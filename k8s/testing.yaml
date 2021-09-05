@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: testing
+  name: template-react
+  labels:
+    app: template-react
+  annotations:
+    # force policy will ensure that deployment is updated
+    # even when tag is unchanged (latest remains)
+    keel.sh/policy: force
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: template-react
+  template:
+    metadata:
+      labels:
+        app: template-react
+    spec:
+      containers:
+        - name: template-react
+          image: harbor.internal.teamyapp.com/internal/template-react-testing:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+      imagePullSecrets:
+        - name: harbor-cred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: testing
+  name: template-react
+spec:
+  selector:
+    app: template-react
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  namespace: testing
+  name: template-react
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`template-react.testing.teamyapp.com`)
+      services:
+        - kind: Service
+          name: template-react
+          namespace: testing
+          port: 80
+          passHostHeader: true
+  tls:
+    secretName: teamy-cert
+
