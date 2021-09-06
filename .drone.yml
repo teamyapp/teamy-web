@@ -38,3 +38,47 @@ trigger:
     - main
   event:
     - push
+---
+kind: pipeline
+type: kubernetes
+name: testing
+
+steps:
+  - name: build image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      repo: harbor.internal.teamyapp.com/internal/template-react-testing
+      registry: harbor.internal.teamyapp.com
+      target: production
+      cache_from: harbor.internal.teamyapp.com/internal/template-react-testing
+trigger:
+  branch:
+    - testing
+  event:
+    - push
+---
+kind: pipeline
+type: kubernetes
+name: production
+
+steps:
+  - name: build image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      repo: harbor.internal.teamyapp.com/internal/template-react
+      registry: harbor.internal.teamyapp.com
+      target: production
+      cache_from: harbor.internal.teamyapp.com/internal/template-react-staging
+trigger:
+  branch:
+    - production
+  event:
+    - push
