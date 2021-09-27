@@ -1,0 +1,84 @@
+kind: pipeline
+type: kubernetes
+name: feature
+
+steps:
+  - name: Run unit tests
+    image: node:14.17.6-alpine3.13
+    commands:
+      - apk add --no-cache g++ make python3
+      - yarn install --frozen-lockfile
+      - CI=true yarn test
+trigger:
+  branch:
+    - master
+    - main
+  event:
+    - pull_request
+---
+kind: pipeline
+type: kubernetes
+name: staging
+
+steps:
+  - name: Build Docker image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      repo: harbor.internal.teamyapp.com/internal/teamy-web-staging
+      cache_from: harbor.internal.teamyapp.com/internal/teamy-web-staging
+      registry: harbor.internal.teamyapp.com
+      target: production
+trigger:
+  branch:
+    - master
+    - main
+  event:
+    - push
+---
+kind: pipeline
+type: kubernetes
+name: testing
+
+steps:
+  - name: build image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      repo: harbor.internal.teamyapp.com/internal/teamy-web-testing
+      registry: harbor.internal.teamyapp.com
+      target: production
+      cache_from: harbor.internal.teamyapp.com/internal/teamy-web-testing
+trigger:
+  branch:
+    - testing
+  event:
+    - push
+---
+kind: pipeline
+type: kubernetes
+name: production
+
+steps:
+  - name: build image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      repo: harbor.internal.teamyapp.com/internal/teamy-web
+      registry: harbor.internal.teamyapp.com
+      target: production
+      cache_from: harbor.internal.teamyapp.com/internal/teamy-web-staging
+trigger:
+  branch:
+    - production
+  event:
+    - push
