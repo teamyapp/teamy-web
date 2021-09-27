@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: staging
-  name: template-react
+  name: teamy-web
   labels:
-    app: template-react
+    app: teamy-web
   annotations:
     # force policy will ensure that deployment is updated
     # even when tag is unchanged (latest remains)
@@ -16,15 +16,15 @@ spec:
   revisionHistoryLimit: 3
   selector:
     matchLabels:
-      app: template-react
+      app: teamy-web
   template:
     metadata:
       labels:
-        app: template-react
+        app: teamy-web
     spec:
       containers:
-        - name: template-react
-          image: harbor.internal.teamyapp.com/internal/template-react-staging:latest
+        - name: teamy-web
+          image: harbor.internal.teamyapp.com/internal/teamy-web-staging:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -35,10 +35,10 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: staging
-  name: template-react
+  name: teamy-web
 spec:
   selector:
-    app: template-react
+    app: teamy-web
   ports:
     - name: http
       port: 80
@@ -48,16 +48,16 @@ apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
   namespace: staging
-  name: template-react
+  name: teamy-web
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`template-react.staging.teamyapp.com`)
+      match: Host(`staging.teamyapp.com`)
       services:
         - kind: Service
-          name: template-react
+          name: teamy-web
           namespace: staging
           port: 80
           passHostHeader: true

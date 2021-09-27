@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # React Template
+=======
+# Teamy Web
+>>>>>>> master
 
 ## Prerequisites
 
@@ -16,6 +20,6 @@ yarn start
 1. Visit `http://localhost:3000`
 
 ## Deployment Environments
-- [testing](https://template-react.testing.teamyapp.com)
-- [staging](https://template-react.staging.teamyapp.com)
-- [production](https://template-react.teamyapp.com)
+- [testing](https://testing.teamyapp.com)
+- [staging](https://staging.teamyapp.com)
+- [production](https://teamyapp.com)

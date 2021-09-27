@@ -28,8 +28,8 @@ steps:
         from_secret: DOCKER_USERNAME
       password:
         from_secret: DOCKER_PASSWORD
-      repo: harbor.internal.teamyapp.com/internal/template-react-staging
-      cache_from: harbor.internal.teamyapp.com/internal/template-react-staging
+      repo: harbor.internal.teamyapp.com/internal/teamy-web-staging
+      cache_from: harbor.internal.teamyapp.com/internal/teamy-web-staging
       registry: harbor.internal.teamyapp.com
       target: production
 trigger:
@@ -51,10 +51,10 @@ steps:
         from_secret: DOCKER_USERNAME
       password:
         from_secret: DOCKER_PASSWORD
-      repo: harbor.internal.teamyapp.com/internal/template-react-testing
+      repo: harbor.internal.teamyapp.com/internal/teamy-web-testing
       registry: harbor.internal.teamyapp.com
       target: production
-      cache_from: harbor.internal.teamyapp.com/internal/template-react-testing
+      cache_from: harbor.internal.teamyapp.com/internal/teamy-web-testing
 trigger:
   branch:
     - testing
@@ -73,10 +73,10 @@ steps:
         from_secret: DOCKER_USERNAME
       password:
         from_secret: DOCKER_PASSWORD
-      repo: harbor.internal.teamyapp.com/internal/template-react
+      repo: harbor.internal.teamyapp.com/internal/teamy-web
       registry: harbor.internal.teamyapp.com
       target: production
-      cache_from: harbor.internal.teamyapp.com/internal/template-react-staging
+      cache_from: harbor.internal.teamyapp.com/internal/teamy-web-staging
 trigger:
   branch:
     - production
