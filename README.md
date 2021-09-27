@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# React Template
-=======
 # Teamy Web
->>>>>>> master
 
 ## Prerequisites
 
