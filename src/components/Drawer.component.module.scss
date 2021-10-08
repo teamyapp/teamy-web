@@ -4,28 +4,28 @@
     .Teams {
         display: flex;
         .Team {
-            $roundCorner  : 10px;
-      border        : 4px solid transparent;
-      border-radius : $roundCorner;
-      $size         : 40px;
+            $roundCorner: 10px;
+            border: 4px solid transparent;
+            border-radius: $roundCorner;
+            $size: 40px;
             .IconFrame {
-        display          : flex;
-        align-items      : center;
-        width            : $size;
-        height           : $size;
-        padding          : 10px;
-        cursor           : pointer;
-        border           : none;
-        border-radius    : $roundCorner;
-        background-color : white;
+                display: flex;
+                align-items: center;
+                width: $size;
+                height: $size;
+                padding: 10px;
+                cursor: pointer;
+                border: none;
+                border-radius: $roundCorner;
+                background-color: white;
 
-        .Icon {
-          min-width  : $size - 10px;
-          max-width  : $size;
-          min-height : $size - 10px;
-          max-height : $size;
-        }
-      }
+                .Icon {
+                    min-width: $size - 10px;
+                    max-width: $size;
+                    min-height: $size - 10px;
+                    max-height: $size;
+                }
+            }
         }
     }
 }

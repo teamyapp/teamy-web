@@ -37,14 +37,19 @@ export default class DrawerComponent extends Component {
     render = () => {
         return (
             <div className={styles.Drawer}>
+                <div className={styles.Header}>
+                    {/* TODO: Drawer header detail */}
+                </div>
                 <div className={styles.Teams}>
                     {teams.map((team: Team, index: number) => (
                         <div className={styles.Team} key={index}>
-                             <div className={styles.IconFrame}>
-                                    <img className={styles.Icon}
-                                         src={team.iconUrl}
-                                         alt={team.name}/>
-                                </div>
+                            <div className={styles.IconFrame}>
+                                <img
+                                    className={styles.Icon}
+                                    src={team.iconUrl}
+                                    alt={team.name}
+                                />
+                            </div>
                         </div>
                     ))}
                 </div>
