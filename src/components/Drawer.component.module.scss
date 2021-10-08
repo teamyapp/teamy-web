@@ -1,6 +1,9 @@
 .Drawer {
     display: flex;
 
+    .Header {
+        justify-content: right;
+    }
     .Teams {
         display: flex;
         .Team {
