@@ -2,7 +2,7 @@ import styles from './App.component.module.scss';
 
 function App() {
     return (
-        <div className={styles.APP}>
+        <div className={styles.App}>
             {/* TODO: Drawer */}
             Drawer&nbsp;
             {/* TODO: Header */}
