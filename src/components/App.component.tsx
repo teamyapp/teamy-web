@@ -1,10 +1,11 @@
 import styles from './App.component.module.scss';
-
+import DrawerComponent from './Drawer.component';
+    
 function App() {
     return (
         <div className={styles.App}>
             {/* TODO: Drawer */}
-            Drawer&nbsp;
+            <DrawerComponent />
             {/* TODO: Header Detail */}
             <div className={styles.Content}>
                 <header className={styles.Header}>
