@@ -5,8 +5,12 @@ function App() {
         <div className={styles.App}>
             {/* TODO: Drawer */}
             Drawer&nbsp;
-            {/* TODO: Header */}
-            Header&nbsp;
+            {/* TODO: Header Detail */}
+            <div className={styles.Content}>
+                <header className={styles.Header}>
+                    <div className={styles.TeamName}>Teamy</div>
+                </header>
+            </div>
             {/* TODO: StatefulExecutionComponent */}
             StatefulExecutionComponent
         </div>

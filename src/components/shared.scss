@@ -1,0 +1,11 @@
+@import '../styleguide/color';
+
+@mixin header {
+    .Header {
+        display: flex;
+        align-items: center;
+        height: 50px;
+        padding: 0 16px;
+        background-color: $primaryColor;
+    }
+}
