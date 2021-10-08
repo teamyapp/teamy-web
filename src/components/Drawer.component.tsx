@@ -37,7 +37,6 @@ export default class DrawerComponent extends Component {
     render = () => {
         return (
             <div className={styles.Drawer}>
-                Drawer
                 <div className={styles.Teams}>
                     {teams.map((team: Team, index: number) => (
                         <div className={styles.Team} key={index}>
