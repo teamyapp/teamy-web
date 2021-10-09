@@ -1,0 +1,17 @@
+@import '../../../styleguide/color';
+
+.Execution {
+    .Tabs {
+        background-color: var(--tabs-background-color, $primaryColor);
+        box-shadow: rgba(0, 0, 0, 0.2) 0 2px 4px;
+
+        .Container {
+            max-width: 800px;
+            margin: auto;
+        }
+    }
+
+    .Content {
+        padding: 20px;
+    }
+}
