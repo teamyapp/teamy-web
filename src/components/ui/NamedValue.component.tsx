@@ -1,4 +1,4 @@
-import {Component, ReactElement} from 'react';
+import { Component, ReactElement } from 'react';
 import styles from './NamedValue.component.module.scss';
 
 interface IProps {
@@ -14,5 +14,5 @@ export default class NamedValueComponent extends Component<IProps> {
                 <div className={styles.Value}>{this.props.value}</div>
             </div>
         );
-    };
+    }
 }
