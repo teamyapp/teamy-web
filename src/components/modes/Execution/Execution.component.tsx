@@ -1,7 +1,6 @@
 import React, { Component, ReactElement } from 'react';
 import styles from './Execution.component.module.scss';
 
-
 class ExecutionComponent extends Component {
     public render(): ReactElement {
         return (
