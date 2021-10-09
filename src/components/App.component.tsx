@@ -1,5 +1,6 @@
 import styles from './App.component.module.scss';
 import DrawerComponent from './Drawer.component';
+import StatefulExecutionComponent from './modes/Execution/Execution.component';
 
 function App() {
     return (
@@ -13,7 +14,7 @@ function App() {
                 </header>
             </div>
             {/* TODO: StatefulExecutionComponent */}
-            StatefulExecutionComponent
+            <StatefulExecutionComponent />
         </div>
     );
 }
