@@ -6,7 +6,6 @@ import StatefulExecutionComponent from './modes/Execution/Execution.component';
 export default class AppComponent extends Component {
     public render(): ReactElement {
         return (
-    
             <div className={styles.App}>
                 {/* TODO: Drawer */}
                 <DrawerComponent />
