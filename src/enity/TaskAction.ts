@@ -4,5 +4,5 @@ export enum TaskAction {
     MarkBlocked,
     UpdateAssignee,
     Delete,
-    Detail
+    Detail,
 }
