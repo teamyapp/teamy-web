@@ -2980,6 +2980,11 @@
   dependencies:
     "@types/react" "*"
 
+"@types/marked@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/marked/-/marked-3.0.1.tgz#748645ecde30d8cf7861c3e1c360c6f694172f92"
+  integrity sha512-jry/WUAC511P2NBCeiCkfTRCN2VXobeeQa8p8gImOYsRfnuIVfeEsqOJ1pk+CzCwfMCdv3dkTQRCYaNkkFGtxw==
+
 "@types/mdast@^3.0.0":
   version "3.0.10"
   resolved "https://registry.yarnpkg.com/@types/mdast/-/mdast-3.0.10.tgz#4724244a82a4598884cbbe9bcfd73dff927ee8af"
@@ -3056,6 +3061,11 @@
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/pretty-hrtime/-/pretty-hrtime-1.0.1.tgz#72a26101dc567b0d68fd956cf42314556e42d601"
   integrity sha512-VjID5MJb1eGKthz2qUerWT8+R4b9N+CHvGCzg9fn4kWZgaF9AhdYikQio3R7wV8YY1NsQKPaCwKz1Yff+aHNUQ==
+
+"@types/prismjs@^1.16.6":
+  version "1.16.6"
+  resolved "https://registry.yarnpkg.com/@types/prismjs/-/prismjs-1.16.6.tgz#377054f72f671b36dbe78c517ce2b279d83ecc40"
+  integrity sha512-dTvnamRITNqNkqhlBd235kZl3KfVJQQoT5jkXeiWSBK7i4/TLKBNLV0S1wOt8gy4E2TY722KLtdmv2xc6+Wevg==
 
 "@types/prop-types@*":
   version "15.7.4"
@@ -9777,6 +9787,10 @@ material-icons@^1.9.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/material-icons/-/material-icons-1.9.0.tgz#556a4d611edb167dd42b8c048a9fbb7e2b072c78"
   integrity sha512-DpKPcpzcTJfqec7KEU12IMOEMYnTvfwWJO+FF+K4+7bvE/4dB7Z/F8P4blkbd19WdyuU6AFDKCuk0lq2OFLdHQ==
+marked@^3.0.7:
+  version "3.0.7"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-3.0.7.tgz#343aad9e91b96249b495c99c512ea09cfe06de1e"
+  integrity sha512-ctKqbnLuNbsHbI26cfMyOlKgXGfl1orOv1AvWWDX7AkgfMOwCWvmuYc+mVLeWhQ9W6hdWVBynOs96VkcscKo0Q==
 
 md5.js@^1.3.4:
   version "1.3.5"
@@ -11819,7 +11833,7 @@ pretty-hrtime@^1.0.3:
   resolved "https://registry.yarnpkg.com/pretty-hrtime/-/pretty-hrtime-1.0.3.tgz#b7e3ea42435a4c9b2759d99e0f201eb195802ee1"
   integrity sha1-t+PqQkNaTJsnWdmeDyAesZWALuE=
 
-prismjs@^1.21.0:
+prismjs@^1.21.0, prismjs@^1.25.0:
   version "1.25.0"
   resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.25.0.tgz#6f822df1bdad965734b310b315a23315cf999756"
   integrity sha512-WCjJHl1KEWbnkQom1+SzftbtXMKQoezOCYs5rECqMN+jP+apI7ftoflyqigqzopSO3hMhTEb0mFClA8lkolgEg==
