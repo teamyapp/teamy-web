@@ -1,0 +1,36 @@
+@import '~material-icons/iconfont/material-icons.scss';
+
+.Icon {
+  $iconSize               : var(--icon-size, 24px);
+  $iconColor              : var(--icon-color, black);
+  $iconBoxSize            : var(--icon-box-size, $iconSize);
+  $iconWidth              : var(--icon-box-width, $iconBoxSize);
+  $iconHeight             : var(--icon-box-height, $iconBoxSize);
+
+  font-family             : 'Material Icons', sans-serif;
+  font-size               : $iconSize;
+  font-style              : normal;
+  display                 : flex;
+  overflow                : hidden;
+  align-items             : center;
+  justify-content         : center;
+  width                   : $iconWidth;
+  height                  : $iconHeight;
+  white-space             : nowrap;
+  letter-spacing          : normal;
+  text-transform          : none;
+
+  /* Support for all WebKit browsers. */
+  word-wrap               : normal;
+  /* Support for Safari and Chrome. */
+  color                   : $iconColor;
+
+  /* Support for Firefox. */
+  direction               : ltr;
+
+  /* Support for IE. */
+  -webkit-font-smoothing  : antialiased;
+  text-rendering          : optimizeLegibility;
+  -moz-osx-font-smoothing : grayscale;
+  font-feature-settings   : 'liga';
+}
