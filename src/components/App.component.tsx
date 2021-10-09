@@ -1,4 +1,4 @@
-import React, {Component, ReactElement} from 'react';
+import React, { Component, ReactElement } from 'react';
 import styles from './App.component.module.scss';
 import DrawerComponent from './Drawer.component';
 import StatefulExecutionComponent from './modes/Execution/Execution.component';
@@ -7,7 +7,7 @@ export default class AppComponent extends Component {
     public render(): ReactElement {
         return (
             <div className={styles.App}>
-                {/* TODO: Drawer */}
+                {/* TODO: Use drawer in the AppComponent */}
                 <DrawerComponent />
                 {/* TODO: Header Detail */}
                 <div className={styles.Content}>
@@ -21,5 +21,3 @@ export default class AppComponent extends Component {
         );
     }
 }
- 
-
