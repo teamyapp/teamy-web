@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import styles from './Drawer.component.module.scss';
-import Team from '../enity/Team';
+import Team from '../entity/Team';
 
 const teams: Team[] = [
     {

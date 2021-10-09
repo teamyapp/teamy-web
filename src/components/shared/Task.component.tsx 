@@ -1,6 +1,6 @@
 import {Component, createRef, ReactElement} from 'react';
-import Task from '../../enity/Task';
-import {TaskAction} from '../../enity/TaskAction';
+import Task from '../../entity/Task';
+import {TaskAction} from '../../entity/TaskAction';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
 import NamedValueComponent from '../ui/NamedValue.component';
 import AssigneeComponent from './Assignee.component';
