@@ -4,7 +4,7 @@ import executionPersonalReducer from './slices/ExecutionPersonal';
 
 const store = configureStore({
     reducer: {
-        executionMe: executionMeReducer
+        executionPersonal: executionPersonalReducer
     }
 });
 
