@@ -3,12 +3,15 @@ import styles from './App.component.module.scss';
 import DrawerComponent from './Drawer.component';
 import StatefulExecutionComponent from './modes/Execution/Execution.component';
 import MaterialIconComponent from './ui/MaterialIcon.component';
+import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+import store from '../store/store';
 
 interface IState {
     isDrawerOpen: boolean;
 }
 
-export default class AppComponent extends Component<any, IState> {
+export class AppComponent extends Component<any, IState> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -44,4 +47,13 @@ export default class AppComponent extends Component<any, IState> {
             isDrawerOpen: !this.state.isDrawerOpen
         });
     };
+}
+
+export default function StatefulAppComponent() {
+    return (
+        <Provider store={store}>
+        <BrowserRouter>
+            <AppComponent />
+        </BrowserRouter>
+    </Provider>)
 }
