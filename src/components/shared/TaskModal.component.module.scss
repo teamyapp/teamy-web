@@ -1,0 +1,62 @@
+@import '../../styleguide/color';
+
+$divider : 2px solid #E9E9E9;
+
+.Header {
+  font-size        : 24px;
+  font-weight      : 500;
+  height           : 24px;
+  padding          : 14px 20px;
+  color            : white;
+  background-color : $primaryColor;
+
+  .CloseButton {
+    float        : right;
+    margin-top   : -4px;
+    --icon-size  : 32px;
+    --icon-color : white;
+
+    &:hover {
+      cursor  : pointer;
+      opacity : 0.8;
+    }
+  }
+}
+
+.TaskDetail {
+  display         : flex;
+  min-height      : 500px;
+  padding         : 20px;
+
+  --outline-color : #1976D2;
+  --border        : 2px solid #{$secondaryColor};
+  --font-size     : 18px;
+
+  .LeftSection {
+    width         : 800px;
+    padding-right : 20px;
+
+
+    .Context {
+      margin-top : 20px;
+    }
+  }
+
+  .RightSection {
+    width        : 200px;
+    padding-left : 20px;
+    border-left  : $divider;
+
+    .Row {
+      display : flex;
+
+      &:not(:first-child) {
+        margin-top : 10px;
+      }
+    }
+
+    .Effort {
+      --color : #1976D2;
+    }
+  }
+}
