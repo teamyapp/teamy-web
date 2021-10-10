@@ -91,7 +91,7 @@ const slice = createSlice({
     name: 'executionPersonal',
     initialState,
     reducers: {
-        setNeedAttentionTask(state: ExecutionMeState, action: PayloadAction<Task>) {
+        setNeedAttentionTask(state: ExecutionPersonalState, action: PayloadAction<Task>) {
             state.needAttention = action.payload;
         },
         clearNeedAttentionTask(state: ExecutionMeState) {
