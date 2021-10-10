@@ -97,7 +97,7 @@ const slice = createSlice({
         clearNeedAttentionTask(state: ExecutionPersonalState) {
             state.needAttention = undefined;
         },
-        addIncomingTask(state: ExecutionMeState, action: PayloadAction<Task>) {
+        addIncomingTask(state: ExecutionPersonalState, action: PayloadAction<Task>) {
             state.upcomingTasks.concat(action.payload);
         },
         removeIncomingTask(state: ExecutionMeState, action: PayloadAction<number>) {
