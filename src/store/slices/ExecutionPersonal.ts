@@ -100,7 +100,7 @@ const slice = createSlice({
         addIncomingTask(state: ExecutionPersonalState, action: PayloadAction<Task>) {
             state.upcomingTasks.concat(action.payload);
         },
-        removeIncomingTask(state: ExecutionMeState, action: PayloadAction<number>) {
+        removeIncomingTask(state: ExecutionPersonalState, action: PayloadAction<number>) {
             state.deliveredTasks = state
                 .deliveredTasks
                 .filter((task: Task) => task.id !== action.payload);
