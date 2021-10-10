@@ -1,91 +1,92 @@
 @import '../../styleguide/divider';
 @import '../../styleguide/elevation';
 
-$numOfActionColumns : 2;
-$actionIconSize     : 28px;
+$numOfActionColumns: 2;
+$actionIconSize: 28px;
 
 .Task {
-  @include elevation(4);
-  display          : flex;
-  padding          : 20px;
-  border           : 4px solid transparent;
-  border-radius    : 6px;
-  background-color : white;
+    @include elevation(4);
+    display: flex;
+    padding: 20px;
+    border: 4px solid transparent;
+    border-radius: 6px;
+    background-color: white;
 
-  &:hover {
-    cursor : pointer;
-  }
-
-  .LeftSection {
-    flex          : 1;
-    padding-right : 20px;
-
-    .Goal {
-      font-size   : 22px;
-      font-weight : 500;
+    &:hover {
+        cursor: pointer;
     }
 
-    .DueAt {
-      font-size   : 16px;
-      font-weight : 500;
-      margin-top  : 6px;
-      color       : #585858;
+    .LeftSection {
+        flex: 1;
+        padding-right: 20px;
+
+        .Goal {
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        .DueAt {
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 6px;
+            color: #585858;
+        }
+
+        .Attributes {
+            display: flex;
+            margin-top: 10px;
+
+            .EffortAttribute {
+                --color: #1976d2;
+            }
+        }
     }
 
-    .Attributes {
-      display    : flex;
-      margin-top : 10px;
-
-      .EffortAttribute {
-        --color : #1976D2;
-      }
+    .ActionsSection,
+    .ViewDetailSection {
+        border-left: 2px solid $dividerColor;
     }
-  }
 
-  .ActionsSection, .ViewDetailSection {
-    border-left : 2px solid $dividerColor;
-  }
+    .ActionsSection {
+        display: grid;
+        padding-left: 20px;
+        grid-auto-rows: min-content;
+        grid-template-columns: repeat($numOfActionColumns, 1fr);
+        gap: 10px;
 
-  .ActionsSection {
-    display               : grid;
-    padding-left          : 20px;
-    grid-auto-rows        : min-content;
-    grid-template-columns : repeat($numOfActionColumns, 1fr);
-    gap                   : 10px;
+        .Action {
+            width: $actionIconSize;
+            height: $actionIconSize;
+            padding: 4px;
+            border-radius: 4px;
+            --icon-size: #{$actionIconSize};
+            --icon-box-size: #{$actionIconSize};
 
-    .Action {
-      width           : $actionIconSize;
-      height          : $actionIconSize;
-      padding         : 4px;
-      border-radius   : 4px;
-      --icon-size     : #{$actionIconSize};
-      --icon-box-size : #{$actionIconSize};
-
-      &:hover {
-        background-color : rgba(0, 0, 0, 0.07);
-      }
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.07);
+            }
+        }
     }
-  }
 }
 
 .StartTaskIcon {
-  --icon-color : #00897B;
-  --icon-size  : #{$actionIconSize + 6px};
+    --icon-color: #00897b;
+    --icon-size: #{$actionIconSize + 6px};
 }
 
 .TaskCompletedIcon {
-  --icon-color : #008B00;
+    --icon-color: #008b00;
 }
 
 .DeleteTaskIcon {
-  --icon-color : red;
+    --icon-color: red;
 }
 
 .MarkTaskBlockIcon {
-  --icon-color : red;
-  --icon-size  : #{$actionIconSize + 3px};
+    --icon-color: red;
+    --icon-size: #{$actionIconSize + 3px};
 }
 
 .TaskDetailIcon {
-  --icon-color : #616161;
+    --icon-color: #616161;
 }

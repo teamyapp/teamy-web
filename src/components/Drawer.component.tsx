@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import Team from '../entity/Team';
 import styles from './Drawer.component.module.scss';
 import MaterialIconComponent from './ui/MaterialIcon.component';
@@ -7,32 +7,32 @@ import MaterialIconComponent from './ui/MaterialIcon.component';
 const teams: Team[] = [
     {
         iconUrl: 'teams/teamy.svg',
-        name: 'Teamy'
+        name: 'Teamy',
     },
     {
         iconUrl: 'teams/amazon.svg',
-        name: 'Amazon'
+        name: 'Amazon',
     },
     {
         iconUrl: 'teams/apple.svg',
-        name: 'Apple'
+        name: 'Apple',
     },
     {
         iconUrl: 'teams/facebook.svg',
-        name: 'Facebook'
+        name: 'Facebook',
     },
     {
         iconUrl: 'teams/google.svg',
-        name: 'Google'
+        name: 'Google',
     },
     {
         iconUrl: 'teams/microsoft.svg',
-        name: 'Microsoft'
+        name: 'Microsoft',
     },
     {
         iconUrl: 'teams/tesla.svg',
-        name: 'Tesla'
-    }
+        name: 'Tesla',
+    },
 ];
 
 interface OnMenuCloseHandler {
@@ -52,39 +52,49 @@ export default class DrawerComponent extends Component<IProps, IState> {
     constructor(props: any) {
         super(props);
         this.state = {
-            activeTeamIndex: 0
+            activeTeamIndex: 0,
         };
     }
 
     render = () => {
         return (
-            <div className={`${styles.Drawer} ${classNames({
-                [styles.Show]: this.props.isDrawerOpen
-            })}`}>
+            <div
+                className={`${styles.Drawer} ${classNames({
+                    [styles.Show]: this.props.isDrawerOpen,
+                })}`}
+            >
                 <div className={styles.Header}>
                     <div className={styles.MenuButtonPlaceHolder}>
                         {this.props.isDrawerOpen && (
-                            <div className={styles.MenuButton} onClick={this.onMenuToggle}>
-                                <MaterialIconComponent>menu_open</MaterialIconComponent>
+                            <div
+                                className={styles.MenuButton}
+                                onClick={this.onMenuToggle}
+                            >
+                                <MaterialIconComponent>
+                                    menu_open
+                                </MaterialIconComponent>
                             </div>
                         )}
                     </div>
                 </div>
                 <div className={styles.Teams}>
-                    {
-                        teams.map((team: Team, index: number) => (
-                            <div className={`${styles.Team} ${classNames({
-                                [styles.Active]: this.state.activeTeamIndex === index
+                    {teams.map((team: Team, index: number) => (
+                        <div
+                            className={`${styles.Team} ${classNames({
+                                [styles.Active]:
+                                    this.state.activeTeamIndex === index,
                             })}`}
-                                 key={index}>
-                                <div className={styles.IconFrame}>
-                                    <img className={styles.Icon}
-                                         src={team.iconUrl}
-                                         alt={team.name}/>
-                                </div>
+                            key={index}
+                        >
+                            <div className={styles.IconFrame}>
+                                <img
+                                    className={styles.Icon}
+                                    src={team.iconUrl}
+                                    alt={team.name}
+                                />
                             </div>
-                        ))
-                    }
+                        </div>
+                    ))}
                 </div>
             </div>
         );

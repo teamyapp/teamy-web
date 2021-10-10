@@ -1,6 +1,6 @@
-import {Component, createRef, ReactElement} from 'react';
+import { Component, createRef, ReactElement } from 'react';
 import Task from '../../entity/Task';
-import {DatePickerComponent} from '../ui/DatePicker.component';
+import { DatePickerComponent } from '../ui/DatePicker.component';
 import MarkdownEditorComponent from '../ui/MarkdownEditor.component';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
 import ModalComponent from '../ui/Modal.component';
@@ -26,38 +26,49 @@ export default class TaskModalComponent extends Component<any, IState> {
             <ModalComponent ref={this.modalRef}>
                 <div className={styles.Header}>
                     Task #{this.state.task?.id}
-                    <div className={styles.CloseButton} onClick={this.onCloseButtonClick}>
+                    <div
+                        className={styles.CloseButton}
+                        onClick={this.onCloseButtonClick}
+                    >
                         <MaterialIconComponent>cancel</MaterialIconComponent>
                     </div>
                 </div>
                 <div>
-                    {
-                        this.state.task && (
-                            <div className={styles.TaskDetail}>
-                                <div className={styles.LeftSection}>
-                                    <TextFieldComponent
-                                        value={this.state.task.goal}
-                                        label={'Goal'}
-                                        showLengthCounter={true}
-                                        maxLength={70}
-                                        onChange={this.onTextFieldChangeHandler('goal')}/>
-                                    <div className={styles.Context}>
-                                        <MarkdownEditorComponent label={'Context'}/>
-                                    </div>
+                    {this.state.task && (
+                        <div className={styles.TaskDetail}>
+                            <div className={styles.LeftSection}>
+                                <TextFieldComponent
+                                    value={this.state.task.goal}
+                                    label={'Goal'}
+                                    showLengthCounter={true}
+                                    maxLength={70}
+                                    onChange={this.onTextFieldChangeHandler(
+                                        'goal',
+                                    )}
+                                />
+                                <div className={styles.Context}>
+                                    <MarkdownEditorComponent
+                                        label={'Context'}
+                                    />
                                 </div>
-                                <div className={styles.RightSection}>
-                                    <div>
-                                        <div className={`${styles.Row}`}>
-                                            <DatePickerComponent label={'Due at'}/>
-                                        </div>
-                                        <div className={`${styles.Row} ${styles.Effort}`}>
-                                            <NamedValueComponent name={'Effort'} value={`${this.state.task.effort}`}/>
-                                        </div>
+                            </div>
+                            <div className={styles.RightSection}>
+                                <div>
+                                    <div className={`${styles.Row}`}>
+                                        <DatePickerComponent label={'Due at'} />
+                                    </div>
+                                    <div
+                                        className={`${styles.Row} ${styles.Effort}`}
+                                    >
+                                        <NamedValueComponent
+                                            name={'Effort'}
+                                            value={`${this.state.task.effort}`}
+                                        />
                                     </div>
                                 </div>
                             </div>
-                        )
-                    }
+                        </div>
+                    )}
                 </div>
             </ModalComponent>
         );
@@ -65,7 +76,7 @@ export default class TaskModalComponent extends Component<any, IState> {
 
     public open(task: Task) {
         this.setState({
-            task: task
+            task: task,
         });
         this.modalRef.current?.open();
     }
@@ -74,8 +85,8 @@ export default class TaskModalComponent extends Component<any, IState> {
         return (newValue: string) => {
             this.setState({
                 task: Object.assign({}, this.state.task, {
-                    [taskProp]: newValue
-                })
+                    [taskProp]: newValue,
+                }),
             });
         };
     }

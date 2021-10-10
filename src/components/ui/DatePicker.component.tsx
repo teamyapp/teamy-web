@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import _ from 'lodash';
 import moment from 'moment';
-import {Component, ReactElement} from 'react';
+import { Component, ReactElement } from 'react';
 
 import styles from './DatePicker.component.module.scss';
 import MaterialIconComponent from './MaterialIcon.component';
@@ -10,8 +10,18 @@ import TextFieldComponent from './TextField.component';
 
 const weekDayTitles = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
 ];
 
 const defaultMinYear = 1970;
@@ -43,7 +53,7 @@ export class DatePickerComponent extends Component<IProps, IState> {
             showSelectYear: false,
             selectedDate: today,
             shownDate: today,
-            textFieldContent: ''
+            textFieldContent: '',
         };
     }
 
@@ -57,19 +67,16 @@ export class DatePickerComponent extends Component<IProps, IState> {
                     icon={'date_range'}
                     onChange={this.onTextFieldContentChange}
                     onIconClick={this.onCalendarIconClick}
-                    onBlur={this.onTextFieldBlur}/>
-                {
-                    this.state.showCalendar && (
-                        <div className={styles.Calendar}>
-                            {this.renderCalendarControls()}
-                            {
-                                this.state.showSelectYear ?
-                                    this.renderSelectYear() :
-                                    this.renderSelectMonthDay()
-                            }
-                        </div>
-                    )
-                }
+                    onBlur={this.onTextFieldBlur}
+                />
+                {this.state.showCalendar && (
+                    <div className={styles.Calendar}>
+                        {this.renderCalendarControls()}
+                        {this.state.showSelectYear
+                            ? this.renderSelectYear()
+                            : this.renderSelectMonthDay()}
+                    </div>
+                )}
             </div>
         );
     }
@@ -80,18 +87,32 @@ export class DatePickerComponent extends Component<IProps, IState> {
 
         return (
             <div className={styles.Controls}>
-                <div>{monthNames[month]} {year}</div>
-                <div className={`${styles.Button} ${styles.ShowYears}`}
-                     onClick={this.onToggleSelectYear}>
-                    <MaterialIconComponent>{
-                        this.state.showSelectYear ? 'arrow_drop_down' : 'arrow_drop_up'}
+                <div>
+                    {monthNames[month]} {year}
+                </div>
+                <div
+                    className={`${styles.Button} ${styles.ShowYears}`}
+                    onClick={this.onToggleSelectYear}
+                >
+                    <MaterialIconComponent>
+                        {this.state.showSelectYear
+                            ? 'arrow_drop_down'
+                            : 'arrow_drop_up'}
                     </MaterialIconComponent>
                 </div>
-                <div className={styles.Spacer}/>
-                <div className={`${styles.Button}`} onClick={this.onPrevMonthClick}>
-                    <MaterialIconComponent>navigate_before</MaterialIconComponent>
+                <div className={styles.Spacer} />
+                <div
+                    className={`${styles.Button}`}
+                    onClick={this.onPrevMonthClick}
+                >
+                    <MaterialIconComponent>
+                        navigate_before
+                    </MaterialIconComponent>
                 </div>
-                <div className={`${styles.Button}`} onClick={this.onNextMonthClick}>
+                <div
+                    className={`${styles.Button}`}
+                    onClick={this.onNextMonthClick}
+                >
                     <MaterialIconComponent>navigate_next</MaterialIconComponent>
                 </div>
             </div>
@@ -99,7 +120,10 @@ export class DatePickerComponent extends Component<IProps, IState> {
     }
 
     private renderSelectYear(): ReactElement {
-        const years = _.range(this.props.minYear || defaultMinYear, (this.props.maxYear || defaultMaxYear) + 1);
+        const years = _.range(
+            this.props.minYear || defaultMinYear,
+            (this.props.maxYear || defaultMaxYear) + 1,
+        );
         return (
             <div className={styles.SelectYear}>
                 {years.map(this.renderYear)}
@@ -109,11 +133,13 @@ export class DatePickerComponent extends Component<IProps, IState> {
 
     private renderYear = (year: number, index: number): ReactElement => {
         return (
-            <div key={index}
-                 className={`${styles.Year} ${classNames({
-                     [styles.Selected]: this.showingSelectedYear(year)
-                 })}`}
-                 onClick={this.onYearClickHandler(year)}>
+            <div
+                key={index}
+                className={`${styles.Year} ${classNames({
+                    [styles.Selected]: this.showingSelectedYear(year),
+                })}`}
+                onClick={this.onYearClickHandler(year)}
+            >
                 {year}
             </div>
         );
@@ -122,38 +148,41 @@ export class DatePickerComponent extends Component<IProps, IState> {
     private renderSelectMonthDay(): ReactElement {
         return (
             <div className={styles.Month}>
-                {
-                    weekDayTitles.map(this.renderWeekDay)
-                }
-                {
-                    this.renderMonthDays()
-                }
+                {weekDayTitles.map(this.renderWeekDay)}
+                {this.renderMonthDays()}
             </div>
         );
     }
 
     private renderMonthDays(): ReactElement[] {
-        return DateService
-            .getMonthDays(this.state.shownDate)
-            .map(this.renderMonthDay);
+        return DateService.getMonthDays(this.state.shownDate).map(
+            this.renderMonthDay,
+        );
     }
 
-    private renderMonthDay = (monthDay: (null | number), index: number): ReactElement => {
+    private renderMonthDay = (
+        monthDay: null | number,
+        index: number,
+    ): ReactElement => {
         return monthDay ? (
-                <div key={index} className={`${styles.Cell} ${styles.Day} ${classNames({
+            <div
+                key={index}
+                className={`${styles.Cell} ${styles.Day} ${classNames({
                     [styles.Selected]: this.showingSelectedDate(monthDay),
-                    [styles.Today]: this.showingToday(monthDay)
+                    [styles.Today]: this.showingToday(monthDay),
                 })}`}
-                     onClick={this.onDayClickHandler(monthDay)}>
-                    {monthDay}
-                </div>
-            ) :
-            <div key={index} className={`${styles.Cell}`}/>;
+                onClick={this.onDayClickHandler(monthDay)}
+            >
+                {monthDay}
+            </div>
+        ) : (
+            <div key={index} className={`${styles.Cell}`} />
+        );
     };
 
     private onTextFieldContentChange = (newValue: string) => {
         this.setState({
-            textFieldContent: newValue
+            textFieldContent: newValue,
         });
     };
 
@@ -163,18 +192,18 @@ export class DatePickerComponent extends Component<IProps, IState> {
             const date = momentDate.toDate();
             this.setState({
                 selectedDate: date,
-                shownDate: date
+                shownDate: date,
             });
         }
     };
 
     private onToggleSelectYear = () => {
         this.setState({
-            showSelectYear: !this.state.showSelectYear
+            showSelectYear: !this.state.showSelectYear,
         });
     };
 
-    private onDayClickHandler = (monthDay: number): () => void => {
+    private onDayClickHandler = (monthDay: number): (() => void) => {
         return () => {
             const newDate = new Date(this.state.shownDate);
             newDate.setDate(monthDay);
@@ -182,18 +211,18 @@ export class DatePickerComponent extends Component<IProps, IState> {
                 selectedDate: newDate,
                 shownDate: newDate,
                 showCalendar: false,
-                textFieldContent: moment(newDate).format(dateFormat)
+                textFieldContent: moment(newDate).format(dateFormat),
             });
         };
     };
 
-    private onYearClickHandler = (year: number): () => void => {
+    private onYearClickHandler = (year: number): (() => void) => {
         return () => {
             const newDate = new Date(this.state.shownDate);
             newDate.setFullYear(year);
 
             this.setState({
-                shownDate: newDate
+                shownDate: newDate,
             });
         };
     };
@@ -212,14 +241,22 @@ export class DatePickerComponent extends Component<IProps, IState> {
 
     private showingGivenDate(givenDate: Date, shownMonthDay: number): boolean {
         const shownDate = this.state.shownDate;
-        return shownDate.getFullYear() === givenDate.getFullYear() &&
+        return (
+            shownDate.getFullYear() === givenDate.getFullYear() &&
             shownDate.getMonth() === givenDate.getMonth() &&
-            shownMonthDay === givenDate.getDate();
+            shownMonthDay === givenDate.getDate()
+        );
     }
 
-    private renderWeekDay = (weekDayTitle: string, index: number): ReactElement => {
+    private renderWeekDay = (
+        weekDayTitle: string,
+        index: number,
+    ): ReactElement => {
         return (
-            <div key={index} className={`${styles.Cell} ${styles.WeekDayTitle}`}>
+            <div
+                key={index}
+                className={`${styles.Cell} ${styles.WeekDayTitle}`}
+            >
                 {weekDayTitle}
             </div>
         );
@@ -227,7 +264,7 @@ export class DatePickerComponent extends Component<IProps, IState> {
 
     private onCalendarIconClick = () => {
         this.setState({
-            showCalendar: !this.state.showCalendar
+            showCalendar: !this.state.showCalendar,
         });
     };
 
@@ -243,7 +280,7 @@ export class DatePickerComponent extends Component<IProps, IState> {
         const newDate = new Date(this.state.shownDate);
         newDate.setMonth(nextMonth(newDate.getMonth()));
         this.setState({
-            shownDate: newDate
+            shownDate: newDate,
         });
     };
 }

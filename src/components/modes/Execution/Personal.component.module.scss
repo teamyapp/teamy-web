@@ -1,33 +1,33 @@
 .NeedAttentionSection {
-  --title-color      : #CC18AE;
-  --background-color : #FFF6FF;
+    --title-color: #cc18ae;
+    --background-color: #fff6ff;
 }
 
 .UpcomingSection {
-  --title-color      : #0074B1;
-  --background-color : #F2FCFF;
+    --title-color: #0074b1;
+    --background-color: #f2fcff;
 }
 
 .DeliveredSection {
-  --title-color      : #25A100;
-  --background-color : #E6FFE2;
+    --title-color: #25a100;
+    --background-color: #e6ffe2;
 }
 
 .TaskLists {
-  display               : grid;
-  margin-top            : 20px;
-  grid-template-columns : repeat(2, 1fr);
-  grid-auto-rows        : min-content;
-  grid-gap              : 20px;
+    display: grid;
+    margin-top: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: min-content;
+    grid-gap: 20px;
 
-  > .TaskListSection {
-    flex : 1;
-  }
+    > .TaskListSection {
+        flex: 1;
+    }
 
-  .TaskList {
-    display               : grid;
-    grid-template-columns : 1fr;
-    grid-auto-rows        : min-content;
-    grid-gap              : 10px;
-  }
+    .TaskList {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-auto-rows: min-content;
+        grid-gap: 10px;
+    }
 }

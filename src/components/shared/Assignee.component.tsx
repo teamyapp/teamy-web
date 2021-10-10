@@ -1,9 +1,8 @@
-import {Component, ReactElement} from 'react';
+import { Component, ReactElement } from 'react';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
 import styles from './Assignee.component.module.scss';
 
-interface IProps {
-}
+interface IProps {}
 
 export default class AssigneeComponent extends Component<IProps> {
     public render(): ReactElement {
@@ -14,5 +13,5 @@ export default class AssigneeComponent extends Component<IProps> {
                 </div>
             </div>
         );
-    };
+    }
 }

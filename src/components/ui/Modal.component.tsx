@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import {Component, ReactElement} from 'react';
+import { Component, ReactElement } from 'react';
 import styles from './Modal.component.module.scss';
 
 const transitionDurationMilliseconds = 400;
@@ -16,34 +16,36 @@ export default class ModalComponent extends Component<any, IState> {
         this.state = {
             isVisible: false,
             isOpen: false,
-            isAnimating: false
+            isAnimating: false,
         };
     }
 
     public render(): ReactElement {
         return (
             <div className={styles.Modal}>
-                {
-                    this.state.isVisible && (
-                        <div>
-                            <div className={`${styles.Content} ${classNames({
-                                [styles.Show]: this.state.isOpen
+                {this.state.isVisible && (
+                    <div>
+                        <div
+                            className={`${styles.Content} ${classNames({
+                                [styles.Show]: this.state.isOpen,
                             })}`}
-                                 style={{
-                                     transitionDuration: `${transitionDurationMilliseconds}ms`
-                                 }}>
-                                {this.props.children}
-                            </div>
-                            <div className={`${styles.Overlay} ${classNames({
-                                [styles.Show]: this.state.isOpen
-                            })}`}
-                                 style={{
-                                     transitionDuration: `${transitionDurationMilliseconds}ms`
-                                 }}
-                                 onClick={this.onOverlayClick}/>
+                            style={{
+                                transitionDuration: `${transitionDurationMilliseconds}ms`,
+                            }}
+                        >
+                            {this.props.children}
                         </div>
-                    )
-                }
+                        <div
+                            className={`${styles.Overlay} ${classNames({
+                                [styles.Show]: this.state.isOpen,
+                            })}`}
+                            style={{
+                                transitionDuration: `${transitionDurationMilliseconds}ms`,
+                            }}
+                            onClick={this.onOverlayClick}
+                        />
+                    </div>
+                )}
             </div>
         );
     }
@@ -54,17 +56,17 @@ export default class ModalComponent extends Component<any, IState> {
         }
 
         this.setState({
-            isVisible: true
+            isVisible: true,
         });
         setTimeout(() => {
             this.setState({
                 isOpen: true,
-                isAnimating: true
+                isAnimating: true,
             });
         });
         setTimeout(() => {
             this.setState({
-                isAnimating: false
+                isAnimating: false,
             });
         }, transitionDurationMilliseconds);
     }
@@ -76,13 +78,13 @@ export default class ModalComponent extends Component<any, IState> {
 
         this.setState({
             isOpen: false,
-            isAnimating: true
+            isAnimating: true,
         });
 
         setTimeout(() => {
             this.setState({
                 isVisible: false,
-                isAnimating: false
+                isAnimating: false,
             });
         }, transitionDurationMilliseconds);
     }
