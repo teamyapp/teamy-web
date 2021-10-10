@@ -210,7 +210,7 @@ export class DatePickerComponent extends Component<IProps, IState> {
         return this.showingGiveDate(today, shownMonthDay);
     }
 
-    private showingGiveDate(givenDate: Date, shownMonthDay: number): boolean {
+    private showingGivenDate(givenDate: Date, shownMonthDay: number): boolean {
         const shownDate = this.state.shownDate;
         return shownDate.getFullYear() === givenDate.getFullYear() &&
             shownDate.getMonth() === givenDate.getMonth() &&
