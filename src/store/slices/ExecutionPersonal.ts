@@ -81,7 +81,7 @@ interface ExecutionPersonalState {
     deliveredTasks: Task[];
 }
 
-const initialState: ExecutionMeState = {
+const initialState: ExecutionPersonalState = {
     needAttention: taskNeedAttention,
     upcomingTasks: upcomingTasks,
     deliveredTasks: deliveredTasks
