@@ -1,6 +1,6 @@
-import {Component, createRef, ReactElement} from 'react';
+import { Component, createRef, ReactElement } from 'react';
 import Task from '../../entity/Task';
-import {TaskAction} from '../../entity/TaskAction';
+import { TaskAction } from '../../entity/TaskAction';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
 import NamedValueComponent from '../ui/NamedValue.component';
 import AssigneeComponent from './Assignee.component';
@@ -24,7 +24,7 @@ export default class TaskComponent extends Component<IProps> {
                 <MaterialIconComponent>play_arrow</MaterialIconComponent>
             </span>
         );
-    };
+    }
 
     private static renderMarkTaskCompleted(): ReactElement {
         return (
@@ -32,7 +32,7 @@ export default class TaskComponent extends Component<IProps> {
                 <MaterialIconComponent>check_circle</MaterialIconComponent>
             </span>
         );
-    };
+    }
 
     private static renderMarkTaskBlocked(): ReactElement {
         return (
@@ -40,7 +40,7 @@ export default class TaskComponent extends Component<IProps> {
                 <MaterialIconComponent>report</MaterialIconComponent>
             </span>
         );
-    };
+    }
 
     private static renderDeleteTask(): ReactElement {
         return (
@@ -48,24 +48,29 @@ export default class TaskComponent extends Component<IProps> {
                 <MaterialIconComponent>remove_circle</MaterialIconComponent>
             </span>
         );
-    };
+    }
 
     private static renderUpdateAssignee(): ReactElement {
-        return <AssigneeComponent/>;
-    };
+        return <AssigneeComponent />;
+    }
 
     public render(): ReactElement {
         return (
             <div ref={this.ref} className={styles.Task}>
                 <div className={styles.LeftSection}>
                     <div className={styles.Goal}>{this.props.task.goal}</div>
-                    <div className={styles.DueAt}>Due: {new Date(this.props.task.dueAt).toLocaleString()}</div>
+                    <div className={styles.DueAt}>
+                        Due: {new Date(this.props.task.dueAt).toLocaleString()}
+                    </div>
                     <div className={styles.Attributes}>
-                        {this.props.task.effort &&
-                        <span className={styles.EffortAttribute}>
-                                <NamedValueComponent name={'Effort'} value={`${this.props.task.effort}`}/>
+                        {this.props.task.effort && (
+                            <span className={styles.EffortAttribute}>
+                                <NamedValueComponent
+                                    name={'Effort'}
+                                    value={`${this.props.task.effort}`}
+                                />
                             </span>
-                        }
+                        )}
                     </div>
                 </div>
                 <div className={styles.ActionsSection}>
@@ -73,15 +78,18 @@ export default class TaskComponent extends Component<IProps> {
                 </div>
             </div>
         );
-    };
+    }
 
     private renderTaskDetail(): ReactElement {
         return (
-            <span className={styles.TaskDetailIcon} onClick={this.onTaskDetailClick}>
+            <span
+                className={styles.TaskDetailIcon}
+                onClick={this.onTaskDetailClick}
+            >
                 <MaterialIconComponent>settings</MaterialIconComponent>
             </span>
         );
-    };
+    }
 
     private renderAction(action: TaskAction): ReactElement {
         switch (action) {
@@ -98,17 +106,19 @@ export default class TaskComponent extends Component<IProps> {
             case TaskAction.Detail:
                 return this.renderTaskDetail();
         }
-    };
+    }
 
     private renderActions(): ReactElement[] {
-        return this.props.task.availableActions.concat(TaskAction.Detail).map((action: TaskAction, index: number) => {
-            return (
-                <div className={styles.Action} key={index}>
-                    {this.renderAction(action)}
-                </div>
-            );
-        });
-    };
+        return this.props.task.availableActions
+            .concat(TaskAction.Detail)
+            .map((action: TaskAction, index: number) => {
+                return (
+                    <div className={styles.Action} key={index}>
+                        {this.renderAction(action)}
+                    </div>
+                );
+            });
+    }
 
     private onTaskDetailClick = (): void => {
         if (this.props.onTaskDetailClick) {

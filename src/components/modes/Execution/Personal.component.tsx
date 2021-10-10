@@ -1,4 +1,4 @@
-import React, {Component, createRef, ReactElement} from 'react';
+import React, { Component, createRef, ReactElement } from 'react';
 import Task from '../../../entity/Task';
 import TaskComponent from '../../shared/Task.component';
 import TaskModalComponent from '../../shared/TaskModal.component';
@@ -19,30 +19,31 @@ export default class PersonalComponent extends Component<IProps> {
             <div>
                 <div className={styles.NeedAttentionSection}>
                     <SectionComponent title={'Need Attention'}>
-                        {this.props.taskNeedAttention && this.renderTask(this.props.taskNeedAttention)}
+                        {this.props.taskNeedAttention &&
+                            this.renderTask(this.props.taskNeedAttention)}
                     </SectionComponent>
                 </div>
                 <div className={styles.TaskLists}>
-                    <div className={`${styles.TaskListSection} ${styles.UpcomingSection}`}>
+                    <div
+                        className={`${styles.TaskListSection} ${styles.UpcomingSection}`}
+                    >
                         <SectionComponent title={'Upcoming'}>
                             <div className={styles.TaskList}>
-                                {
-                                    this.props.upcomingTasks.map(this.renderTask)
-                                }
+                                {this.props.upcomingTasks.map(this.renderTask)}
                             </div>
                         </SectionComponent>
                     </div>
-                    <div className={`${styles.TaskListSection} ${styles.DeliveredSection}`}>
+                    <div
+                        className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
+                    >
                         <SectionComponent title={'Delivered'}>
                             <div className={styles.TaskList}>
-                                {
-                                    this.props.deliveredTasks.map(this.renderTask)
-                                }
+                                {this.props.deliveredTasks.map(this.renderTask)}
                             </div>
                         </SectionComponent>
                     </div>
                 </div>
-                <TaskModalComponent ref={this.taskDetailModalRef}/>
+                <TaskModalComponent ref={this.taskDetailModalRef} />
             </div>
         );
     }
@@ -50,7 +51,10 @@ export default class PersonalComponent extends Component<IProps> {
     private renderTask = (task: Task): ReactElement => {
         return (
             <div key={task.id}>
-                <TaskComponent task={task} onTaskDetailClick={this.onTaskDetailClick}/>
+                <TaskComponent
+                    task={task}
+                    onTaskDetailClick={this.onTaskDetailClick}
+                />
             </div>
         );
     };

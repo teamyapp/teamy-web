@@ -1,4 +1,4 @@
-import {Component, createRef, ReactElement, RefObject} from 'react';
+import { Component, createRef, ReactElement, RefObject } from 'react';
 import styles from './Tabs.component.module.scss';
 
 interface OnTabClickHandler {
@@ -19,23 +19,26 @@ export default class TabsComponent extends Component<IProps, IState> {
     private readonly containerRef: RefObject<HTMLDivElement> = createRef();
 
     private readonly tabsRef: RefObject<HTMLDivElement>[];
-    private readonly activeTabIndicatorRef: RefObject<HTMLDivElement> = createRef();
+    private readonly activeTabIndicatorRef: RefObject<HTMLDivElement> =
+        createRef();
 
     constructor(props: IProps) {
         super(props);
         this.state = {
             selectedTabIndex: 0,
-            activateTabIndicatorWidth: 0
+            activateTabIndicatorWidth: 0,
         };
         this.tabsRef = this.props.tabNames.map((_: string) => createRef());
     }
 
     renderTab = (name: string, index: number): ReactElement => {
         return (
-            <div ref={this.tabsRef[index]}
-                 className={styles.Tab}
-                 key={index}
-                 onClick={this.onTabClickHandler(index)}>
+            <div
+                ref={this.tabsRef[index]}
+                className={styles.Tab}
+                key={index}
+                onClick={this.onTabClickHandler(index)}
+            >
                 {name}
             </div>
         );
@@ -46,16 +49,19 @@ export default class TabsComponent extends Component<IProps, IState> {
         return (
             <div ref={this.containerRef} className={styles.Tabs}>
                 {this.props.tabNames.map(this.renderTab)}
-                {this.props.tabNames && <div
-                    ref={this.activeTabIndicatorRef}
-                    className={styles.ActiveTabMarker}
-                    style={{
-                        width: this.state.activateTabIndicatorWidth,
-                        left: indicatorLeft
-                    }}/>}
+                {this.props.tabNames && (
+                    <div
+                        ref={this.activeTabIndicatorRef}
+                        className={styles.ActiveTabMarker}
+                        style={{
+                            width: this.state.activateTabIndicatorWidth,
+                            left: indicatorLeft,
+                        }}
+                    />
+                )}
             </div>
         );
-    };
+    }
 
     public componentDidMount() {
         this.updateActiveTabIndicatorWidth();
@@ -63,13 +69,20 @@ export default class TabsComponent extends Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('resize', this.updateActiveTabIndicatorWidth);
+        window.removeEventListener(
+            'resize',
+            this.updateActiveTabIndicatorWidth,
+        );
     }
 
     private updateActiveTabIndicatorWidth = () => {
-        const width = this.containerRef.current == null ? 0 : this.containerRef.current.offsetWidth / this.props.tabNames.length;
+        const width =
+            this.containerRef.current == null
+                ? 0
+                : this.containerRef.current.offsetWidth /
+                  this.props.tabNames.length;
         this.setState({
-            activateTabIndicatorWidth: width
+            activateTabIndicatorWidth: width,
         });
     };
 
@@ -81,12 +94,12 @@ export default class TabsComponent extends Component<IProps, IState> {
     private onTabClickHandler(index: number): () => void {
         return () => {
             this.setState({
-                selectedTabIndex: index
+                selectedTabIndex: index,
             });
 
             if (this.props.onTabClick) {
                 this.props.onTabClick(index);
             }
         };
-    };
+    }
 }

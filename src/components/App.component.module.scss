@@ -4,34 +4,34 @@
 @import 'shared';
 
 .App {
-  @include menuButton;
-  display : flex;
-  height  : 100vh;
+    @include menuButton;
+    display: flex;
+    height: 100vh;
 
-  .Content {
-    @include header;
-    width                   : 100%;
-    box-shadow              : -4px 0 6px rgba(0, 0, 0, 0.1);
-    --tabs-background-color : white;
-    --tab-text-color        : #{$secondaryColor};
-    --tab-hover-opacity     : 0.03;
+    .Content {
+        @include header;
+        width: 100%;
+        box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+        --tabs-background-color: white;
+        --tab-text-color: #{$secondaryColor};
+        --tab-hover-opacity: 0.03;
 
-    .Header {
-      position : relative;
-      z-index  : 100;
-      color    : $onPrimaryColor;
+        .Header {
+            position: relative;
+            z-index: 100;
+            color: $onPrimaryColor;
 
-      .MenuButtonPlaceHolder {
-        margin-right : 10px;
-      }
+            .MenuButtonPlaceHolder {
+                margin-right: 10px;
+            }
 
-      .TeamName {
-        font-size      : 22px;
-        font-weight    : 500;
-        transition     : left 400ms $easeOutExpo;
+            .TeamName {
+                font-size: 22px;
+                font-weight: 500;
+                transition: left 400ms $easeOutExpo;
 
-        letter-spacing : 1px;
-      }
+                letter-spacing: 1px;
+            }
+        }
     }
-  }
 }

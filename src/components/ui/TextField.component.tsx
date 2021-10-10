@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import {Component, FormEvent, ReactElement} from 'react';
+import { Component, FormEvent, ReactElement } from 'react';
 import MaterialIconComponent from './MaterialIcon.component';
 import './TextField.component.module.scss';
 import styles from './TextField.component.module.scss';
@@ -43,16 +43,18 @@ export default class TextFieldComponent extends Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            isFocused: false
+            isFocused: false,
         };
     }
 
     public render(): ReactElement {
         return (
             <div>
-                <div className={`${styles.TextField} ${classNames({
-                    [styles.Focus]: this.state.isFocused
-                })}`}>
+                <div
+                    className={`${styles.TextField} ${classNames({
+                        [styles.Focus]: this.state.isFocused,
+                    })}`}
+                >
                     <input
                         type={'text'}
                         className={styles.Input}
@@ -64,21 +66,22 @@ export default class TextFieldComponent extends Component<IProps, IState> {
                         maxLength={this.props.maxLength || defaultMaxLength}
                         onChange={this.onChange}
                         onFocus={this.onFocus}
-                        onBlur={this.onBlur}/>
+                        onBlur={this.onBlur}
+                    />
                     <label className={styles.Label}>{this.props.label}</label>
                     {this.props.icon && (
                         <div className={styles.Icon} onClick={this.onIconClick}>
-                            <MaterialIconComponent>{this.props.icon}</MaterialIconComponent>
+                            <MaterialIconComponent>
+                                {this.props.icon}
+                            </MaterialIconComponent>
                         </div>
                     )}
                 </div>
-                {
-                    this.props.showLengthCounter && (
-                        <div className={styles.LengthHint}>
-                            {`${this.props.value?.length} / ${this.props.maxLength}`}
-                        </div>
-                    )
-                }
+                {this.props.showLengthCounter && (
+                    <div className={styles.LengthHint}>
+                        {`${this.props.value?.length} / ${this.props.maxLength}`}
+                    </div>
+                )}
             </div>
         );
     }
@@ -91,7 +94,7 @@ export default class TextFieldComponent extends Component<IProps, IState> {
 
     private onFocus = () => {
         this.setState({
-            isFocused: true
+            isFocused: true,
         });
 
         if (this.props.onFocus) {
@@ -101,7 +104,7 @@ export default class TextFieldComponent extends Component<IProps, IState> {
 
     private onBlur = () => {
         this.setState({
-            isFocused: false
+            isFocused: false,
         });
 
         if (this.props.onBlur) {
