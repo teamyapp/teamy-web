@@ -3,7 +3,7 @@ import Task from '../../../entity/Task';
 import TaskComponent from '../../shared/Task.component';
 import TaskModalComponent from '../../shared/TaskModal.component';
 import SectionComponent from '../../ui/Section.component';
-import styles from './Me.component.module.scss';
+import styles from './Personal.component.module.scss';
 
 interface IProps {
     taskNeedAttention?: Task;
@@ -11,7 +11,7 @@ interface IProps {
     deliveredTasks: Task[];
 }
 
-export default class MeComponent extends Component<IProps> {
+export default class PersonalComponent extends Component<IProps> {
     private taskDetailModalRef = createRef<TaskModalComponent>();
 
     public render(): ReactElement {
