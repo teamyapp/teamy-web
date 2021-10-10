@@ -75,7 +75,7 @@ const deliveredTasks: Task[] = [
     }
 ];
 
-interface ExecutionMeState {
+interface ExecutionPersonalState {
     needAttention?: Task;
     upcomingTasks: Task[];
     deliveredTasks: Task[];
