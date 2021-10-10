@@ -199,7 +199,7 @@ export class DatePickerComponent extends Component<IProps, IState> {
     };
 
     private showingSelectedDate(shownMonthDay: number): boolean {
-        return this.showingGiveDate(this.state.selectedDate, shownMonthDay);
+        return this.showingGivenDate(this.state.selectedDate, shownMonthDay);
     }
 
     private showingSelectedYear(year: number): boolean {
@@ -207,7 +207,7 @@ export class DatePickerComponent extends Component<IProps, IState> {
     }
 
     private showingToday(shownMonthDay: number): boolean {
-        return this.showingGiveDate(today, shownMonthDay);
+        return this.showingGivenDate(today, shownMonthDay);
     }
 
     private showingGivenDate(givenDate: Date, shownMonthDay: number): boolean {
