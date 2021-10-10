@@ -1,5 +1,7 @@
 // Displayed most frequently across screens and components.
-$primaryColor: #007a88;
+$primaryColor        : #007A88;
+$primaryLightColor   : #4DA9B8;
+$primaryDarkColor    : #004E5B;
 
 /*
  Accent and distinguish select part of UI.
@@ -10,8 +12,22 @@ $primaryColor: #007a88;
   Progress bars
   Links and headlines
  */
-$secondaryColor: #424242;
+$secondaryColor      : #424242;
+$secondaryLightColor : #6D6D6D;
+$secondaryDarkColor  : #1B1B1B;
+
+// Surfaces of components, such as cards, sheets, and menus.
+$surfaceColor        : #FFFFFF;
+
+// background color appears behind scrollable content.
+$backgroundColor     : #FFFFFF;
+
+// errors in components, such as invalid text in a text field.
+$errorColor          : #B00020;
 
 // 'On' colors are primarily applied to text, iconography, and strokes. Sometimes, they are applied to surfaces.
-$onPrimaryColor: #ffffff;
-$onSecondaryColor: #ffffff;
+$onPrimaryColor      : #FFFFFF;
+$onSecondaryColor    : #FFFFFF;
+$onBackgroundColor   : #000000;
+$onSurfaceColor      : #000000;
+$onErrorColor        : #FFFFFF;

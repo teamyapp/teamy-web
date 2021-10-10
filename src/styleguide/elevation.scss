@@ -1,0 +1,33 @@
+@use 'sass:map';
+
+$elevationShadows : (
+        0: 0px 0px 0px,
+        1: 0px 2px 2px,
+        2: 0px 3px 2px,
+        3: 0px 3px 4px,
+        4: 0px 2px 5px,
+        5: 0px 3px 6px,
+        6: 0px 3px 6px,
+        7: 0px 4px 6px,
+        8: 0px 5px 6px,
+        9: 0px 5px 7px,
+        10: 0px 6px 7px,
+        11: 0px 6px 8px,
+        12: 0px 7px 9px,
+        13: 0px 7px 9px,
+        14: 0px 7px 10px,
+        15: 0px 8px 10px,
+        16: 0px 8px 11px,
+        17: 0px 8px 12px,
+        18: 0px 9px 12px,
+        19: 0px 9px 13px,
+        20: 0px 10px 14px,
+        21: 0px 10px 14px,
+        22: 0px 10px 15px,
+        23: 0px 11px 15px,
+        24: 0px 11px 16px
+);
+
+@mixin elevation($elevation) {
+  box-shadow : map-get($elevationShadows, $elevation) rgba(0, 0, 0, 0.1);
+}
