@@ -45,7 +45,7 @@ export default class PersonalComponent extends Component<IProps> {
                 <TaskModalComponent ref={this.taskDetailModalRef}/>
             </div>
         );
-    };
+    }
 
     private renderTask = (task: Task): ReactElement => {
         return (
