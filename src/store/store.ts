@@ -1,6 +1,6 @@
 import {configureStore} from '@reduxjs/toolkit';
 
-import executionMeReducer from './slices/ExecutionPersonal';
+import executionPersonalReducer from './slices/ExecutionPersonal';
 
 const store = configureStore({
     reducer: {
