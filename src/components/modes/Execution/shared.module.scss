@@ -1,0 +1,30 @@
+.TaskLists {
+    display: grid;
+    grid-auto-rows: min-content;
+    grid-template-rows: 1fr;
+    grid-column-gap: 20px;
+    height: 100%;
+    box-sizing: border-box;
+
+    > .TaskListSection {
+        flex: 1;
+    }
+
+    .TaskList {
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-auto-rows: min-content;
+        grid-gap: 10px;
+    }
+}
+
+.UpcomingSection {
+    --title-color: #0074b1;
+    --background-color: #f2fcff;
+}
+
+.DeliveredSection {
+    --title-color: #25a100;
+    --background-color: #efffec;
+}

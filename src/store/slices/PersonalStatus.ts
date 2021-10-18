@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import PersonalStatus from '../../entity/PersonalStatus';
 import Task from '../../entity/Task';
 import { TaskAction } from '../../entity/TaskAction';
 
@@ -72,39 +73,30 @@ const deliveredTasks: Task[] = [
     },
 ];
 
-interface ExecutionPersonalState {
-    needAttention?: Task;
-    upcomingTasks: Task[];
-    deliveredTasks: Task[];
-}
-
-const initialState: ExecutionPersonalState = {
-    needAttention: taskNeedAttention,
+const initialState: PersonalStatus = {
+    taskNeedAttention: taskNeedAttention,
     upcomingTasks: upcomingTasks,
     deliveredTasks: deliveredTasks,
 };
 
 const slice = createSlice({
-    name: 'executionPersonal',
+    name: 'PersonalStatus',
     initialState,
     reducers: {
         setNeedAttentionTask(
-            state: ExecutionPersonalState,
+            state: PersonalStatus,
             action: PayloadAction<Task>,
         ) {
-            state.needAttention = action.payload;
+            state.taskNeedAttention = action.payload;
         },
-        clearNeedAttentionTask(state: ExecutionPersonalState) {
-            state.needAttention = undefined;
+        clearNeedAttentionTask(state: PersonalStatus) {
+            state.taskNeedAttention = undefined;
         },
-        addIncomingTask(
-            state: ExecutionPersonalState,
-            action: PayloadAction<Task>,
-        ) {
+        addIncomingTask(state: PersonalStatus, action: PayloadAction<Task>) {
             state.upcomingTasks.concat(action.payload);
         },
         removeIncomingTask(
-            state: ExecutionPersonalState,
+            state: PersonalStatus,
             action: PayloadAction<number>,
         ) {
             state.deliveredTasks = state.deliveredTasks.filter(

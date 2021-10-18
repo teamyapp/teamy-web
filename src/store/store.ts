@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import executionPersonalReducer from './slices/ExecutionPersonal';
+import personalStatusReducer from './slices/PersonalStatus';
+import teamStatusReducer from './slices/TeamStatus';
 
 const store = configureStore({
     reducer: {
-        executionPersonal: executionPersonalReducer,
+        personalStatus: personalStatusReducer,
+        teamStatus: teamStatusReducer,
     },
 });
 

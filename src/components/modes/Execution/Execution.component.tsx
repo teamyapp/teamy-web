@@ -1,21 +1,24 @@
 import { History, LocationState } from 'history';
 import React, { Component, ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
-import Task from '../../../entity/Task';
-import { AppState } from '../../../store/store';
+import { Unsubscribe } from 'redux';
+import PersonalStatus from '../../../entity/PersonalStatus';
+import TeamStatus from '../../../entity/TeamStatus';
+import { ExecutionModeService } from '../../../service/ExecutionMode.service';
+import { updateTeamStatus } from '../../../store/slices/TeamStatus';
+import store from '../../../store/store';
 import TabsComponent from '../../ui/Tabs.component';
 import styles from './Execution.component.module.scss';
 import PersonalComponent from './Personal.component';
+import TeamComponent from './Team.component';
 
 const routes = ['me', 'team'];
 
 interface IProps {
     routerUrl: string;
     routerHistory: History<LocationState>;
-    needAttention?: Task;
-    upcomingTasks: Task[];
-    deliveredTasks: Task[];
+    personalStatus: PersonalStatus;
+    teamStatus: TeamStatus;
 }
 
 class ExecutionComponent extends Component<IProps> {
@@ -34,10 +37,13 @@ class ExecutionComponent extends Component<IProps> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalComponent
-                                taskNeedAttention={this.props.needAttention}
-                                upcomingTasks={this.props.upcomingTasks}
-                                deliveredTasks={this.props.deliveredTasks}
+                                personalStatus={this.props.personalStatus}
                             />
+                        </Route>
+                    </Switch>
+                    <Switch>
+                        <Route path={`${this.props.routerUrl}team`}>
+                            <TeamComponent teamStatus={this.props.teamStatus} />
                         </Route>
                     </Switch>
                 </div>
@@ -50,19 +56,80 @@ class ExecutionComponent extends Component<IProps> {
     };
 }
 
-export default function StatefulExecutionComponent() {
+interface IContainerProps {
+    routerUrl: string;
+    routerHistory: History<LocationState>;
+    executionModeService: ExecutionModeService;
+}
+
+interface IContainerState {
+    personalStatus: PersonalStatus;
+    teamStatus: TeamStatus;
+}
+
+class StatefulComponent extends Component<IContainerProps, IContainerState> {
+    private unsubscribe?: Unsubscribe;
+
+    constructor(props: IContainerProps) {
+        super(props);
+
+        this.state = {
+            personalStatus: {
+                upcomingTasks: [],
+                deliveredTasks: [],
+            },
+            teamStatus: {
+                upcomingTasks: [],
+                inProgressTasks: [],
+                deliveredTasks: [],
+            },
+        };
+    }
+
+    public render(): ReactElement {
+        return (
+            <ExecutionComponent
+                routerUrl={this.props.routerUrl}
+                routerHistory={this.props.routerHistory}
+                personalStatus={this.state.personalStatus}
+                teamStatus={this.state.teamStatus}
+            />
+        );
+    }
+
+    public async componentDidMount() {
+        this.unsubscribe = store.subscribe(() => {
+            const newState = store.getState();
+            this.setState({
+                personalStatus: newState.personalStatus,
+                teamStatus: newState.teamStatus,
+            });
+        });
+
+        const teamStatus =
+            await this.props.executionModeService.fetchTeamStatus();
+        store.dispatch(updateTeamStatus(teamStatus));
+    }
+
+    public componentWillUnmount() {
+        if (this.unsubscribe) {
+            this.unsubscribe();
+        }
+    }
+}
+
+interface IHookProps {
+    executionModeService: ExecutionModeService;
+}
+
+export default function ExecutionComponentHook(props: IHookProps) {
     const { url } = useRouteMatch();
-    const history = useHistory();
-    const { needAttention, upcomingTasks, deliveredTasks } = useSelector(
-        (state: AppState) => state.executionPersonal,
-    );
+    const routerHistory = useHistory();
     return (
-        <ExecutionComponent
+        <StatefulComponent
+            executionModeService={props.executionModeService}
             routerUrl={url}
-            routerHistory={history}
-            needAttention={needAttention}
-            upcomingTasks={upcomingTasks}
-            deliveredTasks={deliveredTasks}
+            routerHistory={routerHistory}
         />
     );
 }
