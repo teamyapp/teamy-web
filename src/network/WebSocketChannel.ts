@@ -35,6 +35,7 @@ export class WebSocketChannel implements IChannel {
                 this.nextOnErrorSubscriptionId++;
             },
             (data: any) => {
+                // TODO: convert Web Socket error to Errors
                 callback(data);
             },
         );
