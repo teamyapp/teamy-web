@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.scss';
 import StatefulAppComponent from './components/App.component';
+import './index.scss';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
     <React.StrictMode>
-        <StatefulAppComponent />
+        <StatefulAppComponent/>
     </React.StrictMode>,
-    document.getElementById('root'),
+    document.getElementById('root')
 );
 
 // If you want to start measuring performance in your app, pass a function
