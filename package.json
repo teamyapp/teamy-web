@@ -14,6 +14,7 @@
     "dependencies": {
         "@reduxjs/toolkit": "^1.6.2",
         "classnames": "^2.3.1",
+        "js-cookie": "^3.0.1",
         "lodash-es": "^4.17.21",
         "marked": "^3.0.7",
         "material-icons": "^1.9.0",
@@ -36,6 +37,7 @@
         "@testing-library/react": "^11.1.0",
         "@testing-library/user-event": "^12.1.10",
         "@types/jest": "^26.0.15",
+        "@types/js-cookie": "^3.0.0",
         "@types/lodash-es": "^4.17.5",
         "@types/marked": "^3.0.1",
         "@types/node": "^12.0.0",
