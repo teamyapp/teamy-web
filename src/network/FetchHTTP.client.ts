@@ -9,7 +9,6 @@ export class FetchHTTPClient implements HTTPClient {
             body?: string;
         },
     ): Promise<string> {
-        console.log(url);
         const response = await fetch(url, {
             method: options?.method,
             mode: 'cors',
