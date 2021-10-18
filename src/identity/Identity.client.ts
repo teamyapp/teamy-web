@@ -115,12 +115,12 @@ export class IdentityClient {
     }
 
     private verifyIdentity(accessToken: string): boolean {
-        // TODO
+        // TODO: fill in when backend is ready
         return false;
     }
 
     private getClientId(): number {
-        // TODO
+        // TODO: fill in when backend is ready
         return 0;
     }
 
