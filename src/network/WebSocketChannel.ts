@@ -57,7 +57,11 @@ export class WebSocketChannel implements IChannel {
         const webSocket = new WebSocket(this.connectionUrl);
         return new Promise((resolve, reject) => {
             webSocket.onopen = (event: Event) => {
-                console.log(`WebSocket connected to: ${this.connectionUrl} ${JSON.stringify(event)}`);
+                console.log(
+                    `WebSocket connected to: ${
+                        this.connectionUrl
+                    } ${JSON.stringify(event)}`,
+                );
                 resolve();
                 this.webSocket = webSocket;
             };
