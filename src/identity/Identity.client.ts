@@ -1,7 +1,8 @@
 import Cookies from 'js-cookie';
-import { Errors } from '../errors/errors';
-import { IChannel, ISubscription } from '../network/IChannel';
-import { WebSocketChannel } from '../network/WebSocketChannel';
+import {Errors} from '../ext/errors';
+import {Result} from '../ext/result';
+import {IChannel, ISubscription} from '../network/IChannel';
+import {WebSocketChannel} from '../network/WebSocketChannel';
 
 const accessTokenKey = 'accessToken';
 
@@ -74,40 +75,29 @@ export class IdentityClient {
         });
     }
 
-    private async getChannel(clientId: number): Promise<IChannel> {
+    private async getChannel(clientId: number): Promise<Result<IChannel>> {
         const channel: IChannel = new WebSocketChannel(this.webSocketUrl);
-        return new Promise(async (resolve, reject) => {
-            let errSub: ISubscription;
-            let messageSub: ISubscription;
+        const resultPromise = channel.onMessageReceivedAsync();
+        channel.open();
 
-            errSub = channel.onError((error: Errors) => {
-                reject(error);
-                errSub?.unsubscribe();
-                messageSub?.unsubscribe();
-                channel.close();
-            });
-            messageSub = channel.onMessageReceived((rawMessage: string) => {
-                const message: Message = JSON.parse(rawMessage);
-                if (message.type === MessageType.ChannelReady) {
-                    resolve(channel);
-                } else {
-                    reject();
-                }
-                errSub?.unsubscribe();
-                messageSub?.unsubscribe();
-                if (message.type === MessageType.ChannelReady) {
-                    return;
-                }
-                channel.close();
-            });
-            await channel.open();
+        const initMessage: Message = {
+            type: MessageType.InitChannel,
+            payload: clientId,
+        };
+        channel.sendMessage(JSON.stringify(initMessage));
 
-            const message: Message = {
-                type: MessageType.InitChannel,
-                payload: clientId,
-            };
-            channel.sendMessage(JSON.stringify(message));
-        });
+        const [rawMessage, err] = await resultPromise;
+        if (!err) {
+            return [channel, err]
+        }
+
+        const message: Message = JSON.parse(rawMessage);
+        if (message.type === MessageType.ChannelReady) {
+            return [channel, null]
+        } else {
+            channel.close();
+            return [channel, Errors.ClientIdInUse]
+        }
     }
 
     private static saveAccessToken(accessToken: string): void {
