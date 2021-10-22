@@ -1,12 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import StatefulAppComponent from './components/App.component';
+import AppComponentContainer from './components/App.component';
+import { initDeps } from './deps';
 import './index.scss';
 import reportWebVitals from './reportWebVitals';
 
+const deps = initDeps();
+
 ReactDOM.render(
     <React.StrictMode>
-        <StatefulAppComponent />
+        <AppComponentContainer
+            executionModeService={deps.executionModeService}
+        />
     </React.StrictMode>,
     document.getElementById('root'),
 );

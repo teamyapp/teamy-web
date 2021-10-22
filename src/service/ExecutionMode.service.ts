@@ -43,7 +43,7 @@ fragment taskPreview on Task {
 `,
             )
             .then((payload: ExecutionModeQueryPayload) => {
-                return payload.executionMode.teamStatus;
+                return payload?.executionMode.teamStatus;
             });
     }
 }

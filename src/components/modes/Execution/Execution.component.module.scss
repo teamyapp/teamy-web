@@ -1,6 +1,10 @@
 @import '../../../styleguide/color';
 
 .Execution {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
     .Tabs {
         background-color: var(--tabs-background-color, $primaryColor);
         box-shadow: rgba(0, 0, 0, 0.2) 0 2px 4px;
@@ -13,5 +17,7 @@
 
     .Content {
         padding: 20px;
+        box-sizing: border-box;
+        flex: 1;
     }
 }
