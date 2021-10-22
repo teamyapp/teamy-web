@@ -10,6 +10,8 @@
 
     .Content {
         @include header;
+        display: flex;
+        flex-direction: column;
         width: 100%;
         box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
         --tabs-background-color: white;
@@ -32,6 +34,10 @@
 
                 letter-spacing: 1px;
             }
+        }
+
+        .Execution {
+            flex: 1;
         }
     }
 }

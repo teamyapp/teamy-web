@@ -1,6 +1,9 @@
 .Section {
     padding: 20px 10px 10px 10px;
     background-color: var(--background-color, white);
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 6px;
 
     .Title {
         font-size: 22px;

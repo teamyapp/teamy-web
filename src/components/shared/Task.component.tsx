@@ -73,9 +73,11 @@ export default class TaskComponent extends Component<IProps> {
                         )}
                     </div>
                 </div>
-                <div className={styles.ActionsSection}>
-                    {this.renderActions()}
-                </div>
+                {this.props.task.availableActions && (
+                    <div className={styles.ActionsSection}>
+                        {this.renderActions()}
+                    </div>
+                )}
             </div>
         );
     }
