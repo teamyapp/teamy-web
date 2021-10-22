@@ -1,3 +1,7 @@
+import { getConfig } from './config/config';
+import { getEnvironment } from './env/environment';
+import { IdentityClient } from './identity/Identity.client';
+import { IdentityHTTPClient } from './identity/IdentityHTTP.client';
 import { GraphQLClient } from './network/GraphQL.client';
 import { FetchHTTPClient } from './network/FetchHTTP.client';
 import { ExecutionModeService } from './service/ExecutionMode.service';
@@ -7,13 +11,16 @@ interface Deps {
 }
 
 export function initDeps(): Deps {
-    const httpClient = new FetchHTTPClient();
-    const graphQLClient = new GraphQLClient(
+    const env = getEnvironment();
+    const identityClient = new IdentityClient(env);
+    let httpClient = new FetchHTTPClient();
+    httpClient = new IdentityHTTPClient(identityClient, httpClient);
+    const config = getConfig(env);
+    const teamyGraphQLClient = new GraphQLClient(
         httpClient,
-        // TODO: extra endpoint from environmental variable
-        'http://localhost:9000/graphql',
+        config.teamyGraphQLEndpoint,
     );
-    const executionModeService = new ExecutionModeService(graphQLClient);
+    const executionModeService = new ExecutionModeService(teamyGraphQLClient);
     return {
         executionModeService,
     };
