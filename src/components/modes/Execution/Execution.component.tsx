@@ -53,14 +53,14 @@ class ExecutionComponent extends Component<IProps> {
 export default function StatefulExecutionComponent() {
     const { url } = useRouteMatch();
     const history = useHistory();
-    const { needAttention, upcomingTasks, deliveredTasks } = useSelector(
-        (state: AppState) => state.executionPersonal,
+    const { taskNeedAttention, upcomingTasks, deliveredTasks } = useSelector(
+        (state: AppState) => state.personalStatus,
     );
     return (
         <ExecutionComponent
             routerUrl={url}
             routerHistory={history}
-            needAttention={needAttention}
+            needAttention={taskNeedAttention}
             upcomingTasks={upcomingTasks}
             deliveredTasks={deliveredTasks}
         />
