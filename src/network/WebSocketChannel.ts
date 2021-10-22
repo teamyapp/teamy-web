@@ -1,3 +1,5 @@
+import { Errors } from '../ext/errors';
+import { Result } from '../ext/result';
 import {
     IChannel,
     ISubscription,
@@ -52,6 +54,23 @@ export class WebSocketChannel implements IChannel {
                 callback(data);
             },
         );
+    }
+
+    public onMessageReceivedAsync(): Promise<Result<string, Errors>> {
+        return new Promise<Result<string, Errors>>((resolve) => {
+            const messageSubscription = this.onMessageReceived(
+                (message: string) => {
+                    resolve({
+                        value: message,
+                    });
+                },
+            );
+            messageSubscription.unsubscribe();
+            const errorSubscription = this.onError((error: Errors) => {
+                resolve({ error });
+                errorSubscription.unsubscribe();
+            });
+        });
     }
 
     public open(): Promise<void> {

@@ -1,4 +1,5 @@
-import { Errors } from '../errors/errors';
+import { Errors } from '../ext/errors';
+import { Result } from '../ext/result';
 
 export interface OnMessageReceived {
     (message: string): void;
@@ -14,9 +15,10 @@ export interface ISubscription {
 }
 
 export interface IChannel {
-    open(): void;
+    open(): Promise<void>;
     close(): void;
     sendMessage(message: string): void;
     onMessageReceived(callback: OnMessageReceived): ISubscription;
+    onMessageReceivedAsync(): Promise<Result<string, Errors>>;
     onError(callback: OnError): ISubscription;
 }
