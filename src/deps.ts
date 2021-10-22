@@ -10,6 +10,7 @@ export function initDeps(): Deps {
     const httpClient = new FetchHTTPClient();
     const graphQLClient = new GraphQLClient(
         httpClient,
+        // TODO: extra endpoint from environmental variable
         'http://localhost:9000/graphql',
     );
     const executionModeService = new ExecutionModeService(graphQLClient);

@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { initDeps } from '../deps';
 import AppComponentContainer from './App.component';
 
-test('renders learn react link', () => {
+test('renders Teamy logo', () => {
     const deps = initDeps();
     render(
         <AppComponentContainer
