@@ -1,3 +1,4 @@
-import {Errors} from './errors';
-
-export type Result<Value> = [Value, Errors | null]
+export interface Result<Value, Error> {
+    value?: Value;
+    error?: Error;
+}

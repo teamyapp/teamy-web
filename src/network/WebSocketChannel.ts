@@ -1,6 +1,11 @@
-import {Errors} from '../ext/errors';
-import {Result} from '../ext/result';
-import {IChannel, ISubscription, OnError, OnMessageReceived} from './IChannel';
+import { Errors } from '../ext/errors';
+import { Result } from '../ext/result';
+import {
+    IChannel,
+    ISubscription,
+    OnError,
+    OnMessageReceived,
+} from './IChannel';
 
 interface ISubscriptions {
     [id: number]: ISubscription;
@@ -34,7 +39,7 @@ export class WebSocketChannel implements IChannel {
             (data: any) => {
                 // TODO: convert Web Socket error to Errors
                 callback(data);
-            }
+            },
         );
     }
 
@@ -47,18 +52,22 @@ export class WebSocketChannel implements IChannel {
             },
             (data: any) => {
                 callback(data);
-            }
+            },
         );
     }
 
-    public onMessageReceivedAsync(): Promise<Result<string>> {
-        return new Promise<Result<string>>((resolve) => {
-            const messageSubscription = this.onMessageReceived((message: string) => {
-                resolve([message, null]);
-                messageSubscription.unsubscribe();
-            });
+    public onMessageReceivedAsync(): Promise<Result<string, Errors>> {
+        return new Promise<Result<string, Errors>>((resolve) => {
+            const messageSubscription = this.onMessageReceived(
+                (message: string) => {
+                    resolve({
+                        value: message,
+                    });
+                },
+            );
+            messageSubscription.unsubscribe();
             const errorSubscription = this.onError((error: Errors) => {
-                resolve(['', error]);
+                resolve({ error });
                 errorSubscription.unsubscribe();
             });
         });
@@ -71,7 +80,7 @@ export class WebSocketChannel implements IChannel {
                 console.log(
                     `WebSocket connected to: ${
                         this.connectionUrl
-                    } ${JSON.stringify(event)}`
+                    } ${JSON.stringify(event)}`,
                 );
                 resolve();
                 this.webSocket = webSocket;
@@ -97,7 +106,7 @@ export class WebSocketChannel implements IChannel {
         nextSubscriptionId: number,
         subscriptions: ISubscriptions,
         incrementSubscriptionId: () => void,
-        callback: (data: any) => void
+        callback: (data: any) => void,
     ): Subscription {
         const subscription = new Subscription(
             (error: any) => {
@@ -105,7 +114,7 @@ export class WebSocketChannel implements IChannel {
             },
             () => {
                 delete subscriptions[nextSubscriptionId];
-            }
+            },
         );
         incrementSubscriptionId();
         subscriptions[nextSubscriptionId] = subscription;
@@ -119,7 +128,7 @@ class Subscription implements ISubscription {
 
     constructor(
         notifyCallback: (data: any) => void,
-        cleanUpCallback: () => void
+        cleanUpCallback: () => void,
     ) {
         this.notifyCallback = notifyCallback;
         this.cleanUpCallback = cleanUpCallback;

@@ -1,8 +1,8 @@
 import Cookies from 'js-cookie';
-import {Errors} from '../ext/errors';
-import {Result} from '../ext/result';
-import {IChannel, ISubscription} from '../network/IChannel';
-import {WebSocketChannel} from '../network/WebSocketChannel';
+import { Errors } from '../ext/errors';
+import { Result } from '../ext/result';
+import { IChannel, ISubscription } from '../network/IChannel';
+import { WebSocketChannel } from '../network/WebSocketChannel';
 
 const accessTokenKey = 'accessToken';
 
@@ -38,65 +38,81 @@ export class IdentityClient {
         return this.verifyIdentity(accessToken);
     }
 
-    public async trySignIn(): Promise<boolean> {
-        let accessToken;
+    public async trySignIn(): Promise<Errors | undefined> {
+        let result: Result<string, Errors>;
+
         while (true) {
             const clientId = this.getClientId();
-            try {
-                accessToken = await this.waitForAccessToken(clientId);
+            result = await this.waitForAccessToken(clientId);
+            if (!result.error) {
                 break;
-            } catch (e: unknown) {
-                switch (e) {
-                    case Errors.ClientIdInUse:
-                        continue;
-                    case Errors.RequestTimeOut:
-                        return false;
-                    default:
-                        throw e;
-                }
+            }
+
+            switch (result.error as Errors) {
+                case Errors.ClientIdInUse:
+                    continue;
+                default:
+                    return result.error;
             }
         }
 
+        const accessToken = result.value!;
         IdentityClient.saveAccessToken(accessToken);
-        return true;
+        return result.error;
     }
 
-    private async waitForAccessToken(clientId: number): Promise<string> {
-        const channel = await this.getChannel(clientId);
-        return new Promise<string>((resolve, reject) => {
+    private async waitForAccessToken(
+        clientId: number,
+    ): Promise<Result<string, Errors>> {
+        const { value, error } = await this.getChannel(clientId);
+        if (error) {
+            return {
+                error,
+            };
+        }
+        const channel = value!;
+        return new Promise<Result<string, Errors>>((resolve) => {
             this.subscription = channel.onMessageReceived((message: string) => {
-                resolve(message);
+                resolve({ value: message });
                 channel.close();
             });
 
             channel.onError((error: Errors) => {
-                reject(error);
+                resolve({ error });
             });
         });
     }
 
-    private async getChannel(clientId: number): Promise<Result<IChannel>> {
+    private async getChannel(
+        clientId: number,
+    ): Promise<Result<IChannel, Errors>> {
         const channel: IChannel = new WebSocketChannel(this.webSocketUrl);
-        const resultPromise = channel.onMessageReceivedAsync();
-        channel.open();
+        await channel.open();
 
+        const resultPromise = channel.onMessageReceivedAsync();
         const initMessage: Message = {
             type: MessageType.InitChannel,
             payload: clientId,
         };
         channel.sendMessage(JSON.stringify(initMessage));
-
-        const [rawMessage, err] = await resultPromise;
-        if (!err) {
-            return [channel, err]
+        const { value, error } = await resultPromise;
+        if (error) {
+            return {
+                error: error,
+            };
         }
 
+        const rawMessage = value!;
         const message: Message = JSON.parse(rawMessage);
         if (message.type === MessageType.ChannelReady) {
-            return [channel, null]
+            return {
+                value: channel,
+            };
         } else {
             channel.close();
-            return [channel, Errors.ClientIdInUse]
+            return {
+                error: Errors.ClientIdInUse,
+            };
         }
     }
 
