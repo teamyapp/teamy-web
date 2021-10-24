@@ -2,27 +2,32 @@ import { Environment } from '../env/environment';
 
 export interface Config {
     apiBaseUrl: string;
-    webSocketUrl: string;
+    cookieDomain: string;
+    cookieSecure: boolean;
 }
 
 const developmentConfig: Config = {
-    apiBaseUrl: '',
-    webSocketUrl: '',
+    apiBaseUrl: 'http://localhost:10000',
+    cookieDomain: 'localhost',
+    cookieSecure: false,
 };
 
 const testingConfig: Config = {
-    apiBaseUrl: '',
-    webSocketUrl: '',
+    apiBaseUrl: 'https://identity.testing.teamyapp.com',
+    cookieDomain: 'testing.teamyapp.com',
+    cookieSecure: true,
 };
 
 const stagingConfig: Config = {
-    apiBaseUrl: '',
-    webSocketUrl: '',
+    apiBaseUrl: 'https://identity.staging.teamyapp.com',
+    cookieDomain: 'staging.teamyapp.com',
+    cookieSecure: true,
 };
 
 const productionConfig: Config = {
-    apiBaseUrl: '',
-    webSocketUrl: '',
+    apiBaseUrl: 'https://identity.teamyapp.com',
+    cookieDomain: 'teamyapp.com',
+    cookieSecure: true,
 };
 
 export function getConfig(env: Environment): Config {

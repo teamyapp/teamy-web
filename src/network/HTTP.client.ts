@@ -1,3 +1,6 @@
+import { Errors } from '../ext/errors';
+import { Result } from '../ext/result';
+
 export interface HTTPClient {
     request(
         url: string,
@@ -6,5 +9,5 @@ export interface HTTPClient {
             headers?: { [key: string]: string };
             body?: string;
         },
-    ): Promise<string>;
+    ): Promise<Result<string, Errors>>;
 }

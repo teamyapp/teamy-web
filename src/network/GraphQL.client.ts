@@ -13,21 +13,25 @@ export class GraphQLClient {
         this.graphQLEndpoint = graphQLEndpoint;
     }
 
-    query<Payload>(query: string, variables?: any): Promise<any> {
+    async query<Payload>(query: string, variables?: any): Promise<any> {
         const body = {
             query: query,
             variables: variables,
         };
 
-        return this.httpClient
-            .request(this.graphQLEndpoint, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(body),
-            })
-            .then(JSON.parse)
-            .then((json: GQLJSONResponse<Payload>) => json.data);
+        const result = await this.httpClient.request(this.graphQLEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(body),
+        });
+        if (result.error) {
+            // TODO: handle error correctly
+            return null;
+        }
+
+        const json: GQLJSONResponse<Payload> = JSON.parse(result.value!);
+        return json.data;
     }
 }
