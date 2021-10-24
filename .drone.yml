@@ -32,6 +32,8 @@ steps:
       cache_from: harbor.internal.teamyapp.com/internal/teamy-web-staging
       registry: harbor.internal.teamyapp.com
       target: production
+      build_args:
+        - ENVIRONMENT=staging
 trigger:
   branch:
     - master
@@ -55,6 +57,8 @@ steps:
       registry: harbor.internal.teamyapp.com
       target: production
       cache_from: harbor.internal.teamyapp.com/internal/teamy-web-testing
+      build_args:
+        - ENVIRONMENT=testing
 trigger:
   branch:
     - testing
@@ -77,6 +81,8 @@ steps:
       registry: harbor.internal.teamyapp.com
       target: production
       cache_from: harbor.internal.teamyapp.com/internal/teamy-web-staging
+      build_args:
+        - ENVIRONMENT=production
 trigger:
   branch:
     - production

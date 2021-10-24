@@ -6,6 +6,7 @@ export enum Environment {
 }
 export function getEnvironment(): Environment {
     return (
-        (process.env[`REACT_APP_ENV`] as Environment) || Environment.Development
+        (process.env[`REACT_APP_ENVIRONMENT`] as Environment) ||
+        Environment.Development
     );
 }

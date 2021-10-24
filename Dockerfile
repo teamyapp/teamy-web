@@ -10,7 +10,9 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
-RUN yarn build
+ARG ENVIRONMENT
+
+RUN yarn build:${ENVIRONMENT}
 
 FROM nginx:1.20.0-alpine AS production
 
