@@ -57,7 +57,7 @@ export class IdentityClient {
         }
 
         const accessToken = result.value!;
-        IdentityClient.saveAccessToken(accessToken);
+        this.saveAccessToken(accessToken);
         return result.error;
     }
 
@@ -87,7 +87,7 @@ export class IdentityClient {
         clientId: number,
     ): Promise<Result<IChannel, Errors>> {
         const channel: IChannel = new WebSocketChannel(
-            this.config.webSocketUrl,
+            `${this.config.apiBaseUrl}/channel`,
         );
         await channel.open();
 
@@ -118,8 +118,11 @@ export class IdentityClient {
         }
     }
 
-    private static saveAccessToken(accessToken: string): void {
-        Cookies.set(accessTokenKey, accessToken);
+    private saveAccessToken(accessToken: string): void {
+        Cookies.set(accessTokenKey, accessToken, {
+            domain: this.config.cookieDomain,
+            secure: this.config.cookieSecure,
+        });
     }
 
     private verifyIdentity(accessToken: string): boolean {
