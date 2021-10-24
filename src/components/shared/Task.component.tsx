@@ -1,6 +1,6 @@
-import { Component, createRef, ReactElement } from 'react';
+import {Component, createRef, ReactElement} from 'react';
 import Task from '../../entity/Task';
-import { TaskAction } from '../../entity/TaskAction';
+import {TaskAction} from '../../entity/TaskAction';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
 import NamedValueComponent from '../ui/NamedValue.component';
 import AssigneeComponent from './Assignee.component';
@@ -51,7 +51,7 @@ export default class TaskComponent extends Component<IProps> {
     }
 
     private static renderUpdateAssignee(): ReactElement {
-        return <AssigneeComponent />;
+        return <AssigneeComponent/>;
     }
 
     public render(): ReactElement {
@@ -59,9 +59,11 @@ export default class TaskComponent extends Component<IProps> {
             <div ref={this.ref} className={styles.Task}>
                 <div className={styles.LeftSection}>
                     <div className={styles.Goal}>{this.props.task.goal}</div>
-                    <div className={styles.DueAt}>
-                        Due: {new Date(this.props.task.dueAt).toLocaleString()}
-                    </div>
+                    {this.props.task.dueAt && (
+                        <div className={styles.DueAt}>
+                            Due: {new Date(this.props.task.dueAt).toLocaleString()}
+                        </div>
+                    )}
                     <div className={styles.Attributes}>
                         {this.props.task.effort && (
                             <span className={styles.EffortAttribute}>
