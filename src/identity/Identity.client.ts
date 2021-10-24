@@ -1,8 +1,10 @@
 import Cookies from 'js-cookie';
+import { Environment } from '../env/environment';
 import { Errors } from '../ext/errors';
 import { Result } from '../ext/result';
 import { IChannel, ISubscription } from '../network/IChannel';
 import { WebSocketChannel } from '../network/WebSocketChannel';
+import { Config, getConfig } from './config';
 
 const accessTokenKey = 'accessToken';
 
@@ -17,13 +19,11 @@ interface Message {
 }
 
 export class IdentityClient {
-    private readonly apiBaseUrl: string;
-    private readonly webSocketUrl: string;
+    private readonly config: Config;
     private subscription?: ISubscription;
 
-    constructor(apiBaseUrl: string, webSocketUrl: string) {
-        this.apiBaseUrl = apiBaseUrl;
-        this.webSocketUrl = webSocketUrl;
+    constructor(env: Environment) {
+        this.config = getConfig(env);
     }
 
     public getAccessToken(): string {
@@ -86,7 +86,9 @@ export class IdentityClient {
     private async getChannel(
         clientId: number,
     ): Promise<Result<IChannel, Errors>> {
-        const channel: IChannel = new WebSocketChannel(this.webSocketUrl);
+        const channel: IChannel = new WebSocketChannel(
+            this.config.webSocketUrl,
+        );
         await channel.open();
 
         const resultPromise = channel.onMessageReceivedAsync();
