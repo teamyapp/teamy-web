@@ -1,3 +1,5 @@
+import { Errors } from '../ext/errors';
+import { Result } from '../ext/result';
 import { HTTPClient } from '../network/HTTP.client';
 import { IdentityClient } from './Identity.client';
 
@@ -17,7 +19,7 @@ export class IdentityHTTPClient implements HTTPClient {
             headers?: { [p: string]: string };
             body?: string;
         },
-    ): Promise<string> {
+    ): Promise<Result<string, Errors>> {
         const headers = options?.headers || {};
         const accessToken = this.identityClient.getAccessToken();
         headers['Authorization'] = `Bearer ${accessToken}`;
