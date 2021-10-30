@@ -1,8 +1,8 @@
 export enum TaskAction {
-    Start,
-    MarkComplete,
-    MarkBlocked,
-    UpdateAssignee,
-    Delete,
-    Detail,
+    Start = 'START',
+    Delete = 'DELETE',
+    AssignOwner = 'ASSIGN_OWNER',
+    ReportBlocked = 'REPORT_BLOCKED',
+    MarkComplete = 'MARK_COMPLETE',
+    ViewDetail = 'VIEW_DETAIL',
 }

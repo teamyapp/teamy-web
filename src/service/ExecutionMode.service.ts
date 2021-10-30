@@ -42,6 +42,7 @@ fragment taskPreview on Task {
   id
   goal
   dueAt
+  availableActions
 }
 `,
             )
@@ -73,6 +74,7 @@ fragment taskPreview on Task {
   id
   goal
   dueAt
+  availableActions
 }
 `,
             )
