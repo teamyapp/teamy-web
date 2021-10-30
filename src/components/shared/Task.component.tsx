@@ -34,7 +34,7 @@ export default class TaskComponent extends Component<IProps> {
         );
     }
 
-    private static renderMarkTaskBlocked(): ReactElement {
+    private static renderReportBlocked(): ReactElement {
         return (
             <span className={styles.MarkTaskBlockIcon}>
                 <MaterialIconComponent>report</MaterialIconComponent>
@@ -50,7 +50,7 @@ export default class TaskComponent extends Component<IProps> {
         );
     }
 
-    private static renderUpdateAssignee(): ReactElement {
+    private static renderAssignOwner(): ReactElement {
         return <AssigneeComponent />;
     }
 
@@ -102,20 +102,20 @@ export default class TaskComponent extends Component<IProps> {
                 return TaskComponent.renderStartTask();
             case TaskAction.MarkComplete:
                 return TaskComponent.renderMarkTaskCompleted();
-            case TaskAction.MarkBlocked:
-                return TaskComponent.renderMarkTaskBlocked();
-            case TaskAction.UpdateAssignee:
-                return TaskComponent.renderUpdateAssignee();
+            case TaskAction.ReportBlocked:
+                return TaskComponent.renderReportBlocked();
+            case TaskAction.AssignOwner:
+                return TaskComponent.renderAssignOwner();
             case TaskAction.Delete:
                 return TaskComponent.renderDeleteTask();
-            case TaskAction.Detail:
+            case TaskAction.ViewDetail:
                 return this.renderTaskDetail();
         }
     }
 
     private renderActions(): ReactElement[] {
         return this.props.task.availableActions
-            .concat(TaskAction.Detail)
+            .concat(TaskAction.ViewDetail)
             .map((action: TaskAction, index: number) => {
                 return (
                     <div className={styles.Action} key={index}>
