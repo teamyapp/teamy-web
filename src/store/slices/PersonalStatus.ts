@@ -1,82 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import PersonalStatus from '../../entity/PersonalStatus';
 import Task from '../../entity/Task';
-import { TaskAction } from '../../entity/TaskAction';
-
-const now = Date.now();
-
-const taskNeedAttention: Task = {
-    id: 4,
-    goal: 'Productionise the core algorithm for graph based access control system',
-    dueAt: now,
-    effort: 10,
-    availableActions: [TaskAction.MarkComplete, TaskAction.MarkBlocked],
-};
-
-const upcomingTasks: Task[] = [
-    {
-        id: 1,
-        goal: 'Create gRPC APIs for permission and resource relationship CRUDs',
-        dueAt: now,
-        effort: 3,
-        availableActions: [
-            TaskAction.Start,
-            TaskAction.UpdateAssignee,
-            TaskAction.Delete,
-        ],
-    },
-    {
-        id: 2,
-        goal: 'Create gRPC API for hasPermission',
-        dueAt: now,
-        effort: 4,
-        availableActions: [
-            TaskAction.Start,
-            TaskAction.UpdateAssignee,
-            TaskAction.Delete,
-        ],
-    },
-    {
-        id: 3,
-        goal: 'Create gRPC API for the permission CRUDs',
-        dueAt: now,
-        effort: 5,
-        availableActions: [
-            TaskAction.Start,
-            TaskAction.UpdateAssignee,
-            TaskAction.Delete,
-        ],
-    },
-];
-
-const deliveredTasks: Task[] = [
-    {
-        id: 1,
-        goal: 'Add unit tests for the core algorithm to make sure edge cases are covered',
-        dueAt: now,
-        effort: 3,
-        availableActions: [],
-    },
-    {
-        id: 2,
-        goal: 'Update Access Control design doc to use the latest tree path algorithm',
-        dueAt: now,
-        effort: 4,
-        availableActions: [],
-    },
-    {
-        id: 3,
-        goal: 'Update DB schema diagram in the access control design doc',
-        dueAt: now,
-        effort: 5,
-        availableActions: [],
-    },
-];
 
 const initialState: PersonalStatus = {
-    taskNeedAttention: taskNeedAttention,
-    upcomingTasks: upcomingTasks,
-    deliveredTasks: deliveredTasks,
+    upcomingTasks: [],
+    deliveredTasks: [],
 };
 
 const slice = createSlice({
@@ -103,6 +31,14 @@ const slice = createSlice({
                 (task: Task) => task.id !== action.payload,
             );
         },
+        updatePersonalStatus(
+            state: PersonalStatus,
+            action: PayloadAction<PersonalStatus>,
+        ) {
+            state.upcomingTasks = action.payload.upcomingTasks;
+            state.taskNeedAttention = action.payload.taskNeedAttention;
+            state.deliveredTasks = action.payload.deliveredTasks;
+        },
     },
 });
 
@@ -111,6 +47,7 @@ export const {
     clearNeedAttentionTask,
     addIncomingTask,
     removeIncomingTask,
+    updatePersonalStatus,
 } = slice.actions;
 
 export default slice.reducer;

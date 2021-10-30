@@ -6,6 +6,7 @@ interface OnTabClickHandler {
 }
 
 interface IProps {
+    defaultSelectedIndex?: number;
     tabNames: string[];
     onTabClick?: OnTabClickHandler;
 }
@@ -25,7 +26,7 @@ export default class TabsComponent extends Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            selectedTabIndex: 0,
+            selectedTabIndex: props.defaultSelectedIndex || 0,
             activateTabIndicatorWidth: 0,
         };
         this.tabsRef = this.props.tabNames.map((_: string) => createRef());

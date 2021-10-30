@@ -5,6 +5,7 @@ import { Unsubscribe } from 'redux';
 import PersonalStatus from '../../../entity/PersonalStatus';
 import TeamStatus from '../../../entity/TeamStatus';
 import { ExecutionModeService } from '../../../service/ExecutionMode.service';
+import { updatePersonalStatus } from '../../../store/slices/PersonalStatus';
 import { updateTeamStatus } from '../../../store/slices/TeamStatus';
 import store from '../../../store/store';
 import TabsComponent from '../../ui/Tabs.component';
@@ -28,6 +29,7 @@ class ExecutionComponent extends Component<IProps> {
                 <div className={styles.Tabs}>
                     <div className={styles.Container}>
                         <TabsComponent
+                            defaultSelectedIndex={0}
                             tabNames={['Me', 'Team']}
                             onTabClick={this.onTabClick}
                         />
@@ -49,6 +51,10 @@ class ExecutionComponent extends Component<IProps> {
                 </div>
             </div>
         );
+    }
+
+    public componentDidMount() {
+        this.onTabClick(0);
     }
 
     private onTabClick = (index: number) => {
@@ -94,12 +100,17 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
     public async componentDidMount() {
         this.unsubscribe = store.subscribe(() => {
             const newState = store.getState();
-            console.log(newState);
             this.setState({
                 personalStatus: newState.personalStatus,
                 teamStatus: newState.teamStatus,
             });
         });
+
+        const personalStatus =
+            await this.props.executionModeService.fetchPersonalStatus();
+        if (personalStatus) {
+            store.dispatch(updatePersonalStatus(personalStatus));
+        }
 
         const teamStatus =
             await this.props.executionModeService.fetchTeamStatus();
