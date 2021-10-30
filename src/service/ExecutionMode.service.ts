@@ -1,3 +1,4 @@
+import PersonalStatus from '../entity/PersonalStatus';
 import TeamStatus from '../entity/TeamStatus';
 import { GraphQLClient } from '../network/GraphQL.client';
 
@@ -6,6 +7,7 @@ interface ExecutionModeQueryPayload {
 }
 
 interface GQLExecutionMode {
+    personalStatus: PersonalStatus;
     teamStatus: TeamStatus;
 }
 
@@ -16,7 +18,39 @@ export class ExecutionModeService {
         this.graphQLClient = graphQLClient;
     }
 
-    fetchTeamStatus(): Promise<TeamStatus> {
+    public fetchPersonalStatus(): Promise<PersonalStatus> {
+        return this.graphQLClient
+            .query<ExecutionModeQueryPayload>(
+                `
+query {
+  executionMode {
+    personalStatus {
+      upcomingTasks {
+       ...taskPreview
+      }
+      taskNeedAttention {
+       ...taskPreview
+      }
+      deliveredTasks {
+       ...taskPreview
+      }
+    }
+  }
+}
+
+fragment taskPreview on Task {
+  id
+  goal
+  dueAt
+}
+`,
+            )
+            .then((payload: ExecutionModeQueryPayload) => {
+                return payload?.executionMode.personalStatus;
+            });
+    }
+
+    public fetchTeamStatus(): Promise<TeamStatus> {
         return this.graphQLClient
             .query<ExecutionModeQueryPayload>(
                 `
