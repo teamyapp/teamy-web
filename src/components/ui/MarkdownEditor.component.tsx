@@ -26,6 +26,7 @@ marked.setOptions({
 
 interface IProps {
     label?: string;
+    content?: string;
 }
 
 interface IState {
@@ -40,7 +41,7 @@ export default class MarkdownEditorComponent extends Component<IProps, IState> {
         this.state = {
             focus: false,
             inEditMode: true,
-            content: '',
+            content: this.props.content || '',
         };
     }
 

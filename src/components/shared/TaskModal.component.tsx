@@ -49,6 +49,7 @@ export default class TaskModalComponent extends Component<any, IState> {
                                 <div className={styles.Context}>
                                     <MarkdownEditorComponent
                                         label={'Context'}
+                                        content={this.state.task.context}
                                     />
                                 </div>
                             </div>
@@ -62,7 +63,10 @@ export default class TaskModalComponent extends Component<any, IState> {
                                     >
                                         <NamedValueComponent
                                             name={'Effort'}
-                                            value={`${this.state.task.effort}`}
+                                            value={`${
+                                                this.state.task.effort ||
+                                                'Unknown'
+                                            }`}
                                         />
                                     </div>
                                 </div>

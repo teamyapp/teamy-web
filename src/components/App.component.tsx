@@ -2,6 +2,7 @@ import React, { Component, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { ExecutionModeService } from '../service/ExecutionMode.service';
+import { TaskService } from '../service/Task.service';
 import store from '../store/store';
 import styles from './App.component.module.scss';
 import DrawerComponent from './Drawer.component';
@@ -9,6 +10,7 @@ import ExecutionComponentHook from './modes/Execution/Execution.component';
 import MaterialIconComponent from './ui/MaterialIcon.component';
 
 interface IProps {
+    taskService: TaskService;
     executionModeService: ExecutionModeService;
 }
 
@@ -50,6 +52,7 @@ export class AppComponent extends Component<IProps, IState> {
                     <div className={styles.Execution}>
                         {
                             <ExecutionComponentHook
+                                taskService={this.props.taskService}
                                 executionModeService={
                                     this.props.executionModeService
                                 }
@@ -73,6 +76,7 @@ export default function AppComponentContainer(props: IProps): ReactElement {
         <Provider store={store}>
             <BrowserRouter>
                 <AppComponent
+                    taskService={props.taskService}
                     executionModeService={props.executionModeService}
                 />
             </BrowserRouter>

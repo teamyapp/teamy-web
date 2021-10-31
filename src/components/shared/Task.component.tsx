@@ -6,8 +6,8 @@ import NamedValueComponent from '../ui/NamedValue.component';
 import AssigneeComponent from './Assignee.component';
 import styles from './Task.component.module.scss';
 
-interface OnTaskDetailClick {
-    (task: Task): void;
+export interface OnTaskDetailClick {
+    (taskId: number): void;
 }
 
 interface IProps {
@@ -127,7 +127,7 @@ export default class TaskComponent extends Component<IProps> {
 
     private onTaskDetailClick = (): void => {
         if (this.props.onTaskDetailClick) {
-            this.props.onTaskDetailClick(this.props.task);
+            this.props.onTaskDetailClick(this.props.task.id);
         }
     };
 }

@@ -1,18 +1,16 @@
-import React, { Component, createRef, ReactElement } from 'react';
+import React, { Component, ReactElement } from 'react';
 import Task from '../../../entity/Task';
 import TeamStatus from '../../../entity/TeamStatus';
-import TaskComponent from '../../shared/Task.component';
-import TaskModalComponent from '../../shared/TaskModal.component';
+import TaskComponent, { OnTaskDetailClick } from '../../shared/Task.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Team.component.module.scss';
 
 interface IProps {
     teamStatus: TeamStatus;
+    onViewTaskDetailClick?: OnTaskDetailClick;
 }
 
 export default class TeamComponent extends Component<IProps> {
-    private taskDetailModalRef = createRef<TaskModalComponent>();
-
     render(): ReactElement {
         return (
             <div className={`${styles.TeamStatus} ${styles.TaskLists}`}>
@@ -49,7 +47,6 @@ export default class TeamComponent extends Component<IProps> {
                         </div>
                     </SectionComponent>
                 </div>
-                <TaskModalComponent ref={this.taskDetailModalRef} />
             </div>
         );
     }
@@ -65,7 +62,9 @@ export default class TeamComponent extends Component<IProps> {
         );
     };
 
-    private onTaskDetailClick = (task: Task) => {
-        this.taskDetailModalRef.current?.open(task);
+    private onTaskDetailClick = (taskId: number) => {
+        if (this.props.onViewTaskDetailClick) {
+            this.props.onViewTaskDetailClick(taskId);
+        }
     };
 }
