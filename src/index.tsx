@@ -10,6 +10,7 @@ const deps = initDeps();
 ReactDOM.render(
     <React.StrictMode>
         <AppComponentContainer
+            taskService={deps.taskService}
             executionModeService={deps.executionModeService}
         />
     </React.StrictMode>,

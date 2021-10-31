@@ -1,18 +1,16 @@
-import React, { Component, createRef, ReactElement } from 'react';
+import React, { Component, ReactElement } from 'react';
 import PersonalStatus from '../../../entity/PersonalStatus';
 import Task from '../../../entity/Task';
-import TaskComponent from '../../shared/Task.component';
-import TaskModalComponent from '../../shared/TaskModal.component';
+import TaskComponent, { OnTaskDetailClick } from '../../shared/Task.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Personal.component.module.scss';
 
 interface IProps {
     personalStatus: PersonalStatus;
+    onViewTaskDetailClick?: OnTaskDetailClick;
 }
 
 export default class PersonalComponent extends Component<IProps> {
-    private taskDetailModalRef = createRef<TaskModalComponent>();
-
     public render(): ReactElement {
         return (
             <div className={styles.PersonalStatus}>
@@ -48,7 +46,6 @@ export default class PersonalComponent extends Component<IProps> {
                         </SectionComponent>
                     </div>
                 </div>
-                <TaskModalComponent ref={this.taskDetailModalRef} />
             </div>
         );
     }
@@ -64,7 +61,9 @@ export default class PersonalComponent extends Component<IProps> {
         );
     };
 
-    private onTaskDetailClick = (task: Task) => {
-        this.taskDetailModalRef.current?.open(task);
+    private onTaskDetailClick = (taskId: number) => {
+        if (this.props.onViewTaskDetailClick) {
+            this.props.onViewTaskDetailClick(taskId);
+        }
     };
 }
