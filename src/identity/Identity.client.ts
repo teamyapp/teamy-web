@@ -1,8 +1,9 @@
 import Cookies from 'js-cookie';
+import { Channel, select } from '../concurrency/csp';
 import { Environment } from '../env/environment';
 import { Errors } from '../ext/errors';
 import { Result } from '../ext/result';
-import { IChannel, ISubscription } from '../network/IChannel';
+import { IChannel } from '../network/IChannel';
 import { WebSocketChannel } from '../network/WebSocketChannel';
 import { Config, getConfig } from './config';
 
@@ -20,7 +21,7 @@ interface Message {
 
 export class IdentityClient {
     private readonly config: Config;
-    private subscription?: ISubscription;
+    private channel?: IChannel;
 
     constructor(env: Environment) {
         this.config = getConfig(env);
@@ -70,17 +71,11 @@ export class IdentityClient {
                 error,
             };
         }
-        const channel = value!;
-        return new Promise<Result<string, Errors>>((resolve) => {
-            this.subscription = channel.onMessageReceived((message: string) => {
-                resolve({ value: message });
-                channel.close();
-            });
-
-            channel.onError((error: Errors) => {
-                resolve({ error });
-            });
-        });
+        this.channel = value!;
+        return readMessage(
+            this.channel.onMessageReceived(),
+            this.channel.onError(),
+        );
     }
 
     private async getChannel(
@@ -91,13 +86,15 @@ export class IdentityClient {
         );
         await channel.open();
 
-        const resultPromise = channel.onMessageReceivedAsync();
+        const onMessageReceived = channel.onMessageReceived();
+        const onError = channel.onError();
         const initMessage: Message = {
             type: MessageType.InitChannel,
             payload: clientId,
         };
         channel.sendMessage(JSON.stringify(initMessage));
-        const { value, error } = await resultPromise;
+
+        const { value, error } = await readMessage(onMessageReceived, onError);
         if (error) {
             return {
                 error: error,
@@ -136,8 +133,26 @@ export class IdentityClient {
     }
 
     public dispose() {
-        if (this.subscription) {
-            this.subscription.unsubscribe();
-        }
+        this.channel?.close();
     }
+}
+
+function readMessage(
+    messageChan: Channel<string | undefined>,
+    errorChan: Channel<Errors | undefined>,
+): Promise<Result<string, Errors>> {
+    return select<Result<string, Errors>>([
+        [
+            messageChan,
+            async (token: string) => {
+                return { value: token };
+            },
+        ],
+        [
+            errorChan,
+            async (error: Errors) => {
+                return { error };
+            },
+        ],
+    ]);
 }
