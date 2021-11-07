@@ -24,7 +24,8 @@
     .Header {
         display: flex;
         align-items: center;
-        height: 50px;
+        min-height: 50px;
+        max-height: 50px;
         padding: 0 16px;
         background-color: $primaryColor;
     }
