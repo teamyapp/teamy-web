@@ -1,25 +1,17 @@
+import { chan, Channel, multi } from '../concurrency/csp';
 import { Errors } from '../ext/errors';
-import { Result } from '../ext/result';
-import {
-    IChannel,
-    ISubscription,
-    OnError,
-    OnMessageReceived,
-} from './IChannel';
 
-interface ISubscriptions {
-    [id: number]: ISubscription;
-}
+import { IChannel } from './IChannel';
 
 export class WebSocketChannel implements IChannel {
     private readonly connectionUrl: string;
     private webSocket?: WebSocket;
 
-    private nextOnErrorSubscriptionId = 0;
-    private nextOnMessageSubscriptionId = 0;
+    private messageReceivedChan = chan<string>();
+    private messageReceivedMulti = multi<string>(this.messageReceivedChan);
 
-    private onErrorSubscriptions: ISubscriptions = {};
-    private onMessageSubscriptions: ISubscriptions = {};
+    private errorChan = chan<Errors>();
+    private errorMulti = multi<Errors>(this.errorChan);
 
     constructor(connectionUrl: string) {
         this.connectionUrl = connectionUrl;
@@ -27,50 +19,16 @@ export class WebSocketChannel implements IChannel {
 
     public close(): void {
         this.webSocket?.close();
+        this.messageReceivedChan.close();
+        this.errorChan.close();
     }
 
-    public onError(callback: OnError): ISubscription {
-        return this.subscribe(
-            this.nextOnErrorSubscriptionId,
-            this.onErrorSubscriptions,
-            () => {
-                this.nextOnErrorSubscriptionId++;
-            },
-            (data: any) => {
-                // TODO: convert Web Socket error to Errors
-                callback(data);
-            },
-        );
+    public onError(): Channel<Errors | undefined> {
+        return this.errorMulti.copy();
     }
 
-    public onMessageReceived(callback: OnMessageReceived): ISubscription {
-        return this.subscribe(
-            this.nextOnMessageSubscriptionId,
-            this.onMessageSubscriptions,
-            () => {
-                this.nextOnMessageSubscriptionId++;
-            },
-            (data: any) => {
-                callback(data);
-            },
-        );
-    }
-
-    public onMessageReceivedAsync(): Promise<Result<string, Errors>> {
-        return new Promise<Result<string, Errors>>((resolve) => {
-            const messageSubscription = this.onMessageReceived(
-                (message: string) => {
-                    resolve({
-                        value: message,
-                    });
-                },
-            );
-            messageSubscription.unsubscribe();
-            const errorSubscription = this.onError((error: Errors) => {
-                resolve({ error });
-                errorSubscription.unsubscribe();
-            });
-        });
+    public onMessageReceived(): Channel<string | undefined> {
+        return this.messageReceivedMulti.copy();
     }
 
     public open(): Promise<void> {
@@ -86,14 +44,10 @@ export class WebSocketChannel implements IChannel {
                 this.webSocket = webSocket;
             };
             webSocket.onerror = (event: Event) => {
-                for (const id in this.onErrorSubscriptions) {
-                    this.onErrorSubscriptions[id].notify(event);
-                }
+                this.errorChan.put(getError(event));
             };
             webSocket.onmessage = (event: MessageEvent) => {
-                for (const id in this.onMessageSubscriptions) {
-                    this.onMessageSubscriptions[id].notify(event.data);
-                }
+                this.messageReceivedChan.put(event.data);
             };
         });
     }
@@ -101,44 +55,9 @@ export class WebSocketChannel implements IChannel {
     public sendMessage(message: string): void {
         this.webSocket?.send(message);
     }
-
-    private subscribe(
-        nextSubscriptionId: number,
-        subscriptions: ISubscriptions,
-        incrementSubscriptionId: () => void,
-        callback: (data: any) => void,
-    ): Subscription {
-        const subscription = new Subscription(
-            (error: any) => {
-                callback(error);
-            },
-            () => {
-                delete subscriptions[nextSubscriptionId];
-            },
-        );
-        incrementSubscriptionId();
-        subscriptions[nextSubscriptionId] = subscription;
-        return subscription;
-    }
 }
 
-class Subscription implements ISubscription {
-    private readonly notifyCallback: (data: any) => void;
-    private readonly cleanUpCallback: () => void;
-
-    constructor(
-        notifyCallback: (data: any) => void,
-        cleanUpCallback: () => void,
-    ) {
-        this.notifyCallback = notifyCallback;
-        this.cleanUpCallback = cleanUpCallback;
-    }
-
-    public unsubscribe(): void {
-        this.cleanUpCallback();
-    }
-
-    public notify(data: any): void {
-        this.notifyCallback(data);
-    }
+function getError(event: Event): Errors {
+    // TODO: extract the correct error from the event
+    return Errors.Unknown;
 }
