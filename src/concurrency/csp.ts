@@ -1,6 +1,7 @@
 /**
  * @author CreatCodeBuild
  * @version Nov 06, 2021
+ * @SLA maintained by CreatCodeBuild for bug fix & new features
  */
 export class UnreachableError extends Error {
     constructor(msg: string) {
@@ -184,10 +185,10 @@ interface DefaultCase<T> {
 // select() is modelled after Go's select statement ( https://tour.golang.org/concurrency/5 )
 // and does the same thing and should have identical behavior.
 // https://stackoverflow.com/questions/37021194/how-are-golang-select-statements-implemented
-export async function select<R1, R2>(
+export async function select<R1>(
     channels: [SeletableChannel<any>, onSelect<any, R1>][],
-    defaultCase?: DefaultCase<R2>,
-): Promise<R1 | R2> {
+    defaultCase?: DefaultCase<R1>,
+): Promise<R1> {
     let promises: Promise<number>[] = channels.map(async ([c, func], i) => {
         await c.ready();
         return i;
