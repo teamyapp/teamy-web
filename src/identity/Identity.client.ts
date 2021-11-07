@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { Channel, select } from '../concurrency/csp';
+import { Channel, PutChannel, select } from '../concurrency/csp';
 import { Environment } from '../env/environment';
 import { Errors } from '../ext/errors';
 import { Result } from '../ext/result';
@@ -138,18 +138,18 @@ export class IdentityClient {
 }
 
 function readMessage(
-    messageChan: Channel<string | undefined>,
-    errorChan: Channel<Errors | undefined>,
+    messageChan: PutChannel<string | undefined>,
+    errorChan: PutChannel<Errors | undefined>,
 ): Promise<Result<string, Errors>> {
     return select<Result<string, Errors>>([
         [
-            messageChan,
+            messageChan as Channel<string | undefined>,
             async (token: string) => {
                 return { value: token };
             },
         ],
         [
-            errorChan,
+            errorChan as Channel<Errors | undefined>,
             async (error: Errors) => {
                 return { error };
             },

@@ -1,4 +1,4 @@
-import { chan, Channel, multi } from '../concurrency/csp';
+import { chan, multi, PutChannel } from '../concurrency/csp';
 import { Errors } from '../ext/errors';
 
 import { IChannel } from './IChannel';
@@ -23,11 +23,11 @@ export class WebSocketChannel implements IChannel {
         this.errorChan.close();
     }
 
-    public onError(): Channel<Errors | undefined> {
+    public onError(): PutChannel<Errors | undefined> {
         return this.errorMulti.copy();
     }
 
-    public onMessageReceived(): Channel<string | undefined> {
+    public onMessageReceived(): PutChannel<string | undefined> {
         return this.messageReceivedMulti.copy();
     }
 
