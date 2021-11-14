@@ -22,6 +22,25 @@
 .UpcomingSection {
     --title-color: #0074b1;
     --background-color: #f2fcff;
+
+    .UpcomingActions {
+        display: flex;
+        justify-content: right;
+        --icon-size: 30px;
+        --icon-color: #0074b1;
+        --background-color: transparent;
+
+        .UpcomingAction {
+            border-radius: 4px;
+            user-select: none;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #0074b1;
+                --icon-color: white;
+            }
+        }
+    }
 }
 
 .DeliveredSection {

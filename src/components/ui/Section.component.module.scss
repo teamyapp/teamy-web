@@ -1,15 +1,21 @@
 .Section {
-    padding: 20px 10px 10px 10px;
+    padding: 0 10px 10px 10px;
     background-color: var(--background-color, white);
     height: 100%;
     box-sizing: border-box;
     border-radius: 6px;
 
-    .Title {
+    .Header {
+        display: flex;
         font-size: 22px;
         font-weight: bolder;
-        margin-bottom: 20px;
+        height: 70px;
         padding: 0 20px;
+        align-items: center;
         color: var(--title-color, black);
+
+        .Actions {
+            flex: 1;
+        }
     }
 }

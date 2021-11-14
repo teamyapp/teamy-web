@@ -2,12 +2,14 @@ import React, { Component, ReactElement } from 'react';
 import Task from '../../../entity/Task';
 import TeamStatus from '../../../entity/TeamStatus';
 import TaskComponent, { OnTaskDetailClick } from '../../shared/Task.component';
+import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Team.component.module.scss';
 
 interface IProps {
     teamStatus: TeamStatus;
     onViewTaskDetailClick?: OnTaskDetailClick;
+    onAddClick?: () => void;
 }
 
 export default class TeamComponent extends Component<IProps> {
@@ -17,7 +19,21 @@ export default class TeamComponent extends Component<IProps> {
                 <div
                     className={`${styles.TaskListSection} ${styles.UpcomingSection}`}
                 >
-                    <SectionComponent title={'Upcoming'}>
+                    <SectionComponent
+                        title={'Upcoming'}
+                        actions={
+                            <div className={styles.UpcomingActions}>
+                                <div
+                                    className={styles.UpcomingAction}
+                                    onClick={this.props.onAddClick}
+                                >
+                                    <MaterialIconComponent>
+                                        add
+                                    </MaterialIconComponent>
+                                </div>
+                            </div>
+                        }
+                    >
                         <div className={styles.TaskList}>
                             {this.props.teamStatus.upcomingTasks.map(
                                 this.renderTask,
@@ -63,8 +79,6 @@ export default class TeamComponent extends Component<IProps> {
     };
 
     private onTaskDetailClick = (taskId: number) => {
-        if (this.props.onViewTaskDetailClick) {
-            this.props.onViewTaskDetailClick(taskId);
-        }
+        this.props.onViewTaskDetailClick?.call(this, taskId);
     };
 }
