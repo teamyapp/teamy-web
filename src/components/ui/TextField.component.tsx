@@ -70,7 +70,10 @@ export default class TextFieldComponent extends Component<IProps, IState> {
                     />
                     <label className={styles.Label}>{this.props.label}</label>
                     {this.props.icon && (
-                        <div className={styles.Icon} onClick={this.onIconClick}>
+                        <div
+                            className={styles.Icon}
+                            onClick={this.props.onIconClick}
+                        >
                             <MaterialIconComponent>
                                 {this.props.icon}
                             </MaterialIconComponent>
@@ -87,9 +90,7 @@ export default class TextFieldComponent extends Component<IProps, IState> {
     }
 
     private onChange = (event: FormEvent<HTMLInputElement>) => {
-        if (this.props.onChange) {
-            this.props.onChange(event.currentTarget.value);
-        }
+        this.props.onChange?.call(this, event.currentTarget.value);
     };
 
     private onFocus = () => {
@@ -97,9 +98,7 @@ export default class TextFieldComponent extends Component<IProps, IState> {
             isFocused: true,
         });
 
-        if (this.props.onFocus) {
-            this.props.onFocus();
-        }
+        this.props.onFocus?.call(this);
     };
 
     private onBlur = () => {
@@ -107,14 +106,6 @@ export default class TextFieldComponent extends Component<IProps, IState> {
             isFocused: false,
         });
 
-        if (this.props.onBlur) {
-            this.props.onBlur();
-        }
-    };
-
-    private onIconClick = () => {
-        if (this.props.onIconClick) {
-            this.props.onIconClick();
-        }
+        this.props.onBlur?.call(this);
     };
 }

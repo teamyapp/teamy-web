@@ -101,8 +101,6 @@ export default class DrawerComponent extends Component<IProps, IState> {
     };
 
     onMenuToggle = () => {
-        if (this.props.onMenuClose) {
-            this.props.onMenuClose();
-        }
+        this.props.onMenuClose?.call(this);
     };
 }

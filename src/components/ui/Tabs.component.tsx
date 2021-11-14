@@ -98,9 +98,7 @@ export default class TabsComponent extends Component<IProps, IState> {
                 selectedTabIndex: index,
             });
 
-            if (this.props.onTabClick) {
-                this.props.onTabClick(index);
-            }
+            this.props.onTabClick?.call(this, index);
         };
     }
 }
