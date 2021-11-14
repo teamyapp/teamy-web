@@ -24,6 +24,8 @@ interface IProps {
     personalStatus: PersonalStatus;
     teamStatus: TeamStatus;
     onViewTaskDetailClick?: (taskId: number) => void;
+    onPersonalAddClick?: () => void;
+    onTeamAddClick?: () => void;
 }
 
 class ExecutionComponent extends Component<IProps> {
@@ -47,8 +49,9 @@ class ExecutionComponent extends Component<IProps> {
                             <PersonalComponent
                                 personalStatus={this.props.personalStatus}
                                 onViewTaskDetailClick={
-                                    this.onViewTaskDetailClick
+                                    this.props.onViewTaskDetailClick
                                 }
+                                onAddClick={this.props.onPersonalAddClick}
                             />
                         </Route>
                     </Switch>
@@ -57,8 +60,9 @@ class ExecutionComponent extends Component<IProps> {
                             <TeamComponent
                                 teamStatus={this.props.teamStatus}
                                 onViewTaskDetailClick={
-                                    this.onViewTaskDetailClick
+                                    this.props.onViewTaskDetailClick
                                 }
+                                onAddClick={this.props.onTeamAddClick}
                             />
                         </Route>
                     </Switch>
@@ -74,12 +78,6 @@ class ExecutionComponent extends Component<IProps> {
 
     private onTabClick = (index: number) => {
         this.props.routerHistory.push(routes[index]);
-    };
-
-    private onViewTaskDetailClick = async (taskId: number) => {
-        if (this.props.onViewTaskDetailClick) {
-            this.props.onViewTaskDetailClick(taskId);
-        }
     };
 
     public showTaskDetail(task: Task) {
@@ -123,6 +121,8 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
                 personalStatus={this.state.personalStatus}
                 teamStatus={this.state.teamStatus}
                 onViewTaskDetailClick={this.onViewTaskDetailClick}
+                onPersonalAddClick={this.onPersonalAddClick}
+                onTeamAddClick={this.onTeamAddClick}
             />
         );
     }
@@ -152,14 +152,20 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
     }
 
     public componentWillUnmount() {
-        if (this.unsubscribe) {
-            this.unsubscribe();
-        }
+        this.unsubscribe?.call(this);
     }
 
     private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
         const task = await this.props.taskService.fetchTask(taskId);
         this.executionComponentRef.current?.showTaskDetail(task);
+    };
+
+    private onPersonalAddClick = () => {
+        console.log('onPersonalAddClick');
+    };
+
+    private onTeamAddClick = () => {
+        console.log('onTeamAddClick');
     };
 }
 

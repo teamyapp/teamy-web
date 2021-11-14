@@ -2,12 +2,14 @@ import React, { Component, ReactElement } from 'react';
 import PersonalStatus from '../../../entity/PersonalStatus';
 import Task from '../../../entity/Task';
 import TaskComponent, { OnTaskDetailClick } from '../../shared/Task.component';
+import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Personal.component.module.scss';
 
 interface IProps {
     personalStatus: PersonalStatus;
     onViewTaskDetailClick?: OnTaskDetailClick;
+    onAddClick?: () => void;
 }
 
 export default class PersonalComponent extends Component<IProps> {
@@ -26,7 +28,21 @@ export default class PersonalComponent extends Component<IProps> {
                     <div
                         className={`${styles.TaskListSection} ${styles.UpcomingSection}`}
                     >
-                        <SectionComponent title={'Upcoming'}>
+                        <SectionComponent
+                            title={'Upcoming'}
+                            actions={
+                                <div className={styles.UpcomingActions}>
+                                    <div
+                                        className={styles.UpcomingAction}
+                                        onClick={this.props.onAddClick}
+                                    >
+                                        <MaterialIconComponent>
+                                            add
+                                        </MaterialIconComponent>
+                                    </div>
+                                </div>
+                            }
+                        >
                             <div className={styles.TaskList}>
                                 {this.props.personalStatus.upcomingTasks.map(
                                     this.renderTask,
@@ -55,15 +71,9 @@ export default class PersonalComponent extends Component<IProps> {
             <div key={task.id}>
                 <TaskComponent
                     task={task}
-                    onTaskDetailClick={this.onTaskDetailClick}
+                    onTaskDetailClick={this.props.onViewTaskDetailClick}
                 />
             </div>
         );
-    };
-
-    private onTaskDetailClick = (taskId: number) => {
-        if (this.props.onViewTaskDetailClick) {
-            this.props.onViewTaskDetailClick(taskId);
-        }
     };
 }
