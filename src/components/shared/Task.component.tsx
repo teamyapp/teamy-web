@@ -126,8 +126,6 @@ export default class TaskComponent extends Component<IProps> {
     }
 
     private onTaskDetailClick = (): void => {
-        if (this.props.onTaskDetailClick) {
-            this.props.onTaskDetailClick(this.props.task.id);
-        }
+        this.props.onTaskDetailClick?.call(this, this.props.task.id);
     };
 }
