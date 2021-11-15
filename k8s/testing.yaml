@@ -24,12 +24,10 @@ spec:
     spec:
       containers:
         - name: teamy-web
-          image: harbor.internal.teamyapp.com/internal/teamy-web-testing:latest
+          image: registry.digitalocean.com/teamyapp/teamy-web-testing:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
-      imagePullSecrets:
-        - name: harbor-cred
 ---
 apiVersion: v1
 kind: Service

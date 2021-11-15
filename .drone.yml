@@ -28,9 +28,9 @@ steps:
         from_secret: DOCKER_USERNAME
       password:
         from_secret: DOCKER_PASSWORD
-      repo: harbor.internal.teamyapp.com/internal/teamy-web-staging
-      cache_from: harbor.internal.teamyapp.com/internal/teamy-web-staging
-      registry: harbor.internal.teamyapp.com
+      repo: registry.digitalocean.com/teamyapp/teamy-web-staging
+      cache_from: registry.digitalocean.com/teamyapp/teamy-web-staging
+      registry: registry.digitalocean.com
       target: production
       build_args:
         - ENVIRONMENT=staging
@@ -53,10 +53,10 @@ steps:
         from_secret: DOCKER_USERNAME
       password:
         from_secret: DOCKER_PASSWORD
-      repo: harbor.internal.teamyapp.com/internal/teamy-web-testing
-      registry: harbor.internal.teamyapp.com
+      repo: registry.digitalocean.com/teamyapp/teamy-web-testing
+      registry: registry.digitalocean.com
       target: production
-      cache_from: harbor.internal.teamyapp.com/internal/teamy-web-testing
+      cache_from: registry.digitalocean.com/teamyapp/teamy-web-testing
       build_args:
         - ENVIRONMENT=testing
 trigger:
@@ -77,10 +77,10 @@ steps:
         from_secret: DOCKER_USERNAME
       password:
         from_secret: DOCKER_PASSWORD
-      repo: harbor.internal.teamyapp.com/internal/teamy-web
-      registry: harbor.internal.teamyapp.com
+      repo: registry.digitalocean.com/teamyapp/teamy-web
+      registry: registry.digitalocean.com
       target: production
-      cache_from: harbor.internal.teamyapp.com/internal/teamy-web-staging
+      cache_from: registry.digitalocean.com/teamyapp/teamy-web-staging
       build_args:
         - ENVIRONMENT=production
 trigger:
