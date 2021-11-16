@@ -2,7 +2,7 @@ FROM node:14.17.6-alpine3.13 AS builder
 
 WORKDIR /app
 
-RUN apk add --no-cache git bash g++ make python3
+RUN apk add git bash g++ make python3
 
 COPY package.json yarn.lock ./
 
