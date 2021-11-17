@@ -4,6 +4,9 @@
     "private": true,
     "scripts": {
         "start": "dotenv -e .env.development -- react-scripts start",
+        "start:staging": "dotenv -e .env.staging -- react-scripts start",
+        "start:production": "dotenv -e .env.production -- react-scripts start",
+        "start:testing": "dotenv -e .env.testing -- react-scripts start",
         "build": "react-scripts build",
         "build:development": "dotenv -e .env.development yarn build",
         "build:testing": "dotenv -e .env.testing yarn build",
