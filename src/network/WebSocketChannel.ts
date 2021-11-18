@@ -1,4 +1,4 @@
-import { chan, multi, PutChannel } from '../concurrency/csp';
+import { chan, multi, PutChannel } from '@creatcodebuild/csp';
 import { Errors } from '../ext/errors';
 
 import { IChannel } from './IChannel';

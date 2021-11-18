@@ -1,5 +1,5 @@
+import { Channel, PutChannel, select } from '@creatcodebuild/csp';
 import Cookies from 'js-cookie';
-import { Channel, PutChannel, select } from '../concurrency/csp';
 import { Environment } from '../env/environment';
 import { Errors } from '../ext/errors';
 import { Result } from '../ext/result';
