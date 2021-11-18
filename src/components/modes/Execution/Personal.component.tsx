@@ -7,19 +7,28 @@ import SectionComponent from '../../ui/Section.component';
 import styles from './Personal.component.module.scss';
 
 interface IProps {
+    taskAdding?: Task;
     personalStatus: PersonalStatus;
     onViewTaskDetailClick?: OnTaskDetailClick;
     onAddClick?: () => void;
+    onNewTaskChange?: (task: Task) => void;
+    onCreateTask?: (task: Task) => void;
+    onUpdateTask?: (task: Task) => void;
 }
 
 export default class PersonalComponent extends Component<IProps> {
+    constructor(props: IProps) {
+        super(props);
+        this.state = {};
+    }
+
     public render(): ReactElement {
         return (
             <div className={styles.PersonalStatus}>
                 <div className={styles.NeedAttentionSection}>
                     <SectionComponent title={'Need Attention'}>
                         {this.props.personalStatus.taskNeedAttention &&
-                            this.renderTask(
+                            this.renderExistingTask()(
                                 this.props.personalStatus.taskNeedAttention,
                             )}
                     </SectionComponent>
@@ -44,8 +53,10 @@ export default class PersonalComponent extends Component<IProps> {
                             }
                         >
                             <div className={styles.TaskList}>
+                                {this.props.taskAdding &&
+                                    this.renderNewTask()(this.props.taskAdding)}
                                 {this.props.personalStatus.upcomingTasks.map(
-                                    this.renderTask,
+                                    this.renderExistingTask(),
                                 )}
                             </div>
                         </SectionComponent>
@@ -56,7 +67,7 @@ export default class PersonalComponent extends Component<IProps> {
                         <SectionComponent title={'Delivered'}>
                             <div className={styles.TaskList}>
                                 {this.props.personalStatus.deliveredTasks.map(
-                                    this.renderTask,
+                                    this.renderExistingTask(),
                                 )}
                             </div>
                         </SectionComponent>
@@ -66,14 +77,35 @@ export default class PersonalComponent extends Component<IProps> {
         );
     }
 
-    private renderTask = (task: Task): ReactElement => {
-        return (
-            <div key={task.id}>
-                <TaskComponent
-                    task={task}
-                    onTaskDetailClick={this.props.onViewTaskDetailClick}
-                />
-            </div>
+    private renderNewTask = (): ((task: Task) => ReactElement) => {
+        return this.renderTask(
+            true,
+            this.props.onCreateTask,
+            this.props.onNewTaskChange,
         );
+    };
+
+    private renderExistingTask = (): ((task: Task) => ReactElement) => {
+        return this.renderTask(false, this.props.onUpdateTask);
+    };
+
+    private renderTask = (
+        isEditing: boolean,
+        onTaskFinishEditing?: (task: Task) => void,
+        onTaskChange?: (task: Task) => void,
+    ): ((task: Task) => ReactElement) => {
+        return (task: Task) => {
+            return (
+                <div key={task.id}>
+                    <TaskComponent
+                        task={task}
+                        isEditing={isEditing}
+                        onTaskDetailClick={this.props.onViewTaskDetailClick}
+                        onTaskChanged={onTaskChange}
+                        onTaskFinishEditing={onTaskFinishEditing}
+                    />
+                </div>
+            );
+        };
     };
 }

@@ -1,4 +1,4 @@
-import { Component, createRef, ReactElement } from 'react';
+import { ChangeEvent, Component, createRef, ReactElement } from 'react';
 import Task from '../../entity/Task';
 import { TaskAction } from '../../entity/TaskAction';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
@@ -6,17 +6,35 @@ import NamedValueComponent from '../ui/NamedValue.component';
 import AssigneeComponent from './Assignee.component';
 import styles from './Task.component.module.scss';
 
+const goalLengthLimit = 70;
+
 export interface OnTaskDetailClick {
     (taskId: number): void;
 }
 
 interface IProps {
     task: Task;
+    isEditing?: boolean;
     onTaskDetailClick?: OnTaskDetailClick;
+    onTaskChanged?: (task: Task) => void;
+    onTaskFinishEditing?: (task: Task) => void;
 }
 
-export default class TaskComponent extends Component<IProps> {
+interface IState {
+    task: Task;
+    isEditing: boolean;
+}
+
+export default class TaskComponent extends Component<IProps, IState> {
     private ref = createRef<HTMLDivElement>();
+
+    constructor(props: IProps) {
+        super(props);
+        this.state = {
+            task: this.props.task,
+            isEditing: props.isEditing || false,
+        };
+    }
 
     private static renderStartTask(): ReactElement {
         return (
@@ -58,30 +76,45 @@ export default class TaskComponent extends Component<IProps> {
         return (
             <div ref={this.ref} className={styles.Task}>
                 <div className={styles.LeftSection}>
-                    <div className={styles.Goal}>{this.props.task.goal}</div>
-                    {this.props.task.dueAt && (
+                    {this.renderGoal()}
+                    {this.state.task.dueAt && (
                         <div className={styles.DueAt}>
                             Due:{' '}
-                            {new Date(this.props.task.dueAt).toLocaleString()}
+                            {new Date(this.state.task.dueAt).toLocaleString()}
                         </div>
                     )}
                     <div className={styles.Attributes}>
-                        {this.props.task.effort && (
+                        {this.state.task.effort && (
                             <span className={styles.EffortAttribute}>
                                 <NamedValueComponent
                                     name={'Effort'}
-                                    value={`${this.props.task.effort}`}
+                                    value={`${this.state.task.effort}`}
                                 />
                             </span>
                         )}
                     </div>
                 </div>
-                {this.props.task.availableActions && (
+                {this.state.task.availableActions && (
                     <div className={styles.ActionsSection}>
                         {this.renderActions()}
                     </div>
                 )}
             </div>
+        );
+    }
+
+    private renderGoal(): ReactElement {
+        return this.state.isEditing ? (
+            <textarea
+                autoFocus
+                maxLength={goalLengthLimit}
+                className={styles.GoalTextField}
+                value={this.state.task.goal}
+                onChange={this.onGoalChange}
+                onBlur={this.onGoalTextFieldBlur}
+            />
+        ) : (
+            <div className={styles.Goal}>{this.state.task.goal}</div>
         );
     }
 
@@ -114,7 +147,7 @@ export default class TaskComponent extends Component<IProps> {
     }
 
     private renderActions(): ReactElement[] {
-        return this.props.task.availableActions
+        return this.state.task.availableActions
             .concat(TaskAction.ViewDetail)
             .map((action: TaskAction, index: number) => {
                 return (
@@ -125,7 +158,24 @@ export default class TaskComponent extends Component<IProps> {
             });
     }
 
+    private onGoalChange = (event: ChangeEvent<HTMLTextAreaElement>): void => {
+        const task = Object.assign({}, this.state.task, {
+            goal: event.target.value,
+        });
+        this.setState({
+            task: task,
+        });
+        this.props.onTaskChanged?.call(this, task);
+    };
+
+    private onGoalTextFieldBlur = (): void => {
+        this.setState({
+            isEditing: false,
+        });
+        this.props.onTaskFinishEditing?.call(this, this.state.task);
+    };
+
     private onTaskDetailClick = (): void => {
-        this.props.onTaskDetailClick?.call(this, this.props.task.id);
+        this.props.onTaskDetailClick?.call(this, this.state.task.id);
     };
 }
