@@ -1332,6 +1332,11 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
+"@creatcodebuild/csp@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@creatcodebuild/csp/-/csp-0.0.6.tgz#1cc5ceff29de432debee597e782de3996ee2bfec"
+  integrity sha512-ZWibJ2K4+DaS4dgyHHSSry1in2VXgWyTuPMA1czVLDF++UoP/P9cVHtZu7u3LAlfaS3fAD8xN6G/H6hqyWaKwA==
+
 "@csstools/convert-colors@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@csstools/convert-colors/-/convert-colors-1.4.0.tgz#ad495dc41b12e75d588c6db8b9834f08fa131eb7"
