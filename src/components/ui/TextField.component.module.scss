@@ -1,3 +1,4 @@
+@use "sass:math";
 @import '../../styleguide/easing';
 
 $fontSize: var(--font-size, 18px);
@@ -68,8 +69,8 @@ $hintColor: #757575;
         position: absolute;
         z-index: 0;
         top: 50%;
-        left: $paddingSide / 2;
-        padding: 0 ($paddingSide / 2);
+        left: math.div($paddingSide, 2);
+        padding: 0 math.div($paddingSide, 2);
         transition: all 200ms $easeOutExpo;
         transform: translateY(-50%);
         color: $hintColor;
