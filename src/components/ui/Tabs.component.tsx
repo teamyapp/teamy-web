@@ -1,4 +1,4 @@
-import React, { Component, createRef, ReactElement, RefObject } from 'react';
+import { Component, createRef, ReactElement, RefObject } from 'react';
 import styles from './Tabs.component.module.scss';
 
 interface OnTabClickHandler {

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import _ from 'lodash';
 import moment from 'moment';
-import React, { Component, ReactElement } from 'react';
+import { Component, ReactElement } from 'react';
 
 import styles from './DatePicker.component.module.scss';
 import MaterialIconComponent from './MaterialIcon.component';

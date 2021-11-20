@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import { Component, ReactElement } from 'react';
 import styles from './NamedValue.component.module.scss';
 
 interface IProps {

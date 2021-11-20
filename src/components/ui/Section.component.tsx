@@ -1,4 +1,4 @@
-import React, { Children, Component, ReactElement } from 'react';
+import { Children, Component, ReactElement } from 'react';
 
 import styles from './Section.component.module.scss';
 
