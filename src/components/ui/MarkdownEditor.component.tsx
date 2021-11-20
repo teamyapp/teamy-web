@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import marked from 'marked';
 import prismjs from 'prismjs';
-import React, { Component, FormEvent, ReactElement } from 'react';
+import { Component, FormEvent, ReactElement } from 'react';
 
 import styles from './MarkdownEditor.component.module.scss';
 
