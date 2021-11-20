@@ -6,6 +6,7 @@ test('renders Teamy logo', () => {
     const deps = initDeps();
     render(
         <AppComponentContainer
+            taskService={deps.taskService}
             executionModeService={deps.executionModeService}
         />,
     );
