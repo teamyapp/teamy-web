@@ -1,4 +1,4 @@
-import { Component, createRef, ReactElement } from 'react';
+import React, { Component, createRef, ReactElement } from 'react';
 import Task from '../../entity/Task';
 import { TaskAction } from '../../entity/TaskAction';
 import MaterialIconComponent from '../ui/MaterialIcon.component';

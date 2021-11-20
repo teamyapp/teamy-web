@@ -1,4 +1,4 @@
-import { Component, createRef, ReactElement } from 'react';
+import React, { Component, createRef, ReactElement } from 'react';
 import Task from '../../entity/Task';
 import { DatePickerComponent } from '../ui/DatePicker.component';
 import MarkdownEditorComponent from '../ui/MarkdownEditor.component';
