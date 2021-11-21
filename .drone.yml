@@ -4,7 +4,7 @@ name: feature
 
 steps:
   - name: Run unit tests
-    image: node:14.17.6-alpine3.13
+    image: node:16.13.0-alpine3.13
     commands:
       - apk add --no-cache g++ make python3
       - yarn install --frozen-lockfile
@@ -29,7 +29,6 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       repo: registry.digitalocean.com/teamyapp/teamy-web-staging
-      cache_from: registry.digitalocean.com/teamyapp/teamy-web-staging
       registry: registry.digitalocean.com
       target: production
       build_args:
@@ -56,7 +55,6 @@ steps:
       repo: registry.digitalocean.com/teamyapp/teamy-web-testing
       registry: registry.digitalocean.com
       target: production
-      cache_from: registry.digitalocean.com/teamyapp/teamy-web-testing
       build_args:
         - ENVIRONMENT=testing
 trigger:
@@ -80,7 +78,6 @@ steps:
       repo: registry.digitalocean.com/teamyapp/teamy-web
       registry: registry.digitalocean.com
       target: production
-      cache_from: registry.digitalocean.com/teamyapp/teamy-web-staging
       build_args:
         - ENVIRONMENT=production
 trigger:
