@@ -1,7 +1,10 @@
 import React, { Component, ReactElement } from 'react';
 import PersonalStatus from '../../../entity/PersonalStatus';
 import Task from '../../../entity/Task';
-import TaskComponent, { OnTaskDetailClick } from '../../shared/Task.component';
+import TaskComponent, {
+    OnTaskDetailClick,
+    OnDeleteTaskClick,
+} from '../../shared/Task.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Personal.component.module.scss';
@@ -10,6 +13,7 @@ interface IProps {
     personalStatus: PersonalStatus;
     onViewTaskDetailClick?: OnTaskDetailClick;
     onAddClick?: () => void;
+    onDeleteTaskClick?: OnDeleteTaskClick;
 }
 
 export default class PersonalComponent extends Component<IProps> {
@@ -72,6 +76,7 @@ export default class PersonalComponent extends Component<IProps> {
                 <TaskComponent
                     task={task}
                     onTaskDetailClick={this.props.onViewTaskDetailClick}
+                    onDeleteTaskClick={this.props.onDeleteTaskClick}
                 />
             </div>
         );

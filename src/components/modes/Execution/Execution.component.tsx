@@ -26,6 +26,7 @@ interface IProps {
     onViewTaskDetailClick?: (taskId: number) => void;
     onPersonalAddClick?: () => void;
     onTeamAddClick?: () => void;
+    onDeleteTaskClick?: (taskId: number) => void;
 }
 
 class ExecutionComponent extends Component<IProps> {
@@ -48,10 +49,11 @@ class ExecutionComponent extends Component<IProps> {
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalComponent
                                 personalStatus={this.props.personalStatus}
+                                onAddClick={this.props.onPersonalAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
                                 }
-                                onAddClick={this.props.onPersonalAddClick}
+                                onDeleteTaskClick={this.props.onDeleteTaskClick}
                             />
                         </Route>
                     </Switch>
@@ -59,10 +61,11 @@ class ExecutionComponent extends Component<IProps> {
                         <Route path={`${this.props.routerUrl}team`}>
                             <TeamComponent
                                 teamStatus={this.props.teamStatus}
+                                onAddClick={this.props.onTeamAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
                                 }
-                                onAddClick={this.props.onTeamAddClick}
+                                onDeleteTaskClick={this.props.onDeleteTaskClick}
                             />
                         </Route>
                     </Switch>
@@ -121,6 +124,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
                 personalStatus={this.state.personalStatus}
                 teamStatus={this.state.teamStatus}
                 onViewTaskDetailClick={this.onViewTaskDetailClick}
+                onDeleteTaskClick={this.onDeleteTaskClick}
                 onPersonalAddClick={this.onPersonalAddClick}
                 onTeamAddClick={this.onTeamAddClick}
             />
@@ -136,6 +140,32 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
             });
         });
 
+        await this.refreshTeamAndPersonalStatus();
+    }
+
+    public componentWillUnmount() {
+        this.unsubscribe?.call(this);
+    }
+
+    private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
+        const task = await this.props.taskService.fetchTask(taskId);
+        this.executionComponentRef.current?.showTaskDetail(task);
+    };
+
+    private onDeleteTaskClick = async (taskId: number): Promise<void> => {
+        await this.props.taskService.deleteTask(taskId);
+        await this.refreshTeamAndPersonalStatus();
+    };
+
+    private onPersonalAddClick = () => {
+        console.log('onPersonalAddClick');
+    };
+
+    private onTeamAddClick = () => {
+        console.log('onTeamAddClick');
+    };
+
+    private async refreshTeamAndPersonalStatus() {
         const personalStatus =
             await this.props.executionModeService.fetchPersonalStatus();
         if (personalStatus) {
@@ -150,23 +180,6 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
             store.dispatch(updateTeamStatus(teamStatus));
         }
     }
-
-    public componentWillUnmount() {
-        this.unsubscribe?.call(this);
-    }
-
-    private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
-        const task = await this.props.taskService.fetchTask(taskId);
-        this.executionComponentRef.current?.showTaskDetail(task);
-    };
-
-    private onPersonalAddClick = () => {
-        console.log('onPersonalAddClick');
-    };
-
-    private onTeamAddClick = () => {
-        console.log('onTeamAddClick');
-    };
 }
 
 interface IHookProps {
