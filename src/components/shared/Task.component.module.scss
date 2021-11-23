@@ -4,6 +4,12 @@
 $numOfActionColumns: 3;
 $actionIconSize: 28px;
 
+@mixin goalText {
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 600;
+}
+
 .Task {
     @include elevation(4);
     display: flex;
@@ -22,8 +28,19 @@ $actionIconSize: 28px;
         padding-right: 20px;
 
         .Goal {
-            font-size: 22px;
-            font-weight: 500;
+            @include goalText;
+        }
+
+        .GoalTextField {
+            width: 100%;
+            box-sizing: border-box;
+            @include goalText;
+            padding: 0;
+            margin: 0;
+            height: 60px;
+            resize: none;
+            border: none;
+            outline: none;
         }
 
         .DueAt {

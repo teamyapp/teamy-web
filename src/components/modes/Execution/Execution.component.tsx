@@ -4,6 +4,7 @@ import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import { Unsubscribe } from 'redux';
 import PersonalStatus from '../../../entity/PersonalStatus';
 import Task from '../../../entity/Task';
+import { TaskAction } from '../../../entity/TaskAction';
 import TeamStatus from '../../../entity/TeamStatus';
 import { ExecutionModeService } from '../../../service/ExecutionMode.service';
 import { TaskService } from '../../../service/Task.service';
@@ -23,9 +24,13 @@ interface IProps {
     routerHistory: History<LocationState>;
     personalStatus: PersonalStatus;
     teamStatus: TeamStatus;
+    taskAdding?: Task;
     onViewTaskDetailClick?: (taskId: number) => void;
     onPersonalAddClick?: () => void;
     onTeamAddClick?: () => void;
+    onNewTaskChange?: (task: Task) => void;
+    onCreateTask?: (task: Task) => void;
+    onUpdateTask?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
 }
 
@@ -49,10 +54,14 @@ class ExecutionComponent extends Component<IProps> {
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalComponent
                                 personalStatus={this.props.personalStatus}
+                                taskAdding={this.props.taskAdding}
                                 onAddClick={this.props.onPersonalAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
                                 }
+                                onNewTaskChange={this.props.onNewTaskChange}
+                                onCreateTask={this.props.onCreateTask}
+                                onUpdateTask={this.props.onUpdateTask}
                                 onDeleteTaskClick={this.props.onDeleteTaskClick}
                             />
                         </Route>
@@ -61,10 +70,14 @@ class ExecutionComponent extends Component<IProps> {
                         <Route path={`${this.props.routerUrl}team`}>
                             <TeamComponent
                                 teamStatus={this.props.teamStatus}
+                                taskAdding={this.props.taskAdding}
                                 onAddClick={this.props.onTeamAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
                                 }
+                                onNewTaskChange={this.props.onNewTaskChange}
+                                onCreateTask={this.props.onCreateTask}
+                                onUpdateTask={this.props.onUpdateTask}
                                 onDeleteTaskClick={this.props.onDeleteTaskClick}
                             />
                         </Route>
@@ -98,6 +111,7 @@ interface IContainerProps {
 interface IContainerState {
     personalStatus: PersonalStatus;
     teamStatus: TeamStatus;
+    taskAdding?: Task;
 }
 
 class StatefulComponent extends Component<IContainerProps, IContainerState> {
@@ -116,6 +130,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
     }
 
     public render(): ReactElement {
+        // TODO: retrieve current user ID from user service
         return (
             <ExecutionComponent
                 ref={this.executionComponentRef}
@@ -123,7 +138,11 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
                 routerHistory={this.props.routerHistory}
                 personalStatus={this.state.personalStatus}
                 teamStatus={this.state.teamStatus}
+                taskAdding={this.state.taskAdding}
                 onViewTaskDetailClick={this.onViewTaskDetailClick}
+                onNewTaskChange={this.onNewTaskChange}
+                onCreateTask={this.onCreateTask}
+                onUpdateTask={this.onUpdateTask}
                 onDeleteTaskClick={this.onDeleteTaskClick}
                 onPersonalAddClick={this.onPersonalAddClick}
                 onTeamAddClick={this.onTeamAddClick}
@@ -152,6 +171,26 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
         this.executionComponentRef.current?.showTaskDetail(task);
     };
 
+    private onNewTaskChange = (task: Task) => {
+        this.setState({
+            taskAdding: task,
+        });
+    };
+
+    private onCreateTask = (task: Task) => {
+        if (task.goal.length > 0) {
+            console.log('onCreateTask');
+        }
+
+        this.setState({
+            taskAdding: undefined,
+        });
+    };
+
+    private onUpdateTask = (task: Task) => {
+        console.log('onUpdateTask');
+    };
+
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.taskService.deleteTask(taskId);
         await this.refreshExecutionStatus();
@@ -159,10 +198,26 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
 
     private onPersonalAddClick = () => {
         console.log('onPersonalAddClick');
+        // TODO: fetch user ID from user service
+        this.setState({
+            taskAdding: {
+                id: -1,
+                goal: '',
+                ownerUserId: 1,
+                availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
+            },
+        });
     };
 
     private onTeamAddClick = () => {
         console.log('onTeamAddClick');
+        this.setState({
+            taskAdding: {
+                id: -1,
+                goal: '',
+                availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
+            },
+        });
     };
 
     private async refreshExecutionStatus() {

@@ -10,13 +10,22 @@ import SectionComponent from '../../ui/Section.component';
 import styles from './Team.component.module.scss';
 
 interface IProps {
+    taskAdding?: Task;
     teamStatus: TeamStatus;
     onViewTaskDetailClick?: OnTaskDetailClick;
     onAddClick?: () => void;
+    onNewTaskChange?: (task: Task) => void;
+    onCreateTask?: (task: Task) => void;
+    onUpdateTask?: (task: Task) => void;
     onDeleteTaskClick?: OnDeleteTaskClick;
 }
 
 export default class TeamComponent extends Component<IProps> {
+    constructor(props: IProps) {
+        super(props);
+        this.state = {};
+    }
+
     render(): ReactElement {
         return (
             <div className={`${styles.TeamStatus} ${styles.TaskLists}`}>
@@ -39,8 +48,10 @@ export default class TeamComponent extends Component<IProps> {
                         }
                     >
                         <div className={styles.TaskList}>
+                            {this.props.taskAdding &&
+                                this.renderNewTask()(this.props.taskAdding)}
                             {this.props.teamStatus.upcomingTasks.map(
-                                this.renderTask,
+                                this.renderExistingTask(),
                             )}
                         </div>
                     </SectionComponent>
@@ -51,7 +62,7 @@ export default class TeamComponent extends Component<IProps> {
                     <SectionComponent title={'In Progress'}>
                         <div className={styles.TaskList}>
                             {this.props.teamStatus.inProgressTasks.map(
-                                this.renderTask,
+                                this.renderExistingTask(),
                             )}
                         </div>
                     </SectionComponent>
@@ -62,7 +73,7 @@ export default class TeamComponent extends Component<IProps> {
                     <SectionComponent title={'Delivered'}>
                         <div className={styles.TaskList}>
                             {this.props.teamStatus.deliveredTasks.map(
-                                this.renderTask,
+                                this.renderExistingTask(),
                             )}
                         </div>
                     </SectionComponent>
@@ -71,20 +82,37 @@ export default class TeamComponent extends Component<IProps> {
         );
     }
 
-    private renderTask = (task: Task): ReactElement => {
-        return (
-            <div key={task.id}>
-                <TaskComponent
-                    task={task}
-                    onTaskDetailClick={this.onTaskDetailClick}
-                    onDeleteTaskClick={this.onDeleteTaskClick}
-                />
-            </div>
+    private renderNewTask = (): ((task: Task) => ReactElement) => {
+        return this.renderTask(
+            true,
+            this.props.onCreateTask,
+            this.props.onNewTaskChange,
         );
     };
 
-    private onTaskDetailClick = (taskId: number) => {
-        this.props.onViewTaskDetailClick?.call(this, taskId);
+    private renderExistingTask = (): ((task: Task) => ReactElement) => {
+        return this.renderTask(false, this.props.onUpdateTask);
+    };
+
+    private renderTask = (
+        isEditing: boolean,
+        onTaskFinishEditing?: (task: Task) => void,
+        onTaskChange?: (task: Task) => void,
+    ): ((task: Task) => ReactElement) => {
+        return (task: Task) => {
+            return (
+                <div key={task.id}>
+                    <TaskComponent
+                        task={task}
+                        isEditing={isEditing}
+                        onTaskDetailClick={this.props.onViewTaskDetailClick}
+                        onTaskChanged={onTaskChange}
+                        onTaskFinishEditing={onTaskFinishEditing}
+                        onDeleteTaskClick={this.onDeleteTaskClick}
+                    />
+                </div>
+            );
+        };
     };
 
     private onDeleteTaskClick = (taskId: number) => {
