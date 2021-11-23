@@ -18,12 +18,17 @@ export interface OnTaskDetailClick {
     (taskId: number): void;
 }
 
+export interface OnDeleteTaskClick {
+    (taskId: number): void;
+}
+
 interface IProps {
     task: Task;
     isEditing?: boolean;
     onTaskDetailClick?: OnTaskDetailClick;
     onTaskChanged?: (task: Task) => void;
     onTaskFinishEditing?: (task: Task) => void;
+    onDeleteTaskClick?: OnDeleteTaskClick;
 }
 
 interface IState {
@@ -66,9 +71,12 @@ export default class TaskComponent extends Component<IProps, IState> {
         );
     }
 
-    private static renderDeleteTask(): ReactElement {
+    private renderDeleteTask(): ReactElement {
         return (
-            <span className={styles.DeleteTaskIcon}>
+            <span
+                className={styles.DeleteTaskIcon}
+                onClick={this.onDeleteTaskClick}
+            >
                 <MaterialIconComponent>remove_circle</MaterialIconComponent>
             </span>
         );
@@ -118,7 +126,6 @@ export default class TaskComponent extends Component<IProps, IState> {
                 value={this.state.task.goal}
                 onChange={this.onGoalChange}
                 onKeyDown={this.onGoalKeyDown}
-                onBlur={this.onGoalTextFieldBlur}
             />
         ) : (
             <div className={styles.Goal}>{this.state.task.goal}</div>
@@ -147,7 +154,7 @@ export default class TaskComponent extends Component<IProps, IState> {
             case TaskAction.AssignOwner:
                 return TaskComponent.renderAssignOwner();
             case TaskAction.Delete:
-                return TaskComponent.renderDeleteTask();
+                return this.renderDeleteTask();
             case TaskAction.ViewDetail:
                 return this.renderTaskDetail();
         }
@@ -185,10 +192,6 @@ export default class TaskComponent extends Component<IProps, IState> {
         this.props.onTaskChanged?.call(this, task);
     };
 
-    private onGoalTextFieldBlur = (): void => {
-        this.finishEditing();
-    };
-
     private finishEditing() {
         this.setState({
             isEditing: false,
@@ -197,6 +200,10 @@ export default class TaskComponent extends Component<IProps, IState> {
     }
 
     private onTaskDetailClick = (): void => {
-        this.props.onTaskDetailClick?.call(this, this.state.task.id);
+        this.props.onTaskDetailClick?.call(null, this.props.task.id);
+    };
+
+    private onDeleteTaskClick = (): void => {
+        this.props.onDeleteTaskClick?.call(null, this.props.task.id);
     };
 }

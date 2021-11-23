@@ -31,6 +31,7 @@ interface IProps {
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
+    onDeleteTaskClick?: (taskId: number) => void;
 }
 
 class ExecutionComponent extends Component<IProps> {
@@ -54,13 +55,14 @@ class ExecutionComponent extends Component<IProps> {
                             <PersonalComponent
                                 personalStatus={this.props.personalStatus}
                                 taskAdding={this.props.taskAdding}
+                                onAddClick={this.props.onPersonalAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
                                 }
-                                onAddClick={this.props.onPersonalAddClick}
                                 onNewTaskChange={this.props.onNewTaskChange}
                                 onCreateTask={this.props.onCreateTask}
                                 onUpdateTask={this.props.onUpdateTask}
+                                onDeleteTaskClick={this.props.onDeleteTaskClick}
                             />
                         </Route>
                     </Switch>
@@ -69,13 +71,14 @@ class ExecutionComponent extends Component<IProps> {
                             <TeamComponent
                                 teamStatus={this.props.teamStatus}
                                 taskAdding={this.props.taskAdding}
+                                onAddClick={this.props.onTeamAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
                                 }
-                                onAddClick={this.props.onTeamAddClick}
                                 onNewTaskChange={this.props.onNewTaskChange}
                                 onCreateTask={this.props.onCreateTask}
                                 onUpdateTask={this.props.onUpdateTask}
+                                onDeleteTaskClick={this.props.onDeleteTaskClick}
                             />
                         </Route>
                     </Switch>
@@ -140,6 +143,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
                 onNewTaskChange={this.onNewTaskChange}
                 onCreateTask={this.onCreateTask}
                 onUpdateTask={this.onUpdateTask}
+                onDeleteTaskClick={this.onDeleteTaskClick}
                 onPersonalAddClick={this.onPersonalAddClick}
                 onTeamAddClick={this.onTeamAddClick}
             />
@@ -155,19 +159,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
             });
         });
 
-        const personalStatus =
-            await this.props.executionModeService.fetchPersonalStatus();
-        if (personalStatus) {
-            store.dispatch(updatePersonalStatus(personalStatus));
-        }
-
-        const teamStatus =
-            await this.props.executionModeService.fetchTeamStatus();
-
-        // TODO: replace with error handling once Identity module is checked in
-        if (teamStatus) {
-            store.dispatch(updateTeamStatus(teamStatus));
-        }
+        await this.refreshExecutionStatus();
     }
 
     public componentWillUnmount() {
@@ -199,6 +191,11 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
         console.log('onUpdateTask');
     };
 
+    private onDeleteTaskClick = async (taskId: number): Promise<void> => {
+        await this.props.taskService.deleteTask(taskId);
+        await this.refreshExecutionStatus();
+    };
+
     private onPersonalAddClick = () => {
         console.log('onPersonalAddClick');
         // TODO: fetch user ID from user service
@@ -222,6 +219,21 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
             },
         });
     };
+
+    private async refreshExecutionStatus() {
+        const personalStatus =
+            await this.props.executionModeService.fetchPersonalStatus();
+        if (personalStatus) {
+            store.dispatch(updatePersonalStatus(personalStatus));
+        }
+
+        const teamStatus =
+            await this.props.executionModeService.fetchTeamStatus();
+
+        if (teamStatus) {
+            store.dispatch(updateTeamStatus(teamStatus));
+        }
+    }
 }
 
 interface IHookProps {

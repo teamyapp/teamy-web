@@ -1,7 +1,10 @@
 import React, { Component, ReactElement } from 'react';
 import Task from '../../../entity/Task';
 import TeamStatus from '../../../entity/TeamStatus';
-import TaskComponent, { OnTaskDetailClick } from '../../shared/Task.component';
+import TaskComponent, {
+    OnDeleteTaskClick,
+    OnTaskDetailClick,
+} from '../../shared/Task.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Team.component.module.scss';
@@ -14,6 +17,7 @@ interface IProps {
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
+    onDeleteTaskClick?: OnDeleteTaskClick;
 }
 
 export default class TeamComponent extends Component<IProps> {
@@ -104,9 +108,14 @@ export default class TeamComponent extends Component<IProps> {
                         onTaskDetailClick={this.props.onViewTaskDetailClick}
                         onTaskChanged={onTaskChange}
                         onTaskFinishEditing={onTaskFinishEditing}
+                        onDeleteTaskClick={this.onDeleteTaskClick}
                     />
                 </div>
             );
         };
+    };
+
+    private onDeleteTaskClick = (taskId: number) => {
+        this.props.onDeleteTaskClick?.call(this, taskId);
     };
 }
