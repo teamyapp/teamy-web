@@ -10,9 +10,14 @@ export interface OnTaskDetailClick {
     (taskId: number): void;
 }
 
+export interface OnDeleteTaskClick {
+    (taskId: number): void;
+}
+
 interface IProps {
     task: Task;
     onTaskDetailClick?: OnTaskDetailClick;
+    onDeleteTaskClick?: OnDeleteTaskClick;
 }
 
 export default class TaskComponent extends Component<IProps> {
@@ -42,9 +47,12 @@ export default class TaskComponent extends Component<IProps> {
         );
     }
 
-    private static renderDeleteTask(): ReactElement {
+    private renderDeleteTask(): ReactElement {
         return (
-            <span className={styles.DeleteTaskIcon}>
+            <span
+                className={styles.DeleteTaskIcon}
+                onClick={this.onDeleteTaskClick}
+            >
                 <MaterialIconComponent>remove_circle</MaterialIconComponent>
             </span>
         );
@@ -107,7 +115,7 @@ export default class TaskComponent extends Component<IProps> {
             case TaskAction.AssignOwner:
                 return TaskComponent.renderAssignOwner();
             case TaskAction.Delete:
-                return TaskComponent.renderDeleteTask();
+                return this.renderDeleteTask();
             case TaskAction.ViewDetail:
                 return this.renderTaskDetail();
         }
@@ -126,6 +134,10 @@ export default class TaskComponent extends Component<IProps> {
     }
 
     private onTaskDetailClick = (): void => {
-        this.props.onTaskDetailClick?.call(this, this.props.task.id);
+        this.props.onTaskDetailClick?.call(null, this.props.task.id);
+    };
+
+    private onDeleteTaskClick = (): void => {
+        this.props.onDeleteTaskClick?.call(null, this.props.task.id);
     };
 }

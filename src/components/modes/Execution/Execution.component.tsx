@@ -26,6 +26,7 @@ interface IProps {
     onViewTaskDetailClick?: (taskId: number) => void;
     onPersonalAddClick?: () => void;
     onTeamAddClick?: () => void;
+    onDeleteTaskClick?: (taskId: number) => void;
 }
 
 class ExecutionComponent extends Component<IProps> {
@@ -48,10 +49,11 @@ class ExecutionComponent extends Component<IProps> {
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalComponent
                                 personalStatus={this.props.personalStatus}
+                                onAddClick={this.props.onPersonalAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
                                 }
-                                onAddClick={this.props.onPersonalAddClick}
+                                onDeleteTaskClick={this.props.onDeleteTaskClick}
                             />
                         </Route>
                     </Switch>
@@ -59,10 +61,11 @@ class ExecutionComponent extends Component<IProps> {
                         <Route path={`${this.props.routerUrl}team`}>
                             <TeamComponent
                                 teamStatus={this.props.teamStatus}
+                                onAddClick={this.props.onTeamAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
                                 }
-                                onAddClick={this.props.onTeamAddClick}
+                                onDeleteTaskClick={this.props.onDeleteTaskClick}
                             />
                         </Route>
                     </Switch>
@@ -121,6 +124,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
                 personalStatus={this.state.personalStatus}
                 teamStatus={this.state.teamStatus}
                 onViewTaskDetailClick={this.onViewTaskDetailClick}
+                onDeleteTaskClick={this.onDeleteTaskClick}
                 onPersonalAddClick={this.onPersonalAddClick}
                 onTeamAddClick={this.onTeamAddClick}
             />
@@ -136,19 +140,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
             });
         });
 
-        const personalStatus =
-            await this.props.executionModeService.fetchPersonalStatus();
-        if (personalStatus) {
-            store.dispatch(updatePersonalStatus(personalStatus));
-        }
-
-        const teamStatus =
-            await this.props.executionModeService.fetchTeamStatus();
-
-        // TODO: replace with error handling once Identity module is checked in
-        if (teamStatus) {
-            store.dispatch(updateTeamStatus(teamStatus));
-        }
+        await this.refreshExecutionStatus();
     }
 
     public componentWillUnmount() {
@@ -160,6 +152,11 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
         this.executionComponentRef.current?.showTaskDetail(task);
     };
 
+    private onDeleteTaskClick = async (taskId: number): Promise<void> => {
+        await this.props.taskService.deleteTask(taskId);
+        await this.refreshExecutionStatus();
+    };
+
     private onPersonalAddClick = () => {
         console.log('onPersonalAddClick');
     };
@@ -167,6 +164,21 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
     private onTeamAddClick = () => {
         console.log('onTeamAddClick');
     };
+
+    private async refreshExecutionStatus() {
+        const personalStatus =
+            await this.props.executionModeService.fetchPersonalStatus();
+        if (personalStatus) {
+            store.dispatch(updatePersonalStatus(personalStatus));
+        }
+
+        const teamStatus =
+            await this.props.executionModeService.fetchTeamStatus();
+
+        if (teamStatus) {
+            store.dispatch(updateTeamStatus(teamStatus));
+        }
+    }
 }
 
 interface IHookProps {

@@ -36,4 +36,15 @@ query getTask($id: ID!) {
                 return payload?.task;
             });
     }
+
+    public deleteTask(taskId: number): Promise<boolean> {
+        return this.graphQLClient.query<boolean>(
+            `
+mutation deleteTask($id: ID!) {
+  deleteTask(taskId: $id)
+}
+`,
+            { id: taskId },
+        );
+    }
 }
