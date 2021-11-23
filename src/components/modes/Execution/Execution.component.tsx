@@ -140,7 +140,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
             });
         });
 
-        await this.refreshTeamAndPersonalStatus();
+        await this.refreshExecutionStatus();
     }
 
     public componentWillUnmount() {
@@ -154,7 +154,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.taskService.deleteTask(taskId);
-        await this.refreshTeamAndPersonalStatus();
+        await this.refreshExecutionStatus();
     };
 
     private onPersonalAddClick = () => {
@@ -165,7 +165,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
         console.log('onTeamAddClick');
     };
 
-    private async refreshTeamAndPersonalStatus() {
+    private async refreshExecutionStatus() {
         const personalStatus =
             await this.props.executionModeService.fetchPersonalStatus();
         if (personalStatus) {
@@ -175,7 +175,6 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
         const teamStatus =
             await this.props.executionModeService.fetchTeamStatus();
 
-        // TODO: replace with error handling once Identity module is checked in
         if (teamStatus) {
             store.dispatch(updateTeamStatus(teamStatus));
         }
