@@ -1,4 +1,10 @@
-import { ChangeEvent, Component, createRef, ReactElement } from 'react';
+import {
+    ChangeEvent,
+    KeyboardEvent,
+    Component,
+    createRef,
+    ReactElement,
+} from 'react';
 import Task from '../../entity/Task';
 import { TaskAction } from '../../entity/TaskAction';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
@@ -111,6 +117,7 @@ export default class TaskComponent extends Component<IProps, IState> {
                 className={styles.GoalTextField}
                 value={this.state.task.goal}
                 onChange={this.onGoalChange}
+                onKeyDown={this.onGoalKeyDown}
                 onBlur={this.onGoalTextFieldBlur}
             />
         ) : (
@@ -158,6 +165,16 @@ export default class TaskComponent extends Component<IProps, IState> {
             });
     }
 
+    private onGoalKeyDown = (
+        event: KeyboardEvent<HTMLTextAreaElement>,
+    ): void => {
+        switch (event.key) {
+            case 'Escape':
+                this.finishEditing();
+                return;
+        }
+    };
+
     private onGoalChange = (event: ChangeEvent<HTMLTextAreaElement>): void => {
         const task = Object.assign({}, this.state.task, {
             goal: event.target.value,
@@ -169,11 +186,15 @@ export default class TaskComponent extends Component<IProps, IState> {
     };
 
     private onGoalTextFieldBlur = (): void => {
+        this.finishEditing();
+    };
+
+    private finishEditing() {
         this.setState({
             isEditing: false,
         });
         this.props.onTaskFinishEditing?.call(this, this.state.task);
-    };
+    }
 
     private onTaskDetailClick = (): void => {
         this.props.onTaskDetailClick?.call(this, this.state.task.id);
