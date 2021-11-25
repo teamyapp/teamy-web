@@ -18,34 +18,10 @@ trigger:
 ---
 kind: pipeline
 type: kubernetes
-name: staging
-
-steps:
-  - name: Build Docker image
-    image: plugins/docker
-    settings:
-      username:
-        from_secret: DOCKER_USERNAME
-      password:
-        from_secret: DOCKER_PASSWORD
-      repo: registry.digitalocean.com/teamyapp/teamy-web-staging
-      registry: registry.digitalocean.com
-      target: production
-      build_args:
-        - ENVIRONMENT=staging
-trigger:
-  branch:
-    - master
-    - main
-  event:
-    - push
----
-kind: pipeline
-type: kubernetes
 name: testing
 
 steps:
-  - name: build image
+  - name: build & publish Docker image
     image: plugins/docker
     settings:
       username:
@@ -57,6 +33,15 @@ steps:
       target: production
       build_args:
         - ENVIRONMENT=testing
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web-testing",
+          "tag": "latest"
+        }
 trigger:
   branch:
     - testing
@@ -65,10 +50,44 @@ trigger:
 ---
 kind: pipeline
 type: kubernetes
+name: staging
+
+steps:
+  - name: build & publish Docker image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      repo: registry.digitalocean.com/teamyapp/teamy-web-staging
+      registry: registry.digitalocean.com
+      target: production
+      build_args:
+        - ENVIRONMENT=staging
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      content_type: application/json
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web-staging",
+          "tag": "latest"
+        }
+trigger:
+  branch:
+    - master
+    - main
+  event:
+    - push
+---
+kind: pipeline
+type: kubernetes
 name: production
 
 steps:
-  - name: build image
+  - name: build & publish Docker image
     image: plugins/docker
     settings:
       username:
@@ -80,6 +99,15 @@ steps:
       target: production
       build_args:
         - ENVIRONMENT=production
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web",
+          "tag": "latest"
+        }
 trigger:
   branch:
     - production
