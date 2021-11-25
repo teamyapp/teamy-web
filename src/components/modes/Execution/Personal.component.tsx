@@ -4,6 +4,7 @@ import Task from '../../../entity/Task';
 import TaskComponent, {
     OnTaskDetailClick,
     OnDeleteTaskClick,
+    OnStartTaskClick,
 } from '../../shared/Task.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
@@ -18,6 +19,7 @@ interface IProps {
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
     onDeleteTaskClick?: OnDeleteTaskClick;
+    onStartTaskClick?: OnStartTaskClick;
 }
 
 export default class PersonalComponent extends Component<IProps> {
@@ -108,6 +110,7 @@ export default class PersonalComponent extends Component<IProps> {
                         onTaskChanged={onTaskChange}
                         onTaskFinishEditing={onTaskFinishEditing}
                         onDeleteTaskClick={this.props.onDeleteTaskClick}
+                        onStartTaskClick={this.props.onStartTaskClick}
                     />
                 </div>
             );

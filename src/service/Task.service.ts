@@ -47,4 +47,15 @@ mutation deleteTask($id: ID!) {
             { id: taskId },
         );
     }
+
+    public startTask(taskId: number): Promise<boolean> {
+        return this.graphQLClient.query<boolean>(
+            `
+mutation startTask($id: ID!) {
+  startTask(taskId: $id)
+}
+`,
+            { id: taskId },
+        );
+    }
 }

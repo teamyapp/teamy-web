@@ -22,6 +22,10 @@ export interface OnDeleteTaskClick {
     (taskId: number): void;
 }
 
+export interface OnStartTaskClick {
+    (taskId: number): void;
+}
+
 interface IProps {
     task: Task;
     isEditing?: boolean;
@@ -29,6 +33,7 @@ interface IProps {
     onTaskChanged?: (task: Task) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: OnDeleteTaskClick;
+    onStartTaskClick?: OnStartTaskClick;
 }
 
 interface IState {
@@ -47,14 +52,6 @@ export default class TaskComponent extends Component<IProps, IState> {
         };
     }
 
-    private static renderStartTask(): ReactElement {
-        return (
-            <span className={styles.StartTaskIcon}>
-                <MaterialIconComponent>play_arrow</MaterialIconComponent>
-            </span>
-        );
-    }
-
     private static renderMarkTaskCompleted(): ReactElement {
         return (
             <span className={styles.TaskCompletedIcon}>
@@ -67,6 +64,17 @@ export default class TaskComponent extends Component<IProps, IState> {
         return (
             <span className={styles.MarkTaskBlockIcon}>
                 <MaterialIconComponent>report</MaterialIconComponent>
+            </span>
+        );
+    }
+
+    private renderStartTask(): ReactElement {
+        return (
+            <span
+                className={styles.StartTaskIcon}
+                onClick={this.onStartTaskClick}
+            >
+                <MaterialIconComponent>play_arrow</MaterialIconComponent>
             </span>
         );
     }
@@ -147,7 +155,7 @@ export default class TaskComponent extends Component<IProps, IState> {
     private renderAction(action: TaskAction): ReactElement {
         switch (action) {
             case TaskAction.Start:
-                return TaskComponent.renderStartTask();
+                return this.renderStartTask();
             case TaskAction.MarkComplete:
                 return TaskComponent.renderMarkTaskCompleted();
             case TaskAction.ReportBlocked:
@@ -206,5 +214,9 @@ export default class TaskComponent extends Component<IProps, IState> {
 
     private onDeleteTaskClick = (): void => {
         this.props.onDeleteTaskClick?.call(null, this.props.task.id);
+    };
+
+    private onStartTaskClick = (): void => {
+        this.props.onStartTaskClick?.call(null, this.props.task.id);
     };
 }
