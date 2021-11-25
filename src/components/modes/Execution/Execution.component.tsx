@@ -32,6 +32,7 @@ interface IProps {
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
+    onStartTaskClick?: (taskId: number) => void;
 }
 
 class ExecutionComponent extends Component<IProps> {
@@ -63,6 +64,7 @@ class ExecutionComponent extends Component<IProps> {
                                 onCreateTask={this.props.onCreateTask}
                                 onUpdateTask={this.props.onUpdateTask}
                                 onDeleteTaskClick={this.props.onDeleteTaskClick}
+                                onStartTaskClick={this.props.onStartTaskClick}
                             />
                         </Route>
                     </Switch>
@@ -79,6 +81,7 @@ class ExecutionComponent extends Component<IProps> {
                                 onCreateTask={this.props.onCreateTask}
                                 onUpdateTask={this.props.onUpdateTask}
                                 onDeleteTaskClick={this.props.onDeleteTaskClick}
+                                onStartTaskClick={this.props.onStartTaskClick}
                             />
                         </Route>
                     </Switch>
@@ -144,6 +147,7 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
                 onCreateTask={this.onCreateTask}
                 onUpdateTask={this.onUpdateTask}
                 onDeleteTaskClick={this.onDeleteTaskClick}
+                onStartTaskClick={this.onStartTaskClick}
                 onPersonalAddClick={this.onPersonalAddClick}
                 onTeamAddClick={this.onTeamAddClick}
             />
@@ -193,6 +197,11 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.taskService.deleteTask(taskId);
+        await this.refreshExecutionStatus();
+    };
+
+    private onStartTaskClick = async (taskId: number): Promise<void> => {
+        await this.props.taskService.startTask(taskId);
         await this.refreshExecutionStatus();
     };
 
