@@ -21,7 +21,7 @@ type: kubernetes
 name: staging
 
 steps:
-  - name: Build Docker image
+  - name: build & publish Docker image
     image: plugins/docker
     settings:
       username:
@@ -33,6 +33,16 @@ steps:
       target: production
       build_args:
         - ENVIRONMENT=staging
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      content_type: application/json
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web-staging",
+          "tag": "latest"
+        }
 trigger:
   branch:
     - master
@@ -45,7 +55,7 @@ type: kubernetes
 name: testing
 
 steps:
-  - name: build image
+  - name: build & publish Docker image
     image: plugins/docker
     settings:
       username:
@@ -57,6 +67,15 @@ steps:
       target: production
       build_args:
         - ENVIRONMENT=testing
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web-testing",
+          "tag": "latest"
+        }
 trigger:
   branch:
     - testing
@@ -68,7 +87,7 @@ type: kubernetes
 name: production
 
 steps:
-  - name: build image
+  - name: build & publish Docker image
     image: plugins/docker
     settings:
       username:
@@ -80,6 +99,15 @@ steps:
       target: production
       build_args:
         - ENVIRONMENT=production
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web",
+          "tag": "latest"
+        }
 trigger:
   branch:
     - production
