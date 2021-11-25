@@ -85,6 +85,14 @@ $actionIconSize: 28px;
             }
         }
     }
+    .IdRow {
+        .Id {
+            background-color: #d6f0ff;
+            font-weight: 500;
+            padding: 2px 10px;
+        }
+        margin-bottom: 6px;
+    }
 }
 
 .StartTaskIcon {
