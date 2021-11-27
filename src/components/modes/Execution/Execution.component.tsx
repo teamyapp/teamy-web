@@ -117,7 +117,10 @@ interface IContainerState {
     taskAdding?: Task;
 }
 
-class StatefulComponent extends Component<IContainerProps, IContainerState> {
+class StatefulExecutionComponent extends Component<
+    IContainerProps,
+    IContainerState
+> {
     private executionComponentRef: RefObject<ExecutionComponent> =
         createRef<ExecutionComponent>();
     private unsubscribe?: Unsubscribe;
@@ -254,7 +257,7 @@ export default function ExecutionComponentHook(props: IHookProps) {
     const { url } = useRouteMatch();
     const routerHistory = useHistory();
     return (
-        <StatefulComponent
+        <StatefulExecutionComponent
             taskService={props.taskService}
             executionModeService={props.executionModeService}
             routerUrl={url}

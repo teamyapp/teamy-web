@@ -19,19 +19,21 @@ export class GraphQLClient {
             variables: variables,
         };
 
-        const result = await this.httpClient.request(this.graphQLEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
+        const [payload, error] = await this.httpClient.request(
+            this.graphQLEndpoint,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body),
             },
-            body: JSON.stringify(body),
-        });
-        if (result.error) {
+        );
+        if (error) {
             // TODO: handle error correctly
             return null;
         }
-
-        const json: GQLJSONResponse<Payload> = JSON.parse(result.value!);
-        return json.data;
+        const json: GQLJSONResponse<Payload> = JSON.parse(payload!);
+        return json?.data;
     }
 }

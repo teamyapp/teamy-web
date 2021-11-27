@@ -1,118 +1,92 @@
-import { Channel, PutChannel, select } from '@creatcodebuild/csp';
+import { chan, Channel, PutChannel, select } from '@creatcodebuild/csp';
 import Cookies from 'js-cookie';
 import { Environment } from '../env/environment';
 import { Errors } from '../ext/errors';
 import { Result } from '../ext/result';
+import { HTTPClient } from '../network/HTTP.client';
 import { IChannel } from '../network/IChannel';
 import { WebSocketChannel } from '../network/WebSocketChannel';
 import { Config, getConfig } from './config';
 
 const accessTokenKey = 'accessToken';
 
-enum MessageType {
-    ChannelReady,
-    InitChannel,
-}
-
-interface Message {
-    type: MessageType;
-    payload: any;
-}
-
 export class IdentityClient {
     private readonly config: Config;
+    private readonly webSocketBaseEndpoint: string;
+    private readonly httpBaseEndpoint: string;
+    private readonly httpClient: HTTPClient;
+    private readonly onShowSignInOptionsCh: Channel<null> = chan();
+    private readonly onShowSignInResultCh: Channel<Errors> = chan();
     private channel?: IChannel;
 
-    constructor(env: Environment) {
+    constructor(env: Environment, httpClient: HTTPClient) {
         this.config = getConfig(env);
+        this.webSocketBaseEndpoint = `${this.config.webSocketProtocol}://${this.config.apiBaseEndpoint}`;
+        this.httpBaseEndpoint = `${this.config.httpProtocol}://${this.config.apiBaseEndpoint}`;
+        this.httpClient = httpClient;
     }
 
     public getAccessToken(): string {
         return Cookies.get(accessTokenKey) || '';
     }
 
-    public isSignedIn(): boolean {
+    public async isSignedIn(): Promise<boolean> {
         const accessToken = this.getAccessToken();
         if (accessToken == null || accessToken.length === 0) {
             return false;
         }
-        return this.verifyIdentity(accessToken);
+        return this.verifyToken(accessToken);
     }
 
-    public async trySignIn(): Promise<Errors | undefined> {
-        let result: Result<string, Errors>;
+    public async prepareSignIn(): Promise<Result<number, Errors>> {
+        let error = null;
 
-        while (true) {
-            const clientId = this.getClientId();
-            result = await this.waitForAccessToken(clientId);
-            if (!result.error) {
-                break;
+        for (let retry = 0; retry < 5; retry++) {
+            let sessionId: number | null;
+            [sessionId, error] = await this.getSessionId();
+            if (error) {
+                continue;
             }
 
-            switch (result.error as Errors) {
-                case Errors.ClientIdInUse:
-                    continue;
-                default:
-                    return result.error;
-            }
+            this.channel = await this.getChannel(sessionId!);
+            return [sessionId, null];
         }
-
-        const accessToken = result.value!;
-        this.saveAccessToken(accessToken);
-        return result.error;
+        return [null, error];
     }
 
-    private async waitForAccessToken(
-        clientId: number,
-    ): Promise<Result<string, Errors>> {
-        const { value, error } = await this.getChannel(clientId);
-        if (error) {
-            return {
-                error,
-            };
-        }
-        this.channel = value!;
-        return readMessage(
-            this.channel.onMessageReceived(),
-            this.channel.onError(),
+    public tryOAuthSignIn(oauthProvider: string, sessionID: number): void {
+        const oauthURL = new URL(
+            `${this.httpBaseEndpoint}/sign-in/oauth/${oauthProvider}`,
         );
+        oauthURL.searchParams.set('session-id', `${sessionID}`);
+        window.open(oauthURL.href);
     }
 
-    private async getChannel(
-        clientId: number,
-    ): Promise<Result<IChannel, Errors>> {
+    public async waitForSignFinish(): Promise<Errors | null> {
+        const [accessToken, error] = await readMessage(
+            this.channel!.onMessageReceived(),
+            this.channel!.onError(),
+        );
+        if (!error) {
+            this.saveAccessToken(accessToken!);
+        }
+        return error;
+    }
+
+    public onShowSignInOptions(): Channel<null> {
+        return this.onShowSignInOptionsCh;
+    }
+
+    public onShowSignInResult(): Channel<Errors> {
+        return this.onShowSignInResultCh;
+    }
+
+    private async getChannel(sessionId: number): Promise<IChannel> {
         const channel: IChannel = new WebSocketChannel(
-            `${this.config.apiBaseUrl}/channel`,
+            `${this.webSocketBaseEndpoint}/sign-in/session/${sessionId}/subscribe`,
         );
         await channel.open();
-
-        const onMessageReceived = channel.onMessageReceived();
-        const onError = channel.onError();
-        const initMessage: Message = {
-            type: MessageType.InitChannel,
-            payload: clientId,
-        };
-        channel.sendMessage(JSON.stringify(initMessage));
-
-        const { value, error } = await readMessage(onMessageReceived, onError);
-        if (error) {
-            return {
-                error: error,
-            };
-        }
-
-        const rawMessage = value!;
-        const message: Message = JSON.parse(rawMessage);
-        if (message.type === MessageType.ChannelReady) {
-            return {
-                value: channel,
-            };
-        } else {
-            channel.close();
-            return {
-                error: Errors.ClientIdInUse,
-            };
-        }
+        return channel;
     }
 
     private saveAccessToken(accessToken: string): void {
@@ -122,14 +96,28 @@ export class IdentityClient {
         });
     }
 
-    private verifyIdentity(accessToken: string): boolean {
-        // TODO: fill in when backend is ready
-        return false;
+    private async verifyToken(accessToken: string): Promise<boolean> {
+        const result = await this.httpClient.request(
+            `${this.httpBaseEndpoint}/identity/verify-token`,
+            {
+                method: 'POST',
+                body: accessToken,
+            },
+        );
+        return !result[1];
     }
 
-    private getClientId(): number {
-        // TODO: fill in when backend is ready
-        return 0;
+    private async getSessionId(): Promise<Result<number, Errors>> {
+        let [sessionID, error] = await this.httpClient.request(
+            `${this.httpBaseEndpoint}/sign-in/session/new`,
+            {
+                method: 'GET',
+            },
+        );
+        if (error) {
+            return [null, error];
+        }
+        return [parseInt(sessionID!), null];
     }
 
     public dispose() {
@@ -145,13 +133,13 @@ function readMessage(
         [
             messageChan as Channel<string | undefined>,
             async (token: string) => {
-                return { value: token };
+                return [token, null];
             },
         ],
         [
             errorChan as Channel<Errors | undefined>,
             async (error: Errors) => {
-                return { error };
+                return [null, error];
             },
         ],
     ]);
