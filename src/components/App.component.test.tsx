@@ -1,8 +1,9 @@
-import { render, screen } from '@testing-library/react';
+import React from 'react';
+import { render } from '@testing-library/react';
 import { initDeps } from '../deps';
 import AppComponentContainer from './App.component';
 
-test('renders Teamy logo', () => {
+test('renders without crash', () => {
     const deps = initDeps();
     render(
         <AppComponentContainer
@@ -10,6 +11,4 @@ test('renders Teamy logo', () => {
             executionModeService={deps.executionModeService}
         />,
     );
-    const linkElement = screen.getByText(/Teamy/i);
-    expect(linkElement).toBeInTheDocument();
 });
