@@ -1,8 +1,8 @@
-import {
+import React, {
     ChangeEvent,
-    KeyboardEvent,
     Component,
     createRef,
+    KeyboardEvent,
     ReactElement,
 } from 'react';
 import Task from '../../entity/Task';
@@ -98,7 +98,13 @@ export default class TaskComponent extends Component<IProps, IState> {
         return (
             <div ref={this.ref} className={styles.Task}>
                 <div className={styles.LeftSection}>
-                    {this.props.task.id > 0 && <div className={styles.IdRow}><span className={styles.Id}>#{this.props.task.id}</span></div>}
+                    {this.props.task.id > 0 && (
+                        <div className={styles.IdRow}>
+                            <span className={styles.Id}>
+                                #{this.props.task.id}
+                            </span>
+                        </div>
+                    )}
                     {this.renderGoal()}
                     {this.state.task.dueAt && (
                         <div className={styles.DueAt}>
