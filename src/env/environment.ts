@@ -12,7 +12,7 @@ export function getEnvironment(): Environment {
     );
 }
 
-export function getEnvConfig(variable: string): string {
-    const config = process.env.config as any;
-    return config[variable] || '';
+export function getEnvVar(variable: string): string {
+    const variables = process.env.variables as any;
+    return variables[variable] || '';
 }

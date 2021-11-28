@@ -1,5 +1,5 @@
 const CracoSwcPlugin = require('craco-swc');
-const { DefinePlugin } = require("webpack");
+const { DefinePlugin } = require('webpack');
 const childProcess = require('child_process');
 
 const gitShortCommitHash = childProcess
@@ -8,7 +8,7 @@ const gitShortCommitHash = childProcess
     .trim();
 
 const gitLongCommitHash = childProcess
-    .execSync('git rev-parse --short HEAD')
+    .execSync('git rev-parse HEAD')
     .toString()
     .trim();
 
@@ -20,7 +20,7 @@ module.exports = {
                     GIT_SHORT_COMMIT_HASH: gitShortCommitHash,
                     GIT_LONG_COMMIT_HASH: gitLongCommitHash,
                 }),
-            })
+            }),
         ],
         configure: (webpackConfig) => {
             return webpackConfig;

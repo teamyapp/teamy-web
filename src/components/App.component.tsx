@@ -5,6 +5,7 @@ import { ExecutionModeService } from '../service/ExecutionMode.service';
 import { TaskService } from '../service/Task.service';
 import store from '../store/store';
 import styles from './App.component.module.scss';
+import { DebugComponent } from './Debug.component';
 import DrawerComponent from './Drawer.component';
 import ExecutionComponentHook from './modes/Execution/Execution.component';
 import MaterialIconComponent from './ui/MaterialIcon.component';
@@ -31,7 +32,10 @@ export class AppComponent extends Component<IProps, IState> {
             <div className={styles.App}>
                 <Switch>
                     <Route path={'/debug'}>
-                        ++++
+                        <DebugComponent
+                            repoOwner={'teamyapp'}
+                            repoName={'teamy-web'}
+                        />
                     </Route>
                     <Route path={'/'}>
                         <DrawerComponent
