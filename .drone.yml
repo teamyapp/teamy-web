@@ -6,7 +6,7 @@ steps:
   - name: Run unit tests
     image: node:16.13.0-alpine3.13
     commands:
-      - apk add --no-cache g++ make python3
+      - apk add --no-cache git g++ make python3
       - yarn install --frozen-lockfile
       - CI=true yarn test
 trigger:

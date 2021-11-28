@@ -1,0 +1,51 @@
+@import '../styleguide/color';
+@import '../styleguide/elevation';
+
+.Debug {
+    position: relative;
+    background-color: #424242;
+    display: flex;
+    height: 100%;
+    width: 100%;
+
+    .Card {
+        @include elevation(5);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        border-radius: 4px;
+        background-color: white;
+    }
+
+    .InfoCard {
+        padding: 40px;
+
+        .Title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 30px;
+            margin-bottom: 40px;
+        }
+
+        table,
+        th,
+        td {
+            border: 2px solid #004d40;
+        }
+
+        table {
+            td {
+                padding: 10px 20px;
+            }
+
+            .RowName {
+                font-weight: bold;
+                color: white;
+                background-color: #00695c;
+            }
+
+            border-collapse: collapse;
+        }
+    }
+}
