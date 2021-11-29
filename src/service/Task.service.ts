@@ -66,9 +66,11 @@ mutation createTask($taskInput: TaskInput!) {
   createTask (task: $taskInput)
 }
 `,
-            {taskInput:  Object.assign({}, task, {
-                    ownerUserId: `${task.ownerUserId}`
-                })}
+            {
+                taskInput: Object.assign({}, task, {
+                    ownerUserId: `${task.ownerUserId}`,
+                }),
+            },
         );
     }
 }

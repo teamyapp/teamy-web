@@ -83,7 +83,6 @@ export class AppComponent extends Component<IProps, IState> {
 }
 
 export default function AppComponentContainer(props: IProps): ReactElement {
-
     return (
         <Provider store={store}>
             <BrowserRouter>
