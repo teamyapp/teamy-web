@@ -181,9 +181,10 @@ class StatefulComponent extends Component<IContainerProps, IContainerState> {
         });
     };
 
-    private onCreateTask = (task: Task) => {
+    private onCreateTask = async (task: Task): Promise<void> => {
         if (task.goal.length > 0) {
-            console.log('onCreateTask');
+            await this.props.taskService.createTask(task);
+            await this.refreshExecutionStatus();
         }
 
         this.setState({

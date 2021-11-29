@@ -58,4 +58,19 @@ mutation startTask($id: ID!) {
             { id: taskId },
         );
     }
+
+    public createTask(task: Task): Promise<boolean> {
+        return this.graphQLClient.query<boolean>(
+            `
+mutation createTask($taskInput: TaskInput!) {
+  createTask (task: $taskInput)
+}
+`,
+            {
+                taskInput: Object.assign({}, task, {
+                    ownerUserId: `${task.ownerUserId}`,
+                }),
+            },
+        );
+    }
 }
