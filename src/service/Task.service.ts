@@ -22,6 +22,12 @@ query getTask($id: ID!) {
     goal
     dueAt
     context
+    owner {
+        id
+        firstName
+        lastName
+        profileUrl
+    }
     effort
     numOfUnknowns
     availableActions
@@ -70,7 +76,7 @@ mutation createTask($taskInput: TaskInput!) {
 `,
             {
                 taskInput: Object.assign({}, task, {
-                    ownerUserId: `${task.ownerUserId}`,
+                    ownerUserId: task.owner ? `${task.owner?.id}` : undefined,
                 }),
             },
         );
