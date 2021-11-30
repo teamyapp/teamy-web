@@ -1,4 +1,1 @@
-export interface Result<Value, Error> {
-    value?: Value;
-    error?: Error;
-}
+export type Result<Value, Error> = [Value | null, Error | null];

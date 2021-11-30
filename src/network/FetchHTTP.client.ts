@@ -2,6 +2,16 @@ import { Errors } from '../ext/errors';
 import { Result } from '../ext/result';
 import { HTTPClient } from './HTTP.client';
 
+const errors: { [httpError: number]: Errors } = {
+    400: Errors.BadRequest,
+    401: Errors.Unauthenticated,
+    404: Errors.NotFound,
+    408: Errors.RequestTimeOut,
+    500: Errors.ServerInternalError,
+    501: Errors.NotImplemented,
+    503: Errors.ServiceUnavailable,
+};
+
 export class FetchHTTPClient implements HTTPClient {
     async request(
         url: string,
@@ -20,19 +30,24 @@ export class FetchHTTPClient implements HTTPClient {
                 redirect: 'follow',
                 body: options?.body,
             })
-                .then((response) => {
-                    return response.text();
+                .then(async (response) => {
+                    if (response.status >= 400) {
+                        resolve([
+                            null,
+                            FetchHTTPClient.getError(response.status),
+                        ]);
+                        return null;
+                    } else {
+                        resolve([await response.text(), null]);
+                    }
                 })
-                .then((text) => {
-                    resolve({
-                        value: text,
-                    });
-                })
-                .catch((reason) => {
-                    resolve({
-                        error: Errors.ServiceUnavailable,
-                    });
+                .catch(() => {
+                    resolve([null, Errors.Unknown]);
                 });
         });
+    }
+
+    private static getError(httpStatusCode: number): Errors {
+        return errors[httpStatusCode] || Errors.Unknown;
     }
 }

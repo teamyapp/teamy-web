@@ -1,6 +1,11 @@
 export enum Errors {
     Unknown,
-    ClientIdInUse,
+    SessionIdInUse,
     RequestTimeOut,
+    BadRequest,
+    Unauthenticated,
+    NotFound,
     ServiceUnavailable,
+    ServerInternalError,
+    NotImplemented,
 }

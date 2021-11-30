@@ -50,7 +50,7 @@ export class DebugComponent extends Component<IProps, IState> {
                 },
                 {
                     name: 'Identity web API',
-                    value: getIdentityConfig(env).apiBaseUrl,
+                    value: getIdentityConfig(env).apiBaseEndpoint,
                 },
             ],
         });

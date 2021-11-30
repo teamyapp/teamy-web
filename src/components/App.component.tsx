@@ -1,8 +1,8 @@
 import React, { Component, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { ExecutionModeService } from '../service/ExecutionMode.service';
-import { TaskService } from '../service/Task.service';
+import { Deps } from '../deps';
+import { withIdentity } from '../identity/withIdentity';
 import store from '../store/store';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
@@ -11,8 +11,7 @@ import ExecutionComponentHook from './modes/Execution/Execution.component';
 import MaterialIconComponent from './ui/MaterialIcon.component';
 
 interface IProps {
-    taskService: TaskService;
-    executionModeService: ExecutionModeService;
+    deps: Deps;
 }
 
 interface IState {
@@ -27,7 +26,7 @@ export class AppComponent extends Component<IProps, IState> {
         };
     }
 
-    public render(): ReactElement {
+    public render() {
         return (
             <div className={styles.App}>
                 <Switch>
@@ -61,9 +60,11 @@ export class AppComponent extends Component<IProps, IState> {
                             <div className={styles.Execution}>
                                 {
                                     <ExecutionComponentHook
-                                        taskService={this.props.taskService}
+                                        taskService={
+                                            this.props.deps.taskService
+                                        }
                                         executionModeService={
-                                            this.props.executionModeService
+                                            this.props.deps.executionModeService
                                         }
                                     />
                                 }
@@ -82,14 +83,15 @@ export class AppComponent extends Component<IProps, IState> {
     };
 }
 
-export default function AppComponentContainer(props: IProps): ReactElement {
+export default function AppComponentHook(props: IProps): ReactElement {
+    const AppWithIdentity = withIdentity(
+        props.deps.identityClient,
+        AppComponent,
+    );
     return (
         <Provider store={store}>
             <BrowserRouter>
-                <AppComponent
-                    taskService={props.taskService}
-                    executionModeService={props.executionModeService}
-                />
+                <AppWithIdentity deps={props.deps} />
             </BrowserRouter>
         </Provider>
     );
