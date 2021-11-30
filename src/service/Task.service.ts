@@ -63,7 +63,9 @@ mutation startTask($id: ID!) {
         return this.graphQLClient.query<boolean>(
             `
 mutation createTask($taskInput: TaskInput!) {
-  createTask (task: $taskInput)
+  createTask (task: $taskInput) {
+    id
+  }
 }
 `,
             {
