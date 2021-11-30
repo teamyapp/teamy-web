@@ -1,16 +1,19 @@
-import {
+import classNames from 'classnames';
+import React, {
     ChangeEvent,
-    KeyboardEvent,
     Component,
     createRef,
+    KeyboardEvent,
     ReactElement,
 } from 'react';
 import Task from '../../entity/Task';
 import { TaskAction } from '../../entity/TaskAction';
+import { User } from '../../entity/User';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
 import NamedValueComponent from '../ui/NamedValue.component';
-import AssigneeComponent from './Assignee.component';
+import { SelectUserListComponent } from './SelectUserList.component';
 import styles from './Task.component.module.scss';
+import { UserProfile } from './UserProfile.component';
 
 const goalLengthLimit = 70;
 
@@ -29,6 +32,7 @@ export interface OnStartTaskClick {
 interface IProps {
     task: Task;
     isEditing?: boolean;
+    findPotentialOwners?: (taskId: number) => Promise<User[]>;
     onTaskDetailClick?: OnTaskDetailClick;
     onTaskChanged?: (task: Task) => void;
     onTaskFinishEditing?: (task: Task) => void;
@@ -39,6 +43,8 @@ interface IProps {
 interface IState {
     task: Task;
     isEditing: boolean;
+    showTeamMembersList: boolean;
+    potentialOwners: User[];
 }
 
 export default class TaskComponent extends Component<IProps, IState> {
@@ -49,49 +55,107 @@ export default class TaskComponent extends Component<IProps, IState> {
         this.state = {
             task: this.props.task,
             isEditing: props.isEditing || false,
+            showTeamMembersList: false,
+            potentialOwners: [],
         };
     }
 
-    private static renderMarkTaskCompleted(): ReactElement {
+    private static renderMarkTaskCompleted(index: number): ReactElement {
         return (
-            <span className={styles.TaskCompletedIcon}>
+            <div
+                className={`${styles.Action} ${styles.TaskCompletedIcon}`}
+                key={index}
+            >
                 <MaterialIconComponent>check_circle</MaterialIconComponent>
-            </span>
+            </div>
         );
     }
 
-    private static renderReportBlocked(): ReactElement {
+    private static renderReportBlocked(index: number): ReactElement {
         return (
-            <span className={styles.MarkTaskBlockIcon}>
+            <div
+                className={`${styles.Action} ${styles.MarkTaskBlockIcon}`}
+                key={index}
+            >
                 <MaterialIconComponent>report</MaterialIconComponent>
-            </span>
+            </div>
         );
     }
 
-    private renderStartTask(): ReactElement {
+    private renderStartTask(index: number): ReactElement {
         return (
-            <span
-                className={styles.StartTaskIcon}
+            <div
+                className={`${styles.Action} ${styles.StartTaskIcon}`}
+                key={index}
                 onClick={this.onStartTaskClick}
             >
                 <MaterialIconComponent>play_arrow</MaterialIconComponent>
-            </span>
+            </div>
         );
     }
 
-    private renderDeleteTask(): ReactElement {
+    private renderDeleteTask(index: number): ReactElement {
         return (
-            <span
-                className={styles.DeleteTaskIcon}
+            <div
+                className={`${styles.Action} ${styles.DeleteTaskIcon}`}
+                key={index}
                 onClick={this.onDeleteTaskClick}
             >
                 <MaterialIconComponent>remove_circle</MaterialIconComponent>
-            </span>
+            </div>
         );
     }
 
-    private static renderAssignOwner(): ReactElement {
-        return <AssigneeComponent />;
+    private renderAssignOwner(index: number): ReactElement {
+        return (
+            <div key={index} className={styles.AssignOwner}>
+                <div
+                    className={`${styles.Action} ${
+                        styles.AssignOwnerIcon
+                    } ${classNames({
+                        [styles.Active]: this.state.showTeamMembersList,
+                    })}`}
+                    onClick={this.onAssignOwnerClick}
+                >
+                    {this.props.task.owner ? (
+                        <UserProfile user={this.props.task.owner} />
+                    ) : (
+                        <MaterialIconComponent>face</MaterialIconComponent>
+                    )}
+                </div>
+                {this.state.showTeamMembersList && (
+                    <div className={styles.TeamMemberList}>
+                        <div className={styles.TeamMemberListHeader}>
+                            <div
+                                className={styles.CloseButton}
+                                onClick={this.onCloseTeamMembersListClick}
+                            >
+                                <MaterialIconComponent>
+                                    close
+                                </MaterialIconComponent>
+                            </div>
+                        </div>
+                        <SelectUserListComponent
+                            users={this.state.potentialOwners}
+                            onSelectUser={this.onSelectOwner}
+                            findUsers={this.findPotentialOwners}
+                        />
+                    </div>
+                )}
+            </div>
+        );
+    }
+
+    private renderTaskDetail(index: number): ReactElement {
+        return (
+            <div
+                className={`${styles.Action} ${styles.TaskDetailIcon}`}
+                key={index}
+                onClick={this.onTaskDetailClick}
+            >
+                <MaterialIconComponent>settings</MaterialIconComponent>
+            </div>
+        );
     }
 
     public render(): ReactElement {
@@ -147,44 +211,30 @@ export default class TaskComponent extends Component<IProps, IState> {
         );
     }
 
-    private renderTaskDetail(): ReactElement {
-        return (
-            <span
-                className={styles.TaskDetailIcon}
-                onClick={this.onTaskDetailClick}
-            >
-                <MaterialIconComponent>settings</MaterialIconComponent>
-            </span>
-        );
-    }
-
-    private renderAction(action: TaskAction): ReactElement {
+    private renderAction = (
+        action: TaskAction,
+        index: number,
+    ): ReactElement => {
         switch (action) {
             case TaskAction.Start:
-                return this.renderStartTask();
+                return this.renderStartTask(index);
             case TaskAction.MarkComplete:
-                return TaskComponent.renderMarkTaskCompleted();
+                return TaskComponent.renderMarkTaskCompleted(index);
             case TaskAction.ReportBlocked:
-                return TaskComponent.renderReportBlocked();
+                return TaskComponent.renderReportBlocked(index);
             case TaskAction.AssignOwner:
-                return TaskComponent.renderAssignOwner();
+                return this.renderAssignOwner(index);
             case TaskAction.Delete:
-                return this.renderDeleteTask();
+                return this.renderDeleteTask(index);
             case TaskAction.ViewDetail:
-                return this.renderTaskDetail();
+                return this.renderTaskDetail(index);
         }
-    }
+    };
 
     private renderActions(): ReactElement[] {
         return this.state.task.availableActions
             .concat(TaskAction.ViewDetail)
-            .map((action: TaskAction, index: number) => {
-                return (
-                    <div className={styles.Action} key={index}>
-                        {this.renderAction(action)}
-                    </div>
-                );
-            });
+            .map(this.renderAction);
     }
 
     private onGoalKeyDown = (
@@ -207,6 +257,14 @@ export default class TaskComponent extends Component<IProps, IState> {
         this.props.onTaskChanged?.call(this, task);
     };
 
+    private onSelectOwner = (userId: number): void => {
+        const task = Object.assign({}, this.state.task, {
+            ownerUserId: userId,
+        });
+        this.props.onTaskChanged?.call(this, task);
+        this.closeTeamMembersList();
+    };
+
     private finishEditing() {
         this.setState({
             isEditing: false,
@@ -224,5 +282,32 @@ export default class TaskComponent extends Component<IProps, IState> {
 
     private onStartTaskClick = (): void => {
         this.props.onStartTaskClick?.call(null, this.props.task.id);
+    };
+
+    private onAssignOwnerClick = (): void => {
+        this.setState({
+            showTeamMembersList: true,
+        });
+    };
+
+    private onCloseTeamMembersListClick = (): void => {
+        this.closeTeamMembersList();
+    };
+
+    private closeTeamMembersList() {
+        this.setState({
+            showTeamMembersList: false,
+        });
+    }
+
+    private findPotentialOwners = async () => {
+        if (this.props.findPotentialOwners) {
+            const potentialOwners = await this.props.findPotentialOwners(
+                this.props.task.id,
+            );
+            this.setState({
+                potentialOwners: potentialOwners,
+            });
+        }
     };
 }

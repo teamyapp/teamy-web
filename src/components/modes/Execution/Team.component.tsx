@@ -1,6 +1,7 @@
 import React, { Component, ReactElement } from 'react';
 import Task from '../../../entity/Task';
 import TeamStatus from '../../../entity/TeamStatus';
+import { User } from '../../../entity/User';
 import TaskComponent, {
     OnStartTaskClick,
     OnDeleteTaskClick,
@@ -13,6 +14,7 @@ import styles from './Team.component.module.scss';
 interface IProps {
     taskAdding?: Task;
     teamStatus: TeamStatus;
+    findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     onViewTaskDetailClick?: OnTaskDetailClick;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
@@ -93,7 +95,7 @@ export default class TeamComponent extends Component<IProps> {
     };
 
     private renderExistingTask = (): ((task: Task) => ReactElement) => {
-        return this.renderTask(false, this.props.onUpdateTask);
+        return this.renderTask(false, undefined, this.props.onUpdateTask);
     };
 
     private renderTask = (
@@ -107,6 +109,9 @@ export default class TeamComponent extends Component<IProps> {
                     <TaskComponent
                         task={task}
                         isEditing={isEditing}
+                        findPotentialOwners={
+                            this.props.findPotentialOwnersForTask
+                        }
                         onTaskDetailClick={this.props.onViewTaskDetailClick}
                         onTaskChanged={onTaskChange}
                         onTaskFinishEditing={onTaskFinishEditing}

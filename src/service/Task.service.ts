@@ -22,6 +22,12 @@ query getTask($id: ID!) {
     goal
     dueAt
     context
+    owner {
+        id
+        firstName
+        lastName
+        profileUrl
+    }
     effort
     numOfUnknowns
     availableActions
@@ -56,6 +62,23 @@ mutation startTask($id: ID!) {
 }
 `,
             { id: taskId },
+        );
+    }
+
+    public createTask(task: Task): Promise<boolean> {
+        return this.graphQLClient.query<boolean>(
+            `
+mutation createTask($taskInput: TaskInput!) {
+  createTask (task: $taskInput) {
+    id
+  }
+}
+`,
+            {
+                taskInput: Object.assign({}, task, {
+                    ownerUserId: task.owner ? `${task.owner?.id}` : undefined,
+                }),
+            },
         );
     }
 }

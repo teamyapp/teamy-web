@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Component, FormEvent, ReactElement } from 'react';
+import React, { Component, FormEvent, ReactElement } from 'react';
 import MaterialIconComponent from './MaterialIcon.component';
 import './TextField.component.module.scss';
 import styles from './TextField.component.module.scss';

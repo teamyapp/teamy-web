@@ -6,6 +6,7 @@ import PersonalStatus from '../../../entity/PersonalStatus';
 import Task from '../../../entity/Task';
 import { TaskAction } from '../../../entity/TaskAction';
 import TeamStatus from '../../../entity/TeamStatus';
+import { User } from '../../../entity/User';
 import { ExecutionModeService } from '../../../service/ExecutionMode.service';
 import { TaskService } from '../../../service/Task.service';
 import { updatePersonalStatus } from '../../../store/slices/PersonalStatus';
@@ -25,6 +26,7 @@ interface IProps {
     personalStatus: PersonalStatus;
     teamStatus: TeamStatus;
     taskAdding?: Task;
+    findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     onViewTaskDetailClick?: (taskId: number) => void;
     onPersonalAddClick?: () => void;
     onTeamAddClick?: () => void;
@@ -56,6 +58,9 @@ class ExecutionComponent extends Component<IProps> {
                             <PersonalComponent
                                 personalStatus={this.props.personalStatus}
                                 taskAdding={this.props.taskAdding}
+                                findPotentialOwnersForTask={
+                                    this.props.findPotentialOwnersForTask
+                                }
                                 onAddClick={this.props.onPersonalAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
@@ -73,6 +78,9 @@ class ExecutionComponent extends Component<IProps> {
                             <TeamComponent
                                 teamStatus={this.props.teamStatus}
                                 taskAdding={this.props.taskAdding}
+                                findPotentialOwnersForTask={
+                                    this.props.findPotentialOwnersForTask
+                                }
                                 onAddClick={this.props.onTeamAddClick}
                                 onViewTaskDetailClick={
                                     this.props.onViewTaskDetailClick
@@ -145,6 +153,7 @@ class StatefulExecutionComponent extends Component<
                 personalStatus={this.state.personalStatus}
                 teamStatus={this.state.teamStatus}
                 taskAdding={this.state.taskAdding}
+                findPotentialOwnersForTask={this.findPotentialOwnersForTask}
                 onViewTaskDetailClick={this.onViewTaskDetailClick}
                 onNewTaskChange={this.onNewTaskChange}
                 onCreateTask={this.onCreateTask}
@@ -184,9 +193,10 @@ class StatefulExecutionComponent extends Component<
         });
     };
 
-    private onCreateTask = (task: Task) => {
+    private onCreateTask = async (task: Task): Promise<void> => {
         if (task.goal.length > 0) {
-            console.log('onCreateTask');
+            await this.props.taskService.createTask(task);
+            await this.refreshExecutionStatus();
         }
 
         this.setState({
@@ -195,7 +205,7 @@ class StatefulExecutionComponent extends Component<
     };
 
     private onUpdateTask = (task: Task) => {
-        console.log('onUpdateTask');
+        console.log('onUpdateTask', task);
     };
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
@@ -215,7 +225,9 @@ class StatefulExecutionComponent extends Component<
             taskAdding: {
                 id: -1,
                 goal: '',
-                ownerUserId: 1,
+                owner: {
+                    id: 1,
+                },
                 availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
             },
         });
@@ -231,6 +243,11 @@ class StatefulExecutionComponent extends Component<
             },
         });
     };
+
+    private findPotentialOwnersForTask(taskId: number): Promise<User[]> {
+        // TODO: fetch potential owners for a given task
+        return Promise.resolve([]);
+    }
 
     private async refreshExecutionStatus() {
         const personalStatus =

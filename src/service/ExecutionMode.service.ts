@@ -74,6 +74,12 @@ fragment taskPreview on Task {
   id
   goal
   dueAt
+  owner {
+    id
+    firstName
+    lastName
+    profileUrl
+  }
   availableActions
 }
 `,

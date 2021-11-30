@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Component, ReactElement } from 'react';
+import React, { Component, ReactElement } from 'react';
 import styles from './Modal.component.module.scss';
 
 const transitionDurationMilliseconds = 400;
