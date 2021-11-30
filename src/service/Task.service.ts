@@ -65,7 +65,6 @@ mutation startTask($id: ID!) {
 mutation createTask($taskInput: TaskInput!) {
   createTask (task: $taskInput) {
     id
-    goal
   }
 }
 `,
