@@ -77,11 +77,45 @@ $actionIconSize: 28px;
             height: $actionIconSize;
             padding: 4px;
             border-radius: 4px;
+            user-select: none;
             --icon-size: #{$actionIconSize};
             --icon-box-size: #{$actionIconSize};
 
+            &.Active,
             &:hover {
                 background-color: rgba(0, 0, 0, 0.07);
+            }
+        }
+
+        .AssignOwner {
+            --profile-width: #{$actionIconSize};
+            --profile-height: #{$actionIconSize};
+            position: relative;
+
+            .TeamMemberList {
+                background-color: white;
+                position: absolute;
+                top: 40px;
+                z-index: 100;
+                float: left;
+                @include elevation(6);
+
+                .TeamMemberListHeader {
+                    background-color: #424242;
+                    --icon-color: white;
+                    --icon-size: 22px;
+                    display: flex;
+                    justify-content: flex-end;
+                    padding: 4px;
+
+                    .CloseButton {
+                        border-radius: 50%;
+                        padding: 2px;
+                        &:hover {
+                            background-color: rgba(255, 255, 255, 0.1);
+                        }
+                    }
+                }
             }
         }
     }
@@ -115,4 +149,8 @@ $actionIconSize: 28px;
 
 .TaskDetailIcon {
     --icon-color: #616161;
+}
+
+.AssignOwnerIcon {
+    --icon-color: #3d7bf6;
 }
