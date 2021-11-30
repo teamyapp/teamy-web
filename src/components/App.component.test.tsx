@@ -6,9 +6,6 @@ import AppComponentContainer from './App.component';
 test('renders without crash', () => {
     const deps = initDeps();
     render(
-        <AppComponentContainer
-            taskService={deps.taskService}
-            executionModeService={deps.executionModeService}
-        />,
+        <AppComponentContainer deps={deps}/>,
     );
 });
