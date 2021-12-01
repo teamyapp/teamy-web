@@ -1,7 +1,11 @@
 .UserProfile {
     width: var(--profile-width, 24px);
     height: var(--profile-height, 24px);
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
     border-radius: 50%;
     background-color: var(--profile-background, #455a64);
 }

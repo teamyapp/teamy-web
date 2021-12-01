@@ -30,6 +30,7 @@ export interface OnStartTaskClick {
 }
 
 interface IProps {
+    canViewDetail: boolean;
     task: Task;
     isEditing?: boolean;
     findPotentialOwners?: (taskId: number) => Promise<User[]>;
@@ -232,9 +233,11 @@ export default class TaskComponent extends Component<IProps, IState> {
     };
 
     private renderActions(): ReactElement[] {
-        return this.state.task.availableActions
-            .concat(TaskAction.ViewDetail)
-            .map(this.renderAction);
+        let actions = this.state.task.availableActions;
+        if (this.props.canViewDetail) {
+            actions = actions.concat(TaskAction.ViewDetail);
+        }
+        return actions.map(this.renderAction);
     }
 
     private onGoalKeyDown = (
