@@ -5,7 +5,5 @@ import AppComponentContainer from './App.component';
 
 test('renders without crash', () => {
     const deps = initDeps();
-    render(
-        <AppComponentContainer deps={deps}/>,
-    );
+    render(<AppComponentContainer deps={deps} />);
 });
