@@ -7,10 +7,12 @@ import { FetchHTTPClient } from './network/FetchHTTP.client';
 import { ExecutionModeService } from './service/ExecutionMode.service';
 import { TaskService } from './service/Task.service';
 import { TeamService } from './service/Team.service';
+import { UserService } from './service/User.service';
 
 export interface Deps {
     taskService: TaskService;
     teamService: TeamService;
+    userService: UserService;
     executionModeService: ExecutionModeService;
     identityClient: IdentityClient;
 }
@@ -27,10 +29,12 @@ export function initDeps(): Deps {
     );
     const taskService = new TaskService(teamyGraphQLClient);
     const teamService = new TeamService(teamyGraphQLClient);
+    const userService = new UserService(teamyGraphQLClient);
     const executionModeService = new ExecutionModeService(teamyGraphQLClient);
     return {
         taskService,
         teamService,
+        userService,
         executionModeService,
         identityClient,
     };

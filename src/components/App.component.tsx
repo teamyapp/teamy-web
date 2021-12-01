@@ -66,6 +66,9 @@ export class AppComponent extends Component<IProps, IState> {
                                         teamService={
                                             this.props.deps.teamService
                                         }
+                                        userService={
+                                            this.props.deps.userService
+                                        }
                                         executionModeService={
                                             this.props.deps.executionModeService
                                         }

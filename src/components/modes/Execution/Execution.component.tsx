@@ -10,6 +10,7 @@ import { User } from '../../../entity/User';
 import { ExecutionModeService } from '../../../service/ExecutionMode.service';
 import { TaskService } from '../../../service/Task.service';
 import { TeamService } from '../../../service/Team.service';
+import { UserService } from '../../../service/User.service';
 import { updatePersonalStatus } from '../../../store/slices/PersonalStatus';
 import { updateTeamStatus } from '../../../store/slices/TeamStatus';
 import store from '../../../store/store';
@@ -119,6 +120,7 @@ interface IContainerProps {
     executionModeService: ExecutionModeService;
     taskService: TaskService;
     teamService: TeamService;
+    userService: UserService;
 }
 
 interface IContainerState {
@@ -146,7 +148,6 @@ class StatefulExecutionComponent extends Component<
     }
 
     public render(): ReactElement {
-        // TODO: retrieve current user ID from user service
         return (
             <ExecutionComponent
                 ref={this.executionComponentRef}
@@ -198,6 +199,7 @@ class StatefulExecutionComponent extends Component<
     private onCreateTask = async (task: Task): Promise<void> => {
         if (task.goal.length > 0) {
             await this.props.taskService.createTask(task);
+
             await this.refreshExecutionStatus();
         }
 
@@ -220,16 +222,15 @@ class StatefulExecutionComponent extends Component<
         await this.refreshExecutionStatus();
     };
 
-    private onPersonalAddClick = () => {
+    private onPersonalAddClick = async(): Promise<void> => {
         console.log('onPersonalAddClick');
         // TODO: fetch user ID from user service
+        const user = await this.props.userService.fetchMe()
         this.setState({
             taskAdding: {
                 id: -1,
                 goal: '',
-                owner: {
-                    id: 1,
-                },
+                owner: user,
                 availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
             },
         });
@@ -270,8 +271,9 @@ class StatefulExecutionComponent extends Component<
 
 interface IHookProps {
     taskService: TaskService;
-    executionModeService: ExecutionModeService;
     teamService: TeamService;
+    userService: UserService;
+    executionModeService: ExecutionModeService;
 }
 
 export default function ExecutionComponentHook(props: IHookProps) {
@@ -281,6 +283,7 @@ export default function ExecutionComponentHook(props: IHookProps) {
         <StatefulExecutionComponent
             taskService={props.taskService}
             teamService={props.teamService}
+            userService={props.userService}
             executionModeService={props.executionModeService}
             routerUrl={url}
             routerHistory={routerHistory}
