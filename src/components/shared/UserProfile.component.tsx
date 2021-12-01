@@ -8,9 +8,11 @@ interface IProps {
 
 export class UserProfile extends Component<IProps> {
     public render(): ReactElement {
-        const name = `${
-            this.props.user.firstName
-        } ${this.props.user.lastName ? this.props.user.lastName[0].toUpperCase() : ''}`;
+        const name = `${this.props.user.firstName} ${
+            this.props.user.lastName
+                ? this.props.user.lastName[0].toUpperCase()
+                : ''
+        }`;
         return (
             <img
                 className={styles.UserProfile}

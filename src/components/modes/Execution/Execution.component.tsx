@@ -9,6 +9,7 @@ import TeamStatus from '../../../entity/TeamStatus';
 import { User } from '../../../entity/User';
 import { ExecutionModeService } from '../../../service/ExecutionMode.service';
 import { TaskService } from '../../../service/Task.service';
+import { TeamService } from '../../../service/Team.service';
 import { updatePersonalStatus } from '../../../store/slices/PersonalStatus';
 import { updateTeamStatus } from '../../../store/slices/TeamStatus';
 import store from '../../../store/store';
@@ -117,6 +118,7 @@ interface IContainerProps {
     routerHistory: History<LocationState>;
     executionModeService: ExecutionModeService;
     taskService: TaskService;
+    teamService: TeamService;
 }
 
 interface IContainerState {
@@ -244,10 +246,12 @@ class StatefulExecutionComponent extends Component<
         });
     };
 
-    private findPotentialOwnersForTask(taskId: number): Promise<User[]> {
-        // TODO: fetch potential owners for a given task
-        return Promise.resolve([]);
-    }
+    private findPotentialOwnersForTask = async (
+        taskId: number,
+    ): Promise<User[]> => {
+        const users = await this.props.teamService.fetchTeamMembers();
+        return users;
+    };
 
     private async refreshExecutionStatus() {
         const personalStatus =
@@ -268,6 +272,7 @@ class StatefulExecutionComponent extends Component<
 interface IHookProps {
     taskService: TaskService;
     executionModeService: ExecutionModeService;
+    teamService: TeamService;
 }
 
 export default function ExecutionComponentHook(props: IHookProps) {
@@ -276,6 +281,7 @@ export default function ExecutionComponentHook(props: IHookProps) {
     return (
         <StatefulExecutionComponent
             taskService={props.taskService}
+            teamService={props.teamService}
             executionModeService={props.executionModeService}
             routerUrl={url}
             routerHistory={routerHistory}

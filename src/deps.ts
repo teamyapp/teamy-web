@@ -6,9 +6,11 @@ import { GraphQLClient } from './network/GraphQL.client';
 import { FetchHTTPClient } from './network/FetchHTTP.client';
 import { ExecutionModeService } from './service/ExecutionMode.service';
 import { TaskService } from './service/Task.service';
+import { TeamService } from './service/Team.service';
 
 export interface Deps {
     taskService: TaskService;
+    teamService: TeamService;
     executionModeService: ExecutionModeService;
     identityClient: IdentityClient;
 }
@@ -24,9 +26,11 @@ export function initDeps(): Deps {
         config.teamyGraphQLEndpoint,
     );
     const taskService = new TaskService(teamyGraphQLClient);
+    const teamService = new TeamService(teamyGraphQLClient);
     const executionModeService = new ExecutionModeService(teamyGraphQLClient);
     return {
         taskService,
+        teamService,
         executionModeService,
         identityClient,
     };
