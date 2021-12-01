@@ -88,17 +88,19 @@ export default class PersonalComponent extends Component<IProps> {
     private renderNewTask = (): ((task: Task) => ReactElement) => {
         return this.renderTask(
             true,
+            false,
             this.props.onCreateTask,
             this.props.onNewTaskChange,
         );
     };
 
     private renderExistingTask = (): ((task: Task) => ReactElement) => {
-        return this.renderTask(false, undefined, this.props.onUpdateTask);
+        return this.renderTask(false, true, undefined, this.props.onUpdateTask);
     };
 
     private renderTask = (
         isEditing: boolean,
+        canViewDetail: boolean,
         onTaskFinishEditing?: (task: Task) => void,
         onTaskChange?: (task: Task) => void,
     ): ((task: Task) => ReactElement) => {
@@ -106,6 +108,7 @@ export default class PersonalComponent extends Component<IProps> {
             return (
                 <div key={task.id}>
                     <TaskComponent
+                        canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}
                         findPotentialOwners={
