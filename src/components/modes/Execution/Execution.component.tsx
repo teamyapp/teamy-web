@@ -249,8 +249,7 @@ class StatefulExecutionComponent extends Component<
     private findPotentialOwnersForTask = async (
         taskId: number,
     ): Promise<User[]> => {
-        const users = await this.props.teamService.fetchTeamMembers();
-        return users;
+        return await this.props.teamService.fetchTeamMembers();
     };
 
     private async refreshExecutionStatus() {
