@@ -60,18 +60,7 @@ export class AppComponent extends Component<IProps, IState> {
                             <div className={styles.Execution}>
                                 {
                                     <ExecutionComponentHook
-                                        taskService={
-                                            this.props.deps.taskService
-                                        }
-                                        teamService={
-                                            this.props.deps.teamService
-                                        }
-                                        userService={
-                                            this.props.deps.userService
-                                        }
-                                        executionModeService={
-                                            this.props.deps.executionModeService
-                                        }
+                                        deps={this.props.deps}
                                     />
                                 }
                             </div>
