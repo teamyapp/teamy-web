@@ -225,7 +225,7 @@ class StatefulExecutionComponent extends Component<
     private onPersonalAddClick = async(): Promise<void> => {
         console.log('onPersonalAddClick');
         // TODO: fetch user ID from user service
-        const user = await this.props.userService.fetchMe()
+        const user = await this.props.userService.fetchMe();
         this.setState({
             taskAdding: {
                 id: -1,
