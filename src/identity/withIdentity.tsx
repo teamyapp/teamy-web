@@ -35,13 +35,13 @@ export function withIdentity(
             const isSignedIn = await identityClient.isSignedIn();
             this.setState({
                 isSignedIn: isSignedIn,
-                isLoaded: true
+                isLoaded: true,
             });
         }
 
         public render(): ReactElement {
             if (!this.state.isLoaded) {
-                return <div></div>
+                return <div></div>;
             }
 
             const { forwardedRef, ...rest } = this.props;
