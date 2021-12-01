@@ -2,15 +2,12 @@ import { History, LocationState } from 'history';
 import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import { Unsubscribe } from 'redux';
+import { Deps } from '../../../deps';
 import PersonalStatus from '../../../entity/PersonalStatus';
 import Task from '../../../entity/Task';
 import { TaskAction } from '../../../entity/TaskAction';
 import TeamStatus from '../../../entity/TeamStatus';
 import { User } from '../../../entity/User';
-import { ExecutionModeService } from '../../../service/ExecutionMode.service';
-import { TaskService } from '../../../service/Task.service';
-import { TeamService } from '../../../service/Team.service';
-import { UserService } from '../../../service/User.service';
 import { updatePersonalStatus } from '../../../store/slices/PersonalStatus';
 import { updateTeamStatus } from '../../../store/slices/TeamStatus';
 import store from '../../../store/store';
@@ -115,12 +112,9 @@ class ExecutionComponent extends Component<IProps> {
 }
 
 interface IContainerProps {
+    deps: Deps;
     routerUrl: string;
     routerHistory: History<LocationState>;
-    executionModeService: ExecutionModeService;
-    taskService: TaskService;
-    teamService: TeamService;
-    userService: UserService;
 }
 
 interface IContainerState {
@@ -186,7 +180,7 @@ class StatefulExecutionComponent extends Component<
     }
 
     private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
-        const task = await this.props.taskService.fetchTask(taskId);
+        const task = await this.props.deps.taskService.fetchTask(taskId);
         this.executionComponentRef.current?.showTaskDetail(task);
     };
 
@@ -198,7 +192,7 @@ class StatefulExecutionComponent extends Component<
 
     private onCreateTask = async (task: Task): Promise<void> => {
         if (task.goal.length > 0) {
-            await this.props.taskService.createTask(task);
+            await this.props.deps.taskService.createTask(task);
 
             await this.refreshExecutionStatus();
         }
@@ -213,18 +207,18 @@ class StatefulExecutionComponent extends Component<
     };
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
-        await this.props.taskService.deleteTask(taskId);
+        await this.props.deps.taskService.deleteTask(taskId);
         await this.refreshExecutionStatus();
     };
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
-        await this.props.taskService.startTask(taskId);
+        await this.props.deps.taskService.startTask(taskId);
         await this.refreshExecutionStatus();
     };
 
-    private onPersonalAddClick = async(): Promise<void> => {
+    private onPersonalAddClick = async (): Promise<void> => {
         console.log('onPersonalAddClick');
-        const user = await this.props.userService.fetchMe();
+        const user = await this.props.deps.userService.fetchMe();
         this.setState({
             taskAdding: {
                 id: -1,
@@ -249,18 +243,18 @@ class StatefulExecutionComponent extends Component<
     private findPotentialOwnersForTask = async (
         taskId: number,
     ): Promise<User[]> => {
-        return await this.props.teamService.fetchTeamMembers();
+        return await this.props.deps.teamService.fetchTeamMembers();
     };
 
     private async refreshExecutionStatus() {
         const personalStatus =
-            await this.props.executionModeService.fetchPersonalStatus();
+            await this.props.deps.executionModeService.fetchPersonalStatus();
         if (personalStatus) {
             store.dispatch(updatePersonalStatus(personalStatus));
         }
 
         const teamStatus =
-            await this.props.executionModeService.fetchTeamStatus();
+            await this.props.deps.executionModeService.fetchTeamStatus();
 
         if (teamStatus) {
             store.dispatch(updateTeamStatus(teamStatus));
@@ -269,10 +263,7 @@ class StatefulExecutionComponent extends Component<
 }
 
 interface IHookProps {
-    taskService: TaskService;
-    teamService: TeamService;
-    userService: UserService;
-    executionModeService: ExecutionModeService;
+    deps: Deps;
 }
 
 export default function ExecutionComponentHook(props: IHookProps) {
@@ -280,10 +271,7 @@ export default function ExecutionComponentHook(props: IHookProps) {
     const routerHistory = useHistory();
     return (
         <StatefulExecutionComponent
-            taskService={props.taskService}
-            teamService={props.teamService}
-            userService={props.userService}
-            executionModeService={props.executionModeService}
+            deps={props.deps}
             routerUrl={url}
             routerHistory={routerHistory}
         />
