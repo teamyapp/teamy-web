@@ -13,6 +13,7 @@ export class UserProfile extends Component<IProps> {
                 ? this.props.user.lastName[0].toUpperCase()
                 : ''
         }`;
+
         return this.props.user.profileUrl ? (
             <img
                 className={styles.UserProfile}

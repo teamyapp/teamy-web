@@ -23,7 +23,7 @@ export class SelectUserListComponent extends Component<IProps> {
     }
 
     public renderUser = (user: User, index: number): ReactElement => {
-        const name = `${user.firstName} ${user.lastName![0].toUpperCase()}`;
+        const name = `${user.firstName} ${user.lastName![0].toUpperCase()}.`;
         return (
             <div
                 className={styles.UserRow}
