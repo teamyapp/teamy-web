@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import React, { Component, ReactElement } from 'react';
 import { getConfig } from '../config/config';
-import { getConfig as getIdentityConfig } from '../identity/config';
 import { getEnvironment, getEnvVar } from '../env/environment';
+import { getConfig as getIdentityConfig } from '../identity/config';
 
 import styles from './Debug.component.module.scss';
 
@@ -75,7 +75,13 @@ export class DebugComponent extends Component<IProps, IState> {
                 <td className={styles.RowName}>{configRow.name}</td>
                 <td>
                     {configRow.link ? (
-                        <a href={configRow.link}>{configRow.value}</a>
+                        <a
+                            href={configRow.link}
+                            rel='noreferrer noopener'
+                            target={'_blank'}
+                        >
+                            {configRow.value}
+                        </a>
                     ) : (
                         configRow.value
                     )}
