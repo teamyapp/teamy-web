@@ -4,42 +4,12 @@ import Team from '../entity/Team';
 import styles from './Drawer.component.module.scss';
 import MaterialIconComponent from './ui/MaterialIcon.component';
 
-const teams: Team[] = [
-    {
-        iconUrl: 'teams/teamy.svg',
-        name: 'Teamy',
-    },
-    {
-        iconUrl: 'teams/amazon.svg',
-        name: 'Amazon',
-    },
-    {
-        iconUrl: 'teams/apple.svg',
-        name: 'Apple',
-    },
-    {
-        iconUrl: 'teams/facebook.svg',
-        name: 'Facebook',
-    },
-    {
-        iconUrl: 'teams/google.svg',
-        name: 'Google',
-    },
-    {
-        iconUrl: 'teams/microsoft.svg',
-        name: 'Microsoft',
-    },
-    {
-        iconUrl: 'teams/tesla.svg',
-        name: 'Tesla',
-    },
-];
-
 interface OnMenuCloseHandler {
     (): void;
 }
 
 interface IProps {
+    teams: Team[];
     onMenuClose?: OnMenuCloseHandler;
     isDrawerOpen: boolean;
 }
@@ -78,7 +48,7 @@ export default class DrawerComponent extends Component<IProps, IState> {
                     </div>
                 </div>
                 <div className={styles.Teams}>
-                    {teams.map((team: Team, index: number) => (
+                    {this.props.teams.map((team: Team, index: number) => (
                         <div
                             className={`${styles.Team} ${classNames({
                                 [styles.Active]:
@@ -89,7 +59,7 @@ export default class DrawerComponent extends Component<IProps, IState> {
                             <div className={styles.IconFrame}>
                                 <img
                                     className={styles.Icon}
-                                    src={team.iconUrl}
+                                    src={team.logoUrl}
                                     alt={team.name}
                                 />
                             </div>

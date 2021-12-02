@@ -2,6 +2,7 @@ import React, { Component, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Deps } from '../deps';
+import Team from '../entity/Team';
 import { withIdentity } from '../identity/withIdentity';
 import store from '../store/store';
 import styles from './App.component.module.scss';
@@ -12,13 +13,14 @@ import MaterialIconComponent from './ui/MaterialIcon.component';
 
 interface IProps {
     deps: Deps;
+    teams: Team[];
 }
 
 interface IState {
     isDrawerOpen: boolean;
 }
 
-export class AppComponent extends Component<IProps, IState> {
+class AppComponent extends Component<IProps, IState> {
     constructor(props: any) {
         super(props);
         this.state = {
@@ -38,6 +40,7 @@ export class AppComponent extends Component<IProps, IState> {
                     </Route>
                     <Route path={'/'}>
                         <DrawerComponent
+                            teams={this.props.teams}
                             isDrawerOpen={this.state.isDrawerOpen}
                             onMenuClose={this.onMenuToggle}
                         />
@@ -78,10 +81,44 @@ export class AppComponent extends Component<IProps, IState> {
     };
 }
 
-export default function AppComponentHook(props: IProps): ReactElement {
+interface IContainerProps {
+    deps: Deps;
+}
+
+interface IContainerState {
+    teams: Team[];
+}
+
+class AppComponentContainer extends Component<
+    IContainerProps,
+    IContainerState
+> {
+    constructor(props: IContainerProps) {
+        super(props);
+        this.state = {
+            teams: [],
+        };
+    }
+    public render(): ReactElement {
+        return <AppComponent {...this.props} teams={this.state.teams} />;
+    }
+
+    public async componentDidMount() {
+        const teams = await this.props.deps.teamService.fetchTeams();
+        this.setState({
+            teams,
+        });
+    }
+}
+
+interface IHookProps {
+    deps: Deps;
+}
+
+export default function AppComponentHook(props: IHookProps): ReactElement {
     const AppWithIdentity = withIdentity(
         props.deps.identityClient,
-        AppComponent,
+        AppComponentContainer,
     );
     return (
         <Provider store={store}>
