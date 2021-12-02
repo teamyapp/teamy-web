@@ -17,28 +17,17 @@ import { UserProfile } from './UserProfile.component';
 
 const goalLengthLimit = 70;
 
-export interface OnTaskDetailClick {
-    (taskId: number): void;
-}
-
-export interface OnDeleteTaskClick {
-    (taskId: number): void;
-}
-
-export interface OnStartTaskClick {
-    (taskId: number): void;
-}
-
 interface IProps {
     canViewDetail: boolean;
     task: Task;
     isEditing?: boolean;
     findPotentialOwners?: (taskId: number) => Promise<User[]>;
-    onTaskDetailClick?: OnTaskDetailClick;
+    onTaskDetailClick?: (taskId: number) => void;
     onTaskChanged?: (task: Task) => void;
     onTaskFinishEditing?: (task: Task) => void;
-    onDeleteTaskClick?: OnDeleteTaskClick;
-    onStartTaskClick?: OnStartTaskClick;
+    onDeleteTaskClick?: (taskId: number) => void;
+    onStartTaskClick?: (taskId: number) => void;
+    onCompleteTaskClick?: (taskId: number) => void;
 }
 
 interface IState {
@@ -61,11 +50,12 @@ export default class TaskComponent extends Component<IProps, IState> {
         };
     }
 
-    private static renderMarkTaskCompleted(index: number): ReactElement {
+    private renderCompleteTask(index: number): ReactElement {
         return (
             <div
                 className={`${styles.Action} ${styles.TaskCompletedIcon}`}
                 key={index}
+                onClick={this.onCompleteTaskClick}
             >
                 <MaterialIconComponent>check_circle</MaterialIconComponent>
             </div>
@@ -220,7 +210,7 @@ export default class TaskComponent extends Component<IProps, IState> {
             case TaskAction.Start:
                 return this.renderStartTask(index);
             case TaskAction.MarkComplete:
-                return TaskComponent.renderMarkTaskCompleted(index);
+                return this.renderCompleteTask(index);
             case TaskAction.ReportBlocked:
                 return TaskComponent.renderReportBlocked(index);
             case TaskAction.AssignOwner:
@@ -285,6 +275,10 @@ export default class TaskComponent extends Component<IProps, IState> {
 
     private onStartTaskClick = (): void => {
         this.props.onStartTaskClick?.call(null, this.props.task.id);
+    };
+
+    private onCompleteTaskClick = (): void => {
+        this.props.onCompleteTaskClick?.call(null, this.props.task.id);
     };
 
     private onAssignOwnerClick = (): void => {

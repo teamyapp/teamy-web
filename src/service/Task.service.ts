@@ -65,6 +65,17 @@ mutation startTask($id: ID!) {
         );
     }
 
+    public completeTask(taskId: number): Promise<boolean> {
+        return this.graphQLClient.query<boolean>(
+            `
+mutation completeTask($id: ID!) {
+  completeTask(taskId: $id)
+}
+`,
+            { id: taskId },
+        );
+    }
+
     public createTask(task: Task): Promise<boolean> {
         return this.graphQLClient.query<boolean>(
             `

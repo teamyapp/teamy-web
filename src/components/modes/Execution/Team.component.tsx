@@ -2,11 +2,7 @@ import React, { Component, ReactElement } from 'react';
 import Task from '../../../entity/Task';
 import TeamStatus from '../../../entity/TeamStatus';
 import { User } from '../../../entity/User';
-import TaskComponent, {
-    OnStartTaskClick,
-    OnDeleteTaskClick,
-    OnTaskDetailClick,
-} from '../../shared/Task.component';
+import TaskComponent from '../../shared/Task.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Team.component.module.scss';
@@ -15,13 +11,14 @@ interface IProps {
     taskAdding?: Task;
     teamStatus: TeamStatus;
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
-    onViewTaskDetailClick?: OnTaskDetailClick;
+    onViewTaskDetailClick?: (taskId: number) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: OnDeleteTaskClick;
-    onStartTaskClick?: OnStartTaskClick;
+    onDeleteTaskClick?: (taskId: number) => void;
+    onStartTaskClick?: (taskId: number) => void;
+    onCompleteTaskClick?: (taskId: number) => void;
 }
 
 export default class TeamComponent extends Component<IProps> {
@@ -118,19 +115,12 @@ export default class TeamComponent extends Component<IProps> {
                         onTaskDetailClick={this.props.onViewTaskDetailClick}
                         onTaskChanged={onTaskChange}
                         onTaskFinishEditing={onTaskFinishEditing}
-                        onDeleteTaskClick={this.onDeleteTaskClick}
-                        onStartTaskClick={this.onStartTaskClick}
+                        onDeleteTaskClick={this.props.onDeleteTaskClick}
+                        onStartTaskClick={this.props.onStartTaskClick}
+                        onCompleteTaskClick={this.props.onCompleteTaskClick}
                     />
                 </div>
             );
         };
-    };
-
-    private onDeleteTaskClick = (taskId: number) => {
-        this.props.onDeleteTaskClick?.call(this, taskId);
-    };
-
-    private onStartTaskClick = (taskId: number) => {
-        this.props.onStartTaskClick?.call(this, taskId);
     };
 }
