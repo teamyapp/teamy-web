@@ -34,6 +34,7 @@ interface IProps {
     onUpdateTask?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
     onStartTaskClick?: (taskId: number) => void;
+    onCompleteTaskClick?: (taskId: number) => void;
 }
 
 class ExecutionComponent extends Component<IProps> {
@@ -69,6 +70,9 @@ class ExecutionComponent extends Component<IProps> {
                                 onUpdateTask={this.props.onUpdateTask}
                                 onDeleteTaskClick={this.props.onDeleteTaskClick}
                                 onStartTaskClick={this.props.onStartTaskClick}
+                                onCompleteTaskClick={
+                                    this.props.onCompleteTaskClick
+                                }
                             />
                         </Route>
                     </Switch>
@@ -89,6 +93,9 @@ class ExecutionComponent extends Component<IProps> {
                                 onUpdateTask={this.props.onUpdateTask}
                                 onDeleteTaskClick={this.props.onDeleteTaskClick}
                                 onStartTaskClick={this.props.onStartTaskClick}
+                                onCompleteTaskClick={
+                                    this.props.onCompleteTaskClick
+                                }
                             />
                         </Route>
                     </Switch>
@@ -157,6 +164,7 @@ class StatefulExecutionComponent extends Component<
                 onUpdateTask={this.onUpdateTask}
                 onDeleteTaskClick={this.onDeleteTaskClick}
                 onStartTaskClick={this.onStartTaskClick}
+                onCompleteTaskClick={this.onCompleteTaskClick}
                 onPersonalAddClick={this.onPersonalAddClick}
                 onTeamAddClick={this.onTeamAddClick}
             />
@@ -213,6 +221,11 @@ class StatefulExecutionComponent extends Component<
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.startTask(taskId);
+        await this.refreshExecutionStatus();
+    };
+
+    private onCompleteTaskClick = async (taskId: number): Promise<void> => {
+        await this.props.deps.taskService.completeTask(taskId);
         await this.refreshExecutionStatus();
     };
 

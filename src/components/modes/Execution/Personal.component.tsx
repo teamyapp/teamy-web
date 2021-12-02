@@ -2,11 +2,7 @@ import React, { Component, ReactElement } from 'react';
 import PersonalStatus from '../../../entity/PersonalStatus';
 import Task from '../../../entity/Task';
 import { User } from '../../../entity/User';
-import TaskComponent, {
-    OnTaskDetailClick,
-    OnDeleteTaskClick,
-    OnStartTaskClick,
-} from '../../shared/Task.component';
+import TaskComponent from '../../shared/Task.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Personal.component.module.scss';
@@ -15,13 +11,14 @@ interface IProps {
     taskAdding?: Task;
     personalStatus: PersonalStatus;
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
-    onViewTaskDetailClick?: OnTaskDetailClick;
+    onViewTaskDetailClick?: (taskId: number) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: OnDeleteTaskClick;
-    onStartTaskClick?: OnStartTaskClick;
+    onDeleteTaskClick?: (taskId: number) => void;
+    onStartTaskClick?: (taskId: number) => void;
+    onCompleteTaskClick?: (taskId: number) => void;
 }
 
 export default class PersonalComponent extends Component<IProps> {
@@ -119,6 +116,7 @@ export default class PersonalComponent extends Component<IProps> {
                         onTaskFinishEditing={onTaskFinishEditing}
                         onDeleteTaskClick={this.props.onDeleteTaskClick}
                         onStartTaskClick={this.props.onStartTaskClick}
+                        onCompleteTaskClick={this.props.onCompleteTaskClick}
                     />
                 </div>
             );
