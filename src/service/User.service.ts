@@ -1,9 +1,6 @@
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
-
-interface MeQueryPayload {
-    me: User;
-}
+import { QueryPayload } from './QueryPayload';
 
 export class UserService {
     private readonly graphQLClient: GraphQLClient;
@@ -26,7 +23,7 @@ query {
 }
 `,
             )
-            .then((payload: MeQueryPayload) => {
+            .then((payload: QueryPayload) => {
                 return payload?.me;
             });
     }
