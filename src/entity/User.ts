@@ -6,4 +6,5 @@ export interface User {
     lastName?: string;
     profileUrl?: string;
     activeTeam?: Team;
+    teams: Team[];
 }

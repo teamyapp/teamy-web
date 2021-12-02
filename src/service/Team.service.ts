@@ -1,3 +1,4 @@
+import Team from '../entity/Team';
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
 import { QueryPayload } from './QueryPayload';
@@ -29,6 +30,26 @@ query {
             )
             .then((payload: QueryPayload) => {
                 return payload.me.activeTeam?.members || [];
+            });
+    }
+
+    public fetchTeams(): Promise<Team[]> {
+        return this.graphQLClient
+            .query(
+                `
+query {
+  me {
+    teams {
+      id
+      name
+      logoUrl
+    }
+  }
+}
+`,
+            )
+            .then((payload: QueryPayload) => {
+                return payload.me.teams;
             });
     }
 }
