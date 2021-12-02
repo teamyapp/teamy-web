@@ -4,28 +4,15 @@ import Team from '../entity/Team';
 import styles from './Drawer.component.module.scss';
 import MaterialIconComponent from './ui/MaterialIcon.component';
 
-interface OnMenuCloseHandler {
-    (): void;
-}
-
 interface IProps {
     teams: Team[];
-    onMenuClose?: OnMenuCloseHandler;
+    activeTeamId: number;
+    onMenuClose?: () => void;
+    onActiveTeamSelect?: (teamId: number) => void;
     isDrawerOpen: boolean;
 }
 
-interface IState {
-    activeTeamIndex: number;
-}
-
-export default class DrawerComponent extends Component<IProps, IState> {
-    constructor(props: any) {
-        super(props);
-        this.state = {
-            activeTeamIndex: 0,
-        };
-    }
-
+export default class DrawerComponent extends Component<IProps> {
     render = () => {
         return (
             <div
@@ -52,11 +39,14 @@ export default class DrawerComponent extends Component<IProps, IState> {
                         <div
                             className={`${styles.Team} ${classNames({
                                 [styles.Active]:
-                                    this.state.activeTeamIndex === index,
+                                    this.props.activeTeamId === team.id,
                             })}`}
                             key={index}
                         >
-                            <div className={styles.IconFrame}>
+                            <div
+                                className={styles.IconFrame}
+                                onClick={this.onTeamClick(team.id)}
+                            >
                                 <img
                                     className={styles.Icon}
                                     src={team.logoUrl}
@@ -71,6 +61,12 @@ export default class DrawerComponent extends Component<IProps, IState> {
     };
 
     onMenuToggle = () => {
-        this.props.onMenuClose?.call(this);
+        this.props.onMenuClose?.call(null);
+    };
+
+    onTeamClick = (teamId: number): (() => void) => {
+        return () => {
+            this.props.onActiveTeamSelect?.call(null, teamId);
+        };
     };
 }

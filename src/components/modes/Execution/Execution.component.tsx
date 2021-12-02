@@ -130,7 +130,7 @@ interface IContainerState {
     taskAdding?: Task;
 }
 
-class StatefulExecutionComponent extends Component<
+export class StatefulExecutionComponent extends Component<
     IContainerProps,
     IContainerState
 > {
@@ -180,7 +180,7 @@ class StatefulExecutionComponent extends Component<
             });
         });
 
-        await this.refreshExecutionStatus();
+        await this.refresh();
     }
 
     public componentWillUnmount() {
@@ -202,7 +202,7 @@ class StatefulExecutionComponent extends Component<
         if (task.goal.length > 0) {
             await this.props.deps.taskService.createTask(task);
 
-            await this.refreshExecutionStatus();
+            await this.refresh();
         }
 
         this.setState({
@@ -216,17 +216,17 @@ class StatefulExecutionComponent extends Component<
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.deleteTask(taskId);
-        await this.refreshExecutionStatus();
+        await this.refresh();
     };
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.startTask(taskId);
-        await this.refreshExecutionStatus();
+        await this.refresh();
     };
 
     private onCompleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.completeTask(taskId);
-        await this.refreshExecutionStatus();
+        await this.refresh();
     };
 
     private onPersonalAddClick = async (): Promise<void> => {
@@ -259,7 +259,7 @@ class StatefulExecutionComponent extends Component<
         return await this.props.deps.teamService.fetchTeamMembers();
     };
 
-    private async refreshExecutionStatus() {
+    public async refresh() {
         const personalStatus =
             await this.props.deps.executionModeService.fetchPersonalStatus();
         if (personalStatus) {
@@ -276,6 +276,7 @@ class StatefulExecutionComponent extends Component<
 }
 
 interface IHookProps {
+    executionRef: RefObject<StatefulExecutionComponent>;
     deps: Deps;
 }
 
@@ -284,6 +285,7 @@ export default function ExecutionComponentHook(props: IHookProps) {
     const routerHistory = useHistory();
     return (
         <StatefulExecutionComponent
+            ref={props.executionRef}
             deps={props.deps}
             routerUrl={url}
             routerHistory={routerHistory}
