@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Deps } from '../deps';
@@ -8,12 +8,17 @@ import store from '../store/store';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import DrawerComponent from './Drawer.component';
-import ExecutionComponentHook from './modes/Execution/Execution.component';
+import ExecutionComponentHook, {
+    StatefulExecutionComponent,
+} from './modes/Execution/Execution.component';
 import MaterialIconComponent from './ui/MaterialIcon.component';
 
 interface IProps {
+    executionRef: RefObject<StatefulExecutionComponent>;
     deps: Deps;
     teams: Team[];
+    activeTeamId: number;
+    onActiveTeamSelect?: (teamId: number) => void;
 }
 
 interface IState {
@@ -40,9 +45,11 @@ class AppComponent extends Component<IProps, IState> {
                     </Route>
                     <Route path={'/'}>
                         <DrawerComponent
+                            activeTeamId={this.props.activeTeamId}
                             teams={this.props.teams}
                             isDrawerOpen={this.state.isDrawerOpen}
                             onMenuClose={this.onMenuToggle}
+                            onActiveTeamSelect={this.props.onActiveTeamSelect}
                         />
                         <div className={styles.Content}>
                             <header className={styles.Header}>
@@ -63,6 +70,7 @@ class AppComponent extends Component<IProps, IState> {
                             <div className={styles.Execution}>
                                 {
                                     <ExecutionComponentHook
+                                        executionRef={this.props.executionRef}
                                         deps={this.props.deps}
                                     />
                                 }
@@ -87,27 +95,53 @@ interface IContainerProps {
 
 interface IContainerState {
     teams: Team[];
+    activeTeamId: number;
 }
 
 class AppComponentContainer extends Component<
     IContainerProps,
     IContainerState
 > {
+    private executionRef: RefObject<StatefulExecutionComponent> = createRef();
+
     constructor(props: IContainerProps) {
         super(props);
         this.state = {
             teams: [],
+            activeTeamId: -1,
         };
     }
+
     public render(): ReactElement {
-        return <AppComponent {...this.props} teams={this.state.teams} />;
+        return (
+            <AppComponent
+                executionRef={this.executionRef}
+                activeTeamId={this.state.activeTeamId}
+                teams={this.state.teams}
+                onActiveTeamSelect={this.onActiveTeamSelect}
+                {...this.props}
+            />
+        );
     }
 
     public async componentDidMount() {
+        await this.refresh();
+    }
+
+    private onActiveTeamSelect = async (teamId: number): Promise<void> => {
+        await this.props.deps.teamService.updateActiveTeamId(teamId);
+        await this.refresh();
+    };
+
+    private async refresh() {
         const teams = await this.props.deps.teamService.fetchTeams();
+        const activeTeamId =
+            await this.props.deps.teamService.fetchActiveTeamId();
         this.setState({
             teams,
+            activeTeamId,
         });
+        await this.executionRef.current?.refresh();
     }
 }
 

@@ -1,7 +1,7 @@
 import { User } from './User';
 
 export default interface Team {
-    id: string;
+    id: number;
     name: string;
     logoUrl: string;
     members?: User[];
