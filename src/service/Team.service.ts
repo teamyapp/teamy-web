@@ -1,10 +1,6 @@
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
-import Team from '../entity/Team';
-
-interface ActiveTeamQueryPayload {
-    activeTeam: Team;
-}
+import { QueryPayload } from './QueryPayload';
 
 export class TeamService {
     private readonly graphQLClient: GraphQLClient;
@@ -18,19 +14,21 @@ export class TeamService {
             .query(
                 `
 query {
-  activeTeam {
-    members {
-      id
-      firstName
-      lastName
-      profileUrl
+  me {
+    activeTeam {
+      members {
+        id
+        firstName
+        lastName
+        profileUrl
+      }
     }
   }
 }
 `,
             )
-            .then((payload: ActiveTeamQueryPayload) => {
-                return payload.activeTeam?.members || [];
+            .then((payload: QueryPayload) => {
+                return payload.me.activeTeam?.members || [];
             });
     }
 }
