@@ -29,7 +29,7 @@ query {
 `,
             )
             .then((payload: QueryPayload) => {
-                return payload.me.activeTeam?.members || [];
+                return payload?.me?.activeTeam?.members || [];
             });
     }
 
@@ -47,7 +47,7 @@ query {
 `,
             )
             .then((payload: QueryPayload) => {
-                return payload.me.activeTeam?.id || -1;
+                return payload?.me?.activeTeam?.id || -1;
             });
     }
 
