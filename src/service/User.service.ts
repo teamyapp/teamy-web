@@ -1,6 +1,5 @@
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
-import { QueryPayload } from './QueryPayload';
 
 export class UserService {
     private readonly graphQLClient: GraphQLClient;
@@ -23,7 +22,7 @@ query {
 }
 `,
             )
-            .then((payload: QueryPayload) => {
+            .then((payload: any) => {
                 return payload?.me;
             });
     }

@@ -1,3 +1,4 @@
+import Task from './Task';
 import Team from './Team';
 
 export interface User {
@@ -7,4 +8,6 @@ export interface User {
     profileUrl?: string;
     activeTeam?: Team;
     teams: Team[];
+    upcomingTasks?: Task[];
+    deliveredTasks?: Task[];
 }
