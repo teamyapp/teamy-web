@@ -32,9 +32,9 @@ export default class PersonalComponent extends Component<IProps> {
             <div className={styles.PersonalStatus}>
                 <div className={styles.NeedAttentionSection}>
                     <SectionComponent title={'Need Attention'}>
-                        {this.props.personalStatus.taskNeedAttention &&
+                        {this.props.personalStatus.needAttentionTask &&
                             this.renderExistingTask()(
-                                this.props.personalStatus.taskNeedAttention,
+                                this.props.personalStatus.needAttentionTask,
                             )}
                     </SectionComponent>
                 </div>

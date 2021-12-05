@@ -75,7 +75,9 @@ query {
             .query(
                 `
 mutation updateActiveTeam($teamId: ID!) {
-  updateActiveTeam(teamId: $teamId)
+  updateActiveTeam(teamId: $teamId) {
+    id
+  }
 }
 `,
                 {

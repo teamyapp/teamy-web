@@ -15,6 +15,9 @@ export class ExecutionModeService {
                 `
 query {
   me {
+    needAttentionTask {
+      ...taskPreview
+    }
     upcomingTasks: tasks(input: {
       status: UPCOMING
     }) {
@@ -44,6 +47,7 @@ fragment taskPreview on Task {
             )
             .then((payload: any) => {
                 return {
+                    needAttentionTask: payload?.me?.needAttentionTask,
                     upcomingTasks: payload?.me?.upcomingTasks || [],
                     deliveredTasks: payload?.me?.deliveredTasks || [],
                 };
@@ -55,20 +59,27 @@ fragment taskPreview on Task {
             .query<any>(
                 `
 query {
-  executionMode {
-    teamStatus {
-      upcomingTasks {
-       ...taskPreview
+  me {
+    activeTeam {
+      upcomingTasks: tasks(input: {
+        status: UPCOMING
+      }) {
+        ...taskPreview
       }
-      inProgressTasks {
-       ...taskPreview
+      inProgressTasks: tasks(input: {
+        status: IN_PROGRESS
+      }) {
+        ...taskPreview
       }
-      deliveredTasks {
-       ...taskPreview
+      deliveredTasks: tasks(input: {
+        status: DELIVERED
+      }) {
+        ...taskPreview
       }
     }
   }
 }
+
 fragment taskPreview on Task {
   id
   goal
@@ -84,7 +95,13 @@ fragment taskPreview on Task {
 `,
             )
             .then((payload: any) => {
-                return payload?.executionMode?.teamStatus;
+                return {
+                    upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],
+                    inProgressTasks:
+                        payload?.me?.activeTeam?.inProgressTasks || [],
+                    deliveredTasks:
+                        payload?.me?.activeTeam?.deliveredTasks || [],
+                };
             });
     }
 }

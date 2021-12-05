@@ -15,10 +15,10 @@ const slice = createSlice({
             state: PersonalStatus,
             action: PayloadAction<Task>,
         ) {
-            state.taskNeedAttention = action.payload;
+            state.needAttentionTask = action.payload;
         },
         clearNeedAttentionTask(state: PersonalStatus) {
-            state.taskNeedAttention = undefined;
+            state.needAttentionTask = undefined;
         },
         addIncomingTask(state: PersonalStatus, action: PayloadAction<Task>) {
             state.upcomingTasks.concat(action.payload);
@@ -36,7 +36,7 @@ const slice = createSlice({
             action: PayloadAction<PersonalStatus>,
         ) {
             state.upcomingTasks = action.payload.upcomingTasks;
-            state.taskNeedAttention = action.payload.taskNeedAttention;
+            state.needAttentionTask = action.payload.needAttentionTask;
             state.deliveredTasks = action.payload.deliveredTasks;
         },
     },
