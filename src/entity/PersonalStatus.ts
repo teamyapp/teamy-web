@@ -1,7 +1,7 @@
 import Task from './Task';
 
 export default interface PersonalStatus {
-    taskNeedAttention?: Task;
+    needAttentionTask?: Task;
     upcomingTasks: Task[];
     deliveredTasks: Task[];
 }
