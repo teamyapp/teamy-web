@@ -1,7 +1,6 @@
 import Team from '../entity/Team';
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
-import { MutationPayload, QueryPayload } from './QueryPayload';
 
 export class TeamService {
     private readonly graphQLClient: GraphQLClient;
@@ -28,7 +27,7 @@ query {
 }
 `,
             )
-            .then((payload: QueryPayload) => {
+            .then((payload: any) => {
                 return payload?.me?.activeTeam?.members || [];
             });
     }
@@ -46,7 +45,7 @@ query {
 }
 `,
             )
-            .then((payload: QueryPayload) => {
+            .then((payload: any) => {
                 return payload?.me?.activeTeam?.id || -1;
             });
     }
@@ -66,7 +65,7 @@ query {
 }
 `,
             )
-            .then((payload: QueryPayload) => {
+            .then((payload: any) => {
                 return payload?.me?.teams || [];
             });
     }
@@ -83,7 +82,7 @@ mutation updateActiveTeam($teamId: ID!) {
                     teamId,
                 },
             )
-            .then((payload: MutationPayload) => {
+            .then((payload: any) => {
                 return payload?.updateActiveTeam;
             });
     }

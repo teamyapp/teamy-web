@@ -2,15 +2,6 @@ import PersonalStatus from '../entity/PersonalStatus';
 import TeamStatus from '../entity/TeamStatus';
 import { GraphQLClient } from '../network/GraphQL.client';
 
-interface ExecutionModeQueryPayload {
-    executionMode: GQLExecutionMode;
-}
-
-interface GQLExecutionMode {
-    personalStatus: PersonalStatus;
-    teamStatus: TeamStatus;
-}
-
 export class ExecutionModeService {
     private readonly graphQLClient: GraphQLClient;
 
@@ -20,20 +11,19 @@ export class ExecutionModeService {
 
     public fetchPersonalStatus(): Promise<PersonalStatus> {
         return this.graphQLClient
-            .query<ExecutionModeQueryPayload>(
+            .query<any>(
                 `
 query {
-  executionMode {
-    personalStatus {
-      upcomingTasks {
-       ...taskPreview
-      }
-      taskNeedAttention {
-       ...taskPreview
-      }
-      deliveredTasks {
-       ...taskPreview
-      }
+  me {
+    upcomingTasks: tasks(input: {
+      status: UPCOMING
+    }) {
+      ...taskPreview
+    }
+    deliveredTasks: tasks(input: {
+      status: DELIVERED
+    }) {
+      ...taskPreview
     }
   }
 }
@@ -52,14 +42,17 @@ fragment taskPreview on Task {
 }
 `,
             )
-            .then((payload: ExecutionModeQueryPayload) => {
-                return payload?.executionMode?.personalStatus;
+            .then((payload: any) => {
+                return {
+                    upcomingTasks: payload?.me?.upcomingTasks || [],
+                    deliveredTasks: payload?.me?.deliveredTasks || [],
+                };
             });
     }
 
     public fetchTeamStatus(): Promise<TeamStatus> {
         return this.graphQLClient
-            .query<ExecutionModeQueryPayload>(
+            .query<any>(
                 `
 query {
   executionMode {
@@ -90,7 +83,7 @@ fragment taskPreview on Task {
 }
 `,
             )
-            .then((payload: ExecutionModeQueryPayload) => {
+            .then((payload: any) => {
                 return payload?.executionMode?.teamStatus;
             });
     }
