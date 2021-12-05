@@ -45,7 +45,7 @@ fragment taskPreview on Task {
             .then((payload: any) => {
                 return {
                     upcomingTasks: payload?.me?.upcomingTasks || [],
-                    deliveredTasks: payload?.me.deliveredTasks || [],
+                    deliveredTasks: payload?.me?.deliveredTasks || [],
                 };
             });
     }
