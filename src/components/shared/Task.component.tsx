@@ -196,9 +196,16 @@ export default class TaskComponent extends Component<IProps, IState> {
                 value={this.state.task.goal}
                 onChange={this.onGoalChange}
                 onKeyDown={this.onGoalKeyDown}
+                onBlur={this.onGoalBlur}
             />
         ) : (
-            <div className={styles.Goal}>{this.state.task.goal}</div>
+            <div className={styles.Goal} onDoubleClick={this.onGoalDoubleClick}>
+                {this.state.task.goal || (
+                    <span className={styles.Placeholder}>
+                        Set a goal for me
+                    </span>
+                )}
+            </div>
         );
     }
 
@@ -230,6 +237,10 @@ export default class TaskComponent extends Component<IProps, IState> {
         return actions.map(this.renderAction);
     }
 
+    private onGoalBlur = () => {
+        this.finishEditing();
+    };
+
     private onGoalKeyDown = (
         event: KeyboardEvent<HTMLTextAreaElement>,
     ): void => {
@@ -253,11 +264,17 @@ export default class TaskComponent extends Component<IProps, IState> {
     private onSelectOwner = (userId: number): void => {
         const task = Object.assign({}, this.state.task, {
             owner: {
-                id: userId
-            }
+                id: userId,
+            },
         });
         this.props.onTaskChanged?.call(this, task);
         this.closeTeamMembersList();
+    };
+
+    private onGoalDoubleClick = () => {
+        this.setState({
+            isEditing: true,
+        });
     };
 
     private finishEditing() {
