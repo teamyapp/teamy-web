@@ -252,7 +252,9 @@ export default class TaskComponent extends Component<IProps, IState> {
 
     private onSelectOwner = (userId: number): void => {
         const task = Object.assign({}, this.state.task, {
-            ownerUserId: userId,
+            owner: {
+                id: userId
+            }
         });
         this.props.onTaskChanged?.call(this, task);
         this.closeTeamMembersList();

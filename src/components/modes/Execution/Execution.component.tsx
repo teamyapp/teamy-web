@@ -210,8 +210,9 @@ export class StatefulExecutionComponent extends Component<
         });
     };
 
-    private onUpdateTask = (task: Task) => {
-        console.log('onUpdateTask', task);
+    private onUpdateTask = async(task: Task) => {
+        await this.props.deps.taskService.updateTask(task);
+        await this.refresh();
     };
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
