@@ -16,6 +16,15 @@
         --profile-width: 34px;
         --profile-height: 34px;
 
+        .SelectionIndicator {
+            --icon-size: 26px;
+            --icon-color: #00897b;
+            display: flex;
+            align-items: center;
+            width: 36px;
+            font-weight: bold;
+        }
+
         .Name {
             margin-left: 10px;
             display: flex;

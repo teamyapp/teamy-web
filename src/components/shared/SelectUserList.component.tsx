@@ -1,10 +1,12 @@
 import React, { Component, ReactElement } from 'react';
 import { User } from '../../entity/User';
+import MaterialIconComponent from '../ui/MaterialIcon.component';
 import styles from './SelectUserList.component.module.scss';
 import { UserProfile } from './UserProfile.component';
 
 interface IProps {
     users: User[];
+    selectedUserId?: number;
     onSelectUser?: (userId: number) => void;
     findUsers?: () => void;
 }
@@ -30,6 +32,11 @@ export class SelectUserListComponent extends Component<IProps> {
                 key={index}
                 onClick={this.onUserRowClick(user.id)}
             >
+                <div className={styles.SelectionIndicator}>
+                    {this.props.selectedUserId === user.id && (
+                        <MaterialIconComponent>check</MaterialIconComponent>
+                    )}
+                </div>
                 <UserProfile user={user} />
                 <div className={styles.Name}>{name}</div>
             </div>

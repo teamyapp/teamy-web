@@ -127,6 +127,7 @@ export default class TaskComponent extends Component<IProps, IState> {
                             </div>
                         </div>
                         <SelectUserListComponent
+                            selectedUserId={this.props.task.owner?.id}
                             users={this.state.potentialOwners}
                             onSelectUser={this.onSelectOwner}
                             findUsers={this.findPotentialOwners}
