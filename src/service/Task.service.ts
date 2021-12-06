@@ -43,6 +43,27 @@ query getTask($id: ID!) {
             });
     }
 
+    public updateTask(task: Task): Promise<boolean> {
+        return this.graphQLClient.query<boolean>(
+            `
+mutation updateTask($taskId: ID!, $taskInput: TaskInput!) {
+  updateTask(taskId: $taskId, task: $taskInput) {
+    id
+  }
+}
+`,
+            {
+                taskId: task.id,
+                taskInput: {
+                    context: task.context,
+                    dueAt: task.dueAt,
+                    goal: task.goal,
+                    ownerUserId: task.owner?.id,
+                },
+            },
+        );
+    }
+
     public deleteTask(taskId: number): Promise<boolean> {
         return this.graphQLClient.query<boolean>(
             `
