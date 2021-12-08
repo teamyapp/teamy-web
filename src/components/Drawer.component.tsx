@@ -49,7 +49,7 @@ export default class DrawerComponent extends Component<IProps> {
                             >
                                 <img
                                     className={styles.Icon}
-                                    src={team.logoUrl}
+                                    src={team.iconUrl}
                                     alt={team.name}
                                 />
                             </div>

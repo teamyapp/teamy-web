@@ -84,23 +84,17 @@ export default class TeamComponent extends Component<IProps> {
     }
 
     private renderNewTask = (): ((task: Task) => ReactElement) => {
-        return this.renderTask(
-            true,
-            false,
-            this.props.onCreateTask,
-            this.props.onNewTaskChange,
-        );
+        return this.renderTask(true, false, this.props.onCreateTask);
     };
 
     private renderExistingTask = (): ((task: Task) => ReactElement) => {
-        return this.renderTask(false, true, undefined, this.props.onUpdateTask);
+        return this.renderTask(false, true, this.props.onUpdateTask);
     };
 
     private renderTask = (
         isEditing: boolean,
         canViewDetail: boolean,
         onTaskFinishEditing?: (task: Task) => void,
-        onTaskChange?: (task: Task) => void,
     ): ((task: Task) => ReactElement) => {
         return (task: Task) => {
             return (
@@ -113,7 +107,6 @@ export default class TeamComponent extends Component<IProps> {
                             this.props.findPotentialOwnersForTask
                         }
                         onTaskDetailClick={this.props.onViewTaskDetailClick}
-                        onTaskChanged={onTaskChange}
                         onTaskFinishEditing={onTaskFinishEditing}
                         onDeleteTaskClick={this.props.onDeleteTaskClick}
                         onStartTaskClick={this.props.onStartTaskClick}

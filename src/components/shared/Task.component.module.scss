@@ -1,3 +1,4 @@
+@use 'sass:math';
 @import '../../styleguide/divider';
 @import '../../styleguide/elevation';
 
@@ -75,7 +76,7 @@ $edgeSpace: 12px;
         padding-left: $edgeSpace;
         grid-auto-rows: min-content;
         grid-template-columns: repeat($numOfActionColumns, 1fr);
-        gap: $edgeSpace / 2;
+        gap: math.div($edgeSpace, 2);
 
         .Action {
             width: $actionIconSize;

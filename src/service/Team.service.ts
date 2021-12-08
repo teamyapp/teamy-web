@@ -59,7 +59,7 @@ query {
     teams {
       id
       name
-      logoUrl
+      iconUrl
     }
   }
 }
