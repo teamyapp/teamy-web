@@ -23,7 +23,6 @@ interface IProps {
     isEditing?: boolean;
     findPotentialOwners?: (taskId: number) => Promise<User[]>;
     onTaskDetailClick?: (taskId: number) => void;
-    onTaskChanged?: (task: Task) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
     onStartTaskClick?: (taskId: number) => void;
@@ -259,7 +258,6 @@ export default class TaskComponent extends Component<IProps, IState> {
         this.setState({
             task: task,
         });
-        this.props.onTaskChanged?.call(this, task);
     };
 
     private onSelectOwner = (userId: number): void => {
@@ -268,7 +266,7 @@ export default class TaskComponent extends Component<IProps, IState> {
                 id: userId,
             },
         });
-        this.props.onTaskChanged?.call(this, task);
+        this.props.onTaskFinishEditing?.call(this, task);
         this.closeTeamMembersList();
     };
 

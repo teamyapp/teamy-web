@@ -1,10 +1,6 @@
 import Task from '../entity/Task';
 import { GraphQLClient } from '../network/GraphQL.client';
 
-interface TaskQueryPayload {
-    task: Task;
-}
-
 export class TaskService {
     private readonly graphQLClient: GraphQLClient;
 
@@ -14,7 +10,7 @@ export class TaskService {
 
     public fetchTask(taskId: number): Promise<Task> {
         return this.graphQLClient
-            .query<TaskQueryPayload>(
+            .query<Task>(
                 `
 query getTask($id: ID!) {
   task(id: $id) {
@@ -28,23 +24,22 @@ query getTask($id: ID!) {
         lastName
         profileUrl
     }
-    effort
-    numOfUnknowns
+    // effort
+    // numOfUnknowns
     availableActions
     createdAt
-    updatedAt
   }
 }
 `,
-                { id: taskId },
+                { id: `${taskId}` },
             )
-            .then((payload: TaskQueryPayload) => {
+            .then((payload: any) => {
                 return payload?.task;
             });
     }
 
-    public updateTask(task: Task): Promise<boolean> {
-        return this.graphQLClient.query<boolean>(
+    public updateTask(task: Task): Promise<Task> {
+        return this.graphQLClient.query<Task>(
             `
 mutation updateTask($taskId: ID!, $taskInput: TaskInput!) {
   updateTask(taskId: $taskId, task: $taskInput) {
@@ -53,7 +48,7 @@ mutation updateTask($taskId: ID!, $taskInput: TaskInput!) {
 }
 `,
             {
-                taskId: task.id,
+                taskId: `${task.id}`,
                 taskInput: {
                     context: task.context,
                     dueAt: task.dueAt,
@@ -64,41 +59,60 @@ mutation updateTask($taskId: ID!, $taskInput: TaskInput!) {
         );
     }
 
-    public deleteTask(taskId: number): Promise<boolean> {
-        return this.graphQLClient.query<boolean>(
+    public deleteTask(taskId: number): Promise<Task> {
+        return this.graphQLClient.query<Task>(
             `
 mutation deleteTask($id: ID!) {
-  deleteTask(taskId: $id)
+  deleteTask(taskId: $id) {
+    id
+  }
 }
 `,
-            { id: taskId },
+            { id: `${taskId}` },
         );
     }
 
-    public startTask(taskId: number): Promise<boolean> {
-        return this.graphQLClient.query<boolean>(
+    public startTask(taskId: number): Promise<any> {
+        return this.graphQLClient.query<any>(
             `
-mutation startTask($id: ID!) {
-  startTask(taskId: $id)
+mutation startTask($taskId: ID!, $task: TaskInput!) {
+  updateTask(taskId: $taskId, task: $task) {
+    id
+  }
+  promoteTaskToNeedAttention(taskId: $taskId) {
+    id
+  }
 }
 `,
-            { id: taskId },
+            {
+                taskId: `${taskId}`,
+                task: {
+                    status: 'IN_PROGRESS',
+                },
+            },
         );
     }
 
-    public completeTask(taskId: number): Promise<boolean> {
-        return this.graphQLClient.query<boolean>(
+    public completeTask(taskId: number): Promise<any> {
+        return this.graphQLClient.query<any>(
             `
-mutation completeTask($id: ID!) {
-  completeTask(taskId: $id)
+mutation completeTask($taskId: ID!, $task: TaskInput!) {
+  updateTask(taskId: $taskId, task: $task) {
+    id
+  }
 }
 `,
-            { id: taskId },
+            {
+                taskId: `${taskId}`,
+                task: {
+                    status: 'DELIVERED',
+                },
+            },
         );
     }
 
-    public createTask(task: Task): Promise<boolean> {
-        return this.graphQLClient.query<boolean>(
+    public createTask(task: Task): Promise<Task> {
+        return this.graphQLClient.query<Task>(
             `
 mutation createTask($taskInput: TaskInput!) {
   createTask (task: $taskInput) {

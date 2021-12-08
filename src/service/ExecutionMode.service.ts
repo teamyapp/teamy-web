@@ -9,24 +9,28 @@ export class ExecutionModeService {
         this.graphQLClient = graphQLClient;
     }
 
-    public fetchPersonalStatus(): Promise<PersonalStatus> {
+    public fetchPersonalStatus(userId: number): Promise<PersonalStatus> {
         return this.graphQLClient
             .query<any>(
                 `
-query {
+query personalStatus($userId: ID!) {
   me {
-    needAttentionTask {
-      ...taskPreview
-    }
-    upcomingTasks: tasks(input: {
-      status: UPCOMING
-    }) {
-      ...taskPreview
-    }
-    deliveredTasks: tasks(input: {
-      status: DELIVERED
-    }) {
-      ...taskPreview
+    activeTeam {
+      tasksNeedAttention(isMine: true) {
+         ...taskPreview
+      }
+      upcomingTasks: tasks(input: {
+        status: UPCOMING
+        ownerId: $userId
+      }) {
+        ...taskPreview
+      }
+      deliveredTasks: tasks(input: {
+          status: DELIVERED
+          ownerId: $userId
+      }) {
+          ...taskPreview
+      }
     }
   }
 }
@@ -44,12 +48,14 @@ fragment taskPreview on Task {
   availableActions
 }
 `,
-            )
+                {
+                    userId: userId,
+                })
             .then((payload: any) => {
                 return {
-                    needAttentionTask: payload?.me?.needAttentionTask,
-                    upcomingTasks: payload?.me?.upcomingTasks || [],
-                    deliveredTasks: payload?.me?.deliveredTasks || [],
+                    needAttentionTask: payload?.me?.activeTeam?.tasksNeedAttention[0],
+                    upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],
+                    deliveredTasks: payload?.me?.activeTeam?.deliveredTasks || [],
                 };
             });
     }
