@@ -263,7 +263,9 @@ export class StatefulExecutionComponent extends Component<
     public async refresh() {
         const user = await this.props.deps.userService.fetchMe();
         const personalStatus =
-            await this.props.deps.executionModeService.fetchPersonalStatus(user?.id || -1);
+            await this.props.deps.executionModeService.fetchPersonalStatus(
+                user?.id || -1,
+            );
         if (personalStatus) {
             store.dispatch(updatePersonalStatus(personalStatus));
         }
