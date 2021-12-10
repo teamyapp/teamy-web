@@ -50,12 +50,15 @@ fragment taskPreview on Task {
 `,
                 {
                     userId: userId,
-                })
+                },
+            )
             .then((payload: any) => {
                 return {
-                    needAttentionTask: payload?.me?.activeTeam?.tasksNeedAttention[0],
+                    needAttentionTask:
+                        payload?.me?.activeTeam?.tasksNeedAttention[0],
                     upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],
-                    deliveredTasks: payload?.me?.activeTeam?.deliveredTasks || [],
+                    deliveredTasks:
+                        payload?.me?.activeTeam?.deliveredTasks || [],
                 };
             });
     }

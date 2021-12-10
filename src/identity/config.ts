@@ -11,7 +11,7 @@ export interface Config {
 const developmentConfig: Config = {
     httpProtocol: 'http',
     webSocketProtocol: 'ws',
-    apiBaseEndpoint: 'localhost:9500',
+    apiBaseEndpoint: 'localhost:9500/identity',
     cookieDomain: 'localhost',
     cookieSecure: false,
 };
@@ -19,7 +19,7 @@ const developmentConfig: Config = {
 const testingConfig: Config = {
     httpProtocol: 'https',
     webSocketProtocol: 'wss',
-    apiBaseEndpoint: 'identity.testing.teamyapp.com',
+    apiBaseEndpoint: 'cloud.testing.teamyapp.com/identity',
     cookieDomain: 'testing.teamyapp.com',
     cookieSecure: true,
 };
@@ -27,7 +27,7 @@ const testingConfig: Config = {
 const stagingConfig: Config = {
     httpProtocol: 'https',
     webSocketProtocol: 'wss',
-    apiBaseEndpoint: 'identity.staging.teamyapp.com',
+    apiBaseEndpoint: 'cloud.staging.teamyapp.com/identity',
     cookieDomain: 'staging.teamyapp.com',
     cookieSecure: true,
 };
@@ -35,7 +35,7 @@ const stagingConfig: Config = {
 const productionConfig: Config = {
     httpProtocol: 'https',
     webSocketProtocol: 'wss',
-    apiBaseEndpoint: 'identity.teamyapp.com',
+    apiBaseEndpoint: 'cloud.teamyapp.com/identity',
     cookieDomain: 'teamyapp.com',
     cookieSecure: true,
 };

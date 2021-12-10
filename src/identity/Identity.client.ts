@@ -98,7 +98,7 @@ export class IdentityClient {
 
     private async verifyToken(accessToken: string): Promise<boolean> {
         const result = await this.httpClient.request(
-            `${this.httpBaseEndpoint}/identity/verify-token`,
+            `${this.httpBaseEndpoint}/verify-token`,
             {
                 method: 'POST',
                 body: accessToken,
