@@ -36,6 +36,7 @@ steps:
       bucket: teamyapp
       region: sfo3
       rebuild: true
+      override: false
       cache_key: '{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
