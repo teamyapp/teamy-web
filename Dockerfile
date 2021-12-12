@@ -4,11 +4,9 @@ WORKDIR /app
 
 RUN apk add --no-cache git bash g++ make python3
 
-COPY package.json yarn.lock ./
+COPY . .
 
 RUN yarn install --frozen-lockfile
-
-COPY . .
 
 ARG ENVIRONMENT
 
