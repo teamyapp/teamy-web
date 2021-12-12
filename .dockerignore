@@ -1,3 +1,4 @@
 README.md
 .drone.yml
 .gitignore
+node_modules

@@ -89,6 +89,15 @@ steps:
         from_secret: DOCKER_PASSWORD
       repo: registry.digitalocean.com/teamyapp/teamy-web-testing
       registry: registry.digitalocean.com
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web-testing",
+          "tag": "latest"
+        }
   - name: rebuild cache
     image: meltwater/drone-cache
     environment:
@@ -104,15 +113,6 @@ steps:
       cache_key: '{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
-  - name: notify image update
-    image: plugins/webhook
-    settings:
-      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
-      template: |
-        {
-          "name": "registry.digitalocean.com/teamyapp/teamy-web-testing",
-          "tag": "latest"
-        }
   - name: slack
     image: plugins/slack
     settings:
@@ -162,6 +162,16 @@ steps:
         from_secret: DOCKER_PASSWORD
       repo: registry.digitalocean.com/teamyapp/teamy-web-staging
       registry: registry.digitalocean.com
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      content_type: application/json
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web-staging",
+          "tag": "latest"
+        }
   - name: rebuild cache
     image: meltwater/drone-cache
     environment:
@@ -177,16 +187,6 @@ steps:
       cache_key: '{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
-  - name: notify image update
-    image: plugins/webhook
-    settings:
-      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
-      content_type: application/json
-      template: |
-        {
-          "name": "registry.digitalocean.com/teamyapp/teamy-web-staging",
-          "tag": "latest"
-        }
   - name: slack
     image: plugins/slack
     settings:
