@@ -1,4 +1,4 @@
-const CracoSwcPlugin = require('craco-swc');
+const CracoEsbuildPlugin = require('craco-esbuild');
 const { DefinePlugin } = require('webpack');
 const childProcess = require('child_process');
 
@@ -28,22 +28,7 @@ module.exports = {
     },
     plugins: [
         {
-            plugin: CracoSwcPlugin,
-            options: {
-                swcLoaderOptions: {
-                    jsc: {
-                        parser: {
-                            syntax: 'typescript',
-                            tsx: true,
-                            dynamicImport: true,
-                        },
-                        target: 'es5',
-                        loose: false,
-                        externalHelpers: true,
-                        keepClassNames: false,
-                    },
-                },
-            },
+            plugin: CracoEsbuildPlugin,
         },
     ],
 };
