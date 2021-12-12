@@ -2,3 +2,6 @@ README.md
 .drone.yml
 .gitignore
 node_modules
+docs
+src
+k8s
