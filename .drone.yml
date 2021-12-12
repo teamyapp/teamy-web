@@ -3,12 +3,42 @@ type: kubernetes
 name: feature
 
 steps:
-  - name: Run unit tests
+  - name: restore cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      restore: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: run unit tests
     image: node:16.13.0-alpine3.13
     commands:
       - apk add --no-cache git g++ make python3
-      - yarn install --frozen-lockfile
+      - yarn install --pure-lockfile
       - CI=true yarn test
+  - name: rebuild cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      rebuild: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
   - name: slack
     image: plugins/slack
     settings:
@@ -29,6 +59,21 @@ type: kubernetes
 name: testing
 
 steps:
+  - name: restore cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      restore: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
   - name: build & publish Docker image
     image: plugins/docker
     settings:
@@ -41,6 +86,21 @@ steps:
       target: production
       build_args:
         - ENVIRONMENT=testing
+  - name: rebuild cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      rebuild: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
   - name: notify image update
     image: plugins/webhook
     settings:
@@ -69,6 +129,21 @@ type: kubernetes
 name: staging
 
 steps:
+  - name: restore cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      restore: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
   - name: build & publish Docker image
     image: plugins/docker
     settings:
@@ -81,6 +156,21 @@ steps:
       target: production
       build_args:
         - ENVIRONMENT=staging
+  - name: rebuild cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      rebuild: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
   - name: notify image update
     image: plugins/webhook
     settings:
@@ -111,6 +201,21 @@ type: kubernetes
 name: production
 
 steps:
+  - name: restore cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      restore: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
   - name: build & publish Docker image
     image: plugins/docker
     settings:
@@ -132,6 +237,21 @@ steps:
           "name": "registry.digitalocean.com/teamyapp/teamy-web",
           "tag": "latest"
         }
+  - name: rebuild cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      rebuild: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
   - name: slack
     image: plugins/slack
     settings:
