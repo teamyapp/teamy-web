@@ -74,6 +74,21 @@ steps:
       cache_key: '{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
+  - name: build frontend
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git g++ make python3
+      - yarn install --frozen-lockfile
+      - yarn build:testing
+  - name: build & publish Docker image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      repo: registry.digitalocean.com/teamyapp/teamy-web-testing
+      registry: registry.digitalocean.com
   - name: build & publish Docker image
     image: plugins/docker
     settings:
@@ -144,6 +159,12 @@ steps:
       cache_key: '{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
+  - name: build frontend
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git g++ make python3
+      - yarn install --frozen-lockfile
+      - yarn build:staging
   - name: build & publish Docker image
     image: plugins/docker
     settings:
@@ -153,9 +174,6 @@ steps:
         from_secret: DOCKER_PASSWORD
       repo: registry.digitalocean.com/teamyapp/teamy-web-staging
       registry: registry.digitalocean.com
-      target: production
-      build_args:
-        - ENVIRONMENT=staging
   - name: rebuild cache
     image: meltwater/drone-cache
     environment:
@@ -216,6 +234,12 @@ steps:
       cache_key: '{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
+  - name: build frontend
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git g++ make python3
+      - yarn install --frozen-lockfile
+      - yarn build:production
   - name: build & publish Docker image
     image: plugins/docker
     settings:
@@ -225,9 +249,6 @@ steps:
         from_secret: DOCKER_PASSWORD
       repo: registry.digitalocean.com/teamyapp/teamy-web
       registry: registry.digitalocean.com
-      target: production
-      build_args:
-        - ENVIRONMENT=production
   - name: notify image update
     image: plugins/webhook
     settings:
