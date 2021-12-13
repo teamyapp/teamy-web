@@ -1,4 +1,6 @@
 .Section {
+    display: flex;
+    flex-direction: column;
     padding: 0 10px 10px 10px;
     background-color: var(--background-color, white);
     height: 100%;
@@ -6,10 +8,11 @@
     border-radius: 6px;
 
     .Header {
+        margin-top: 5px;
         display: flex;
         font-size: 22px;
         font-weight: bolder;
-        height: 70px;
+        height: 50px;
         padding: 0 20px;
         align-items: center;
         color: var(--title-color, black);
@@ -17,5 +20,11 @@
         .Actions {
             flex: 1;
         }
+    }
+
+    .Content {
+        flex: 1;
+        overflow-y: scroll;
+        padding: 5px;
     }
 }

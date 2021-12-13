@@ -16,7 +16,7 @@ $selectedTeamIndicatorColor: #1976d2;
     background-color: $drawerBackgroundColor;
 
     &.Show {
-        width: 120px;
+        width: 100px;
     }
 
     @include header;

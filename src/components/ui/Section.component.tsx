@@ -1,4 +1,4 @@
-import React, { Children, Component, ReactElement } from 'react';
+import React, { Component, ReactElement } from 'react';
 
 import styles from './Section.component.module.scss';
 
@@ -15,9 +15,7 @@ export default class SectionComponent extends Component<IProps> {
                     <div>{this.props.title}</div>
                     <div className={styles.Actions}>{this.props.actions}</div>
                 </div>
-                {Children.count(this.props.children) > 0 && (
-                    <div>{this.props.children}</div>
-                )}
+                <div className={styles.Content}>{this.props.children}</div>
             </section>
         );
     }
