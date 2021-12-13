@@ -1,3 +1,4 @@
+import { FetchPolicy } from '@apollo/client';
 import { History, LocationState } from 'history';
 import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
@@ -267,7 +268,6 @@ export class StatefulExecutionComponent extends Component<
     private onCreateTask = async (task: Task): Promise<void> => {
         if (task.goal.length > 0) {
             await this.props.deps.taskService.createTask(task);
-
             await this.refresh();
         }
 
@@ -298,7 +298,7 @@ export class StatefulExecutionComponent extends Component<
 
     private onPersonalAddClick = async (): Promise<void> => {
         console.log('onPersonalAddClick');
-        const user = await this.props.deps.userService.fetchMe();
+        const user = await this.props.deps.userService.fetchMe("cache-first");
         this.setState({
             taskAdding: {
                 id: -1,
@@ -362,17 +362,17 @@ export class StatefulExecutionComponent extends Component<
     };
 
     public async refresh() {
-        const user = await this.props.deps.userService.fetchMe();
+        const user = await this.props.deps.userService.fetchMe("network-only");
         const personalStatus =
             await this.props.deps.executionModeService.fetchPersonalStatus(
-                user?.id || -1,
+                user?.id || -1, "network-only"
             );
         if (personalStatus) {
             store.dispatch(updatePersonalStatus(personalStatus));
         }
 
         const teamStatus =
-            await this.props.deps.executionModeService.fetchTeamStatus();
+            await this.props.deps.executionModeService.fetchTeamStatus("network-only");
 
         if (teamStatus) {
             store.dispatch(updateTeamStatus(teamStatus));

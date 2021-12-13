@@ -3,7 +3,10 @@ import {
     ApolloClient,
     InMemoryCache,
     gql,
-    NormalizedCacheObject
+    NormalizedCacheObject,
+    DocumentNode,
+    MutationOptions,
+    QueryOptions
 } from "@apollo/client";
 import Cookies from 'js-cookie';
 
@@ -28,16 +31,13 @@ export class GraphQLClient {
         });
     }
 
-    async query<Payload>(query: string, variables?: any): Promise<any> {
-        const body = {
-            query: query,
-            variables: variables,
-        };
+    async mutate(options: MutationOptions): Promise<any> {
+        const result = await this.client.mutate(options)
+        return result.data
+    }
 
-        const result = await this.client.query({
-            query: gql`${query}`,
-            variables: variables
-        })
+    async query<Payload>(query: QueryOptions): Promise<any> {
+        const result = await this.client.query(query)
         return result.data
 
         // const [payload, error] = await this.httpClient.request(

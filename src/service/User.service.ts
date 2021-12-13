@@ -1,3 +1,4 @@
+import { FetchPolicy, gql } from '@apollo/client';
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
 
@@ -8,11 +9,20 @@ export class UserService {
         this.graphQLClient = graphQLClient;
     }
 
-    public fetchMe(): Promise<User> {
+    public fetchMe(policy: FetchPolicy): Promise<User> {
         return this.graphQLClient
             .query(
-                `
-query {
+                { query: QueryMe, fetchPolicy: policy },
+            )
+            .then((payload: any) => {
+                return payload?.me;
+            });
+    }
+}
+
+
+const QueryMe = gql`
+query Me {
    me{
     id
     firstName
@@ -20,10 +30,4 @@ query {
     profileUrl
   } 
 }
-`,
-            )
-            .then((payload: any) => {
-                return payload?.me;
-            });
-    }
-}
+`

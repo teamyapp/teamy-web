@@ -1,95 +1,64 @@
+import { gql } from '@apollo/client';
 import Team from '../entity/Team';
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
+import { QueryActiveTeamId, QueryTeamMembers, QueryTeams } from './queries';
 
 export class TeamService {
-    private readonly graphQLClient: GraphQLClient;
+  private readonly graphQLClient: GraphQLClient;
 
-    constructor(graphQLClient: GraphQLClient) {
-        this.graphQLClient = graphQLClient;
-    }
-
-    public fetchTeamMembers(): Promise<User[]> {
-        return this.graphQLClient
-            .query(
-                `
-query {
-  me {
-    id
-    activeTeam {
-      id
-      members {
-        id
-        firstName
-        lastName
-        profileUrl
-      }
-    }
+  constructor(graphQLClient: GraphQLClient) {
+    this.graphQLClient = graphQLClient;
   }
-}
-`,
-            )
-            .then((payload: any) => {
-                return payload?.me?.activeTeam?.members || [];
-            });
-    }
 
-    public fetchActiveTeamId(): Promise<number> {
-        return this.graphQLClient
-            .query(
-                `
-query {
-  me {
-    id
-    activeTeam {
-      id
-    }
+  public fetchTeamMembers(): Promise<User[]> {
+    return this.graphQLClient
+      .query(
+        { query: QueryTeamMembers },
+      )
+      .then((payload: any) => {
+        return payload?.me?.activeTeam?.members || [];
+      });
   }
-}
-`,
-            )
-            .then((payload: any) => {
-                return payload?.me?.activeTeam?.id || -1;
-            });
-    }
 
-    public fetchTeams(): Promise<Team[]> {
-        return this.graphQLClient
-            .query(
-                `
-query {
-  me {
-    id
-    teams {
-      id
-      name
-      iconUrl
-    }
+  public fetchActiveTeamId(): Promise<number> {
+    return this.graphQLClient
+      .query(
+        { query: QueryActiveTeamId },
+      )
+      .then((payload: any) => {
+        return payload?.me?.activeTeam?.id || -1;
+      });
   }
-}
-`,
-            )
-            .then((payload: any) => {
-                return payload?.me?.teams || [];
-            });
-    }
 
-    public updateActiveTeamId(teamId: number): Promise<boolean> {
-        return this.graphQLClient
-            .query(
-                `
+  public fetchTeams(): Promise<Team[]> {
+    return this.graphQLClient
+      .query(
+        { query: QueryTeams },
+      )
+      .then((payload: any) => {
+        return payload?.me?.teams || [];
+      });
+  }
+
+  public updateActiveTeamId(teamId: number): Promise<boolean> {
+    return this.graphQLClient
+      .mutate({
+        mutation: gql`
 mutation updateActiveTeam($teamId: ID!) {
   updateActiveTeam(teamId: $teamId) {
     id
   }
 }
 `,
-                {
-                    teamId,
-                },
-            )
-            .then((payload: any) => {
-                return payload?.updateActiveTeam;
-            });
-    }
+        variables: {
+          teamId,
+        },
+      })
+      .then((payload: any) => {
+        return payload?.updateActiveTeam;
+      });
+  }
 }
+
+

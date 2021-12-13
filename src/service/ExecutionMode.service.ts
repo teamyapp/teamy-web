@@ -1,120 +1,43 @@
+import { FetchPolicy } from '@apollo/client';
 import PersonalStatus from '../entity/PersonalStatus';
 import TeamStatus from '../entity/TeamStatus';
 import { GraphQLClient } from '../network/GraphQL.client';
+import { QueryPersonalStatus, QueryTeamStatus } from './queries';
+
+
 
 export class ExecutionModeService {
-    private readonly graphQLClient: GraphQLClient;
+  private readonly graphQLClient: GraphQLClient;
 
-    constructor(graphQLClient: GraphQLClient) {
-        this.graphQLClient = graphQLClient;
-    }
-
-    public fetchPersonalStatus(userId: number): Promise<PersonalStatus> {
-        return this.graphQLClient
-            .query<any>(
-                `
-query personalStatus($userId: ID!) {
-  me {
-    id
-    activeTeam {
-      id
-      tasksNeedAttention(isMine: true) {
-         ...taskPreview
-      }
-      upcomingTasks: tasks(input: {
-        status: UPCOMING
-        ownerId: $userId
-      }) {
-        ...taskPreview
-      }
-      deliveredTasks: tasks(input: {
-          status: DELIVERED
-          ownerId: $userId
-      }) {
-          ...taskPreview
-      }
-    }
+  constructor(graphQLClient: GraphQLClient) {
+    this.graphQLClient = graphQLClient;
   }
-}
 
-fragment taskPreview on Task {
-  id
-  goal
-  dueAt
-  owner {
-    id
-    firstName
-    lastName
-    profileUrl
+  public fetchPersonalStatus(userId: number, policy: FetchPolicy): Promise<PersonalStatus> {
+    return this.graphQLClient
+      .query<any>({ query: QueryPersonalStatus, variables: { userId: userId }, fetchPolicy: policy })
+      .then((payload: any) => {
+        return {
+          needAttentionTask:
+            payload?.me?.activeTeam?.tasksNeedAttention[0],
+          upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],
+          deliveredTasks:
+            payload?.me?.activeTeam?.deliveredTasks || [],
+        };
+      });
   }
-  availableActions
-}
-`,
-                {
-                    userId: userId,
-                },
-            )
-            .then((payload: any) => {
-                return {
-                    needAttentionTask:
-                        payload?.me?.activeTeam?.tasksNeedAttention[0],
-                    upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],
-                    deliveredTasks:
-                        payload?.me?.activeTeam?.deliveredTasks || [],
-                };
-            });
-    }
 
-    public fetchTeamStatus(): Promise<TeamStatus> {
-        return this.graphQLClient
-            .query<any>(
-                `
-query {
-  me {
-    id
-    activeTeam {
-      id
-      upcomingTasks: tasks(input: {
-        status: UPCOMING
-      }) {
-        ...taskPreview
-      }
-      inProgressTasks: tasks(input: {
-        status: IN_PROGRESS
-      }) {
-        ...taskPreview
-      }
-      deliveredTasks: tasks(input: {
-        status: DELIVERED
-      }) {
-        ...taskPreview
-      }
-    }
+  public fetchTeamStatus(policy: FetchPolicy): Promise<TeamStatus> {
+    return this.graphQLClient
+      .query<any>({query: QueryTeamStatus, fetchPolicy: policy})
+      .then((payload: any) => {
+        return {
+          upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],
+          inProgressTasks:
+            payload?.me?.activeTeam?.inProgressTasks || [],
+          deliveredTasks:
+            payload?.me?.activeTeam?.deliveredTasks || [],
+        };
+      });
   }
-}
-
-fragment taskPreview on Task {
-  id
-  goal
-  dueAt
-  owner {
-    id
-    firstName
-    lastName
-    profileUrl
-  }
-  availableActions
-}
-`,
-            )
-            .then((payload: any) => {
-                return {
-                    upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],
-                    inProgressTasks:
-                        payload?.me?.activeTeam?.inProgressTasks || [],
-                    deliveredTasks:
-                        payload?.me?.activeTeam?.deliveredTasks || [],
-                };
-            });
-    }
 }
