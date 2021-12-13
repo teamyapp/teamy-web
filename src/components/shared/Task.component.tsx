@@ -4,14 +4,13 @@ import React, {
     Component,
     createRef,
     KeyboardEvent,
+    MouseEvent,
     ReactElement,
 } from 'react';
 import Task from '../../entity/Task';
 import { TaskAction } from '../../entity/TaskAction';
-import { User } from '../../entity/User';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
 import NamedValueComponent from '../ui/NamedValue.component';
-import { SelectUserListComponent } from './SelectUserList.component';
 import styles from './Task.component.module.scss';
 import { UserProfile } from './UserProfile.component';
 
@@ -21,19 +20,24 @@ interface IProps {
     canViewDetail: boolean;
     task: Task;
     isEditing?: boolean;
-    findPotentialOwners?: (taskId: number) => Promise<User[]>;
+    isOwnerSelected: boolean;
     onTaskDetailClick?: (taskId: number) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
     onStartTaskClick?: (taskId: number) => void;
     onCompleteTaskClick?: (taskId: number) => void;
+    onShowPotentialTaskOwners?: (
+        task: Task,
+        buttonLeft: number,
+        buttonTop: number,
+        buttonWidth: number,
+        buttonHeight: number,
+    ) => void;
 }
 
 interface IState {
     task: Task;
     isEditing: boolean;
-    showTeamMembersList: boolean;
-    potentialOwners: User[];
 }
 
 export default class TaskComponent extends Component<IProps, IState> {
@@ -44,8 +48,6 @@ export default class TaskComponent extends Component<IProps, IState> {
         this.state = {
             task: this.props.task,
             isEditing: props.isEditing || false,
-            showTeamMembersList: false,
-            potentialOwners: [],
         };
     }
 
@@ -103,7 +105,7 @@ export default class TaskComponent extends Component<IProps, IState> {
                     className={`${styles.Action} ${
                         styles.AssignOwnerIcon
                     } ${classNames({
-                        [styles.Active]: this.state.showTeamMembersList,
+                        [styles.Active]: this.props.isOwnerSelected,
                     })}`}
                     onClick={this.onAssignOwnerClick}
                 >
@@ -113,26 +115,6 @@ export default class TaskComponent extends Component<IProps, IState> {
                         <MaterialIconComponent>face</MaterialIconComponent>
                     )}
                 </div>
-                {this.state.showTeamMembersList && (
-                    <div className={styles.TeamMemberList}>
-                        <div className={styles.TeamMemberListHeader}>
-                            <div
-                                className={styles.CloseButton}
-                                onClick={this.onCloseTeamMembersListClick}
-                            >
-                                <MaterialIconComponent>
-                                    close
-                                </MaterialIconComponent>
-                            </div>
-                        </div>
-                        <SelectUserListComponent
-                            selectedUserId={this.props.task.owner?.id}
-                            users={this.state.potentialOwners}
-                            onSelectUser={this.onSelectOwner}
-                            findUsers={this.findPotentialOwners}
-                        />
-                    </div>
-                )}
             </div>
         );
     }
@@ -260,16 +242,6 @@ export default class TaskComponent extends Component<IProps, IState> {
         });
     };
 
-    private onSelectOwner = (userId: number): void => {
-        const task = Object.assign({}, this.state.task, {
-            owner: {
-                id: userId,
-            },
-        });
-        this.props.onTaskFinishEditing?.call(this, task);
-        this.closeTeamMembersList();
-    };
-
     private onGoalDoubleClick = () => {
         this.setState({
             isEditing: true,
@@ -299,30 +271,16 @@ export default class TaskComponent extends Component<IProps, IState> {
         this.props.onCompleteTaskClick?.call(null, this.props.task.id);
     };
 
-    private onAssignOwnerClick = (): void => {
-        this.setState({
-            showTeamMembersList: true,
-        });
-    };
-
-    private onCloseTeamMembersListClick = (): void => {
-        this.closeTeamMembersList();
-    };
-
-    private closeTeamMembersList() {
-        this.setState({
-            showTeamMembersList: false,
-        });
-    }
-
-    private findPotentialOwners = async () => {
-        if (this.props.findPotentialOwners) {
-            const potentialOwners = await this.props.findPotentialOwners(
-                this.props.task.id,
-            );
-            this.setState({
-                potentialOwners: potentialOwners,
-            });
-        }
+    private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
+        const element = event.currentTarget as HTMLDivElement;
+        const rect = element.getBoundingClientRect();
+        this.props.onShowPotentialTaskOwners?.call(
+            null,
+            this.state.task,
+            rect.left,
+            rect.top,
+            rect.width,
+            rect.height,
+        );
     };
 }

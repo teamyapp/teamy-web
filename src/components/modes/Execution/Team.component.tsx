@@ -11,6 +11,7 @@ interface IProps {
     taskAdding?: Task;
     teamStatus: TeamStatus;
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
+    taskSelectingOwner?: Task;
     onViewTaskDetailClick?: (taskId: number) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
@@ -19,6 +20,13 @@ interface IProps {
     onDeleteTaskClick?: (taskId: number) => void;
     onStartTaskClick?: (taskId: number) => void;
     onCompleteTaskClick?: (taskId: number) => void;
+    onShowPotentialTaskOwners?: (
+        task: Task,
+        buttonLeft: number,
+        buttonTop: number,
+        buttonWidth: number,
+        buttonHeight: number,
+    ) => void;
 }
 
 export default class TeamComponent extends Component<IProps> {
@@ -103,14 +111,17 @@ export default class TeamComponent extends Component<IProps> {
                         canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}
-                        findPotentialOwners={
-                            this.props.findPotentialOwnersForTask
+                        isOwnerSelected={
+                            this.props.taskSelectingOwner?.id === task.id
                         }
                         onTaskDetailClick={this.props.onViewTaskDetailClick}
                         onTaskFinishEditing={onTaskFinishEditing}
                         onDeleteTaskClick={this.props.onDeleteTaskClick}
                         onStartTaskClick={this.props.onStartTaskClick}
                         onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        onShowPotentialTaskOwners={
+                            this.props.onShowPotentialTaskOwners
+                        }
                     />
                 </div>
             );

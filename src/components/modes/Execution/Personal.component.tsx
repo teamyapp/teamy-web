@@ -1,7 +1,6 @@
 import React, { Component, ReactElement } from 'react';
 import PersonalStatus from '../../../entity/PersonalStatus';
 import Task from '../../../entity/Task';
-import { User } from '../../../entity/User';
 import TaskComponent from '../../shared/Task.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
@@ -10,7 +9,7 @@ import styles from './Personal.component.module.scss';
 interface IProps {
     taskAdding?: Task;
     personalStatus: PersonalStatus;
-    findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
+    taskSelectingOwner?: Task;
     onViewTaskDetailClick?: (taskId: number) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
@@ -19,6 +18,13 @@ interface IProps {
     onDeleteTaskClick?: (taskId: number) => void;
     onStartTaskClick?: (taskId: number) => void;
     onCompleteTaskClick?: (taskId: number) => void;
+    onShowPotentialTaskOwners?: (
+        task: Task,
+        buttonLeft: number,
+        buttonTop: number,
+        buttonWidth: number,
+        buttonHeight: number,
+    ) => void;
 }
 
 export default class PersonalComponent extends Component<IProps> {
@@ -102,14 +108,17 @@ export default class PersonalComponent extends Component<IProps> {
                         canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}
-                        findPotentialOwners={
-                            this.props.findPotentialOwnersForTask
+                        isOwnerSelected={
+                            this.props.taskSelectingOwner?.id === task.id
                         }
                         onTaskDetailClick={this.props.onViewTaskDetailClick}
                         onTaskFinishEditing={onTaskFinishEditing}
                         onDeleteTaskClick={this.props.onDeleteTaskClick}
                         onStartTaskClick={this.props.onStartTaskClick}
                         onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        onShowPotentialTaskOwners={
+                            this.props.onShowPotentialTaskOwners
+                        }
                     />
                 </div>
             );

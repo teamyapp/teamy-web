@@ -8,7 +8,6 @@ interface IProps {
     users: User[];
     selectedUserId?: number;
     onSelectUser?: (userId: number) => void;
-    findUsers?: () => void;
 }
 
 export class SelectUserListComponent extends Component<IProps> {
@@ -18,10 +17,6 @@ export class SelectUserListComponent extends Component<IProps> {
                 {this.props.users.map(this.renderUser)}
             </div>
         );
-    }
-
-    public componentDidMount() {
-        this.props.findUsers?.call(null);
     }
 
     public renderUser = (user: User, index: number): ReactElement => {
