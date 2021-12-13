@@ -5,7 +5,7 @@ export interface Config {
 }
 
 const developmentConfig: Config = {
-    teamyGraphQLEndpoint: 'http://localhost:9000/graphql',
+    teamyGraphQLEndpoint: 'http://localhost:9001/graphql',
 };
 
 const testingConfig: Config = {

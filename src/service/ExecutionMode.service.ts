@@ -15,7 +15,9 @@ export class ExecutionModeService {
                 `
 query personalStatus($userId: ID!) {
   me {
+    id
     activeTeam {
+      id
       tasksNeedAttention(isMine: true) {
          ...taskPreview
       }
@@ -69,7 +71,9 @@ fragment taskPreview on Task {
                 `
 query {
   me {
+    id
     activeTeam {
+      id
       upcomingTasks: tasks(input: {
         status: UPCOMING
       }) {

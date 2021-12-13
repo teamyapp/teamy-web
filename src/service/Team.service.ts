@@ -15,7 +15,9 @@ export class TeamService {
                 `
 query {
   me {
+    id
     activeTeam {
+      id
       members {
         id
         firstName
@@ -38,6 +40,7 @@ query {
                 `
 query {
   me {
+    id
     activeTeam {
       id
     }
@@ -56,6 +59,7 @@ query {
                 `
 query {
   me {
+    id
     teams {
       id
       name
