@@ -4,6 +4,7 @@
     display: flex;
     flex-direction: column;
     height: 100%;
+    overflow-y: hidden;
 
     .Tabs {
         background-color: var(--tabs-background-color, $primaryColor);
@@ -19,5 +20,6 @@
         padding: 20px;
         box-sizing: border-box;
         flex: 1;
+        overflow-y: hidden;
     }
 }
