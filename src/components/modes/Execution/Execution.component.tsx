@@ -333,7 +333,7 @@ export class StatefulExecutionComponent extends Component<
             showPotentialTaskOwnersList: true,
             taskSelectingOwner: task,
             taskOwnersListLeft: buttonLeft,
-            taskOwnersListTop: buttonTop + buttonHeight + 2,
+            taskOwnersListTop: buttonTop + buttonHeight,
         });
     };
 
