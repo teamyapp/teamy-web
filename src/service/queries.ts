@@ -1,5 +1,16 @@
 import { gql } from "@apollo/client"
 
+export const QueryMe = gql`
+query Me {
+   me{
+    id
+    firstName
+    lastName
+    profileUrl
+  } 
+}
+`
+
 export const QueryPersonalStatus = gql`
 query personalStatus($userId: ID!) {
   me {

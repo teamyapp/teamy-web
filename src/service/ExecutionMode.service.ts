@@ -15,7 +15,7 @@ export class ExecutionModeService {
 
   public fetchPersonalStatus(userId: number, policy: FetchPolicy): Promise<PersonalStatus> {
     return this.graphQLClient
-      .query<any>({ query: QueryPersonalStatus, variables: { userId: userId }, fetchPolicy: policy })
+      .query({ query: QueryPersonalStatus, variables: { userId: userId }, fetchPolicy: policy })
       .then((payload: any) => {
         return {
           needAttentionTask:
@@ -29,7 +29,7 @@ export class ExecutionModeService {
 
   public fetchTeamStatus(policy: FetchPolicy): Promise<TeamStatus> {
     return this.graphQLClient
-      .query<any>({query: QueryTeamStatus, fetchPolicy: policy})
+      .query({query: QueryTeamStatus, fetchPolicy: policy})
       .then((payload: any) => {
         return {
           upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],
