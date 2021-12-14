@@ -1,4 +1,4 @@
-import { FetchPolicy, gql } from '@apollo/client';
+import { FetchPolicy } from '@apollo/client';
 import * as queries from './queries';
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';

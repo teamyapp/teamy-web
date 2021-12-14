@@ -24,7 +24,7 @@ export function initDeps(): Deps {
     httpClient = new IdentityHTTPClient(identityClient, httpClient);
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
-        httpClient,
+        identityClient,
         config.teamyGraphQLEndpoint,
     );
     const taskService = new TaskService(teamyGraphQLClient);

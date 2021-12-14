@@ -1,4 +1,3 @@
-import { FetchPolicy } from '@apollo/client';
 import { History, LocationState } from 'history';
 import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
