@@ -3,11 +3,11 @@ import {
     InMemoryCache,
     NormalizedCacheObject,
     MutationOptions,
-    QueryOptions
-} from "@apollo/client";
+    QueryOptions,
+} from '@apollo/client';
 
 interface AccessTokenGetter {
-    getAccessToken(): string
+    getAccessToken(): string;
 }
 
 export class GraphQLClient {
@@ -18,18 +18,20 @@ export class GraphQLClient {
             uri: graphQLEndpoint,
             cache: new InMemoryCache(),
             headers: {
-                "Authorization": `Bearer ${tokenGetter.getAccessToken()}`
-            }
+                Authorization: `Bearer ${tokenGetter.getAccessToken()}`,
+            },
         });
     }
 
     async mutate(options: MutationOptions): Promise<any> {
-        const result = await this.client.mutate(options)
-        return result.data
+        options.errorPolicy = 'all';
+        const result = await this.client.mutate(options);
+        return result.data;
     }
 
     async query(query: QueryOptions): Promise<any> {
-        const result = await this.client.query(query)
-        return result.data
+        query.errorPolicy = 'all';
+        const result = await this.client.query(query);
+        return result.data;
     }
 }

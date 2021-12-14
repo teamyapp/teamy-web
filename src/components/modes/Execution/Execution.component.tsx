@@ -297,7 +297,7 @@ export class StatefulExecutionComponent extends Component<
 
     private onPersonalAddClick = async (): Promise<void> => {
         console.log('onPersonalAddClick');
-        const user = await this.props.deps.userService.fetchMe("cache-first");
+        const user = await this.props.deps.userService.fetchMe('cache-first');
         this.setState({
             taskAdding: {
                 id: -1,
@@ -361,17 +361,20 @@ export class StatefulExecutionComponent extends Component<
     };
 
     public async refresh() {
-        const user = await this.props.deps.userService.fetchMe("network-only");
+        const user = await this.props.deps.userService.fetchMe('network-only');
         const personalStatus =
             await this.props.deps.executionModeService.fetchPersonalStatus(
-                user?.id || -1, "network-only"
+                user?.id || -1,
+                'network-only',
             );
         if (personalStatus) {
             store.dispatch(updatePersonalStatus(personalStatus));
         }
 
         const teamStatus =
-            await this.props.deps.executionModeService.fetchTeamStatus("network-only");
+            await this.props.deps.executionModeService.fetchTeamStatus(
+                'network-only',
+            );
 
         if (teamStatus) {
             store.dispatch(updateTeamStatus(teamStatus));
