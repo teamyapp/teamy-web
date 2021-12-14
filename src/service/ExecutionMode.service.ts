@@ -1,6 +1,8 @@
+import { FetchPolicy } from '@apollo/client';
 import PersonalStatus from '../entity/PersonalStatus';
 import TeamStatus from '../entity/TeamStatus';
 import { GraphQLClient } from '../network/GraphQL.client';
+import { QueryPersonalStatus, QueryTeamStatus } from './queries';
 
 export class ExecutionModeService {
     private readonly graphQLClient: GraphQLClient;
@@ -9,49 +11,16 @@ export class ExecutionModeService {
         this.graphQLClient = graphQLClient;
     }
 
-    public fetchPersonalStatus(userId: number): Promise<PersonalStatus> {
+    public fetchPersonalStatus(
+        userId: number,
+        policy: FetchPolicy,
+    ): Promise<PersonalStatus> {
         return this.graphQLClient
-            .query<any>(
-                `
-query personalStatus($userId: ID!) {
-  me {
-    activeTeam {
-      tasksNeedAttention(isMine: true) {
-         ...taskPreview
-      }
-      upcomingTasks: tasks(input: {
-        status: UPCOMING
-        ownerId: $userId
-      }) {
-        ...taskPreview
-      }
-      deliveredTasks: tasks(input: {
-          status: DELIVERED
-          ownerId: $userId
-      }) {
-          ...taskPreview
-      }
-    }
-  }
-}
-
-fragment taskPreview on Task {
-  id
-  goal
-  dueAt
-  owner {
-    id
-    firstName
-    lastName
-    profileUrl
-  }
-  availableActions
-}
-`,
-                {
-                    userId: userId,
-                },
-            )
+            .query({
+                query: QueryPersonalStatus,
+                variables: { userId: userId },
+                fetchPolicy: policy,
+            })
             .then((payload: any) => {
                 return {
                     needAttentionTask:
@@ -63,46 +32,9 @@ fragment taskPreview on Task {
             });
     }
 
-    public fetchTeamStatus(): Promise<TeamStatus> {
+    public fetchTeamStatus(policy: FetchPolicy): Promise<TeamStatus> {
         return this.graphQLClient
-            .query<any>(
-                `
-query {
-  me {
-    activeTeam {
-      upcomingTasks: tasks(input: {
-        status: UPCOMING
-      }) {
-        ...taskPreview
-      }
-      inProgressTasks: tasks(input: {
-        status: IN_PROGRESS
-      }) {
-        ...taskPreview
-      }
-      deliveredTasks: tasks(input: {
-        status: DELIVERED
-      }) {
-        ...taskPreview
-      }
-    }
-  }
-}
-
-fragment taskPreview on Task {
-  id
-  goal
-  dueAt
-  owner {
-    id
-    firstName
-    lastName
-    profileUrl
-  }
-  availableActions
-}
-`,
-            )
+            .query({ query: QueryTeamStatus, fetchPolicy: policy })
             .then((payload: any) => {
                 return {
                     upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],

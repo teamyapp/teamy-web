@@ -1,6 +1,8 @@
 import Team from '../entity/Team';
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
+import { QueryActiveTeamId, QueryTeamMembers, QueryTeams } from './queries';
+import * as mutations from './mutations';
 
 export class TeamService {
     private readonly graphQLClient: GraphQLClient;
@@ -11,22 +13,7 @@ export class TeamService {
 
     public fetchTeamMembers(): Promise<User[]> {
         return this.graphQLClient
-            .query(
-                `
-query {
-  me {
-    activeTeam {
-      members {
-        id
-        firstName
-        lastName
-        profileUrl
-      }
-    }
-  }
-}
-`,
-            )
+            .query({ query: QueryTeamMembers })
             .then((payload: any) => {
                 return payload?.me?.activeTeam?.members || [];
             });
@@ -34,17 +21,7 @@ query {
 
     public fetchActiveTeamId(): Promise<number> {
         return this.graphQLClient
-            .query(
-                `
-query {
-  me {
-    activeTeam {
-      id
-    }
-  }
-}
-`,
-            )
+            .query({ query: QueryActiveTeamId })
             .then((payload: any) => {
                 return payload?.me?.activeTeam?.id || -1;
             });
@@ -52,19 +29,7 @@ query {
 
     public fetchTeams(): Promise<Team[]> {
         return this.graphQLClient
-            .query(
-                `
-query {
-  me {
-    teams {
-      id
-      name
-      iconUrl
-    }
-  }
-}
-`,
-            )
+            .query({ query: QueryTeams })
             .then((payload: any) => {
                 return payload?.me?.teams || [];
             });
@@ -72,18 +37,12 @@ query {
 
     public updateActiveTeamId(teamId: number): Promise<boolean> {
         return this.graphQLClient
-            .query(
-                `
-mutation updateActiveTeam($teamId: ID!) {
-  updateActiveTeam(teamId: $teamId) {
-    id
-  }
-}
-`,
-                {
+            .mutate({
+                mutation: mutations.updateActiveTeam,
+                variables: {
                     teamId,
                 },
-            )
+            })
             .then((payload: any) => {
                 return payload?.updateActiveTeam;
             });
