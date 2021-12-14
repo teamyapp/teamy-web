@@ -25,13 +25,16 @@
     }
 
     .SelectTaskOwnerList {
-        margin-top: 4px;
         background-color: white;
         position: fixed;
         z-index: 100;
         float: left;
         overflow: visible;
         @include elevation(6);
+
+        &:focus {
+            outline: none;
+        }
 
         .SelectTaskOwnerListHeader {
             background-color: #424242;

@@ -11,6 +11,7 @@ import { User } from '../../../entity/User';
 import { updatePersonalStatus } from '../../../store/slices/PersonalStatus';
 import { updateTeamStatus } from '../../../store/slices/TeamStatus';
 import store from '../../../store/store';
+import { IBoundingBoxFinder } from '../../../entity/position';
 import { SelectUserListComponent } from '../../shared/SelectUserList.component';
 import TaskModalComponent from '../../shared/TaskModal.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
@@ -21,16 +22,16 @@ import TeamComponent from './Team.component';
 
 const routes = ['me', 'team'];
 
+const taskOwnersListVerticalOffset = 4;
+const taskOwnersListHorizontalOffset = 10;
+
 interface IProps {
     routerUrl: string;
     routerHistory: History<LocationState>;
     personalStatus: PersonalStatus;
     teamStatus: TeamStatus;
     taskAdding?: Task;
-    showPotentialTaskOwnersList: boolean;
     taskSelectingOwner?: Task;
-    taskOwnersListLeft: number;
-    taskOwnersListTop: number;
     potentialTaskOwners: User[];
     onViewTaskDetailClick?: (taskId: number) => void;
     onPersonalAddClick?: () => void;
@@ -43,17 +44,29 @@ interface IProps {
     onCompleteTaskClick?: (taskId: number) => void;
     onSelectTaskOwner?: (userId: number) => void;
     onCloseTaskOwnersListClick?: () => void;
-    onShowPotentialTaskOwners?: (
-        task: Task,
-        buttonLeft: number,
-        buttonTop: number,
-        buttonWidth: number,
-        buttonHeight: number,
-    ) => void;
+    onShowPotentialTaskOwners?: (task: Task) => Promise<void>;
 }
 
-class ExecutionComponent extends Component<IProps> {
+interface IState {
+    showPotentialTaskOwnersList: boolean;
+    findTaskOwnersAlignTargetBoundBox?: IBoundingBoxFinder;
+    taskOwnersListLeft: number;
+    taskOwnersListTop: number;
+}
+
+class ExecutionComponent extends Component<IProps, IState> {
     private taskDetailModalRef = createRef<TaskModalComponent>();
+    private taskOwnersPopupRef = createRef<HTMLDivElement>();
+
+    constructor(props: IProps) {
+        super(props);
+
+        this.state = {
+            showPotentialTaskOwnersList: false,
+            taskOwnersListLeft: -1000,
+            taskOwnersListTop: -1000,
+        };
+    }
 
     public render(): ReactElement {
         return (
@@ -89,7 +102,7 @@ class ExecutionComponent extends Component<IProps> {
                                     this.props.onCompleteTaskClick
                                 }
                                 onShowPotentialTaskOwners={
-                                    this.props.onShowPotentialTaskOwners
+                                    this.onShowPotentialTaskOwners
                                 }
                             />
                         </Route>
@@ -115,25 +128,28 @@ class ExecutionComponent extends Component<IProps> {
                                     this.props.onCompleteTaskClick
                                 }
                                 onShowPotentialTaskOwners={
-                                    this.props.onShowPotentialTaskOwners
+                                    this.onShowPotentialTaskOwners
                                 }
                             />
                         </Route>
                     </Switch>
                 </div>
                 <TaskModalComponent ref={this.taskDetailModalRef} />
-                {this.props.showPotentialTaskOwnersList && (
+                {this.state.showPotentialTaskOwnersList && (
                     <div
+                        ref={this.taskOwnersPopupRef}
                         className={styles.SelectTaskOwnerList}
                         style={{
-                            left: this.props.taskOwnersListLeft,
-                            top: this.props.taskOwnersListTop,
+                            left: this.state.taskOwnersListLeft,
+                            top: this.state.taskOwnersListTop,
                         }}
+                        tabIndex={-1}
+                        onBlur={this.onCloseTaskOwnersListClick}
                     >
                         <div className={styles.SelectTaskOwnerListHeader}>
                             <div
                                 className={styles.CloseButton}
-                                onClick={this.props.onCloseTaskOwnersListClick}
+                                onClick={this.onCloseTaskOwnersListClick}
                             >
                                 <MaterialIconComponent>
                                     close
@@ -145,7 +161,7 @@ class ExecutionComponent extends Component<IProps> {
                                 this.props.taskSelectingOwner?.owner?.id
                             }
                             users={this.props.potentialTaskOwners}
-                            onSelectUser={this.props.onSelectTaskOwner}
+                            onSelectUser={this.onSelectTaskOwner}
                         />
                     </div>
                 )}
@@ -155,15 +171,101 @@ class ExecutionComponent extends Component<IProps> {
 
     public componentDidMount() {
         this.onTabClick(0);
+        window.addEventListener('resize', this.onWindowResize);
+        window.addEventListener('scroll', this.onWindowScroll, true);
+    }
+
+    public componentWillUnmount() {
+        window.removeEventListener('resize', this.onWindowResize);
+        window.removeEventListener('scroll', this.onWindowScroll);
+    }
+
+    public showTaskDetail(task: Task) {
+        this.taskDetailModalRef.current?.open(task);
     }
 
     private onTabClick = (index: number) => {
         this.props.routerHistory.push(routes[index]);
     };
 
-    public showTaskDetail(task: Task) {
-        this.taskDetailModalRef.current?.open(task);
+    private onShowPotentialTaskOwners = async (
+        task: Task,
+        findAlignTargetBoundBox: IBoundingBoxFinder,
+    ) => {
+        if (this.props.onShowPotentialTaskOwners) {
+            await this.props.onShowPotentialTaskOwners(task);
+        }
+
+        this.setState({
+            findTaskOwnersAlignTargetBoundBox: findAlignTargetBoundBox,
+            showPotentialTaskOwnersList: true,
+        });
+
+        setTimeout(() => {
+            this.taskOwnersPopupRef.current?.focus();
+            this.updateTaskOwnersListPosition();
+        });
+    };
+
+    private onCloseTaskOwnersListClick = () => {
+        this.closeTaskOwnersList();
+    };
+
+    private closeTaskOwnersList() {
+        this.props.onCloseTaskOwnersListClick?.call(null);
+        this.setState({
+            showPotentialTaskOwnersList: false,
+            taskOwnersListLeft: -1000,
+            taskOwnersListTop: -1000,
+        });
     }
+
+    private onSelectTaskOwner = (userId: number) => {
+        this.props.onSelectTaskOwner?.call(null, userId);
+        this.setState({
+            showPotentialTaskOwnersList: false,
+        });
+    };
+
+    private updateTaskOwnersListPosition = () => {
+        if (!this.state.showPotentialTaskOwnersList) {
+            return;
+        }
+
+        if (!this.state.findTaskOwnersAlignTargetBoundBox) {
+            return;
+        }
+
+        const boundingBox = this.state.findTaskOwnersAlignTargetBoundBox();
+        const width = this.taskOwnersPopupRef.current?.offsetWidth || 0;
+        const height = this.taskOwnersPopupRef.current?.offsetHeight || 0;
+        const left = Math.min(
+            boundingBox.left,
+            document.body.clientWidth - width - taskOwnersListHorizontalOffset,
+        );
+        let top =
+            boundingBox.top + boundingBox.height + taskOwnersListVerticalOffset;
+        if (top + height > document.body.clientHeight) {
+            top = boundingBox.top - height - taskOwnersListVerticalOffset;
+        }
+
+        this.setState({
+            taskOwnersListLeft: left,
+            taskOwnersListTop: top,
+        });
+    };
+
+    private onWindowResize = () => {
+        this.updateTaskOwnersListPosition();
+    };
+
+    private onWindowScroll = () => {
+        if (!this.state.showPotentialTaskOwnersList) {
+            return;
+        }
+
+        this.taskOwnersPopupRef.current?.blur();
+    };
 }
 
 interface IContainerProps {
@@ -175,10 +277,8 @@ interface IContainerProps {
 interface IContainerState {
     personalStatus: PersonalStatus;
     teamStatus: TeamStatus;
-    showPotentialTaskOwnersList: boolean;
     taskSelectingOwner?: Task;
-    taskOwnersListLeft: number;
-    taskOwnersListTop: number;
+    assignOwnerUIBoundingBoxFinder?: IBoundingBoxFinder;
     potentialTaskOwners: User[];
     taskAdding?: Task;
 }
@@ -199,9 +299,6 @@ export class StatefulExecutionComponent extends Component<
             personalStatus: newState.personalStatus,
             teamStatus: newState.teamStatus,
             potentialTaskOwners: [],
-            showPotentialTaskOwnersList: false,
-            taskOwnersListLeft: 0,
-            taskOwnersListTop: 0,
         };
     }
 
@@ -214,12 +311,7 @@ export class StatefulExecutionComponent extends Component<
                 personalStatus={this.state.personalStatus}
                 teamStatus={this.state.teamStatus}
                 taskAdding={this.state.taskAdding}
-                showPotentialTaskOwnersList={
-                    this.state.showPotentialTaskOwnersList
-                }
                 taskSelectingOwner={this.state.taskSelectingOwner}
-                taskOwnersListLeft={this.state.taskOwnersListLeft}
-                taskOwnersListTop={this.state.taskOwnersListTop}
                 potentialTaskOwners={this.state.potentialTaskOwners}
                 onViewTaskDetailClick={this.onViewTaskDetailClick}
                 onNewTaskChange={this.onNewTaskChange}
@@ -320,20 +412,11 @@ export class StatefulExecutionComponent extends Component<
         });
     };
 
-    private onShowPotentialTaskOwners = async (
-        task: Task,
-        buttonLeft: number,
-        buttonTop: number,
-        buttonWidth: number,
-        buttonHeight: number,
-    ) => {
+    private onShowPotentialTaskOwners = async (task: Task) => {
         const owners = await this.props.deps.teamService.fetchTeamMembers();
         this.setState({
             potentialTaskOwners: owners,
-            showPotentialTaskOwnersList: true,
             taskSelectingOwner: task,
-            taskOwnersListLeft: buttonLeft,
-            taskOwnersListTop: buttonTop + buttonHeight,
         });
     };
 
@@ -347,7 +430,6 @@ export class StatefulExecutionComponent extends Component<
         );
         this.setState({
             potentialTaskOwners: [],
-            showPotentialTaskOwnersList: false,
             taskSelectingOwner: undefined,
         });
         await this.refresh();
@@ -356,7 +438,6 @@ export class StatefulExecutionComponent extends Component<
     private onCloseTaskOwnersListClick = () => {
         this.setState({
             potentialTaskOwners: [],
-            showPotentialTaskOwnersList: false,
             taskSelectingOwner: undefined,
         });
     };
