@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import Task from '../../entity/Task';
 import { TaskAction } from '../../entity/TaskAction';
+import { IBoundingBoxFinder, Rect } from '../../entity/position';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
 import NamedValueComponent from '../ui/NamedValue.component';
 import styles from './Task.component.module.scss';
@@ -28,10 +29,7 @@ interface IProps {
     onCompleteTaskClick?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
-        buttonLeft: number,
-        buttonTop: number,
-        buttonWidth: number,
-        buttonHeight: number,
+        findAlignTargetBoundBox: IBoundingBoxFinder,
     ) => void;
 }
 
@@ -273,14 +271,12 @@ export default class TaskComponent extends Component<IProps, IState> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
         const element = event.currentTarget as HTMLDivElement;
-        const rect = element.getBoundingClientRect();
         this.props.onShowPotentialTaskOwners?.call(
             null,
             this.state.task,
-            rect.left,
-            rect.top,
-            rect.width,
-            rect.height,
+            (): Rect => {
+                return element.getBoundingClientRect();
+            },
         );
     };
 }

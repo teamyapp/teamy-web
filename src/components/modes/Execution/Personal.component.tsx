@@ -1,6 +1,7 @@
 import React, { Component, ReactElement } from 'react';
 import PersonalStatus from '../../../entity/PersonalStatus';
 import Task from '../../../entity/Task';
+import { IBoundingBoxFinder } from '../../../entity/position';
 import TaskComponent from '../../shared/Task.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
@@ -20,10 +21,7 @@ interface IProps {
     onCompleteTaskClick?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
-        buttonLeft: number,
-        buttonTop: number,
-        buttonWidth: number,
-        buttonHeight: number,
+        findAlignTargetBoundBox: IBoundingBoxFinder,
     ) => void;
 }
 
