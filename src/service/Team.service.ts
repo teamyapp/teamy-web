@@ -1,8 +1,8 @@
-import { gql } from '@apollo/client';
 import Team from '../entity/Team';
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
 import { QueryActiveTeamId, QueryTeamMembers, QueryTeams } from './queries';
+import * as mutations from './mutations';
 
 export class TeamService {
   private readonly graphQLClient: GraphQLClient;
@@ -44,13 +44,7 @@ export class TeamService {
   public updateActiveTeamId(teamId: number): Promise<boolean> {
     return this.graphQLClient
       .mutate({
-        mutation: gql`
-mutation updateActiveTeam($teamId: ID!) {
-  updateActiveTeam(teamId: $teamId) {
-    id
-  }
-}
-`,
+        mutation: mutations.updateActiveTeam,
         variables: {
           teamId,
         },
@@ -60,5 +54,3 @@ mutation updateActiveTeam($teamId: ID!) {
       });
   }
 }
-
-

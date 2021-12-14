@@ -1,8 +1,8 @@
-import { gql } from '@apollo/client';
 import Task from '../entity/Task';
 import { GraphQLClient } from '../network/GraphQL.client';
 import { QueryGetTask } from './queries';
-import * as queries from './queries';
+import * as mutations from './mutations';
+
 
 export class TaskService {
   private readonly graphQLClient: GraphQLClient;
@@ -13,7 +13,7 @@ export class TaskService {
 
   public fetchTask(taskId: number): Promise<Task> {
     return this.graphQLClient
-      .query<Task>({
+      .query({
         query: QueryGetTask,
         variables: { id: `${taskId}` },
       })
@@ -24,19 +24,7 @@ export class TaskService {
 
   public updateTask(task: Task): Promise<Task> {
     return this.graphQLClient.mutate({
-      mutation: gql`
-                  mutation updateTask($taskId: ID!, $taskInput: TaskInput!) {
-                    updateTask(taskId: $taskId, task: $taskInput) {
-                      id
-                      goal
-                      context
-                      dueAt
-                      owner {
-                        id
-                      }
-                    }
-                  }
-                  `,
+      mutation: mutations.updateTask,
       variables: {
         taskId: `${task.id}`,
         taskInput: {
@@ -51,30 +39,14 @@ export class TaskService {
 
   public deleteTask(taskId: number): Promise<Task> {
     return this.graphQLClient.mutate({
-      mutation: gql`
-        mutation deleteTask($id: ID!) {
-          deleteTask(taskId: $id) {
-            id
-          }
-        }
-        `,
+      mutation: mutations.deleteTask,
       variables: { id: `${taskId}` },
     });
   }
 
   public startTask(taskId: number): Promise<any> {
     return this.graphQLClient.mutate({
-      mutation: gql`
-mutation startTask($taskId: ID!, $task: TaskInput!) {
-  updateTask(taskId: $taskId, task: $task) {
-    status
-    id
-  }
-  promoteTaskToNeedAttention(taskId: $taskId) {
-    id
-  }
-}
-`,
+      mutation: mutations.startTask,
       variables: {
         taskId: `${taskId}`,
         task: {
@@ -86,14 +58,7 @@ mutation startTask($taskId: ID!, $task: TaskInput!) {
 
   public completeTask(taskId: number): Promise<any> {
     return this.graphQLClient.mutate({
-      mutation: gql`
-mutation completeTask($taskId: ID!, $task: TaskInput!) {
-  updateTask(taskId: $taskId, task: $task) {
-    id
-    status
-  }
-}
-`,
+      mutation: mutations.completeTask,
       variables: {
         taskId: `${taskId}`,
         task: {
@@ -105,26 +70,12 @@ mutation completeTask($taskId: ID!, $task: TaskInput!) {
 
   public createTask(task: Task): Promise<Task> {
     return this.graphQLClient.mutate({
-      mutation: gql`
-mutation createTask($taskInput: TaskInput!) {
-  createTask (task: $taskInput) {
-    id
-    goal
-    context
-    owner {
-      id
-    }
-  }
-}
-`,
+      mutation: mutations.createTask,
       variables: {
         taskInput: Object.assign({}, task, {
           ownerUserId: task.owner ? `${task.owner?.id}` : undefined,
         }),
-      },
-      refetchQueries: ["personalStatus", "teamStatus"]
+      }
     });
   }
 }
-
-
