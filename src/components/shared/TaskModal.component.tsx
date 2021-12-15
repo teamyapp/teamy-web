@@ -6,6 +6,7 @@ import MaterialIconComponent from '../ui/MaterialIcon.component';
 import ModalComponent from '../ui/Modal.component';
 import NamedValueComponent from '../ui/NamedValue.component';
 import TextFieldComponent from '../ui/TextField.component';
+import { Deps } from '../../deps';
 
 import styles from './TaskModal.component.module.scss';
 
@@ -13,11 +14,17 @@ interface IState {
     task?: Task;
 }
 
+interface Pros {
+    deps: Deps
+}
+
 export default class TaskModalComponent extends Component<any, IState> {
     private modalRef = createRef<ModalComponent>();
+    deps: Deps
 
-    constructor(props: any) {
+    constructor(props: Pros) {
         super(props);
+        this.deps = props.deps;
         this.state = {};
     }
 
@@ -70,6 +77,7 @@ export default class TaskModalComponent extends Component<any, IState> {
                                         />
                                     </div>
                                 </div>
+                                <button onClick={this.onSaveButtonClicked}>Save</button>
                             </div>
                         </div>
                     )}
@@ -98,4 +106,10 @@ export default class TaskModalComponent extends Component<any, IState> {
     private onCloseButtonClick = () => {
         this.modalRef.current?.close();
     };
+
+    onSaveButtonClicked = async () => {
+        if(this.state.task) {
+            await this.deps.taskService.updateTask(this.state.task);
+        }
+    }
 }

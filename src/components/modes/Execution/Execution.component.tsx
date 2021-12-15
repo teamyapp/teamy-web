@@ -26,6 +26,7 @@ const taskOwnersListVerticalOffset = 4;
 const taskOwnersListHorizontalOffset = 10;
 
 interface IProps {
+    deps: Deps;
     routerUrl: string;
     routerHistory: History<LocationState>;
     personalStatus: PersonalStatus;
@@ -134,7 +135,7 @@ class ExecutionComponent extends Component<IProps, IState> {
                         </Route>
                     </Switch>
                 </div>
-                <TaskModalComponent ref={this.taskDetailModalRef} />
+                <TaskModalComponent ref={this.taskDetailModalRef} deps={this.props.deps}/>
                 {this.state.showPotentialTaskOwnersList && (
                     <div
                         ref={this.taskOwnersPopupRef}
@@ -325,6 +326,7 @@ export class StatefulExecutionComponent extends Component<
                 onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
                 onSelectTaskOwner={this.onSelectTaskOwner}
                 onCloseTaskOwnersListClick={this.onCloseTaskOwnersListClick}
+                deps={this.props.deps}
             />
         );
     }
