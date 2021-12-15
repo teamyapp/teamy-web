@@ -109,6 +109,8 @@ export default class TaskModalComponent extends Component<any, IState> {
 
     onSaveButtonClicked = async () => {
         if(this.state.task) {
+            console.log(this.state.task)
+            // todo: context is not in state
             await this.deps.taskService.updateTask(this.state.task);
         }
     }
