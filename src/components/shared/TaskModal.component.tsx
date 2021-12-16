@@ -111,7 +111,7 @@ export default class TaskModalComponent extends Component<any, IState> {
         if(this.state.task) {
             console.log(this.state.task)
             // todo: context is not in state
-            await this.deps.taskService.updateTask(this.state.task);
+            await this.props.deps.taskService.updateTask(this.state.task);
         }
     }
 }
