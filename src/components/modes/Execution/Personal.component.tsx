@@ -7,10 +7,9 @@ import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Personal.component.module.scss';
 import { Deps } from '../../../deps';
-import * as queries from '../../../service/queries';
 
 interface IProps {
-    deps: Deps
+    deps: Deps;
     taskAdding?: Task;
     personalStatus: PersonalStatus;
     taskSelectingOwner?: Task;
@@ -29,7 +28,6 @@ interface IProps {
 }
 
 export default class PersonalComponent extends Component<IProps> {
-
     constructor(props: IProps) {
         super(props);
         this.state = {};

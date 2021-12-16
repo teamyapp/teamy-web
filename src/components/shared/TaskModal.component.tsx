@@ -15,7 +15,7 @@ interface IState {
 }
 
 interface Pros {
-    deps: Deps
+    deps: Deps;
 }
 
 export default class TaskModalComponent extends Component<any, IState> {
@@ -75,7 +75,9 @@ export default class TaskModalComponent extends Component<any, IState> {
                                         />
                                     </div>
                                 </div>
-                                <button onClick={this.onSaveButtonClick}>Save</button>
+                                <button onClick={this.onSaveButtonClick}>
+                                    Save
+                                </button>
                             </div>
                         </div>
                     )}
@@ -106,10 +108,10 @@ export default class TaskModalComponent extends Component<any, IState> {
     };
 
     onSaveButtonClick = async () => {
-        if(this.state.task) {
-            console.log(this.state.task)
+        if (this.state.task) {
+            console.log(this.state.task);
             // todo: context is not in state
             await this.props.deps.taskService.updateTask(this.state.task);
         }
-    }
+    };
 }

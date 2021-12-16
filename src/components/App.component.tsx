@@ -13,7 +13,7 @@ import ExecutionComponentHook, {
     StatefulExecutionComponent,
 } from './modes/Execution/Execution.component';
 import MaterialIconComponent from './ui/MaterialIcon.component';
-import * as queries from '../service/queries'
+import * as queries from '../service/queries';
 
 interface IProps {
     executionRef: RefObject<StatefulExecutionComponent>;
@@ -136,11 +136,11 @@ class AppComponentContainer extends Component<
     };
 
     private async refresh(policy: FetchPolicy) {
-        console.log("refresh App", policy)
+        console.log('refresh App', policy);
         const data = await this.props.deps.graphql.query({
             fetchPolicy: policy,
-            query: queries.Me
-        })
+            query: queries.Me,
+        });
         const teams: Team[] = data.me.teams;
         const activeTeamId = data.me.activeTeam?.id;
         this.setState({

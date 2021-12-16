@@ -138,7 +138,10 @@ class ExecutionComponent extends Component<IProps, IState> {
                         </Route>
                     </Switch>
                 </div>
-                <TaskModalComponent ref={this.taskDetailModalRef} deps={this.props.deps}/>
+                <TaskModalComponent
+                    ref={this.taskDetailModalRef}
+                    deps={this.props.deps}
+                />
                 {this.state.showPotentialTaskOwnersList && (
                     <div
                         ref={this.taskOwnersPopupRef}
@@ -447,25 +450,33 @@ export class StatefulExecutionComponent extends Component<
     };
 
     public async refresh(policy: FetchPolicy) {
-        console.log("refresh", policy)
+        console.log('refresh', policy);
         const data = await this.props.deps.graphql.query({
             fetchPolicy: policy,
-            query: queries.Me
-        })
+            query: queries.Me,
+        });
         if (data.me.activeTeam) {
-            store.dispatch(updatePersonalStatus({
-                needAttentionTask: data.me.activeTeam.tasksNeedAttention,
-                // todo: use apollo cli to compile query to TS interfaces to have type hint
-                // @ts-ignore
-                upcomingTasks: data.me.activeTeam.upcomingTasks.filter(task => task.owner.id === data.me.id),
-                // @ts-ignore
-                deliveredTasks: data.me.activeTeam.deliveredTasks.filter(task => task.owner.id === data.me.id),
-            }));
-            store.dispatch(updateTeamStatus({
-                upcomingTasks: data.me.activeTeam.upcomingTasks,
-                inProgressTasks: data.me.activeTeam.inProgressTasks,
-                deliveredTasks: data.me.activeTeam.deliveredTasks,
-            }));
+            store.dispatch(
+                updatePersonalStatus({
+                    needAttentionTask: data.me.activeTeam.tasksNeedAttention,
+                    // todo: use apollo cli to compile query to TS interfaces to have type hint
+                    // @ts-ignore
+                    upcomingTasks: data.me.activeTeam.upcomingTasks.filter(
+                        (task) => task.owner.id === data.me.id,
+                    ),
+                    // @ts-ignore
+                    deliveredTasks: data.me.activeTeam.deliveredTasks.filter(
+                        (task) => task.owner.id === data.me.id,
+                    ),
+                }),
+            );
+            store.dispatch(
+                updateTeamStatus({
+                    upcomingTasks: data.me.activeTeam.upcomingTasks,
+                    inProgressTasks: data.me.activeTeam.inProgressTasks,
+                    deliveredTasks: data.me.activeTeam.deliveredTasks,
+                }),
+            );
         }
     }
 }

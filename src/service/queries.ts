@@ -18,7 +18,7 @@ fragment taskPreview on Task {
     availableActions
     createdAt
 }
-`
+`;
 
 export const Me = gql`
     query Me {
@@ -53,7 +53,6 @@ export const Me = gql`
     ${fragmentTaskPreview}
 `;
 
-
 export const QueryMe = gql`
     query Me {
         me {
@@ -74,14 +73,10 @@ export const QueryPersonalStatus = gql`
                 tasksNeedAttention(isMine: true) {
                     ...taskPreview
                 }
-                upcomingTasks: tasks(
-                    input: { status: UPCOMING }
-                ) {
+                upcomingTasks: tasks(input: { status: UPCOMING }) {
                     ...taskPreview
                 }
-                deliveredTasks: tasks(
-                    input: { status: DELIVERED }
-                ) {
+                deliveredTasks: tasks(input: { status: DELIVERED }) {
                     ...taskPreview
                 }
             }
@@ -171,4 +166,3 @@ export const QueryTeams = gql`
         }
     }
 `;
-
