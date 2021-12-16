@@ -15,6 +15,7 @@ export interface Deps {
     userService: UserService;
     executionModeService: ExecutionModeService;
     identityClient: IdentityClient;
+    graphql: GraphQLClient
 }
 
 export function initDeps(): Deps {
@@ -37,5 +38,6 @@ export function initDeps(): Deps {
         userService,
         executionModeService,
         identityClient,
+        graphql: teamyGraphQLClient
     };
 }

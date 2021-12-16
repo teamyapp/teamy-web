@@ -1,3 +1,4 @@
+import { FetchPolicy } from '@apollo/client';
 import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -125,15 +126,15 @@ class AppComponentContainer extends Component<
     }
 
     public async componentDidMount() {
-        await this.refresh();
+        await this.refresh('cache-first');
     }
 
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
         await this.props.deps.teamService.updateActiveTeamId(teamId);
-        await this.refresh();
+        await this.refresh('network-only');
     };
 
-    private async refresh() {
+    private async refresh(policy: FetchPolicy) {
         const teams = await this.props.deps.teamService.fetchTeams();
         const activeTeamId =
             await this.props.deps.teamService.fetchActiveTeamId();
@@ -141,7 +142,7 @@ class AppComponentContainer extends Component<
             teams,
             activeTeamId,
         });
-        await this.executionRef.current?.refresh();
+        await this.executionRef.current?.refresh(policy);
     }
 }
 

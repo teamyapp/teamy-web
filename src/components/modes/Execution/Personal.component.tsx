@@ -6,8 +6,11 @@ import TaskComponent from '../../shared/Task.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Personal.component.module.scss';
+import { Deps } from '../../../deps';
+import * as queries from '../../../service/queries';
 
 interface IProps {
+    deps: Deps
     taskAdding?: Task;
     personalStatus: PersonalStatus;
     taskSelectingOwner?: Task;
@@ -26,9 +29,13 @@ interface IProps {
 }
 
 export default class PersonalComponent extends Component<IProps> {
+
+    deps: Deps
+
     constructor(props: IProps) {
         super(props);
         this.state = {};
+        this.deps = props.deps;
     }
 
     public render(): ReactElement {
@@ -93,6 +100,12 @@ export default class PersonalComponent extends Component<IProps> {
     private renderExistingTask = (): ((task: Task) => ReactElement) => {
         return this.renderTask(false, true, this.props.onUpdateTask);
     };
+
+    async componentDidMount() {
+        await this.deps.graphql.query({
+            query: queries.MePage,
+        })
+    }
 
     private renderTask = (
         isEditing: boolean,
