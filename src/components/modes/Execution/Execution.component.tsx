@@ -20,6 +20,7 @@ import styles from './Execution.component.module.scss';
 import PersonalComponent from './Personal.component';
 import TeamComponent from './Team.component';
 import { FetchPolicy } from '@apollo/client';
+import * as queries from '../../../service/queries';
 
 const routes = ['me', 'team'];
 
@@ -446,24 +447,27 @@ export class StatefulExecutionComponent extends Component<
     };
 
     public async refresh(policy: FetchPolicy) {
-        console.log("refresh")
-        const user = await this.props.deps.userService.fetchMe('cache-first');
-        const personalStatus =
-            await this.props.deps.executionModeService.fetchPersonalStatus(
-                user?.id || -1,
-                policy,
-            );
-        if (personalStatus) {
-            store.dispatch(updatePersonalStatus(personalStatus));
+        console.log("refresh", policy)
+        const data = await this.props.deps.graphql.query({
+            fetchPolicy: policy,
+            query: queries.MePage
+        })
+        if (data.me.activeTeam) {
+            store.dispatch(updatePersonalStatus({
+                needAttentionTask: data.me.activeTeam.tasksNeedAttention,
+                // todo: use apollo cli to compile query to TS interfaces to have type hint
+                // @ts-ignore
+                upcomingTasks: data.me.activeTeam.upcomingTasks.filter(task => task.owner.id === data.me.id),
+                // @ts-ignore
+                deliveredTasks: data.me.activeTeam.deliveredTasks.filter(task => task.owner.id === data.me.id),
+            }));
         }
-
-        const teamStatus =
-            await this.props.deps.executionModeService.fetchTeamStatus(
-                policy,
-            );
-
-        if (teamStatus) {
-            store.dispatch(updateTeamStatus(teamStatus));
+        if (data.me.activeTeam) {
+            store.dispatch(updateTeamStatus({
+                upcomingTasks: data.me.activeTeam.upcomingTasks,
+                inProgressTasks: data.me.activeTeam.inProgressTasks,
+                deliveredTasks: data.me.activeTeam.deliveredTasks,
+            }));
         }
     }
 }

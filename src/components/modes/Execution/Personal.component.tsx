@@ -101,12 +101,6 @@ export default class PersonalComponent extends Component<IProps> {
         return this.renderTask(false, true, this.props.onUpdateTask);
     };
 
-    async componentDidMount() {
-        await this.deps.graphql.query({
-            query: queries.MePage,
-        })
-    }
-
     private renderTask = (
         isEditing: boolean,
         canViewDetail: boolean,
