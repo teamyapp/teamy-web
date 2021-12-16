@@ -20,11 +20,9 @@ interface Pros {
 
 export default class TaskModalComponent extends Component<any, IState> {
     private modalRef = createRef<ModalComponent>();
-    deps: Deps
 
     constructor(props: Pros) {
         super(props);
-        this.deps = props.deps;
         this.state = {};
     }
 
@@ -107,7 +105,7 @@ export default class TaskModalComponent extends Component<any, IState> {
         this.modalRef.current?.close();
     };
 
-    onSaveButtonClicked = async () => {
+    onSaveButtonClick = async () => {
         if(this.state.task) {
             console.log(this.state.task)
             // todo: context is not in state

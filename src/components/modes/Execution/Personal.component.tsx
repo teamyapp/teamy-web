@@ -30,12 +30,9 @@ interface IProps {
 
 export default class PersonalComponent extends Component<IProps> {
 
-    deps: Deps
-
     constructor(props: IProps) {
         super(props);
         this.state = {};
-        this.deps = props.deps;
     }
 
     public render(): ReactElement {
