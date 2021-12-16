@@ -70,7 +70,7 @@ class ExecutionComponent extends Component<IProps, IState> {
 
     public render(): ReactElement {
         return (
-            <div className={styles.Execution}>
+            <div className={styles.Execution} onScrollCapture={this.onScroll}>
                 <div className={styles.Tabs}>
                     <div className={styles.Container}>
                         <TabsComponent
@@ -172,12 +172,10 @@ class ExecutionComponent extends Component<IProps, IState> {
     public componentDidMount() {
         this.onTabClick(0);
         window.addEventListener('resize', this.onWindowResize);
-        window.addEventListener('scroll', this.onWindowScroll, true);
     }
 
     public componentWillUnmount() {
         window.removeEventListener('resize', this.onWindowResize);
-        window.removeEventListener('scroll', this.onWindowScroll);
     }
 
     public showTaskDetail(task: Task) {
@@ -259,7 +257,7 @@ class ExecutionComponent extends Component<IProps, IState> {
         this.updateTaskOwnersListPosition();
     };
 
-    private onWindowScroll = () => {
+    private onScroll = () => {
         if (!this.state.showPotentialTaskOwnersList) {
             return;
         }
