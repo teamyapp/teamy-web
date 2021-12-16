@@ -1,3 +1,4 @@
+import { FetchPolicy } from '@apollo/client';
 import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
@@ -12,6 +13,7 @@ import ExecutionComponentHook, {
     StatefulExecutionComponent,
 } from './modes/Execution/Execution.component';
 import MaterialIconComponent from './ui/MaterialIcon.component';
+import * as queries from '../service/queries';
 
 interface IProps {
     executionRef: RefObject<StatefulExecutionComponent>;
@@ -125,23 +127,27 @@ class AppComponentContainer extends Component<
     }
 
     public async componentDidMount() {
-        await this.refresh();
+        await this.refresh('cache-first');
     }
 
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
         await this.props.deps.teamService.updateActiveTeamId(teamId);
-        await this.refresh();
+        await this.refresh('network-only');
     };
 
-    private async refresh() {
-        const teams = await this.props.deps.teamService.fetchTeams();
-        const activeTeamId =
-            await this.props.deps.teamService.fetchActiveTeamId();
+    private async refresh(policy: FetchPolicy) {
+        console.log('refresh App', policy);
+        const data = await this.props.deps.graphql.query({
+            fetchPolicy: policy,
+            query: queries.Me,
+        });
+        const teams: Team[] = data.me.teams;
+        const activeTeamId = data.me.activeTeam?.id;
         this.setState({
             teams,
             activeTeamId,
         });
-        await this.executionRef.current?.refresh();
+        await this.executionRef.current?.refresh('cache-first');
     }
 }
 

@@ -1,5 +1,58 @@
 import { gql } from '@apollo/client';
 
+const fragmentTaskPreview = `
+fragment taskPreview on Task {
+    id
+    goal
+    dueAt
+    context
+    creator {
+        id
+    }
+    owner {
+        id
+        firstName
+        lastName
+        profileUrl
+    }
+    availableActions
+    createdAt
+}
+`;
+
+export const Me = gql`
+    query Me {
+        me {
+            id
+            firstName
+            lastName
+            profileUrl
+            activeTeam {
+                id
+                tasksNeedAttention(isMine: true) {
+                    ...taskPreview
+                }
+                upcomingTasks: tasks(input: { status: UPCOMING }) {
+                    ...taskPreview
+                }
+                inProgressTasks: tasks(input: { status: IN_PROGRESS }) {
+                    ...taskPreview
+                }
+                deliveredTasks: tasks(input: { status: DELIVERED }) {
+                    ...taskPreview
+                }
+            }
+            teams {
+                id
+                name
+                iconUrl
+            }
+        }
+    }
+
+    ${fragmentTaskPreview}
+`;
+
 export const QueryMe = gql`
     query Me {
         me {
@@ -12,7 +65,7 @@ export const QueryMe = gql`
 `;
 
 export const QueryPersonalStatus = gql`
-    query personalStatus($userId: ID!) {
+    query personalStatus {
         me {
             id
             activeTeam {
@@ -20,32 +73,17 @@ export const QueryPersonalStatus = gql`
                 tasksNeedAttention(isMine: true) {
                     ...taskPreview
                 }
-                upcomingTasks: tasks(
-                    input: { status: UPCOMING, ownerId: $userId }
-                ) {
+                upcomingTasks: tasks(input: { status: UPCOMING }) {
                     ...taskPreview
                 }
-                deliveredTasks: tasks(
-                    input: { status: DELIVERED, ownerId: $userId }
-                ) {
+                deliveredTasks: tasks(input: { status: DELIVERED }) {
                     ...taskPreview
                 }
             }
         }
     }
 
-    fragment taskPreview on Task {
-        id
-        goal
-        dueAt
-        owner {
-            id
-            firstName
-            lastName
-            profileUrl
-        }
-        availableActions
-    }
+    ${fragmentTaskPreview}
 `;
 
 export const QueryTeamStatus = gql`
@@ -66,19 +104,7 @@ export const QueryTeamStatus = gql`
             }
         }
     }
-
-    fragment taskPreview on Task {
-        id
-        goal
-        dueAt
-        owner {
-            id
-            firstName
-            lastName
-            profileUrl
-        }
-        availableActions
-    }
+    ${fragmentTaskPreview}
 `;
 
 export const QueryGetTask = gql`
@@ -94,8 +120,6 @@ export const QueryGetTask = gql`
                 lastName
                 profileUrl
             }
-            # effort
-            # numOfUnknowns
             availableActions
             createdAt
         }

@@ -6,8 +6,10 @@ import TaskComponent from '../../shared/Task.component';
 import MaterialIconComponent from '../../ui/MaterialIcon.component';
 import SectionComponent from '../../ui/Section.component';
 import styles from './Personal.component.module.scss';
+import { Deps } from '../../../deps';
 
 interface IProps {
+    deps: Deps;
     taskAdding?: Task;
     personalStatus: PersonalStatus;
     taskSelectingOwner?: Task;

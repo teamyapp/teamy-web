@@ -6,6 +6,7 @@ import MaterialIconComponent from '../ui/MaterialIcon.component';
 import ModalComponent from '../ui/Modal.component';
 import NamedValueComponent from '../ui/NamedValue.component';
 import TextFieldComponent from '../ui/TextField.component';
+import { Deps } from '../../deps';
 
 import styles from './TaskModal.component.module.scss';
 
@@ -13,10 +14,14 @@ interface IState {
     task?: Task;
 }
 
+interface IProps {
+    deps: Deps;
+}
+
 export default class TaskModalComponent extends Component<any, IState> {
     private modalRef = createRef<ModalComponent>();
 
-    constructor(props: any) {
+    constructor(props: IProps) {
         super(props);
         this.state = {};
     }
@@ -70,6 +75,9 @@ export default class TaskModalComponent extends Component<any, IState> {
                                         />
                                     </div>
                                 </div>
+                                <button onClick={this.onSaveButtonClick}>
+                                    Save
+                                </button>
                             </div>
                         </div>
                     )}
@@ -97,5 +105,13 @@ export default class TaskModalComponent extends Component<any, IState> {
 
     private onCloseButtonClick = () => {
         this.modalRef.current?.close();
+    };
+
+    onSaveButtonClick = async () => {
+        if (this.state.task) {
+            console.log(this.state.task);
+            // TODO: add onChange event to MarkdownEditorComponent in order to update context
+            await this.props.deps.taskService.updateTask(this.state.task);
+        }
     };
 }

@@ -19,6 +19,8 @@ import TabsComponent from '../../ui/Tabs.component';
 import styles from './Execution.component.module.scss';
 import PersonalComponent from './Personal.component';
 import TeamComponent from './Team.component';
+import { FetchPolicy } from '@apollo/client';
+import * as queries from '../../../service/queries';
 
 const routes = ['me', 'team'];
 
@@ -26,6 +28,7 @@ const taskOwnersListVerticalOffset = 4;
 const taskOwnersListHorizontalOffset = 10;
 
 interface IProps {
+    deps: Deps;
     routerUrl: string;
     routerHistory: History<LocationState>;
     personalStatus: PersonalStatus;
@@ -84,6 +87,7 @@ class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalComponent
+                                deps={this.props.deps}
                                 personalStatus={this.props.personalStatus}
                                 taskAdding={this.props.taskAdding}
                                 taskSelectingOwner={
@@ -134,7 +138,10 @@ class ExecutionComponent extends Component<IProps, IState> {
                         </Route>
                     </Switch>
                 </div>
-                <TaskModalComponent ref={this.taskDetailModalRef} />
+                <TaskModalComponent
+                    ref={this.taskDetailModalRef}
+                    deps={this.props.deps}
+                />
                 {this.state.showPotentialTaskOwnersList && (
                     <div
                         ref={this.taskOwnersPopupRef}
@@ -323,6 +330,7 @@ export class StatefulExecutionComponent extends Component<
                 onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
                 onSelectTaskOwner={this.onSelectTaskOwner}
                 onCloseTaskOwnersListClick={this.onCloseTaskOwnersListClick}
+                deps={this.props.deps}
             />
         );
     }
@@ -336,7 +344,7 @@ export class StatefulExecutionComponent extends Component<
             });
         });
 
-        await this.refresh();
+        await this.refresh('cache-first');
     }
 
     public componentWillUnmount() {
@@ -357,7 +365,7 @@ export class StatefulExecutionComponent extends Component<
     private onCreateTask = async (task: Task): Promise<void> => {
         if (task.goal.length > 0) {
             await this.props.deps.taskService.createTask(task);
-            await this.refresh();
+            await this.refresh('network-only');
         }
 
         this.setState({
@@ -367,22 +375,22 @@ export class StatefulExecutionComponent extends Component<
 
     private onUpdateTask = async (task: Task) => {
         await this.props.deps.taskService.updateTask(task);
-        await this.refresh();
+        await this.refresh('network-only');
     };
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.deleteTask(taskId);
-        await this.refresh();
+        await this.refresh('network-only');
     };
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.startTask(taskId);
-        await this.refresh();
+        await this.refresh('network-only');
     };
 
     private onCompleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.completeTask(taskId);
-        await this.refresh();
+        await this.refresh('network-only');
     };
 
     private onPersonalAddClick = async (): Promise<void> => {
@@ -429,7 +437,7 @@ export class StatefulExecutionComponent extends Component<
             potentialTaskOwners: [],
             taskSelectingOwner: undefined,
         });
-        await this.refresh();
+        await this.refresh('network-only');
     };
 
     private onCloseTaskOwnersListClick = () => {
@@ -439,24 +447,35 @@ export class StatefulExecutionComponent extends Component<
         });
     };
 
-    public async refresh() {
-        const user = await this.props.deps.userService.fetchMe('network-only');
-        const personalStatus =
-            await this.props.deps.executionModeService.fetchPersonalStatus(
-                user?.id || -1,
-                'network-only',
+    public async refresh(policy: FetchPolicy) {
+        console.log('refresh', policy);
+        const data = await this.props.deps.graphql.query({
+            fetchPolicy: policy,
+            query: queries.Me,
+        });
+        if (data.me.activeTeam) {
+            store.dispatch(
+                updatePersonalStatus({
+                    needAttentionTask: data.me.activeTeam.tasksNeedAttention,
+                    // todo: use apollo cli to compile query to TS interfaces to have type hint
+                    upcomingTasks: data.me.activeTeam.upcomingTasks.filter(
+                        // @ts-ignore
+                        (task) => task.owner.id === data.me.id,
+                    ),
+                    // @ts-ignore
+                    deliveredTasks: data.me.activeTeam.deliveredTasks.filter(
+                        // @ts-ignore
+                        (task) => task.owner.id === data.me.id,
+                    ),
+                }),
             );
-        if (personalStatus) {
-            store.dispatch(updatePersonalStatus(personalStatus));
-        }
-
-        const teamStatus =
-            await this.props.deps.executionModeService.fetchTeamStatus(
-                'network-only',
+            store.dispatch(
+                updateTeamStatus({
+                    upcomingTasks: data.me.activeTeam.upcomingTasks,
+                    inProgressTasks: data.me.activeTeam.inProgressTasks,
+                    deliveredTasks: data.me.activeTeam.deliveredTasks,
+                }),
             );
-
-        if (teamStatus) {
-            store.dispatch(updateTeamStatus(teamStatus));
         }
     }
 }
