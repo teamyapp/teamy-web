@@ -461,8 +461,6 @@ export class StatefulExecutionComponent extends Component<
                 // @ts-ignore
                 deliveredTasks: data.me.activeTeam.deliveredTasks.filter(task => task.owner.id === data.me.id),
             }));
-        }
-        if (data.me.activeTeam) {
             store.dispatch(updateTeamStatus({
                 upcomingTasks: data.me.activeTeam.upcomingTasks,
                 inProgressTasks: data.me.activeTeam.inProgressTasks,
