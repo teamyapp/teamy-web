@@ -21,7 +21,7 @@ interface Pros {
 export default class TaskModalComponent extends Component<any, IState> {
     private modalRef = createRef<ModalComponent>();
 
-    constructor(props: Pros) {
+    constructor(props: IProps) {
         super(props);
         this.state = {};
     }
