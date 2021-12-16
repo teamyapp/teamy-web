@@ -139,7 +139,7 @@ class AppComponentContainer extends Component<
         console.log("refresh App", policy)
         const data = await this.props.deps.graphql.query({
             fetchPolicy: policy,
-            query: queries.MePage
+            query: queries.Me
         })
         const teams: Team[] = data.me.teams;
         const activeTeamId = data.me.activeTeam?.id;

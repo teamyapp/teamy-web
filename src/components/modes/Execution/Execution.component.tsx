@@ -450,7 +450,7 @@ export class StatefulExecutionComponent extends Component<
         console.log("refresh", policy)
         const data = await this.props.deps.graphql.query({
             fetchPolicy: policy,
-            query: queries.MePage
+            query: queries.Me
         })
         if (data.me.activeTeam) {
             store.dispatch(updatePersonalStatus({
