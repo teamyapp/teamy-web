@@ -110,7 +110,7 @@ export default class TaskModalComponent extends Component<any, IState> {
     onSaveButtonClick = async () => {
         if (this.state.task) {
             console.log(this.state.task);
-            // todo: context is not in state
+            // TODO: add onChange event to MarkdownEditorComponent in order to update context
             await this.props.deps.taskService.updateTask(this.state.task);
         }
     };
