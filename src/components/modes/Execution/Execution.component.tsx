@@ -460,12 +460,13 @@ export class StatefulExecutionComponent extends Component<
                 updatePersonalStatus({
                     needAttentionTask: data.me.activeTeam.tasksNeedAttention,
                     // todo: use apollo cli to compile query to TS interfaces to have type hint
-                    // @ts-ignore
                     upcomingTasks: data.me.activeTeam.upcomingTasks.filter(
+                        // @ts-ignore
                         (task) => task.owner.id === data.me.id,
                     ),
                     // @ts-ignore
                     deliveredTasks: data.me.activeTeam.deliveredTasks.filter(
+                        // @ts-ignore
                         (task) => task.owner.id === data.me.id,
                     ),
                 }),
