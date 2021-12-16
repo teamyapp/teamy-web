@@ -14,7 +14,7 @@ interface IState {
     task?: Task;
 }
 
-interface Pros {
+interface IProps {
     deps: Deps;
 }
 
