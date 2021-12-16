@@ -77,7 +77,7 @@ export default class TaskModalComponent extends Component<any, IState> {
                                         />
                                     </div>
                                 </div>
-                                <button onClick={this.onSaveButtonClicked}>Save</button>
+                                <button onClick={this.onSaveButtonClick}>Save</button>
                             </div>
                         </div>
                     )}
