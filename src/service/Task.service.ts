@@ -14,7 +14,7 @@ export class TaskService {
         return this.graphQLClient
             .query({
                 query: QueryGetTask,
-                variables: { id: `${taskId}` },
+                variables: { id: taskId },
             })
             .then((payload: any) => {
                 return payload?.task;
@@ -25,7 +25,7 @@ export class TaskService {
         return this.graphQLClient.mutate({
             mutation: mutations.updateTask,
             variables: {
-                taskId: `${task.id}`,
+                taskId: task.id,
                 taskInput: {
                     context: task.context,
                     dueAt: task.dueAt,
@@ -47,7 +47,7 @@ export class TaskService {
         return this.graphQLClient.mutate({
             mutation: mutations.startTask,
             variables: {
-                taskId: `${taskId}`,
+                taskId: taskId,
                 task: {
                     status: 'IN_PROGRESS',
                 },
@@ -59,7 +59,7 @@ export class TaskService {
         return this.graphQLClient.mutate({
             mutation: mutations.completeTask,
             variables: {
-                taskId: `${taskId}`,
+                taskId: taskId,
                 task: {
                     status: 'DELIVERED',
                 },
@@ -72,7 +72,7 @@ export class TaskService {
             mutation: mutations.createTask,
             variables: {
                 taskInput: Object.assign({}, task, {
-                    ownerUserId: task.owner ? `${task.owner?.id}` : undefined,
+                    ownerUserId: task.owner ? task.owner?.id : undefined,
                 }),
             },
         });

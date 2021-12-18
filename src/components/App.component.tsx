@@ -11,6 +11,7 @@ import DrawerComponent from './Drawer.component';
 import ExecutionComponentHook, {
     StatefulExecutionComponent,
 } from './modes/Execution/Execution.component';
+import { TeamSettingsModalComponent } from './shared/TeamModal.component';
 import MaterialIconComponent from './ui/MaterialIcon.component';
 
 interface IProps {
@@ -26,6 +27,8 @@ interface IState {
 }
 
 class AppComponent extends Component<IProps, IState> {
+    private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
+
     constructor(props: any) {
         super(props);
         this.state = {
@@ -50,6 +53,9 @@ class AppComponent extends Component<IProps, IState> {
                             isDrawerOpen={this.state.isDrawerOpen}
                             onMenuClose={this.onMenuToggle}
                             onActiveTeamSelect={this.props.onActiveTeamSelect}
+                            onAddTeamMembersClick={this.onAddTeamMembersClick}
+                            onShowTeamMembersClick={this.onShowTeamMembersClick}
+                            onViewTeamSettings={this.onViewTeamSettings}
                         />
                         <div className={styles.Content}>
                             <header className={styles.Header}>
@@ -78,14 +84,30 @@ class AppComponent extends Component<IProps, IState> {
                         </div>
                     </Route>
                 </Switch>
+                <TeamSettingsModalComponent
+                    deps={this.props.deps}
+                    ref={this.teamSettingsModalRef}
+                />
             </div>
         );
     }
 
-    onMenuToggle = () => {
+    private onMenuToggle = () => {
         this.setState({
             isDrawerOpen: !this.state.isDrawerOpen,
         });
+    };
+
+    private onAddTeamMembersClick = () => {
+        console.log('onAddTeamMembersClick');
+    };
+
+    private onShowTeamMembersClick = (teamId: number) => {
+        this.teamSettingsModalRef.current?.open(teamId, 1);
+    };
+
+    private onViewTeamSettings = (teamId: number) => {
+        this.teamSettingsModalRef.current?.open(teamId);
     };
 }
 

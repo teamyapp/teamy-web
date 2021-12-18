@@ -1,7 +1,12 @@
 import Team from '../entity/Team';
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
-import { QueryActiveTeamId, QueryTeamMembers, QueryTeams } from './queries';
+import {
+    QueryActiveTeamId,
+    QueryTeam,
+    QueryTeamMembers,
+    QueryTeams,
+} from './queries';
 import * as mutations from './mutations';
 
 export class TeamService {
@@ -24,6 +29,14 @@ export class TeamService {
             .query({ query: QueryActiveTeamId })
             .then((payload: any) => {
                 return payload?.me?.activeTeam?.id || -1;
+            });
+    }
+
+    public fetchTeam(teamId: number): Promise<Team> {
+        return this.graphQLClient
+            .query({ query: QueryTeam, variables: { id: teamId } })
+            .then((payload: any) => {
+                return payload?.team;
             });
     }
 
