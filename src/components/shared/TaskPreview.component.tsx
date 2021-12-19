@@ -1,5 +1,12 @@
 import classNames from 'classnames';
-import React, { ChangeEvent, Component, createRef, KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import React, {
+    ChangeEvent,
+    Component,
+    createRef,
+    KeyboardEvent,
+    MouseEvent,
+    ReactElement,
+} from 'react';
 import { IBoundingBoxFinder, Rect } from '../../entity/position';
 import Task from '../../entity/Task';
 import { TaskAction } from '../../entity/TaskAction';

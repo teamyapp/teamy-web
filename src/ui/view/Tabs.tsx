@@ -77,7 +77,7 @@ export class TabsUI extends Component<IProps, IState> {
             this.containerRef.current == null
                 ? 0
                 : this.containerRef.current.offsetWidth /
-                this.props.tabNames.length;
+                  this.props.tabNames.length;
         this.setState({
             activateTabIndicatorWidth: width,
         });

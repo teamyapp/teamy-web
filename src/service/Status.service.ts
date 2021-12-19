@@ -4,7 +4,7 @@ import TeamStatus from '../entity/TeamStatus';
 import { GraphQLClient } from '../network/GraphQL.client';
 import { QueryPersonalStatus, QueryTeamStatus } from './queries';
 
-export class ExecutionModeService {
+export class StatusService {
     private readonly graphQLClient: GraphQLClient;
 
     constructor(graphQLClient: GraphQLClient) {

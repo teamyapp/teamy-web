@@ -2,49 +2,49 @@
 @import 'src/ui/styleguide/elevation';
 
 .Debug {
-    position         : relative;
-    display          : flex;
-    width            : 100%;
-    height           : 100%;
-    background-color : #424242;
+    position: relative;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background-color: #424242;
 
     .Card {
         @include elevation(5);
-        position         : absolute;
-        top              : 50%;
-        left             : 50%;
-        transform        : translateX(-50%) translateY(-50%);
-        border-radius    : 4px;
-        background-color : white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        border-radius: 4px;
+        background-color: white;
     }
 
     .InfoCard {
-        padding : 40px;
+        padding: 40px;
 
         .Title {
-            font-size     : 30px;
-            font-weight   : bold;
-            margin-bottom : 40px;
-            text-align    : center;
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 40px;
+            text-align: center;
         }
 
         table,
         th,
         td {
-            border : 2px solid #004D40;
+            border: 2px solid #004d40;
         }
 
         table {
-            border-collapse : collapse;
+            border-collapse: collapse;
 
             td {
-                padding : 10px 20px;
+                padding: 10px 20px;
             }
 
             .RowName {
-                font-weight      : bold;
-                color            : white;
-                background-color : #00695C;
+                font-weight: bold;
+                color: white;
+                background-color: #00695c;
             }
         }
     }
