@@ -1,8 +1,8 @@
 import classNames from 'classnames';
 import React, { Component, createRef, MouseEvent, RefObject } from 'react';
-import Team from '../entity/Team';
+import Team from '../../../entity/Team';
 import styles from './Drawer.module.scss';
-import { MaterialIconUI } from './ui/basic/MaterialIcon';
+import { MaterialIconUI } from '../basic/MaterialIcon';
 
 interface IProps {
     teams: Team[];

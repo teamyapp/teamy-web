@@ -9,7 +9,7 @@ import * as queries from '../service/queries';
 import store from '../store/store';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
-import { DrawerUI } from './Drawer';
+import { DrawerUI } from './ui/teamy/Drawer';
 import ExecutionComponentHook, {
     ExecutionComponent,
 } from './Execution/Execution.component';

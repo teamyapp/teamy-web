@@ -1,7 +1,7 @@
-@import '../styleguide/color';
-@import '../styleguide/easing';
-@import '../styleguide/elevation';
-@import 'shared';
+@import '../../../styleguide/color';
+@import '../../../styleguide/easing';
+@import '../../../styleguide/elevation';
+@import 'src/components/shared';
 
 @include menuButton;
 
