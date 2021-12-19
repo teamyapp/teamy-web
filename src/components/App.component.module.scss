@@ -5,40 +5,40 @@
 
 .App {
     @include menuButton;
-    display : flex;
-    height  : 100vh;
+    display: flex;
+    height: 100vh;
 
     .Content {
         @include header;
-        display                 : flex;
-        flex-direction          : column;
-        width                   : 100%;
-        box-shadow              : -4px 0 6px rgba(0, 0, 0, 0.1);
-        --tabs-background-color : white;
-        --tab-text-color        : #{$secondaryColor};
-        --tab-hover-opacity     : 0.03;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+        --tabs-background-color: white;
+        --tab-text-color: #{$secondaryColor};
+        --tab-hover-opacity: 0.03;
 
         .Header {
-            position : relative;
-            z-index  : 100;
-            color    : $onPrimaryColor;
+            position: relative;
+            z-index: 100;
+            color: $onPrimaryColor;
 
             .MenuButtonPlaceHolder {
-                margin-right : 10px;
+                margin-right: 10px;
             }
 
             .TeamName {
-                font-size      : 22px;
-                font-weight    : 500;
-                transition     : left 400ms $easeOutExpo;
+                font-size: 22px;
+                font-weight: 500;
+                transition: left 400ms $easeOutExpo;
 
-                letter-spacing : 1px;
+                letter-spacing: 1px;
             }
         }
 
         .Execution {
-            overflow-y : hidden;
-            flex       : 1;
+            overflow-y: hidden;
+            flex: 1;
         }
     }
 }

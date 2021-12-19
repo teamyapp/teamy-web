@@ -39,9 +39,9 @@ export default class PersonalStatusUI extends Component<IProps> {
                 <div className={styles.NeedAttentionSection}>
                     <SectionUI title={'Need Attention'}>
                         {this.props.personalStatus.needAttentionTask &&
-                        this.renderExistingTask()(
-                            this.props.personalStatus.needAttentionTask,
-                        )}
+                            this.renderExistingTask()(
+                                this.props.personalStatus.needAttentionTask,
+                            )}
                     </SectionUI>
                 </div>
                 <div className={`${styles.TaskLists}`}>
@@ -63,7 +63,7 @@ export default class PersonalStatusUI extends Component<IProps> {
                         >
                             <div className={styles.TaskList}>
                                 {this.props.taskAdding &&
-                                this.renderNewTask()(this.props.taskAdding)}
+                                    this.renderNewTask()(this.props.taskAdding)}
                                 {this.props.personalStatus.upcomingTasks.map(
                                     this.renderExistingTask(),
                                 )}

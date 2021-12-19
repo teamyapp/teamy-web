@@ -54,7 +54,7 @@ export default class KanbanUI extends Component<IProps> {
                     >
                         <div className={styles.TaskList}>
                             {this.props.taskAdding &&
-                            this.renderNewTask()(this.props.taskAdding)}
+                                this.renderNewTask()(this.props.taskAdding)}
                             {this.props.teamStatus.upcomingTasks.map(
                                 this.renderExistingTask(),
                             )}

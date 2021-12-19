@@ -10,7 +10,9 @@ import store from '../store/store';
 import { MaterialIconUI } from '../ui/view/MaterialIcon';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
-import ExecutionComponentHook, { ExecutionComponent } from './Execution.component';
+import ExecutionComponentHook, {
+    ExecutionComponent,
+} from './Execution.component';
 import { DrawerUI } from './shared/Drawer';
 import { TeamSettingsModalComponent } from './shared/TeamModal.component';
 

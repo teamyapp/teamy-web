@@ -1,32 +1,32 @@
 @import '../styleguide/easing';
 
 .Tabs {
-    position   : relative;
-    display    : flex;
+    position: relative;
+    display: flex;
 
-    $textColor : var(--tab-text-color, black);
+    $textColor: var(--tab-text-color, black);
 
     .Tab {
-        font-size   : 18px;
-        font-weight : bold;
-        flex        : 1;
-        padding     : 12px 0 16px 0;
-        text-align  : center;
-        color       : $textColor;
+        font-size: 18px;
+        font-weight: bold;
+        flex: 1;
+        padding: 12px 0 16px 0;
+        text-align: center;
+        color: $textColor;
 
         &:hover {
-            cursor           : pointer;
-            $opacity         : var(--tab-hover-opacity, 0.05);
-            background-color : rgba(0, 0, 0, $opacity);
+            cursor: pointer;
+            $opacity: var(--tab-hover-opacity, 0.05);
+            background-color: rgba(0, 0, 0, $opacity);
         }
     }
 
     .ActiveTabMarker {
-        position         : absolute;
-        bottom           : 0;
-        left             : 0;
-        height           : 3px;
-        transition       : all 500ms $easeOutExpo;
-        background-color : var(--tab-active-indicator-color, #{$textColor});
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        transition: all 500ms $easeOutExpo;
+        background-color: var(--tab-active-indicator-color, #{$textColor});
     }
 }

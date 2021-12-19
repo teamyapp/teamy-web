@@ -10,7 +10,7 @@ import './VSCode.theme.scss';
 const renderer = new marked.Renderer();
 marked.setOptions({
     renderer,
-    highlight: function(code: string, language: string) {
+    highlight: function (code: string, language: string) {
         try {
             return prismjs.highlight(
                 code,
