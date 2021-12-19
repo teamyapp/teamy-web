@@ -18,6 +18,12 @@ steps:
       cache_key: '{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
+  - name: build frontend
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git g++ make python3
+      - yarn install --frozen-lockfile
+      - yarn build:staging
   - name: run unit tests
     image: node:16.13.0-alpine3.13
     commands:
