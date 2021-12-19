@@ -10,7 +10,7 @@ import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import DrawerComponent from './Drawer.component';
 import ExecutionComponentHook, {
-    StatefulExecutionComponent,
+    ExecutionComponent,
 } from './modes/Execution/Execution.component';
 import { TeamSettingsModalComponent } from './shared/TeamModal.component';
 import MaterialIconComponent from './ui/MaterialIcon.component';
@@ -27,7 +27,7 @@ interface IState {
 }
 
 class AppComponent extends Component<IProps, IState> {
-    private executionRef = createRef<StatefulExecutionComponent>();
+    private executionRef = createRef<ExecutionComponent>();
     private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
 
     constructor(props: any) {

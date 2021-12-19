@@ -31,23 +31,6 @@ interface IProps {
     deps: Deps;
     routerUrl: string;
     routerHistory: History<LocationState>;
-    personalStatus: PersonalStatus;
-    teamStatus: TeamStatus;
-    taskAdding?: Task;
-    taskSelectingOwner?: Task;
-    potentialTaskOwners: User[];
-    onViewTaskDetailClick?: (taskId: number) => void;
-    onPersonalAddClick?: () => void;
-    onTeamAddClick?: () => void;
-    onNewTaskChange?: (task: Task) => void;
-    onCreateTask?: (task: Task) => void;
-    onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number) => void;
-    onStartTaskClick?: (taskId: number) => void;
-    onCompleteTaskClick?: (taskId: number) => void;
-    onSelectTaskOwner?: (userId: number) => void;
-    onCloseTaskOwnersListClick?: () => void;
-    onShowPotentialTaskOwners?: (task: Task) => Promise<void>;
 }
 
 interface IState {
@@ -55,19 +38,30 @@ interface IState {
     findTaskOwnersAlignTargetBoundBox?: IBoundingBoxFinder;
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
+    personalStatus: PersonalStatus;
+    teamStatus: TeamStatus;
+    taskSelectingOwner?: Task;
+    assignOwnerUIBoundingBoxFinder?: IBoundingBoxFinder;
+    potentialTaskOwners: User[];
+    taskAdding?: Task;
 }
 
-class ExecutionComponent extends Component<IProps, IState> {
+export class ExecutionComponent extends Component<IProps, IState> {
     private taskDetailModalRef = createRef<TaskModalComponent>();
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
+    private unsubscribe?: Unsubscribe;
 
     constructor(props: IProps) {
         super(props);
 
+        const newState = store.getState();
         this.state = {
             showPotentialTaskOwnersList: false,
             taskOwnersListLeft: -1000,
             taskOwnersListTop: -1000,
+            personalStatus: newState.personalStatus,
+            teamStatus: newState.teamStatus,
+            potentialTaskOwners: [],
         };
     }
 
@@ -88,23 +82,21 @@ class ExecutionComponent extends Component<IProps, IState> {
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalComponent
                                 deps={this.props.deps}
-                                personalStatus={this.props.personalStatus}
-                                taskAdding={this.props.taskAdding}
+                                personalStatus={this.state.personalStatus}
+                                taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
-                                    this.props.taskSelectingOwner
+                                    this.state.taskSelectingOwner
                                 }
-                                onAddClick={this.props.onPersonalAddClick}
+                                onAddClick={this.onPersonalAddClick}
                                 onViewTaskDetailClick={
-                                    this.props.onViewTaskDetailClick
+                                    this.onViewTaskDetailClick
                                 }
-                                onNewTaskChange={this.props.onNewTaskChange}
-                                onCreateTask={this.props.onCreateTask}
-                                onUpdateTask={this.props.onUpdateTask}
-                                onDeleteTaskClick={this.props.onDeleteTaskClick}
-                                onStartTaskClick={this.props.onStartTaskClick}
-                                onCompleteTaskClick={
-                                    this.props.onCompleteTaskClick
-                                }
+                                onNewTaskChange={this.onNewTaskChange}
+                                onCreateTask={this.onCreateTask}
+                                onUpdateTask={this.onUpdateTask}
+                                onDeleteTaskClick={this.onDeleteTaskClick}
+                                onStartTaskClick={this.onStartTaskClick}
+                                onCompleteTaskClick={this.onCompleteTaskClick}
                                 onShowPotentialTaskOwners={
                                     this.onShowPotentialTaskOwners
                                 }
@@ -114,23 +106,21 @@ class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}team`}>
                             <TeamComponent
-                                teamStatus={this.props.teamStatus}
-                                taskAdding={this.props.taskAdding}
+                                teamStatus={this.state.teamStatus}
+                                taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
-                                    this.props.taskSelectingOwner
+                                    this.state.taskSelectingOwner
                                 }
-                                onAddClick={this.props.onTeamAddClick}
+                                onAddClick={this.onTeamAddClick}
                                 onViewTaskDetailClick={
-                                    this.props.onViewTaskDetailClick
+                                    this.onViewTaskDetailClick
                                 }
-                                onNewTaskChange={this.props.onNewTaskChange}
-                                onCreateTask={this.props.onCreateTask}
-                                onUpdateTask={this.props.onUpdateTask}
-                                onDeleteTaskClick={this.props.onDeleteTaskClick}
-                                onStartTaskClick={this.props.onStartTaskClick}
-                                onCompleteTaskClick={
-                                    this.props.onCompleteTaskClick
-                                }
+                                onNewTaskChange={this.onNewTaskChange}
+                                onCreateTask={this.onCreateTask}
+                                onUpdateTask={this.onUpdateTask}
+                                onDeleteTaskClick={this.onDeleteTaskClick}
+                                onStartTaskClick={this.onStartTaskClick}
+                                onCompleteTaskClick={this.onCompleteTaskClick}
                                 onShowPotentialTaskOwners={
                                     this.onShowPotentialTaskOwners
                                 }
@@ -165,9 +155,9 @@ class ExecutionComponent extends Component<IProps, IState> {
                         </div>
                         <SelectUserListComponent
                             selectedUserId={
-                                this.props.taskSelectingOwner?.owner?.id
+                                this.state.taskSelectingOwner?.owner?.id
                             }
-                            users={this.props.potentialTaskOwners}
+                            users={this.state.potentialTaskOwners}
                             onSelectUser={this.onSelectTaskOwner}
                         />
                     </div>
@@ -176,12 +166,22 @@ class ExecutionComponent extends Component<IProps, IState> {
         );
     }
 
-    public componentDidMount() {
+    public async componentDidMount() {
         this.onTabClick(0);
         window.addEventListener('resize', this.onWindowResize);
+
+        this.unsubscribe = store.subscribe(() => {
+            const newState = store.getState();
+            this.setState({
+                personalStatus: newState.personalStatus,
+                teamStatus: newState.teamStatus,
+            });
+        });
+        await this.refresh('cache-first');
     }
 
     public componentWillUnmount() {
+        this.unsubscribe?.call(this);
         window.removeEventListener('resize', this.onWindowResize);
     }
 
@@ -197,11 +197,10 @@ class ExecutionComponent extends Component<IProps, IState> {
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,
     ) => {
-        if (this.props.onShowPotentialTaskOwners) {
-            await this.props.onShowPotentialTaskOwners(task);
-        }
-
+        const owners = await this.props.deps.teamService.fetchTeamMembers();
         this.setState({
+            potentialTaskOwners: owners,
+            taskSelectingOwner: task,
             findTaskOwnersAlignTargetBoundBox: findAlignTargetBoundBox,
             showPotentialTaskOwnersList: true,
         });
@@ -212,24 +211,20 @@ class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onCloseTaskOwnersListClick = () => {
-        this.closeTaskOwnersList();
-    };
-
-    private closeTaskOwnersList() {
-        this.props.onCloseTaskOwnersListClick?.call(null);
+    private onSelectTaskOwner = async (userId: number) => {
+        await this.props.deps.taskService.updateTask(
+            Object.assign({}, this.state.taskSelectingOwner, {
+                owner: Object.assign({}, this.state.taskSelectingOwner?.owner, {
+                    id: userId,
+                }),
+            }),
+        );
         this.setState({
+            potentialTaskOwners: [],
             showPotentialTaskOwnersList: false,
-            taskOwnersListLeft: -1000,
-            taskOwnersListTop: -1000,
+            taskSelectingOwner: undefined,
         });
-    }
-
-    private onSelectTaskOwner = (userId: number) => {
-        this.props.onSelectTaskOwner?.call(null, userId);
-        this.setState({
-            showPotentialTaskOwnersList: false,
-        });
+        await this.refresh('network-only');
     };
 
     private updateTaskOwnersListPosition = () => {
@@ -271,89 +266,10 @@ class ExecutionComponent extends Component<IProps, IState> {
 
         this.taskOwnersPopupRef.current?.blur();
     };
-}
-
-interface IContainerProps {
-    deps: Deps;
-    routerUrl: string;
-    routerHistory: History<LocationState>;
-}
-
-interface IContainerState {
-    personalStatus: PersonalStatus;
-    teamStatus: TeamStatus;
-    taskSelectingOwner?: Task;
-    assignOwnerUIBoundingBoxFinder?: IBoundingBoxFinder;
-    potentialTaskOwners: User[];
-    taskAdding?: Task;
-}
-
-export class StatefulExecutionComponent extends Component<
-    IContainerProps,
-    IContainerState
-> {
-    private executionComponentRef: RefObject<ExecutionComponent> =
-        createRef<ExecutionComponent>();
-    private unsubscribe?: Unsubscribe;
-
-    constructor(props: IContainerProps) {
-        super(props);
-
-        const newState = store.getState();
-        this.state = {
-            personalStatus: newState.personalStatus,
-            teamStatus: newState.teamStatus,
-            potentialTaskOwners: [],
-        };
-    }
-
-    public render(): ReactElement {
-        return (
-            <ExecutionComponent
-                ref={this.executionComponentRef}
-                routerUrl={this.props.routerUrl}
-                routerHistory={this.props.routerHistory}
-                personalStatus={this.state.personalStatus}
-                teamStatus={this.state.teamStatus}
-                taskAdding={this.state.taskAdding}
-                taskSelectingOwner={this.state.taskSelectingOwner}
-                potentialTaskOwners={this.state.potentialTaskOwners}
-                onViewTaskDetailClick={this.onViewTaskDetailClick}
-                onNewTaskChange={this.onNewTaskChange}
-                onCreateTask={this.onCreateTask}
-                onUpdateTask={this.onUpdateTask}
-                onDeleteTaskClick={this.onDeleteTaskClick}
-                onStartTaskClick={this.onStartTaskClick}
-                onCompleteTaskClick={this.onCompleteTaskClick}
-                onPersonalAddClick={this.onPersonalAddClick}
-                onTeamAddClick={this.onTeamAddClick}
-                onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
-                onSelectTaskOwner={this.onSelectTaskOwner}
-                onCloseTaskOwnersListClick={this.onCloseTaskOwnersListClick}
-                deps={this.props.deps}
-            />
-        );
-    }
-
-    public async componentDidMount() {
-        this.unsubscribe = store.subscribe(() => {
-            const newState = store.getState();
-            this.setState({
-                personalStatus: newState.personalStatus,
-                teamStatus: newState.teamStatus,
-            });
-        });
-
-        await this.refresh('cache-first');
-    }
-
-    public componentWillUnmount() {
-        this.unsubscribe?.call(this);
-    }
 
     private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
         const task = await this.props.deps.taskService.fetchTask(taskId);
-        this.executionComponentRef.current?.showTaskDetail(task);
+        this.showTaskDetail(task);
     };
 
     private onNewTaskChange = (task: Task) => {
@@ -407,7 +323,6 @@ export class StatefulExecutionComponent extends Component<
     };
 
     private onTeamAddClick = () => {
-        console.log('onTeamAddClick');
         this.setState({
             taskAdding: {
                 id: -1,
@@ -417,33 +332,13 @@ export class StatefulExecutionComponent extends Component<
         });
     };
 
-    private onShowPotentialTaskOwners = async (task: Task) => {
-        const owners = await this.props.deps.teamService.fetchTeamMembers();
-        this.setState({
-            potentialTaskOwners: owners,
-            taskSelectingOwner: task,
-        });
-    };
-
-    private onSelectTaskOwner = async (userId: number) => {
-        await this.props.deps.taskService.updateTask(
-            Object.assign({}, this.state.taskSelectingOwner, {
-                owner: Object.assign({}, this.state.taskSelectingOwner?.owner, {
-                    id: userId,
-                }),
-            }),
-        );
-        this.setState({
-            potentialTaskOwners: [],
-            taskSelectingOwner: undefined,
-        });
-        await this.refresh('network-only');
-    };
-
     private onCloseTaskOwnersListClick = () => {
         this.setState({
             potentialTaskOwners: [],
             taskSelectingOwner: undefined,
+            showPotentialTaskOwnersList: false,
+            taskOwnersListLeft: -1000,
+            taskOwnersListTop: -1000,
         });
     };
 
@@ -460,13 +355,10 @@ export class StatefulExecutionComponent extends Component<
                         data.me?.activeTeam?.tasksNeedAttention[0],
                     // todo: use apollo cli to compile query to TS interfaces to have type hint
                     upcomingTasks: data.me?.activeTeam?.upcomingTasks.filter(
-                        // @ts-ignore
-                        (task) => task.owner?.id === data?.me?.id,
+                        (task: Task) => task.owner?.id === data?.me?.id,
                     ),
-                    // @ts-ignore
                     deliveredTasks: data.me?.activeTeam?.deliveredTasks.filter(
-                        // @ts-ignore
-                        (task) => task.owner?.id === data.me?.id,
+                        (task: Task) => task.owner?.id === data.me?.id,
                     ),
                 }),
             );
@@ -482,7 +374,7 @@ export class StatefulExecutionComponent extends Component<
 }
 
 interface IHookProps {
-    executionRef: RefObject<StatefulExecutionComponent>;
+    executionRef: RefObject<ExecutionComponent>;
     deps: Deps;
 }
 
@@ -490,7 +382,7 @@ export default function ExecutionComponentHook(props: IHookProps) {
     const { url } = useRouteMatch();
     const routerHistory = useHistory();
     return (
-        <StatefulExecutionComponent
+        <ExecutionComponent
             ref={props.executionRef}
             deps={props.deps}
             routerUrl={url}
