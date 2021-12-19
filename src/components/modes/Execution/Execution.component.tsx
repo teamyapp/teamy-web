@@ -41,7 +41,6 @@ interface IState {
     personalStatus: PersonalStatus;
     teamStatus: TeamStatus;
     taskSelectingOwner?: Task;
-    assignOwnerUIBoundingBoxFinder?: IBoundingBoxFinder;
     potentialTaskOwners: User[];
     taskAdding?: Task;
 }
