@@ -1,0 +1,138 @@
+@use 'sass:math';
+@import '../../../styleguide/divider';
+@import '../../../styleguide/elevation';
+
+$numOfActionColumns: 3;
+$actionIconSize: 28px;
+$edgeSpace: 12px;
+
+@mixin goalText {
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.Task {
+    @include elevation(4);
+    display: flex;
+    min-height: 80px;
+    padding: $edgeSpace;
+    border: 4px solid transparent;
+    border-radius: 6px;
+    background-color: white;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    .LeftSection {
+        flex: 1;
+        padding-right: $edgeSpace;
+
+        .Goal {
+            @include goalText;
+
+            .Placeholder {
+                color: #757575;
+            }
+        }
+
+        .GoalTextField {
+            box-sizing: border-box;
+            width: 100%;
+            @include goalText;
+            height: 60px;
+            margin: 0;
+            padding: 0;
+            resize: none;
+            border: none;
+            outline: none;
+            background-color: #f5f5f5;
+        }
+
+        .DueAt {
+            font-size: 16px;
+            font-weight: 500;
+            margin-top: 6px;
+            color: #585858;
+        }
+
+        .Attributes {
+            display: flex;
+            margin-top: 10px;
+
+            .EffortAttribute {
+                --color: #1976d2;
+            }
+        }
+    }
+
+    .ActionsSection,
+    .ViewDetailSection {
+        border-left: 2px solid $dividerColor;
+    }
+
+    .ActionsSection {
+        display: grid;
+        padding-left: $edgeSpace;
+        grid-auto-rows: min-content;
+        grid-template-columns: repeat($numOfActionColumns, 1fr);
+        gap: math.div($edgeSpace, 2);
+
+        .Action {
+            width: $actionIconSize;
+            height: $actionIconSize;
+            padding: 4px;
+            user-select: none;
+            border-radius: 4px;
+            --icon-size: #{$actionIconSize};
+            --icon-box-size: #{$actionIconSize};
+
+            &.Active,
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.07);
+            }
+        }
+
+        .AssignOwner {
+            --profile-width: #{$actionIconSize};
+            --profile-height: #{$actionIconSize};
+        }
+    }
+
+    .IdRow {
+        margin-bottom: 10px;
+
+        .Id {
+            font-weight: 500;
+            padding: 2px 10px;
+            background-color: #d6f0ff;
+        }
+    }
+}
+
+.StartTaskIcon {
+    --icon-color: #00897b;
+    --icon-size: #{$actionIconSize + 6px};
+}
+
+.TaskCompletedIcon {
+    --icon-color: #008b00;
+}
+
+.DeleteTaskIcon {
+    --icon-color: red;
+}
+
+.MarkTaskBlockIcon {
+    --icon-color: red;
+    --icon-size: #{$actionIconSize + 3px};
+}
+
+.TaskDetailIcon {
+    --icon-color: #616161;
+}
+
+.AssignOwnerIcon {
+    --icon-color: #3d7bf6;
+}

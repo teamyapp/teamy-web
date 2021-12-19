@@ -1,0 +1,163 @@
+@import 'Modal.shared.module';
+
+$memberProfileWidth: 60px;
+$memberProfileHeight: 60px;
+
+.TeamModal {
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    height: 600px;
+
+    .Tabs {
+        background-color: #f5f5f5;
+    }
+
+    .TabContent {
+        flex: 1;
+    }
+
+    .TeamProfileTab {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        height: 100%;
+        padding: 20px;
+        background-color: #cfd8dc;
+
+        .TeamProfileTabContent {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            padding: 40px;
+            border: 4px solid #b0bec5;
+            border-radius: 6px;
+            background-color: white;
+
+            .TeamIcon {
+                position: relative;
+                border: 4px solid #e0e0e0;
+                border-radius: 4px;
+                background-color: white;
+
+                .TeamIconImg {
+                    width: 100px;
+                    height: 100px;
+                    margin: 20px;
+                }
+
+                &:hover {
+                    .UploadTeamIconButton {
+                        opacity: 0.8;
+                    }
+                }
+
+                .UploadTeamIconButton {
+                    font-size: 20px;
+                    font-weight: bold;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-sizing: border-box;
+                    width: 100%;
+                    height: 100%;
+                    padding: 0 10px;
+                    user-select: none;
+                    text-align: center;
+                    opacity: 0;
+                    color: white;
+                    background-color: #424242;
+
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            .TeamNameSection {
+                margin-top: 30px;
+                --border: 2px solid #757575;
+            }
+
+            .ActionsSection {
+                display: flex;
+                flex-direction: column;
+                margin-top: 30px;
+
+                .Action {
+                    font-size: 20px;
+                    font-weight: 500;
+                    width: 200px;
+                    padding: 10px;
+                    text-align: center;
+                    color: white;
+                    border-radius: 6px;
+
+                    &:not(:first-child) {
+                        margin-top: 6px;
+                    }
+
+                    &:hover {
+                        cursor: pointer;
+                        opacity: 0.9;
+                    }
+                }
+
+                .SaveAction {
+                    background-color: #388e3c;
+                    //border: 2px solid #388e3c;
+                }
+
+                .DeleteTeamAction {
+                    background-color: #d32f2f;
+                    //border: 2px solid #c62828;
+                }
+            }
+        }
+    }
+
+    .TeamMemberTab {
+        display: grid;
+        padding: 40px;
+        --profile-width: #{$memberProfileWidth};
+        --profile-height: #{$memberProfileHeight};
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+
+        .Cell {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+
+            .AddButton {
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                width: $memberProfileWidth;
+
+                height: $memberProfileHeight;
+                cursor: pointer;
+                border-radius: 50%;
+                background-color: #ad1457;
+                &:hover {
+                    opacity: 0.8;
+                }
+                --icon-color: white;
+                --icon-size: 30px;
+            }
+
+            .MemberName {
+                font-size: 18px;
+                font-weight: bold;
+                margin-top: 10px;
+            }
+        }
+    }
+}

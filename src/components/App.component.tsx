@@ -4,17 +4,17 @@ import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Deps } from '../deps';
 import Team from '../entity/Team';
-import { withIdentity } from '../identity/withIdentity';
+import { withIdentityVerification } from '../identity/withIdentityVerification';
+import * as queries from '../service/queries';
 import store from '../store/store';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
-import DrawerComponent from './Drawer.component';
+import { DrawerUI } from './Drawer';
 import ExecutionComponentHook, {
     ExecutionComponent,
-} from './modes/Execution/Execution.component';
-import { TeamSettingsModalComponent } from './shared/TeamModal.component';
-import MaterialIconComponent from './ui/MaterialIcon.component';
-import * as queries from '../service/queries';
+} from './Execution/Execution.component';
+import { MaterialIconUI } from './ui/basic/MaterialIcon';
+import { TeamSettingsModalComponent } from './ui/teamy/TeamModal.component';
 
 interface IProps {
     deps: Deps;
@@ -50,7 +50,7 @@ class AppComponent extends Component<IProps, IState> {
                         />
                     </Route>
                     <Route path={'/'}>
-                        <DrawerComponent
+                        <DrawerUI
                             activeTeamId={this.state.activeTeamId}
                             teams={this.state.teams}
                             isDrawerOpen={this.state.isDrawerOpen}
@@ -68,9 +68,9 @@ class AppComponent extends Component<IProps, IState> {
                                             className={styles.MenuButton}
                                             onClick={this.onMenuToggle}
                                         >
-                                            <MaterialIconComponent>
+                                            <MaterialIconUI>
                                                 menu
-                                            </MaterialIconComponent>
+                                            </MaterialIconUI>
                                         </div>
                                     )}
                                 </div>
@@ -95,6 +95,10 @@ class AppComponent extends Component<IProps, IState> {
         );
     }
 
+    public async componentDidMount() {
+        await this.refresh('cache-first');
+    }
+
     private onMenuToggle = () => {
         this.setState({
             isDrawerOpen: !this.state.isDrawerOpen,
@@ -112,10 +116,6 @@ class AppComponent extends Component<IProps, IState> {
     private onViewTeamSettings = (teamId: number) => {
         this.teamSettingsModalRef.current?.open(teamId);
     };
-
-    public async componentDidMount() {
-        await this.refresh('cache-first');
-    }
 
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
         await this.props.deps.teamService.updateActiveTeamId(teamId);
@@ -143,14 +143,14 @@ interface IHookProps {
 }
 
 export default function AppComponentHook(props: IHookProps): ReactElement {
-    const AppWithIdentity = withIdentity(
+    const AppWithIdentityVerification = withIdentityVerification(
         props.deps.identityClient,
         AppComponent,
     );
     return (
         <Provider store={store}>
             <BrowserRouter>
-                <AppWithIdentity deps={props.deps} />
+                <AppWithIdentityVerification deps={props.deps} />
             </BrowserRouter>
         </Provider>
     );
