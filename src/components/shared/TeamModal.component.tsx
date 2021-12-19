@@ -84,9 +84,13 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                     <div className={styles.TeamProfileTabContent}>
                         <div className={styles.TeamIcon}>
                             <img
+                                alt={this.state.team?.name}
                                 className={styles.TeamIconImg}
                                 src={this.state.team?.iconUrl}
                             />
+                            <div className={styles.UploadTeamIconButton}>
+                                Upload profile
+                            </div>
                         </div>
                         <div className={styles.TeamNameSection}>
                             <TextFieldComponent
@@ -98,11 +102,13 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                         <div className={styles.ActionsSection}>
                             <div
                                 className={`${styles.Action} ${styles.SaveAction}`}
+                                onClick={this.onSaveTeamProfileClick}
                             >
                                 Save
                             </div>
                             <div
                                 className={`${styles.Action} ${styles.DeleteTeamAction}`}
+                                onClick={this.onDeleteTeamClick}
                             >
                                 Delete Team
                             </div>
@@ -157,5 +163,13 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                 name: newName,
             }),
         });
+    };
+
+    private onSaveTeamProfileClick = () => {
+        console.log('onSaveTeamProfileClick');
+    };
+
+    private onDeleteTeamClick = () => {
+        console.log('onDeleteTeamClick');
     };
 }
