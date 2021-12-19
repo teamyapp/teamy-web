@@ -5,6 +5,7 @@ import { User } from '../../entity/User';
 import MaterialIconComponent from '../ui/MaterialIcon.component';
 import ModalComponent from '../ui/Modal.component';
 import TabsComponent from '../ui/Tabs.component';
+import TextFieldComponent from '../ui/TextField.component';
 import styles from './TeamModal.component.module.scss';
 import { UserProfile } from './UserProfile.component';
 
@@ -15,6 +16,7 @@ interface IProps {
 interface IState {
     defaultTabIndex: number;
     currentTabIndex: number;
+    initialTeamName?: string;
     team?: Team;
 }
 
@@ -35,7 +37,7 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                 {this.state.team && (
                     <div className={styles.TeamModal}>
                         <div className={styles.Header}>
-                            Team {this.state.team.name}
+                            Team {this.state.initialTeamName}
                             <div
                                 className={styles.CloseButton}
                                 onClick={this.onCloseButtonClick}
@@ -45,20 +47,18 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                                 </MaterialIconComponent>
                             </div>
                         </div>
-                        <div>
-                            <div key={0} className={styles.Tabs}>
-                                <TabsComponent
-                                    defaultSelectedIndex={
-                                        this.state.defaultTabIndex
-                                    }
-                                    tabNames={['Settings', 'Members']}
-                                    onTabClick={this.onTabClick}
-                                />
-                            </div>
-                            <div>
-                                {this.renderTeamSettingsTab()}
-                                {this.renderTeamMembersTab()}
-                            </div>
+                        <div key={0} className={styles.Tabs}>
+                            <TabsComponent
+                                defaultSelectedIndex={
+                                    this.state.defaultTabIndex
+                                }
+                                tabNames={['Profile', 'Members']}
+                                onTabClick={this.onTabClick}
+                            />
+                        </div>
+                        <div className={styles.TabContent}>
+                            {this.renderTeamProfileTab()}
+                            {this.renderTeamMembersTab()}
                         </div>
                     </div>
                 )}
@@ -72,14 +72,43 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
             defaultTabIndex,
             currentTabIndex: defaultTabIndex,
             team,
+            initialTeamName: team.name,
         });
         this.modalRef.current?.open();
     };
 
-    private renderTeamSettingsTab = () => {
+    private renderTeamProfileTab = () => {
         return (
             this.state.currentTabIndex === 0 && (
-                <div className={styles.TeamSettingsTab}></div>
+                <div className={styles.TeamProfileTab}>
+                    <div className={styles.TeamProfileTabContent}>
+                        <div className={styles.TeamIcon}>
+                            <img
+                                className={styles.TeamIconImg}
+                                src={this.state.team?.iconUrl}
+                            />
+                        </div>
+                        <div className={styles.TeamNameSection}>
+                            <TextFieldComponent
+                                value={this.state.team?.name}
+                                label={'Name'}
+                                onChange={this.onTeamNameChange}
+                            />
+                        </div>
+                        <div className={styles.ActionsSection}>
+                            <div
+                                className={`${styles.Action} ${styles.SaveAction}`}
+                            >
+                                Save
+                            </div>
+                            <div
+                                className={`${styles.Action} ${styles.DeleteTeamAction}`}
+                            >
+                                Delete Team
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )
         );
     };
@@ -119,6 +148,14 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
     private onTabClick = (tabIndex: number) => {
         this.setState({
             currentTabIndex: tabIndex,
+        });
+    };
+
+    private onTeamNameChange = (newName: string) => {
+        this.setState({
+            team: Object.assign({}, this.state.team, {
+                name: newName,
+            }),
         });
     };
 }
