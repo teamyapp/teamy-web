@@ -456,24 +456,25 @@ export class StatefulExecutionComponent extends Component<
         if (data.me.activeTeam) {
             store.dispatch(
                 updatePersonalStatus({
-                    needAttentionTask: data.me.activeTeam.tasksNeedAttention,
+                    needAttentionTask:
+                        data.me?.activeTeam?.tasksNeedAttention[0],
                     // todo: use apollo cli to compile query to TS interfaces to have type hint
-                    upcomingTasks: data.me.activeTeam.upcomingTasks.filter(
+                    upcomingTasks: data.me?.activeTeam?.upcomingTasks.filter(
                         // @ts-ignore
-                        (task) => task.owner.id === data.me.id,
+                        (task) => task.owner?.id === data?.me?.id,
                     ),
                     // @ts-ignore
-                    deliveredTasks: data.me.activeTeam.deliveredTasks.filter(
+                    deliveredTasks: data.me?.activeTeam?.deliveredTasks.filter(
                         // @ts-ignore
-                        (task) => task.owner.id === data.me.id,
+                        (task) => task.owner?.id === data.me?.id,
                     ),
                 }),
             );
             store.dispatch(
                 updateTeamStatus({
-                    upcomingTasks: data.me.activeTeam.upcomingTasks,
-                    inProgressTasks: data.me.activeTeam.inProgressTasks,
-                    deliveredTasks: data.me.activeTeam.deliveredTasks,
+                    upcomingTasks: data.me?.activeTeam?.upcomingTasks,
+                    inProgressTasks: data.me?.activeTeam?.inProgressTasks,
+                    deliveredTasks: data.me?.activeTeam?.deliveredTasks,
                 }),
             );
         }
