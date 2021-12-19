@@ -1,5 +1,5 @@
 import { FetchPolicy } from '@apollo/client';
-import React, { Component, createRef, ReactElement, RefObject } from 'react';
+import React, { Component, createRef, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Deps } from '../deps';
@@ -17,24 +17,25 @@ import MaterialIconComponent from './ui/MaterialIcon.component';
 import * as queries from '../service/queries';
 
 interface IProps {
-    executionRef: RefObject<StatefulExecutionComponent>;
     deps: Deps;
-    teams: Team[];
-    activeTeamId: number;
-    onActiveTeamSelect?: (teamId: number) => void;
 }
 
 interface IState {
+    teams: Team[];
+    activeTeamId: number;
     isDrawerOpen: boolean;
 }
 
 class AppComponent extends Component<IProps, IState> {
+    private executionRef = createRef<StatefulExecutionComponent>();
     private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
 
     constructor(props: any) {
         super(props);
         this.state = {
             isDrawerOpen: false,
+            teams: [],
+            activeTeamId: -1,
         };
     }
 
@@ -50,11 +51,11 @@ class AppComponent extends Component<IProps, IState> {
                     </Route>
                     <Route path={'/'}>
                         <DrawerComponent
-                            activeTeamId={this.props.activeTeamId}
-                            teams={this.props.teams}
+                            activeTeamId={this.state.activeTeamId}
+                            teams={this.state.teams}
                             isDrawerOpen={this.state.isDrawerOpen}
                             onMenuClose={this.onMenuToggle}
-                            onActiveTeamSelect={this.props.onActiveTeamSelect}
+                            onActiveTeamSelect={this.onActiveTeamSelect}
                             onAddTeamMembersClick={this.onAddTeamMembersClick}
                             onShowTeamMembersClick={this.onShowTeamMembersClick}
                             onViewTeamSettings={this.onViewTeamSettings}
@@ -78,7 +79,7 @@ class AppComponent extends Component<IProps, IState> {
                             <div className={styles.Execution}>
                                 {
                                     <ExecutionComponentHook
-                                        executionRef={this.props.executionRef}
+                                        executionRef={this.executionRef}
                                         deps={this.props.deps}
                                     />
                                 }
@@ -111,42 +112,6 @@ class AppComponent extends Component<IProps, IState> {
     private onViewTeamSettings = (teamId: number) => {
         this.teamSettingsModalRef.current?.open(teamId);
     };
-}
-
-interface IContainerProps {
-    deps: Deps;
-}
-
-interface IContainerState {
-    teams: Team[];
-    activeTeamId: number;
-}
-
-class AppComponentContainer extends Component<
-    IContainerProps,
-    IContainerState
-> {
-    private executionRef: RefObject<StatefulExecutionComponent> = createRef();
-
-    constructor(props: IContainerProps) {
-        super(props);
-        this.state = {
-            teams: [],
-            activeTeamId: -1,
-        };
-    }
-
-    public render(): ReactElement {
-        return (
-            <AppComponent
-                executionRef={this.executionRef}
-                activeTeamId={this.state.activeTeamId}
-                teams={this.state.teams}
-                onActiveTeamSelect={this.onActiveTeamSelect}
-                {...this.props}
-            />
-        );
-    }
 
     public async componentDidMount() {
         await this.refresh('cache-first');
@@ -180,7 +145,7 @@ interface IHookProps {
 export default function AppComponentHook(props: IHookProps): ReactElement {
     const AppWithIdentity = withIdentity(
         props.deps.identityClient,
-        AppComponentContainer,
+        AppComponent,
     );
     return (
         <Provider store={store}>
