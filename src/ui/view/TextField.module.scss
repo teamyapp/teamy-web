@@ -1,0 +1,97 @@
+@use 'sass:math';
+@import '../styleguide/easing';
+
+$fontSize         : var(--font-size, 18px);
+$outlineColor     : var(--outline-color, #1976D2);
+$labelActiveColor : var(--label-active-color, $outlineColor);
+$border           : var(--border, #{1px solid black});
+$iconSize         : var(--icon-size, 24px);
+$iconPadding      : 2px;
+$paddingSide      : 10px;
+$hintColor        : #757575;
+
+.TextField {
+    font-size        : $fontSize;
+    position         : relative;
+    display          : flex;
+    align-items      : center;
+    min-height       : calc(#{$iconSize} + #{$iconPadding * 2});
+    padding          : 6px $paddingSide;
+    border           : $border;
+    border-radius    : 4px;
+    background-color : white;
+
+    &.Focus {
+        outline        : 2px solid $outlineColor;
+        outline-offset : -2px;
+    }
+
+    .Input {
+        font-size        : $fontSize;
+        position         : relative;
+        z-index          : 1;
+        display          : block;
+        flex             : 1;
+        width            : 100%;
+        height           : $fontSize;
+        letter-spacing   : 1px;
+        border           : none;
+        outline          : none;
+        background-color : transparent;
+
+        &::placeholder {
+            opacity : 0;
+        }
+
+        &:focus,
+        &:not(:placeholder-shown) {
+            & + .Label {
+                z-index   : 2;
+                top       : 0;
+                transform : translateY(-50%) scale(0.9);
+            }
+        }
+
+        &:focus {
+            &::placeholder {
+                opacity : 1;
+            }
+
+            & + .Label {
+                color : $labelActiveColor;
+            }
+        }
+    }
+
+    .Label {
+        font-size        : $fontSize;
+        font-weight      : bold;
+        position         : absolute;
+        z-index          : 0;
+        top              : 50%;
+        left             : math.div($paddingSide, 2);
+        padding          : 0 math.div($paddingSide, 2);
+        transition       : all 200ms $easeOutExpo;
+        transform        : translateY(-50%);
+        color            : $hintColor;
+        background-color : white;
+    }
+
+    .Icon {
+        padding     : 2px;
+        --icon-size : #{$iconSize};
+
+        &:hover {
+            cursor           : pointer;
+            background-color : rgba(0, 0, 0, 0.1);
+        }
+    }
+}
+
+.LengthHint {
+    font-size   : 14px;
+    font-weight : bold;
+    margin-top  : 4px;
+    text-align  : right;
+    color       : $hintColor;
+}

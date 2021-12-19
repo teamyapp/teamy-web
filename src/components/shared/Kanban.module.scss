@@ -1,0 +1,10 @@
+@import 'shared.module';
+
+.TeamStatus {
+    grid-template-columns : repeat(3, 1fr);
+}
+
+.InProgressSection {
+    --title-color      : #FF6F00;
+    --background-color : #FFF8E1;
+}

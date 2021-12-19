@@ -1,0 +1,17 @@
+@import 'shared.module';
+
+.PersonalStatus {
+    display        : flex;
+    flex-direction : column;
+    height         : 100%;
+
+    .TaskLists {
+        grid-template-columns : repeat(2, 1fr);
+    }
+}
+
+.NeedAttentionSection {
+    margin-bottom      : 20px;
+    --title-color      : #CC18AE;
+    --background-color : #FFF6FF;
+}

@@ -1,0 +1,41 @@
+@import '../../ui/styleguide/color';
+@import 'Modal.shared.module';
+
+$divider : 2px solid #E9E9E9;
+
+.TaskDetail {
+    display         : flex;
+    min-height      : 500px;
+    padding         : 20px;
+
+    --outline-color : #1976D2;
+    --border        : 2px solid #{$secondaryColor};
+    --font-size     : 18px;
+
+    .LeftSection {
+        width         : 800px;
+        padding-right : 20px;
+
+        .Context {
+            margin-top : 20px;
+        }
+    }
+
+    .RightSection {
+        width        : 200px;
+        padding-left : 20px;
+        border-left  : $divider;
+
+        .Row {
+            display : flex;
+
+            &:not(:first-child) {
+                margin-top : 10px;
+            }
+        }
+
+        .Effort {
+            --color : #1976D2;
+        }
+    }
+}
