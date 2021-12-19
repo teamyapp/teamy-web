@@ -7,14 +7,12 @@ import Team from '../entity/Team';
 import { withIdentityVerification } from '../identity/withIdentityVerification';
 import * as queries from '../service/queries';
 import store from '../store/store';
+import { MaterialIconUI } from '../ui/view/MaterialIcon';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
-import { DrawerUI } from './ui/teamy/Drawer';
-import ExecutionComponentHook, {
-    ExecutionComponent,
-} from './Execution/Execution.component';
-import { MaterialIconUI } from './ui/basic/MaterialIcon';
-import { TeamSettingsModalComponent } from './ui/teamy/TeamModal.component';
+import ExecutionComponentHook, { ExecutionComponent } from './Execution.component';
+import { DrawerUI } from './shared/Drawer';
+import { TeamSettingsModalComponent } from './shared/TeamModal.component';
 
 interface IProps {
     deps: Deps;
