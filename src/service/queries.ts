@@ -143,17 +143,19 @@ export const QueryTeams = gql`
     }
 `;
 
-export const QueryTeam = gql`
-    query Team($id: ID!) {
-        team(id: $id) {
-            id
-            name
-            iconUrl
-            members {
+export const QueryTeamsWithMembers = gql`
+    query Teams {
+        me {
+            teams {
                 id
-                firstName
-                lastName
-                profileUrl
+                name
+                iconUrl
+                members {
+                    id
+                    firstName
+                    lastName
+                    profileUrl
+                }
             }
         }
     }

@@ -46,7 +46,7 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                             </div>
                         </div>
                         <div>
-                            <div className={styles.Tabs}>
+                            <div key={0} className={styles.Tabs}>
                                 <TabsComponent
                                     defaultSelectedIndex={
                                         this.state.defaultTabIndex
@@ -99,9 +99,9 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
         );
     };
 
-    private renderTeamMember = (user: User) => {
+    private renderTeamMember = (user: User, index: number) => {
         return (
-            <div className={styles.Cell}>
+            <div key={index} className={styles.Cell}>
                 <UserProfile user={user} />
                 <div className={styles.MemberName}>
                     <span>{user.firstName}</span>

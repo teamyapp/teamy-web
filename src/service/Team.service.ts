@@ -3,9 +3,9 @@ import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
 import {
     QueryActiveTeamId,
-    QueryTeam,
     QueryTeamMembers,
     QueryTeams,
+    QueryTeamsWithMembers,
 } from './queries';
 import * as mutations from './mutations';
 
@@ -34,9 +34,15 @@ export class TeamService {
 
     public fetchTeam(teamId: number): Promise<Team> {
         return this.graphQLClient
-            .query({ query: QueryTeam, variables: { id: teamId } })
+            .query({
+                query: QueryTeamsWithMembers,
+                variables: { ids: [teamId] },
+            })
             .then((payload: any) => {
-                return payload?.team;
+                return payload?.me?.teams || [];
+            })
+            .then((teams: Team[]) => {
+                return teams[0];
             });
     }
 
