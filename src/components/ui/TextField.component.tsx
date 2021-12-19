@@ -6,22 +6,6 @@ import styles from './TextField.component.module.scss';
 
 const defaultMaxLength = 524288;
 
-interface OnChangeHandler {
-    (newValue: string): void;
-}
-
-interface OnFocusHandler {
-    (): void;
-}
-
-interface OnBlurHandler {
-    (): void;
-}
-
-interface OnIconClickHandler {
-    (): void;
-}
-
 interface IProps {
     value?: string;
     label?: string;
@@ -29,10 +13,10 @@ interface IProps {
     showLengthCounter?: boolean;
     maxLength?: number;
     icon?: string;
-    onChange?: OnChangeHandler;
-    onFocus?: OnFocusHandler;
-    onBlur?: OnBlurHandler;
-    onIconClick?: OnIconClickHandler;
+    onChange?: (newValue: string) => void;
+    onFocus?: () => void;
+    onBlur?: () => void;
+    onIconClick?: () => void;
 }
 
 interface IState {

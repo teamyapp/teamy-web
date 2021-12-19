@@ -1,14 +1,10 @@
 import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import styles from './Tabs.component.module.scss';
 
-interface OnTabClickHandler {
-    (tableIndex: number): void;
-}
-
 interface IProps {
     defaultSelectedIndex?: number;
     tabNames: string[];
-    onTabClick?: OnTabClickHandler;
+    onTabClick?: (tableIndex: number) => void;
 }
 
 interface IState {
