@@ -1,0 +1,51 @@
+@import 'Modal.shared.module';
+
+$memberProfileWidth: 60px;
+$memberProfileHeight: 60px;
+
+.TeamModal {
+    width: 800px;
+    height: 600px;
+
+    .Tabs {
+        background-color: #f5f5f5;
+    }
+
+    .TeamMemberTab {
+        padding: 40px;
+        --profile-width: #{$memberProfileWidth};
+        --profile-height: #{$memberProfileHeight};
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+
+        .Cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .AddButton {
+                width: $memberProfileWidth;
+                height: $memberProfileHeight;
+                background-color: #ad1457;
+                cursor: pointer;
+                &:hover {
+                    opacity: 0.8;
+                }
+                --icon-color: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                --icon-size: 30px;
+                border-radius: 50%;
+            }
+
+            .MemberName {
+                margin-top: 10px;
+                font-size: 18px;
+                font-weight: bold;
+            }
+        }
+    }
+}

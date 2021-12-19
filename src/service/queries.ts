@@ -166,3 +166,21 @@ export const QueryTeams = gql`
         }
     }
 `;
+
+export const QueryTeamsWithMembers = gql`
+    query Teams {
+        me {
+            teams {
+                id
+                name
+                iconUrl
+                members {
+                    id
+                    firstName
+                    lastName
+                    profileUrl
+                }
+            }
+        }
+    }
+`;

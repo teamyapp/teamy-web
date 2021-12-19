@@ -1,27 +1,7 @@
 @import '../../styleguide/color';
+@import 'Modal.shared.module';
 
 $divider: 2px solid #e9e9e9;
-
-.Header {
-    font-size: 24px;
-    font-weight: 500;
-    height: 24px;
-    padding: 14px 20px;
-    color: white;
-    background-color: $primaryColor;
-
-    .CloseButton {
-        float: right;
-        margin-top: -4px;
-        --icon-size: 32px;
-        --icon-color: white;
-
-        &:hover {
-            cursor: pointer;
-            opacity: 0.8;
-        }
-    }
-}
 
 .TaskDetail {
     display: flex;

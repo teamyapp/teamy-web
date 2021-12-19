@@ -1,11 +1,13 @@
 @import '../styleguide/color';
 @import '../styleguide/easing';
+@import '../styleguide/elevation';
 @import 'shared';
 
 @include menuButton;
 
 $drawerBackgroundColor: #f2eee9;
 $selectedTeamIndicatorColor: #1976d2;
+$contextMenuSidePadding: 20px;
 
 .Drawer {
     display: flex;
@@ -75,6 +77,36 @@ $selectedTeamIndicatorColor: #1976d2;
                     min-height: $size - 10px;
                     max-height: $size;
                 }
+            }
+        }
+    }
+
+    .TeamContextMenu {
+        position: fixed;
+        z-index: 1000;
+        background-color: white;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        @include elevation(5);
+
+        &:focus {
+            outline: none;
+        }
+
+        .ContextMenuItem {
+            padding: 6px $contextMenuSidePadding;
+            font-weight: bold;
+            font-size: 16px;
+
+            &:hover {
+                background-color: #424242;
+                color: white;
+                cursor: pointer;
+            }
+
+            &:not(:first-child) {
+                border-top: 1px solid #eeeeee;
             }
         }
     }
