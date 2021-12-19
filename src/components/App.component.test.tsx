@@ -1,9 +1,9 @@
-import React from 'react';
 import { render } from '@testing-library/react';
+import React from 'react';
 import { initDeps } from '../deps';
-import AppComponentContainer from './App.component';
+import AppComponentHook from './App.component';
 
 test('renders without crash', () => {
     const deps = initDeps();
-    render(<AppComponentContainer deps={deps} />);
+    render(<AppComponentHook deps={deps} />);
 });

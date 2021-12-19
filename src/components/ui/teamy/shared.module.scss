@@ -1,0 +1,53 @@
+.TaskLists {
+    display: grid;
+    overflow-y: hidden;
+    box-sizing: border-box;
+    height: 100%;
+    grid-auto-rows: min-content;
+    grid-template-rows: 1fr;
+    grid-column-gap: 20px;
+
+    > .TaskListSection {
+        display: flex;
+        overflow-y: hidden;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .TaskList {
+        display: grid;
+        border-radius: 6px;
+        grid-template-columns: 1fr;
+        grid-auto-rows: min-content;
+        grid-gap: 10px;
+    }
+}
+
+.UpcomingSection {
+    --title-color: #0074b1;
+    --background-color: #f2fcff;
+
+    .UpcomingActions {
+        display: flex;
+        justify-content: right;
+        --icon-size: 30px;
+        --icon-color: #0074b1;
+        --background-color: transparent;
+
+        .UpcomingAction {
+            user-select: none;
+            border-radius: 4px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: #0074b1;
+                --icon-color: white;
+            }
+        }
+    }
+}
+
+.DeliveredSection {
+    --title-color: #25a100;
+    --background-color: #efffec;
+}
