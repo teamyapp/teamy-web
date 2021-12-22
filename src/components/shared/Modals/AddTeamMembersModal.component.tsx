@@ -72,8 +72,8 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
         const userIds = userIdsString
             .split(itemSeparator)
             .map((idString: string) => parseInt(idString));
-        // for (let userId of userIds) {
-        //     this.props.deps.teamService.addMember(this.state.team?.id || -1, userId)
-        // }
+        for (let userId of userIds) {
+            // TODO: invoke add team member API
+        }
     };
 }
