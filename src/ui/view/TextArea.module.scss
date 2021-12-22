@@ -1,0 +1,42 @@
+@import '../styleguide/color';
+
+$fontSize: var(--font-size, 20px);
+$outlineColor: var(--outline-color, #1976d2);
+$border: var(--border, #{2px solid $secondaryColor});
+$width: var(--width, 100%);
+$height: var(--height, 100%);
+
+.TextArea {
+    font-size: $fontSize;
+    border: $border;
+    outline: $outlineColor;
+    width: $width;
+    height: $height;
+    display: flex;
+    flex-direction: column;
+    letter-spacing: 2px;
+    box-sizing: border-box;
+
+    .Label {
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        height: 40px;
+        padding: 0 10px;
+        color: $onSecondaryColor;
+        background-color: $secondaryColor;
+    }
+
+    .Input {
+        font-size: inherit;
+        flex: 1;
+        display: block;
+        width: 100%;
+        box-sizing: border-box;
+        outline: none;
+        border: 0;
+        padding: 10px;
+        margin: 0;
+        resize: none;
+    }
+}
