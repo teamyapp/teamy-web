@@ -1,0 +1,80 @@
+import React, { Component, createRef } from 'react';
+import { Deps } from '../../../deps';
+import Team from '../../../entity/Team';
+import { Button } from '../../../ui/view/Button';
+import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
+import { ModalUI } from '../../../ui/view/Modal';
+import { TextAreaUI } from '../../../ui/view/TextArea';
+
+import styles from './AddTeamMembersModal.component.module.scss';
+
+const itemSeparator = ',';
+
+interface IProps {
+    deps: Deps;
+}
+
+interface IState {
+    team?: Team;
+}
+
+export class AddTeamMembersModalComponent extends Component<IProps, IState> {
+    private modalRef = createRef<ModalUI>();
+    private userIDTextAreaRef = createRef<TextAreaUI>();
+
+    constructor(props: IProps) {
+        super(props);
+        this.state = {};
+    }
+
+    public render() {
+        return (
+            <ModalUI ref={this.modalRef}>
+                <div className={styles.Header}>
+                    Add New Members to {this.state.team?.name}
+                    <div
+                        className={styles.CloseButton}
+                        onClick={this.onCloseButtonClick}
+                    >
+                        <MaterialIconUI>cancel</MaterialIconUI>
+                    </div>
+                </div>
+                <div className={styles.Content}>
+                    <div className={styles.UserIds}>
+                        <TextAreaUI
+                            ref={this.userIDTextAreaRef}
+                            label={'User IDs'}
+                            placeholder={`Separated by '${itemSeparator}'`}
+                        />
+                    </div>
+                    <div className={styles.AddAction}>
+                        <Button label={'Add'} onClick={this.onAddButtonClick} />
+                    </div>
+                </div>
+            </ModalUI>
+        );
+    }
+
+    public open = async (teamId: number) => {
+        const team = await this.props.deps.teamService.fetchTeam(teamId);
+        this.setState({
+            team,
+        });
+        this.modalRef.current?.open();
+    };
+
+    private onCloseButtonClick = () => {
+        this.modalRef.current?.close();
+    };
+
+    private onAddButtonClick = () => {
+        const userIdsString = this.userIDTextAreaRef.current?.content || '';
+        const userIds = userIdsString
+            .split(itemSeparator)
+            .map((idString: string) => parseInt(idString));
+        for (let userId of userIds) {
+            // TODO: invoke add team member API
+            console.log(userId);
+        }
+    };
+}

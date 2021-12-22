@@ -1,0 +1,19 @@
+@import 'Modal.shared.module';
+
+.Content {
+    width: 600px;
+    padding: 20px;
+    box-sizing: border-box;
+
+    .UserIds {
+        height: 100px;
+        margin-bottom: 20px;
+    }
+
+    .AddAction {
+        margin: 0 auto;
+        width: 120px;
+        --background-color: #388e3c;
+        --border-color: #2e7d32;
+    }
+}

@@ -1,13 +1,14 @@
 import React, { Component, createRef } from 'react';
-import { Deps } from '../../deps';
-import Team from '../../entity/Team';
-import { User } from '../../entity/User';
-import { MaterialIconUI } from '../../ui/view/MaterialIcon';
-import { ModalUI } from '../../ui/view/Modal';
-import { TabsUI } from '../../ui/view/Tabs';
-import { TextFieldUI } from '../../ui/view/TextField';
+import { Deps } from '../../../deps';
+import Team from '../../../entity/Team';
+import { User } from '../../../entity/User';
+import { Button } from '../../../ui/view/Button';
+import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
+import { ModalUI } from '../../../ui/view/Modal';
+import { TabsUI } from '../../../ui/view/Tabs';
+import { TextFieldUI } from '../../../ui/view/TextField';
 import styles from './TeamModal.component.module.scss';
-import { UserProfileUI } from './UserProfile';
+import { UserProfileUI } from '../UserProfile';
 
 interface IProps {
     deps: Deps;
@@ -98,17 +99,17 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                             />
                         </div>
                         <div className={styles.ActionsSection}>
-                            <div
-                                className={`${styles.Action} ${styles.SaveAction}`}
-                                onClick={this.onSaveTeamProfileClick}
-                            >
-                                Save
+                            <div className={styles.SaveAction}>
+                                <Button
+                                    label={'Save'}
+                                    onClick={this.onSaveTeamProfileClick}
+                                />
                             </div>
-                            <div
-                                className={`${styles.Action} ${styles.DeleteTeamAction}`}
-                                onClick={this.onDeleteTeamClick}
-                            >
-                                Delete Team
+                            <div className={styles.DeleteTeamAction}>
+                                <Button
+                                    label={'Delete Team'}
+                                    onClick={this.onDeleteTeamClick}
+                                />
                             </div>
                         </div>
                     </div>
@@ -120,13 +121,15 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
     private renderTeamMembersTab = () => {
         return (
             this.state.currentTabIndex === 1 && (
-                <div className={styles.TeamMemberTab}>
-                    <div className={styles.Cell}>
-                        <div className={styles.AddButton}>
-                            <MaterialIconUI>add</MaterialIconUI>
+                <div className={styles.TeamMembersTab}>
+                    <div className={styles.TeamMemberList}>
+                        <div className={styles.Cell}>
+                            <div className={styles.AddButton}>
+                                <MaterialIconUI>add</MaterialIconUI>
+                            </div>
                         </div>
+                        {this.state.team?.members?.map(this.renderTeamMember)}
                     </div>
-                    {this.state.team?.members?.map(this.renderTeamMember)}
                 </div>
             )
         );
