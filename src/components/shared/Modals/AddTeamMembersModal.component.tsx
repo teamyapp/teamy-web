@@ -74,6 +74,7 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
             .map((idString: string) => parseInt(idString));
         for (let userId of userIds) {
             // TODO: invoke add team member API
+            console.log(userId);
         }
     };
 }
