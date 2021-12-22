@@ -22,7 +22,6 @@ export function initDeps(): Deps {
     const env = getEnvironment();
     let httpClient = new FetchHTTPClient();
     const identityClient = new IdentityClient(env, httpClient);
-    httpClient = new IdentityHTTPClient(identityClient, httpClient);
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
         identityClient,

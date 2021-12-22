@@ -14,7 +14,8 @@ import ExecutionComponentHook, {
     ExecutionComponent,
 } from './Execution.component';
 import { DrawerUI } from './shared/Drawer';
-import { TeamSettingsModalComponent } from './shared/TeamModal.component';
+import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
+import { TeamSettingsModalComponent } from './shared/Modals/TeamModal.component';
 
 interface IProps {
     deps: Deps;
@@ -29,6 +30,7 @@ interface IState {
 class AppComponent extends Component<IProps, IState> {
     private executionRef = createRef<ExecutionComponent>();
     private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
+    private addTeamMembersModalRef = createRef<AddTeamMembersModalComponent>();
 
     constructor(props: any) {
         super(props);
@@ -91,6 +93,10 @@ class AppComponent extends Component<IProps, IState> {
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
                 />
+                <AddTeamMembersModalComponent
+                    deps={this.props.deps}
+                    ref={this.addTeamMembersModalRef}
+                />
             </div>
         );
     }
@@ -105,8 +111,8 @@ class AppComponent extends Component<IProps, IState> {
         });
     };
 
-    private onAddTeamMembersClick = () => {
-        console.log('onAddTeamMembersClick');
+    private onAddTeamMembersClick = (teamId: number) => {
+        this.addTeamMembersModalRef.current?.open(teamId);
     };
 
     private onShowTeamMembersClick = (teamId: number) => {

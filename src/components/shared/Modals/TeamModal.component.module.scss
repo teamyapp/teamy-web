@@ -85,80 +85,67 @@ $memberProfileHeight: 60px;
             }
 
             .ActionsSection {
-                display: flex;
-                flex-direction: column;
                 margin-top: 30px;
-
-                .Action {
-                    font-size: 20px;
-                    font-weight: 500;
-                    width: 200px;
-                    padding: 10px;
-                    text-align: center;
-                    color: white;
-                    border-radius: 6px;
-
-                    &:not(:first-child) {
-                        margin-top: 6px;
-                    }
-
-                    &:hover {
-                        cursor: pointer;
-                        opacity: 0.9;
-                    }
-                }
+                --width: 160px;
 
                 .SaveAction {
-                    background-color: #388e3c;
-                    //border: 2px solid #388e3c;
+                    --background-color: #388e3c;
+                    --border-color: #2e7d32;
                 }
 
                 .DeleteTeamAction {
-                    background-color: #d32f2f;
-                    //border: 2px solid #c62828;
+                    margin-top: 6px;
+                    --background-color: #d32f2f;
+                    --border-color: #c62828;
                 }
             }
         }
     }
 
-    .TeamMemberTab {
-        display: grid;
-        padding: 40px;
-        --profile-width: #{$memberProfileWidth};
-        --profile-height: #{$memberProfileHeight};
-        grid-template-columns: repeat(5, 1fr);
-        gap: 10px;
+    .TeamMembersTab {
+        position: relative;
+        display: flex;
+        height: 100%;
 
-        .Cell {
-            display: flex;
-            align-items: center;
-            flex-direction: column;
+        .TeamMemberList {
+            display: grid;
+            padding: 40px;
+            --profile-width: #{$memberProfileWidth};
+            --profile-height: #{$memberProfileHeight};
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
 
-            .AddButton {
-                font-weight: bold;
+            .Cell {
                 display: flex;
                 align-items: center;
-                justify-content: center;
+                flex-direction: column;
 
-                width: $memberProfileWidth;
+                .AddButton {
+                    font-weight: bold;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
 
-                height: $memberProfileHeight;
-                cursor: pointer;
-                border-radius: 50%;
-                background-color: #ad1457;
+                    width: $memberProfileWidth;
 
-                &:hover {
-                    opacity: 0.8;
+                    height: $memberProfileHeight;
+                    cursor: pointer;
+                    border-radius: 50%;
+                    background-color: #ad1457;
+
+                    &:hover {
+                        opacity: 0.8;
+                    }
+
+                    --icon-color: white;
+                    --icon-size: 30px;
                 }
 
-                --icon-color: white;
-                --icon-size: 30px;
-            }
-
-            .MemberName {
-                font-size: 18px;
-                font-weight: bold;
-                margin-top: 10px;
+                .MemberName {
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-top: 10px;
+                }
             }
         }
     }

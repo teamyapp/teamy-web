@@ -1,12 +1,13 @@
 import React, { Component, createRef, ReactElement } from 'react';
-import { Deps } from '../../deps';
-import Task from '../../entity/Task';
-import { DatePickerUI } from '../../ui/view/DatePicker';
-import { MarkdownEditorUI } from '../../ui/view/MarkdownEditor';
-import { MaterialIconUI } from '../../ui/view/MaterialIcon';
-import { ModalUI } from '../../ui/view/Modal';
-import { NamedValueUI } from '../../ui/view/NamedValue';
-import { TextFieldUI } from '../../ui/view/TextField';
+import { Deps } from '../../../deps';
+import Task from '../../../entity/Task';
+import { Button } from '../../../ui/view/Button';
+import { DatePickerUI } from '../../../ui/view/DatePicker';
+import { MarkdownEditorUI } from '../../../ui/view/MarkdownEditor';
+import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
+import { ModalUI } from '../../../ui/view/Modal';
+import { NamedValueUI } from '../../../ui/view/NamedValue';
+import { TextFieldUI } from '../../../ui/view/TextField';
 
 import styles from './TaskModal.component.module.scss';
 
@@ -59,8 +60,8 @@ export class TaskModalComponent extends Component<any, IState> {
                                 </div>
                             </div>
                             <div className={styles.RightSection}>
-                                <div>
-                                    <div className={`${styles.Row}`}>
+                                <div className={styles.Attributes}>
+                                    <div className={styles.Row}>
                                         <DatePickerUI label={'Due at'} />
                                     </div>
                                     <div
@@ -75,9 +76,14 @@ export class TaskModalComponent extends Component<any, IState> {
                                         />
                                     </div>
                                 </div>
-                                <button onClick={this.onSaveButtonClick}>
-                                    Save
-                                </button>
+                                <div className={styles.Actions}>
+                                    <div className={styles.SaveAction}>
+                                        <Button
+                                            label={'Save'}
+                                            onClick={this.onSaveButtonClick}
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -93,7 +99,7 @@ export class TaskModalComponent extends Component<any, IState> {
         this.modalRef.current?.open();
     }
 
-    onSaveButtonClick = async () => {
+    private onSaveButtonClick = async () => {
         if (this.state.task) {
             console.log(this.state.task);
             // TODO: add onChange event to MarkdownEditorComponent in order to update context

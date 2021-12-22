@@ -1,0 +1,53 @@
+@import '../../../ui/styleguide/color';
+@import 'Modal.shared.module';
+
+$divider: 2px solid #eeeeee;
+
+.TaskDetail {
+    display: flex;
+    min-height: 500px;
+
+    --outline-color: #1976d2;
+    --border: 2px solid #{$secondaryColor};
+    --font-size: 18px;
+
+    .LeftSection {
+        width: 800px;
+        padding: 20px;
+
+        .Context {
+            margin-top: 20px;
+        }
+    }
+
+    .RightSection {
+        width: 200px;
+        border-left: $divider;
+
+        .Attributes {
+            padding: 20px;
+
+            .Row {
+                display: flex;
+
+                &:not(:first-child) {
+                    margin-top: 10px;
+                }
+
+                .Effort {
+                    --color: #1976d2;
+                }
+            }
+        }
+
+        .Actions {
+            padding: 20px;
+            border-top: $divider;
+
+            .SaveAction {
+                --background-color: #388e3c;
+                --border-color: #2e7d32;
+            }
+        }
+    }
+}

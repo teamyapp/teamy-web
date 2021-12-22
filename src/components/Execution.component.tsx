@@ -20,7 +20,7 @@ import styles from './Execution.component.module.scss';
 import Team from './shared/Kanban';
 import PersonalUI from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
-import { TaskModalComponent } from './shared/TaskModal.component';
+import { TaskModalComponent } from './shared/Modals/TaskModal.component';
 
 const routes = ['me', 'team'];
 
