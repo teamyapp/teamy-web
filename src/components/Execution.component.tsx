@@ -52,7 +52,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
     private unsubscribe?: Unsubscribe;
     private mutCaster: csp.Multicaster<events.MutationEvent | undefined>;
-    private mutChan: csp.PutChannel<events.MutationEvent>
+    private mutChan: csp.PutChannel<events.MutationEvent>;
 
     constructor(props: IProps) {
         super(props);
@@ -68,16 +68,19 @@ export class ExecutionComponent extends Component<IProps, IState> {
         };
 
         // Channels that communicates mutation events
+        // source channel for putting mutation events
         const mutChan = csp.chan<events.MutationEvent>();
         this.mutChan = mutChan;
+        // a multicaster used to other components to subscribe the event
         this.mutCaster = csp.multi(mutChan);
 
         // start a coroutine here
         const chan = this.mutCaster.copy();
         (async () => {
-            while(true) {
-                await chan.pop()
-                console.log("mutation happened");
+            while (true) {
+                // do not care what events are received, refresh anyway
+                await chan.pop();
+                console.log('mutation happened');
                 await this.refresh('network-only');
             }
         })();
@@ -346,8 +349,8 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.deleteTask(taskId);
         await this.mutChan.put({
-            type: "TaskDelete",
-            id: taskId
+            type: 'TaskDelete',
+            id: taskId,
         });
         // await this.refresh('network-only');
     };

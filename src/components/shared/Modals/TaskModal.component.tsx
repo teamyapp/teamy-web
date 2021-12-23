@@ -109,7 +109,7 @@ export class TaskModalComponent extends Component<any, IState> {
             await this.props.deps.taskService.updateTask(this.state.task);
             console.log(this.props.mutChan);
             this.props.mutChan.put({
-                type: "TaskUpdate",
+                type: 'TaskUpdate',
                 id: this.state.task?.id,
                 goal: this.state.task.goal,
             });

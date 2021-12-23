@@ -52,21 +52,24 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         };
 
         (async () => {
-            while(true) {
+            while (true) {
                 const event = await this.props.mutChan.pop();
-                if(event !== undefined) {
-                    console.log("received mutation", this.props.task.id);
-                    if(event.type == "TaskUpdate" && event.id === this.props.task.id) {
-                        const task = Object.assign({}, this.state.task)
+                if (event !== undefined) {
+                    console.log('received mutation', this.props.task.id);
+                    if (
+                        event.type == 'TaskUpdate' &&
+                        event.id === this.props.task.id
+                    ) {
+                        const task = Object.assign({}, this.state.task);
                         task.goal = event.goal;
                         task.context = event.context;
                         this.setState({
                             task: task,
-                            isEditing: this.state.isEditing
+                            isEditing: this.state.isEditing,
                         });
                     }
                 } else {
-                    console.log("channel has been closed, should not happen");
+                    console.log('channel has been closed, should not happen');
                 }
             }
         })();
