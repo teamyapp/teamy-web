@@ -24,6 +24,7 @@ interface IState {
 
 export class TaskModalComponent extends Component<any, IState> {
     private modalRef = createRef<ModalUI>();
+    private markdownEditorRef = createRef<MarkdownEditorUI>();
 
     constructor(props: IProps) {
         super(props);
@@ -59,6 +60,7 @@ export class TaskModalComponent extends Component<any, IState> {
                                     <MarkdownEditorUI
                                         label={'Context'}
                                         content={this.state.task.context}
+                                        ref={this.markdownEditorRef}
                                     />
                                 </div>
                             </div>
@@ -106,13 +108,16 @@ export class TaskModalComponent extends Component<any, IState> {
         if (this.state.task) {
             console.log(this.state.task);
             // TODO: add onChange event to MarkdownEditorComponent in order to update context
-            await this.props.deps.taskService.updateTask(this.state.task);
-            console.log(this.props.mutChan);
+            const task = Object.assign({}, this.state.task);
+            task.context = this.markdownEditorRef.current?.state.content;
             this.props.mutChan.put({
                 type: 'TaskUpdate',
                 id: this.state.task?.id,
                 goal: this.state.task.goal,
+                context: this.markdownEditorRef.current?.state.content
             });
+            await this.props.deps.taskService.updateTask(task);
+            console.log(this.props.mutChan);
         }
     };
 
