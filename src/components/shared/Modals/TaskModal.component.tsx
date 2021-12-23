@@ -106,8 +106,6 @@ export class TaskModalComponent extends Component<any, IState> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
-            console.log(this.state.task);
-            // TODO: add onChange event to MarkdownEditorComponent in order to update context
             const task = Object.assign({}, this.state.task);
             task.context = this.markdownEditorRef.current?.state.content;
             this.props.mutChan.put({
@@ -117,7 +115,6 @@ export class TaskModalComponent extends Component<any, IState> {
                 context: this.markdownEditorRef.current?.state.content
             });
             await this.props.deps.taskService.updateTask(task);
-            console.log(this.props.mutChan);
         }
     };
 
