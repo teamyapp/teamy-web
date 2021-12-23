@@ -1,0 +1,226 @@
+===============================================================================
+EXTENSION NAME : linecounter
+EXTENSION VERSION : 0.2.7
+-------------------------------------------------------------------------------
+count time : 2021-12-23 13:05:35
+count workspace : /root/teamy-web
+total files : 190
+total code lines : 19320
+total comment lines : 372
+total blank lines : 4208
+
+    statistics
+   |      extension|     total code|  total comment|    total blank|percent|
+   -------------------------------------------------------------------------
+   |          .json|            192|              0|              5|   0.99|
+   |       .staging|              1|              0|              0| 0.0052|
+   |            .js|             74|             15|              3|   0.38|
+   |   .development|              1|              0|              0| 0.0052|
+   |    .production|              1|              0|              0| 0.0052|
+   |               |             45|              1|             10|   0.23|
+   |       .testing|              1|              0|              0| 0.0052|
+   |          .html|            368|             23|             33|    1.9|
+   |           .txt|              6|            227|             24|  0.031|
+   |           .svg|             94|              0|              0|   0.49|
+   |          .yaml|            189|              0|              2|   0.98|
+   |           .map|              5|              0|              0|  0.026|
+   |            .md|             14|              4|              8|  0.072|
+   |           .yml|            281|             11|              4|    1.5|
+   |            .ts|           1068|              8|            123|    5.5|
+   |           .tsx|           2655|             13|            274|     14|
+   |          .scss|           1466|             33|            271|    7.6|
+   |           .css|              4|              1|              1|  0.021|
+   |          .conf|             10|              0|              2|  0.052|
+   |          .lock|          12845|             36|           3448|     66|
+   -------------------------------------------------------------------------
+.dockerignore, code is 7, comment is 0, blank is 0.
+.drone.yml, code is 281, comment is 11, blank is 4.
+.env.development, code is 1, comment is 0, blank is 0.
+.env.production, code is 1, comment is 0, blank is 0.
+.env.staging, code is 1, comment is 0, blank is 0.
+.env.testing, code is 1, comment is 0, blank is 0.
+.gitignore, code is 20, comment is 1, blank is 6.
+.prettierignore, code is 6, comment is 0, blank is 0.
+.prettierrc, code is 7, comment is 0, blank is 0.
+.storybook/main.js, code is 11, comment is 0, blank is 0.
+.storybook/preview.js, code is 9, comment is 0, blank is 0.
+craco.config.js, code is 31, comment is 0, blank is 3.
+Dockerfile, code is 5, comment is 0, blank is 4.
+docs/0.560cc675.iframe.bundle.js, code is 1, comment is 3, blank is 0.
+docs/0.560cc675.iframe.bundle.js.LICENSE.txt, code is 0, comment is 8, blank is 0.
+docs/0.560cc675.iframe.bundle.js.map, code is 1, comment is 0, blank is 0.
+docs/0.799c368cbe88266827ba.manager.bundle.js, code is 1, comment is 0, blank is 0.
+docs/1.54285ee9.iframe.bundle.js, code is 1, comment is 1, blank is 0.
+docs/1.54285ee9.iframe.bundle.js.LICENSE.txt, code is 0, comment is 8, blank is 0.
+docs/1.54285ee9.iframe.bundle.js.map, code is 1, comment is 0, blank is 0.
+docs/1.9ebd2fb519f6726108de.manager.bundle.js, code is 1, comment is 0, blank is 0.
+docs/10.a85ea1a67689be8e19ff.manager.bundle.js, code is 1, comment is 0, blank is 0.
+docs/11.f4e922583ae35da460f3.manager.bundle.js, code is 1, comment is 1, blank is 0.
+docs/11.f4e922583ae35da460f3.manager.bundle.js.LICENSE.txt, code is 0, comment is 12, blank is 0.
+docs/12.1415460941f0bdcb8fa8.manager.bundle.js, code is 1, comment is 0, blank is 0.
+docs/2.c337cecf.iframe.bundle.js, code is 1, comment is 0, blank is 0.
+docs/3.8c8d23ae.iframe.bundle.js, code is 1, comment is 0, blank is 0.
+docs/5.f459d151315e6780c20f.manager.bundle.js, code is 1, comment is 2, blank is 0.
+docs/5.f459d151315e6780c20f.manager.bundle.js.LICENSE.txt, code is 0, comment is 8, blank is 0.
+docs/6.3bd64d820f3745f262ff.manager.bundle.js, code is 1, comment is 0, blank is 0.
+docs/7.0bc9d04a.iframe.bundle.js, code is 1, comment is 0, blank is 0.
+docs/7.3d04765dbf3f1dcd706c.manager.bundle.js, code is 1, comment is 0, blank is 0.
+docs/8.8e2132ec.iframe.bundle.js, code is 1, comment is 2, blank is 0.
+docs/8.8e2132ec.iframe.bundle.js.LICENSE.txt, code is 0, comment is 12, blank is 0.
+docs/8.8e2132ec.iframe.bundle.js.map, code is 1, comment is 0, blank is 0.
+docs/8.b541eadfcb9164835dfc.manager.bundle.js, code is 1, comment is 0, blank is 0.
+docs/9.109ea555.iframe.bundle.js, code is 1, comment is 0, blank is 0.
+docs/9.411ac8e451bbb10926c7.manager.bundle.js, code is 1, comment is 0, blank is 0.
+docs/asset-manifest.json, code is 30, comment is 0, blank is 1.
+docs/favicon.ico, it is a binary file.
+docs/iframe.html, code is 305, comment is 0, blank is 25.
+docs/index.html, code is 43, comment is 0, blank is 8.
+docs/logo192.png, it is a binary file.
+docs/logo512.png, it is a binary file.
+docs/main.3bc5b1c4.iframe.bundle.js, code is 1, comment is 0, blank is 0.
+docs/main.4c3140a78c06c6b39fba.manager.bundle.js, code is 1, comment is 1, blank is 0.
+docs/manifest.json, code is 25, comment is 0, blank is 0.
+docs/profiles/boy1.png, it is a binary file.
+docs/profiles/boy2.png, it is a binary file.
+docs/profiles/boy3.png, it is a binary file.
+docs/profiles/girl1.png, it is a binary file.
+docs/robots.txt, code is 3, comment is 1, blank is 0.
+docs/runtime~main.0a7d0104.iframe.bundle.js, code is 1, comment is 0, blank is 0.
+docs/runtime~main.91a0c7330ab317d35c4a.manager.bundle.js, code is 1, comment is 0, blank is 0.
+docs/static/css/main.f39455e1.chunk.css, code is 4, comment is 1, blank is 1.
+docs/static/css/main.f39455e1.chunk.css.map, code is 1, comment is 0, blank is 0.
+docs/teams/amazon.svg, code is 8, comment is 0, blank is 0.
+docs/teams/apple.svg, code is 3, comment is 0, blank is 0.
+docs/teams/facebook.svg, code is 4, comment is 0, blank is 0.
+docs/teams/google.svg, code is 6, comment is 0, blank is 0.
+docs/teams/microsoft.svg, code is 12, comment is 0, blank is 0.
+docs/teams/teamy.svg, code is 10, comment is 0, blank is 0.
+docs/teams/tesla.svg, code is 4, comment is 0, blank is 0.
+docs/vendors~main.00e3dff4.iframe.bundle.js, code is 1, comment is 3, blank is 0.
+docs/vendors~main.00e3dff4.iframe.bundle.js.LICENSE.txt, code is 0, comment is 79, blank is 12.
+docs/vendors~main.00e3dff4.iframe.bundle.js.map, code is 1, comment is 0, blank is 0.
+docs/vendors~main.0d1916dd840230bedd21.manager.bundle.js, code is 1, comment is 2, blank is 0.
+docs/vendors~main.0d1916dd840230bedd21.manager.bundle.js.LICENSE.txt, code is 0, comment is 98, blank is 12.
+k8s/production.yaml, code is 63, comment is 0, blank is 1.
+k8s/staging.yaml, code is 63, comment is 0, blank is 0.
+k8s/testing.yaml, code is 63, comment is 0, blank is 1.
+nginx/default.conf, code is 10, comment is 0, blank is 2.
+package.json, code is 92, comment is 0, blank is 4.
+public/favicon.ico, it is a binary file.
+public/index.html, code is 20, comment is 23, blank is 0.
+public/logo192.png, it is a binary file.
+public/logo512.png, it is a binary file.
+public/manifest.json, code is 25, comment is 0, blank is 0.
+public/profiles/boy1.png, it is a binary file.
+public/profiles/boy2.png, it is a binary file.
+public/profiles/boy3.png, it is a binary file.
+public/profiles/girl1.png, it is a binary file.
+public/robots.txt, code is 3, comment is 1, blank is 0.
+public/teams/amazon.svg, code is 8, comment is 0, blank is 0.
+public/teams/apple.svg, code is 3, comment is 0, blank is 0.
+public/teams/facebook.svg, code is 4, comment is 0, blank is 0.
+public/teams/google.svg, code is 6, comment is 0, blank is 0.
+public/teams/microsoft.svg, code is 12, comment is 0, blank is 0.
+public/teams/teamy.svg, code is 10, comment is 0, blank is 0.
+public/teams/tesla.svg, code is 4, comment is 0, blank is 0.
+README.md, code is 14, comment is 4, blank is 8.
+src/components/App.component.module.scss, code is 37, comment is 0, blank is 7.
+src/components/App.component.test.tsx, code is 8, comment is 0, blank is 1.
+src/components/App.component.tsx, code is 149, comment is 0, blank is 14.
+src/components/Debug.component.module.scss, code is 43, comment is 0, blank is 8.
+src/components/Debug.component.tsx, code is 84, comment is 1, blank is 8.
+src/components/Execution.component.module.scss, code is 49, comment is 0, blank is 9.
+src/components/Execution.component.tsx, code is 375, comment is 7, blank is 39.
+src/components/shared.scss, code is 28, comment is 0, blank is 4.
+src/components/shared/Drawer.module.scss, code is 92, comment is 1, blank is 20.
+src/components/shared/Drawer.tsx, code is 162, comment is 0, blank is 15.
+src/components/shared/Kanban.module.scss, code is 8, comment is 0, blank is 2.
+src/components/shared/Kanban.tsx, code is 124, comment is 0, blank is 6.
+src/components/shared/Modals/AddTeamMembersModal.component.module.scss, code is 16, comment is 0, blank is 3.
+src/components/shared/Modals/AddTeamMembersModal.component.tsx, code is 69, comment is 1, blank is 10.
+src/components/shared/Modals/Modal.shared.module.scss, code is 19, comment is 0, blank is 3.
+src/components/shared/Modals/TaskModal.component.module.scss, code is 41, comment is 0, blank is 12.
+src/components/shared/Modals/TaskModal.component.tsx, code is 123, comment is 0, blank is 11.
+src/components/shared/Modals/TeamModal.component.module.scss, code is 128, comment is 0, blank is 24.
+src/components/shared/Modals/TeamModal.component.tsx, code is 162, comment is 0, blank is 14.
+src/components/shared/Personal.module.scss, code is 14, comment is 0, blank is 3.
+src/components/shared/PersonalStatus.tsx, code is 123, comment is 0, blank is 6.
+src/components/shared/SelectUserList.module.scss, code is 32, comment is 0, blank is 5.
+src/components/shared/SelectUserList.tsx, code is 44, comment is 0, blank is 4.
+src/components/shared/TaskLists.module.scss, code is 46, comment is 0, blank is 7.
+src/components/shared/TaskPreview.component.tsx, code is 282, comment is 0, blank is 26.
+src/components/shared/TaskPreview.module.scss, code is 114, comment is 0, blank is 24.
+src/components/shared/UserProfile.module.scss, code is 11, comment is 0, blank is 0.
+src/components/shared/UserProfile.tsx, code is 26, comment is 0, blank is 3.
+src/config/config.example.ts, code is 28, comment is 0, blank is 6.
+src/config/config.ts, code is 19, comment is 0, blank is 6.
+src/deps.ts, code is 39, comment is 0, blank is 2.
+src/entity/events.ts, code is 11, comment is 0, blank is 2.
+src/entity/PersonalStatus.ts, code is 6, comment is 0, blank is 1.
+src/entity/position.ts, code is 9, comment is 0, blank is 1.
+src/entity/Task.ts, code is 12, comment is 0, blank is 1.
+src/entity/TaskAction.ts, code is 8, comment is 0, blank is 0.
+src/entity/Team.ts, code is 7, comment is 0, blank is 1.
+src/entity/TeamStatus.ts, code is 6, comment is 0, blank is 1.
+src/entity/User.ts, code is 12, comment is 0, blank is 1.
+src/env/environment.ts, code is 16, comment is 0, blank is 2.
+src/ext/errors.ts, code is 11, comment is 0, blank is 0.
+src/ext/result.ts, code is 1, comment is 0, blank is 0.
+src/identity/config.ts, code is 49, comment is 0, blank is 6.
+src/identity/Identity.client.ts, code is 128, comment is 2, blank is 18.
+src/identity/IdentityHTTP.client.ts, code is 25, comment is 0, blank is 3.
+src/identity/SignIn.component.module.scss, code is 39, comment is 0, blank is 7.
+src/identity/SignIn.component.tsx, code is 42, comment is 1, blank is 4.
+src/identity/withIdentityVerification.tsx, code is 60, comment is 0, blank is 8.
+src/index.scss, code is 6, comment is 0, blank is 0.
+src/index.tsx, code is 14, comment is 3, blank is 3.
+src/network/FetchHTTP.client.ts, code is 50, comment is 0, blank is 3.
+src/network/GraphQL.client.ts, code is 32, comment is 0, blank is 5.
+src/network/HTTP.client.ts, code is 12, comment is 0, blank is 1.
+src/network/IChannel.ts, code is 9, comment is 0, blank is 1.
+src/network/WebSocketChannel.ts, code is 51, comment is 1, blank is 11.
+src/react-app-env.d.ts, code is 0, comment is 1, blank is 0.
+src/reportWebVitals.ts, code is 15, comment is 0, blank is 2.
+src/service/mutations.ts, code is 59, comment is 0, blank is 4.
+src/service/queries.ts, code is 174, comment is 0, blank is 12.
+src/service/Status.service.ts, code is 44, comment is 0, blank is 4.
+src/service/Task.service.ts, code is 74, comment is 0, blank is 8.
+src/service/Team.service.ts, code is 62, comment is 0, blank is 7.
+src/service/User.service.ts, code is 17, comment is 0, blank is 3.
+src/setupTests.ts, code is 1, comment is 4, blank is 0.
+src/store/slices/PersonalStatus.ts, code is 49, comment is 0, blank is 4.
+src/store/slices/TeamStatus.ts, code is 20, comment is 0, blank is 4.
+src/store/store.ts, code is 12, comment is 0, blank is 3.
+src/ui/styleguide/color.scss, code is 14, comment is 14, blank is 5.
+src/ui/styleguide/divider.scss, code is 1, comment is 0, blank is 0.
+src/ui/styleguide/easing.scss, code is 1, comment is 0, blank is 0.
+src/ui/styleguide/elevation.scss, code is 31, comment is 0, blank is 2.
+src/ui/styleguide/utility.scss, code is 7, comment is 5, blank is 0.
+src/ui/view/Button.module.scss, code is 20, comment is 0, blank is 2.
+src/ui/view/Button.stories.module.scss, code is 6, comment is 0, blank is 0.
+src/ui/view/Button.stories.tsx, code is 25, comment is 0, blank is 4.
+src/ui/view/Button.tsx, code is 15, comment is 0, blank is 2.
+src/ui/view/DatePicker.module.scss, code is 104, comment is 0, blank is 22.
+src/ui/view/DatePicker.tsx, code is 266, comment is 0, blank is 35.
+src/ui/view/MarkdownEditor.module.scss, code is 69, comment is 0, blank is 14.
+src/ui/view/MarkdownEditor.tsx, code is 119, comment is 0, blank is 11.
+src/ui/view/MaterialIcon.module.scss, code is 27, comment is 4, blank is 5.
+src/ui/view/MaterialIcon.tsx, code is 11, comment is 0, blank is 2.
+src/ui/view/Modal.module.scss, code is 33, comment is 0, blank is 5.
+src/ui/view/Modal.tsx, code is 85, comment is 0, blank is 10.
+src/ui/view/NamedValue.module.scss, code is 19, comment is 0, blank is 2.
+src/ui/view/NamedValue.tsx, code is 16, comment is 0, blank is 2.
+src/ui/view/Section.module.scss, code is 27, comment is 0, blank is 3.
+src/ui/view/Section.tsx, code is 19, comment is 0, blank is 3.
+src/ui/view/Tabs.module.scss, code is 27, comment is 0, blank is 5.
+src/ui/view/Tabs.tsx, code is 87, comment is 0, blank is 13.
+src/ui/view/TextArea.module.scss, code is 38, comment is 0, blank is 4.
+src/ui/view/TextArea.stories.module.scss, code is 7, comment is 0, blank is 0.
+src/ui/view/TextArea.stories.tsx, code is 37, comment is 0, blank is 4.
+src/ui/view/TextArea.tsx, code is 45, comment is 0, blank is 6.
+src/ui/view/TextField.module.scss, code is 85, comment is 0, blank is 12.
+src/ui/view/TextField.tsx, code is 83, comment is 0, blank is 10.
+src/ui/view/VSCode.theme.scss, code is 227, comment is 9, blank is 52.
+tsconfig.json, code is 20, comment is 0, blank is 0.
+yarn.lock, code is 12845, comment is 36, blank is 3448.
+===============================================================================
