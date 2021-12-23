@@ -5,6 +5,7 @@ import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import { Unsubscribe } from 'redux';
 import { Deps } from '../deps';
 import PersonalStatus from '../entity/PersonalStatus';
+import * as events from '../entity/events';
 import { IBoundingBoxFinder } from '../entity/position';
 import Task from '../entity/Task';
 import { TaskAction } from '../entity/TaskAction';
@@ -21,6 +22,7 @@ import Team from './shared/Kanban';
 import PersonalUI from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
 import { TaskModalComponent } from './shared/Modals/TaskModal.component';
+import * as csp from '@creatcodebuild/csp';
 
 const routes = ['me', 'team'];
 
@@ -49,6 +51,8 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private taskDetailModalRef = createRef<TaskModalComponent>();
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
     private unsubscribe?: Unsubscribe;
+    private mutCaster: csp.Multicaster<events.MutationEvent | undefined>;
+    private mutChan: csp.PutChannel<events.MutationEvent>
 
     constructor(props: IProps) {
         super(props);
@@ -62,6 +66,21 @@ export class ExecutionComponent extends Component<IProps, IState> {
             teamStatus: newState.teamStatus,
             potentialTaskOwners: [],
         };
+
+        // Channels that communicates mutation events
+        const mutChan = csp.chan<events.MutationEvent>();
+        this.mutChan = mutChan;
+        this.mutCaster = csp.multi(mutChan);
+
+        // start a coroutine here
+        const chan = this.mutCaster.copy();
+        (async () => {
+            while(true) {
+                await chan.pop()
+                console.log("mutation happened");
+                await this.refresh('network-only');
+            }
+        })();
     }
 
     public render(): ReactElement {
@@ -80,6 +99,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalUI
+                                mutCaster={this.mutCaster}
                                 deps={this.props.deps}
                                 personalStatus={this.state.personalStatus}
                                 taskAdding={this.state.taskAdding}
@@ -105,6 +125,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}team`}>
                             <Team
+                                mutCaster={this.mutCaster}
                                 teamStatus={this.state.teamStatus}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
@@ -130,6 +151,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 <TaskModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
+                    mutChan={this.mutChan}
                 />
                 {this.state.showPotentialTaskOwnersList && (
                     <div
@@ -323,7 +345,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.deleteTask(taskId);
-        await this.refresh('network-only');
+        await this.mutChan.put({
+            type: "TaskDelete",
+            id: taskId
+        });
+        // await this.refresh('network-only');
     };
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {

@@ -7,12 +7,15 @@ import { MaterialIconUI } from '../../ui/view/MaterialIcon';
 import { SectionUI } from '../../ui/view/Section';
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview.component';
+import * as csp from '@creatcodebuild/csp';
+import * as events from '../../entity/events';
 
 interface IProps {
     taskAdding?: Task;
     teamStatus: TeamStatus;
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     taskSelectingOwner?: Task;
+    mutCaster: csp.Multicaster<events.MutationEvent | undefined>;
     onViewTaskDetailClick?: (taskId: number) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
@@ -104,6 +107,7 @@ export default class KanbanUI extends Component<IProps> {
             return (
                 <div key={task.id}>
                     <TaskPreviewUI
+                        mutChan={this.props.mutCaster.copy()}
                         canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}

@@ -8,11 +8,14 @@ import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
 import { ModalUI } from '../../../ui/view/Modal';
 import { NamedValueUI } from '../../../ui/view/NamedValue';
 import { TextFieldUI } from '../../../ui/view/TextField';
+import * as csp from '@creatcodebuild/csp';
 
 import styles from './TaskModal.component.module.scss';
+import * as events from '../../../entity/events';
 
 interface IProps {
     deps: Deps;
+    mutChan: csp.Channel<events.MutationEvent>;
 }
 
 interface IState {
@@ -104,6 +107,12 @@ export class TaskModalComponent extends Component<any, IState> {
             console.log(this.state.task);
             // TODO: add onChange event to MarkdownEditorComponent in order to update context
             await this.props.deps.taskService.updateTask(this.state.task);
+            console.log(this.props.mutChan);
+            this.props.mutChan.put({
+                type: "TaskUpdate",
+                id: this.state.task?.id,
+                goal: this.state.task.goal,
+            });
         }
     };
 

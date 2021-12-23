@@ -14,6 +14,8 @@ import { MaterialIconUI } from '../../ui/view/MaterialIcon';
 import { NamedValueUI } from '../../ui/view/NamedValue';
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
+import * as csp from '@creatcodebuild/csp';
+import * as events from '../../entity/events';
 
 const goalLengthLimit = 70;
 
@@ -22,6 +24,7 @@ interface IProps {
     task: Task;
     isEditing?: boolean;
     isOwnerSelected: boolean;
+    mutChan: csp.PopChannel<events.MutationEvent | undefined>;
     onTaskDetailClick?: (taskId: number) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
@@ -47,6 +50,26 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             task: this.props.task,
             isEditing: props.isEditing || false,
         };
+
+        (async () => {
+            while(true) {
+                const event = await this.props.mutChan.pop();
+                if(event !== undefined) {
+                    console.log("received mutation", this.props.task.id);
+                    if(event.type == "TaskUpdate" && event.id === this.props.task.id) {
+                        const task = Object.assign({}, this.state.task)
+                        task.goal = event.goal;
+                        task.context = event.context;
+                        this.setState({
+                            task: task,
+                            isEditing: this.state.isEditing
+                        });
+                    }
+                } else {
+                    console.log("channel has been closed, should not happen");
+                }
+            }
+        })();
     }
 
     private static renderReportBlocked(index: number): ReactElement {
