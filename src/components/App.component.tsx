@@ -9,7 +9,7 @@ import * as queries from '../service/queries';
 import store from '../store/store';
 import { MaterialIconUI } from '../ui/view/MaterialIcon';
 import styles from './App.component.module.scss';
-import { DebugComponent } from './Debug.component';
+import { DevComponent } from './Dev.component';
 import ExecutionComponentHook, {
     ExecutionComponent,
 } from './Execution.component';
@@ -45,8 +45,8 @@ class AppComponent extends Component<IProps, IState> {
         return (
             <div className={styles.App}>
                 <Switch>
-                    <Route path={'/debug'}>
-                        <DebugComponent
+                    <Route path={'/dev'}>
+                        <DevComponent
                             repoOwner={'teamyapp'}
                             repoName={'teamy-web'}
                         />

@@ -1,7 +1,7 @@
 @import 'src/ui/styleguide/color';
 @import 'src/ui/styleguide/elevation';
 
-.Debug {
+.Dev {
     position: relative;
     display: flex;
     width: 100%;
@@ -16,6 +16,10 @@
         transform: translateX(-50%) translateY(-50%);
         border-radius: 4px;
         background-color: white;
+    }
+
+    .Section:not(:first-child) {
+        margin-top: 40px;
     }
 
     .InfoCard {
@@ -36,6 +40,7 @@
 
         table {
             border-collapse: collapse;
+            margin: 0 auto;
 
             td {
                 padding: 10px 20px;

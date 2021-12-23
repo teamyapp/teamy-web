@@ -12,6 +12,8 @@ const gitLongCommitHash = childProcess
     .toString()
     .trim();
 
+const codeStats = childProcess.execSync('sloc src/ -f json').toString().trim();
+
 module.exports = {
     webpack: {
         plugins: [
@@ -19,6 +21,7 @@ module.exports = {
                 'process.env.variables': JSON.stringify({
                     GIT_SHORT_COMMIT_HASH: gitShortCommitHash,
                     GIT_LONG_COMMIT_HASH: gitLongCommitHash,
+                    CODE_STATS: codeStats,
                 }),
             }),
         ],
