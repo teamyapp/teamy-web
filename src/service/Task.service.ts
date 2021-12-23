@@ -16,7 +16,7 @@ export class TaskService {
             .query({
                 query: QueryGetTask,
                 variables: { id: taskId },
-                fetchPolicy: policy
+                fetchPolicy: policy,
             })
             .then((payload: any) => {
                 return payload?.task;

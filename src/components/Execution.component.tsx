@@ -320,7 +320,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
-        const task = await this.props.deps.taskService.fetchTask(taskId, 'cache-first');
+        const task = await this.props.deps.taskService.fetchTask(
+            taskId,
+            'cache-first',
+        );
         this.showTaskDetail(task);
     };
 
