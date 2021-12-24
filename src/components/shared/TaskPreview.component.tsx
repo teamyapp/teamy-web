@@ -24,7 +24,7 @@ interface IProps {
     task: Task;
     isEditing?: boolean;
     isOwnerSelected: boolean;
-    mutChan: csp.Channel<events.MutationEvent | undefined>;
+    multiCaster: csp.Multicaster<events.MutationEvent>;
     onTaskDetailClick?: (taskId: number) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
@@ -43,6 +43,7 @@ interface IState {
 
 export class TaskPreviewUI extends Component<IProps, IState> {
     private ref = createRef<HTMLDivElement>();
+    private mutationChan: csp.Channel<events.MutationEvent | undefined>
 
     constructor(props: IProps) {
         super(props);
@@ -51,7 +52,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             isEditing: props.isEditing || false,
         };
 
-        
+        this.mutationChan = this.props.multiCaster.copy();
     }
 
     private static renderReportBlocked(index: number): ReactElement {
@@ -289,8 +290,12 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         this.listenToMutation();
     }
 
+    public componentWillUnmount() {
+        this.mutationChan.close();
+    }
+
     private async listenToMutation() {
-        for await (let event of this.props.mutChan) {
+        for await (let event of this.mutationChan) {
             if(event !== undefined) {
                 console.log('received mutation', this.props.task.id);
                 if (

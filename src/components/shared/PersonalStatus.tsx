@@ -15,7 +15,7 @@ interface IProps {
     taskAdding?: Task;
     personalStatus: PersonalStatus;
     taskSelectingOwner?: Task;
-    mutCaster: csp.Multicaster<events.MutationEvent | undefined>;
+    mutCaster: csp.Multicaster<events.MutationEvent>;
     onViewTaskDetailClick?: (taskId: number) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
@@ -106,7 +106,7 @@ export default class PersonalStatusUI extends Component<IProps> {
             return (
                 <div key={task.id}>
                     <TaskPreviewUI
-                        mutChan={this.props.mutCaster.copy()}
+                        multiCaster={this.props.mutCaster}
                         canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}

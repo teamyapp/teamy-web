@@ -51,7 +51,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private taskDetailModalRef = createRef<TaskModalComponent>();
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
     private unsubscribe?: Unsubscribe;
-    private mutCaster: csp.Multicaster<events.MutationEvent | undefined>;
+    private mutCaster: csp.Multicaster<events.MutationEvent>;
     private mutChan: csp.PutChannel<events.MutationEvent>;
     private mutationListener: csp.Channel<events.MutationEvent | undefined>;
 
@@ -73,7 +73,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         const mutChan = csp.chan<events.MutationEvent>();
         this.mutChan = mutChan;
         // a multicaster used to other components to subscribe the event
-        this.mutCaster = csp.multi(mutChan);
+        this.mutCaster = csp.multi<events.MutationEvent>(mutChan);
         this.mutationListener = this.mutCaster.copy();
     }
 
