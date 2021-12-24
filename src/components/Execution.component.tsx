@@ -130,7 +130,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}team`}>
                             <Team
-                                mutCaster={this.mutCaster}
+                                multiCaster={this.multiCaster}
                                 teamStatus={this.state.teamStatus}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
