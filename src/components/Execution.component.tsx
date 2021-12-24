@@ -51,7 +51,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private taskDetailModalRef = createRef<TaskModalComponent>();
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
     private unsubscribe?: Unsubscribe;
-    private mutCaster: csp.Multicaster<events.MutationEvent>;
+    private readonly multiCaster: csp.Multicaster<events.MutationEvent>;
     private mutChan: csp.PutChannel<events.MutationEvent>;
     private mutationListener: csp.Channel<events.MutationEvent | undefined>;
 
