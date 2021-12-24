@@ -78,7 +78,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private async listenToMutation() {
-        for await (let event of this.mutationListener) {
+        while (true) {
+            let event = await this.mutationListener.pop();
+            if (event === undefined) {
+                return;
+            }
             // do not care what events are received, refresh anyway
             console.log('mutation happened');
             await this.refresh('network-only');

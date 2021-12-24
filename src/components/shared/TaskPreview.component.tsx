@@ -43,7 +43,7 @@ interface IState {
 
 export class TaskPreviewUI extends Component<IProps, IState> {
     private ref = createRef<HTMLDivElement>();
-    private mutationChan: csp.Channel<events.MutationEvent | undefined>
+    private mutationChan: csp.Channel<events.MutationEvent | undefined>;
 
     constructor(props: IProps) {
         super(props);
@@ -295,21 +295,20 @@ export class TaskPreviewUI extends Component<IProps, IState> {
     }
 
     private async listenToMutation() {
-        for await (let event of this.mutationChan) {
-            if(event !== undefined) {
-                console.log('received mutation', this.props.task.id);
-                if (
-                    event.type == 'TaskUpdate' &&
-                    event.id === this.props.task.id
-                ) {
-                    const task = Object.assign({}, this.state.task);
-                    task.goal = event.goal;
-                    task.context = event.context;
-                    this.setState({
-                        task: task,
-                        isEditing: this.state.isEditing,
-                    });
-                }
+        while (true) {
+            let event = await this.mutationChan.pop();
+            if (event == undefined) {
+                return;
+            }
+            console.log('received mutation', this.props.task.id);
+            if (event.type == 'TaskUpdate' && event.id === this.props.task.id) {
+                const task = Object.assign({}, this.state.task);
+                task.goal = event.goal;
+                task.context = event.context;
+                this.setState({
+                    task: task,
+                    isEditing: this.state.isEditing,
+                });
             }
         }
     }
