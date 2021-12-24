@@ -107,7 +107,7 @@ export default class KanbanUI extends Component<IProps> {
             return (
                 <div key={task.id}>
                     <TaskPreviewUI
-                        multiCaster={this.props.mutCaster}
+                        multiCaster={this.props.multiCaster}
                         canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}
