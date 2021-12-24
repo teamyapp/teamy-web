@@ -52,7 +52,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
     private unsubscribe?: Unsubscribe;
     private readonly multiCaster: csp.Multicaster<events.MutationEvent>;
-    private mutChan: csp.PutChannel<events.MutationEvent>;
+    private readonly multiChan: csp.PutChannel<events.MutationEvent>;
     private mutationListener: csp.Channel<events.MutationEvent | undefined>;
 
     constructor(props: IProps) {
