@@ -53,6 +53,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private unsubscribe?: Unsubscribe;
     private mutCaster: csp.Multicaster<events.MutationEvent | undefined>;
     private mutChan: csp.PutChannel<events.MutationEvent>;
+    private mutationListener: csp.Channel<events.MutationEvent | undefined>;
 
     constructor(props: IProps) {
         super(props);
@@ -73,17 +74,15 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.mutChan = mutChan;
         // a multicaster used to other components to subscribe the event
         this.mutCaster = csp.multi(mutChan);
+        this.mutationListener = this.mutCaster.copy();
+    }
 
-        // start a coroutine here
-        const chan = this.mutCaster.copy();
-        (async () => {
-            while (true) {
-                // do not care what events are received, refresh anyway
-                await chan.pop();
-                console.log('mutation happened');
-                await this.refresh('network-only');
-            }
-        })();
+    private async listenToMutation() {
+        for await (let event of this.mutationListener) {
+            // do not care what events are received, refresh anyway
+            console.log('mutation happened');
+            await this.refresh('network-only');
+        }
     }
 
     public render(): ReactElement {
@@ -189,6 +188,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     public async componentDidMount() {
+        this.listenToMutation();
         this.onTabClick(0);
         window.addEventListener('resize', this.onWindowResize);
 
@@ -203,6 +203,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        this.mutationListener.close();
         this.unsubscribe?.call(this);
         window.removeEventListener('resize', this.onWindowResize);
     }

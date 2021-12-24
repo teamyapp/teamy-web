@@ -24,7 +24,7 @@ interface IProps {
     task: Task;
     isEditing?: boolean;
     isOwnerSelected: boolean;
-    mutChan: csp.PopChannel<events.MutationEvent | undefined>;
+    mutChan: csp.Channel<events.MutationEvent | undefined>;
     onTaskDetailClick?: (taskId: number) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
@@ -51,28 +51,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             isEditing: props.isEditing || false,
         };
 
-        (async () => {
-            while (true) {
-                const event = await this.props.mutChan.pop();
-                if (event !== undefined) {
-                    console.log('received mutation', this.props.task.id);
-                    if (
-                        event.type == 'TaskUpdate' &&
-                        event.id === this.props.task.id
-                    ) {
-                        const task = Object.assign({}, this.state.task);
-                        task.goal = event.goal;
-                        task.context = event.context;
-                        this.setState({
-                            task: task,
-                            isEditing: this.state.isEditing,
-                        });
-                    }
-                } else {
-                    console.log('channel has been closed, should not happen');
-                }
-            }
-        })();
+        
     }
 
     private static renderReportBlocked(index: number): ReactElement {
@@ -305,4 +284,28 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             },
         );
     };
+
+    public componentDidMount() {
+        this.listenToMutation();
+    }
+
+    private async listenToMutation() {
+        for await (let event of this.props.mutChan) {
+            if(event !== undefined) {
+                console.log('received mutation', this.props.task.id);
+                if (
+                    event.type == 'TaskUpdate' &&
+                    event.id === this.props.task.id
+                ) {
+                    const task = Object.assign({}, this.state.task);
+                    task.goal = event.goal;
+                    task.context = event.context;
+                    this.setState({
+                        task: task,
+                        isEditing: this.state.isEditing,
+                    });
+                }
+            }
+        }
+    }
 }
