@@ -359,7 +359,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
             type: 'TaskDelete',
             id: taskId,
         });
-        // await this.refresh('network-only');
     };
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
