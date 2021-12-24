@@ -12,6 +12,7 @@ const itemSeparator = ',';
 
 interface IProps {
     deps: Deps;
+    onTeamMembersAdded?: (teamId: number) => void;
 }
 
 interface IState {
@@ -29,7 +30,7 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
 
     public render() {
         return (
-            <ModalUI ref={this.modalRef}>
+            <ModalUI ref={this.modalRef} level={1}>
                 <div className={styles.Header}>
                     Add New Members to {this.state.team?.name}
                     <div
@@ -67,14 +68,18 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
         this.modalRef.current?.close();
     };
 
-    private onAddButtonClick = () => {
+    private onAddButtonClick = async () => {
+        const teamId = this.state.team!.id;
         const userIdsString = this.userIDTextAreaRef.current?.content || '';
         const userIds = userIdsString
             .split(itemSeparator)
             .map((idString: string) => parseInt(idString));
-        for (let userId of userIds) {
-            // TODO: invoke add team member API
-            console.log(userId);
-        }
+        await Promise.all(
+            userIds.map((userId: number) =>
+                this.props.deps.teamService.addTeamMember(teamId, userId),
+            ),
+        );
+        this.modalRef.current?.close();
+        this.props.onTeamMembersAdded?.call(null, teamId);
     };
 }

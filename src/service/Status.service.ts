@@ -2,7 +2,7 @@ import { FetchPolicy } from '@apollo/client';
 import PersonalStatus from '../entity/PersonalStatus';
 import TeamStatus from '../entity/TeamStatus';
 import { GraphQLClient } from '../network/GraphQL.client';
-import { QueryPersonalStatus, QueryTeamStatus } from './queries';
+import * as queries from './queries';
 
 export class StatusService {
     private readonly graphQLClient: GraphQLClient;
@@ -17,7 +17,7 @@ export class StatusService {
     ): Promise<PersonalStatus> {
         return this.graphQLClient
             .query({
-                query: QueryPersonalStatus,
+                query: queries.personalStatus,
                 variables: { userId: userId },
                 fetchPolicy: policy,
             })
@@ -34,7 +34,7 @@ export class StatusService {
 
     public fetchTeamStatus(policy: FetchPolicy): Promise<TeamStatus> {
         return this.graphQLClient
-            .query({ query: QueryTeamStatus, fetchPolicy: policy })
+            .query({ query: queries.teamStatus, fetchPolicy: policy })
             .then((payload: any) => {
                 return {
                     upcomingTasks: payload?.me?.activeTeam?.upcomingTasks || [],
