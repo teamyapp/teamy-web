@@ -104,7 +104,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalUI
-                                mutCaster={this.mutCaster}
+                                multiCaster={this.multiCaster}
                                 deps={this.props.deps}
                                 personalStatus={this.state.personalStatus}
                                 taskAdding={this.state.taskAdding}
