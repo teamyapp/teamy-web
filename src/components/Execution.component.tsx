@@ -72,7 +72,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         // source channel for putting mutation events
         this.multiChan = csp.chan<events.MutationEvent>();
         // a multicaster used to other components to subscribe the event
-        this.mutCaster = csp.multi<events.MutationEvent>(mutChan);
+        this.multiCaster = csp.multi<events.MutationEvent>(this.multiChan);
         this.mutationListener = this.mutCaster.copy();
     }
 
