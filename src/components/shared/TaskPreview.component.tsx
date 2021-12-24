@@ -297,7 +297,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
     private async listenToMutation() {
         while (true) {
             let event = await this.mutationChan.pop();
-            if (event == undefined) {
+            if (event === undefined) {
                 return;
             }
             console.log('received mutation', this.props.task.id);
