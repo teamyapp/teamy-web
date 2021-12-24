@@ -156,7 +156,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 <TaskModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
-                    mutChan={this.mutChan}
+                    multiChan={this.multiChan}
                 />
                 {this.state.showPotentialTaskOwnersList && (
                     <div
