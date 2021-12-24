@@ -15,7 +15,7 @@ import * as events from '../../../entity/events';
 
 interface IProps {
     deps: Deps;
-    mutChan: csp.Channel<events.MutationEvent>;
+    multiChan: csp.Channel<events.MutationEvent>;
 }
 
 interface IState {
