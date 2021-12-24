@@ -12,7 +12,7 @@ const itemSeparator = ',';
 
 interface IProps {
     deps: Deps;
-    onTeamMemberAdded?: (teamId: number) => void;
+    onTeamMembersAdded?: (teamId: number) => void;
 }
 
 interface IState {
@@ -80,6 +80,6 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
             ),
         );
         this.modalRef.current?.close();
-        this.props.onTeamMemberAdded?.call(null, teamId);
+        this.props.onTeamMembersAdded?.call(null, teamId);
     };
 }

@@ -97,7 +97,7 @@ class AppComponent extends Component<IProps, IState> {
                 <AddTeamMembersModalComponent
                     deps={this.props.deps}
                     ref={this.addTeamMembersModalRef}
-                    onTeamMemberAdded={this.onTeamMemberAdded}
+                    onTeamMembersAdded={this.onTeamMembersAdded}
                 />
             </div>
         );
@@ -130,7 +130,7 @@ class AppComponent extends Component<IProps, IState> {
         await this.refresh('network-only');
     };
 
-    private onTeamMemberAdded = async (teamId: number) => {
+    private onTeamMembersAdded = async (teamId: number) => {
         await this.refresh('network-only');
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
