@@ -1,12 +1,7 @@
 import Team from '../entity/Team';
 import { User } from '../entity/User';
 import { GraphQLClient } from '../network/GraphQL.client';
-import {
-    QueryActiveTeamId,
-    QueryTeamMembers,
-    QueryTeams,
-    QueryTeamsWithMembers,
-} from './queries';
+import * as queries from './queries';
 import * as mutations from './mutations';
 
 export class TeamService {
@@ -18,7 +13,7 @@ export class TeamService {
 
     public fetchTeamMembers(): Promise<User[]> {
         return this.graphQLClient
-            .query({ query: QueryTeamMembers })
+            .query({ query: queries.teamMembers })
             .then((payload: any) => {
                 return payload?.me?.activeTeam?.members || [];
             });
@@ -26,7 +21,7 @@ export class TeamService {
 
     public fetchActiveTeamId(): Promise<number> {
         return this.graphQLClient
-            .query({ query: QueryActiveTeamId })
+            .query({ query: queries.activeTeamId })
             .then((payload: any) => {
                 return payload?.me?.activeTeam?.id || -1;
             });
@@ -35,7 +30,7 @@ export class TeamService {
     public fetchTeam(teamId: number): Promise<Team> {
         return this.graphQLClient
             .query({
-                query: QueryTeamsWithMembers,
+                query: queries.teamsWithMembers,
                 variables: { ids: [teamId] },
             })
             .then((payload: any) => {
@@ -48,7 +43,7 @@ export class TeamService {
 
     public fetchTeams(): Promise<Team[]> {
         return this.graphQLClient
-            .query({ query: QueryTeams })
+            .query({ query: queries.teams })
             .then((payload: any) => {
                 return payload?.me?.teams || [];
             });
@@ -64,6 +59,20 @@ export class TeamService {
             })
             .then((payload: any) => {
                 return payload?.updateActiveTeam;
+            });
+    }
+
+    public addTeamMember(teamId: number, newMemberId: number): Promise<number> {
+        return this.graphQLClient
+            .mutate({
+                mutation: mutations.addTeamMember,
+                variables: {
+                    teamId,
+                    newMemberId: `${newMemberId}`,
+                },
+            })
+            .then((payload: any) => {
+                return payload?.team?.addMember?.team?.id;
             });
     }
 }

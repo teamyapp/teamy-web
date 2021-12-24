@@ -20,8 +20,8 @@ fragment taskPreview on Task {
 }
 `;
 
-export const Me = gql`
-    query Me {
+export const mePage = gql`
+    query me {
         me {
             id
             firstName
@@ -53,8 +53,8 @@ export const Me = gql`
     ${fragmentTaskPreview}
 `;
 
-export const QueryMe = gql`
-    query Me {
+export const me = gql`
+    query me {
         me {
             id
             firstName
@@ -64,7 +64,7 @@ export const QueryMe = gql`
     }
 `;
 
-export const QueryPersonalStatus = gql`
+export const personalStatus = gql`
     query personalStatus {
         me {
             id
@@ -86,7 +86,7 @@ export const QueryPersonalStatus = gql`
     ${fragmentTaskPreview}
 `;
 
-export const QueryTeamStatus = gql`
+export const teamStatus = gql`
     query TeamStatus {
         me {
             id
@@ -107,8 +107,8 @@ export const QueryTeamStatus = gql`
     ${fragmentTaskPreview}
 `;
 
-export const QueryGetTask = gql`
-    query getTask($id: ID!) {
+export const task = gql`
+    query task($id: ID!) {
         task(id: $id) {
             id
             goal
@@ -126,8 +126,8 @@ export const QueryGetTask = gql`
     }
 `;
 
-export const QueryTeamMembers = gql`
-    query TeamMembers {
+export const teamMembers = gql`
+    query teamMembers {
         me {
             id
             activeTeam {
@@ -143,8 +143,8 @@ export const QueryTeamMembers = gql`
     }
 `;
 
-export const QueryActiveTeamId = gql`
-    query ActiveTeamId {
+export const activeTeamId = gql`
+    query activeTeamId {
         me {
             id
             activeTeam {
@@ -154,8 +154,8 @@ export const QueryActiveTeamId = gql`
     }
 `;
 
-export const QueryTeams = gql`
-    query Teams {
+export const teams = gql`
+    query teams {
         me {
             id
             teams {
@@ -167,10 +167,10 @@ export const QueryTeams = gql`
     }
 `;
 
-export const QueryTeamsWithMembers = gql`
-    query Teams {
+export const teamsWithMembers = gql`
+    query teams($ids: [ID!]!) {
         me {
-            teams {
+            teams(ids: $ids) {
                 id
                 name
                 iconUrl

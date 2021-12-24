@@ -12,6 +12,7 @@ import { UserProfileUI } from '../UserProfile';
 
 interface IProps {
     deps: Deps;
+    onAddTeamMemberClick?: (teamId: number) => void;
 }
 
 interface IState {
@@ -124,7 +125,10 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                 <div className={styles.TeamMembersTab}>
                     <div className={styles.TeamMemberList}>
                         <div className={styles.Cell}>
-                            <div className={styles.AddButton}>
+                            <div
+                                className={styles.AddButton}
+                                onClick={this.onAddTeamMemberClick}
+                            >
                                 <MaterialIconUI>add</MaterialIconUI>
                             </div>
                         </div>
@@ -172,5 +176,9 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
 
     private onDeleteTeamClick = () => {
         console.log('onDeleteTeamClick');
+    };
+
+    private onAddTeamMemberClick = () => {
+        this.props.onAddTeamMemberClick?.call(null, this.state.team!.id);
     };
 }

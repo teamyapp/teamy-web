@@ -92,10 +92,12 @@ class AppComponent extends Component<IProps, IState> {
                 <TeamSettingsModalComponent
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
+                    onAddTeamMemberClick={this.onAddTeamMembersClick}
                 />
                 <AddTeamMembersModalComponent
                     deps={this.props.deps}
                     ref={this.addTeamMembersModalRef}
+                    onAddedTeamMember={this.onAddedTeamMember}
                 />
             </div>
         );
@@ -128,14 +130,19 @@ class AppComponent extends Component<IProps, IState> {
         await this.refresh('network-only');
     };
 
+    private onAddedTeamMember = async (teamId: number) => {
+        await this.refresh('network-only');
+        this.teamSettingsModalRef.current?.open(teamId, 1);
+    };
+
     private async refresh(policy: FetchPolicy) {
         console.log('refresh App', policy);
         const data = await this.props.deps.graphql.query({
             fetchPolicy: policy,
-            query: queries.Me,
+            query: queries.mePage,
         });
-        const teams: Team[] = data.me.teams;
-        const activeTeamId = data.me.activeTeam?.id;
+        const teams: Team[] = data.me?.teams;
+        const activeTeamId = data.me?.activeTeam?.id;
         this.setState({
             teams,
             activeTeamId,

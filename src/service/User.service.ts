@@ -12,7 +12,7 @@ export class UserService {
 
     public fetchMe(policy: FetchPolicy): Promise<User> {
         return this.graphQLClient
-            .query({ query: queries.QueryMe, fetchPolicy: policy })
+            .query({ query: queries.me, fetchPolicy: policy })
             .then((payload: any) => {
                 return payload?.me;
             });
