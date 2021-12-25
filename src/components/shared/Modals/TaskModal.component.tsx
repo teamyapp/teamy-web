@@ -109,7 +109,6 @@ export class TaskModalComponent extends Component<any, IState> {
             const task = Object.assign({}, this.state.task, {
               context: this.markdownEditorRef.current?.state.content
             });
-            task.context = this.markdownEditorRef.current?.state.content;
             this.props.mutChan.put({
                 type: 'TaskUpdate',
                 id: this.state.task?.id,
