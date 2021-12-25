@@ -113,7 +113,7 @@ export class TaskModalComponent extends Component<any, IState> {
                 type: 'TaskUpdate',
                 id: this.state.task?.id,
                 goal: this.state.task.goal,
-                context: this.markdownEditorRef.current?.state.content,
+                context: task.context,
             });
             await this.props.deps.taskService.updateTask(task);
         }
