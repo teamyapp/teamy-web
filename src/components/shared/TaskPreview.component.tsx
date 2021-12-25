@@ -306,8 +306,6 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                   goal: event.goal,
                   context = event.context
                 });
-                task.goal = event.goal;
-                task.context = event.context;
                 this.setState({
                     task: task,
                     isEditing: this.state.isEditing,
