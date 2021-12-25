@@ -22,7 +22,7 @@ interface IState {
     task?: Task;
 }
 
-export class TaskModalComponent extends Component<any, IState> {
+export class TaskModalComponent extends Component<IProps, IState> {
     private modalRef = createRef<ModalUI>();
     private markdownEditorRef = createRef<MarkdownEditorUI>();
 
@@ -109,11 +109,11 @@ export class TaskModalComponent extends Component<any, IState> {
             const task = Object.assign({}, this.state.task, {
               context: this.markdownEditorRef.current?.state.content
             });
-            this.props.mutChan.put({
+            await this.props.multiChan.put({
                 type: 'TaskUpdate',
                 id: this.state.task?.id,
                 goal: this.state.task.goal,
-                context: task.context,
+                context: task.context || '',
             });
             await this.props.deps.taskService.updateTask(task);
         }
