@@ -3,6 +3,11 @@ import React, { Component, ReactElement } from 'react';
 import styles from './Modal.module.scss';
 
 const transitionDurationMilliseconds = 400;
+const baseElevation = 1000;
+
+interface IProps {
+    level?: number;
+}
 
 interface IState {
     isVisible: boolean;
@@ -10,8 +15,8 @@ interface IState {
     isAnimating: boolean;
 }
 
-export class ModalUI extends Component<any, IState> {
-    constructor(props: any) {
+export class ModalUI extends Component<IProps, IState> {
+    constructor(props: IProps) {
         super(props);
         this.state = {
             isVisible: false,
@@ -21,6 +26,7 @@ export class ModalUI extends Component<any, IState> {
     }
 
     public render(): ReactElement {
+        const elevation = (this.props.level || 0) + baseElevation;
         return (
             <div className={styles.Modal}>
                 {this.state.isVisible && (
@@ -30,6 +36,7 @@ export class ModalUI extends Component<any, IState> {
                                 [styles.Show]: this.state.isOpen,
                             })}`}
                             style={{
+                                zIndex: elevation + 1,
                                 transitionDuration: `${transitionDurationMilliseconds}ms`,
                             }}
                         >
@@ -40,6 +47,7 @@ export class ModalUI extends Component<any, IState> {
                                 [styles.Show]: this.state.isOpen,
                             })}`}
                             style={{
+                                zIndex: elevation,
                                 transitionDuration: `${transitionDurationMilliseconds}ms`,
                             }}
                             onClick={this.onOverlayClick}

@@ -61,3 +61,17 @@ export const updateActiveTeam = gql`
         }
     }
 `;
+
+export const addTeamMember = gql`
+    mutation addTeamMember($teamId: ID!, $newMemberId: ID!) {
+        team(id: $teamId) {
+            addMember(id: $newMemberId) {
+                team {
+                    members {
+                        id
+                    }
+                }
+            }
+        }
+    }
+`;

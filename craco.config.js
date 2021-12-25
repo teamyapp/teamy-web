@@ -32,6 +32,16 @@ module.exports = {
     plugins: [
         {
             plugin: CracoEsbuildPlugin,
+            options: {
+                esbuildLoaderOptions: {
+                    loader: 'tsx',
+                    target: 'es2018',
+                },
+                esbuildMinimizerOptions: {
+                    target: 'es2018',
+                    css: true,
+                },
+            },
         },
     ],
 };
