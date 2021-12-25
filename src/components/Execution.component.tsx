@@ -219,7 +219,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         console.log('refresh', policy);
         const data = await this.props.deps.graphql.query({
             fetchPolicy: policy,
-            query: queries.Me,
+            query: queries.mePage,
         });
         if (data.me.activeTeam) {
             store.dispatch(
