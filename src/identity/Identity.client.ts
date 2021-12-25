@@ -97,14 +97,17 @@ export class IdentityClient {
     }
 
     private async verifyToken(accessToken: string): Promise<boolean> {
-        const result = await this.httpClient.request(
+        const [userId, err] = await this.httpClient.request(
             `${this.httpBaseEndpoint}/verify-token`,
             {
                 method: 'POST',
                 body: accessToken,
             },
         );
-        return !result[1];
+        if (err) {
+            return false;
+        }
+        return userId != null;
     }
 
     private async getSessionId(): Promise<Result<number, Errors>> {

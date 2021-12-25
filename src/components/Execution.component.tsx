@@ -52,7 +52,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
     private unsubscribe?: Unsubscribe;
     private readonly multiCaster: csp.Multicaster<events.MutationEvent>;
-    private readonly multiChan: csp.PutChannel<events.MutationEvent>;
+    private readonly multiChan: csp.Channel<events.MutationEvent>;
     private mutationListener: csp.Channel<events.MutationEvent | undefined>;
 
     constructor(props: IProps) {
@@ -355,7 +355,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.deleteTask(taskId);
-        await this.mutChan.put({
+        await this.multiChan.put({
             type: 'TaskDelete',
             id: taskId,
         });
