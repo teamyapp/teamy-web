@@ -14,6 +14,8 @@ import { MaterialIconUI } from '../../ui/view/MaterialIcon';
 import { NamedValueUI } from '../../ui/view/NamedValue';
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
+import * as csp from '@creatcodebuild/csp';
+import * as events from '../../entity/events';
 
 const goalLengthLimit = 70;
 
@@ -22,6 +24,7 @@ interface IProps {
     task: Task;
     isEditing?: boolean;
     isOwnerSelected: boolean;
+    multiCaster: csp.Multicaster<events.MutationEvent>;
     onTaskDetailClick?: (taskId: number) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
@@ -40,6 +43,7 @@ interface IState {
 
 export class TaskPreviewUI extends Component<IProps, IState> {
     private ref = createRef<HTMLDivElement>();
+    private mutationChan: csp.Channel<events.MutationEvent | undefined>;
 
     constructor(props: IProps) {
         super(props);
@@ -47,6 +51,8 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             task: this.props.task,
             isEditing: props.isEditing || false,
         };
+
+        this.mutationChan = this.props.multiCaster.copy();
     }
 
     private static renderReportBlocked(index: number): ReactElement {
@@ -279,4 +285,31 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             },
         );
     };
+
+    public componentDidMount() {
+        this.listenToMutation();
+    }
+
+    public componentWillUnmount() {
+        this.mutationChan.close();
+    }
+
+    private async listenToMutation() {
+        while (true) {
+            let event = await this.mutationChan.pop();
+            if (event === undefined) {
+                return;
+            }
+            console.log('received mutation', this.props.task.id);
+            if (event.type === 'TaskUpdate' && event.id === this.props.task.id) {
+                const task = Object.assign({}, this.state.task, {
+                  goal: event.goal,
+                  context: event.context
+                });
+                this.setState({
+                    task: task,
+                });
+            }
+        }
+    }
 }

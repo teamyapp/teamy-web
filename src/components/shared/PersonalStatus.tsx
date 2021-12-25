@@ -7,12 +7,15 @@ import { MaterialIconUI } from '../../ui/view/MaterialIcon';
 import { SectionUI } from '../../ui/view/Section';
 import styles from './Personal.module.scss';
 import { TaskPreviewUI } from './TaskPreview.component';
+import * as csp from '@creatcodebuild/csp';
+import * as events from '../../entity/events';
 
 interface IProps {
     deps: Deps;
     taskAdding?: Task;
     personalStatus: PersonalStatus;
     taskSelectingOwner?: Task;
+    multiCaster: csp.Multicaster<events.MutationEvent>;
     onViewTaskDetailClick?: (taskId: number) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
@@ -103,6 +106,7 @@ export default class PersonalStatusUI extends Component<IProps> {
             return (
                 <div key={task.id}>
                     <TaskPreviewUI
+                        multiCaster={this.props.multiCaster}
                         canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}

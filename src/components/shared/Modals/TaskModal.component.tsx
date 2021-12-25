@@ -8,11 +8,14 @@ import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
 import { ModalUI } from '../../../ui/view/Modal';
 import { NamedValueUI } from '../../../ui/view/NamedValue';
 import { TextFieldUI } from '../../../ui/view/TextField';
+import * as csp from '@creatcodebuild/csp';
 
 import styles from './TaskModal.component.module.scss';
+import * as events from '../../../entity/events';
 
 interface IProps {
     deps: Deps;
+    multiChan: csp.Channel<events.MutationEvent>;
 }
 
 interface IState {
@@ -21,6 +24,7 @@ interface IState {
 
 export class TaskModalComponent extends Component<any, IState> {
     private modalRef = createRef<ModalUI>();
+    private markdownEditorRef = createRef<MarkdownEditorUI>();
 
     constructor(props: IProps) {
         super(props);
@@ -56,6 +60,7 @@ export class TaskModalComponent extends Component<any, IState> {
                                     <MarkdownEditorUI
                                         label={'Context'}
                                         content={this.state.task.context}
+                                        ref={this.markdownEditorRef}
                                     />
                                 </div>
                             </div>
@@ -101,9 +106,16 @@ export class TaskModalComponent extends Component<any, IState> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
-            console.log(this.state.task);
-            // TODO: add onChange event to MarkdownEditorComponent in order to update context
-            await this.props.deps.taskService.updateTask(this.state.task);
+            const task = Object.assign({}, this.state.task, {
+              context: this.markdownEditorRef.current?.state.content
+            });
+            this.props.mutChan.put({
+                type: 'TaskUpdate',
+                id: this.state.task?.id,
+                goal: this.state.task.goal,
+                context: task.context,
+            });
+            await this.props.deps.taskService.updateTask(task);
         }
     };
 

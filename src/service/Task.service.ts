@@ -1,6 +1,7 @@
 import Task from '../entity/Task';
 import { GraphQLClient } from '../network/GraphQL.client';
 import * as mutations from './mutations';
+import { FetchPolicy } from '@apollo/client';
 import * as queries from './queries';
 
 export class TaskService {
@@ -10,11 +11,12 @@ export class TaskService {
         this.graphQLClient = graphQLClient;
     }
 
-    public fetchTask(taskId: number): Promise<Task> {
+    public fetchTask(taskId: number, policy: FetchPolicy): Promise<Task> {
         return this.graphQLClient
             .query({
                 query: queries.task,
                 variables: { id: taskId },
+                fetchPolicy: policy,
             })
             .then((payload: any) => {
                 return payload?.task;

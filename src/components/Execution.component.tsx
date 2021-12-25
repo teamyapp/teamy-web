@@ -5,6 +5,7 @@ import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import { Unsubscribe } from 'redux';
 import { Deps } from '../deps';
 import PersonalStatus from '../entity/PersonalStatus';
+import * as events from '../entity/events';
 import { IBoundingBoxFinder } from '../entity/position';
 import Task from '../entity/Task';
 import { TaskAction } from '../entity/TaskAction';
@@ -21,6 +22,7 @@ import Team from './shared/Kanban';
 import PersonalUI from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
 import { TaskModalComponent } from './shared/Modals/TaskModal.component';
+import * as csp from '@creatcodebuild/csp';
 
 const routes = ['me', 'team'];
 
@@ -49,6 +51,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private taskDetailModalRef = createRef<TaskModalComponent>();
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
     private unsubscribe?: Unsubscribe;
+    private readonly multiCaster: csp.Multicaster<events.MutationEvent>;
+    private readonly multiChan: csp.Channel<events.MutationEvent>;
+    private readonly mutationListener: csp.Channel<events.MutationEvent | undefined>;
 
     constructor(props: IProps) {
         super(props);
@@ -62,6 +67,25 @@ export class ExecutionComponent extends Component<IProps, IState> {
             teamStatus: newState.teamStatus,
             potentialTaskOwners: [],
         };
+
+        // Channels that communicates mutation events
+        // source channel for putting mutation events
+        this.multiChan = csp.chan<events.MutationEvent>();
+        // a multicaster used to other components to subscribe the event
+        this.multiCaster = csp.multi<events.MutationEvent>(this.multiChan);
+        this.mutationListener = this.multiCaster.copy();
+    }
+
+    private async listenToMutation() {
+        while (true) {
+            let event = await this.mutationListener.pop();
+            if (event === undefined) {
+                return;
+            }
+            // do not care what events are received, refresh anyway
+            console.log('mutation happened');
+            await this.refresh('network-only');
+        }
     }
 
     public render(): ReactElement {
@@ -80,6 +104,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalUI
+                                multiCaster={this.multiCaster}
                                 deps={this.props.deps}
                                 personalStatus={this.state.personalStatus}
                                 taskAdding={this.state.taskAdding}
@@ -105,6 +130,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}team`}>
                             <Team
+                                multiCaster={this.multiCaster}
                                 teamStatus={this.state.teamStatus}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
@@ -130,6 +156,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 <TaskModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
+                    multiChan={this.multiChan}
                 />
                 {this.state.showPotentialTaskOwnersList && (
                     <div
@@ -164,6 +191,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     public async componentDidMount() {
+        this.listenToMutation();
         this.onTabClick(0);
         window.addEventListener('resize', this.onWindowResize);
 
@@ -178,6 +206,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
+        this.mutationListener.close();
         this.unsubscribe?.call(this);
         window.removeEventListener('resize', this.onWindowResize);
     }
@@ -295,7 +324,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
-        const task = await this.props.deps.taskService.fetchTask(taskId);
+        const task = await this.props.deps.taskService.fetchTask(
+            taskId,
+            'cache-first',
+        );
         this.showTaskDetail(task);
     };
 
@@ -323,7 +355,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.deleteTask(taskId);
-        await this.refresh('network-only');
+        await this.multiChan.put({
+            type: 'TaskDelete',
+            id: taskId,
+        });
     };
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
