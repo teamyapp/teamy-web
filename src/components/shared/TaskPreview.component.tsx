@@ -304,7 +304,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             if (event.type === 'TaskUpdate' && event.id === this.props.task.id) {
                 const task = Object.assign({}, this.state.task, {
                   goal: event.goal,
-                  context = event.context
+                  context: event.context
                 });
                 this.setState({
                     task: task,
