@@ -308,7 +308,6 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                 });
                 this.setState({
                     task: task,
-                    isEditing: this.state.isEditing,
                 });
             }
         }
