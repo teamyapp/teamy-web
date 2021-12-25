@@ -53,7 +53,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private unsubscribe?: Unsubscribe;
     private readonly multiCaster: csp.Multicaster<events.MutationEvent>;
     private readonly multiChan: csp.Channel<events.MutationEvent>;
-    private mutationListener: csp.Channel<events.MutationEvent | undefined>;
+    private readonly mutationListener: csp.Channel<events.MutationEvent | undefined>;
 
     constructor(props: IProps) {
         super(props);
