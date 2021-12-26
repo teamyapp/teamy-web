@@ -1,5 +1,5 @@
-import Team from '../entity/Team';
-import { User } from '../entity/User';
+import Team from '../entity/team';
+import { User } from '../entity/user';
 import { GraphQLClient } from '../network/GraphQL.client';
 import * as queries from './queries';
 import * as mutations from './mutations';

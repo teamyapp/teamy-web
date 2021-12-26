@@ -1,4 +1,4 @@
-import Task from '../entity/Task';
+import Task from '../entity/task';
 import { GraphQLClient } from '../network/GraphQL.client';
 import * as mutations from './mutations';
 import { FetchPolicy } from '@apollo/client';
