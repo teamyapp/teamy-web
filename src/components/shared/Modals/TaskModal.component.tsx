@@ -15,14 +15,14 @@ import * as events from '../../../entity/events';
 
 interface IProps {
     deps: Deps;
-    multiChan: csp.Channel<events.MutationEvent>;
+    mutationChan: csp.Channel<events.MutationEvent>;
 }
 
 interface IState {
     task?: Task;
 }
 
-export class TaskModalComponent extends Component<any, IState> {
+export class TaskModalComponent extends Component<IProps, IState> {
     private modalRef = createRef<ModalUI>();
     private markdownEditorRef = createRef<MarkdownEditorUI>();
 
@@ -107,13 +107,13 @@ export class TaskModalComponent extends Component<any, IState> {
     private onSaveButtonClick = async () => {
         if (this.state.task) {
             const task = Object.assign({}, this.state.task, {
-              context: this.markdownEditorRef.current?.state.content
+                context: this.markdownEditorRef.current?.state.content,
             });
-            this.props.mutChan.put({
+            await this.props.mutationChan.put({
                 type: 'TaskUpdate',
                 id: this.state.task?.id,
                 goal: this.state.task.goal,
-                context: task.context,
+                context: task.context || '',
             });
             await this.props.deps.taskService.updateTask(task);
         }

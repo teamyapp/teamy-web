@@ -52,8 +52,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
     private unsubscribe?: Unsubscribe;
     private readonly multiCaster: csp.Multicaster<events.MutationEvent>;
-    private readonly multiChan: csp.Channel<events.MutationEvent>;
-    private readonly mutationListener: csp.Channel<events.MutationEvent | undefined>;
+    private readonly mutationChan: csp.Channel<events.MutationEvent>;
+    private readonly mutationListener: csp.Channel<
+        events.MutationEvent | undefined
+    >;
 
     constructor(props: IProps) {
         super(props);
@@ -70,9 +72,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
         // Channels that communicates mutation events
         // source channel for putting mutation events
-        this.multiChan = csp.chan<events.MutationEvent>();
+        this.mutationChan = csp.chan<events.MutationEvent>();
         // a multicaster used to other components to subscribe the event
-        this.multiCaster = csp.multi<events.MutationEvent>(this.multiChan);
+        this.multiCaster = csp.multi<events.MutationEvent>(this.mutationChan);
         this.mutationListener = this.multiCaster.copy();
     }
 
@@ -156,7 +158,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 <TaskModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
-                    multiChan={this.multiChan}
+                    mutationChan={this.mutationChan}
                 />
                 {this.state.showPotentialTaskOwnersList && (
                     <div
@@ -355,7 +357,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.deleteTask(taskId);
-        await this.multiChan.put({
+        await this.mutationChan.put({
             type: 'TaskDelete',
             id: taskId,
         });
