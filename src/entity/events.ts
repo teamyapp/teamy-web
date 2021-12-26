@@ -1,4 +1,4 @@
-export type MutationEvent = TaskUpdate | TaskDelete;
+export type MutationEvent = TaskUpdate | TaskDelete | StartTask;
 
 export interface TaskUpdate {
     type: 'TaskUpdate';
@@ -9,5 +9,10 @@ export interface TaskUpdate {
 
 export interface TaskDelete {
     type: 'TaskDelete';
+    id: number;
+}
+
+export interface StartTask {
+    type: 'StartTask';
     id: number;
 }

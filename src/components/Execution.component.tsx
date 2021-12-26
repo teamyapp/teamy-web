@@ -81,12 +81,44 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private async listenToMutation() {
         while (true) {
             let event = await this.mutationListener.pop();
-            if (event === undefined) {
+            if (event === undefined || event == undefined) {
                 return;
             }
             // do not care what events are received, refresh anyway
-            console.log('mutation happened');
+            console.log('mutation happened', event.type);
+            if (event.type === 'StartTask') {
+                let task = this.state.teamStatus.upcomingTasks.find(
+                    (element) => element.id === event?.id,
+                );
+                if (task !== undefined) {
+                    let upcoming = this.state.teamStatus.upcomingTasks.filter(
+                        (element) => element.id !== event?.id,
+                    );
+                    let inProgress = [task].concat(
+                        this.state.teamStatus.inProgressTasks,
+                    );
+                    this.setState({
+                        teamStatus: {
+                            upcomingTasks: upcoming,
+                            inProgressTasks: inProgress,
+                            deliveredTasks: this.state.teamStatus.deliveredTasks,
+                        },
+                    });
+                }
+            } else if (event.type === 'TaskDelete') {
+                let delivered = this.state.teamStatus.deliveredTasks.filter(
+                    (element) => element.id !== event?.id,
+                );
+                this.setState({
+                    teamStatus: {
+                        upcomingTasks: this.state.teamStatus.upcomingTasks,
+                        inProgressTasks: this.state.teamStatus.inProgressTasks,
+                        deliveredTasks: delivered,
+                    },
+                });
+            }
             await this.refresh('network-only');
+            console.log(event.type, 'refresh done');
         }
     }
 
@@ -365,7 +397,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.startTask(taskId);
-        await this.refresh('network-only');
+        await this.mutationChan.put({
+            type: 'StartTask',
+            id: taskId,
+        });
+        // await this.refresh('network-only');
     };
 
     private onCompleteTaskClick = async (taskId: number): Promise<void> => {
