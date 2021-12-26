@@ -1,6 +1,6 @@
-import Task from './task';
+import { Task } from './task';
 
-export default interface PersonalStatus {
+export interface PersonalStatus {
     needAttentionTask?: Task;
     upcomingTasks: Task[];
     deliveredTasks: Task[];

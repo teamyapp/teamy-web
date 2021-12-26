@@ -8,7 +8,7 @@ import React, {
     ReactElement,
 } from 'react';
 import { IBoundingBoxFinder, Rect } from '../../entity/position';
-import Task from '../../entity/task';
+import { Task } from '../../entity/task';
 import { TaskAction } from '../../entity/taskAction';
 import { MaterialIconUI } from '../../ui/view/MaterialIcon';
 import { NamedValueUI } from '../../ui/view/NamedValue';

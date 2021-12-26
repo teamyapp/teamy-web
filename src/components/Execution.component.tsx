@@ -4,10 +4,10 @@ import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import { Unsubscribe } from 'redux';
 import { Deps } from '../deps';
-import PersonalStatus from '../entity/personalStatus';
+import { PersonalStatus } from '../entity/personalStatus';
 import * as events from '../entity/events';
 import { IBoundingBoxFinder } from '../entity/position';
-import Task from '../entity/task';
+import { Task } from '../entity/task';
 import { TaskAction } from '../entity/taskAction';
 import { TeamStatus } from '../entity/teamStatus';
 import { User } from '../entity/user';
@@ -52,7 +52,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
     private unsubscribe?: Unsubscribe;
     private readonly multiCaster: csp.Multicaster<events.MutationEvent>;
-    private readonly multiChan: csp.Channel<events.MutationEvent>;
+    private readonly mutationChan: csp.Channel<events.MutationEvent>;
     private readonly mutationListener: csp.Channel<
         events.MutationEvent | undefined
     >;
@@ -72,9 +72,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
         // Channels that communicates mutation events
         // source channel for putting mutation events
-        this.multiChan = csp.chan<events.MutationEvent>();
+        this.mutationChan = csp.chan<events.MutationEvent>();
         // a multicaster used to other components to subscribe the event
-        this.multiCaster = csp.multi<events.MutationEvent>(this.multiChan);
+        this.multiCaster = csp.multi<events.MutationEvent>(this.mutationChan);
         this.mutationListener = this.multiCaster.copy();
     }
 
@@ -158,7 +158,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 <TaskModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
-                    multiChan={this.multiChan}
+                    mutationChan={this.mutationChan}
                 />
                 {this.state.showPotentialTaskOwnersList && (
                     <div
@@ -357,7 +357,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         await this.props.deps.taskService.deleteTask(taskId);
-        await this.multiChan.put({
+        await this.mutationChan.put({
             type: 'TaskDelete',
             id: taskId,
         });

@@ -1,6 +1,6 @@
 import React, { Component, createRef } from 'react';
 import { Deps } from '../../../deps';
-import Team from '../../../entity/team';
+import { Team } from '../../../entity/team';
 import { User } from '../../../entity/user';
 import { ButtonUI } from '../../../ui/view/Button';
 import { MaterialIconUI } from '../../../ui/view/MaterialIcon';

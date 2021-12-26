@@ -1,6 +1,6 @@
 import React, { Component, createRef, ReactElement } from 'react';
 import { Deps } from '../../../deps';
-import Task from '../../../entity/task';
+import { Task } from '../../../entity/task';
 import { ButtonUI } from '../../../ui/view/Button';
 import { DatePickerUI } from '../../../ui/view/DatePicker';
 import { MarkdownEditorUI } from '../../../ui/view/MarkdownEditor';
@@ -15,14 +15,14 @@ import * as events from '../../../entity/events';
 
 interface IProps {
     deps: Deps;
-    multiChan: csp.Channel<events.MutationEvent>;
+    mutationChan: csp.Channel<events.MutationEvent>;
 }
 
 interface IState {
     task?: Task;
 }
 
-export class TaskModalComponent extends Component<any, IState> {
+export class TaskModalComponent extends Component<IProps, IState> {
     private modalRef = createRef<ModalUI>();
     private markdownEditorRef = createRef<MarkdownEditorUI>();
 
@@ -109,11 +109,11 @@ export class TaskModalComponent extends Component<any, IState> {
             const task = Object.assign({}, this.state.task, {
                 context: this.markdownEditorRef.current?.state.content,
             });
-            this.props.mutChan.put({
+            await this.props.mutationChan.put({
                 type: 'TaskUpdate',
                 id: this.state.task?.id,
                 goal: this.state.task.goal,
-                context: task.context,
+                context: task.context || '',
             });
             await this.props.deps.taskService.updateTask(task);
         }
