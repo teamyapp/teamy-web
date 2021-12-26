@@ -1,5 +1,6 @@
 import React, { Component, ReactElement } from 'react';
-import { User } from '../../entity/User';
+import { User } from '../../entity/user';
+import { FormatService } from '../../service/format.service';
 import { MaterialIconUI } from '../../ui/view/MaterialIcon';
 import styles from './SelectUserList.module.scss';
 import { UserProfileUI } from './UserProfile';
@@ -20,9 +21,6 @@ export class SelectUserListUI extends Component<IProps> {
     }
 
     public renderUser = (user: User, index: number): ReactElement => {
-        const name = `${user.firstName} ${
-            user.lastName && `${user.lastName![0].toUpperCase()}.`
-        }`;
         return (
             <div
                 className={styles.UserRow}
@@ -35,7 +33,9 @@ export class SelectUserListUI extends Component<IProps> {
                     )}
                 </div>
                 <UserProfileUI user={user} />
-                <div className={styles.Name}>{name}</div>
+                <div className={styles.Name}>
+                    {FormatService.getShortName(user.firstName, user.lastName)}
+                </div>
             </div>
         );
     };

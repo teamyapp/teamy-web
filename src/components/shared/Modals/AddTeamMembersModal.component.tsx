@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 import { Deps } from '../../../deps';
-import Team from '../../../entity/Team';
-import { Button } from '../../../ui/view/Button';
+import Team from '../../../entity/team';
+import { ButtonUI } from '../../../ui/view/Button';
 import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
 import { ModalUI } from '../../../ui/view/Modal';
 import { TextAreaUI } from '../../../ui/view/TextArea';
@@ -49,7 +49,10 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
                         />
                     </div>
                     <div className={styles.AddAction}>
-                        <Button label={'Add'} onClick={this.onAddButtonClick} />
+                        <ButtonUI
+                            label={'Add'}
+                            onClick={this.onAddButtonClick}
+                        />
                     </div>
                 </div>
             </ModalUI>

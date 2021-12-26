@@ -1,0 +1,62 @@
+@import '../../ui/styleguide/font';
+$divider: 2px solid #eeeeee;
+
+.Thread {
+    padding: 0 20px;
+
+    .Message {
+        @include primaryFont;
+        padding: 20px 0;
+        display: flex;
+
+        &:not(:first-child) {
+            border-top: $divider;
+        }
+
+        .LeftSection {
+            --profile-width: 40px;
+            --profile-height: 40px;
+        }
+
+        .RightSection {
+            margin-left: 10px;
+
+            .AuthorName {
+                font-weight: bold;
+            }
+
+            .MessageContent {
+                margin-top: 6px;
+            }
+
+            .MessagePostedAt {
+                margin-left: 10px;
+                font-size: 14px;
+                font-weight: bold;
+                color: #616161;
+            }
+        }
+    }
+
+    .Input {
+        padding-bottom: 20px;
+
+        .TextArea {
+            --border: #{3px solid #e0e0e0};
+            --font-size: 16px;
+            height: 120px;
+        }
+
+        .Actions {
+            margin-top: 14px;
+            display: flex;
+            justify-content: end;
+
+            .Save {
+                --width: 100px;
+                --background-color: #388e3c;
+                --border-color: #2e7d32;
+            }
+        }
+    }
+}

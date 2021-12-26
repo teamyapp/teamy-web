@@ -1,10 +1,10 @@
 import { ComponentStory } from '@storybook/react';
-import { Button } from './Button';
+import { ButtonUI } from './Button';
 
 import styles from './Button.stories.module.scss';
 
 export default {
-    component: Button,
+    component: ButtonUI,
     argTypes: {
         label: {
             control: 'text',
@@ -15,10 +15,10 @@ export default {
     },
 };
 
-const Template: ComponentStory<typeof Button> = ({ label, onClick }) => {
+const Template: ComponentStory<typeof ButtonUI> = ({ label, onClick }) => {
     return (
         <div className={styles.Box}>
-            <Button label={label} onClick={onClick} />
+            <ButtonUI label={label} onClick={onClick} />
         </div>
     );
 };
