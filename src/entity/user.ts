@@ -1,5 +1,5 @@
-import Task from './task';
-import Team from './team';
+import Task from './Task';
+import Team from './Team';
 
 export interface User {
     id: number;
@@ -7,7 +7,7 @@ export interface User {
     lastName?: string;
     profileUrl?: string;
     activeTeam?: Team;
-    teams?: Team[];
+    teams: Team[];
     upcomingTasks?: Task[];
     deliveredTasks?: Task[];
 }

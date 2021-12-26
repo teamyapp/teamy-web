@@ -1,5 +1,5 @@
-import { TaskAction } from './taskAction';
-import { User } from './user';
+import { TaskAction } from './TaskAction';
+import { User } from './User';
 
 export default interface Task {
     id: number;
