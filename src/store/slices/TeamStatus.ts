@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import TeamStatus from '../../entity/teamStatus';
+import { TeamStatus } from '../../entity/teamStatus';
 
 const initialState: TeamStatus = {
     upcomingTasks: [],

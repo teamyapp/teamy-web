@@ -1,7 +1,7 @@
 import React, { Component, ReactElement } from 'react';
 import { IBoundingBoxFinder } from '../../entity/position';
 import Task from '../../entity/task';
-import TeamStatus from '../../entity/teamStatus';
+import { TeamStatus } from '../../entity/teamStatus';
 import { User } from '../../entity/user';
 import { MaterialIconUI } from '../../ui/view/MaterialIcon';
 import { SectionUI } from '../../ui/view/Section';

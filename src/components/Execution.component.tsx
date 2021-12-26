@@ -9,7 +9,7 @@ import * as events from '../entity/events';
 import { IBoundingBoxFinder } from '../entity/position';
 import Task from '../entity/task';
 import { TaskAction } from '../entity/taskAction';
-import TeamStatus from '../entity/teamStatus';
+import { TeamStatus } from '../entity/teamStatus';
 import { User } from '../entity/user';
 import * as queries from '../service/queries';
 import { updatePersonalStatus } from '../store/slices/PersonalStatus';

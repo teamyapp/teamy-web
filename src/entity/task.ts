@@ -1,4 +1,4 @@
-import { TaskAction } from './TaskAction';
+import { TaskAction } from './taskAction';
 import { User } from './user';
 
 export default interface Task {
