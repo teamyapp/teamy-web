@@ -79,32 +79,49 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private async listenToMutation() {
+
+        // move all element in array1 that satisfy find to array2
+        // creating 2 new arrays
+        function moveTo<T>(array1: Array<T>, array2: Array<T>, find: (element: T) => boolean ): [Array<T>, Array<T>] {
+            let toBeMoved = array1.filter(find);
+            let newArray1 = array1.filter((ele) => !find(ele))
+            return [newArray1, array2.concat(toBeMoved)]
+        }
+
+        const chan = csp.chan<events.MutationEvent>();
+        (async () => {
+            // this coroutine handles network refresh only
+            // and each refresh takes place in order
+            while(true) {
+                let event = await chan.pop();
+                if(event === undefined) {
+                    return;
+                }
+                console.log(event.type, 'refresh done');
+                await this.refresh('network-only')
+                console.log(event.type, 'refresh done');
+            }
+        })();
+
         while (true) {
             let event = await this.mutationListener.pop();
-            if (event === undefined || event == undefined) {
+            if (event === undefined) {
                 return;
             }
             // do not care what events are received, refresh anyway
             console.log('mutation happened', event.type);
             if (event.type === 'StartTask') {
-                let task = this.state.teamStatus.upcomingTasks.find(
-                    (element) => element.id === event?.id,
-                );
-                if (task !== undefined) {
-                    let upcoming = this.state.teamStatus.upcomingTasks.filter(
-                        (element) => element.id !== event?.id,
-                    );
-                    let inProgress = [task].concat(
-                        this.state.teamStatus.inProgressTasks,
-                    );
-                    this.setState({
-                        teamStatus: {
-                            upcomingTasks: upcoming,
-                            inProgressTasks: inProgress,
-                            deliveredTasks: this.state.teamStatus.deliveredTasks,
-                        },
-                    });
-                }
+                let [upcomingTasks, inProgressTasks] = moveTo(
+                    this.state.teamStatus.upcomingTasks,
+                    this.state.teamStatus.inProgressTasks,
+                    (task) => task.id === event?.id)
+                this.setState({
+                    teamStatus: {
+                        upcomingTasks: upcomingTasks,
+                        inProgressTasks: inProgressTasks,
+                        deliveredTasks: this.state.teamStatus.deliveredTasks,
+                    },
+                });
             } else if (event.type === 'TaskDelete') {
                 let delivered = this.state.teamStatus.deliveredTasks.filter(
                     (element) => element.id !== event?.id,
@@ -116,9 +133,22 @@ export class ExecutionComponent extends Component<IProps, IState> {
                         deliveredTasks: delivered,
                     },
                 });
+            } else if (event.type === 'CompleteTask') {
+                let [inProgressTasks, deliveredTasks] = moveTo(
+                    this.state.teamStatus.inProgressTasks,
+                    this.state.teamStatus.deliveredTasks,
+                    (task) => task.id === event?.id)
+                this.setState({
+                    teamStatus: {
+                        upcomingTasks: this.state.teamStatus.upcomingTasks,
+                        inProgressTasks: inProgressTasks,
+                        deliveredTasks: deliveredTasks,
+                    },
+                });
             }
-            await this.refresh('network-only');
-            console.log(event.type, 'refresh done');
+            // after synchronized updates, do async network refresh
+            // do not await
+            chan.put(event);
         }
     }
 
@@ -388,25 +418,32 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
-        await this.props.deps.taskService.deleteTask(taskId);
-        await this.mutationChan.put({
+        // don't care if the consumer is ready to pop, no await
+        this.mutationChan.put({
             type: 'TaskDelete',
             id: taskId,
         });
+        await this.props.deps.taskService.deleteTask(taskId);
+        console.log('deleteTask done');
     };
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
-        await this.props.deps.taskService.startTask(taskId);
-        await this.mutationChan.put({
+        // don't care if the consumer is ready to pop, no await
+        this.mutationChan.put({
             type: 'StartTask',
             id: taskId,
         });
+        await this.props.deps.taskService.startTask(taskId);
         // await this.refresh('network-only');
     };
 
     private onCompleteTaskClick = async (taskId: number): Promise<void> => {
+        // don't care if the consumer is ready to pop, no await
+        this.mutationChan.put({
+            type: 'CompleteTask',
+            id: taskId,
+        });
         await this.props.deps.taskService.completeTask(taskId);
-        await this.refresh('network-only');
     };
 
     private onPersonalAddClick = async (): Promise<void> => {
