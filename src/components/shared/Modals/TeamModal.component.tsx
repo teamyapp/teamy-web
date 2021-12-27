@@ -2,7 +2,7 @@ import React, { Component, createRef } from 'react';
 import { Deps } from '../../../deps';
 import { Team } from '../../../entity/team';
 import { User } from '../../../entity/user';
-import { Button } from '../../../ui/view/Button';
+import { ButtonUI } from '../../../ui/view/Button';
 import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
 import { ModalUI } from '../../../ui/view/Modal';
 import { TabsUI } from '../../../ui/view/Tabs';
@@ -101,13 +101,13 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                         </div>
                         <div className={styles.ActionsSection}>
                             <div className={styles.SaveAction}>
-                                <Button
+                                <ButtonUI
                                     label={'Save'}
                                     onClick={this.onSaveTeamProfileClick}
                                 />
                             </div>
                             <div className={styles.DeleteTeamAction}>
-                                <Button
+                                <ButtonUI
                                     label={'Delete Team'}
                                     onClick={this.onDeleteTeamClick}
                                 />

@@ -1,7 +1,7 @@
 import React, { Component, createRef, ReactElement } from 'react';
 import { Deps } from '../../../deps';
 import { Task } from '../../../entity/task';
-import { Button } from '../../../ui/view/Button';
+import { ButtonUI } from '../../../ui/view/Button';
 import { DatePickerUI } from '../../../ui/view/DatePicker';
 import { MarkdownEditorUI } from '../../../ui/view/MarkdownEditor';
 import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
@@ -83,7 +83,7 @@ export class TaskModalComponent extends Component<IProps, IState> {
                                 </div>
                                 <div className={styles.Actions}>
                                     <div className={styles.SaveAction}>
-                                        <Button
+                                        <ButtonUI
                                             label={'Save'}
                                             onClick={this.onSaveButtonClick}
                                         />
