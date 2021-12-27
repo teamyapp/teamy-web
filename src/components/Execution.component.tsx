@@ -96,7 +96,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 if(event === undefined) {
                     return;
                 }
-                console.log(event.type, 'refresh done');
+                console.log(event.type, 'refresh start');
                 await this.refresh('network-only')
                 console.log(event.type, 'refresh done');
             }
