@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 import { Deps } from '../../../deps';
-import Team from '../../../entity/Team';
-import { User } from '../../../entity/User';
+import { Team } from '../../../entity/team';
+import { User } from '../../../entity/user';
 import { Button } from '../../../ui/view/Button';
 import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
 import { ModalUI } from '../../../ui/view/Modal';

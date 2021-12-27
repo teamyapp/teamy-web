@@ -1,6 +1,6 @@
 import React, { Component, createRef, ReactElement } from 'react';
 import { Deps } from '../../../deps';
-import Task from '../../../entity/Task';
+import { Task } from '../../../entity/task';
 import { Button } from '../../../ui/view/Button';
 import { DatePickerUI } from '../../../ui/view/DatePicker';
 import { MarkdownEditorUI } from '../../../ui/view/MarkdownEditor';

@@ -1,8 +1,8 @@
 import React, { Component, ReactElement } from 'react';
 import { IBoundingBoxFinder } from '../../entity/position';
-import Task from '../../entity/Task';
-import TeamStatus from '../../entity/TeamStatus';
-import { User } from '../../entity/User';
+import { Task } from '../../entity/task';
+import { TeamStatus } from '../../entity/teamStatus';
+import { User } from '../../entity/user';
 import { MaterialIconUI } from '../../ui/view/MaterialIcon';
 import { SectionUI } from '../../ui/view/Section';
 import styles from './Kanban.module.scss';
