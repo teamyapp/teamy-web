@@ -111,7 +111,7 @@ export class TaskModalComponent extends Component<IProps, IState> {
             });
             await this.props.mutationChan.put({
                 type: 'TaskUpdate',
-                id: this.state.task?.id,
+                taskId: this.state.task?.id,
                 goal: this.state.task.goal,
                 context: task.context || '',
             });

@@ -303,7 +303,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             console.log('received mutation', this.props.task.id);
             if (
                 event.type === 'TaskUpdate' &&
-                event.id === this.props.task.id
+                event.taskId === this.props.task.id
             ) {
                 const task = Object.assign({}, this.state.task, {
                     goal: event.goal,

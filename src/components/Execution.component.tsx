@@ -113,7 +113,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 let [upcomingTasks, inProgressTasks] = moveTo(
                     this.state.teamStatus.upcomingTasks,
                     this.state.teamStatus.inProgressTasks,
-                    (task) => task.id === event?.id)
+                    (task) => task.id === event?.taskId)
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
                         upcomingTasks: upcomingTasks,
@@ -122,7 +122,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 });
             } else if (event.type === 'TaskDelete') {
                 let delivered = this.state.teamStatus.deliveredTasks.filter(
-                    (element) => element.id !== event?.id,
+                    (element) => element.id !== event?.taskId,
                 );
                 this.setState({
                     teamStatus: {
@@ -135,7 +135,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 let [inProgressTasks, deliveredTasks] = moveTo(
                     this.state.teamStatus.inProgressTasks,
                     this.state.teamStatus.deliveredTasks,
-                    (task) => task.id === event?.id)
+                    (task) => task.id === event?.taskId)
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
                         inProgressTasks: inProgressTasks,
@@ -418,7 +418,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         // don't care if the consumer is ready to pop, no await
         this.mutationChan.put({
             type: 'TaskDelete',
-            id: taskId,
+            taskId: taskId,
         });
         await this.props.deps.taskService.deleteTask(taskId);
         console.log('deleteTask done');
@@ -428,7 +428,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         // don't care if the consumer is ready to pop, no await
         this.mutationChan.put({
             type: 'StartTask',
-            id: taskId,
+            taskId: taskId,
         });
         await this.props.deps.taskService.startTask(taskId);
     };
@@ -437,7 +437,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         // don't care if the consumer is ready to pop, no await
         this.mutationChan.put({
             type: 'CompleteTask',
-            id: taskId,
+            taskId: taskId,
         });
         await this.props.deps.taskService.completeTask(taskId);
     };
