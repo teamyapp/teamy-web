@@ -115,7 +115,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                         this.refreshState(data);
                         console.log('refresh done');
                     } else {
-                        console.log('refresh discarded');
+                        console.log('refresh discarded because new mutations happened in the mean time');
                     }
                 } else {
                     console.log('mutation channel is not empty');
