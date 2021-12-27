@@ -79,7 +79,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private async listenToMutation() {
-        // move all element in array1 that satisfies find to array2
+        // move all elements from array1 which meet the given condition into array2 
         // creating 2 new arrays
         function moveTo<T>(array1: Array<T>, array2: Array<T>, find: (element: T) => boolean ): [Array<T>, Array<T>] {
             let toBeMoved = array1.filter(find);
