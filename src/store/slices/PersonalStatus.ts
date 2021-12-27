@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import PersonalStatus from '../../entity/PersonalStatus';
-import Task from '../../entity/Task';
+import { PersonalStatus } from '../../entity/personalStatus';
+import { Task } from '../../entity/task';
 
 const initialState: PersonalStatus = {
     upcomingTasks: [],

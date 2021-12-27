@@ -3,8 +3,10 @@ import styles from './TextArea.module.scss';
 
 interface IProps {
     label?: string;
+    content?: string;
     placeholder?: string;
     onChange?: (content: string) => void;
+    onBlur?: () => void;
 }
 
 interface IState {
@@ -15,7 +17,7 @@ export class TextAreaUI extends Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            content: '',
+            content: props.content || '',
         };
     }
 
@@ -30,6 +32,7 @@ export class TextAreaUI extends Component<IProps, IState> {
                     value={this.state.content}
                     placeholder={this.props.placeholder}
                     onChange={this.onTextAreaContentChange}
+                    onBlur={this.props.onBlur}
                 />
             </div>
         );
@@ -37,6 +40,12 @@ export class TextAreaUI extends Component<IProps, IState> {
 
     public get content() {
         return this.state.content;
+    }
+
+    public set content(value: string) {
+        this.setState({
+            content: value,
+        });
     }
 
     private onTextAreaContentChange = (

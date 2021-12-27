@@ -6,7 +6,7 @@ interface IProps {
     onClick?: () => void;
 }
 
-export class Button extends Component<IProps> {
+export class ButtonUI extends Component<IProps> {
     render() {
         return (
             <div className={styles.Button} onClick={this.props.onClick}>

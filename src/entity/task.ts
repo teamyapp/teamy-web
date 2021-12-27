@@ -1,7 +1,7 @@
-import { TaskAction } from './TaskAction';
-import { User } from './User';
+import { TaskAction } from './taskAction';
+import { User } from './user';
 
-export default interface Task {
+export interface Task {
     id: number;
     goal: string;
     dueAt?: number;
