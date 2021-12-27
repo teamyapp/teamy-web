@@ -8,7 +8,7 @@ import PersonalStatus from '../entity/PersonalStatus';
 import * as events from '../entity/events';
 import { IBoundingBoxFinder } from '../entity/position';
 import Task from '../entity/Task';
-import {AllActions, TaskAction} from '../entity/TaskAction';
+import { AllActions, TaskAction } from '../entity/TaskAction';
 import TeamStatus from '../entity/TeamStatus';
 import { User } from '../entity/User';
 import * as queries from '../service/queries';
@@ -102,8 +102,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 // nor expose a public isEmpty / length method,
                 // to check if the channel is empty, it means to check if the channel is not ready to be consumed.
                 // todo: consider add synchronized versions of these methods
-                let result = await Promise.any([chan.ready(), Promise.resolve(null)])
-                if(result === null) {
+                let result = await Promise.any([
+                    chan.ready(),
+                    Promise.resolve(null),
+                ]);
+                if (result === null) {
                     // the channel is not ready therefore empty
                     console.log('mutation channel is empty');
                     console.log('refresh start');
@@ -111,12 +114,17 @@ export class ExecutionComponent extends Component<IProps, IState> {
                         fetchPolicy: 'network-only',
                         query: queries.mePage,
                     });
-                    let isEmpty = await Promise.any([chan.ready(), Promise.resolve(null)])
-                    if(isEmpty === null) {
+                    let isEmpty = await Promise.any([
+                        chan.ready(),
+                        Promise.resolve(null),
+                    ]);
+                    if (isEmpty === null) {
                         this.refreshState(data);
                         console.log('refresh done');
                     } else {
-                        console.log('refresh discarded because new mutations happened in the mean time');
+                        console.log(
+                            'refresh discarded because new mutations happened in the mean time',
+                        );
                     }
                 } else {
                     console.log('mutation channel is not empty');
@@ -127,19 +135,27 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 }
                 switch (event.type) {
                     case 'CreateTask':
-                        await this.props.deps.taskService.createTask(event.task);
+                        await this.props.deps.taskService.createTask(
+                            event.task,
+                        );
                         break;
                     case 'TaskDelete':
-                        await this.props.deps.taskService.deleteTask(event.taskId);
+                        await this.props.deps.taskService.deleteTask(
+                            event.taskId,
+                        );
                         break;
-                    case "StartTask":
-                        await this.props.deps.taskService.startTask(event.taskId);
+                    case 'StartTask':
+                        await this.props.deps.taskService.startTask(
+                            event.taskId,
+                        );
                         break;
-                    case "CompleteTask":
-                        await this.props.deps.taskService.completeTask(event.taskId);
+                    case 'CompleteTask':
+                        await this.props.deps.taskService.completeTask(
+                            event.taskId,
+                        );
                         break;
                 }
-                console.log(event.type, "done");
+                console.log(event.type, 'done');
             }
         })().then();
 
@@ -151,11 +167,14 @@ export class ExecutionComponent extends Component<IProps, IState> {
             }
             // do not care what events are received, refresh anyway
             console.log('mutation happened', event.type);
-            if(event.type === 'CreateTask') {
-                event.task.availableActions = AllActions
+            if (event.type === 'CreateTask') {
+                event.task.availableActions = AllActions;
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
-                        upcomingTasks: this.state.teamStatus.upcomingTasks.concat(event.task)
+                        upcomingTasks:
+                            this.state.teamStatus.upcomingTasks.concat(
+                                event.task,
+                            ),
                     }),
                 });
             } else if (event.type === 'StartTask') {
@@ -166,9 +185,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     (task) => task.id === taskId,
                     (task) => {
                         return Object.assign({}, task, {
-                            availableActions: AllActions
-                        })
-                    }
+                            availableActions: AllActions,
+                        });
+                    },
                 );
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
@@ -177,7 +196,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     }),
                 });
             } else if (event.type === 'TaskDelete') {
-                let taskId = event.taskId
+                let taskId = event.taskId;
                 let delivered = this.state.teamStatus.deliveredTasks.filter(
                     (element) => element.id !== taskId,
                 );
@@ -189,16 +208,16 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     },
                 });
             } else if (event.type === 'CompleteTask') {
-                let taskId = event.taskId
+                let taskId = event.taskId;
                 let [inProgressTasks, deliveredTasks] = moveTo(
                     this.state.teamStatus.inProgressTasks,
                     this.state.teamStatus.deliveredTasks,
                     (task) => task.id === taskId,
                     (task) => {
                         return Object.assign({}, task, {
-                            availableActions: AllActions
-                        })
-                    }
+                            availableActions: AllActions,
+                        });
+                    },
                 );
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
@@ -346,7 +365,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
             fetchPolicy: policy,
             query: queries.mePage,
         });
-        this.refreshState(data)
+        this.refreshState(data);
     }
     private refreshState(data: any) {
         if (data?.me?.activeTeam) {
@@ -469,14 +488,14 @@ export class ExecutionComponent extends Component<IProps, IState> {
         if (task.goal.length > 0) {
             await this.mutationChan.put({
                 type: 'CreateTask',
-                task: task
-            })
+                task: task,
+            });
         }
 
         // remove the adding task UI
         this.setState({
-            taskAdding: undefined
-        })
+            taskAdding: undefined,
+        });
     };
 
     private onUpdateTask = async (task: Task) => {
