@@ -1,54 +1,90 @@
 @import '../../../ui/styleguide/color';
 @import 'Modal.shared.module';
 
-$divider: 2px solid #eeeeee;
+$divider: 3px solid #eeeeee;
 
-.TaskDetail {
+.ModalContent {
     display: flex;
-    min-height: 500px;
+    flex-direction: column;
+    overflow-y: hidden;
 
-    --outline-color: #1976d2;
-    --border: 2px solid #{$secondaryColor};
-    --font-size: 18px;
+    .Title {
+        font-size: 20px;
+        font-weight: bold;
+    }
 
-    .LeftSection {
+    .TaskDetail {
+        display: flex;
         width: 800px;
-        padding: 20px;
 
-        .Context {
-            margin-top: 20px;
-            height: 200px;
+        --outline-color: #1976d2;
+        --border: 2px solid #{$secondaryColor};
+        --font-size: 18px;
+
+        .LeftSection {
+            flex: 1;
+            padding: 20px;
+            .Context {
+                margin-top: 20px;
+                height: 160px;
+            }
+        }
+
+        .RightSection {
+            width: 200px;
+            border-left: $divider;
+            overflow-y: auto;
+
+            .Attributes {
+                padding: 20px;
+
+                .Row {
+                    display: flex;
+
+                    &:not(:first-child) {
+                        margin-top: 10px;
+                    }
+
+                    .Effort {
+                        --color: #1976d2;
+                    }
+                }
+            }
+
+            .Actions {
+                padding: 20px;
+                border-top: $divider;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+
+                .SaveAction {
+                    --background-color: #388e3c;
+                    --border-color: #2e7d32;
+                }
+            }
         }
     }
 
-    .RightSection {
-        width: 200px;
-        border-left: $divider;
+    .CommentsSection {
+        border-top: $divider;
+        width: 100%;
+        background-color: white;
+        box-sizing: border-box;
+        overflow-y: hidden;
+        display: flex;
+        flex-direction: column;
+        padding: 20px 0;
 
-        .Attributes {
-            padding: 20px;
-
-            .Row {
-                display: flex;
-
-                &:not(:first-child) {
-                    margin-top: 10px;
-                }
-
-                .Effort {
-                    --color: #1976d2;
-                }
-            }
+        .Title {
+            margin-bottom: 20px;
+            padding: 0 20px;
         }
 
-        .Actions {
-            padding: 20px;
-            border-top: $divider;
-
-            .SaveAction {
-                --background-color: #388e3c;
-                --border-color: #2e7d32;
-            }
+        .Thread {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 20px;
         }
     }
 }

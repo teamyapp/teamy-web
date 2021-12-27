@@ -184,3 +184,21 @@ export const teamsWithMembers = gql`
         }
     }
 `;
+
+export const taskComments = gql`
+    query comments($taskId: ID!) {
+        task(id: $taskId) {
+            comments {
+                id
+                content
+                commenter {
+                    id
+                    firstName
+                    lastName
+                    profileUrl
+                }
+                createdAt
+            }
+        }
+    }
+`;

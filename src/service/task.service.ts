@@ -41,7 +41,7 @@ export class TaskService {
     public deleteTask(taskId: number): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: mutations.deleteTask,
-            variables: { id: `${taskId}` },
+            variables: { taskId: taskId },
         });
     }
 

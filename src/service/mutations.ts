@@ -14,8 +14,8 @@ export const updateTask = gql`
     }
 `;
 export const deleteTask = gql`
-    mutation deleteTask($id: ID!) {
-        deleteTask(taskId: $id) {
+    mutation deleteTask($taskId: ID!) {
+        deleteTask(taskId: $taskId) {
             id
         }
     }
@@ -70,6 +70,35 @@ export const addTeamMember = gql`
                     members {
                         id
                     }
+                }
+            }
+        }
+    }
+`;
+
+export const createComment = gql`
+    mutation createComment($taskId: ID!, $content: String!) {
+        createComment(taskId: $taskId, content: $content) {
+            id
+        }
+    }
+`;
+
+export const deleteComment = gql`
+    mutation deleteComment($commentId: ID!) {
+        comment(id: $commentId) {
+            delete {
+                id
+            }
+        }
+    }
+`;
+export const updateComment = gql`
+    mutation updateComment($commentId: ID!, $content: String!) {
+        comment(id: $commentId) {
+            updateContent(content: $content) {
+                comment {
+                    id
                 }
             }
         }

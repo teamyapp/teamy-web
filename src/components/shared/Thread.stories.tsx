@@ -85,7 +85,7 @@ const Template: ComponentStory<typeof ThreadUI> = ({
     messages,
     editorUserId,
     onPostMessage,
-    onEditMessage,
+    onUpdateMessage,
     onDeleteMessage,
 }) => {
     return (
@@ -94,7 +94,7 @@ const Template: ComponentStory<typeof ThreadUI> = ({
                 messages={messages}
                 editorUserId={editorUserId}
                 onPostMessage={onPostMessage}
-                onEditMessage={onEditMessage}
+                onUpdateMessage={onUpdateMessage}
                 onDeleteMessage={onDeleteMessage}
             />
         </div>
