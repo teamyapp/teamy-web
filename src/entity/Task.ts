@@ -7,7 +7,5 @@ export default interface Task {
     dueAt?: number;
     context?: string;
     owner?: User;
-    effort?: number;
-    numOfUnknowns?: number;
     availableActions: TaskAction[];
 }

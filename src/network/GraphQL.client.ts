@@ -31,7 +31,7 @@ export class GraphQLClient {
             // suggestion: errors can be pushed to a channel
             // and we can handle errors in a coroutine as well
             // we can have 1 global error channel that an Error Alert Component subscribes to
-            console.info(result.errors)
+            console.error(result.errors)
         }
         return result.data;
     }

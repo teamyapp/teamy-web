@@ -8,7 +8,7 @@ import PersonalStatus from '../entity/PersonalStatus';
 import * as events from '../entity/events';
 import { IBoundingBoxFinder } from '../entity/position';
 import Task from '../entity/Task';
-import { TaskAction } from '../entity/TaskAction';
+import {AllActions, TaskAction} from '../entity/TaskAction';
 import TeamStatus from '../entity/TeamStatus';
 import { User } from '../entity/User';
 import * as queries from '../service/queries';
@@ -85,10 +85,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
             array1: Array<T>,
             array2: Array<T>,
             find: (element: T) => boolean,
+            transform: (element: T) => T,
         ): [Array<T>, Array<T>] {
             let toBeMoved = array1.filter(find);
             let newArray1 = array1.filter((ele) => !find(ele));
-            return [newArray1, array2.concat(toBeMoved)];
+            return [newArray1, array2.concat(toBeMoved.map(transform))];
         }
 
         const chan = csp.chan<events.MutationEvent>();
@@ -127,9 +128,15 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 switch (event.type) {
                     case 'TaskDelete':
                         await this.props.deps.taskService.deleteTask(event.taskId);
-                        console.log('deleteTask done');
+                        break;
+                    case "StartTask":
+                        await this.props.deps.taskService.startTask(event.taskId);
+                        break;
+                    case "CompleteTask":
+                        await this.props.deps.taskService.completeTask(event.taskId);
                         break;
                 }
+                console.log(event.type, event.taskId, "done");
             }
         })().then();
 
@@ -145,6 +152,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     this.state.teamStatus.upcomingTasks,
                     this.state.teamStatus.inProgressTasks,
                     (task) => task.id === event?.taskId,
+                    (task) => {
+                        return Object.assign({}, task, {
+                            availableActions: AllActions
+                        })
+                    }
                 );
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
@@ -168,6 +180,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     this.state.teamStatus.inProgressTasks,
                     this.state.teamStatus.deliveredTasks,
                     (task) => task.id === event?.taskId,
+                    (task) => {
+                        return Object.assign({}, task, {
+                            availableActions: AllActions
+                        })
+                    }
                 );
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
@@ -464,7 +481,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
             type: 'StartTask',
             taskId: taskId,
         });
-        await this.props.deps.taskService.startTask(taskId);
     };
 
     private onCompleteTaskClick = async (taskId: number): Promise<void> => {
@@ -473,7 +489,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
             type: 'CompleteTask',
             taskId: taskId,
         });
-        await this.props.deps.taskService.completeTask(taskId);
     };
 
     private onPersonalAddClick = async (): Promise<void> => {

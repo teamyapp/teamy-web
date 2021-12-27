@@ -84,16 +84,16 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                             {new Date(this.state.task.dueAt).toLocaleString()}
                         </div>
                     )}
-                    <div className={styles.Attributes}>
-                        {this.state.task.effort && (
-                            <span className={styles.EffortAttribute}>
-                                <NamedValueUI
-                                    name={'Effort'}
-                                    value={`${this.state.task.effort}`}
-                                />
-                            </span>
-                        )}
-                    </div>
+                    {/*<div className={styles.Attributes}>*/}
+                    {/*    {this.state.task.effort && (*/}
+                    {/*        <span className={styles.EffortAttribute}>*/}
+                    {/*            <NamedValueUI*/}
+                    {/*                name={'Effort'}*/}
+                    {/*                value={`${this.state.task.effort}`}*/}
+                    {/*            />*/}
+                    {/*        </span>*/}
+                    {/*    )}*/}
+                    {/*</div>*/}
                 </div>
                 {this.state.task.availableActions && (
                     <div className={styles.ActionsSection}>

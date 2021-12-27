@@ -72,13 +72,13 @@ export class TaskModalComponent extends Component<IProps, IState> {
                                     <div
                                         className={`${styles.Row} ${styles.Effort}`}
                                     >
-                                        <NamedValueUI
-                                            name={'Effort'}
-                                            value={`${
-                                                this.state.task.effort ||
-                                                'Unknown'
-                                            }`}
-                                        />
+                                        {/*<NamedValueUI*/}
+                                        {/*    name={'Effort'}*/}
+                                        {/*    value={`${*/}
+                                        {/*        this.state.task.effort ||*/}
+                                        {/*        'Unknown'*/}
+                                        {/*    }`}*/}
+                                        {/*/>*/}
                                     </div>
                                 </div>
                                 <div className={styles.Actions}>
