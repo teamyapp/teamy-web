@@ -79,28 +79,59 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private async listenToMutation() {
-        // move all elements from array1 which meet the given condition into array2 
+        // move all elements from array1 which meet the given condition into array2
         // creating 2 new arrays
-        function moveTo<T>(array1: Array<T>, array2: Array<T>, find: (element: T) => boolean ): [Array<T>, Array<T>] {
+        function moveTo<T>(
+            array1: Array<T>,
+            array2: Array<T>,
+            find: (element: T) => boolean,
+        ): [Array<T>, Array<T>] {
             let toBeMoved = array1.filter(find);
-            let newArray1 = array1.filter((ele) => !find(ele))
-            return [newArray1, array2.concat(toBeMoved)]
+            let newArray1 = array1.filter((ele) => !find(ele));
+            return [newArray1, array2.concat(toBeMoved)];
         }
 
         const chan = csp.chan<events.MutationEvent>();
         (async () => {
             // this coroutine handles network refresh only
             // and each refresh takes place in order
-            while(true) {
+            while (true) {
+                // check if the channel is empty.
+                // because csp.Channel does not expose the internal buffer
+                // nor expose a public isEmpty / length method,
+                // to check if the channel is empty, it means to check if the channel is not ready to be consumed.
+                // todo: consider add synchronized versions of these methods
+                let result = await Promise.any([chan.ready(), Promise.resolve(null)])
+                if(result === null) {
+                    // the channel is not ready therefore empty
+                    console.log('mutation channel is empty');
+                    console.log('refresh start');
+                    const data = await this.props.deps.graphql.query({
+                        fetchPolicy: 'network-only',
+                        query: queries.mePage,
+                    });
+                    let isEmpty = await Promise.any([chan.ready(), Promise.resolve(null)])
+                    if(isEmpty === null) {
+                        this.refreshState(data);
+                        console.log('refresh done');
+                    } else {
+                        console.log('refresh discarded');
+                    }
+                } else {
+                    console.log('mutation channel is not empty');
+                }
                 let event = await chan.pop();
-                if(event === undefined) {
+                if (event === undefined) {
                     return;
                 }
-                console.log(event.type, 'refresh start');
-                await this.refresh('network-only')
-                console.log(event.type, 'refresh done');
+                switch (event.type) {
+                    case 'TaskDelete':
+                        await this.props.deps.taskService.deleteTask(event.taskId);
+                        console.log('deleteTask done');
+                        break;
+                }
             }
-        })();
+        })().then();
 
         while (true) {
             let event = await this.mutationListener.pop();
@@ -113,12 +144,13 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 let [upcomingTasks, inProgressTasks] = moveTo(
                     this.state.teamStatus.upcomingTasks,
                     this.state.teamStatus.inProgressTasks,
-                    (task) => task.id === event?.taskId)
+                    (task) => task.id === event?.taskId,
+                );
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
                         upcomingTasks: upcomingTasks,
                         inProgressTasks: inProgressTasks,
-                    })
+                    }),
                 });
             } else if (event.type === 'TaskDelete') {
                 let delivered = this.state.teamStatus.deliveredTasks.filter(
@@ -135,7 +167,8 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 let [inProgressTasks, deliveredTasks] = moveTo(
                     this.state.teamStatus.inProgressTasks,
                     this.state.teamStatus.deliveredTasks,
-                    (task) => task.id === event?.taskId)
+                    (task) => task.id === event?.taskId,
+                );
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
                         inProgressTasks: inProgressTasks,
@@ -282,7 +315,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
             fetchPolicy: policy,
             query: queries.mePage,
         });
-        if (data.me.activeTeam) {
+        this.refreshState(data)
+    }
+    private refreshState(data: any) {
+        if (data?.me?.activeTeam) {
             store.dispatch(
                 updatePersonalStatus({
                     needAttentionTask:
@@ -420,8 +456,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
             type: 'TaskDelete',
             taskId: taskId,
         });
-        await this.props.deps.taskService.deleteTask(taskId);
-        console.log('deleteTask done');
     };
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
