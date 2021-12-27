@@ -126,6 +126,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     return;
                 }
                 switch (event.type) {
+                    case 'CreateTask':
+                        await this.props.deps.taskService.createTask(event.task);
+                        break;
                     case 'TaskDelete':
                         await this.props.deps.taskService.deleteTask(event.taskId);
                         break;
@@ -136,10 +139,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
                         await this.props.deps.taskService.completeTask(event.taskId);
                         break;
                 }
-                console.log(event.type, event.taskId, "done");
+                console.log(event.type, "done");
             }
         })().then();
 
+        // synchronized part of mutation listener
         while (true) {
             let event = await this.mutationListener.pop();
             if (event === undefined) {
@@ -147,11 +151,19 @@ export class ExecutionComponent extends Component<IProps, IState> {
             }
             // do not care what events are received, refresh anyway
             console.log('mutation happened', event.type);
-            if (event.type === 'StartTask') {
+            if(event.type === 'CreateTask') {
+                event.task.availableActions = AllActions
+                this.setState({
+                    teamStatus: Object.assign({}, this.state.teamStatus, {
+                        upcomingTasks: this.state.teamStatus.upcomingTasks.concat(event.task)
+                    }),
+                });
+            } else if (event.type === 'StartTask') {
+                let taskId = event.taskId;
                 let [upcomingTasks, inProgressTasks] = moveTo(
                     this.state.teamStatus.upcomingTasks,
                     this.state.teamStatus.inProgressTasks,
-                    (task) => task.id === event?.taskId,
+                    (task) => task.id === taskId,
                     (task) => {
                         return Object.assign({}, task, {
                             availableActions: AllActions
@@ -165,8 +177,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     }),
                 });
             } else if (event.type === 'TaskDelete') {
+                let taskId = event.taskId
                 let delivered = this.state.teamStatus.deliveredTasks.filter(
-                    (element) => element.id !== event?.taskId,
+                    (element) => element.id !== taskId,
                 );
                 this.setState({
                     teamStatus: {
@@ -176,10 +189,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     },
                 });
             } else if (event.type === 'CompleteTask') {
+                let taskId = event.taskId
                 let [inProgressTasks, deliveredTasks] = moveTo(
                     this.state.teamStatus.inProgressTasks,
                     this.state.teamStatus.deliveredTasks,
-                    (task) => task.id === event?.taskId,
+                    (task) => task.id === taskId,
                     (task) => {
                         return Object.assign({}, task, {
                             availableActions: AllActions
@@ -453,13 +467,16 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onCreateTask = async (task: Task): Promise<void> => {
         if (task.goal.length > 0) {
-            await this.props.deps.taskService.createTask(task);
-            await this.refresh('network-only');
+            await this.mutationChan.put({
+                type: 'CreateTask',
+                task: task
+            })
         }
 
+        // remove the adding task UI
         this.setState({
-            taskAdding: undefined,
-        });
+            taskAdding: undefined
+        })
     };
 
     private onUpdateTask = async (task: Task) => {

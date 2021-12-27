@@ -8,5 +8,9 @@ export enum TaskAction {
 }
 
 export const AllActions = [
-    TaskAction.Start, TaskAction.Delete, TaskAction.AssignOwner, TaskAction.MarkComplete, TaskAction.ViewDetail
-]
+    TaskAction.Start,
+    TaskAction.Delete,
+    TaskAction.AssignOwner,
+    TaskAction.MarkComplete,
+    TaskAction.ViewDetail,
+];
