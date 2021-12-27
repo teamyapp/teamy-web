@@ -6,7 +6,7 @@ import { DatePickerUI } from '../../../ui/view/DatePicker';
 import { MarkdownEditorUI } from '../../../ui/view/MarkdownEditor';
 import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
 import { ModalUI } from '../../../ui/view/Modal';
-import { NamedValueUI } from '../../../ui/view/NamedValue';
+// import { NamedValueUI } from '../../../ui/view/NamedValue';
 import { TextFieldUI } from '../../../ui/view/TextField';
 import * as csp from '@creatcodebuild/csp';
 
