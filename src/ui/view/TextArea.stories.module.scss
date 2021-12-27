@@ -1,5 +1,7 @@
+@import '../styleguide/font';
+
 .Box {
-    font-family: -apple-system, sans-serif;
+    @include primaryFont;
     margin: 0;
     display: flex;
     width: 700px;

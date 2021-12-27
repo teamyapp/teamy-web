@@ -7,7 +7,7 @@ export interface User {
     lastName?: string;
     profileUrl?: string;
     activeTeam?: Team;
-    teams: Team[];
+    teams?: Team[];
     upcomingTasks?: Task[];
     deliveredTasks?: Task[];
 }

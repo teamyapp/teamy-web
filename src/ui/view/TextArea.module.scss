@@ -3,6 +3,7 @@
 $fontSize: var(--font-size, 20px);
 $outlineColor: var(--outline-color, #1976d2);
 $border: var(--border, #{2px solid $secondaryColor});
+$backgroundColor: var(--background-color, white);
 $width: var(--width, 100%);
 $height: var(--height, 100%);
 
@@ -38,5 +39,6 @@ $height: var(--height, 100%);
         padding: 10px;
         margin: 0;
         resize: none;
+        background-color: $backgroundColor;
     }
 }
