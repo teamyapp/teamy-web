@@ -137,11 +137,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     this.state.teamStatus.deliveredTasks,
                     (task) => task.id === event?.id)
                 this.setState({
-                    teamStatus: {
-                        upcomingTasks: this.state.teamStatus.upcomingTasks,
+                    teamStatus: Object.assign({}, this.state.teamStatus, {
                         inProgressTasks: inProgressTasks,
                         deliveredTasks: deliveredTasks,
-                    },
+                    }),
                 });
             }
             // after synchronized updates, do async network refresh
