@@ -1,6 +1,6 @@
-import { User } from './User';
+import { User } from './user';
 
-export default interface Team {
+export interface Team {
     id: number;
     name: string;
     iconUrl: string;

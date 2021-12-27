@@ -1,8 +1,8 @@
 import React, { Component, ReactElement } from 'react';
 import { Deps } from '../../deps';
-import PersonalStatus from '../../entity/PersonalStatus';
+import { PersonalStatus } from '../../entity/personalStatus';
 import { IBoundingBoxFinder } from '../../entity/position';
-import Task from '../../entity/Task';
+import { Task } from '../../entity/task';
 import { MaterialIconUI } from '../../ui/view/MaterialIcon';
 import { SectionUI } from '../../ui/view/Section';
 import styles from './Personal.module.scss';

@@ -3,10 +3,10 @@ import { getEnvironment } from './env/environment';
 import { IdentityClient } from './identity/Identity.client';
 import { GraphQLClient } from './network/GraphQL.client';
 import { FetchHTTPClient } from './network/FetchHTTP.client';
-import { StatusService } from './service/Status.service';
-import { TaskService } from './service/Task.service';
-import { TeamService } from './service/Team.service';
-import { UserService } from './service/User.service';
+import { StatusService } from './service/status.service';
+import { TaskService } from './service/task.service';
+import { TeamService } from './service/team.service';
+import { UserService } from './service/user.service';
 
 export interface Deps {
     taskService: TaskService;
