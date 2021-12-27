@@ -300,7 +300,6 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             if (event === undefined) {
                 return;
             }
-            console.log('received mutation', this.props.task.id);
             if (
                 event.type === 'TaskUpdate' &&
                 event.taskId === this.props.task.id
