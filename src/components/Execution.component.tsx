@@ -115,11 +115,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     this.state.teamStatus.inProgressTasks,
                     (task) => task.id === event?.id)
                 this.setState({
-                    teamStatus: {
+                    teamStatus: Object.assign({}, this.state.teamStatus, {
                         upcomingTasks: upcomingTasks,
                         inProgressTasks: inProgressTasks,
-                        deliveredTasks: this.state.teamStatus.deliveredTasks,
-                    },
+                    })
                 });
             } else if (event.type === 'TaskDelete') {
                 let delivered = this.state.teamStatus.deliveredTasks.filter(
