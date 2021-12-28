@@ -6,3 +6,11 @@ export enum TaskAction {
     MarkComplete = 'MARK_COMPLETE',
     ViewDetail = 'VIEW_DETAIL',
 }
+
+export const AllActions = [
+    TaskAction.Start,
+    TaskAction.Delete,
+    TaskAction.AssignOwner,
+    TaskAction.MarkComplete,
+    TaskAction.ViewDetail,
+];

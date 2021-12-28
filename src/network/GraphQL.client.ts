@@ -26,6 +26,13 @@ export class GraphQLClient {
     async mutate(options: MutationOptions): Promise<any> {
         options.errorPolicy = 'all';
         const result = await this.client.mutate(options);
+        if (result.errors) {
+            // todo: should handle errors
+            // suggestion: errors can be pushed to a channel
+            // and we can handle errors in a coroutine as well
+            // we can have 1 global error channel that an Error Alert Component subscribes to
+            console.error(result.errors);
+        }
         return result.data;
     }
 

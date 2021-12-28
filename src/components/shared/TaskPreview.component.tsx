@@ -11,7 +11,7 @@ import { IBoundingBoxFinder, Rect } from '../../entity/position';
 import { Task } from '../../entity/task';
 import { TaskAction } from '../../entity/taskAction';
 import { MaterialIconUI } from '../../ui/view/MaterialIcon';
-import { NamedValueUI } from '../../ui/view/NamedValue';
+// import { NamedValueUI } from '../../ui/view/NamedValue';
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
 import * as csp from '@creatcodebuild/csp';
@@ -84,16 +84,16 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                             {new Date(this.state.task.dueAt).toLocaleString()}
                         </div>
                     )}
-                    <div className={styles.Attributes}>
-                        {this.state.task.effort && (
-                            <span className={styles.EffortAttribute}>
-                                <NamedValueUI
-                                    name={'Effort'}
-                                    value={`${this.state.task.effort}`}
-                                />
-                            </span>
-                        )}
-                    </div>
+                    {/*<div className={styles.Attributes}>*/}
+                    {/*    {this.state.task.effort && (*/}
+                    {/*        <span className={styles.EffortAttribute}>*/}
+                    {/*            <NamedValueUI*/}
+                    {/*                name={'Effort'}*/}
+                    {/*                value={`${this.state.task.effort}`}*/}
+                    {/*            />*/}
+                    {/*        </span>*/}
+                    {/*    )}*/}
+                    {/*</div>*/}
                 </div>
                 {this.state.task.availableActions && (
                     <div className={styles.ActionsSection}>
@@ -300,10 +300,9 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             if (event === undefined) {
                 return;
             }
-            console.log('received mutation', this.props.task.id);
             if (
                 event.type === 'TaskUpdate' &&
-                event.id === this.props.task.id
+                event.taskId === this.props.task.id
             ) {
                 const task = Object.assign({}, this.state.task, {
                     goal: event.goal,

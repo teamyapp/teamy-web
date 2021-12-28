@@ -9,7 +9,7 @@ import { DatePickerUI } from '../../../ui/view/DatePicker';
 import { MarkdownEditorUI } from '../../../ui/view/MarkdownEditor';
 import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
 import { ModalUI } from '../../../ui/view/Modal';
-import { NamedValueUI } from '../../../ui/view/NamedValue';
+// import { NamedValueUI } from '../../../ui/view/NamedValue';
 import { TextFieldUI } from '../../../ui/view/TextField';
 import { ThreadUI } from '../Thread';
 
@@ -90,13 +90,13 @@ export class TaskModalComponent extends Component<IProps, IState> {
                                     <div
                                         className={`${styles.Row} ${styles.Effort}`}
                                     >
-                                        <NamedValueUI
-                                            name={'Effort'}
-                                            value={`${
-                                                this.state.task.effort ||
-                                                'Unknown'
-                                            }`}
-                                        />
+                                        {/*<NamedValueUI*/}
+                                        {/*    name={'Effort'}*/}
+                                        {/*    value={`${*/}
+                                        {/*        this.state.task.effort ||*/}
+                                        {/*        'Unknown'*/}
+                                        {/*    }`}*/}
+                                        {/*/>*/}
                                     </div>
                                 </div>
                                 <div className={styles.Actions}>
@@ -170,7 +170,7 @@ export class TaskModalComponent extends Component<IProps, IState> {
             });
             await this.props.mutationChan.put({
                 type: 'TaskUpdate',
-                id: this.state.task?.id,
+                taskId: this.state.task?.id,
                 goal: this.state.task.goal,
                 context: task.context || '',
             });
