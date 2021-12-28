@@ -15,6 +15,8 @@ import { ThreadUI } from '../Thread';
 
 import styles from './TaskModal.component.module.scss';
 
+const verticalMargin = 40;
+
 interface IProps {
     deps: Deps;
     mutationChan: csp.Channel<events.MutationEvent>;
@@ -43,22 +45,24 @@ export class TaskModalComponent extends Component<IProps, IState> {
     public render(): ReactElement {
         return (
             <ModalUI ref={this.modalRef}>
-                <div
-                    className={styles.ModalContent}
-                    style={{
-                        height: this.state.heightWithMargin - 80,
-                    }}
-                >
-                    <div className={styles.Header}>
-                        Task #{this.state.task?.id}
-                        <div
-                            className={styles.CloseButton}
-                            onClick={this.onCloseButtonClick}
-                        >
-                            <MaterialIconUI>cancel</MaterialIconUI>
+                {this.state.task && (
+                    <div
+                        className={styles.ModalContent}
+                        style={{
+                            height:
+                                this.state.heightWithMargin -
+                                2 * verticalMargin,
+                        }}
+                    >
+                        <div className={styles.Header}>
+                            Task #{this.state.task?.id}
+                            <div
+                                className={styles.CloseButton}
+                                onClick={this.onCloseButtonClick}
+                            >
+                                <MaterialIconUI>cancel</MaterialIconUI>
+                            </div>
                         </div>
-                    </div>
-                    {this.state.task && (
                         <div className={styles.TaskDetail}>
                             <div className={styles.LeftSection}>
                                 <TextFieldUI
@@ -105,8 +109,7 @@ export class TaskModalComponent extends Component<IProps, IState> {
                                 </div>
                             </div>
                         </div>
-                    )}
-                    {this.state.task && (
+                        )
                         <div className={styles.CommentsSection}>
                             <div className={styles.Title}>
                                 Comments&nbsp;({this.state.comments.length})
@@ -125,8 +128,8 @@ export class TaskModalComponent extends Component<IProps, IState> {
                                 />
                             </div>
                         </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </ModalUI>
         );
     }

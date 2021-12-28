@@ -13,8 +13,7 @@ const initialMessages: Message[] = [
             lastName: 'Wang',
             profileUrl: 'profiles/boy1.png',
         },
-        content: `
-        Originally, we design task to be able to belong to multiple teams because at that time, we treat Kanban as a place and a task can be put to many places`,
+        content: `Originally, we design task to be able to belong to multiple teams because at that time, we treat Kanban as a place and a task can be put to many places`,
         createdAt: new Date(2020, 11, 20, 9, 52, 0),
     },
     {
