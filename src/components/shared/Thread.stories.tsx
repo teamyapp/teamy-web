@@ -58,7 +58,7 @@ const initialMessages: Message[] = [
             profileUrl: 'profiles/girl1.png',
         },
         content: `I agree`,
-        createdAt: new Date(2021, 11, 26, 9, 52, 0),
+        createdAt: new Date(2021, 11, 28, 9, 52, 0),
     },
 ];
 
