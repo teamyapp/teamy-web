@@ -22,7 +22,8 @@ export class CommentService {
                 fetchPolicy: fetchPolicy,
             })
             .then((payload: any) => {
-                return payload?.task?.comments?.map((comment: any) => {
+                const comments = payload?.task?.comments || [];
+                return comments.map((comment: any) => {
                     return {
                         id: comment?.id || -1,
                         author: comment?.commenter,
