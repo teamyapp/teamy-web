@@ -198,14 +198,17 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 });
             } else if (event.type === 'TaskDelete') {
                 let taskId = event.taskId;
-                let delivered = this.state.teamStatus.deliveredTasks.filter(
-                    (element) => element.id !== taskId,
-                );
                 this.setState({
                     teamStatus: {
-                        upcomingTasks: this.state.teamStatus.upcomingTasks,
-                        inProgressTasks: this.state.teamStatus.inProgressTasks,
-                        deliveredTasks: delivered,
+                        upcomingTasks:this.state.teamStatus.upcomingTasks.filter(
+                            (element) => element.id !== taskId,
+                        ),
+                        inProgressTasks: this.state.teamStatus.inProgressTasks.filter(
+                            (element) => element.id !== taskId,
+                        ),
+                        deliveredTasks: this.state.teamStatus.deliveredTasks.filter(
+                            (element) => element.id !== taskId,
+                        ),
                     },
                 });
             } else if (event.type === 'CompleteTask') {
