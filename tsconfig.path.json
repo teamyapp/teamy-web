@@ -2,6 +2,7 @@
     "compilerOptions": {
         "baseUrl": "./src",
         "paths": {
+            "@*": ["*"],
             "@entity/*": ["entity/*"],
             "@env/*": ["env/*"],
             "@config/*": ["config/*"],
@@ -10,8 +11,7 @@
             "@ext/*": ["libs/ext/*"],
             "@ui/*": ["libs/ui/*"],
             "@network/*": ["libs/network/*"],
-            "@identity/*": ["libs/identity/*"],
-            "@*": ["*"]
+            "@identity/*": ["libs/identity/*"]
         }
     }
 }
