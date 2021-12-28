@@ -8,7 +8,7 @@ import { PersonalStatus } from '@entity/personalStatus';
 import * as events from '../entity/events';
 import { IBoundingBoxFinder } from '@entity/position';
 import { Task } from '@entity/task';
-import { TaskAction } from '@entity/taskAction';
+import { AllActions, TaskAction } from '@entity/taskAction';
 import { TeamStatus } from '@entity/teamStatus';
 import { User } from '@entity/user';
 import * as queries from '../service/queries';
@@ -79,14 +79,162 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private async listenToMutation() {
+        // move all elements from array1 which meet the given condition into array2
+        // creating 2 new arrays
+        function moveTo<T>(
+            array1: Array<T>,
+            array2: Array<T>,
+            find: (element: T) => boolean,
+            transform: (element: T) => T,
+        ): [Array<T>, Array<T>] {
+            let toBeMoved = array1.filter(find);
+            let newArray1 = array1.filter((ele) => !find(ele));
+            return [newArray1, array2.concat(toBeMoved.map(transform))];
+        }
+
+        const chan = csp.chan<events.MutationEvent>();
+        (async () => {
+            // this coroutine handles network refresh only
+            // and each refresh takes place in order
+            while (true) {
+                // check if the channel is empty.
+                // because csp.Channel does not expose the internal buffer
+                // nor expose a public isEmpty / length method,
+                // to check if the channel is empty, it means to check if the channel is not ready to be consumed.
+                // TODO: consider adding synchronized versions of these methods
+                let result = await Promise.any([
+                    chan.ready(),
+                    Promise.resolve(null),
+                ]);
+                if (result === null) {
+                    // the channel is not ready therefore empty
+                    console.log('mutation channel is empty');
+                    console.log('refresh start');
+                    const data = await this.props.deps.graphql.query({
+                        fetchPolicy: 'network-only',
+                        query: queries.mePage,
+                    });
+                    let isEmpty = await Promise.any([
+                        chan.ready(),
+                        Promise.resolve(null),
+                    ]);
+                    if (isEmpty === null) {
+                        this.refreshState(data);
+                        console.log('refresh done');
+                    } else {
+                        console.log(
+                            'refresh discarded because new mutations happened in the mean time',
+                        );
+                    }
+                } else {
+                    console.log('mutation channel is not empty');
+                }
+                let event = await chan.pop();
+                if (event === undefined) {
+                    return;
+                }
+                switch (event.type) {
+                    case 'CreateTask':
+                        await this.props.deps.taskService.createTask(
+                            event.task,
+                        );
+                        break;
+                    case 'TaskDelete':
+                        await this.props.deps.taskService.deleteTask(
+                            event.taskId,
+                        );
+                        break;
+                    case 'StartTask':
+                        await this.props.deps.taskService.startTask(
+                            event.taskId,
+                        );
+                        break;
+                    case 'CompleteTask':
+                        await this.props.deps.taskService.completeTask(
+                            event.taskId,
+                        );
+                        break;
+                }
+                console.log(event.type, 'done');
+            }
+        })().then();
+
+        // synchronized part of mutation listener
         while (true) {
             let event = await this.mutationListener.pop();
             if (event === undefined) {
                 return;
             }
             // do not care what events are received, refresh anyway
-            console.log('mutation happened');
-            await this.refresh('network-only');
+            console.log('mutation happened', event.type);
+            if (event.type === 'CreateTask') {
+                event.task.availableActions = AllActions;
+                this.setState({
+                    teamStatus: Object.assign({}, this.state.teamStatus, {
+                        upcomingTasks:
+                            this.state.teamStatus.upcomingTasks.concat(
+                                event.task,
+                            ),
+                    }),
+                });
+            } else if (event.type === 'StartTask') {
+                let taskId = event.taskId;
+                let [upcomingTasks, inProgressTasks] = moveTo(
+                    this.state.teamStatus.upcomingTasks,
+                    this.state.teamStatus.inProgressTasks,
+                    (task) => task.id === taskId,
+                    (task) => {
+                        return Object.assign({}, task, {
+                            availableActions: AllActions,
+                        });
+                    },
+                );
+                this.setState({
+                    teamStatus: Object.assign({}, this.state.teamStatus, {
+                        upcomingTasks: upcomingTasks,
+                        inProgressTasks: inProgressTasks,
+                    }),
+                });
+            } else if (event.type === 'TaskDelete') {
+                let taskId = event.taskId;
+                this.setState({
+                    teamStatus: {
+                        upcomingTasks:
+                            this.state.teamStatus.upcomingTasks.filter(
+                                (element) => element.id !== taskId,
+                            ),
+                        inProgressTasks:
+                            this.state.teamStatus.inProgressTasks.filter(
+                                (element) => element.id !== taskId,
+                            ),
+                        deliveredTasks:
+                            this.state.teamStatus.deliveredTasks.filter(
+                                (element) => element.id !== taskId,
+                            ),
+                    },
+                });
+            } else if (event.type === 'CompleteTask') {
+                let taskId = event.taskId;
+                let [inProgressTasks, deliveredTasks] = moveTo(
+                    this.state.teamStatus.inProgressTasks,
+                    this.state.teamStatus.deliveredTasks,
+                    (task) => task.id === taskId,
+                    (task) => {
+                        return Object.assign({}, task, {
+                            availableActions: AllActions,
+                        });
+                    },
+                );
+                this.setState({
+                    teamStatus: Object.assign({}, this.state.teamStatus, {
+                        inProgressTasks: inProgressTasks,
+                        deliveredTasks: deliveredTasks,
+                    }),
+                });
+            }
+            // after synchronized updates, do async network refresh
+            // do not await
+            chan.put(event);
         }
     }
 
@@ -223,7 +371,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
             fetchPolicy: policy,
             query: queries.mePage,
         });
-        if (data.me.activeTeam) {
+        this.refreshState(data);
+    }
+    private refreshState(data: any) {
+        if (data?.me?.activeTeam) {
             store.dispatch(
                 updatePersonalStatus({
                     needAttentionTask:
@@ -341,10 +492,13 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onCreateTask = async (task: Task): Promise<void> => {
         if (task.goal.length > 0) {
-            await this.props.deps.taskService.createTask(task);
-            await this.refresh('network-only');
+            await this.mutationChan.put({
+                type: 'CreateTask',
+                task: task,
+            });
         }
 
+        // remove the adding task UI
         this.setState({
             taskAdding: undefined,
         });
@@ -356,21 +510,27 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
-        await this.props.deps.taskService.deleteTask(taskId);
-        await this.mutationChan.put({
+        // don't care if the consumer is ready to pop, no await
+        this.mutationChan.put({
             type: 'TaskDelete',
-            id: taskId,
+            taskId: taskId,
         });
     };
 
     private onStartTaskClick = async (taskId: number): Promise<void> => {
-        await this.props.deps.taskService.startTask(taskId);
-        await this.refresh('network-only');
+        // don't care if the consumer is ready to pop, no await
+        this.mutationChan.put({
+            type: 'StartTask',
+            taskId: taskId,
+        });
     };
 
     private onCompleteTaskClick = async (taskId: number): Promise<void> => {
-        await this.props.deps.taskService.completeTask(taskId);
-        await this.refresh('network-only');
+        // don't care if the consumer is ready to pop, no await
+        this.mutationChan.put({
+            type: 'CompleteTask',
+            taskId: taskId,
+        });
     };
 
     private onPersonalAddClick = async (): Promise<void> => {
