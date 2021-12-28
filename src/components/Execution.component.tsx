@@ -102,7 +102,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 // because csp.Channel does not expose the internal buffer
                 // nor expose a public isEmpty / length method,
                 // to check if the channel is empty, it means to check if the channel is not ready to be consumed.
-                // todo: consider add synchronized versions of these methods
+                // TODO: consider adding synchronized versions of these methods
                 let result = await Promise.any([
                     chan.ready(),
                     Promise.resolve(null),
