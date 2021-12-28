@@ -33,8 +33,7 @@ module.exports = {
             options: {
                 source: 'tsconfig',
                 baseUrl: './src',
-                tsConfigPath: './tsconfig.path.json',
-                unsafeAllowModulesOutsideOfSrc: true,
+                tsConfigPath: './tsconfig.path.json'
             },
         },
         {
