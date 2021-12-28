@@ -1,7 +1,7 @@
 import React, { Component, ReactElement } from 'react';
-import { User } from '../../entity/user';
-import { FormatService } from '../../service/format.service';
-import { MaterialIconUI } from '../../ui/view/MaterialIcon';
+import { User } from '@entity/user';
+import { FormatService } from '@service/format.service';
+import { MaterialIconUI } from '@ui/MaterialIcon';
 import styles from './SelectUserList.module.scss';
 import { UserProfileUI } from './UserProfile';
 interface IProps {

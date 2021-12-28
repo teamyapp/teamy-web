@@ -1,4 +1,4 @@
-import { Environment } from '../env/environment';
+import { Environment } from '@env/environment';
 
 export interface Config {
     httpProtocol: string;

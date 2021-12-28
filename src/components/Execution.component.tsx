@@ -3,21 +3,20 @@ import { History, LocationState } from 'history';
 import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import { Unsubscribe } from 'redux';
-import { Deps } from '../deps';
-import { PersonalStatus } from '../entity/personalStatus';
+import { Deps } from '@deps';
+import { PersonalStatus } from '@entity/personalStatus';
 import * as events from '../entity/events';
-import { IBoundingBoxFinder } from '../entity/position';
-import { AllActions, TaskAction } from '../entity/taskAction';
-import { Task } from '../entity/task';
-import { TeamStatus } from '../entity/teamStatus';
-import { User } from '../entity/user';
-
+import { IBoundingBoxFinder } from '@entity/position';
+import { Task } from '@entity/task';
+import { AllActions, TaskAction } from '@entity/taskAction';
+import { TeamStatus } from '@entity/teamStatus';
+import { User } from '@entity/user';
 import * as queries from '../service/queries';
-import { updatePersonalStatus } from '../store/slices/PersonalStatus';
-import { updateTeamStatus } from '../store/slices/TeamStatus';
+import { updatePersonalStatus } from '@store/slices/PersonalStatus';
+import { updateTeamStatus } from '@store/slices/TeamStatus';
 import store from '../store/store';
-import { MaterialIconUI } from '../ui/view/MaterialIcon';
-import { TabsUI } from '../ui/view/Tabs';
+import { MaterialIconUI } from '@ui/MaterialIcon';
+import { TabsUI } from '@ui/Tabs';
 import styles from './Execution.component.module.scss';
 import Team from './shared/Kanban';
 import PersonalUI from './shared/PersonalStatus';
@@ -200,15 +199,18 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 let taskId = event.taskId;
                 this.setState({
                     teamStatus: {
-                        upcomingTasks:this.state.teamStatus.upcomingTasks.filter(
-                            (element) => element.id !== taskId,
-                        ),
-                        inProgressTasks: this.state.teamStatus.inProgressTasks.filter(
-                            (element) => element.id !== taskId,
-                        ),
-                        deliveredTasks: this.state.teamStatus.deliveredTasks.filter(
-                            (element) => element.id !== taskId,
-                        ),
+                        upcomingTasks:
+                            this.state.teamStatus.upcomingTasks.filter(
+                                (element) => element.id !== taskId,
+                            ),
+                        inProgressTasks:
+                            this.state.teamStatus.inProgressTasks.filter(
+                                (element) => element.id !== taskId,
+                            ),
+                        deliveredTasks:
+                            this.state.teamStatus.deliveredTasks.filter(
+                                (element) => element.id !== taskId,
+                            ),
                     },
                 });
             } else if (event.type === 'CompleteTask') {

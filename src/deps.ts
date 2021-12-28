@@ -1,13 +1,13 @@
-import { getConfig } from './config/config';
-import { getEnvironment } from './env/environment';
-import { IdentityClient } from './identity/Identity.client';
-import { GraphQLClient } from './network/GraphQL.client';
-import { FetchHTTPClient } from './network/FetchHTTP.client';
-import { CommentService } from './service/comment.service';
-import { StatusService } from './service/status.service';
-import { TaskService } from './service/task.service';
-import { TeamService } from './service/team.service';
-import { UserService } from './service/user.service';
+import { getConfig } from '@config/config';
+import { getEnvironment } from '@env/environment';
+import { IdentityClient } from '@identity/Identity.client';
+import { GraphQLClient } from '@network/GraphQL.client';
+import { FetchHTTPClient } from '@network/FetchHTTP.client';
+import { CommentService } from '@service/comment.service';
+import { StatusService } from '@service/status.service';
+import { TaskService } from '@service/task.service';
+import { TeamService } from '@service/team.service';
+import { UserService } from '@service/user.service';
 
 export interface Deps {
     taskService: TaskService;

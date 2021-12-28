@@ -1,10 +1,10 @@
 import React, { Component, createRef } from 'react';
-import { Deps } from '../../../deps';
-import { Team } from '../../../entity/team';
-import { ButtonUI } from '../../../ui/view/Button';
-import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
-import { ModalUI } from '../../../ui/view/Modal';
-import { TextAreaUI } from '../../../ui/view/TextArea';
+import { Deps } from '@deps';
+import { Team } from '@entity/team';
+import { ButtonUI } from '@ui/Button';
+import { MaterialIconUI } from '@ui/MaterialIcon';
+import { ModalUI } from '@ui/Modal';
+import { TextAreaUI } from '@ui/TextArea';
 
 import styles from './AddTeamMembersModal.component.module.scss';
 

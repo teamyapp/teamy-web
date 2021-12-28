@@ -1,5 +1,5 @@
 @use 'sass:math';
-@import '../styleguide/easing';
+@import 'styleguide/easing';
 
 $fontSize: var(--font-size, 18px);
 $outlineColor: var(--outline-color, #1976d2);

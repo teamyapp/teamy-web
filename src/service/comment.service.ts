@@ -1,6 +1,6 @@
 import { FetchPolicy } from '@apollo/client';
-import { Message } from '../entity/message';
-import { GraphQLClient } from '../network/GraphQL.client';
+import { Message } from '@entity/message';
+import { GraphQLClient } from '@network/GraphQL.client';
 import * as queries from './queries';
 import * as mutations from './mutations';
 
@@ -34,11 +34,10 @@ export class CommentService {
     }
 
     public async createComment(taskId: number, content: string) {
-        await this.graphQLClient
-            .mutate({
-                mutation: mutations.createComment,
-                variables: { taskId: taskId, content: content },
-            });
+        await this.graphQLClient.mutate({
+            mutation: mutations.createComment,
+            variables: { taskId: taskId, content: content },
+        });
     }
 
     public async updateComment(commentId: number, content: string) {

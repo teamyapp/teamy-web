@@ -2,12 +2,12 @@ import { FetchPolicy } from '@apollo/client';
 import React, { Component, createRef, ReactElement } from 'react';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { Deps } from '../deps';
-import { Team } from '../entity/team';
-import { withIdentityVerification } from '../identity/withIdentityVerification';
+import { Deps } from '@deps';
+import { Team } from '@entity/team';
+import { withIdentityVerification } from '@identity/withIdentityVerification';
 import * as queries from '../service/queries';
 import store from '../store/store';
-import { MaterialIconUI } from '../ui/view/MaterialIcon';
+import { MaterialIconUI } from '@ui/MaterialIcon';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import ExecutionComponentHook, {

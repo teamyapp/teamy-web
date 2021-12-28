@@ -1,14 +1,14 @@
 import React, { Component, ReactElement } from 'react';
-import { IBoundingBoxFinder } from '../../entity/position';
-import { Task } from '../../entity/task';
-import { TeamStatus } from '../../entity/teamStatus';
-import { User } from '../../entity/user';
-import { MaterialIconUI } from '../../ui/view/MaterialIcon';
-import { SectionUI } from '../../ui/view/Section';
+import { IBoundingBoxFinder } from '@entity/position';
+import { Task } from '@entity/task';
+import { TeamStatus } from '@entity/teamStatus';
+import { User } from '@entity/user';
+import { MaterialIconUI } from '@ui/MaterialIcon';
+import { SectionUI } from '@ui/Section';
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview.component';
 import * as csp from '@creatcodebuild/csp';
-import * as events from '../../entity/events';
+import * as events from '@entity/events';
 
 interface IProps {
     taskAdding?: Task;
