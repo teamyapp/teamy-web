@@ -1,9 +1,9 @@
 import React, { Component, createRef } from 'react';
-import { Message } from '../../entity/message';
-import { FormatService } from '../../service/format.service';
-import { ButtonUI } from '../../ui/view/Button';
-import { MaterialIconUI } from '../../ui/view/MaterialIcon';
-import { TextAreaUI } from '../../ui/view/TextArea';
+import { Message } from '@entity/message';
+import { FormatService } from '@service/format.service';
+import { ButtonUI } from '@ui/Button';
+import { MaterialIconUI } from '@ui/MaterialIcon';
+import { TextAreaUI } from '@ui/TextArea';
 import styles from './Thread.module.scss';
 import { UserProfileUI } from './UserProfile';
 

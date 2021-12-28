@@ -1,6 +1,6 @@
 @use 'sass:math';
-@import '../../ui/styleguide/divider';
-@import '../../ui/styleguide/elevation';
+@import '../../libs/ui/styleguide/divider';
+@import '../../libs/ui/styleguide/elevation';
 
 $numOfActionColumns: 3;
 $actionIconSize: 28px;

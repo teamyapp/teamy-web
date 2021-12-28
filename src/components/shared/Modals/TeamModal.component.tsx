@@ -1,12 +1,12 @@
 import React, { Component, createRef } from 'react';
-import { Deps } from '../../../deps';
-import { Team } from '../../../entity/team';
-import { User } from '../../../entity/user';
-import { ButtonUI } from '../../../ui/view/Button';
-import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
-import { ModalUI } from '../../../ui/view/Modal';
-import { TabsUI } from '../../../ui/view/Tabs';
-import { TextFieldUI } from '../../../ui/view/TextField';
+import { Deps } from '@deps';
+import { Team } from '@entity/team';
+import { User } from '@entity/user';
+import { ButtonUI } from '@ui/Button';
+import { MaterialIconUI } from '@ui/MaterialIcon';
+import { ModalUI } from '@ui/Modal';
+import { TabsUI } from '@ui/Tabs';
+import { TextFieldUI } from '@ui/TextField';
 import styles from './TeamModal.component.module.scss';
 import { UserProfileUI } from '../UserProfile';
 

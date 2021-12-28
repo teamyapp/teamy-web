@@ -1,11 +1,11 @@
 import { chan, Channel, PutChannel, select } from '@creatcodebuild/csp';
 import Cookies from 'js-cookie';
-import { Environment } from '../env/environment';
-import { Errors } from '../ext/errors';
-import { Result } from '../ext/result';
-import { HTTPClient } from '../network/HTTP.client';
-import { IChannel } from '../network/IChannel';
-import { WebSocketChannel } from '../network/WebSocketChannel';
+import { Environment } from '@env/environment';
+import { Errors } from '@ext/errors';
+import { Result } from '@ext/result';
+import { HTTPClient } from '@network/HTTP.client';
+import { IChannel } from '@network/IChannel';
+import { WebSocketChannel } from '@network/WebSocketChannel';
 import { Config, getConfig } from './config';
 
 const accessTokenKey = 'accessToken';

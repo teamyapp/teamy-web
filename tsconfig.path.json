@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "paths": {
+            "@entity/*": ["entity/*"],
+            "@env/*": ["env/*"],
+            "@config/*": ["config/*"],
+            "@store/*": ["store/*"],
+            "@service/*": ["service/*"],
+            "@ext/*": ["libs/ext/*"],
+            "@ui/*": ["libs/ui/*"],
+            "@network/*": ["libs/network/*"],
+            "@identity/*": ["libs/identity/*"],
+            "@*": ["*"]
+        }
+    }
+}

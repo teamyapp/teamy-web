@@ -1,4 +1,5 @@
 const CracoEsbuildPlugin = require('craco-esbuild');
+const CracoAlias = require('craco-alias');
 const { DefinePlugin } = require('webpack');
 const childProcess = require('child_process');
 
@@ -27,6 +28,15 @@ module.exports = {
         },
     },
     plugins: [
+        {
+            plugin: CracoAlias,
+            options: {
+                source: 'tsconfig',
+                baseUrl: './src',
+                tsConfigPath: './tsconfig.path.json',
+                unsafeAllowModulesOutsideOfSrc: true,
+            },
+        },
         {
             plugin: CracoEsbuildPlugin,
             options: {

@@ -1,16 +1,16 @@
 import * as csp from '@creatcodebuild/csp';
 import React, { Component, createRef, ReactElement } from 'react';
-import { Deps } from '../../../deps';
-import * as events from '../../../entity/events';
-import { Message } from '../../../entity/message';
-import { Task } from '../../../entity/task';
-import { ButtonUI } from '../../../ui/view/Button';
-import { DatePickerUI } from '../../../ui/view/DatePicker';
-import { MarkdownEditorUI } from '../../../ui/view/MarkdownEditor';
-import { MaterialIconUI } from '../../../ui/view/MaterialIcon';
-import { ModalUI } from '../../../ui/view/Modal';
-import { NamedValueUI } from '../../../ui/view/NamedValue';
-import { TextFieldUI } from '../../../ui/view/TextField';
+import { Deps } from '@deps';
+import * as events from '@entity/events';
+import { Message } from '@entity/message';
+import { Task } from '@entity/task';
+import { ButtonUI } from '@ui/Button';
+import { DatePickerUI } from '@ui/DatePicker';
+import { MarkdownEditorUI } from '@ui/MarkdownEditor';
+import { MaterialIconUI } from '@ui/MaterialIcon';
+import { ModalUI } from '@ui/Modal';
+import { NamedValueUI } from '@ui/NamedValue';
+import { TextFieldUI } from '@ui/TextField';
 import { ThreadUI } from '../Thread';
 
 import styles from './TaskModal.component.module.scss';
@@ -109,7 +109,6 @@ export class TaskModalComponent extends Component<IProps, IState> {
                                 </div>
                             </div>
                         </div>
-                        )
                         <div className={styles.CommentsSection}>
                             <div className={styles.Title}>
                                 Comments&nbsp;({this.state.comments.length})

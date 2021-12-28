@@ -1,14 +1,14 @@
 import React, { Component, ReactElement } from 'react';
-import { Deps } from '../../deps';
-import { PersonalStatus } from '../../entity/personalStatus';
-import { IBoundingBoxFinder } from '../../entity/position';
-import { Task } from '../../entity/task';
-import { MaterialIconUI } from '../../ui/view/MaterialIcon';
-import { SectionUI } from '../../ui/view/Section';
+import { Deps } from '@deps';
+import { PersonalStatus } from '@entity/personalStatus';
+import { IBoundingBoxFinder } from '@entity/position';
+import { Task } from '@entity/task';
+import { MaterialIconUI } from '@ui/MaterialIcon';
+import { SectionUI } from '@ui/Section';
 import styles from './Personal.module.scss';
 import { TaskPreviewUI } from './TaskPreview.component';
 import * as csp from '@creatcodebuild/csp';
-import * as events from '../../entity/events';
+import * as events from '@entity/events';
 
 interface IProps {
     deps: Deps;

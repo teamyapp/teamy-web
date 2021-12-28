@@ -1,5 +1,5 @@
-@import 'src/ui/styleguide/color';
-@import 'src/ui/styleguide/utility';
+@import '../libs/ui/styleguide/color';
+@import '../libs/ui/styleguide/utility';
 
 @mixin menuButton {
     .MenuButtonPlaceHolder {
