@@ -38,9 +38,6 @@ export class CommentService {
             .mutate({
                 mutation: mutations.createComment,
                 variables: { taskId: taskId, content: content },
-            })
-            .then((payload: any) => {
-                return payload?.createComment?.id;
             });
     }
 
