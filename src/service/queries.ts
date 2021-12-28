@@ -60,6 +60,9 @@ export const me = gql`
             firstName
             lastName
             profileUrl
+            activeTeam {
+                id
+            }
         }
     }
 `;

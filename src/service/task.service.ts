@@ -69,14 +69,15 @@ export class TaskService {
         });
     }
 
-    public createTask(task: Task): Promise<Task> {
-        return this.graphQLClient.mutate({
+    public async createTask(task: Task, teamId: number): Promise<Task> {
+        return (await this.graphQLClient.mutate({
             mutation: mutations.createTask,
             variables: {
                 taskInput: Object.assign({}, task, {
                     ownerUserId: task.owner ? task.owner?.id : undefined,
                 }),
+                teamId: teamId
             },
-        });
+        })).createTask?.ownedByTeam?.task;
     }
 }

@@ -49,18 +49,18 @@ export class TeamService {
             });
     }
 
-    public updateActiveTeamId(teamId: number): Promise<boolean> {
-        return this.graphQLClient
-            .mutate({
-                mutation: mutations.updateActiveTeam,
-                variables: {
-                    teamId,
-                },
-            })
-            .then((payload: any) => {
-                return payload?.updateActiveTeam;
-            });
-    }
+    // public updateActiveTeamId(teamId: number): Promise<boolean> {
+    //     return this.graphQLClient
+    //         .mutate({
+    //             mutation: mutations.updateActiveTeam,
+    //             variables: {
+    //                 teamId,
+    //             },
+    //         })
+    //         .then((payload: any) => {
+    //             return payload?.updateActiveTeam;
+    //         });
+    // }
 
     public addTeamMember(teamId: number, newMemberId: number): Promise<number> {
         return this.graphQLClient

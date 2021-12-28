@@ -57,7 +57,7 @@ class AppComponent extends Component<IProps, IState> {
                             teams={this.state.teams}
                             isDrawerOpen={this.state.isDrawerOpen}
                             onMenuClose={this.onMenuToggle}
-                            onActiveTeamSelect={this.onActiveTeamSelect}
+                            // onActiveTeamSelect={this.onActiveTeamSelect}
                             onAddTeamMembersClick={this.onAddTeamMembersClick}
                             onShowTeamMembersClick={this.onShowTeamMembersClick}
                             onViewTeamSettings={this.onViewTeamSettings}
@@ -125,10 +125,10 @@ class AppComponent extends Component<IProps, IState> {
         this.teamSettingsModalRef.current?.open(teamId);
     };
 
-    private onActiveTeamSelect = async (teamId: number): Promise<void> => {
-        await this.props.deps.teamService.updateActiveTeamId(teamId);
-        await this.refresh('network-only');
-    };
+    // private onActiveTeamSelect = async (teamId: number): Promise<void> => {
+    //     await this.props.deps.teamService.updateActiveTeamId(teamId);
+    //     await this.refresh('network-only');
+    // };
 
     private onTeamMembersAdded = async (teamId: number) => {
         await this.refresh('network-only');

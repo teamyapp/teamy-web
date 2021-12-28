@@ -135,9 +135,18 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 }
                 switch (event.type) {
                     case 'CreateTask':
-                        await this.props.deps.taskService.createTask(
-                            event.task,
-                        );
+                        let me = await this.props.deps.userService.fetchMe('cache-first');
+                        console.debug(me)
+                        let teamId = me.activeTeam?.id
+                        if (teamId === undefined) {
+                            console.error("the user does not have an active team, can't create tasks in a team");
+                        } else {
+                            let task = await this.props.deps.taskService.createTask(
+                                event.task,
+                                teamId
+                            );
+                            console.debug(task);
+                        }
                         break;
                     case 'TaskDelete':
                         await this.props.deps.taskService.deleteTask(
