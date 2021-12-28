@@ -3,6 +3,7 @@ import { getEnvironment } from './env/environment';
 import { IdentityClient } from './identity/Identity.client';
 import { GraphQLClient } from './network/GraphQL.client';
 import { FetchHTTPClient } from './network/FetchHTTP.client';
+import { CommentService } from './service/comment.service';
 import { StatusService } from './service/status.service';
 import { TaskService } from './service/task.service';
 import { TeamService } from './service/team.service';
@@ -12,7 +13,8 @@ export interface Deps {
     taskService: TaskService;
     teamService: TeamService;
     userService: UserService;
-    executionModeService: StatusService;
+    commentService: CommentService;
+    statusService: StatusService;
     identityClient: IdentityClient;
     graphql: GraphQLClient;
 }
@@ -29,12 +31,14 @@ export function initDeps(): Deps {
     const taskService = new TaskService(teamyGraphQLClient);
     const teamService = new TeamService(teamyGraphQLClient);
     const userService = new UserService(teamyGraphQLClient);
-    const executionModeService = new StatusService(teamyGraphQLClient);
+    const statusService = new StatusService(teamyGraphQLClient);
+    const commentService = new CommentService(teamyGraphQLClient);
     return {
         taskService,
         teamService,
         userService,
-        executionModeService,
+        commentService,
+        statusService,
         identityClient,
         graphql: teamyGraphQLClient,
     };

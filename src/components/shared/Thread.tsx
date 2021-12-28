@@ -10,8 +10,9 @@ import { UserProfileUI } from './UserProfile';
 interface IProps {
     messages: Message[];
     editorUserId: number;
+    postButtonLabel?: string;
     onPostMessage?: (message: string) => void;
-    onEditMessage?: (messageId: number, message: string) => void;
+    onUpdateMessage?: (messageId: number, message: string) => Promise<void>;
     onDeleteMessage?: (messageId: number) => void;
 }
 
@@ -33,7 +34,12 @@ export class ThreadUI extends Component<IProps, IState> {
     public render() {
         return (
             <div className={styles.Thread}>
-                {this.props.messages.map(this.renderMessage)}
+                {this.props.messages
+                    .sort(
+                        (comment1: any, comment2: any) =>
+                            comment1.createdAt - comment2.createdAt,
+                    )
+                    .map(this.renderMessage)}
                 <div className={styles.Input}>
                     <div className={styles.TextArea}>
                         <TextAreaUI
@@ -42,9 +48,9 @@ export class ThreadUI extends Component<IProps, IState> {
                         />
                     </div>
                     <div className={styles.Actions}>
-                        <div className={styles.Save}>
+                        <div className={styles.PostMessage}>
                             <ButtonUI
-                                label={'Post'}
+                                label={this.props.postButtonLabel || 'Post'}
                                 onClick={this.onPostMessageClick}
                             />
                         </div>
@@ -103,6 +109,7 @@ export class ThreadUI extends Component<IProps, IState> {
                             <div className={styles.TextArea}>
                                 <TextAreaUI
                                     content={message.content}
+                                    autoFocus={true}
                                     onChange={this.onEditingMessageChange}
                                     onBlur={this.onEditingMessageBlur}
                                 />
@@ -149,8 +156,8 @@ export class ThreadUI extends Component<IProps, IState> {
         });
     };
 
-    private onEditingMessageBlur = () => {
-        this.props.onEditMessage?.call(
+    private onEditingMessageBlur = async () => {
+        await this.props.onUpdateMessage?.call(
             null,
             this.state.editingMessageId,
             this.state.editingMessageContent || '',
