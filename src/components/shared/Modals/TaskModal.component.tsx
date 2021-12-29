@@ -1,7 +1,7 @@
 import * as csp from '@creatcodebuild/csp';
 import React, { Component, createRef, ReactElement } from 'react';
 import { Deps } from '@deps';
-import * as events from '@entity/events';
+import { MutationEvent } from '@entity/events';
 import { Message } from '@entity/message';
 import { Task } from '@entity/task';
 import { ButtonUI } from '@ui/Button';
@@ -19,7 +19,7 @@ const verticalMargin = 40;
 
 interface IProps {
     deps: Deps;
-    mutationChan: csp.Channel<events.MutationEvent>;
+    mutationOutputChan: csp.PutChannel<MutationEvent>;
 }
 
 interface IState {
@@ -164,16 +164,10 @@ export class TaskModalComponent extends Component<IProps, IState> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
-            const task = Object.assign({}, this.state.task, {
-                context: this.markdownEditorRef.current?.state.content,
+            await this.props.mutationOutputChan.put({
+                type: 'UpdateTask',
+                task: this.state.task,
             });
-            await this.props.mutationChan.put({
-                type: 'TaskUpdate',
-                taskId: this.state.task?.id,
-                goal: this.state.task.goal,
-                context: task.context || '',
-            });
-            await this.props.deps.taskService.updateTask(task);
         }
     };
 

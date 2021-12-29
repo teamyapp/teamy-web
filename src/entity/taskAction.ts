@@ -1,3 +1,5 @@
+import { TaskStatus } from '@entity/taskStatus';
+
 export enum TaskAction {
     Start = 'START',
     Delete = 'DELETE',
@@ -7,10 +9,23 @@ export enum TaskAction {
     ViewDetail = 'VIEW_DETAIL',
 }
 
-export const AllActions = [
-    TaskAction.Start,
-    TaskAction.Delete,
-    TaskAction.AssignOwner,
-    TaskAction.MarkComplete,
-    TaskAction.ViewDetail,
-];
+export function getActions(status: TaskStatus) {
+    switch (status) {
+        case TaskStatus.Upcoming:
+            return [
+                TaskAction.Start,
+                TaskAction.Delete,
+                TaskAction.AssignOwner,
+            ];
+        case TaskStatus.NeedAttention:
+        case TaskStatus.InProgress:
+            return [
+                TaskAction.Delete,
+                TaskAction.AssignOwner,
+                TaskAction.ReportBlocked,
+                TaskAction.MarkComplete,
+            ];
+        case TaskStatus.Delivered:
+            return [TaskAction.Delete];
+    }
+}
