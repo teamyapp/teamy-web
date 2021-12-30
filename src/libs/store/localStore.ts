@@ -18,10 +18,11 @@ export class LocalStore<State, MutationEvent extends event.Event> {
     private readonly initialState: State;
     private readonly events: MutationEvent[];
     private readonly mutateState: MutateState<State, MutationEvent>;
+    private readonly mutationChan = csp.chan<MutationEvent>();
+
     private readonly stateChangeChan = csp.chan<State>();
     private readonly stateChangeCaster: csp.Multicaster<State | undefined> =
         csp.multi(this.stateChangeChan);
-    private readonly mutationChan = csp.chan<MutationEvent>();
 
     private currentState: State;
 
