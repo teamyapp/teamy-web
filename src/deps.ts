@@ -6,6 +6,8 @@ import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { LocalStore } from '@lib/store/localStore';
 import { CommentService } from '@service/comment.service';
+import { createNetworkStateMutator } from '@service/networkStateMutator';
+import { ResponsiveStateService } from '@service/responsiveState.service';
 import { StatusService } from '@service/status.service';
 import { TaskService } from '@service/task.service';
 import { TeamService } from '@service/team.service';
@@ -20,8 +22,12 @@ export interface Deps {
     commentService: CommentService;
     statusService: StatusService;
     identityClient: IdentityClient;
-    graphql: GraphQLClient;
     localStore: LocalStore<IAppState, events.MutationEvent>;
+    responsiveStateService: ResponsiveStateService<
+        IAppState,
+        events.MutationEvent
+    >;
+    graphql: GraphQLClient;
 }
 
 export function initDeps(): Deps {
@@ -39,6 +45,11 @@ export function initDeps(): Deps {
     const statusService = new StatusService(teamyGraphQLClient);
     const commentService = new CommentService(teamyGraphQLClient);
     const localStore = createStore();
+    const networkStateMutator = createNetworkStateMutator(taskService);
+    const responsiveStateService = new ResponsiveStateService<
+        IAppState,
+        events.MutationEvent
+    >(localStore, networkStateMutator);
     return {
         taskService,
         teamService,
@@ -47,6 +58,7 @@ export function initDeps(): Deps {
         statusService,
         identityClient,
         localStore,
+        responsiveStateService,
         graphql: teamyGraphQLClient,
     };
 }

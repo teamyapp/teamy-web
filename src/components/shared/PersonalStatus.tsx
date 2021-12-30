@@ -31,11 +31,6 @@ interface IProps {
 }
 
 export default class PersonalStatusUI extends Component<IProps> {
-    constructor(props: IProps) {
-        super(props);
-        this.state = {};
-    }
-
     public render(): ReactElement {
         return (
             <div className={styles.PersonalStatus}>

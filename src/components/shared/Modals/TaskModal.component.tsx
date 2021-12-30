@@ -19,7 +19,7 @@ const verticalMargin = 40;
 
 interface IProps {
     deps: Deps;
-    mutationChan: csp.Channel<events.MutationEvent>;
+    mutationOutputChan: csp.PutChannel<events.MutationEvent | undefined>;
 }
 
 interface IState {
@@ -164,14 +164,10 @@ export class TaskModalComponent extends Component<IProps, IState> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
-            const task = Object.assign({}, this.state.task, {
-                context: this.markdownEditorRef.current?.state.content,
-            });
-            await this.props.mutationChan.put({
+            await this.props.mutationOutputChan.put({
                 type: 'UpdateTask',
-                task: task,
+                task: this.state.task,
             });
-            await this.props.deps.taskService.updateTask(task);
         }
     };
 

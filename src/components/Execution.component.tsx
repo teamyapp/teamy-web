@@ -4,10 +4,10 @@ import { Deps } from '@deps';
 import { PersonalStatus } from '@entity/personalStatus';
 import { IBoundingBoxFinder } from '@entity/position';
 import { Task } from '@entity/task';
-import { getActions, TaskAction } from '@entity/taskAction';
-import { TaskStatus } from '@entity/taskStatus';
+import { TaskAction } from '@entity/taskAction';
 import { TeamStatus } from '@entity/teamStatus';
 import { User } from '@entity/user';
+import { IStateSyncer } from '@service/responsiveState.service';
 import { IAppState } from '@state/state';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
@@ -46,13 +46,14 @@ interface IState {
 }
 
 export class ExecutionComponent extends Component<IProps, IState> {
-    private taskDetailModalRef = createRef<TaskModalComponent>();
-    private taskOwnersPopupRef = createRef<HTMLDivElement>();
-    private readonly multiCaster: csp.Multicaster<events.MutationEvent>;
-    private readonly mutationChan: csp.Channel<events.MutationEvent>;
-    private readonly mutationListener: csp.Channel<
+    private readonly taskDetailModalRef = createRef<TaskModalComponent>();
+    private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
+    private readonly mutationChan = csp.chan<events.MutationEvent>();
+    private readonly multiCaster: csp.Multicaster<events.MutationEvent> =
+        csp.multi<events.MutationEvent>(this.mutationChan);
+    private readonly mutationOutputChan: csp.PopChannel<
         events.MutationEvent | undefined
-    >;
+    > = this.multiCaster.copy();
     private stateChangeChan?: csp.PopChannel<IAppState>;
 
     constructor(props: IProps) {
@@ -72,173 +73,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
             },
             potentialTaskOwners: [],
         };
-
-        // Channels that communicates mutation events
-        // source channel for putting mutation events
-        this.mutationChan = csp.chan<events.MutationEvent>();
-        // a multicaster used to other components to subscribe the event
-        this.multiCaster = csp.multi<events.MutationEvent>(this.mutationChan);
-        this.mutationListener = this.multiCaster.copy();
-    }
-
-    private async listenToMutation() {
-        // move all elements from array1 which meet the given condition into array2
-        // creating 2 new arrays
-        function moveTo<T>(
-            array1: Array<T>,
-            array2: Array<T>,
-            find: (element: T) => boolean,
-            transform: (element: T) => T,
-        ): [Array<T>, Array<T>] {
-            let toBeMoved = array1.filter(find);
-            let newArray1 = array1.filter((ele) => !find(ele));
-            return [newArray1, array2.concat(toBeMoved.map(transform))];
-        }
-
-        const chan = csp.chan<events.MutationEvent>();
-        (async () => {
-            // this coroutine handles network refresh only
-            // and each refresh takes place in order
-            while (true) {
-                // check if the channel is empty.
-                // because csp.Channel does not expose the internal buffer
-                // nor expose a public isEmpty / length method,
-                // to check if the channel is empty, it means to check if the channel is not ready to be consumed.
-                // TODO: consider adding synchronized versions of these methods
-                let result = await Promise.any([
-                    chan.ready(),
-                    Promise.resolve(null),
-                ]);
-                if (result === null) {
-                    // the channel is not ready therefore empty
-                    console.log('mutation channel is empty');
-                    console.log('refresh start');
-                    const data = await this.props.deps.graphql.query({
-                        fetchPolicy: 'network-only',
-                        query: queries.mePage,
-                    });
-                    let isEmpty = await Promise.any([
-                        chan.ready(),
-                        Promise.resolve(null),
-                    ]);
-                    if (isEmpty === null) {
-                        this.refreshState(data);
-                        console.log('refresh done');
-                    } else {
-                        console.log(
-                            'refresh discarded because new mutations happened in the mean time',
-                        );
-                    }
-                } else {
-                    console.log('mutation channel is not empty');
-                }
-                let event = await chan.pop();
-                if (event === undefined) {
-                    return;
-                }
-                switch (event.type) {
-                    case 'CreateTask':
-                        await this.props.deps.taskService.createTask(
-                            event.task,
-                        );
-                        break;
-                    case 'DeleteTask':
-                        await this.props.deps.taskService.deleteTask(
-                            event.taskId,
-                        );
-                        break;
-                    case 'StartTask':
-                        await this.props.deps.taskService.startTask(
-                            event.taskId,
-                        );
-                        break;
-                    case 'CompleteTask':
-                        await this.props.deps.taskService.completeTask(
-                            event.taskId,
-                        );
-                        break;
-                }
-                console.log(event.type, 'done');
-            }
-        })().then();
-
-        // synchronized part of mutation listener
-        while (true) {
-            let event = await this.mutationListener.pop();
-            if (event === undefined) {
-                return;
-            }
-            // do not care what events are received, refresh anyway
-            console.log('mutation happened', event.type);
-            if (event.type === 'CreateTask') {
-                event.task.availableActions = getActions(TaskStatus.Upcoming);
-                this.setState({
-                    teamStatus: Object.assign({}, this.state.teamStatus, {
-                        upcomingTasks:
-                            this.state.teamStatus.upcomingTasks.concat(
-                                event.task,
-                            ),
-                    }),
-                });
-            } else if (event.type === 'StartTask') {
-                let taskId = event.taskId;
-                let [upcomingTasks, inProgressTasks] = moveTo(
-                    this.state.teamStatus.upcomingTasks,
-                    this.state.teamStatus.inProgressTasks,
-                    (task) => task.id === taskId,
-                    (task) => {
-                        return Object.assign({}, task, {
-                            availableActions: getActions(TaskStatus.InProgress),
-                        });
-                    },
-                );
-                this.setState({
-                    teamStatus: Object.assign({}, this.state.teamStatus, {
-                        upcomingTasks: upcomingTasks,
-                        inProgressTasks: inProgressTasks,
-                    }),
-                });
-            } else if (event.type === 'DeleteTask') {
-                let taskId = event.taskId;
-                this.setState({
-                    teamStatus: {
-                        upcomingTasks:
-                            this.state.teamStatus.upcomingTasks.filter(
-                                (element) => element.id !== taskId,
-                            ),
-                        inProgressTasks:
-                            this.state.teamStatus.inProgressTasks.filter(
-                                (element) => element.id !== taskId,
-                            ),
-                        deliveredTasks:
-                            this.state.teamStatus.deliveredTasks.filter(
-                                (element) => element.id !== taskId,
-                            ),
-                    },
-                });
-            } else if (event.type === 'CompleteTask') {
-                let taskId = event.taskId;
-                let [inProgressTasks, deliveredTasks] = moveTo(
-                    this.state.teamStatus.inProgressTasks,
-                    this.state.teamStatus.deliveredTasks,
-                    (task) => task.id === taskId,
-                    (task) => {
-                        return Object.assign({}, task, {
-                            availableActions: getActions(TaskStatus.Delivered),
-                        });
-                    },
-                );
-                this.setState({
-                    teamStatus: Object.assign({}, this.state.teamStatus, {
-                        inProgressTasks: inProgressTasks,
-                        deliveredTasks: deliveredTasks,
-                    }),
-                });
-            }
-            // after synchronized updates, do async network refresh
-            // do not await
-            chan.put(event);
-        }
     }
 
     public render(): ReactElement {
@@ -309,7 +143,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 <TaskModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
-                    mutationChan={this.mutationChan}
+                    mutationOutputChan={this.mutationChan}
                 />
                 {this.state.showPotentialTaskOwnersList && (
                     <div
@@ -344,7 +178,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     public async componentDidMount() {
-        this.listenToMutation();
         this.onTabClick(0);
         window.addEventListener('resize', this.onWindowResize);
 
@@ -373,12 +206,30 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 });
             }
         })().then();
-        await this.refresh('cache-first');
+
+        const stateSyncer: IStateSyncer = {
+            fetchNetworkState: async (): Promise<any> => {
+                return await this.props.deps.graphql.query({
+                    fetchPolicy: 'network-only',
+                    query: queries.mePage,
+                });
+            },
+            setLocalState: (state: any) => {
+                this.refreshState(state);
+            },
+            syncLocalState: () => {
+                this.props.deps.localStore.getState();
+            },
+        };
+        this.props.deps.responsiveStateService.listen(
+            stateSyncer,
+            this.mutationOutputChan,
+        );
     }
 
     public componentWillUnmount() {
-        this.stateChangeChan?.close?.call(null);
-        this.mutationListener.close();
+        this.mutationChan?.close();
+        this.stateChangeChan?.close();
         window.removeEventListener('resize', this.onWindowResize);
     }
 
@@ -394,9 +245,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
         this.refreshState(data);
     }
+
     private refreshState(data: any) {
         if (data?.me?.activeTeam) {
             const activeTeam = data.me?.activeTeam;
+
             this.props.deps.localStore.mutate({
                 type: 'RefreshTeam',
                 currentUserId: data.me?.id,
@@ -430,20 +283,20 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onSelectTaskOwner = async (userId: number) => {
-        await this.props.deps.taskService.updateTask(
-            Object.assign({}, this.state.taskSelectingOwner, {
+    private onSelectTaskOwner = (userId: number) => {
+        this.mutationChan.put({
+            type: 'UpdateTask',
+            task: Object.assign({}, this.state.taskSelectingOwner, {
                 owner: Object.assign({}, this.state.taskSelectingOwner?.owner, {
                     id: userId,
                 }),
             }),
-        );
+        });
         this.setState({
             potentialTaskOwners: [],
             showPotentialTaskOwnersList: false,
             taskSelectingOwner: undefined,
         });
-        await this.refresh('network-only');
     };
 
     private updateTaskOwnersListPosition = () => {
@@ -500,9 +353,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onCreateTask = async (task: Task): Promise<void> => {
+    private onCreateTask = (task: Task): void => {
         if (task.goal.length > 0) {
-            await this.mutationChan.put({
+            this.mutationChan.put({
                 type: 'CreateTask',
                 task: task,
             });
@@ -514,12 +367,14 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onUpdateTask = async (task: Task) => {
-        await this.props.deps.taskService.updateTask(task);
-        await this.refresh('network-only');
+    private onUpdateTask = (task: Task) => {
+        this.mutationChan.put({
+            type: 'UpdateTask',
+            task: task,
+        });
     };
 
-    private onDeleteTaskClick = async (taskId: number): Promise<void> => {
+    private onDeleteTaskClick = (taskId: number): void => {
         // don't care if the consumer is ready to pop, no await
         this.mutationChan.put({
             type: 'DeleteTask',
@@ -527,7 +382,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onStartTaskClick = async (taskId: number): Promise<void> => {
+    private onStartTaskClick = (taskId: number): void => {
         // don't care if the consumer is ready to pop, no await
         this.mutationChan.put({
             type: 'StartTask',
@@ -535,7 +390,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onCompleteTaskClick = async (taskId: number): Promise<void> => {
+    private onCompleteTaskClick = (taskId: number): void => {
         // don't care if the consumer is ready to pop, no await
         this.mutationChan.put({
             type: 'CompleteTask',
