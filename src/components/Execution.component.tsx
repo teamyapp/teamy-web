@@ -1,6 +1,8 @@
 import { FetchPolicy } from '@apollo/client';
 import * as csp from '@creatcodebuild/csp';
 import { Deps } from '@deps';
+import * as events from '@entity/events';
+import { RefreshTeam } from '@entity/events';
 import { PersonalStatus } from '@entity/personalStatus';
 import { IBoundingBoxFinder } from '@entity/position';
 import { Task } from '@entity/task';
@@ -8,14 +10,13 @@ import { TaskAction } from '@entity/taskAction';
 import { TeamStatus } from '@entity/teamStatus';
 import { User } from '@entity/user';
 import { IStateSyncer } from '@lib/store/responsiveState.service';
-import { IAppState } from '@state/state';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
+import * as queries from '@service/queries';
+import { IAppState } from '@state/state';
 import { History, LocationState } from 'history';
 import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
-import * as events from '@entity/events';
-import * as queries from '@service/queries';
 import styles from './Execution.component.module.scss';
 import Team from './shared/Kanban';
 import { TaskModalComponent } from './shared/Modals/TaskModal.component';
@@ -51,9 +52,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private readonly mutationChan = csp.chan<events.MutationEvent>();
     private readonly multiCaster: csp.Multicaster<events.MutationEvent> =
         csp.multi<events.MutationEvent>(this.mutationChan);
-    private readonly mutationOutputChan: csp.PopChannel<
-        events.MutationEvent | undefined
-    > = this.multiCaster.copy();
+    private readonly mutationOutputChan: csp.PopChannel<events.MutationEvent | undefined> = this.multiCaster.copy();
     private stateChangeChan?: csp.PopChannel<IAppState>;
 
     constructor(props: IProps) {
@@ -190,31 +189,19 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     break;
                 }
 
-                this.setState({
-                    personalStatus: {
-                        needAttentionTask: state.needAttentionTask,
-                        upcomingTasks: state.teamStatus.upcomingTasks.filter(
-                            (task: Task) =>
-                                task.owner?.id === state.currentUserId,
-                        ),
-                        deliveredTasks: state.teamStatus.deliveredTasks.filter(
-                            (task: Task) =>
-                                task.owner?.id === state.currentUserId,
-                        ),
-                    },
-                    teamStatus: state.teamStatus,
-                });
+                this.updateState(state);
             }
         })().then();
 
-        const stateSyncer: IStateSyncer = {
+        const stateSyncer: IStateSyncer<IAppState> = {
             fetchNetworkState: async (): Promise<any> => {
                 return await this.props.deps.graphql.query({
                     fetchPolicy: 'network-only',
                     query: queries.mePage,
                 });
             },
-            setLocalState: this.refreshState,
+            updateLocalStateWithRawData: this.updateLocalStateWithRawData,
+            updateLocalState: this.updateState,
         };
         this.props.deps.responsiveStateService.listen(
             stateSyncer,
@@ -242,19 +229,36 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private refreshState = (data: any) => {
-        if (data?.me?.activeTeam) {
-            const activeTeam = data.me?.activeTeam;
-
-            this.props.deps.localStore.mutate({
-                type: 'RefreshTeam',
-                currentUserId: data.me?.id,
-                tasksNeedAttention: activeTeam?.tasksNeedAttention,
-                deliveredTasks: activeTeam?.deliveredTasks,
-                inProgressTasks: activeTeam?.inProgressTasks,
-                upcomingTasks: activeTeam?.upcomingTasks,
-            });
+        const event = createRefreshTeamEvent(data)
+        if (event) {
+            this.props.deps.localStore.mutate(event);
         }
     };
+
+    private updateLocalStateWithRawData = (data: any) => {
+        const event = createRefreshTeamEvent(data);
+        if (event) {
+            const newState = this.props.deps.localStore.mutate(event, false);
+            this.updateState(newState);
+        }
+    }
+
+    private updateState = (state: IAppState) => {
+        this.setState({
+            personalStatus: {
+                needAttentionTask: state.needAttentionTask,
+                upcomingTasks: state.teamStatus.upcomingTasks.filter(
+                    (task: Task) =>
+                        task.owner?.id === state.currentUserId,
+                ),
+                deliveredTasks: state.teamStatus.deliveredTasks.filter(
+                    (task: Task) =>
+                        task.owner?.id === state.currentUserId,
+                ),
+            },
+            teamStatus: state.teamStatus,
+        });
+    }
 
     private onTabClick = (index: number) => {
         this.props.routerHistory.push(routes[index]);
@@ -425,6 +429,21 @@ export class ExecutionComponent extends Component<IProps, IState> {
             taskOwnersListTop: -1000,
         });
     };
+}
+
+function createRefreshTeamEvent(data: any): RefreshTeam | null {
+    const activeTeam = data.me?.activeTeam;
+    if (activeTeam) {
+        return {
+            type: 'RefreshTeam',
+            currentUserId: data.me?.id,
+            tasksNeedAttention: activeTeam.tasksNeedAttention,
+            deliveredTasks: activeTeam.deliveredTasks,
+            inProgressTasks: activeTeam.inProgressTasks,
+            upcomingTasks: activeTeam.upcomingTasks,
+        };
+    }
+    return null;
 }
 
 interface IHookProps {

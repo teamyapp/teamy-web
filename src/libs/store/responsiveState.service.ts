@@ -3,9 +3,10 @@ import { Channel, PopChannel } from '@creatcodebuild/csp';
 import { Event } from '@lib/event/event';
 import { LocalStore } from '@lib/store/localStore';
 
-export interface IStateSyncer {
+export interface IStateSyncer<State> {
     fetchNetworkState(): Promise<any>;
-    setLocalState(state: any): void;
+    updateLocalStateWithRawData(data: any): void;
+    updateLocalState(state: State): void;
 }
 
 export type MutateNetworkState<MutationEvent> = (
@@ -26,7 +27,7 @@ export class ResponsiveStateService<LocalState, MutationEvent extends Event> {
     }
 
     public listen(
-        stateSyncer: IStateSyncer,
+        stateSyncer: IStateSyncer<LocalState>,
         mutationChan: PopChannel<MutationEvent | undefined>,
     ) {
         // move all elements from array1 which meet the given condition into array2
@@ -40,7 +41,8 @@ export class ResponsiveStateService<LocalState, MutationEvent extends Event> {
                 if (event === undefined) {
                     return;
                 }
-                await this.localStore.mutate(event);
+                const state = this.localStore.mutate(event, false);
+                stateSyncer.updateLocalState(state);
                 // after synchronized updates, do async network refresh
                 // do not await
                 this.networkMutationEventChan.put(event);
@@ -48,7 +50,7 @@ export class ResponsiveStateService<LocalState, MutationEvent extends Event> {
         })();
     }
 
-    private async syncNetworkStateInBackground(stateSyncer: IStateSyncer) {
+    private async syncNetworkStateInBackground(stateSyncer: IStateSyncer<LocalState>) {
         // this coroutine handles network refresh only
         // and each refresh takes place in order
 
@@ -62,9 +64,9 @@ export class ResponsiveStateService<LocalState, MutationEvent extends Event> {
                 // the channel is not ready therefore empty
                 console.log('mutation channel is empty');
                 console.log('refresh start');
-                const state = await stateSyncer.fetchNetworkState();
+                const data = await stateSyncer.fetchNetworkState();
                 if (await isEmpty(this.networkMutationEventChan)) {
-                    stateSyncer.setLocalState(state);
+                    stateSyncer.updateLocalStateWithRawData(data);
                     console.log('refresh done');
                 } else {
                     console.log(

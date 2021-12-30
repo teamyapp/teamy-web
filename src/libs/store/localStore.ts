@@ -18,12 +18,9 @@ export class LocalStore<State, MutationEvent extends event.Event> {
     private readonly initialState: State;
     private readonly events: MutationEvent[];
     private readonly mutateState: MutateState<State, MutationEvent>;
-    private readonly mutationChan = csp.chan<MutationEvent>();
-
     private readonly stateChangeChan = csp.chan<State>();
     private readonly stateChangeCaster: csp.Multicaster<State | undefined> =
         csp.multi(this.stateChangeChan);
-    private readonly stateChangeMonitorChain = this.stateChangeCaster.copy();
 
     private currentState: State;
 
@@ -42,13 +39,19 @@ export class LocalStore<State, MutationEvent extends event.Event> {
             this.currentState = this.initialState = initialState;
             this.events = [];
         }
-
-        this.startProcessingEvents();
     }
 
-    public async mutate(event: MutationEvent): Promise<void> {
-        await this.mutationChan.put(event);
-        await this.stateChangeMonitorChain;
+    public mutate(event: MutationEvent, shouldNotify: boolean = true): State {
+        const newState = this.mutateState(this.currentState, event);
+        this.events.push(event);
+        this.currentState = newState;
+        console.log(`performed local mutation: ${event.type}`);
+        this.persistData();
+
+        if (shouldNotify) {
+            this.stateChangeChan.put(newState);
+        }
+        return newState;
     }
 
     public getState(): State {
@@ -57,23 +60,6 @@ export class LocalStore<State, MutationEvent extends event.Event> {
 
     public subscribeStateChange(): csp.PopChannel<State> {
         return this.stateChangeCaster.copy();
-    }
-
-    private startProcessingEvents() {
-        (async () => {
-            while (true) {
-                const event = await this.mutationChan.pop();
-                if (!event) {
-                    return;
-                }
-
-                this.events.push(event);
-                this.currentState = this.mutateState(this.currentState, event);
-                console.log(`performed local mutation: ${event.type}`);
-                this.persistData();
-                await this.stateChangeChan.put(this.currentState);
-            }
-        })();
     }
 
     private persistData() {
