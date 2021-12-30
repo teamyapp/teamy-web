@@ -1,5 +1,5 @@
 import * as csp from '@creatcodebuild/csp';
-import { Event } from '@lib/event/event';
+import * as event from '@lib/event/event';
 
 const storeDataKey = 'storeData';
 
@@ -14,7 +14,7 @@ interface Data<State, MutationEvent> {
     events: MutationEvent[];
 }
 
-export class LocalStore<State, MutationEvent extends Event> {
+export class LocalStore<State, MutationEvent extends event.Event> {
     private readonly initialState: State;
     private readonly events: MutationEvent[];
     private readonly mutateState: MutateState<State, MutationEvent>;
