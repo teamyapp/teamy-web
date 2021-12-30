@@ -1,13 +1,17 @@
 import { getConfig } from '@config/config';
+import * as events from '@entity/events';
 import { getEnvironment } from '@env/environment';
-import { IdentityClient } from '@identity/Identity.client';
-import { GraphQLClient } from '@network/GraphQL.client';
-import { FetchHTTPClient } from '@network/FetchHTTP.client';
+import { IdentityClient } from '@lib/identity/Identity.client';
+import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
+import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { LocalStore } from '@lib/store/localStore';
 import { CommentService } from '@service/comment.service';
 import { StatusService } from '@service/status.service';
 import { TaskService } from '@service/task.service';
 import { TeamService } from '@service/team.service';
 import { UserService } from '@service/user.service';
+import { IAppState } from '@state/state';
+import { createStore } from '@state/store';
 
 export interface Deps {
     taskService: TaskService;
@@ -17,6 +21,7 @@ export interface Deps {
     statusService: StatusService;
     identityClient: IdentityClient;
     graphql: GraphQLClient;
+    localStore: LocalStore<IAppState, events.MutationEvent>;
 }
 
 export function initDeps(): Deps {
@@ -33,6 +38,7 @@ export function initDeps(): Deps {
     const userService = new UserService(teamyGraphQLClient);
     const statusService = new StatusService(teamyGraphQLClient);
     const commentService = new CommentService(teamyGraphQLClient);
+    const localStore = createStore();
     return {
         taskService,
         teamService,
@@ -40,6 +46,7 @@ export function initDeps(): Deps {
         commentService,
         statusService,
         identityClient,
+        localStore,
         graphql: teamyGraphQLClient,
     };
 }

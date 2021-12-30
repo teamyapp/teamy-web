@@ -1,14 +1,16 @@
 import React, { Component, ReactElement } from 'react';
 import { User } from '@entity/user';
 import { FormatService } from '@service/format.service';
-import { MaterialIconUI } from '@ui/MaterialIcon';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import styles from './SelectUserList.module.scss';
 import { UserProfileUI } from './UserProfile';
+
 interface IProps {
     users: User[];
     selectedUserId?: number;
     onSelectUser?: (userId: number) => void;
 }
+
 export class SelectUserListUI extends Component<IProps> {
     render(): ReactElement {
         return (

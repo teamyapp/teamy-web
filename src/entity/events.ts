@@ -1,35 +1,44 @@
-import { Task } from './task';
+import { Task } from '@entity/task';
+import { Event } from '@lib/event/event';
 
 export type MutationEvent =
-    | TaskUpdate
-    | TaskDelete
+    | CreateTask
+    | UpdateTask
+    | DeleteTask
     | StartTask
     | CompleteTask
-    | CreateTask;
+    | RefreshTeam;
 
-export interface TaskUpdate {
-    type: 'TaskUpdate';
-    taskId: number;
-    goal: string;
-    context: string;
+export interface CreateTask extends Event {
+    type: 'CreateTask';
+    task: Task;
 }
 
-export interface TaskDelete {
-    type: 'TaskDelete';
+export interface UpdateTask extends Event {
+    type: 'UpdateTask';
+    task: Task;
+}
+
+export interface DeleteTask extends Event {
+    type: 'DeleteTask';
     taskId: number;
 }
 
-export interface StartTask {
+export interface StartTask extends Event {
     type: 'StartTask';
     taskId: number;
 }
 
-export interface CompleteTask {
+export interface CompleteTask extends Event {
     type: 'CompleteTask';
     taskId: number;
 }
 
-export interface CreateTask {
-    type: 'CreateTask';
-    task: Task;
+export interface RefreshTeam extends Event {
+    type: 'RefreshTeam';
+    currentUserId: number;
+    tasksNeedAttention: Task[];
+    upcomingTasks: Task[];
+    inProgressTasks: Task[];
+    deliveredTasks: Task[];
 }

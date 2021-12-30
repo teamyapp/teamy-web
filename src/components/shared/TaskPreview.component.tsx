@@ -10,7 +10,7 @@ import React, {
 import { IBoundingBoxFinder, Rect } from '@entity/position';
 import { Task } from '@entity/task';
 import { TaskAction } from '@entity/taskAction';
-import { MaterialIconUI } from '@ui/MaterialIcon';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 // import { NamedValueUI } from '@ui/NamedValue';
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
@@ -301,15 +301,11 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                 return;
             }
             if (
-                event.type === 'TaskUpdate' &&
-                event.taskId === this.props.task.id
+                event.type === 'UpdateTask' &&
+                event.task.id === this.props.task.id
             ) {
-                const task = Object.assign({}, this.state.task, {
-                    goal: event.goal,
-                    context: event.context,
-                });
                 this.setState({
-                    task: task,
+                    task: event.task,
                 });
             }
         }

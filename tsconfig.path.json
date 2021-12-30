@@ -6,12 +6,14 @@
             "@entity/*": ["entity/*"],
             "@env/*": ["env/*"],
             "@config/*": ["config/*"],
-            "@store/*": ["store/*"],
             "@service/*": ["service/*"],
-            "@ext/*": ["libs/ext/*"],
-            "@ui/*": ["libs/ui/*"],
-            "@network/*": ["libs/network/*"],
-            "@identity/*": ["libs/identity/*"]
+            "@state/*": ["state/*"],
+            "@lib/ext/*": ["libs/ext/*"],
+            "@lib/ui/*": ["libs/ui/*"],
+            "@lib/network/*": ["libs/network/*"],
+            "@lib/identity/*": ["libs/identity/*"],
+            "@lib/event/*": ["libs/event/*"],
+            "@lib/store/*": ["libs/store/*"]
         }
     }
 }

@@ -14,5 +14,5 @@ module.exports = {
     webpackFinal: async (config) => {
         config.resolve.plugins = [new TsConfigPathsPlugin()];
         return config;
-    }
+    },
 };

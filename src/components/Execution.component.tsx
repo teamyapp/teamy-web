@@ -1,28 +1,26 @@
 import { FetchPolicy } from '@apollo/client';
+import * as csp from '@creatcodebuild/csp';
+import { Deps } from '@deps';
+import { PersonalStatus } from '@entity/personalStatus';
+import { IBoundingBoxFinder } from '@entity/position';
+import { Task } from '@entity/task';
+import { getActions, TaskAction } from '@entity/taskAction';
+import { TaskStatus } from '@entity/taskStatus';
+import { TeamStatus } from '@entity/teamStatus';
+import { User } from '@entity/user';
+import { IAppState } from '@state/state';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { TabsUI } from '@lib/ui/Tabs';
 import { History, LocationState } from 'history';
 import React, { Component, createRef, ReactElement, RefObject } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
-import { Unsubscribe } from 'redux';
-import { Deps } from '@deps';
-import { PersonalStatus } from '@entity/personalStatus';
-import * as events from '../entity/events';
-import { IBoundingBoxFinder } from '@entity/position';
-import { Task } from '@entity/task';
-import { AllActions, TaskAction } from '@entity/taskAction';
-import { TeamStatus } from '@entity/teamStatus';
-import { User } from '@entity/user';
-import * as queries from '../service/queries';
-import { updatePersonalStatus } from '@store/slices/PersonalStatus';
-import { updateTeamStatus } from '@store/slices/TeamStatus';
-import store from '../store/store';
-import { MaterialIconUI } from '@ui/MaterialIcon';
-import { TabsUI } from '@ui/Tabs';
+import * as events from '@entity/events';
+import * as queries from '@service/queries';
 import styles from './Execution.component.module.scss';
 import Team from './shared/Kanban';
+import { TaskModalComponent } from './shared/Modals/TaskModal.component';
 import PersonalUI from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
-import { TaskModalComponent } from './shared/Modals/TaskModal.component';
-import * as csp from '@creatcodebuild/csp';
 
 const routes = ['me', 'team'];
 
@@ -50,23 +48,28 @@ interface IState {
 export class ExecutionComponent extends Component<IProps, IState> {
     private taskDetailModalRef = createRef<TaskModalComponent>();
     private taskOwnersPopupRef = createRef<HTMLDivElement>();
-    private unsubscribe?: Unsubscribe;
     private readonly multiCaster: csp.Multicaster<events.MutationEvent>;
     private readonly mutationChan: csp.Channel<events.MutationEvent>;
     private readonly mutationListener: csp.Channel<
         events.MutationEvent | undefined
     >;
+    private stateChangeChan?: csp.PopChannel<IAppState>;
 
     constructor(props: IProps) {
         super(props);
-
-        const newState = store.getState();
         this.state = {
             showPotentialTaskOwnersList: false,
             taskOwnersListLeft: -1000,
             taskOwnersListTop: -1000,
-            personalStatus: newState.personalStatus,
-            teamStatus: newState.teamStatus,
+            personalStatus: {
+                upcomingTasks: [],
+                deliveredTasks: [],
+            },
+            teamStatus: {
+                upcomingTasks: [],
+                inProgressTasks: [],
+                deliveredTasks: [],
+            },
             potentialTaskOwners: [],
         };
 
@@ -139,7 +142,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                             event.task,
                         );
                         break;
-                    case 'TaskDelete':
+                    case 'DeleteTask':
                         await this.props.deps.taskService.deleteTask(
                             event.taskId,
                         );
@@ -168,7 +171,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
             // do not care what events are received, refresh anyway
             console.log('mutation happened', event.type);
             if (event.type === 'CreateTask') {
-                event.task.availableActions = AllActions;
+                event.task.availableActions = getActions(TaskStatus.Upcoming);
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
                         upcomingTasks:
@@ -185,7 +188,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     (task) => task.id === taskId,
                     (task) => {
                         return Object.assign({}, task, {
-                            availableActions: AllActions,
+                            availableActions: getActions(TaskStatus.InProgress),
                         });
                     },
                 );
@@ -195,7 +198,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                         inProgressTasks: inProgressTasks,
                     }),
                 });
-            } else if (event.type === 'TaskDelete') {
+            } else if (event.type === 'DeleteTask') {
                 let taskId = event.taskId;
                 this.setState({
                     teamStatus: {
@@ -221,7 +224,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     (task) => task.id === taskId,
                     (task) => {
                         return Object.assign({}, task, {
-                            availableActions: AllActions,
+                            availableActions: getActions(TaskStatus.Delivered),
                         });
                     },
                 );
@@ -345,19 +348,37 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.onTabClick(0);
         window.addEventListener('resize', this.onWindowResize);
 
-        this.unsubscribe = store.subscribe(() => {
-            const newState = store.getState();
-            this.setState({
-                personalStatus: newState.personalStatus,
-                teamStatus: newState.teamStatus,
-            });
-        });
+        this.stateChangeChan =
+            this.props.deps.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                const state = await this.stateChangeChan!.pop();
+                if (!state) {
+                    break;
+                }
+
+                this.setState({
+                    personalStatus: {
+                        needAttentionTask: state.needAttentionTask,
+                        upcomingTasks: state.teamStatus.upcomingTasks.filter(
+                            (task: Task) =>
+                                task.owner?.id === state.currentUserId,
+                        ),
+                        deliveredTasks: state.teamStatus.deliveredTasks.filter(
+                            (task: Task) =>
+                                task.owner?.id === state.currentUserId,
+                        ),
+                    },
+                    teamStatus: state.teamStatus,
+                });
+            }
+        })().then();
         await this.refresh('cache-first');
     }
 
     public componentWillUnmount() {
+        this.stateChangeChan?.close?.call(null);
         this.mutationListener.close();
-        this.unsubscribe?.call(this);
         window.removeEventListener('resize', this.onWindowResize);
     }
 
@@ -375,26 +396,15 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
     private refreshState(data: any) {
         if (data?.me?.activeTeam) {
-            store.dispatch(
-                updatePersonalStatus({
-                    needAttentionTask:
-                        data.me?.activeTeam?.tasksNeedAttention[0],
-                    // todo: use apollo cli to compile query to TS interfaces to have type hint
-                    upcomingTasks: data.me?.activeTeam?.upcomingTasks.filter(
-                        (task: Task) => task.owner?.id === data?.me?.id,
-                    ),
-                    deliveredTasks: data.me?.activeTeam?.deliveredTasks.filter(
-                        (task: Task) => task.owner?.id === data.me?.id,
-                    ),
-                }),
-            );
-            store.dispatch(
-                updateTeamStatus({
-                    upcomingTasks: data.me?.activeTeam?.upcomingTasks,
-                    inProgressTasks: data.me?.activeTeam?.inProgressTasks,
-                    deliveredTasks: data.me?.activeTeam?.deliveredTasks,
-                }),
-            );
+            const activeTeam = data.me?.activeTeam;
+            this.props.deps.localStore.mutate({
+                type: 'RefreshTeam',
+                currentUserId: data.me?.id,
+                tasksNeedAttention: activeTeam?.tasksNeedAttention,
+                deliveredTasks: activeTeam?.deliveredTasks,
+                inProgressTasks: activeTeam?.inProgressTasks,
+                upcomingTasks: activeTeam?.upcomingTasks,
+            });
         }
     }
 
@@ -512,7 +522,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private onDeleteTaskClick = async (taskId: number): Promise<void> => {
         // don't care if the consumer is ready to pop, no await
         this.mutationChan.put({
-            type: 'TaskDelete',
+            type: 'DeleteTask',
             taskId: taskId,
         });
     };
