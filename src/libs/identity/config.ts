@@ -43,7 +43,7 @@ const productionConfig: Config = {
 export function getConfig(env: Environment): Config {
     switch (env) {
         case Environment.Development:
-            return stagingConfig;
+            return developmentConfig;
         case Environment.Testing:
             return testingConfig;
         case Environment.Staging:
