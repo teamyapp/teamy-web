@@ -1,13 +1,19 @@
 import { getConfig } from '@config/config';
+import * as events from '@entity/events';
 import { getEnvironment } from '@env/environment';
-import { IdentityClient } from '@identity/Identity.client';
-import { GraphQLClient } from '@network/GraphQL.client';
-import { FetchHTTPClient } from '@network/FetchHTTP.client';
+import { IdentityClient } from '@lib/identity/Identity.client';
+import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
+import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { LocalStore } from '@lib/store/localStore';
 import { CommentService } from '@service/comment.service';
+import { createNetworkStateMutator } from '@service/networkStateMutator';
+import { ResponsiveStateService } from '@lib/store/responsiveState.service';
 import { StatusService } from '@service/status.service';
 import { TaskService } from '@service/task.service';
 import { TeamService } from '@service/team.service';
 import { UserService } from '@service/user.service';
+import { IAppState } from '@state/state';
+import { createStore } from '@state/store';
 
 export interface Deps {
     taskService: TaskService;
@@ -16,6 +22,11 @@ export interface Deps {
     commentService: CommentService;
     statusService: StatusService;
     identityClient: IdentityClient;
+    localStore: LocalStore<IAppState, events.MutationEvent>;
+    responsiveStateService: ResponsiveStateService<
+        IAppState,
+        events.MutationEvent
+    >;
     graphql: GraphQLClient;
 }
 
@@ -33,6 +44,12 @@ export function initDeps(): Deps {
     const userService = new UserService(teamyGraphQLClient);
     const statusService = new StatusService(teamyGraphQLClient);
     const commentService = new CommentService(teamyGraphQLClient);
+    const localStore = createStore();
+    const networkStateMutator = createNetworkStateMutator(taskService);
+    const responsiveStateService = new ResponsiveStateService<
+        IAppState,
+        events.MutationEvent
+    >(localStore, networkStateMutator);
     return {
         taskService,
         teamService,
@@ -40,6 +57,8 @@ export function initDeps(): Deps {
         commentService,
         statusService,
         identityClient,
+        localStore,
+        responsiveStateService,
         graphql: teamyGraphQLClient,
     };
 }

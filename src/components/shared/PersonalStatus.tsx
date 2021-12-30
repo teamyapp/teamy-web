@@ -3,8 +3,8 @@ import { Deps } from '@deps';
 import { PersonalStatus } from '@entity/personalStatus';
 import { IBoundingBoxFinder } from '@entity/position';
 import { Task } from '@entity/task';
-import { MaterialIconUI } from '@ui/MaterialIcon';
-import { SectionUI } from '@ui/Section';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { SectionUI } from '@lib/ui/Section';
 import styles from './Personal.module.scss';
 import { TaskPreviewUI } from './TaskPreview.component';
 import * as csp from '@creatcodebuild/csp';
@@ -31,11 +31,6 @@ interface IProps {
 }
 
 export default class PersonalStatusUI extends Component<IProps> {
-    constructor(props: IProps) {
-        super(props);
-        this.state = {};
-    }
-
     public render(): ReactElement {
         return (
             <div className={styles.PersonalStatus}>

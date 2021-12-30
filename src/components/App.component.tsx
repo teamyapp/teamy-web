@@ -1,13 +1,11 @@
 import { FetchPolicy } from '@apollo/client';
-import React, { Component, createRef, ReactElement } from 'react';
-import { Provider } from 'react-redux';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Deps } from '@deps';
 import { Team } from '@entity/team';
-import { withIdentityVerification } from '@identity/withIdentityVerification';
-import * as queries from '../service/queries';
-import store from '../store/store';
-import { MaterialIconUI } from '@ui/MaterialIcon';
+import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import React, { Component, createRef, ReactElement } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import * as queries from '@service/queries';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import ExecutionComponentHook, {
@@ -128,6 +126,7 @@ class AppComponent extends Component<IProps, IState> {
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
         await this.props.deps.teamService.updateActiveTeamId(teamId);
         await this.refresh('network-only');
+        await this.executionRef.current?.refresh('cache-first');
     };
 
     private onTeamMembersAdded = async (teamId: number) => {
@@ -147,7 +146,6 @@ class AppComponent extends Component<IProps, IState> {
             teams,
             activeTeamId,
         });
-        await this.executionRef.current?.refresh('cache-first');
     }
 }
 
@@ -161,10 +159,8 @@ export default function AppComponentHook(props: IHookProps): ReactElement {
         AppComponent,
     );
     return (
-        <Provider store={store}>
-            <BrowserRouter>
-                <AppWithIdentityVerification deps={props.deps} />
-            </BrowserRouter>
-        </Provider>
+        <BrowserRouter>
+            <AppWithIdentityVerification deps={props.deps} />
+        </BrowserRouter>
     );
 }

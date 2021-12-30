@@ -4,13 +4,13 @@ import { Deps } from '@deps';
 import * as events from '@entity/events';
 import { Message } from '@entity/message';
 import { Task } from '@entity/task';
-import { ButtonUI } from '@ui/Button';
-import { DatePickerUI } from '@ui/DatePicker';
-import { MarkdownEditorUI } from '@ui/MarkdownEditor';
-import { MaterialIconUI } from '@ui/MaterialIcon';
-import { ModalUI } from '@ui/Modal';
+import { ButtonUI } from '@lib/ui/Button';
+import { DatePickerUI } from '@lib/ui/DatePicker';
+import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { ModalUI } from '@lib/ui/Modal';
 // import { NamedValueUI } from '@ui/NamedValue';
-import { TextFieldUI } from '@ui/TextField';
+import { TextFieldUI } from '@lib/ui/TextField';
 import { ThreadUI } from '../Thread';
 
 import styles from './TaskModal.component.module.scss';
@@ -19,7 +19,7 @@ const verticalMargin = 40;
 
 interface IProps {
     deps: Deps;
-    mutationChan: csp.Channel<events.MutationEvent>;
+    mutationOutputChan: csp.PutChannel<events.MutationEvent | undefined>;
 }
 
 interface IState {
@@ -164,16 +164,10 @@ export class TaskModalComponent extends Component<IProps, IState> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
-            const task = Object.assign({}, this.state.task, {
-                context: this.markdownEditorRef.current?.state.content,
+            await this.props.mutationOutputChan.put({
+                type: 'UpdateTask',
+                task: this.state.task,
             });
-            await this.props.mutationChan.put({
-                type: 'TaskUpdate',
-                taskId: this.state.task?.id,
-                goal: this.state.task.goal,
-                context: task.context || '',
-            });
-            await this.props.deps.taskService.updateTask(task);
         }
     };
 

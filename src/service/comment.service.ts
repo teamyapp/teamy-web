@@ -1,6 +1,6 @@
 import { FetchPolicy } from '@apollo/client';
 import { Message } from '@entity/message';
-import { GraphQLClient } from '@network/GraphQL.client';
+import { GraphQLClient } from '@lib/network/GraphQL.client';
 import * as queries from './queries';
 import * as mutations from './mutations';
 

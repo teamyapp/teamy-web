@@ -1,6 +1,6 @@
-import { Errors } from '@ext/errors';
-import { Result } from '@ext/result';
-import { HTTPClient } from '@network/HTTP.client';
+import { Errors } from '@lib/ext/errors';
+import { Result } from '@lib/ext/result';
+import { HTTPClient } from '@lib/network/HTTP.client';
 import { IdentityClient } from './Identity.client';
 
 export class IdentityHTTPClient implements HTTPClient {

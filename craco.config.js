@@ -33,7 +33,7 @@ module.exports = {
             options: {
                 source: 'tsconfig',
                 baseUrl: './src',
-                tsConfigPath: './tsconfig.path.json'
+                tsConfigPath: './tsconfig.path.json',
             },
         },
         {
@@ -46,6 +46,12 @@ module.exports = {
                 esbuildMinimizerOptions: {
                     target: 'es2018',
                     css: true,
+                },
+                esbuildJestOptions: {
+                    loaders: {
+                        '.ts': 'ts',
+                        '.tsx': 'tsx',
+                    },
                 },
             },
         },

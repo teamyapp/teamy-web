@@ -1,3 +1,9 @@
+import * as csp from '@creatcodebuild/csp';
+import * as events from '@entity/events';
+import { IBoundingBoxFinder, Rect } from '@entity/position';
+import { Task } from '@entity/task';
+import { TaskAction } from '@entity/taskAction';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import classNames from 'classnames';
 import React, {
     ChangeEvent,
@@ -7,15 +13,9 @@ import React, {
     MouseEvent,
     ReactElement,
 } from 'react';
-import { IBoundingBoxFinder, Rect } from '@entity/position';
-import { Task } from '@entity/task';
-import { TaskAction } from '@entity/taskAction';
-import { MaterialIconUI } from '@ui/MaterialIcon';
 // import { NamedValueUI } from '@ui/NamedValue';
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
-import * as csp from '@creatcodebuild/csp';
-import * as events from '@entity/events';
 
 const goalLengthLimit = 70;
 
@@ -37,22 +37,19 @@ interface IProps {
 }
 
 interface IState {
-    task: Task;
+    editingTask?: Task;
     isEditing: boolean;
 }
 
 export class TaskPreviewUI extends Component<IProps, IState> {
     private ref = createRef<HTMLDivElement>();
-    private mutationChan: csp.Channel<events.MutationEvent | undefined>;
 
     constructor(props: IProps) {
         super(props);
         this.state = {
-            task: this.props.task,
+            editingTask: this.props.task,
             isEditing: props.isEditing || false,
         };
-
-        this.mutationChan = this.props.multiCaster.copy();
     }
 
     private static renderReportBlocked(index: number): ReactElement {
@@ -78,10 +75,10 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                         </div>
                     )}
                     {this.renderGoal()}
-                    {this.state.task.dueAt && (
+                    {this.props.task.dueAt && (
                         <div className={styles.DueAt}>
                             Due:{' '}
-                            {new Date(this.state.task.dueAt).toLocaleString()}
+                            {new Date(this.props.task.dueAt).toLocaleString()}
                         </div>
                     )}
                     {/*<div className={styles.Attributes}>*/}
@@ -95,7 +92,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                     {/*    )}*/}
                     {/*</div>*/}
                 </div>
-                {this.state.task.availableActions && (
+                {this.props.task.availableActions && (
                     <div className={styles.ActionsSection}>
                         {this.renderActions()}
                     </div>
@@ -179,14 +176,14 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                 autoFocus
                 maxLength={goalLengthLimit}
                 className={styles.GoalTextField}
-                value={this.state.task.goal}
+                value={this.state.editingTask?.goal || ''}
                 onChange={this.onGoalChange}
                 onKeyDown={this.onGoalKeyDown}
                 onBlur={this.onGoalBlur}
             />
         ) : (
             <div className={styles.Goal} onDoubleClick={this.onGoalDoubleClick}>
-                {this.state.task.goal || (
+                {this.props.task.goal || (
                     <span className={styles.Placeholder}>
                         Set a goal for me
                     </span>
@@ -216,7 +213,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
     };
 
     private renderActions(): ReactElement[] {
-        let actions = this.state.task.availableActions;
+        let actions = this.props.task.availableActions;
         if (this.props.canViewDetail) {
             actions = actions.concat(TaskAction.ViewDetail);
         }
@@ -238,25 +235,26 @@ export class TaskPreviewUI extends Component<IProps, IState> {
     };
 
     private onGoalChange = (event: ChangeEvent<HTMLTextAreaElement>): void => {
-        const task = Object.assign({}, this.state.task, {
-            goal: event.target.value,
-        });
         this.setState({
-            task: task,
+            editingTask: Object.assign({}, this.state.editingTask, {
+                goal: event.target.value,
+            }),
         });
     };
 
     private onGoalDoubleClick = () => {
         this.setState({
+            editingTask: this.props.task,
             isEditing: true,
         });
     };
 
     private finishEditing() {
         this.setState({
+            editingTask: undefined,
             isEditing: false,
         });
-        this.props.onTaskFinishEditing?.call(this, this.state.task);
+        this.props.onTaskFinishEditing?.call(this, this.state.editingTask!);
     }
 
     private onTaskDetailClick = (): void => {
@@ -279,39 +277,10 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         const element = event.currentTarget as HTMLDivElement;
         this.props.onShowPotentialTaskOwners?.call(
             null,
-            this.state.task,
+            this.props.task,
             (): Rect => {
                 return element.getBoundingClientRect();
             },
         );
     };
-
-    public componentDidMount() {
-        this.listenToMutation();
-    }
-
-    public componentWillUnmount() {
-        this.mutationChan.close();
-    }
-
-    private async listenToMutation() {
-        while (true) {
-            let event = await this.mutationChan.pop();
-            if (event === undefined) {
-                return;
-            }
-            if (
-                event.type === 'TaskUpdate' &&
-                event.taskId === this.props.task.id
-            ) {
-                const task = Object.assign({}, this.state.task, {
-                    goal: event.goal,
-                    context: event.context,
-                });
-                this.setState({
-                    task: task,
-                });
-            }
-        }
-    }
 }
