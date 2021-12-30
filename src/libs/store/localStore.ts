@@ -23,6 +23,7 @@ export class LocalStore<State, MutationEvent extends event.Event> {
     private readonly stateChangeChan = csp.chan<State>();
     private readonly stateChangeCaster: csp.Multicaster<State | undefined> =
         csp.multi(this.stateChangeChan);
+    private readonly stateChangeMonitorChain = this.stateChangeCaster.copy();
 
     private currentState: State;
 
@@ -45,8 +46,9 @@ export class LocalStore<State, MutationEvent extends event.Event> {
         this.startProcessingEvents();
     }
 
-    public mutate(event: MutationEvent): Promise<void> {
-        return this.mutationChan.put(event);
+    public async mutate(event: MutationEvent): Promise<void> {
+        await this.mutationChan.put(event);
+        await this.stateChangeMonitorChain;
     }
 
     public getState(): State {
