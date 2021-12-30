@@ -5,7 +5,6 @@ import { PersonalStatus } from '@entity/personalStatus';
 import { IBoundingBoxFinder } from '@entity/position';
 import { Task } from '@entity/task';
 import { getActions, TaskAction } from '@entity/taskAction';
-import { TaskStatus } from '@entity/taskStatus';
 import { TeamStatus } from '@entity/teamStatus';
 import { User } from '@entity/user';
 import { IAppState } from '@state/state';
@@ -171,7 +170,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
             // do not care what events are received, refresh anyway
             console.log('mutation happened', event.type);
             if (event.type === 'CreateTask') {
-                event.task.availableActions = getActions(TaskStatus.Upcoming);
+                event.task.availableActions = getActions('Upcoming');
                 this.setState({
                     teamStatus: Object.assign({}, this.state.teamStatus, {
                         upcomingTasks:
@@ -188,7 +187,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     (task) => task.id === taskId,
                     (task) => {
                         return Object.assign({}, task, {
-                            availableActions: getActions(TaskStatus.InProgress),
+                            availableActions: getActions('InProgress'),
                         });
                     },
                 );
@@ -224,7 +223,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     (task) => task.id === taskId,
                     (task) => {
                         return Object.assign({}, task, {
-                            availableActions: getActions(TaskStatus.Delivered),
+                            availableActions: getActions('Delivered'),
                         });
                     },
                 );
