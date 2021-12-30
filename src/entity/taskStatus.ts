@@ -1,6 +1,5 @@
-export enum TaskStatus {
-    Upcoming,
-    InProgress,
-    Delivered,
-    NeedAttention,
-}
+export type TaskStatus =
+    | 'Upcoming'
+    | 'InProgress'
+    | 'Delivered'
+    | 'NeedAttention';

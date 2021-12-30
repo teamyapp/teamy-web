@@ -5,10 +5,7 @@ import { LocalStore } from '@lib/store/localStore';
 
 export interface IStateSyncer {
     fetchNetworkState(): Promise<any>;
-
     setLocalState(state: any): void;
-
-    syncLocalState(): void;
 }
 
 export type MutateNetworkState<MutationEvent> = (
@@ -43,8 +40,7 @@ export class ResponsiveStateService<LocalState, MutationEvent extends Event> {
                 if (event === undefined) {
                     return;
                 }
-                this.localStore.mutate(event);
-                stateSyncer.syncLocalState();
+                await this.localStore.mutate(event);
                 // after synchronized updates, do async network refresh
                 // do not await
                 this.networkMutationEventChan.put(event);

@@ -7,7 +7,7 @@ import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { LocalStore } from '@lib/store/localStore';
 import { CommentService } from '@service/comment.service';
 import { createNetworkStateMutator } from '@service/networkStateMutator';
-import { ResponsiveStateService } from '@service/responsiveState.service';
+import { ResponsiveStateService } from '@lib/store/responsiveState.service';
 import { StatusService } from '@service/status.service';
 import { TaskService } from '@service/task.service';
 import { TeamService } from '@service/team.service';

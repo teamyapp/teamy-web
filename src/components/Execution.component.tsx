@@ -7,7 +7,7 @@ import { Task } from '@entity/task';
 import { TaskAction } from '@entity/taskAction';
 import { TeamStatus } from '@entity/teamStatus';
 import { User } from '@entity/user';
-import { IStateSyncer } from '@service/responsiveState.service';
+import { IStateSyncer } from '@lib/store/responsiveState.service';
 import { IAppState } from '@state/state';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
@@ -214,12 +214,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     query: queries.mePage,
                 });
             },
-            setLocalState: (state: any) => {
-                this.refreshState(state);
-            },
-            syncLocalState: () => {
-                this.props.deps.localStore.getState();
-            },
+            setLocalState: this.refreshState,
         };
         this.props.deps.responsiveStateService.listen(
             stateSyncer,
@@ -246,7 +241,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.refreshState(data);
     }
 
-    private refreshState(data: any) {
+    private refreshState = (data: any) => {
         if (data?.me?.activeTeam) {
             const activeTeam = data.me?.activeTeam;
 
@@ -259,7 +254,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 upcomingTasks: activeTeam?.upcomingTasks,
             });
         }
-    }
+    };
 
     private onTabClick = (index: number) => {
         this.props.routerHistory.push(routes[index]);

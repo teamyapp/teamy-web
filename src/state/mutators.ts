@@ -9,7 +9,7 @@ function createTaskMutateState(
     state: IAppState,
     event: events.CreateTask,
 ): IAppState {
-    event.task.availableActions = getActions(TaskStatus.Upcoming);
+    event.task.availableActions = getActions('Upcoming');
     return Object.assign({}, state, {
         teamStatus: Object.assign({}, state.teamStatus, {
             upcomingTasks: state.teamStatus.upcomingTasks.concat(event.task),
@@ -24,22 +24,20 @@ function updateTaskMutateState(
     event: events.UpdateTask,
 ): IAppState {
     const upcomingTasks = state.teamStatus.upcomingTasks.map((oldTask: Task) =>
-        replaceTask(event.task, oldTask, TaskStatus.Upcoming),
+        replaceTask(event.task, oldTask, 'Upcoming'),
     );
     const inProgressTasks = state.teamStatus.inProgressTasks.map(
-        (oldTask: Task) =>
-            replaceTask(event.task, oldTask, TaskStatus.InProgress),
+        (oldTask: Task) => replaceTask(event.task, oldTask, 'InProgress'),
     );
     const deliveredTasks = state.teamStatus.deliveredTasks.map(
-        (oldTask: Task) =>
-            replaceTask(event.task, oldTask, TaskStatus.Delivered),
+        (oldTask: Task) => replaceTask(event.task, oldTask, 'Delivered'),
     );
     let needAttentionTask = state.needAttentionTask;
     if (needAttentionTask) {
         needAttentionTask = replaceTask(
             event.task,
             needAttentionTask,
-            TaskStatus.NeedAttention,
+            'NeedAttention',
         );
     }
     return Object.assign({}, state, {
@@ -89,7 +87,7 @@ function startTaskMutateState(
         (task) => {
             return Object.assign({}, task, {
                 // TODO: assign appropriate actions
-                availableActions: getActions(TaskStatus.Upcoming),
+                availableActions: getActions('Upcoming'),
             });
         },
     );
@@ -99,14 +97,14 @@ function startTaskMutateState(
         (task: Task) => task.id === event.taskId,
         (task) => {
             return Object.assign({}, task, {
-                availableActions: getActions(TaskStatus.InProgress),
+                availableActions: getActions('InProgress'),
             });
         },
     );
     const needAttentionTask = inProgressTasks.filter(
         (task: Task) => task.id === event.taskId,
     )[0];
-    needAttentionTask.availableActions = getActions(TaskStatus.NeedAttention);
+    needAttentionTask.availableActions = getActions('NeedAttention');
     return Object.assign({}, state, {
         teamStatus: Object.assign({}, state.teamStatus, {
             upcomingTasks: upcomingTasks,
@@ -127,7 +125,7 @@ function completeTaskMutateState(
         (task: Task) => task.id === event.taskId,
         (task) => {
             return Object.assign({}, task, {
-                availableActions: getActions(TaskStatus.Delivered),
+                availableActions: getActions('Delivered'),
             });
         },
     );
@@ -150,20 +148,20 @@ function refreshTeamMutateState(
         needAttentionTask = replaceTask(
             needAttentionTask,
             needAttentionTask,
-            TaskStatus.NeedAttention,
+            'NeedAttention',
         );
     }
     return Object.assign({}, state, {
         currentUserId: event.currentUserId,
         teamStatus: {
             upcomingTasks: event.upcomingTasks.map((task) =>
-                replaceTask(task, task, TaskStatus.Upcoming),
+                replaceTask(task, task, 'Upcoming'),
             ),
             inProgressTasks: event.inProgressTasks.map((task) =>
-                replaceTask(task, task, TaskStatus.InProgress),
+                replaceTask(task, task, 'InProgress'),
             ),
             deliveredTasks: event.deliveredTasks.map((task) =>
-                replaceTask(task, task, TaskStatus.Delivered),
+                replaceTask(task, task, 'Delivered'),
             ),
         },
         needAttentionTask: needAttentionTask,

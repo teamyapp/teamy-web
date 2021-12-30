@@ -1,5 +1,5 @@
 import * as csp from '@creatcodebuild/csp';
-import { Event } from '@lib/event/event';
+import * as event from '@lib/event/event';
 
 const storeDataKey = 'storeData';
 
@@ -9,18 +9,22 @@ export type MutateState<State, MutationEvent> = (
 ) => State;
 
 interface Data<State, MutationEvent> {
-    states: State[];
+    initialState: State;
+    currentState: State;
     events: MutationEvent[];
 }
 
-export class LocalStore<State, MutationEvent extends Event> {
-    private readonly states: State[];
+export class LocalStore<State, MutationEvent extends event.Event> {
+    private readonly initialState: State;
     private readonly events: MutationEvent[];
     private readonly mutateState: MutateState<State, MutationEvent>;
+    private readonly mutationChan = csp.chan<MutationEvent>();
 
     private readonly stateChangeChan = csp.chan<State>();
     private readonly stateChangeCaster: csp.Multicaster<State | undefined> =
         csp.multi(this.stateChangeChan);
+
+    private currentState: State;
 
     constructor(
         initialState: State,
@@ -28,57 +32,63 @@ export class LocalStore<State, MutationEvent extends Event> {
     ) {
         this.mutateState = mutateState;
         const data = this.loadData();
-        this.states = data.states.length === 0 ? [initialState] : data.states;
-        this.events = data.events;
-    }
 
-    public mutate(event: MutationEvent) {
-        if (this.states.length < 1) {
-            console.log('cannot mutate state');
-            return;
+        if (data) {
+            this.initialState = data.initialState;
+            this.currentState = data.currentState;
+            this.events = data.events;
+        } else {
+            this.currentState = this.initialState = initialState;
+            this.events = [];
         }
 
-        this.events.push(event);
-        this.states.push(this.mutateState(this.getState(), event));
-        this.stateChangeChan.put(this.getState());
-        console.log(`performed local mutation: ${event.type}`);
-        this.persistData();
+        this.startProcessingEvents();
     }
 
-    public undo() {
-        if (this.states.length < 2) {
-            console.log('cannot undo state mutation');
-            return;
-        }
-        this.states.pop();
-        this.persistData();
+    public mutate(event: MutationEvent): Promise<void> {
+        return this.mutationChan.put(event);
     }
 
     public getState(): State {
-        return this.states[this.states.length - 1];
+        return this.currentState;
     }
 
     public subscribeStateChange(): csp.PopChannel<State> {
         return this.stateChangeCaster.copy();
     }
 
+    private startProcessingEvents() {
+        (async () => {
+            while (true) {
+                const event = await this.mutationChan.pop();
+                if (!event) {
+                    return;
+                }
+
+                this.events.push(event);
+                this.currentState = this.mutateState(this.currentState, event);
+                console.log(`performed local mutation: ${event.type}`);
+                this.persistData();
+                await this.stateChangeChan.put(this.currentState);
+            }
+        })();
+    }
+
     private persistData() {
         const data: Data<State, MutationEvent> = {
-            states: this.states,
+            initialState: this.initialState,
+            currentState: this.currentState,
             events: this.events,
         };
         localStorage.setItem(storeDataKey, JSON.stringify(data, null, 4));
     }
 
-    private loadData(): Data<State, MutationEvent> {
+    private loadData(): Data<State, MutationEvent> | null {
         const data = localStorage.getItem(storeDataKey);
         if (!data) {
-            return {
-                states: [],
-                events: [],
-            };
+            return null;
         } else {
-            return JSON.parse(localStorage.getItem(storeDataKey) || '');
+            return JSON.parse(data);
         }
     }
 }
