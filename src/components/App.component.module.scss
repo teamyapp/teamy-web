@@ -34,6 +34,23 @@
 
                 letter-spacing: 1px;
             }
+
+            .Spacer {
+                flex: 1;
+            }
+
+            .UserProfile {
+                --profile-width: 30px;
+                --profile-height: 30px;
+                border-radius: 50%;
+                margin-right: 6px;
+                border: 3px solid transparent;
+
+                &:hover {
+                    cursor: pointer;
+                    border: 3px solid white;
+                }
+            }
         }
 
         .Execution {

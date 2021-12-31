@@ -8,7 +8,7 @@ import { IStateSyncer } from '@lib/store/responsiveState.service';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
-import { Deps } from '@core/deps';
+import { Deps } from '@core/dep/deps';
 import * as events from '@core/entity/events';
 import { RefreshTeam } from '@core/entity/events';
 import { PersonalStatus } from '@core/entity/personalStatus';

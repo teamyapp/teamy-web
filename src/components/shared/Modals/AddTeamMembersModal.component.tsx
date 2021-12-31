@@ -5,7 +5,7 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 import { TextAreaUI } from '@lib/ui/TextArea';
 
-import { Deps } from '@core/deps';
+import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
 
 import styles from './AddTeamMembersModal.component.module.scss';

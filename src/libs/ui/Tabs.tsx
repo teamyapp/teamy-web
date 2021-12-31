@@ -14,7 +14,7 @@ interface IState {
 }
 
 export class TabsUI extends Component<IProps, IState> {
-    private readonly containerRef: RefObject<HTMLDivElement> = createRef();
+    private readonly containerRef = createRef<HTMLDivElement>();
 
     private readonly tabsRef: RefObject<HTMLDivElement>[];
     private readonly activeTabIndicatorRef: RefObject<HTMLDivElement> =
@@ -85,8 +85,14 @@ export class TabsUI extends Component<IProps, IState> {
     };
 
     private getActiveTabIndicatorLeft(): number {
+        if (
+            this.state.selectedTabIndex < 0 ||
+            this.state.selectedTabIndex >= this.tabsRef.length
+        ) {
+            return 0;
+        }
         let ref = this.tabsRef[this.state.selectedTabIndex];
-        return ref.current == null ? 0 : ref.current.offsetLeft;
+        return ref.current?.offsetLeft || 0;
     }
 
     private onTabClickHandler(index: number): () => void {
