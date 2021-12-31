@@ -22,7 +22,7 @@ import { IAppState } from '@core/state/state';
 
 import styles from './Execution.component.module.scss';
 import Team from './shared/Kanban';
-import { TaskModalComponent } from './shared/Modals/TaskModal.component';
+import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.component';
 import PersonalUI from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
 
@@ -50,7 +50,7 @@ interface IState {
 }
 
 export class ExecutionComponent extends Component<IProps, IState> {
-    private readonly taskDetailModalRef = createRef<TaskModalComponent>();
+    private readonly taskDetailModalRef = createRef<TaskDetailModalComponent>();
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
     private readonly mutationChan = csp.chan<events.MutationEvent>();
     private readonly multiCaster: csp.Multicaster<events.MutationEvent> =
@@ -144,7 +144,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                         </Route>
                     </Switch>
                 </div>
-                <TaskModalComponent
+                <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
                     mutationOutputChan={this.mutationChan}

@@ -11,7 +11,7 @@ import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 
 import { UserProfileUI } from '../UserProfile';
-import styles from './TeamModal.component.module.scss';
+import styles from './TeamSettingsModal.component.module.scss';
 
 interface IProps {
     deps: Deps;
@@ -41,7 +41,7 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
         return (
             <ModalUI ref={this.modalRef}>
                 {this.state.team && (
-                    <div className={styles.TeamModal}>
+                    <div className={styles.TeamSettingsModal}>
                         <div className={styles.Header}>
                             Team {this.state.initialTeamName}
                             <div

@@ -39,7 +39,7 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
         return (
             <ModalUI ref={this.modalRef}>
                 {this.state.user && (
-                    <div className={styles.UserModal}>
+                    <div className={styles.UserSettingsModal}>
                         <div className={styles.Header}>
                             User Settings
                             <div

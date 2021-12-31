@@ -15,7 +15,7 @@ import { Message } from '@core/entity/message';
 import { Task } from '@core/entity/task';
 
 import { ThreadUI } from '../Thread';
-import styles from './TaskModal.component.module.scss';
+import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 40;
 
@@ -31,7 +31,7 @@ interface IState {
     heightWithMargin: number;
 }
 
-export class TaskModalComponent extends Component<IProps, IState> {
+export class TaskDetailModalComponent extends Component<IProps, IState> {
     private readonly modalRef = createRef<ModalUI>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();

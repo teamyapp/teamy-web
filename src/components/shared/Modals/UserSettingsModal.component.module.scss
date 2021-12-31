@@ -1,7 +1,7 @@
 @import 'Modal.shared.module';
 @import '../../../libs/ui/styleguide/font';
 
-.UserModal {
+.UserSettingsModal {
     @include primaryFont;
     display: flex;
     flex-direction: column;

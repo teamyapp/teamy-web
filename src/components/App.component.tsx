@@ -17,7 +17,7 @@ import ExecutionComponentHook, {
 } from './Execution.component';
 import { DrawerUI } from './shared/Drawer';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
-import { TeamSettingsModalComponent } from './shared/Modals/TeamModal.component';
+import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
 import { UserProfileUI } from './shared/UserProfile';
 
