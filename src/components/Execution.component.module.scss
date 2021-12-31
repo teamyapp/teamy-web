@@ -1,5 +1,6 @@
 @import '../libs/ui/styleguide/color';
 @import '../libs/ui/styleguide/elevation';
+@import './shared/shared';
 
 .Execution {
     display: flex;
@@ -9,7 +10,7 @@
 
     .Tabs {
         background-color: var(--tabs-background-color, $primaryColor);
-        box-shadow: rgba(0, 0, 0, 0.2) 0 2px 4px;
+        box-shadow: rgba(0, 0, 0, 0.15) 0 2px 4px;
 
         .Container {
             max-width: 800px;
@@ -21,7 +22,7 @@
         overflow-y: hidden;
         flex: 1;
         box-sizing: border-box;
-        padding: 20px;
+        padding: $sectionSpace;
     }
 
     .SelectTaskOwnerList {

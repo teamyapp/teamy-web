@@ -4,11 +4,11 @@
 
 $numOfActionColumns: 3;
 $actionIconSize: 28px;
-$edgeSpace: 12px;
+$edgeSpace: 10px;
 
 @mixin goalText {
     font-family: inherit;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 600;
 }
 
