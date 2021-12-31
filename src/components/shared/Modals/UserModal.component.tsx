@@ -60,7 +60,6 @@ export class UserModalComponent extends Component<IProps, IState> {
                         </div>
                         <div className={styles.TabContent}>
                             {this.renderUserProfileTab()}
-                            {/*{this.renderTeamMembersTab()}*/}
                         </div>
                     </div>
                 )}

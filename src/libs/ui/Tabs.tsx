@@ -85,14 +85,8 @@ export class TabsUI extends Component<IProps, IState> {
     };
 
     private getActiveTabIndicatorLeft(): number {
-        if (
-            this.state.selectedTabIndex < 0 ||
-            this.state.selectedTabIndex >= this.tabsRef.length
-        ) {
-            return 0;
-        }
         let ref = this.tabsRef[this.state.selectedTabIndex];
-        return ref.current?.offsetLeft || 0;
+        return ref?.current?.offsetLeft || 0;
     }
 
     private onTabClickHandler(index: number): () => void {
