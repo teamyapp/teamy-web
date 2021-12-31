@@ -9,7 +9,7 @@ import { TextFieldUI } from '@lib/ui/TextField';
 import { Deps } from '@core/dep/deps';
 import { User } from '@core/entity/user';
 
-import styles from './UserModal.component.module.scss';
+import styles from './UserSettingsModal.component.module.scss';
 
 interface IProps {
     deps: Deps;
@@ -24,7 +24,7 @@ interface IState {
     initialUserLastName?: string;
 }
 
-export class UserModalComponent extends Component<IProps, IState> {
+export class UserSettingsModalComponent extends Component<IProps, IState> {
     private readonly modalRef = createRef<ModalUI>();
 
     constructor(props: IProps) {

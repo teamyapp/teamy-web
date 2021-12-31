@@ -18,7 +18,7 @@ import ExecutionComponentHook, {
 import { DrawerUI } from './shared/Drawer';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
 import { TeamSettingsModalComponent } from './shared/Modals/TeamModal.component';
-import { UserModalComponent } from './shared/Modals/UserModal.component';
+import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
 import { UserProfileUI } from './shared/UserProfile';
 
 interface IProps {
@@ -36,7 +36,7 @@ class AppComponent extends Component<IProps, IState> {
     private executionRef = createRef<ExecutionComponent>();
     private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
     private addTeamMembersModalRef = createRef<AddTeamMembersModalComponent>();
-    private userModalRef = createRef<UserModalComponent>();
+    private userModalRef = createRef<UserSettingsModalComponent>();
 
     constructor(props: any) {
         super(props);
@@ -87,11 +87,18 @@ class AppComponent extends Component<IProps, IState> {
                                 </div>
                                 <div className={styles.Spacer} />
                                 {this.state.me && (
-                                    <div
-                                        className={styles.UserProfile}
-                                        onClick={this.onUserProfileClick}
-                                    >
-                                        <UserProfileUI user={this.state.me} />
+                                    <div className={styles.UserSection}>
+                                        <div
+                                            className={styles.UserProfile}
+                                            onClick={this.onUserProfileClick}
+                                        >
+                                            <UserProfileUI
+                                                user={this.state.me}
+                                            />
+                                        </div>
+                                        <div className={styles.UserName}>
+                                            {`${this.state.me?.firstName} ${this.state.me?.lastName}`}
+                                        </div>
                                     </div>
                                 )}
                             </header>
@@ -117,7 +124,7 @@ class AppComponent extends Component<IProps, IState> {
                     ref={this.addTeamMembersModalRef}
                     onTeamMembersAdded={this.onTeamMembersAdded}
                 />
-                <UserModalComponent
+                <UserSettingsModalComponent
                     ref={this.userModalRef}
                     deps={this.props.deps}
                     onUserUpdated={this.onUserUpdated}

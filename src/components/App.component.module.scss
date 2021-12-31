@@ -1,7 +1,7 @@
 @import '../libs/ui/styleguide/color';
 @import '../libs/ui/styleguide/utility';
 @import '../libs/ui/styleguide/easing';
-@import 'shared';
+@import './shared/shared';
 
 .App {
     @include menuButton;
@@ -22,6 +22,7 @@
             position: relative;
             z-index: 100;
             color: $onPrimaryColor;
+            padding: 0 0 0 16px;
 
             .MenuButtonPlaceHolder {
                 margin-right: 10px;
@@ -31,7 +32,6 @@
                 font-size: 22px;
                 font-weight: 500;
                 transition: left 400ms $easeOutExpo;
-
                 letter-spacing: 1px;
             }
 
@@ -39,16 +39,29 @@
                 flex: 1;
             }
 
-            .UserProfile {
-                --profile-width: 30px;
-                --profile-height: 30px;
-                border-radius: 50%;
-                margin-right: 6px;
-                border: 3px solid transparent;
+            .UserSection {
+                display: flex;
+                align-items: center;
+                background-color: rgba(0, 0, 0, 0.1);
+                height: 100%;
+                padding: 0 26px 0 20px;
 
-                &:hover {
-                    cursor: pointer;
-                    border: 3px solid white;
+                .UserProfile {
+                    --profile-width: 28px;
+                    --profile-height: 28px;
+                    border-radius: 50%;
+                    border: 3px solid transparent;
+
+                    &:hover {
+                        cursor: pointer;
+                        border: 3px solid white;
+                    }
+                }
+
+                .UserName {
+                    font-size: 20px;
+                    margin-left: 16px;
+                    font-weight: 500;
                 }
             }
         }

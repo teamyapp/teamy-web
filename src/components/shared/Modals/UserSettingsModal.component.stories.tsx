@@ -3,22 +3,22 @@ import { Component, createRef } from 'react';
 
 import { initDeps } from '@core/dep/deps';
 
-import { UserModalComponent } from './UserModal.component';
-import styles from './UserModal.component.stories.module.scss';
+import { UserSettingsModalComponent } from './UserSettingsModal.component';
+import styles from './UserSettingsModal.component.stories.module.scss';
 
 export default {
-    component: UserModalComponent,
+    component: UserSettingsModalComponent,
 };
 
 const deps = initDeps();
 
 class ModalStory extends Component<any, any> {
-    private readonly modalRef = createRef<UserModalComponent>();
+    private readonly modalRef = createRef<UserSettingsModalComponent>();
 
     render() {
         return (
             <div className={styles.ModalStory}>
-                <UserModalComponent ref={this.modalRef} deps={deps} />
+                <UserSettingsModalComponent ref={this.modalRef} deps={deps} />
             </div>
         );
     }
@@ -33,6 +33,7 @@ class ModalStory extends Component<any, any> {
     }
 }
 
-export const Primary: ComponentStory<typeof UserModalComponent> = () => {
-    return <ModalStory />;
-};
+export const Primary: ComponentStory<typeof UserSettingsModalComponent> =
+    () => {
+        return <ModalStory />;
+    };
