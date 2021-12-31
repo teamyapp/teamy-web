@@ -1,11 +1,11 @@
-import { chan, Channel, PutChannel, select } from '@creatcodebuild/csp';
-import Cookies from 'js-cookie';
 import { Environment } from '@env/environment';
-import { Errors } from '@lib/ext/errors';
-import { Result } from '@lib/ext/result';
+import { chan, Channel, PutChannel, select } from '@lib/csp/csp';
+import { Errors } from '@lib/error/errors';
+import { Result } from '@lib/error/result';
 import { HTTPClient } from '@lib/network/HTTP.client';
 import { IChannel } from '@lib/network/IChannel';
 import { WebSocketChannel } from '@lib/network/WebSocketChannel';
+import Cookies from 'js-cookie';
 import { Config, getConfig } from './config';
 
 const accessTokenKey = 'accessToken';
@@ -81,6 +81,10 @@ export class IdentityClient {
         return this.onShowSignInResultCh;
     }
 
+    public dispose() {
+        this.channel?.close();
+    }
+
     private async getChannel(sessionId: number): Promise<IChannel> {
         const channel: IChannel = new WebSocketChannel(
             `${this.webSocketBaseEndpoint}/sign-in/session/${sessionId}/subscribe`,
@@ -118,10 +122,6 @@ export class IdentityClient {
             return [null, error];
         }
         return [parseInt(sessionID!), null];
-    }
-
-    public dispose() {
-        this.channel?.close();
     }
 }
 

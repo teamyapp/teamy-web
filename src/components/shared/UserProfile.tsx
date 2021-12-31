@@ -1,5 +1,5 @@
-import React, { Component, ReactElement } from 'react';
 import { User } from '@entity/user';
+import React, { Component, ReactElement } from 'react';
 import styles from './UserProfile.module.scss';
 
 interface IProps {

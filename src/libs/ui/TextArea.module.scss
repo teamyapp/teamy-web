@@ -9,14 +9,14 @@ $height: var(--height, 100%);
 
 .TextArea {
     font-size: $fontSize;
-    border: $border;
-    outline: $outlineColor;
-    width: $width;
-    height: $height;
     display: flex;
     flex-direction: column;
-    letter-spacing: 2px;
     box-sizing: border-box;
+    width: $width;
+    height: $height;
+    letter-spacing: 2px;
+    border: $border;
+    outline: $outlineColor;
 
     .Label {
         font-weight: bold;
@@ -30,15 +30,15 @@ $height: var(--height, 100%);
 
     .Input {
         font-size: inherit;
-        flex: 1;
         display: block;
-        width: 100%;
+        flex: 1;
         box-sizing: border-box;
-        outline: none;
-        border: 0;
-        padding: 10px;
+        width: 100%;
         margin: 0;
+        padding: 10px;
         resize: none;
+        border: 0;
+        outline: none;
         background-color: $backgroundColor;
     }
 }

@@ -1,5 +1,5 @@
-import { Errors } from '../ext/errors';
-import { Result } from '../ext/result';
+import { Errors } from '@lib/error/errors';
+import { Result } from '@lib/error/result';
 
 export interface HTTPClient {
     request(

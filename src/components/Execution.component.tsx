@@ -1,5 +1,4 @@
 import { FetchPolicy } from '@apollo/client';
-import * as csp from '@creatcodebuild/csp';
 import { Deps } from '@deps';
 import * as events from '@entity/events';
 import { RefreshTeam } from '@entity/events';
@@ -9,6 +8,7 @@ import { Task } from '@entity/task';
 import { TaskAction } from '@entity/taskAction';
 import { TeamStatus } from '@entity/teamStatus';
 import { User } from '@entity/user';
+import * as csp from '@lib/csp/csp';
 import { IStateSyncer } from '@lib/store/responsiveState.service';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
@@ -52,7 +52,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private readonly mutationChan = csp.chan<events.MutationEvent>();
     private readonly multiCaster: csp.Multicaster<events.MutationEvent> =
         csp.multi<events.MutationEvent>(this.mutationChan);
-    private readonly mutationOutputChan: csp.PopChannel<events.MutationEvent | undefined> = this.multiCaster.copy();
+    private readonly mutationOutputChan: csp.PopChannel<
+        events.MutationEvent | undefined
+    > = this.multiCaster.copy();
     private stateChangeChan?: csp.PopChannel<IAppState>;
 
     constructor(props: IProps) {
@@ -229,7 +231,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private refreshState = (data: any) => {
-        const event = createRefreshTeamEvent(data)
+        const event = createRefreshTeamEvent(data);
         if (event) {
             this.props.deps.localStore.mutate(event);
         }
@@ -241,24 +243,22 @@ export class ExecutionComponent extends Component<IProps, IState> {
             const newState = this.props.deps.localStore.mutate(event, false);
             this.updateState(newState);
         }
-    }
+    };
 
     private updateState = (state: IAppState) => {
         this.setState({
             personalStatus: {
                 needAttentionTask: state.needAttentionTask,
                 upcomingTasks: state.teamStatus.upcomingTasks.filter(
-                    (task: Task) =>
-                        task.owner?.id === state.currentUserId,
+                    (task: Task) => task.owner?.id === state.currentUserId,
                 ),
                 deliveredTasks: state.teamStatus.deliveredTasks.filter(
-                    (task: Task) =>
-                        task.owner?.id === state.currentUserId,
+                    (task: Task) => task.owner?.id === state.currentUserId,
                 ),
             },
             teamStatus: state.teamStatus,
         });
-    }
+    };
 
     private onTabClick = (index: number) => {
         this.props.routerHistory.push(routes[index]);

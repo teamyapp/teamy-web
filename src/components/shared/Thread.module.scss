@@ -1,5 +1,6 @@
 @import '../../libs/ui/styleguide/font';
 @import '../../libs/ui/styleguide/elevation';
+
 $divider: 2px solid #eeeeee;
 
 .Thread {
@@ -13,9 +14,9 @@ $divider: 2px solid #eeeeee;
         @include primaryFont;
 
         .TextArea {
+            height: 80px;
             --border: none;
             --background-color: #eeeeee;
-            height: 80px;
         }
 
         &:hover {
@@ -25,30 +26,30 @@ $divider: 2px solid #eeeeee;
         }
 
         .MessageActions {
-            justify-content: flex-end;
-            background-color: #f5f5f5;
-            padding: 2px;
-            border-radius: 3px;
             display: none;
+            justify-content: flex-end;
+            padding: 2px;
             user-select: none;
+            border-radius: 3px;
+            background-color: #f5f5f5;
 
             .MessageAction {
-                --icon-color: #424242;
                 font-size: 10px;
                 padding: 2px;
                 border-radius: 3px;
+                --icon-color: #424242;
 
                 &:hover {
                     cursor: pointer;
-                    --icon-color: white;
                     background-color: #424242;
+                    --icon-color: white;
                 }
             }
         }
 
         .MessageCenter {
-            width: 100%;
             display: flex;
+            width: 100%;
             padding: 20px 0;
 
             .LeftSection {
@@ -57,22 +58,22 @@ $divider: 2px solid #eeeeee;
             }
 
             .RightSection {
-                margin-left: 10px;
                 flex: 1;
+                margin-left: 10px;
 
                 .RightTopRow {
-                    height: 32px;
                     display: flex;
                     align-items: center;
+                    height: 32px;
 
                     .AuthorName {
                         font-weight: bold;
                     }
 
                     .MessagePostedAt {
-                        margin-left: 10px;
                         font-size: 14px;
                         font-weight: bold;
+                        margin-left: 10px;
                         color: #616161;
                     }
 
@@ -82,9 +83,9 @@ $divider: 2px solid #eeeeee;
                 }
 
                 .MessageContent {
-                    white-space: pre-wrap;
                     font-size: 16px;
                     line-height: 20px;
+                    white-space: pre-wrap;
                 }
             }
         }
@@ -98,14 +99,14 @@ $divider: 2px solid #eeeeee;
 
     .Input {
         .TextArea {
-            --border: #{3px solid #e0e0e0};
             height: 120px;
+            --border: #{3px solid #e0e0e0};
         }
 
         .Actions {
-            margin-top: 14px;
             display: flex;
             justify-content: flex-end;
+            margin-top: 14px;
 
             .PostMessage {
                 --background-color: #388e3c;

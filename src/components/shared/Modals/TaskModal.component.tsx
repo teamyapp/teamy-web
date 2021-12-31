@@ -1,9 +1,8 @@
-import * as csp from '@creatcodebuild/csp';
-import React, { Component, createRef, ReactElement } from 'react';
 import { Deps } from '@deps';
 import * as events from '@entity/events';
 import { Message } from '@entity/message';
 import { Task } from '@entity/task';
+import * as csp from '@lib/csp/csp';
 import { ButtonUI } from '@lib/ui/Button';
 import { DatePickerUI } from '@lib/ui/DatePicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
@@ -11,6 +10,7 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 // import { NamedValueUI } from '@ui/NamedValue';
 import { TextFieldUI } from '@lib/ui/TextField';
+import React, { Component, createRef, ReactElement } from 'react';
 import { ThreadUI } from '../Thread';
 
 import styles from './TaskModal.component.module.scss';

@@ -8,12 +8,14 @@
             "@config/*": ["config/*"],
             "@service/*": ["service/*"],
             "@state/*": ["state/*"],
-            "@lib/ext/*": ["libs/ext/*"],
+            "@lib/csp/*": ["libs/csp/*"],
+            "@lib/error/*": ["libs/error/*"],
             "@lib/ui/*": ["libs/ui/*"],
             "@lib/network/*": ["libs/network/*"],
             "@lib/identity/*": ["libs/identity/*"],
             "@lib/event/*": ["libs/event/*"],
-            "@lib/store/*": ["libs/store/*"]
+            "@lib/store/*": ["libs/store/*"],
+            "@lib/testing/*": ["libs/testing/*"]
         }
     }
 }

@@ -1,7 +1,7 @@
+import { FetchPolicy } from '@apollo/client';
 import { Task } from '@entity/task';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import * as mutations from './mutations';
-import { FetchPolicy } from '@apollo/client';
 import * as queries from './queries';
 
 export class TaskService {

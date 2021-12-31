@@ -24,6 +24,16 @@ export class TextAreaUI extends Component<IProps, IState> {
         };
     }
 
+    public get content() {
+        return this.state.content;
+    }
+
+    public set content(value: string) {
+        this.setState({
+            content: value,
+        });
+    }
+
     public render() {
         return (
             <div className={`${styles.TextArea}`}>
@@ -49,16 +59,6 @@ export class TextAreaUI extends Component<IProps, IState> {
             const end = el.value.length;
             el.setSelectionRange(end, end);
         }
-    }
-
-    public get content() {
-        return this.state.content;
-    }
-
-    public set content(value: string) {
-        this.setState({
-            content: value,
-        });
     }
 
     private onTextAreaContentChange = (

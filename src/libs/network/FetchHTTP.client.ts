@@ -1,5 +1,5 @@
-import { Errors } from '../ext/errors';
-import { Result } from '../ext/result';
+import { Errors } from '@lib/error/errors';
+import { Result } from '@lib/error/result';
 import { HTTPClient } from './HTTP.client';
 
 const errors: { [httpError: number]: Errors } = {
@@ -13,6 +13,10 @@ const errors: { [httpError: number]: Errors } = {
 };
 
 export class FetchHTTPClient implements HTTPClient {
+    private static getError(httpStatusCode: number): Errors {
+        return errors[httpStatusCode] || Errors.Unknown;
+    }
+
     async request(
         url: string,
         options?: {
@@ -45,9 +49,5 @@ export class FetchHTTPClient implements HTTPClient {
                     resolve([null, Errors.Unknown]);
                 });
         });
-    }
-
-    private static getError(httpStatusCode: number): Errors {
-        return errors[httpStatusCode] || Errors.Unknown;
     }
 }

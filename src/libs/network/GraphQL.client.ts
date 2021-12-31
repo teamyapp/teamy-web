@@ -1,8 +1,8 @@
 import {
     ApolloClient,
     InMemoryCache,
-    NormalizedCacheObject,
     MutationOptions,
+    NormalizedCacheObject,
     QueryOptions,
 } from '@apollo/client';
 

@@ -3,9 +3,9 @@ import { Deps } from '@deps';
 import { Team } from '@entity/team';
 import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import * as queries from '@service/queries';
 import React, { Component, createRef, ReactElement } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import * as queries from '@service/queries';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import ExecutionComponentHook, {
