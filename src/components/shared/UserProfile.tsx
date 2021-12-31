@@ -1,5 +1,7 @@
-import { User } from '@entity/user';
 import React, { Component, ReactElement } from 'react';
+
+import { User } from '@core/entity/user';
+
 import styles from './UserProfile.module.scss';
 
 interface IProps {

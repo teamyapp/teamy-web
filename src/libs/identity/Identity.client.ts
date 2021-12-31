@@ -1,11 +1,14 @@
-import { Environment } from '@env/environment';
-import { chan, Channel, PutChannel, select } from '@lib/csp/csp';
+import Cookies from 'js-cookie';
+
+import { Channel, PutChannel, chan, select } from '@lib/csp/csp';
 import { Errors } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { HTTPClient } from '@lib/network/HTTP.client';
 import { IChannel } from '@lib/network/IChannel';
 import { WebSocketChannel } from '@lib/network/WebSocketChannel';
-import Cookies from 'js-cookie';
+
+import { Environment } from '@core/env/environment';
+
 import { Config, getConfig } from './config';
 
 const accessTokenKey = 'accessToken';

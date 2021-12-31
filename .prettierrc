@@ -3,5 +3,8 @@
     "tabWidth": 4,
     "semi": true,
     "singleQuote": true,
-    "jsxSingleQuote": true
+    "jsxSingleQuote": true,
+    "importOrder": ["^@lib", "^@core", "^[./]"],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true
 }

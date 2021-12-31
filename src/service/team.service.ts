@@ -1,6 +1,8 @@
-import { Team } from '@entity/team';
-import { User } from '@entity/user';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+
+import { Team } from '@core/entity/team';
+import { User } from '@core/entity/user';
+
 import * as mutations from './mutations';
 import * as queries from './queries';
 

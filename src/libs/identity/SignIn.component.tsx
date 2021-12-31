@@ -1,6 +1,6 @@
 import React, { Component, ReactElement } from 'react';
-import { IdentityClient } from './Identity.client';
 
+import { IdentityClient } from './Identity.client';
 import styles from './SignIn.component.module.scss';
 
 interface IProps {

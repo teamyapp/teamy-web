@@ -1,7 +1,10 @@
-import { User } from '@entity/user';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { FormatService } from '@service/format.service';
 import React, { Component, ReactElement } from 'react';
+
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
+import { User } from '@core/entity/user';
+import { FormatService } from '@core/service/format.service';
+
 import styles from './SelectUserList.module.scss';
 import { UserProfileUI } from './UserProfile';
 

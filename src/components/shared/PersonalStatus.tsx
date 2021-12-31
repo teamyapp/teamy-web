@@ -1,12 +1,15 @@
-import { Deps } from '@deps';
-import * as events from '@entity/events';
-import { PersonalStatus } from '@entity/personalStatus';
-import { IBoundingBoxFinder } from '@entity/position';
-import { Task } from '@entity/task';
+import React, { Component, ReactElement } from 'react';
+
 import * as csp from '@lib/csp/csp';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
-import React, { Component, ReactElement } from 'react';
+
+import { Deps } from '@core/deps';
+import * as events from '@core/entity/events';
+import { PersonalStatus } from '@core/entity/personalStatus';
+import { IBoundingBoxFinder } from '@core/entity/position';
+import { Task } from '@core/entity/task';
+
 import styles from './Personal.module.scss';
 import { TaskPreviewUI } from './TaskPreview.component';
 

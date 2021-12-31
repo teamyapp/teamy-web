@@ -1,7 +1,8 @@
-import { Message } from '@entity/message';
 import { ComponentStory } from '@storybook/react';
-import { ThreadUI } from './Thread';
 
+import { Message } from '@core/entity/message';
+
+import { ThreadUI } from './Thread';
 import styles from './Thread.stories.module.scss';
 
 const initialMessages: Message[] = [

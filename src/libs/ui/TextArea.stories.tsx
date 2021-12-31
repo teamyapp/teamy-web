@@ -1,6 +1,6 @@
 import { ComponentStory } from '@storybook/react';
-import { TextAreaUI } from './TextArea';
 
+import { TextAreaUI } from './TextArea';
 import styles from './TextArea.stories.module.scss';
 
 export default {

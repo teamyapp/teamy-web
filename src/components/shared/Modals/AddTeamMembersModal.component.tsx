@@ -1,10 +1,12 @@
-import { Deps } from '@deps';
-import { Team } from '@entity/team';
+import React, { Component, createRef } from 'react';
+
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 import { TextAreaUI } from '@lib/ui/TextArea';
-import React, { Component, createRef } from 'react';
+
+import { Deps } from '@core/deps';
+import { Team } from '@core/entity/team';
 
 import styles from './AddTeamMembersModal.component.module.scss';
 

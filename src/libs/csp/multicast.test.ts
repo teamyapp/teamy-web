@@ -1,4 +1,5 @@
 import { strictEqual } from 'assert';
+
 import { chan, multi, sleep } from './csp';
 
 describe('Multi Cast of Channels', () => {

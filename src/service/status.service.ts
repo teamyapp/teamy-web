@@ -1,7 +1,10 @@
 import { FetchPolicy } from '@apollo/client';
-import { PersonalStatus } from '@entity/personalStatus';
-import { TeamStatus } from '@entity/teamStatus';
+
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+
+import { PersonalStatus } from '@core/entity/personalStatus';
+import { TeamStatus } from '@core/entity/teamStatus';
+
 import * as queries from './queries';
 
 export class StatusService {

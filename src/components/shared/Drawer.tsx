@@ -1,7 +1,10 @@
-import { Team } from '@entity/team';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import classNames from 'classnames';
-import React, { Component, createRef, MouseEvent, RefObject } from 'react';
+import React, { Component, MouseEvent, RefObject, createRef } from 'react';
+
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
+import { Team } from '@core/entity/team';
+
 import styles from './Drawer.module.scss';
 
 interface IProps {

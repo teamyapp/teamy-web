@@ -2,12 +2,12 @@
     "compilerOptions": {
         "baseUrl": "./src",
         "paths": {
-            "@*": ["*"],
-            "@entity/*": ["entity/*"],
-            "@env/*": ["env/*"],
-            "@config/*": ["config/*"],
-            "@service/*": ["service/*"],
-            "@state/*": ["state/*"],
+            "@core/entity/*": ["entity/*"],
+            "@core/env/*": ["env/*"],
+            "@core/config/*": ["config/*"],
+            "@core/service/*": ["service/*"],
+            "@core/state/*": ["state/*"],
+            "@core/*": ["*"],
             "@lib/csp/*": ["libs/csp/*"],
             "@lib/error/*": ["libs/error/*"],
             "@lib/ui/*": ["libs/ui/*"],

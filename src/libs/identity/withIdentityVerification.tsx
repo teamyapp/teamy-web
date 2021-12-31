@@ -3,9 +3,10 @@ import React, {
     ComponentType,
     ExoticComponent,
     ForwardedRef,
-    forwardRef,
     ReactElement,
+    forwardRef,
 } from 'react';
+
 import { IdentityClient } from './Identity.client';
 import { SignInComponent } from './SignIn.component';
 

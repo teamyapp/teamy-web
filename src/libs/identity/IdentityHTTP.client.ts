@@ -1,6 +1,7 @@
 import { Errors } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { HTTPClient } from '@lib/network/HTTP.client';
+
 import { IdentityClient } from './Identity.client';
 
 export class IdentityHTTPClient implements HTTPClient {

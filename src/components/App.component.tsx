@@ -1,11 +1,14 @@
 import { FetchPolicy } from '@apollo/client';
-import { Deps } from '@deps';
-import { Team } from '@entity/team';
+import React, { Component, ReactElement, createRef } from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
 import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import * as queries from '@service/queries';
-import React, { Component, createRef, ReactElement } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+
+import { Deps } from '@core/deps';
+import { Team } from '@core/entity/team';
+import * as queries from '@core/service/queries';
+
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import ExecutionComponentHook, {

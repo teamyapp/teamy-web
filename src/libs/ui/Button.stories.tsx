@@ -1,6 +1,6 @@
 import { ComponentStory } from '@storybook/react';
-import { ButtonUI } from './Button';
 
+import { ButtonUI } from './Button';
 import styles from './Button.stories.module.scss';
 
 export default {

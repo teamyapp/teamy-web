@@ -1,9 +1,12 @@
-import { Message } from '@entity/message';
+import React, { Component, createRef } from 'react';
+
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TextAreaUI } from '@lib/ui/TextArea';
-import { FormatService } from '@service/format.service';
-import React, { Component, createRef } from 'react';
+
+import { Message } from '@core/entity/message';
+import { FormatService } from '@core/service/format.service';
+
 import styles from './Thread.module.scss';
 import { UserProfileUI } from './UserProfile';
 

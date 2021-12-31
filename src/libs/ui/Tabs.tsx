@@ -1,4 +1,5 @@
-import React, { Component, createRef, ReactElement, RefObject } from 'react';
+import React, { Component, ReactElement, RefObject, createRef } from 'react';
+
 import styles from './Tabs.module.scss';
 
 interface IProps {
