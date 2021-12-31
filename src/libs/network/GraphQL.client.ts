@@ -11,20 +11,20 @@ interface AccessTokenGetter {
 }
 
 export class GraphQLClient {
-    client: ApolloClient<NormalizedCacheObject>;
+    private readonly tokenGetter: AccessTokenGetter;
+    private readonly client: ApolloClient<NormalizedCacheObject>;
 
     constructor(tokenGetter: AccessTokenGetter, graphQLEndpoint: string) {
+        this.tokenGetter = tokenGetter;
         this.client = new ApolloClient({
             uri: graphQLEndpoint,
             cache: new InMemoryCache(),
-            headers: {
-                Authorization: `Bearer ${tokenGetter.getAccessToken()}`,
-            },
         });
     }
 
     async mutate(options: MutationOptions): Promise<any> {
         options.errorPolicy = 'all';
+        options.context = this.getAuthContext();
         const result = await this.client.mutate(options);
         if (result.errors) {
             // todo: should handle errors
@@ -36,9 +36,18 @@ export class GraphQLClient {
         return result.data;
     }
 
-    async query(query: QueryOptions): Promise<any> {
-        query.errorPolicy = 'all';
-        const result = await this.client.query(query);
+    async query(options: QueryOptions): Promise<any> {
+        options.errorPolicy = 'all';
+        options.context = this.getAuthContext();
+        const result = await this.client.query(options);
         return result.data;
+    }
+
+    private getAuthContext() {
+        return {
+            headers: {
+                Authorization: `Bearer ${this.tokenGetter.getAccessToken()}`,
+            },
+        };
     }
 }
