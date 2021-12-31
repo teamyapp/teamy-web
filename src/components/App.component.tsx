@@ -82,7 +82,9 @@ class AppComponent extends Component<IProps, IState> {
                                         </div>
                                     )}
                                 </div>
-                                <div className={styles.TeamName}>Teamy</div>
+                                <div className={styles.TeamName}>
+                                    {this.state.me?.activeTeam?.name}
+                                </div>
                                 <div className={styles.Spacer} />
                                 {this.state.me && (
                                     <div
@@ -108,6 +110,7 @@ class AppComponent extends Component<IProps, IState> {
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
                     onAddTeamMemberClick={this.onAddTeamMembersClick}
+                    onTeamUpdated={this.onTeamUpdated}
                 />
                 <AddTeamMembersModalComponent
                     deps={this.props.deps}
@@ -158,6 +161,10 @@ class AppComponent extends Component<IProps, IState> {
     private onTeamMembersAdded = async (teamId: number) => {
         await this.refresh('network-only');
         this.teamSettingsModalRef.current?.open(teamId, 1);
+    };
+
+    private onTeamUpdated = () => {
+        this.refresh('network-only');
     };
 
     private onUserUpdated = () => {
