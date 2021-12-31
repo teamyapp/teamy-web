@@ -109,9 +109,9 @@ $memberProfileHeight: 60px;
 
         .TeamMemberList {
             display: grid;
-            padding: 40px;
-            width: 100%;
             box-sizing: border-box;
+            width: 100%;
+            padding: 40px;
             --profile-width: #{$memberProfileWidth};
             --profile-height: #{$memberProfileHeight};
             grid-template-columns: repeat(5, 1fr);

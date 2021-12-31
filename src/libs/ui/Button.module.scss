@@ -5,15 +5,15 @@ $width: var(--width, 100%);
 .Button {
     font-size: 20px;
     font-weight: 500;
-    width: $width;
     box-sizing: border-box;
+    width: $width;
     padding: 6px 20px;
+    user-select: none;
     text-align: center;
     color: white;
+    border: 2px solid $borderColor;
     border-radius: 6px;
     background-color: $backgroundColor;
-    border: 2px solid $borderColor;
-    user-select: none;
 
     &:hover {
         cursor: pointer;

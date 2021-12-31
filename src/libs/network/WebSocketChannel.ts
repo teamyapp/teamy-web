@@ -1,5 +1,5 @@
-import { chan, multi, PutChannel } from '@creatcodebuild/csp';
-import { Errors } from '../ext/errors';
+import { chan, multi, PutChannel } from '@lib/csp/csp';
+import { Errors } from '@lib/error/errors';
 
 import { IChannel } from './IChannel';
 

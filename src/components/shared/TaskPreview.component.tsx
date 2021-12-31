@@ -1,8 +1,8 @@
-import * as csp from '@creatcodebuild/csp';
 import * as events from '@entity/events';
 import { IBoundingBoxFinder, Rect } from '@entity/position';
 import { Task } from '@entity/task';
 import { TaskAction } from '@entity/taskAction';
+import * as csp from '@lib/csp/csp';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import classNames from 'classnames';
 import React, {

@@ -2,8 +2,8 @@
 
 .Box {
     @include primaryFont;
-    margin: 0;
     display: flex;
     width: 700px;
     height: 400px;
+    margin: 0;
 }

@@ -1,4 +1,4 @@
-import * as csp from '@creatcodebuild/csp';
+import * as csp from '@lib/csp/csp';
 import * as event from '@lib/event/event';
 
 const storeDataKey = 'storeData';

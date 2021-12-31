@@ -1,9 +1,9 @@
 @import 'Modal.shared.module';
 
 .Content {
+    box-sizing: border-box;
     width: 600px;
     padding: 20px;
-    box-sizing: border-box;
 
     .UserIds {
         height: 100px;
@@ -11,8 +11,8 @@
     }
 
     .AddAction {
-        margin: 0 auto;
         width: 120px;
+        margin: 0 auto;
         --background-color: #388e3c;
         --border-color: #2e7d32;
     }

@@ -1,8 +1,8 @@
-import _ from 'lodash';
-import React, { Component, ReactElement } from 'react';
 import { getConfig } from '@config/config';
 import { getEnvironment, getEnvVar } from '@env/environment';
 import { getConfig as getIdentityConfig } from '@lib/identity/config';
+import _ from 'lodash';
+import React, { Component, ReactElement } from 'react';
 
 import styles from './Debug.component.module.scss';
 

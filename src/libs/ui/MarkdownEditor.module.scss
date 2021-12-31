@@ -6,11 +6,11 @@ $fontSize: var(--font-size, 20px);
 $outlineColor: var(--outline-color, #1976d2);
 
 .MarkdownEditor {
-    border: $border;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
     height: 100%;
+    border: $border;
 
     &.Focus {
         outline: 2px solid $outlineColor;
@@ -26,27 +26,34 @@ $outlineColor: var(--outline-color, #1976d2);
         padding: 0 10px;
         color: $onSecondaryColor;
         background-color: $secondaryColor;
+
         .Spacer {
             flex: 1;
         }
+
         .Mode {
             display: flex;
             --icon-color: $onSecondaryColor;
         }
     }
+
     .Button {
         padding: 4px;
         border-radius: 2px;
         @include userSelect(none);
+
         &:not(:first-child) {
             margin-left: 4px;
         }
+
         &.Enabled {
             background-color: $onSecondaryColor;
             --icon-color: #{$secondaryColor};
         }
+
         &:hover {
             cursor: pointer;
+
             &:not(.Enabled) {
                 background-color: rgba(255, 255, 255, 0.1);
             }

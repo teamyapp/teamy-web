@@ -4,26 +4,26 @@
 .SignInOptions {
     position: absolute;
     display: flex;
-    background-color: $secondaryColor;
-    height: 100%;
     width: 100%;
+    height: 100%;
+    background-color: $secondaryColor;
 
     .SignInOptionsCard {
         position: absolute;
         @include elevation(4);
-        border-radius: 4px;
-
-        padding: 50px 30px;
         top: 50%;
+
         left: 50%;
+        padding: 50px 30px;
         transform: translateX(-50%) translateY(-50%);
+        border-radius: 4px;
         background-color: white;
 
         .Title {
             font-size: 30px;
             font-weight: bolder;
-            text-align: center;
             margin-bottom: 40px;
+            text-align: center;
         }
 
         .Button {
@@ -31,11 +31,11 @@
             border-radius: 4px;
 
             &.Google {
-                background-color: #e53935;
-                color: white;
                 font-weight: bold;
                 cursor: pointer;
+                color: white;
                 border: 2px solid #c62828;
+                background-color: #e53935;
 
                 &:hover {
                     opacity: 0.8;

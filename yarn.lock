@@ -1212,11 +1212,6 @@
     semver "^7.3.2"
     webpack-merge "^4.2.2"
 
-"@creatcodebuild/csp@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@creatcodebuild/csp/-/csp-0.0.6.tgz#1cc5ceff29de432debee597e782de3996ee2bfec"
-  integrity sha512-ZWibJ2K4+DaS4dgyHHSSry1in2VXgWyTuPMA1czVLDF++UoP/P9cVHtZu7u3LAlfaS3fAD8xN6G/H6hqyWaKwA==
-
 "@cspotcode/source-map-consumer@0.8.0":
   version "0.8.0"
   resolved "https://registry.yarnpkg.com/@cspotcode/source-map-consumer/-/source-map-consumer-0.8.0.tgz#33bf4b7b39c178821606f669bbc447a6a629786b"

@@ -1,11 +1,13 @@
-import * as csp from '@creatcodebuild/csp';
-import { Channel, PopChannel } from '@creatcodebuild/csp';
+import * as csp from '@lib/csp/csp';
+import { Channel, PopChannel } from '@lib/csp/csp';
 import { Event } from '@lib/event/event';
 import { LocalStore } from '@lib/store/localStore';
 
 export interface IStateSyncer<State> {
     fetchNetworkState(): Promise<any>;
+
     updateLocalStateWithRawData(data: any): void;
+
     updateLocalState(state: State): void;
 }
 
@@ -50,7 +52,9 @@ export class ResponsiveStateService<LocalState, MutationEvent extends Event> {
         })();
     }
 
-    private async syncNetworkStateInBackground(stateSyncer: IStateSyncer<LocalState>) {
+    private async syncNetworkStateInBackground(
+        stateSyncer: IStateSyncer<LocalState>,
+    ) {
         // this coroutine handles network refresh only
         // and each refresh takes place in order
 
