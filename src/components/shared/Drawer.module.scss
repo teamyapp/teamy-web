@@ -1,7 +1,7 @@
 @import '../../libs/ui/styleguide/color';
 @import '../../libs/ui/styleguide/easing';
 @import '../../libs/ui/styleguide/elevation';
-@import '../shared';
+@import './shared';
 
 @include menuButton;
 
@@ -25,6 +25,7 @@ $contextMenuSidePadding: 20px;
 
     .Header {
         justify-content: right;
+        padding: 0 16px;
 
         .MenuButton {
             // fix icon offset
