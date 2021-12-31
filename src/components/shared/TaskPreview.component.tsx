@@ -8,12 +8,13 @@ import React, {
     createRef,
 } from 'react';
 
-import * as events from '@entity/events';
-import { IBoundingBoxFinder, Rect } from '@entity/position';
-import { Task } from '@entity/task';
-import { TaskAction } from '@entity/taskAction';
 import * as csp from '@lib/csp/csp';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
+import * as events from '@core/entity/events';
+import { IBoundingBoxFinder, Rect } from '@core/entity/position';
+import { Task } from '@core/entity/task';
+import { TaskAction } from '@core/entity/taskAction';
 
 // import { NamedValueUI } from '@ui/NamedValue';
 import styles from './TaskPreview.module.scss';

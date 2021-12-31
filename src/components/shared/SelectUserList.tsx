@@ -1,8 +1,9 @@
 import React, { Component, ReactElement } from 'react';
 
-import { User } from '@entity/user';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { FormatService } from '@service/format.service';
+
+import { User } from '@core/entity/user';
+import { FormatService } from '@core/service/format.service';
 
 import styles from './SelectUserList.module.scss';
 import { UserProfileUI } from './UserProfile';

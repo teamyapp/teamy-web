@@ -1,8 +1,9 @@
 import classNames from 'classnames';
 import React, { Component, MouseEvent, RefObject, createRef } from 'react';
 
-import { Team } from '@entity/team';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
+import { Team } from '@core/entity/team';
 
 import styles from './Drawer.module.scss';
 

@@ -1,23 +1,24 @@
+import { FetchPolicy } from '@apollo/client';
 import { History, LocationState } from 'history';
 import React, { Component, ReactElement, RefObject, createRef } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
-import { FetchPolicy } from '@apollo/client';
-import { Deps } from '@deps';
-import * as events from '@entity/events';
-import { RefreshTeam } from '@entity/events';
-import { PersonalStatus } from '@entity/personalStatus';
-import { IBoundingBoxFinder } from '@entity/position';
-import { Task } from '@entity/task';
-import { TaskAction } from '@entity/taskAction';
-import { TeamStatus } from '@entity/teamStatus';
-import { User } from '@entity/user';
 import * as csp from '@lib/csp/csp';
 import { IStateSyncer } from '@lib/store/responsiveState.service';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
-import * as queries from '@service/queries';
-import { IAppState } from '@state/state';
+
+import { Deps } from '@core/deps';
+import * as events from '@core/entity/events';
+import { RefreshTeam } from '@core/entity/events';
+import { PersonalStatus } from '@core/entity/personalStatus';
+import { IBoundingBoxFinder } from '@core/entity/position';
+import { Task } from '@core/entity/task';
+import { TaskAction } from '@core/entity/taskAction';
+import { TeamStatus } from '@core/entity/teamStatus';
+import { User } from '@core/entity/user';
+import * as queries from '@core/service/queries';
+import { IAppState } from '@core/state/state';
 
 import styles from './Execution.component.module.scss';
 import Team from './shared/Kanban';

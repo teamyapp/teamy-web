@@ -1,6 +1,6 @@
 import React, { Component, ReactElement } from 'react';
 
-import { User } from '@entity/user';
+import { User } from '@core/entity/user';
 
 import styles from './UserProfile.module.scss';
 

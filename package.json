@@ -100,7 +100,7 @@
     },
     "jest": {
         "moduleNameMapper": {
-            "^@deps": "<rootDir>/src/deps",
+            "^@core/deps": "<rootDir>/src/deps",
             "^@lib/testing/(.*)": "<rootDir>/src/libs/testing/$1",
             "^@lib/csp/(.*)": "<rootDir>/src/libs/csp/$1"
         }

@@ -1,5 +1,6 @@
-import { Task } from '@entity/task';
 import { Event } from '@lib/event/event';
+
+import { Task } from '@core/entity/task';
 
 export type MutationEvent =
     | CreateTask

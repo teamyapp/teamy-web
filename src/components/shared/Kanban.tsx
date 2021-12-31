@@ -1,13 +1,14 @@
 import React, { Component, ReactElement } from 'react';
 
-import * as events from '@entity/events';
-import { IBoundingBoxFinder } from '@entity/position';
-import { Task } from '@entity/task';
-import { TeamStatus } from '@entity/teamStatus';
-import { User } from '@entity/user';
 import * as csp from '@lib/csp/csp';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
+
+import * as events from '@core/entity/events';
+import { IBoundingBoxFinder } from '@core/entity/position';
+import { Task } from '@core/entity/task';
+import { TeamStatus } from '@core/entity/teamStatus';
+import { User } from '@core/entity/user';
 
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview.component';

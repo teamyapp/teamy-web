@@ -1,5 +1,5 @@
-import { Task } from '@entity/task';
-import { TeamStatus } from '@entity/teamStatus';
+import { Task } from '@core/entity/task';
+import { TeamStatus } from '@core/entity/teamStatus';
 
 export interface IAppState {
     currentUserId: number;

@@ -1,7 +1,7 @@
+import { render } from '@testing-library/react';
 import React from 'react';
 
-import { initDeps } from '@deps';
-import { render } from '@testing-library/react';
+import { initDeps } from '@core/deps';
 
 import AppComponentHook from './App.component';
 

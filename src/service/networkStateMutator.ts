@@ -1,5 +1,5 @@
-import { MutationEvent } from '@entity/events';
-import { TaskService } from '@service/task.service';
+import { MutationEvent } from '@core/entity/events';
+import { TaskService } from '@core/service/task.service';
 
 export function createNetworkStateMutator(
     taskService: TaskService,

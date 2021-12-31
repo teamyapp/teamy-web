@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import React, { Component, ReactElement } from 'react';
 
-import { getConfig } from '@config/config';
-import { getEnvVar, getEnvironment } from '@env/environment';
 import { getConfig as getIdentityConfig } from '@lib/identity/config';
+
+import { getConfig } from '@core/config/config';
+import { getEnvVar, getEnvironment } from '@core/env/environment';
 
 import styles from './Debug.component.module.scss';
 

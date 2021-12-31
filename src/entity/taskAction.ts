@@ -1,4 +1,4 @@
-import { TaskStatus } from '@entity/taskStatus';
+import { TaskStatus } from '@core/entity/taskStatus';
 
 export enum TaskAction {
     Start = 'START',

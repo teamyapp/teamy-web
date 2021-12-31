@@ -1,5 +1,6 @@
-import { Message } from '@entity/message';
 import { ComponentStory } from '@storybook/react';
+
+import { Message } from '@core/entity/message';
 
 import { ThreadUI } from './Thread';
 import styles from './Thread.stories.module.scss';
