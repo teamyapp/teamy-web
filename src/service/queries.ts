@@ -29,6 +29,7 @@ export const mePage = gql`
             profileUrl
             activeTeam {
                 id
+                name
                 tasksNeedAttention(isMine: true) {
                     ...taskPreview
                 }

@@ -92,6 +92,18 @@ export const addTeamMember = gql`
     }
 `;
 
+export const updateTeam = gql`
+    mutation updateTeam($teamId: ID!, $teamInput: TeamUpdateInput!) {
+        team(id: $teamId) {
+            update(input: $teamInput) {
+                team {
+                    id
+                }
+            }
+        }
+    }
+`;
+
 export const createComment = gql`
     mutation createComment($taskId: ID!, $content: String!) {
         createComment(taskId: $taskId, content: $content) {

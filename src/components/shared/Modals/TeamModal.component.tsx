@@ -16,6 +16,7 @@ import styles from './TeamModal.component.module.scss';
 interface IProps {
     deps: Deps;
     onAddTeamMemberClick?: (teamId: number) => void;
+    onTeamUpdated?: () => void;
 }
 
 interface IState {
@@ -174,14 +175,15 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
     };
 
     private onSaveTeamProfileClick = () => {
-        console.log('onSaveTeamProfileClick');
+        this.props.deps.teamService.updateTeam(this.state.team!);
+        this.props.onTeamUpdated?.call(null);
     };
 
     private onDeleteTeamClick = () => {
         console.log('onDeleteTeamClick');
     };
 
-    private onAddTeamMemberClick = () => {
-        this.props.onAddTeamMemberClick?.call(null, this.state.team!.id);
+    private onAddTeamMemberClick = async () => {
+        await this.props.onAddTeamMemberClick?.call(null, this.state.team!.id);
     };
 }
