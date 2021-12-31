@@ -4,7 +4,7 @@ import * as csp from '@lib/csp/csp';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
-import { Deps } from '@core/deps';
+import { Deps } from '@core/dep/deps';
 import * as events from '@core/entity/events';
 import { PersonalStatus } from '@core/entity/personalStatus';
 import { IBoundingBoxFinder } from '@core/entity/position';

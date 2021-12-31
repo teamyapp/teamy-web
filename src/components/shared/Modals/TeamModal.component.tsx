@@ -6,7 +6,7 @@ import { ModalUI } from '@lib/ui/Modal';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TextFieldUI } from '@lib/ui/TextField';
 
-import { Deps } from '@core/deps';
+import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 
@@ -31,8 +31,8 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
     constructor(props: any) {
         super(props);
         this.state = {
-            defaultTabIndex: -1,
-            currentTabIndex: -1,
+            defaultTabIndex: 0,
+            currentTabIndex: 0,
         };
     }
 

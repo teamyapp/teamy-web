@@ -9,7 +9,7 @@ import { ModalUI } from '@lib/ui/Modal';
 // import { NamedValueUI } from '@ui/NamedValue';
 import { TextFieldUI } from '@lib/ui/TextField';
 
-import { Deps } from '@core/deps';
+import { Deps } from '@core/dep/deps';
 import * as events from '@core/entity/events';
 import { Message } from '@core/entity/message';
 import { Task } from '@core/entity/task';

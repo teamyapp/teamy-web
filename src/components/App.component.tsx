@@ -5,8 +5,9 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
-import { Deps } from '@core/deps';
+import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
+import { User } from '@core/entity/user';
 import * as queries from '@core/service/queries';
 
 import styles from './App.component.module.scss';
@@ -17,12 +18,15 @@ import ExecutionComponentHook, {
 import { DrawerUI } from './shared/Drawer';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
 import { TeamSettingsModalComponent } from './shared/Modals/TeamModal.component';
+import { UserModalComponent } from './shared/Modals/UserModal.component';
+import { UserProfileUI } from './shared/UserProfile';
 
 interface IProps {
     deps: Deps;
 }
 
 interface IState {
+    me?: User;
     teams: Team[];
     activeTeamId: number;
     isDrawerOpen: boolean;
@@ -32,6 +36,7 @@ class AppComponent extends Component<IProps, IState> {
     private executionRef = createRef<ExecutionComponent>();
     private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
     private addTeamMembersModalRef = createRef<AddTeamMembersModalComponent>();
+    private userModalRef = createRef<UserModalComponent>();
 
     constructor(props: any) {
         super(props);
@@ -78,6 +83,15 @@ class AppComponent extends Component<IProps, IState> {
                                     )}
                                 </div>
                                 <div className={styles.TeamName}>Teamy</div>
+                                <div className={styles.Spacer} />
+                                {this.state.me && (
+                                    <div
+                                        className={styles.UserProfile}
+                                        onClick={this.onUserProfileClick}
+                                    >
+                                        <UserProfileUI user={this.state.me} />
+                                    </div>
+                                )}
                             </header>
                             <div className={styles.Execution}>
                                 {
@@ -100,6 +114,11 @@ class AppComponent extends Component<IProps, IState> {
                     ref={this.addTeamMembersModalRef}
                     onTeamMembersAdded={this.onTeamMembersAdded}
                 />
+                <UserModalComponent
+                    ref={this.userModalRef}
+                    deps={this.props.deps}
+                    onUserUpdated={this.onUserUpdated}
+                />
             </div>
         );
     }
@@ -112,6 +131,10 @@ class AppComponent extends Component<IProps, IState> {
         this.setState({
             isDrawerOpen: !this.state.isDrawerOpen,
         });
+    };
+
+    private onUserProfileClick = () => {
+        this.userModalRef.current?.open(this.state.me!);
     };
 
     private onAddTeamMembersClick = (teamId: number) => {
@@ -137,6 +160,10 @@ class AppComponent extends Component<IProps, IState> {
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
 
+    private onUserUpdated = () => {
+        this.refresh('network-only');
+    };
+
     private async refresh(policy: FetchPolicy) {
         console.log('refresh App', policy);
         const data = await this.props.deps.graphql.query({
@@ -146,6 +173,7 @@ class AppComponent extends Component<IProps, IState> {
         const teams: Team[] = data.me?.teams;
         const activeTeamId = data.me?.activeTeam?.id;
         this.setState({
+            me: data.me,
             teams,
             activeTeamId,
         });

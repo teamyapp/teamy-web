@@ -4,6 +4,7 @@ import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { User } from '@core/entity/user';
 
+import * as mutations from './mutations';
 import * as queries from './queries';
 
 export class UserService {
@@ -19,5 +20,15 @@ export class UserService {
             .then((payload: any) => {
                 return payload?.me;
             });
+    }
+
+    public updateUser(user: User): Promise<void> {
+        return this.graphQLClient.mutate({
+            mutation: mutations.updateUser,
+            variables: {
+                userId: user.id,
+                userInput: user,
+            },
+        });
     }
 }
