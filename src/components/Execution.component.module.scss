@@ -1,5 +1,6 @@
 @import '../libs/ui/styleguide/color';
 @import '../libs/ui/styleguide/elevation';
+@import './shared/shared';
 
 .Execution {
     display: flex;
@@ -21,7 +22,7 @@
         overflow-y: hidden;
         flex: 1;
         box-sizing: border-box;
-        padding: 20px;
+        padding: $sectionSpace;
     }
 
     .SelectTaskOwnerList {
