@@ -1,3 +1,5 @@
+import React, { Component, ReactElement } from 'react';
+
 import { Deps } from '@deps';
 import * as events from '@entity/events';
 import { PersonalStatus } from '@entity/personalStatus';
@@ -6,7 +8,7 @@ import { Task } from '@entity/task';
 import * as csp from '@lib/csp/csp';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
-import React, { Component, ReactElement } from 'react';
+
 import styles from './Personal.module.scss';
 import { TaskPreviewUI } from './TaskPreview.component';
 

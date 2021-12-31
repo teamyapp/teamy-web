@@ -1,5 +1,6 @@
 import { Errors } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
+
 import { HTTPClient } from './HTTP.client';
 
 const errors: { [httpError: number]: Errors } = {

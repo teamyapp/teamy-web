@@ -1,5 +1,6 @@
 import classNames from 'classnames';
 import React, { Component, FormEvent, ReactElement } from 'react';
+
 import { MaterialIconUI } from './MaterialIcon';
 import './TextField.module.scss';
 import styles from './TextField.module.scss';

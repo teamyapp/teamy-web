@@ -3,6 +3,7 @@ import { Task } from '@entity/task';
 import { getActions } from '@entity/taskAction';
 import { TaskStatus } from '@entity/taskStatus';
 import { MutateState } from '@lib/store/localStore';
+
 import { IAppState } from './state';
 
 function createTaskMutateState(

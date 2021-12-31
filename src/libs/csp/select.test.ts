@@ -1,5 +1,7 @@
-import { throwsAsync } from '@lib/testing/assert';
 import { strictEqual } from 'assert';
+
+import { throwsAsync } from '@lib/testing/assert';
+
 import { after, chan, select, sleep } from './csp';
 
 describe('select on read/receive/pop operation', () => {

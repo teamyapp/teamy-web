@@ -1,4 +1,4 @@
-import { chan, multi, PutChannel } from '@lib/csp/csp';
+import { PutChannel, chan, multi } from '@lib/csp/csp';
 import { Errors } from '@lib/error/errors';
 
 import { IChannel } from './IChannel';

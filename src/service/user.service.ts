@@ -1,6 +1,7 @@
 import { FetchPolicy } from '@apollo/client';
 import { User } from '@entity/user';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+
 import * as queries from './queries';
 
 export class UserService {

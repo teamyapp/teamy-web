@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+
 import AppComponentHook from './components/App.component';
 import { initDeps } from './deps';
 import './index.scss';

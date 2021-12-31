@@ -1,5 +1,7 @@
-import { throwsAsync } from '@lib/testing/assert';
 import { deepStrictEqual } from 'assert';
+
+import { throwsAsync } from '@lib/testing/assert';
+
 import { chan } from './csp';
 
 describe('Channel', () => {

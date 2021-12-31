@@ -1,3 +1,5 @@
+import React, { Component, ReactElement, createRef } from 'react';
+
 import { Deps } from '@deps';
 import * as events from '@entity/events';
 import { Message } from '@entity/message';
@@ -10,9 +12,8 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 // import { NamedValueUI } from '@ui/NamedValue';
 import { TextFieldUI } from '@lib/ui/TextField';
-import React, { Component, createRef, ReactElement } from 'react';
-import { ThreadUI } from '../Thread';
 
+import { ThreadUI } from '../Thread';
 import styles from './TaskModal.component.module.scss';
 
 const verticalMargin = 40;

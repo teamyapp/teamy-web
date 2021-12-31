@@ -1,3 +1,5 @@
+import React, { Component, createRef } from 'react';
+
 import { Deps } from '@deps';
 import { Team } from '@entity/team';
 import { User } from '@entity/user';
@@ -6,7 +8,7 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TextFieldUI } from '@lib/ui/TextField';
-import React, { Component, createRef } from 'react';
+
 import { UserProfileUI } from '../UserProfile';
 import styles from './TeamModal.component.module.scss';
 

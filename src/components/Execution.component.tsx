@@ -1,3 +1,7 @@
+import { History, LocationState } from 'history';
+import React, { Component, ReactElement, RefObject, createRef } from 'react';
+import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+
 import { FetchPolicy } from '@apollo/client';
 import { Deps } from '@deps';
 import * as events from '@entity/events';
@@ -14,9 +18,7 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import * as queries from '@service/queries';
 import { IAppState } from '@state/state';
-import { History, LocationState } from 'history';
-import React, { Component, createRef, ReactElement, RefObject } from 'react';
-import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+
 import styles from './Execution.component.module.scss';
 import Team from './shared/Kanban';
 import { TaskModalComponent } from './shared/Modals/TaskModal.component';

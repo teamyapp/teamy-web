@@ -1,4 +1,5 @@
-import React, { Component, createRef, FormEvent } from 'react';
+import React, { Component, FormEvent, createRef } from 'react';
+
 import styles from './TextArea.module.scss';
 
 interface IProps {
