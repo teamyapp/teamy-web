@@ -6,7 +6,7 @@ import { LocalStore } from '@lib/store/localStore';
 export interface IStateSyncer<State> {
     fetchNetworkState(): Promise<any>;
 
-    updateLocalStateWithRawData(data: any): void;
+    updateLocalStateWithRawData(data: any): Promise<void>;
 
     updateLocalState(state: State): void;
 }
@@ -70,7 +70,7 @@ export class ResponsiveStateService<LocalState, MutationEvent extends Event> {
                 console.log('refresh start');
                 const data = await stateSyncer.fetchNetworkState();
                 if (await isEmpty(this.networkMutationEventChan)) {
-                    stateSyncer.updateLocalStateWithRawData(data);
+                    await stateSyncer.updateLocalStateWithRawData(data);
                     console.log('refresh done');
                 } else {
                     console.log(

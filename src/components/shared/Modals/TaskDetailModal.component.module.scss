@@ -1,7 +1,7 @@
 @import '../../../libs/ui/styleguide/color';
 @import 'Modal.shared.module';
 
-$divider: 3px solid #eeeeee;
+$divider: 2px solid #eeeeee;
 
 .ModalContent {
     display: flex;
@@ -13,31 +13,59 @@ $divider: 3px solid #eeeeee;
         font-weight: bold;
     }
 
-    .TaskDetail {
+    .TaskActionsSection {
+        display: flex;
+        justify-content: flex-end;
+        padding: 4px 20px;
+        background-color: #f1f1f1;
+
+        .AssignOwner {
+            --profile-height: 26px;
+            --profile-width: 26px;
+        }
+
+        .Action {
+            padding: 4px;
+            border-radius: 4px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+
+            &:hover,
+            &.Active {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+
+    .TaskDetailSection {
         display: flex;
         width: 800px;
-
+        padding: 20px;
         --outline-color: #1976d2;
         --border: 2px solid #{$secondaryColor};
         --font-size: 18px;
 
         .LeftSection {
             flex: 1;
-            padding: 20px;
 
             .Context {
-                height: 160px;
-                margin-top: 20px;
+                height: 120px;
+                margin-top: 10px;
             }
         }
 
         .RightSection {
             overflow-y: auto;
             width: 200px;
-            border-left: $divider;
+            margin-left: 20px;
 
             .Attributes {
-                padding: 20px;
+                display: flex;
+                align-items: flex-end;
+                flex-direction: column;
 
                 .Row {
                     display: flex;
@@ -54,10 +82,9 @@ $divider: 3px solid #eeeeee;
 
             .Actions {
                 display: flex;
-                align-items: center;
+                align-items: flex-end;
                 flex-direction: column;
-                padding: 20px;
-                border-top: $divider;
+                margin-top: 10px;
 
                 .SaveAction {
                     --background-color: #388e3c;
@@ -70,22 +97,21 @@ $divider: 3px solid #eeeeee;
     .CommentsSection {
         display: flex;
         overflow-y: hidden;
+        flex: 1;
         flex-direction: column;
         box-sizing: border-box;
         width: 100%;
-        padding: 20px 0;
-        border-top: $divider;
-        background-color: white;
+        padding: 0 4px 20px 4px;
 
         .Title {
-            margin-bottom: 20px;
-            padding: 0 20px;
+            margin-bottom: 10px;
+            padding: 0 16px;
         }
 
         .Thread {
             overflow-y: auto;
             flex: 1;
-            padding: 0 20px;
+            padding: 0 16px;
         }
     }
 }

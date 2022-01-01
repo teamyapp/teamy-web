@@ -11,7 +11,7 @@ import { TeamStatus } from '@core/entity/teamStatus';
 import { User } from '@core/entity/user';
 
 import styles from './Kanban.module.scss';
-import { TaskPreviewUI } from './TaskPreview.component';
+import { TaskPreviewUI } from './TaskPreview';
 
 interface IProps {
     taskAdding?: Task;
