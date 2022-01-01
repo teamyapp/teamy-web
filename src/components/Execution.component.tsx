@@ -147,6 +147,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
+                    taskSelectingOwner={this.state.taskSelectingOwner?.id}
                     mutationOutputChan={this.mutationChan}
                     onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
                 />

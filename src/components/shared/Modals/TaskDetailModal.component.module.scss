@@ -32,6 +32,11 @@ $divider: 2px solid #eeeeee;
                 cursor: pointer;
                 background-color: rgba(0, 0, 0, 0.1);
             }
+
+            &:hover,
+            &.Active {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
         }
     }
 
@@ -77,10 +82,9 @@ $divider: 2px solid #eeeeee;
 
             .Actions {
                 display: flex;
-                align-items: center;
+                align-items: flex-end;
                 flex-direction: column;
                 margin-top: 10px;
-                padding: 0 20px;
 
                 .SaveAction {
                     --background-color: #388e3c;

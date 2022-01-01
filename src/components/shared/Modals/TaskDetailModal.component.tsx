@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import React, { Component, MouseEvent, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -23,6 +24,7 @@ const verticalMargin = 40;
 
 interface IProps {
     deps: Deps;
+    taskSelectingOwner?: number;
     mutationOutputChan: csp.PutChannel<events.MutationEvent | undefined>;
     onShowPotentialTaskOwners?: (
         task: Task,
@@ -73,7 +75,13 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
                         </div>
                         <div className={styles.TaskActionsSection}>
                             <div
-                                className={`${styles.Action} ${styles.AssignOwner}`}
+                                className={`${styles.Action} ${
+                                    styles.AssignOwner
+                                } ${classNames({
+                                    [styles.Active]:
+                                        this.props.taskSelectingOwner ===
+                                        this.state.task.id,
+                                })}`}
                                 onClick={this.onAssignOwnerClick}
                             >
                                 {this.state.task?.owner ? (
