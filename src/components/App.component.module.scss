@@ -21,8 +21,8 @@
         .Header {
             position: relative;
             z-index: 100;
-            color: $onPrimaryColor;
             padding: 0 0 0 16px;
+            color: $onPrimaryColor;
 
             .MenuButtonPlaceHolder {
                 margin-right: 10px;
@@ -42,15 +42,15 @@
             .UserSection {
                 display: flex;
                 align-items: center;
-                background-color: rgba(0, 0, 0, 0.1);
                 height: 100%;
                 padding: 0 26px 0 20px;
+                background-color: rgba(0, 0, 0, 0.1);
 
                 .UserProfile {
+                    border: 3px solid transparent;
+                    border-radius: 50%;
                     --profile-width: 28px;
                     --profile-height: 28px;
-                    border-radius: 50%;
-                    border: 3px solid transparent;
 
                     &:hover {
                         cursor: pointer;
@@ -60,8 +60,8 @@
 
                 .UserName {
                     font-size: 20px;
-                    margin-left: 16px;
                     font-weight: 500;
+                    margin-left: 16px;
                 }
             }
         }

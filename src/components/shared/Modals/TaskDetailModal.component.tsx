@@ -1,4 +1,4 @@
-import React, { Component, ReactElement, createRef } from 'react';
+import React, { Component, MouseEvent, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { ButtonUI } from '@lib/ui/Button';
@@ -12,9 +12,11 @@ import { TextFieldUI } from '@lib/ui/TextField';
 import { Deps } from '@core/dep/deps';
 import * as events from '@core/entity/events';
 import { Message } from '@core/entity/message';
+import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 
 import { ThreadUI } from '../Thread';
+import { UserProfileUI } from '../UserProfile';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 40;
@@ -22,6 +24,10 @@ const verticalMargin = 40;
 interface IProps {
     deps: Deps;
     mutationOutputChan: csp.PutChannel<events.MutationEvent | undefined>;
+    onShowPotentialTaskOwners?: (
+        task: Task,
+        findAlignTargetBoundBox: IBoundingBoxFinder,
+    ) => void;
 }
 
 interface IState {
@@ -65,7 +71,21 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
                                 <MaterialIconUI>cancel</MaterialIconUI>
                             </div>
                         </div>
-                        <div className={styles.TaskDetail}>
+                        <div className={styles.TaskActionsSection}>
+                            <div
+                                className={`${styles.Action} ${styles.AssignOwner}`}
+                                onClick={this.onAssignOwnerClick}
+                            >
+                                {this.state.task?.owner ? (
+                                    <UserProfileUI
+                                        user={this.state.task.owner}
+                                    />
+                                ) : (
+                                    <MaterialIconUI>face</MaterialIconUI>
+                                )}
+                            </div>
+                        </div>
+                        <div className={styles.TaskDetailSection}>
                             <div className={styles.LeftSection}>
                                 <TextFieldUI
                                     value={this.state.task.goal}
@@ -89,17 +109,17 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
                                     <div className={styles.Row}>
                                         <DatePickerUI label={'Due at'} />
                                     </div>
-                                    <div
-                                        className={`${styles.Row} ${styles.Effort}`}
-                                    >
-                                        {/*<NamedValueUI*/}
-                                        {/*    name={'Effort'}*/}
-                                        {/*    value={`${*/}
-                                        {/*        this.state.task.effort ||*/}
-                                        {/*        'Unknown'*/}
-                                        {/*    }`}*/}
-                                        {/*/>*/}
-                                    </div>
+                                    {/*<div*/}
+                                    {/*    className={`${styles.Row} ${styles.Effort}`}*/}
+                                    {/*>*/}
+                                    {/*<NamedValueUI*/}
+                                    {/*    name={'Effort'}*/}
+                                    {/*    value={`${*/}
+                                    {/*        this.state.task.effort ||*/}
+                                    {/*        'Unknown'*/}
+                                    {/*    }`}*/}
+                                    {/*/>*/}
+                                    {/*</div>*/}
                                 </div>
                                 <div className={styles.Actions}>
                                     <div className={styles.SaveAction}>
@@ -143,11 +163,17 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
         window.removeEventListener('resize', this.onBodyResize);
     }
 
-    public async open(task: Task) {
-        await this.refresh(task);
+    public async open(taskId: number) {
+        await this.refreshWithTaskId(taskId);
         this.adjustSize();
         this.modalRef.current?.open();
         this.scrollToCommentsBottom();
+    }
+
+    public async refresh() {
+        if (this.state.task) {
+            await this.refreshWithTaskId(this.state.task.id);
+        }
     }
 
     private onCloseButtonClick = () => {
@@ -188,18 +214,18 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
             this.state.task?.id || -1,
             content,
         );
-        await this.refresh(this.state.task!);
+        await this.refresh();
         this.scrollToCommentsBottom();
     };
 
     private onDeleteComment = async (commentId: number) => {
         await this.props.deps.commentService.deleteComment(commentId);
-        await this.refresh(this.state.task!);
+        await this.refresh();
     };
 
     private onUpdateComment = async (commentId: number, content: string) => {
         await this.props.deps.commentService.updateComment(commentId, content);
-        await this.refresh(this.state.task!);
+        await this.refresh();
     };
 
     private scrollToCommentsBottom() {
@@ -207,18 +233,37 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
         threadDivEl?.scrollTo(0, threadDivEl?.scrollHeight);
     }
 
-    private async refresh(task: Task) {
+    private async refreshWithTaskId(taskId: number) {
         const mePromise = this.props.deps.userService.fetchMe('cache-first');
+        const taskPromise = this.props.deps.taskService.fetchTask(
+            taskId,
+            'network-only',
+        );
         const commentsPromise =
             this.props.deps.commentService.fetchTaskComments(
-                task.id,
+                taskId,
                 'network-only',
             );
-        const [me, comments] = await Promise.all([mePromise, commentsPromise]);
+        const [me, task, comments] = await Promise.all([
+            mePromise,
+            taskPromise,
+            commentsPromise,
+        ]);
         this.setState({
             task: task,
             meUserId: me.id,
             comments: comments,
         });
     }
+
+    private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
+        const element = event.currentTarget as HTMLDivElement;
+        this.props.onShowPotentialTaskOwners?.call(
+            null,
+            this.state.task!,
+            (): Rect => {
+                return element.getBoundingClientRect();
+            },
+        );
+    };
 }

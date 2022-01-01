@@ -4,5 +4,7 @@
 .Box {
     @include elevation(5);
     width: 700px;
+    margin: 20px 0 0 20px;
     padding: 20px;
+    background-color: white;
 }

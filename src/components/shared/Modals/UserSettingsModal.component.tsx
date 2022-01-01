@@ -67,6 +67,16 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
         );
     }
 
+    public open = (user: User) => {
+        this.setState({
+            user,
+            initialUserFirstName: user.firstName || '',
+            initialUserLastName: user.lastName || '',
+        });
+
+        this.modalRef.current?.open();
+    };
+
     private renderUserProfileTab = () => {
         return (
             this.state.currentTabIndex === 0 && (
@@ -110,16 +120,6 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
                 </div>
             )
         );
-    };
-
-    public open = (user: User) => {
-        this.setState({
-            user,
-            initialUserFirstName: user.firstName || '',
-            initialUserLastName: user.lastName || '',
-        });
-
-        this.modalRef.current?.open();
     };
 
     private onCloseButtonClick = () => {

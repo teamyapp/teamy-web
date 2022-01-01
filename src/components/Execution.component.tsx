@@ -148,6 +148,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
                     mutationOutputChan={this.mutationChan}
+                    onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
                 />
                 {this.state.showPotentialTaskOwnersList && (
                     <div
@@ -220,8 +221,8 @@ export class ExecutionComponent extends Component<IProps, IState> {
         window.removeEventListener('resize', this.onWindowResize);
     }
 
-    public showTaskDetail(task: Task) {
-        this.taskDetailModalRef.current?.open(task);
+    public showTaskDetail(taskId: number) {
+        this.taskDetailModalRef.current?.open(taskId);
     }
 
     public async refresh(policy: FetchPolicy) {
@@ -240,11 +241,12 @@ export class ExecutionComponent extends Component<IProps, IState> {
         }
     };
 
-    private updateLocalStateWithRawData = (data: any) => {
+    private updateLocalStateWithRawData = async (data: any) => {
         const event = createRefreshTeamEvent(data);
         if (event) {
             const newState = this.props.deps.localStore.mutate(event, false);
             this.updateState(newState);
+            await this.taskDetailModalRef.current?.refresh();
         }
     };
 
@@ -342,11 +344,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
-        const task = await this.props.deps.taskService.fetchTask(
-            taskId,
-            'cache-first',
-        );
-        this.showTaskDetail(task);
+        this.showTaskDetail(taskId);
     };
 
     private onNewTaskChange = (task: Task) => {

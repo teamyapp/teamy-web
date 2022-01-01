@@ -11,7 +11,7 @@ import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 
 import styles from './Personal.module.scss';
-import { TaskPreviewUI } from './TaskPreview.component';
+import { TaskPreviewUI } from './TaskPreview';
 
 interface IProps {
     deps: Deps;
