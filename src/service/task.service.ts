@@ -147,7 +147,7 @@ function Contains(text: string): Filterer<Task> {
 
 // Given a sequence of tasks, split it to N sequences of tasks where N is the number of unique assignees.
 // this is useful when the UI wants to group tasks by owners instead of status.
-function SplitByOwners(tasks: Task[]): Map<User | undefined, Task[]> {
+function GroupByOwners(tasks: Task[]): Map<User | undefined, Task[]> {
     return tasks.reduce((accu, cur) => {
         if (accu.has(cur.owner)) {
             accu.get(cur.owner)?.push(cur)
@@ -168,5 +168,5 @@ function Example(tasks: Task[]) {
         And(Upcoming, Between(t1, t2)),
         InProgress,
     ))
-    SplitByOwners(tasks)
+    GroupByOwners(tasks)
 }
