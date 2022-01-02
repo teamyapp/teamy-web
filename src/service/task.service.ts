@@ -158,6 +158,19 @@ function GroupByOwners(tasks: Task[]): Map<User | undefined, Task[]> {
     }, new Map<User | undefined, Task[]>())
 }
 
+// Generic GroupBy
+function GroupBy<T, Group>(data: T[], groupBy: (ele: T) => Group): Map<Group | undefined, T[]> {
+    return data.reduce((accu, cur) => {
+        if (accu.has(groupBy(cur))) {
+            accu.get(groupBy(cur))?.push(cur)
+        } else {
+            accu.set(groupBy(cur), [cur])
+        }
+        return accu
+    }, new Map<Group | undefined, T[]>())
+}
+
+
 
 function Example(tasks: Task[]) {
     let t1 = new Date();
@@ -169,4 +182,6 @@ function Example(tasks: Task[]) {
         InProgress,
     ))
     GroupByOwners(tasks)
+    GroupBy(tasks, (task) => task.owner)
+    GroupBy(tasks, (task) => task.status)
 }
