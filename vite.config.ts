@@ -13,6 +13,8 @@ const gitLongCommitHash = childProcess
     .toString()
     .trim();
 
+console.log(gitLongCommitHash, gitShortCommitHash);
+
 // https://vitejs.dev/config/
 export default defineConfig({
     build: {
@@ -20,9 +22,7 @@ export default defineConfig({
     },
     plugins: [react(), tsconfigPaths()],
     define: {
-        Vars: {
-            GIT_SHORT_COMMIT_HASH: gitShortCommitHash,
-            GIT_LONG_COMMIT_HASH: gitLongCommitHash,
-        },
+        GIT_SHORT_COMMIT_HASH: JSON.stringify(gitShortCommitHash),
+        GIT_LONG_COMMIT_HASH: JSON.stringify(gitLongCommitHash),
     },
 });

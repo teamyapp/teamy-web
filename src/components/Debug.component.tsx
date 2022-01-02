@@ -33,6 +33,7 @@ export class DebugComponent extends Component<IProps, IState> {
 
     public componentDidMount() {
         const env = getEnvironment();
+        // @ts-ignore
         this.setState({
             configRows: [
                 {
@@ -41,10 +42,8 @@ export class DebugComponent extends Component<IProps, IState> {
                 },
                 {
                     name: 'Git commit',
-                    value: getEnvVar('GIT_SHORT_COMMIT_HASH'),
-                    link: `https://github.com/${this.props.repoOwner}/${
-                        this.props.repoName
-                    }/commit/${getEnvVar('GIT_LONG_COMMIT_HASH')}`,
+                    value: GIT_SHORT_COMMIT_HASH,
+                    link: `https://github.com/${this.props.repoOwner}/${this.props.repoName}/commit/${GIT_LONG_COMMIT_HASH}`,
                 },
                 {
                     name: 'Teamy GraphQL API',
