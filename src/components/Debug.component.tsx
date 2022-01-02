@@ -64,16 +64,21 @@ export class DebugComponent extends Component<IProps, IState> {
                 <div className={`${styles.Card} ${styles.InfoCard}`}>
                     <div className={styles.Title}>Debug</div>
                     <table>
-                        {this.state.configRows.map(this.renderConfigRow)}
+                        <tbody>
+                            {this.state.configRows.map(this.renderConfigRow)}
+                        </tbody>
                     </table>
                 </div>
             </div>
         );
     }
 
-    private renderConfigRow = (configRow: ConfigRow): ReactElement => {
+    private renderConfigRow = (
+        configRow: ConfigRow,
+        index: number,
+    ): ReactElement => {
         return (
-            <tr>
+            <tr key={index}>
                 <td className={styles.RowName}>{configRow.name}</td>
                 <td>
                     {configRow.link ? (
