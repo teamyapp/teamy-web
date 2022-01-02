@@ -33,6 +33,7 @@ export class DebugComponent extends Component<IProps, IState> {
 
     public componentDidMount() {
         const env = getEnvironment();
+        // @ts-ignore
         this.setState({
             configRows: [
                 {
@@ -41,10 +42,8 @@ export class DebugComponent extends Component<IProps, IState> {
                 },
                 {
                     name: 'Git commit',
-                    value: getEnvVar('GIT_SHORT_COMMIT_HASH'),
-                    link: `https://github.com/${this.props.repoOwner}/${
-                        this.props.repoName
-                    }/commit/${getEnvVar('GIT_LONG_COMMIT_HASH')}`,
+                    value: GIT_SHORT_COMMIT_HASH,
+                    link: `https://github.com/${this.props.repoOwner}/${this.props.repoName}/commit/${GIT_LONG_COMMIT_HASH}`,
                 },
                 {
                     name: 'Teamy GraphQL API',
@@ -64,16 +63,21 @@ export class DebugComponent extends Component<IProps, IState> {
                 <div className={`${styles.Card} ${styles.InfoCard}`}>
                     <div className={styles.Title}>Debug</div>
                     <table>
-                        {this.state.configRows.map(this.renderConfigRow)}
+                        <tbody>
+                            {this.state.configRows.map(this.renderConfigRow)}
+                        </tbody>
                     </table>
                 </div>
             </div>
         );
     }
 
-    private renderConfigRow = (configRow: ConfigRow): ReactElement => {
+    private renderConfigRow = (
+        configRow: ConfigRow,
+        index: number,
+    ): ReactElement => {
         return (
-            <tr>
+            <tr key={index}>
                 <td className={styles.RowName}>{configRow.name}</td>
                 <td>
                     {configRow.link ? (

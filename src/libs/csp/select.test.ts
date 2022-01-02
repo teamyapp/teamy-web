@@ -11,6 +11,7 @@ describe('select on read/receive/pop operation', () => {
         let x = await select([[sec1, async (ele) => ele]]);
         strictEqual('put after unblock', x);
     });
+
     it('works 2', async () => {
         let unblock = chan<null>();
         unblock.close();
@@ -34,6 +35,7 @@ describe('select on read/receive/pop operation', () => {
         ]);
         strictEqual(undefined, x);
     });
+
     it('can select from a channel that will be closed later', async () => {
         let unblock = chan<null>();
         setTimeout(async () => {
@@ -49,6 +51,7 @@ describe('select on read/receive/pop operation', () => {
         ]);
         strictEqual(undefined, x);
     });
+
     it('can select from a channel that will be put later', async () => {
         let unblock = chan<string>();
         setTimeout(async () => {
@@ -106,7 +109,7 @@ describe('select on read/receive/pop operation', () => {
         strictEqual('put after unblock', x);
     });
 
-    xit('favors channels with values ready to be received over closed channels', async () => {
+    it('favors channels with values ready to be received over closed channels', async () => {
         // Currently does not support, but
         // Is this even a good design decision?
         let unblock = chan<null>();
@@ -130,35 +133,36 @@ describe('select on read/receive/pop operation', () => {
         strictEqual('sec1', x);
     });
 
-    xit('fair selections --> no starvation', async () => {
-        // Currently does not support, but
-        // Is this even a good design decision?
-        let unblock = chan<null>();
-        unblock.close();
-        let sec1 = chan<null>();
-        sec1.put(null);
-        while (1) {
-            let x = await select([
-                [
-                    unblock,
-                    async function () {
-                        return 'unblock';
-                    },
-                ],
-                [
-                    sec1,
-                    async function () {
-                        return 'sec1';
-                    },
-                ],
-            ]);
-            if ('sec1' === x) {
-                // should eventually get picked
-                break;
-            }
-        }
-    });
-
+    // TODO: fix deadlock
+    // it('fair selections --> no starvation', async () => {
+    //     // Currently does not support, but
+    //     // Is this even a good design decision?
+    //     let unblock = chan<null>();
+    //     unblock.close();
+    //     let sec1 = chan<null>();
+    //     sec1.put(null);
+    //     while (1) {
+    //         let x = await select([
+    //             [
+    //                 unblock,
+    //                 async function () {
+    //                     return 'unblock';
+    //                 },
+    //             ],
+    //             [
+    //                 sec1,
+    //                 async function () {
+    //                     return 'sec1';
+    //                 },
+    //             ],
+    //         ]);
+    //         if ('sec1' === x) {
+    //             // should eventually get picked
+    //             break;
+    //         }
+    //     }
+    // });
+    //
     it('has default case', async () => {
         let unblock = chan<null>();
         strictEqual(
@@ -178,6 +182,7 @@ describe('select on read/receive/pop operation', () => {
             ),
         );
     });
+
     it("won't trigger default case if the normal case is ready", async () => {
         let unblock = chan<null>();
         unblock.close();
@@ -201,6 +206,7 @@ describe('select on read/receive/pop operation', () => {
         strictEqual(0, unblock.putActions.length);
         strictEqual(0, unblock.readyListener.length);
     });
+
     it("won't trigger default case if the normal case is ready 2", async () => {
         let unblock = chan<string>();
         unblock.put('something');

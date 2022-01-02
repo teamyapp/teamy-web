@@ -1,27 +1,38 @@
 {
-  "extends": "./tsconfig.path.json",
-  "compilerOptions": {
-    "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
-  },
-  "include": [
-    "src"
-  ]
+    "compilerOptions": {
+        "target": "es2015",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": false,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx",
+        "baseUrl": "./src",
+        "paths": {
+            "@core/entity/*": ["entity/*"],
+            "@core/env/*": ["env/*"],
+            "@core/config/*": ["config/*"],
+            "@core/service/*": ["service/*"],
+            "@core/state/*": ["state/*"],
+            "@core/dep/*": ["dep/*"],
+            "@lib/csp/*": ["libs/csp/*"],
+            "@lib/error/*": ["libs/error/*"],
+            "@lib/ui/*": ["libs/ui/*"],
+            "@lib/network/*": ["libs/network/*"],
+            "@lib/identity/*": ["libs/identity/*"],
+            "@lib/event/*": ["libs/event/*"],
+            "@lib/store/*": ["libs/store/*"],
+            "@lib/testing/*": ["libs/testing/*"]
+        }
+    },
+    "include": ["src"],
+    "exclude": ["**/*.stories.ts"]
 }
