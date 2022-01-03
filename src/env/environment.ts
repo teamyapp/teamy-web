@@ -11,3 +11,8 @@ export function getEnvironment(): Environment {
         Environment.Development
     );
 }
+
+export function getEnvVar(variable: string): string {
+    const vars = window.Vars;
+    return vars[variable] || '';
+}
