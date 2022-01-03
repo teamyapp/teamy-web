@@ -45,11 +45,13 @@ export const completeTask = gql`
 export const createTask = gql`
     mutation createTask($taskInput: TaskInput!) {
         createTask(task: $taskInput) {
-            id
-            goal
-            context
-            owner {
+            task {
                 id
+                goal
+                context
+                owner {
+                    id
+                }
             }
         }
     }

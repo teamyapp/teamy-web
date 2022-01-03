@@ -40,6 +40,9 @@ export class GraphQLClient {
         options.errorPolicy = 'all';
         options.context = this.getAuthContext();
         const result = await this.client.query(options);
+        if (result.errors) {
+            console.error(result.errors);
+        }
         return result.data;
     }
 

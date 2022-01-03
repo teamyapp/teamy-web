@@ -13,20 +13,16 @@ export class TeamService {
         this.graphQLClient = graphQLClient;
     }
 
-    public fetchTeamMembers(): Promise<User[]> {
-        return this.graphQLClient
+    // get the team members of a team
+    public async fetchTeamMembers(teamId: number): Promise<User[]> {
+        let data = await this.graphQLClient
             .query({ query: queries.teamMembers })
-            .then((payload: any) => {
-                return payload?.me?.activeTeam?.members || [];
-            });
-    }
-
-    public fetchActiveTeamId(): Promise<number> {
-        return this.graphQLClient
-            .query({ query: queries.activeTeamId })
-            .then((payload: any) => {
-                return payload?.me?.activeTeam?.id || -1;
-            });
+        for(let team of data.me.teams) {
+            if(team.id == teamId) {
+                return team.members
+            }
+        }
+        return []
     }
 
     public fetchTeam(teamId: number): Promise<Team> {

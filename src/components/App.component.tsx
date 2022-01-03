@@ -38,12 +38,12 @@ class AppComponent extends Component<IProps, IState> {
     private addTeamMembersModalRef = createRef<AddTeamMembersModalComponent>();
     private userModalRef = createRef<UserSettingsModalComponent>();
 
-    constructor(props: any) {
+    constructor(props: IProps) {
         super(props);
         this.state = {
             isDrawerOpen: false,
             teams: [],
-            activeTeamId: -1,
+            activeTeamId: props.deps.localStore.state().activeTeamId,
         };
     }
 

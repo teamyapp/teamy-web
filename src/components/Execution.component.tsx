@@ -274,7 +274,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,
     ) => {
-        const owners = await this.props.deps.teamService.fetchTeamMembers();
+        const owners = await this.props.deps.teamService.fetchTeamMembers(this.props.deps.localStore.state().activeTeamId);
         this.setState({
             potentialTaskOwners: owners,
             taskSelectingOwner: task,

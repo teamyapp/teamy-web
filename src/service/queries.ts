@@ -144,16 +144,6 @@ export const teamMembers = gql`
     }
 `;
 
-export const activeTeamId = gql`
-    query activeTeamId {
-        me {
-            id
-            activeTeam {
-                id
-            }
-        }
-    }
-`;
 
 export const teams = gql`
     query teams {

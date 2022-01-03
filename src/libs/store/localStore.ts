@@ -54,12 +54,12 @@ export class LocalStore<State, MutationEvent extends event.Event> {
         return newState;
     }
 
-    public getState(): State {
-        return this.currentState;
-    }
-
     public subscribeStateChange(): csp.PopChannel<State> {
         return this.stateChangeCaster.copy();
+    }
+
+    public state(): State {
+        return this.currentState
     }
 
     private persistData() {
