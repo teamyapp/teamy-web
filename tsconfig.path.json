@@ -15,6 +15,7 @@
             "@lib/identity/*": ["libs/identity/*"],
             "@lib/event/*": ["libs/event/*"],
             "@lib/store/*": ["libs/store/*"],
+            "@lib/data/*": ["libs/data/*"],
             "@lib/testing/*": ["libs/testing/*"]
         }
     }
