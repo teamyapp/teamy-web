@@ -5,9 +5,9 @@ import { User } from './user';
 export interface Task {
     id: number;
     goal: string;
-    dueAt?: string;     // RFC3339 string, todo: create a RFC3339
+    dueAt?: string; // RFC3339 string, todo: create a RFC3339 type
     context?: string;
     owner?: User;
     availableActions: TaskAction[];
-    status: TaskStatus
+    status: TaskStatus | undefined; // prefer to T | undefined over ?
 }
