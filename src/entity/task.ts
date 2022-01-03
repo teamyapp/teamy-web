@@ -9,5 +9,5 @@ export interface Task {
     context?: string;
     owner?: User;
     availableActions: TaskAction[];
-    status: TaskStatus | undefined; // prefer to T | undefined over ?
+    status?: TaskStatus;
 }
