@@ -66,7 +66,13 @@ export function Contains(text: string): Filterer<Task> {
 // Given a sequence of tasks, split it to N sequences of tasks where N is the number of unique assignees.
 // this is useful when the UI wants to group tasks by owners instead of status.
 export function GroupByOwners(tasks: Task[]): Map<User | undefined, Task[]> {
-    return GroupBy(tasks, (task) => task.owner);
+    return GroupBy(tasks, (task) => {
+        if(task.owner === null) {
+            return undefined    // treat both null & undefined as undefined
+        } else {
+            return task.owner
+        }
+    });
 }
 
 // Generic GroupBy
