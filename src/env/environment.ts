@@ -7,12 +7,12 @@ export enum Environment {
 
 export function getEnvironment(): Environment {
     return (
-        (import.meta.env['VITE_ENVIRONMENT'] as Environment) ||
+        (process.env[`REACT_APP_ENVIRONMENT`] as Environment) ||
         Environment.Development
     );
 }
 
 export function getEnvVar(variable: string): string {
-    const vars = window.Vars;
-    return vars[variable] || '';
+    const variables = process.env.variables as any;
+    return variables[variable] || '';
 }
