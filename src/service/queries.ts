@@ -66,43 +66,6 @@ export const me = gql`
     }
 `;
 
-export const personalStatus = gql`
-    query personalStatus {
-        me {
-            id
-            activeTeam {
-                id
-                tasksNeedAttention(isMine: true) {
-                    ...taskPreview
-                }
-            }
-        }
-    }
-
-    ${fragmentTaskPreview}
-`;
-
-export const teamStatus = gql`
-    query TeamStatus {
-        me {
-            id
-            activeTeam {
-                id
-                upcomingTasks: tasks(input: { status: UPCOMING }) {
-                    ...taskPreview
-                }
-                inProgressTasks: tasks(input: { status: IN_PROGRESS }) {
-                    ...taskPreview
-                }
-                deliveredTasks: tasks(input: { status: DELIVERED }) {
-                    ...taskPreview
-                }
-            }
-        }
-    }
-    ${fragmentTaskPreview}
-`;
-
 export const task = gql`
     query task($id: ID!) {
         task(id: $id) {
