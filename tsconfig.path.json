@@ -7,6 +7,7 @@
             "@core/config/*": ["config/*"],
             "@core/service/*": ["service/*"],
             "@core/state/*": ["state/*"],
+            "@core/data/*": ["data/*"],
             "@core/dep/*": ["dep/*"],
             "@lib/csp/*": ["libs/csp/*"],
             "@lib/error/*": ["libs/error/*"],

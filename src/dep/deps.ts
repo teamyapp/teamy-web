@@ -9,7 +9,7 @@ import * as events from '@core/entity/events';
 import { getEnvironment } from '@core/env/environment';
 import { CommentService } from '@core/service/comment.service';
 import { createNetworkStateMutator } from '@core/service/networkStateMutator';
-import { StatusService } from '@core/service/status.service';
+import { PageService } from '@core/service/page.service';
 import { TaskService } from '@core/service/task.service';
 import { TeamService } from '@core/service/team.service';
 import { UserService } from '@core/service/user.service';
@@ -21,14 +21,13 @@ export interface Deps {
     teamService: TeamService;
     userService: UserService;
     commentService: CommentService;
-    statusService: StatusService;
+    pageService: PageService;
     identityClient: IdentityClient;
     localStore: LocalStore<IAppState, events.MutationEvent>;
     responsiveStateService: ResponsiveStateService<
         IAppState,
         events.MutationEvent
     >;
-    graphql: GraphQLClient;
 }
 
 export function initDeps(): Deps {
@@ -43,8 +42,8 @@ export function initDeps(): Deps {
     const taskService = new TaskService(teamyGraphQLClient);
     const teamService = new TeamService(teamyGraphQLClient);
     const userService = new UserService(teamyGraphQLClient);
-    const statusService = new StatusService(teamyGraphQLClient);
     const commentService = new CommentService(teamyGraphQLClient);
+    const pageService = new PageService(teamyGraphQLClient);
     const localStore = createStore();
     const networkStateMutator = createNetworkStateMutator(taskService);
     const responsiveStateService = new ResponsiveStateService<
@@ -56,10 +55,9 @@ export function initDeps(): Deps {
         teamService,
         userService,
         commentService,
-        statusService,
+        pageService,
         identityClient,
         localStore,
         responsiveStateService,
-        graphql: teamyGraphQLClient,
     };
 }

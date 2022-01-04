@@ -1,21 +1,26 @@
 import React, { Component, ReactElement } from 'react';
 
 import * as csp from '@lib/csp/csp';
+import { Or } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
+import { Delivered, InProgress, Upcoming } from '@core/data/task.filter';
 import * as events from '@core/entity/events';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
-import { TeamStatus } from '@core/entity/teamStatus';
 import { User } from '@core/entity/user';
 
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
+const upcomingColumnFilter = Or<Task>(Upcoming, InProgress);
+const inProgressColumnFilter = InProgress;
+const deliveredColumnFilter = Delivered;
+
 interface IProps {
     taskAdding?: Task;
-    teamStatus: TeamStatus;
+    tasks: Task[];
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     taskSelectingOwner?: Task;
     multiCaster: csp.Multicaster<events.MutationEvent>;
@@ -33,7 +38,7 @@ interface IProps {
     ) => void;
 }
 
-export default class KanbanUI extends Component<IProps> {
+export class KanbanUI extends Component<IProps> {
     constructor(props: IProps) {
         super(props);
         this.state = {};
@@ -61,9 +66,9 @@ export default class KanbanUI extends Component<IProps> {
                         <div className={styles.TaskList}>
                             {this.props.taskAdding &&
                                 this.renderNewTask()(this.props.taskAdding)}
-                            {this.props.teamStatus.upcomingTasks.map(
-                                this.renderExistingTask(),
-                            )}
+                            {this.props.tasks
+                                .filter(upcomingColumnFilter)
+                                .map(this.renderExistingTask())}
                         </div>
                     </SectionUI>
                 </div>
@@ -72,9 +77,9 @@ export default class KanbanUI extends Component<IProps> {
                 >
                     <SectionUI title={'In Progress'}>
                         <div className={styles.TaskList}>
-                            {this.props.teamStatus.inProgressTasks.map(
-                                this.renderExistingTask(),
-                            )}
+                            {this.props.tasks
+                                .filter(inProgressColumnFilter)
+                                .map(this.renderExistingTask())}
                         </div>
                     </SectionUI>
                 </div>
@@ -83,9 +88,9 @@ export default class KanbanUI extends Component<IProps> {
                 >
                     <SectionUI title={'Delivered'}>
                         <div className={styles.TaskList}>
-                            {this.props.teamStatus.deliveredTasks.map(
-                                this.renderExistingTask(),
-                            )}
+                            {this.props.tasks
+                                .filter(deliveredColumnFilter)
+                                .map(this.renderExistingTask())}
                         </div>
                     </SectionUI>
                 </div>

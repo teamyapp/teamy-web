@@ -9,5 +9,5 @@ export interface Task {
     context?: string;
     owner?: User;
     availableActions: TaskAction[];
-    status?: TaskStatus;
+    status: TaskStatus;
 }

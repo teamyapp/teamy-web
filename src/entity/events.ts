@@ -39,7 +39,5 @@ export interface RefreshTeam extends Event {
     type: 'RefreshTeam';
     currentUserId: number;
     tasksNeedAttention: Task[];
-    upcomingTasks: Task[];
-    inProgressTasks: Task[];
-    deliveredTasks: Task[];
+    teamTasks: Task[];
 }

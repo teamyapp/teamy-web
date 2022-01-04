@@ -8,22 +8,20 @@ import { IStateSyncer } from '@lib/store/responsiveState.service';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
+import { OwnedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import * as events from '@core/entity/events';
 import { RefreshTeam } from '@core/entity/events';
-import { PersonalStatus } from '@core/entity/personalStatus';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
-import { TeamStatus } from '@core/entity/teamStatus';
 import { User } from '@core/entity/user';
-import * as queries from '@core/service/queries';
 import { IAppState } from '@core/state/state';
 
 import styles from './Execution.component.module.scss';
-import Team from './shared/Kanban';
+import { KanbanUI } from './shared/Kanban';
 import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.component';
-import PersonalUI from './shared/PersonalStatus';
+import { PersonalStatusUI } from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
 
 const routes = ['me', 'team'];
@@ -42,8 +40,9 @@ interface IState {
     findTaskOwnersAlignTargetBoundBox?: IBoundingBoxFinder;
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
-    personalStatus: PersonalStatus;
-    teamStatus: TeamStatus;
+    currentUserId: number;
+    needAttentionTask?: Task;
+    teamTasks: Task[];
     taskSelectingOwner?: Task;
     potentialTaskOwners: User[];
     taskAdding?: Task;
@@ -66,20 +65,16 @@ export class ExecutionComponent extends Component<IProps, IState> {
             showPotentialTaskOwnersList: false,
             taskOwnersListLeft: -1000,
             taskOwnersListTop: -1000,
-            personalStatus: {
-                upcomingTasks: [],
-                deliveredTasks: [],
-            },
-            teamStatus: {
-                upcomingTasks: [],
-                inProgressTasks: [],
-                deliveredTasks: [],
-            },
+            currentUserId: -1,
+            teamTasks: [],
             potentialTaskOwners: [],
         };
     }
 
     public render(): ReactElement {
+        const personalTasks = this.state.teamTasks.filter(
+            OwnedBy(this.state.currentUserId),
+        );
         return (
             <div className={styles.Execution} onScrollCapture={this.onScroll}>
                 <div className={styles.Tabs}>
@@ -94,10 +89,11 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 <div className={styles.Content}>
                     <Switch>
                         <Route path={`${this.props.routerUrl}me`}>
-                            <PersonalUI
+                            <PersonalStatusUI
                                 multiCaster={this.multiCaster}
                                 deps={this.props.deps}
-                                personalStatus={this.state.personalStatus}
+                                needAttentionTask={this.state.needAttentionTask}
+                                personalTasks={personalTasks}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
                                     this.state.taskSelectingOwner
@@ -120,9 +116,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     </Switch>
                     <Switch>
                         <Route path={`${this.props.routerUrl}team`}>
-                            <Team
+                            <KanbanUI
                                 multiCaster={this.multiCaster}
-                                teamStatus={this.state.teamStatus}
+                                tasks={this.state.teamTasks}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
                                     this.state.taskSelectingOwner
@@ -202,10 +198,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
         const stateSyncer: IStateSyncer<IAppState> = {
             fetchNetworkState: async (): Promise<any> => {
-                return await this.props.deps.graphql.query({
-                    fetchPolicy: 'network-only',
-                    query: queries.mePage,
-                });
+                return await this.props.deps.pageService.fetchMePage(
+                    'network-only',
+                );
             },
             updateLocalStateWithRawData: this.updateLocalStateWithRawData,
             updateLocalState: this.updateState,
@@ -228,10 +223,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     public async refresh(policy: FetchPolicy) {
         console.log('refresh', policy);
-        const data = await this.props.deps.graphql.query({
-            fetchPolicy: policy,
-            query: queries.mePage,
-        });
+        const data = await this.props.deps.pageService.fetchMePage(policy);
         this.refreshState(data);
     }
 
@@ -253,16 +245,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private updateState = (state: IAppState) => {
         this.setState({
-            personalStatus: {
-                needAttentionTask: state.needAttentionTask,
-                upcomingTasks: state.teamStatus.upcomingTasks.filter(
-                    (task: Task) => task.owner?.id === state.currentUserId,
-                ),
-                deliveredTasks: state.teamStatus.deliveredTasks.filter(
-                    (task: Task) => task.owner?.id === state.currentUserId,
-                ),
-            },
-            teamStatus: state.teamStatus,
+            currentUserId: state.currentUserId,
+            needAttentionTask: state.needAttentionTask,
+            teamTasks: state.teamTasks,
         });
     };
 
@@ -408,6 +393,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 goal: '',
                 owner: user,
                 availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
+                status: 'UPCOMING',
             },
         });
     };
@@ -418,6 +404,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 id: -1,
                 goal: '',
                 availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
+                status: 'UPCOMING',
             },
         });
     };
@@ -440,9 +427,10 @@ function createRefreshTeamEvent(data: any): RefreshTeam | null {
             type: 'RefreshTeam',
             currentUserId: data.me?.id,
             tasksNeedAttention: activeTeam.tasksNeedAttention,
-            deliveredTasks: activeTeam.deliveredTasks,
-            inProgressTasks: activeTeam.inProgressTasks,
-            upcomingTasks: activeTeam.upcomingTasks,
+            // TODO: replace with activeTeam.tasks once backend is ready
+            teamTasks: activeTeam.upcomingTasks
+                .concat(activeTeam.inProgressTasks)
+                .concat(activeTeam.deliveredTasks),
         };
     }
     return null;

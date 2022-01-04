@@ -15,6 +15,7 @@ fragment taskPreview on Task {
         lastName
         profileUrl
     }
+    status
     availableActions
     createdAt
 }
@@ -63,49 +64,6 @@ export const me = gql`
             profileUrl
         }
     }
-`;
-
-export const personalStatus = gql`
-    query personalStatus {
-        me {
-            id
-            activeTeam {
-                id
-                tasksNeedAttention(isMine: true) {
-                    ...taskPreview
-                }
-                upcomingTasks: tasks(input: { status: UPCOMING }) {
-                    ...taskPreview
-                }
-                deliveredTasks: tasks(input: { status: DELIVERED }) {
-                    ...taskPreview
-                }
-            }
-        }
-    }
-
-    ${fragmentTaskPreview}
-`;
-
-export const teamStatus = gql`
-    query TeamStatus {
-        me {
-            id
-            activeTeam {
-                id
-                upcomingTasks: tasks(input: { status: UPCOMING }) {
-                    ...taskPreview
-                }
-                inProgressTasks: tasks(input: { status: IN_PROGRESS }) {
-                    ...taskPreview
-                }
-                deliveredTasks: tasks(input: { status: DELIVERED }) {
-                    ...taskPreview
-                }
-            }
-        }
-    }
-    ${fragmentTaskPreview}
 `;
 
 export const task = gql`

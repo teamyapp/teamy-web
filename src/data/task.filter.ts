@@ -11,11 +11,15 @@ import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
 export const Upcoming: Filter<Task> = (task: Task) =>
-    task.status === 'Upcoming';
+    task.status === 'UPCOMING';
 export const InProgress: Filter<Task> = (task: Task) =>
-    task.status === 'InProgress';
+    task.status === 'IN_PROGRESS';
 export const Delivered: Filter<Task> = (task: Task) =>
-    task.status === 'Delivered';
+    task.status === 'DELIVERED';
+
+export function OwnedBy(ownerUserId: number): Filter<Task> {
+    return (task: Task) => task.owner?.id === ownerUserId;
+}
 
 export function Between(begin: Date, end: Date): Filter<Task> {
     return (task: Task) => {
@@ -36,7 +40,7 @@ export function Contains(text: string): Filter<Task> {
 // Given a sequence of tasks, split it to N sequences of tasks where N is the number of unique assignees.
 // this is useful when the UI wants to group tasks by owners instead of status.
 export function GroupByOwners(tasks: Task[]): Map<User | undefined, Task[]> {
-    return GroupBy(tasks, (task) => {
+    return GroupBy(tasks, (task: Task) => {
         if (task.owner === null) {
             return undefined; // treat both null & undefined as undefined
         } else {
