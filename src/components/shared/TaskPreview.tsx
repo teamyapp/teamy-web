@@ -15,12 +15,11 @@ import * as events from '@core/entity/events';
 import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
+import { goalLengthLimit } from '@core/service/task.service';
 
 // import { NamedValueUI } from '@ui/NamedValue';
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
-
-const goalLengthLimit = 70;
 
 interface IProps {
     canViewDetail: boolean;

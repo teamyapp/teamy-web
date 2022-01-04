@@ -7,6 +7,8 @@ import { Task } from '@core/entity/task';
 import * as mutations from './mutations';
 import * as queries from './queries';
 
+export const goalLengthLimit = 100;
+
 export class TaskService {
     private readonly graphQLClient: GraphQLClient;
 

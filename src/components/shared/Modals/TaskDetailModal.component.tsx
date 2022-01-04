@@ -15,6 +15,7 @@ import * as events from '@core/entity/events';
 import { Message } from '@core/entity/message';
 import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
+import { goalLengthLimit } from '@core/service/task.service';
 
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
@@ -99,7 +100,7 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
                                     value={this.state.task.goal}
                                     label={'Goal'}
                                     showLengthCounter={true}
-                                    maxLength={70}
+                                    maxLength={goalLengthLimit}
                                     onChange={this.onTextFieldChangeHandler(
                                         'goal',
                                     )}
