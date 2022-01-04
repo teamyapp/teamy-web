@@ -96,6 +96,10 @@ export class MarkdownEditorUI extends Component<IProps, IState> {
         );
     }
 
+    public get content() {
+        return this.state.content;
+    }
+
     private onTextAreaContentChange = (
         event: FormEvent<HTMLTextAreaElement>,
     ) => {

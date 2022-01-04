@@ -202,7 +202,13 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
         if (this.state.task) {
             await this.props.mutationOutputChan.put({
                 type: 'UpdateTask',
-                task: this.state.task,
+                task: Object.assign<any, Task, Partial<Task>>(
+                    {},
+                    this.state.task,
+                    {
+                        context: this.markdownEditorRef.current?.content,
+                    },
+                ),
             });
         }
     };
