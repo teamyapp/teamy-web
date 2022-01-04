@@ -125,7 +125,9 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
         case 'RefreshTeam':
             return refreshTeamMutateState(state, event);
         case 'ChangeActiveTeam':
+            // first change the active team
             state.activeTeamId = event.teamId
+            // then get the data for this team
             return state;
     }
 };

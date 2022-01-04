@@ -29,16 +29,16 @@ export class LocalStore<State, MutationEvent extends event.Event> {
         mutateState: MutateState<State, MutationEvent>,
     ) {
         this.mutateState = mutateState;
-        const data = this.loadData();
+        // const data = this.loadData();
 
-        if (data) {
-            this.initialState = data.initialState;
-            this.currentState = data.currentState;
-            this.events = data.events;
-        } else {
+        // if (data) {
+        //     this.initialState = data.initialState;
+        //     this.currentState = data.currentState;
+        //     this.events = data.events;
+        // } else {
             this.currentState = this.initialState = initialState;
             this.events = [];
-        }
+        // }
     }
 
     // todo: should remove shouldNotify
@@ -47,7 +47,7 @@ export class LocalStore<State, MutationEvent extends event.Event> {
         this.events.push(event);
         this.currentState = newState;
         console.log(`performed local mutation: ${event.type}`);
-        this.persistData();
+        // this.persistData();
 
         if (shouldNotify) {
             this.stateChangeChan.put(newState);
@@ -63,21 +63,21 @@ export class LocalStore<State, MutationEvent extends event.Event> {
         return this.stateChangeCaster.copy();
     }
 
-    private persistData() {
-        const data: Data<State, MutationEvent> = {
-            initialState: this.initialState,
-            currentState: this.currentState,
-            events: this.events,
-        };
-        localStorage.setItem(storeDataKey, JSON.stringify(data, null, 4));
-    }
+    // private persistData() {
+    //     const data: Data<State, MutationEvent> = {
+    //         initialState: this.initialState,
+    //         currentState: this.currentState,
+    //         events: this.events,
+    //     };
+    //     localStorage.setItem(storeDataKey, JSON.stringify(data, null, 4));
+    // }
 
-    private loadData(): Data<State, MutationEvent> | null {
-        const data = localStorage.getItem(storeDataKey);
-        if (!data) {
-            return null;
-        } else {
-            return JSON.parse(data);
-        }
-    }
+    // private loadData(): Data<State, MutationEvent> | null {
+    //     const data = localStorage.getItem(storeDataKey);
+    //     if (!data) {
+    //         return null;
+    //     } else {
+    //         return JSON.parse(data);
+    //     }
+    // }
 }

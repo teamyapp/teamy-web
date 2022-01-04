@@ -228,6 +228,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private refreshState = (data: any) => {
+        // todo: this event should be removed
         const event = createRefreshTeamEvent(data);
         if (event) {
             this.props.deps.localStore.mutate(event);

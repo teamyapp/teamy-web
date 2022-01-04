@@ -19,6 +19,7 @@ import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModa
 import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
 import { UserProfileUI } from './shared/UserProfile';
+import { teams } from '@core/service/queries';
 
 interface IProps {
     deps: Deps;
@@ -138,6 +139,7 @@ class AppComponent extends Component<IProps, IState> {
             let changes = this.props.deps.localStore.subscribeStateChange();
             while(true) {
                 let event = await changes.pop()
+                console.log("new change");
                 if(event === undefined) {
                     return;
                 }
@@ -175,9 +177,6 @@ class AppComponent extends Component<IProps, IState> {
             type: "ChangeActiveTeam",
             teamId: teamId
         });
-        // todo: should gradually move away from refresh pattern
-        await this.refresh('network-only');
-        await this.executionRef.current?.refresh('cache-first');
     };
 
     private onTeamMembersAdded = async (teamId: number) => {
@@ -197,11 +196,9 @@ class AppComponent extends Component<IProps, IState> {
         console.log('refresh App', policy);
         const data = await this.props.deps.pageService.fetchMePage(policy);
         const teams: Team[] = data.me?.teams;
-        const activeTeamId = data.me?.activeTeam?.id;
         this.setState({
             me: data.me,
             teams,
-            activeTeamId,
         });
     }
 }
