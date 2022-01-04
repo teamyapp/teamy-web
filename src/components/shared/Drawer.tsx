@@ -9,7 +9,7 @@ import styles from './Drawer.module.scss';
 
 interface IProps {
     teams: Team[];
-    activeTeamId: number;
+    activeTeamId: number | string;
     onMenuClose?: () => void;
     onActiveTeamSelect?: (teamId: number) => void;
     isDrawerOpen: boolean;

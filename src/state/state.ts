@@ -4,7 +4,7 @@ export interface IAppState {
     currentUserId: number;
     needAttentionTask?: Task;
     teamTasks: Task[];
-    activeTeamId: string;
+    activeTeamId: string | number;
 }
 
 export const initialState: IAppState = {

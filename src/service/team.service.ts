@@ -51,15 +51,6 @@ export class TeamService {
             });
     }
 
-    public updateActiveTeamId(teamId: number): Promise<void> {
-        return this.graphQLClient.mutate({
-            mutation: mutations.updateActiveTeam,
-            variables: {
-                teamId,
-            },
-        });
-    }
-
     public addTeamMember(teamId: number, newMemberId: number): Promise<void> {
         return this.graphQLClient.mutate({
             mutation: mutations.addTeamMember,

@@ -74,7 +74,7 @@ export class TaskService {
         });
     }
 
-    public createTask(task: Task, teamId: string): Promise<Task> {
+    public createTask(task: Task, teamId: string | number): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: mutations.createTask,
             variables: {

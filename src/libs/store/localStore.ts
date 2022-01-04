@@ -41,6 +41,7 @@ export class LocalStore<State, MutationEvent extends event.Event> {
         }
     }
 
+    // todo: should remove shouldNotify
     public mutate(event: MutationEvent, shouldNotify: boolean = true): State {
         const newState = this.mutateState(this.currentState, event);
         this.events.push(event);

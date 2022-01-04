@@ -27,7 +27,7 @@ interface IProps {
 interface IState {
     me?: User;
     teams: Team[];
-    activeTeamId: number;
+    activeTeamId: number | string;
     isDrawerOpen: boolean;
 }
 
@@ -134,6 +134,18 @@ class AppComponent extends Component<IProps, IState> {
 
     public async componentDidMount() {
         await this.refresh('cache-first');
+        (async () => {
+            let changes = this.props.deps.localStore.subscribeStateChange();
+            while(true) {
+                let event = await changes.pop()
+                if(event === undefined) {
+                    return;
+                }
+                this.setState({
+                    activeTeamId: event.activeTeamId
+                });
+            }
+        })();
     }
 
     private onMenuToggle = () => {
@@ -159,7 +171,11 @@ class AppComponent extends Component<IProps, IState> {
     };
 
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
-        await this.props.deps.teamService.updateActiveTeamId(teamId);
+        await this.props.deps.localStore.mutate({
+            type: "ChangeActiveTeam",
+            teamId: teamId
+        });
+        // todo: should gradually move away from refresh pattern
         await this.refresh('network-only');
         await this.executionRef.current?.refresh('cache-first');
     };

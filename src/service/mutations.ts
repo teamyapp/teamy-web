@@ -74,14 +74,6 @@ export const updateUser = gql`
     }
 `;
 
-export const updateActiveTeam = gql`
-    mutation updateActiveTeam($teamId: ID!) {
-        updateActiveTeam(teamId: $teamId) {
-            id
-        }
-    }
-`;
-
 export const addTeamMember = gql`
     mutation addTeamMember($teamId: ID!, $newMemberId: ID!) {
         team(id: $teamId) {
