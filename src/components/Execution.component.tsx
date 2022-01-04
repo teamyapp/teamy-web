@@ -344,6 +344,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
             this.mutationChan.put({
                 type: 'CreateTask',
                 task: task,
+                teamId: this.props.deps.localStore.getState().activeTeamId
             });
         }
 
