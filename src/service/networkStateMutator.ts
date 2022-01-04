@@ -7,7 +7,7 @@ export function createNetworkStateMutator(
     return async (event: MutationEvent) => {
         switch (event.type) {
             case 'CreateTask':
-                await taskService.createTask(event.task);
+                await taskService.createTask(event.task, event.teamId);
                 return;
             case 'UpdateTask':
                 await taskService.updateTask(event.task);

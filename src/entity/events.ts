@@ -13,6 +13,7 @@ export type MutationEvent =
 export interface CreateTask extends Event {
     type: 'CreateTask';
     task: Task;
+    teamId: string;
 }
 
 export interface UpdateTask extends Event {
