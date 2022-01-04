@@ -82,7 +82,7 @@ export class PersonalStatusUI extends Component<IProps> {
                                                 -1,
                                         ),
                                     )
-                                    .map(addResumeActionToInProgress)
+                                    .map(withUpcomingActions)
                                     .map(this.renderExistingTask())}
                             </div>
                         </SectionUI>
@@ -142,8 +142,8 @@ export class PersonalStatusUI extends Component<IProps> {
     };
 }
 
-function addResumeActionToInProgress(task: Task): Task {
-    if (task.status !== 'IN_PROGRESS') {
+function withUpcomingActions(task: Task): Task {
+    if (task.status === 'UPCOMING') {
         return task;
     }
     return Object.assign<any, Task, Partial<Task>>({}, task, {
