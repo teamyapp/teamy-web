@@ -8,7 +8,6 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
-import * as queries from '@core/service/queries';
 
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
@@ -180,10 +179,7 @@ class AppComponent extends Component<IProps, IState> {
 
     private async refresh(policy: FetchPolicy) {
         console.log('refresh App', policy);
-        const data = await this.props.deps.graphql.query({
-            fetchPolicy: policy,
-            query: queries.mePage,
-        });
+        const data = await this.props.deps.pageService.fetchMePage(policy);
         const teams: Team[] = data.me?.teams;
         const activeTeamId = data.me?.activeTeam?.id;
         this.setState({

@@ -15,6 +15,7 @@ fragment taskPreview on Task {
         lastName
         profileUrl
     }
+    status
     availableActions
     createdAt
 }
@@ -72,12 +73,6 @@ export const personalStatus = gql`
             activeTeam {
                 id
                 tasksNeedAttention(isMine: true) {
-                    ...taskPreview
-                }
-                upcomingTasks: tasks(input: { status: UPCOMING }) {
-                    ...taskPreview
-                }
-                deliveredTasks: tasks(input: { status: DELIVERED }) {
                     ...taskPreview
                 }
             }

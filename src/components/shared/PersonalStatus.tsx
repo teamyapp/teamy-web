@@ -1,22 +1,32 @@
 import React, { Component, ReactElement } from 'react';
 
 import * as csp from '@lib/csp/csp';
+import { And, Or } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
 import { Deps } from '@core/dep/deps';
 import * as events from '@core/entity/events';
-import { PersonalStatus } from '@core/entity/personalStatus';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
+import { TaskAction, getActions } from '@core/entity/taskAction';
 
+import { Delivered, InProgress, Upcoming } from '../../data/task.filter';
 import styles from './Personal.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
+
+const upcomingColumnFilter = (needAttentionTaskId: number) =>
+    Or<Task>(
+        Upcoming,
+        And(InProgress, (task: Task) => task.id !== needAttentionTaskId),
+    );
+const deliveredColumnFilter = Delivered;
 
 interface IProps {
     deps: Deps;
     taskAdding?: Task;
-    personalStatus: PersonalStatus;
+    needAttentionTask?: Task;
+    personalTasks: Task[];
     taskSelectingOwner?: Task;
     multiCaster: csp.Multicaster<events.MutationEvent>;
     onViewTaskDetailClick?: (taskId: number) => void;
@@ -39,9 +49,9 @@ export default class PersonalStatusUI extends Component<IProps> {
             <div className={styles.PersonalStatus}>
                 <div className={styles.NeedAttentionSection}>
                     <SectionUI title={'Need Attention'}>
-                        {this.props.personalStatus.needAttentionTask &&
+                        {this.props.needAttentionTask &&
                             this.renderExistingTask()(
-                                this.props.personalStatus.needAttentionTask,
+                                this.props.needAttentionTask,
                             )}
                     </SectionUI>
                 </div>
@@ -65,9 +75,15 @@ export default class PersonalStatusUI extends Component<IProps> {
                             <div className={styles.TaskList}>
                                 {this.props.taskAdding &&
                                     this.renderNewTask()(this.props.taskAdding)}
-                                {this.props.personalStatus.upcomingTasks.map(
-                                    this.renderExistingTask(),
-                                )}
+                                {this.props.personalTasks
+                                    .filter(
+                                        upcomingColumnFilter(
+                                            this.props.needAttentionTask?.id ||
+                                                -1,
+                                        ),
+                                    )
+                                    .map(addResumeActionToInProgress)
+                                    .map(this.renderExistingTask())}
                             </div>
                         </SectionUI>
                     </div>
@@ -76,9 +92,9 @@ export default class PersonalStatusUI extends Component<IProps> {
                     >
                         <SectionUI title={'Delivered'}>
                             <div className={styles.TaskList}>
-                                {this.props.personalStatus.deliveredTasks.map(
-                                    this.renderExistingTask(),
-                                )}
+                                {this.props.personalTasks
+                                    .filter(deliveredColumnFilter)
+                                    .map(this.renderExistingTask())}
                             </div>
                         </SectionUI>
                     </div>
@@ -124,4 +140,13 @@ export default class PersonalStatusUI extends Component<IProps> {
             );
         };
     };
+}
+
+function addResumeActionToInProgress(task: Task): Task {
+    if (task.status !== 'IN_PROGRESS') {
+        return task;
+    }
+    return Object.assign<any, Task, Partial<Task>>({}, task, {
+        availableActions: getActions('UPCOMING'),
+    });
 }

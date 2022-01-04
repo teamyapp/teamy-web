@@ -3,6 +3,7 @@ import { FetchPolicy } from '@apollo/client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { Task } from '@core/entity/task';
+import { TaskStatus } from '@core/entity/taskStatus';
 
 import * as mutations from './mutations';
 import * as queries from './queries';

@@ -11,13 +11,9 @@ function createTaskMutateState(
     state: IAppState,
     event: events.CreateTask,
 ): IAppState {
-    event.task.availableActions = getActions('Upcoming');
-    return Object.assign({}, state, {
-        teamStatus: Object.assign({}, state.teamStatus, {
-            upcomingTasks: state.teamStatus.upcomingTasks.concat(event.task),
-            inProgressTasks: state.teamStatus.inProgressTasks,
-            deliveredTasks: state.teamStatus.deliveredTasks,
-        }),
+    event.task.availableActions = getActions('UPCOMING');
+    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+        teamTasks: state.teamTasks.concat(event.task),
     });
 }
 
@@ -25,29 +21,19 @@ function updateTaskMutateState(
     state: IAppState,
     event: events.UpdateTask,
 ): IAppState {
-    const upcomingTasks = state.teamStatus.upcomingTasks.map((oldTask: Task) =>
-        replaceTask(event.task, oldTask, 'Upcoming'),
-    );
-    const inProgressTasks = state.teamStatus.inProgressTasks.map(
-        (oldTask: Task) => replaceTask(event.task, oldTask, 'InProgress'),
-    );
-    const deliveredTasks = state.teamStatus.deliveredTasks.map(
-        (oldTask: Task) => replaceTask(event.task, oldTask, 'Delivered'),
+    const tasks = state.teamTasks.map((oldTask: Task) =>
+        replaceTask(event.task, oldTask, event.task.status!),
     );
     let needAttentionTask = state.needAttentionTask;
     if (needAttentionTask) {
         needAttentionTask = replaceTask(
             event.task,
             needAttentionTask,
-            'NeedAttention',
+            'NEED_ATTENTION',
         );
     }
-    return Object.assign({}, state, {
-        teamStatus: Object.assign({}, state.teamStatus, {
-            upcomingTasks: upcomingTasks,
-            inProgressTasks: inProgressTasks,
-            deliveredTasks: deliveredTasks,
-        }),
+    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+        teamTasks: tasks,
         needAttentionTask: needAttentionTask,
     });
 }
@@ -56,21 +42,11 @@ function deleteTaskMutateState(
     state: IAppState,
     event: events.DeleteTask,
 ): IAppState {
-    const upcomingTasks = state.teamStatus.upcomingTasks.filter(
+    const tasks = state.teamTasks.filter(
         (task: Task) => task.id !== event.taskId,
     );
-    const inProgressTasks = state.teamStatus.inProgressTasks.filter(
-        (task: Task) => task.id !== event.taskId,
-    );
-    const deliveredTasks = state.teamStatus.deliveredTasks.filter(
-        (task: Task) => task.id !== event.taskId,
-    );
-    return Object.assign({}, state, {
-        teamStatus: Object.assign({}, state.teamStatus, {
-            upcomingTasks: upcomingTasks,
-            inProgressTasks: inProgressTasks,
-            deliveredTasks: deliveredTasks,
-        }),
+    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+        teamTasks: tasks,
         needAttentionTask:
             state.needAttentionTask?.id === event.taskId
                 ? undefined
@@ -82,38 +58,15 @@ function startTaskMutateState(
     state: IAppState,
     event: events.StartTask,
 ): IAppState {
-    let [inProgressTasks, upcomingTasks] = moveTo(
-        state.teamStatus.inProgressTasks,
-        state.teamStatus.upcomingTasks,
-        (task: Task) => task.id === state.needAttentionTask?.id,
-        (task) => {
-            return Object.assign({}, task, {
-                // TODO: assign appropriate actions
-                availableActions: getActions('Upcoming'),
-            });
-        },
+    const tasks = state.teamTasks.map((oldTask: Task) =>
+        updateTask(event.taskId, oldTask, 'IN_PROGRESS'),
     );
-    [upcomingTasks, inProgressTasks] = moveTo(
-        upcomingTasks,
-        inProgressTasks,
-        (task: Task) => task.id === event.taskId,
-        (task) => {
-            return Object.assign({}, task, {
-                availableActions: getActions('InProgress'),
-            });
-        },
-    );
-    const needAttentionTask = inProgressTasks.filter(
+    const needAttentionTask = state.teamTasks.filter(
         (task: Task) => task.id === event.taskId,
     )[0];
-    needAttentionTask.availableActions = getActions('NeedAttention');
-    return Object.assign({}, state, {
-        teamStatus: Object.assign({}, state.teamStatus, {
-            upcomingTasks: upcomingTasks,
-            inProgressTasks: inProgressTasks,
-            deliveredTasks: state.teamStatus.deliveredTasks,
-        }),
-        needAttentionTask: needAttentionTask,
+    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+        teamTasks: tasks,
+        needAttentionTask,
     });
 }
 
@@ -121,22 +74,11 @@ function completeTaskMutateState(
     state: IAppState,
     event: events.CompleteTask,
 ): IAppState {
-    let [inProgressTasks, deliveredTasks] = moveTo(
-        state.teamStatus.inProgressTasks,
-        state.teamStatus.deliveredTasks,
-        (task: Task) => task.id === event.taskId,
-        (task) => {
-            return Object.assign({}, task, {
-                availableActions: getActions('Delivered'),
-            });
-        },
+    const tasks = state.teamTasks.map((oldTask: Task) =>
+        updateTask(event.taskId, oldTask, 'DELIVERED'),
     );
-    return Object.assign({}, state, {
-        teamStatus: Object.assign({}, state.teamStatus, {
-            upcomingTasks: state.teamStatus.upcomingTasks,
-            inProgressTasks: inProgressTasks,
-            deliveredTasks: deliveredTasks,
-        }),
+    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+        teamTasks: tasks,
         needAttentionTask: undefined,
     });
 }
@@ -150,22 +92,16 @@ function refreshTeamMutateState(
         needAttentionTask = replaceTask(
             needAttentionTask,
             needAttentionTask,
-            'NeedAttention',
+            'NEED_ATTENTION',
         );
     }
-    return Object.assign({}, state, {
+    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
         currentUserId: event.currentUserId,
-        teamStatus: {
-            upcomingTasks: event.upcomingTasks.map((task) =>
-                replaceTask(task, task, 'Upcoming'),
-            ),
-            inProgressTasks: event.inProgressTasks.map((task) =>
-                replaceTask(task, task, 'InProgress'),
-            ),
-            deliveredTasks: event.deliveredTasks.map((task) =>
-                replaceTask(task, task, 'Delivered'),
-            ),
-        },
+        teamTasks: event.teamTasks.map((task) =>
+            Object.assign<any, Task, Partial<Task>>({}, task, {
+                availableActions: getActions(task.status),
+            }),
+        ),
         needAttentionTask: needAttentionTask,
         // todo: use apollo cli to compile query to TS interfaces to have type hint
     });
@@ -191,13 +127,14 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
     }
 };
 
-function replaceTask(
-    newTask: Task,
+function updateTask(
+    targetTaskId: number,
     oldTask: Task,
     taskStatus: TaskStatus,
 ): Task {
-    if (oldTask.id === newTask.id) {
-        return Object.assign({}, newTask, {
+    if (oldTask.id === targetTaskId) {
+        return Object.assign<any, Task, Partial<Task>>({}, oldTask, {
+            status: taskStatus,
             availableActions: getActions(taskStatus),
         });
     } else {
@@ -205,13 +142,17 @@ function replaceTask(
     }
 }
 
-function moveTo<T>(
-    array1: Array<T>,
-    array2: Array<T>,
-    find: (element: T) => boolean,
-    transform: (element: T) => T,
-): [Array<T>, Array<T>] {
-    let toBeMoved = array1.filter(find);
-    let newArray1 = array1.filter((ele) => !find(ele));
-    return [newArray1, array2.concat(toBeMoved.map(transform))];
+function replaceTask(
+    newTask: Task,
+    oldTask: Task,
+    taskStatus: TaskStatus,
+): Task {
+    if (oldTask.id === newTask.id) {
+        return Object.assign({}, newTask, {
+            status: taskStatus,
+            availableActions: getActions(taskStatus),
+        });
+    } else {
+        return oldTask;
+    }
 }

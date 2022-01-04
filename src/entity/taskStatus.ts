@@ -1,5 +1,5 @@
 export type TaskStatus =
-    | 'Upcoming'
-    | 'InProgress'
-    | 'Delivered'
-    | 'NeedAttention';
+    | 'UPCOMING'
+    | 'IN_PROGRESS'
+    | 'DELIVERED'
+    | 'NEED_ATTENTION';

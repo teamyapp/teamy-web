@@ -15,6 +15,8 @@ import * as events from '@core/entity/events';
 import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
+import { TaskStatus } from '@core/entity/taskStatus';
+import { task } from '@core/service/queries';
 
 // import { NamedValueUI } from '@ui/NamedValue';
 import styles from './TaskPreview.module.scss';
@@ -71,8 +73,10 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             <div ref={this.ref} className={styles.Task}>
                 <div className={styles.LeftSection}>
                     {this.props.task.id > 0 && (
-                        <div className={styles.IdRow}>
-                            <span className={styles.Id}>
+                        <div className={styles.TopRow}>
+                            <span
+                                className={`${styles.Attribute} ${styles.Id}`}
+                            >
                                 #{this.props.task.id}
                             </span>
                         </div>

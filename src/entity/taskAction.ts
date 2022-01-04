@@ -11,21 +11,21 @@ export enum TaskAction {
 
 export function getActions(status: TaskStatus) {
     switch (status) {
-        case 'Upcoming':
+        case 'UPCOMING':
             return [
                 TaskAction.Start,
                 TaskAction.Delete,
                 TaskAction.AssignOwner,
             ];
-        case 'NeedAttention':
-        case 'InProgress':
+        case 'NEED_ATTENTION':
+        case 'IN_PROGRESS':
             return [
                 TaskAction.Delete,
                 TaskAction.AssignOwner,
                 TaskAction.ReportBlocked,
                 TaskAction.MarkComplete,
             ];
-        case 'Delivered':
-            return [TaskAction.Delete];
+        case 'DELIVERED':
+            return [TaskAction.Delete, TaskAction.AssignOwner];
     }
 }
