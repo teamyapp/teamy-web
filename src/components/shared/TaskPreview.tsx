@@ -15,8 +15,6 @@ import * as events from '@core/entity/events';
 import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
-import { TaskStatus } from '@core/entity/taskStatus';
-import { task } from '@core/service/queries';
 
 // import { NamedValueUI } from '@ui/NamedValue';
 import styles from './TaskPreview.module.scss';

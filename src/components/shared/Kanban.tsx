@@ -38,7 +38,7 @@ interface IProps {
     ) => void;
 }
 
-export default class KanbanUI extends Component<IProps> {
+export class KanbanUI extends Component<IProps> {
     constructor(props: IProps) {
         super(props);
         this.state = {};

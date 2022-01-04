@@ -19,9 +19,9 @@ import { User } from '@core/entity/user';
 import { IAppState } from '@core/state/state';
 
 import styles from './Execution.component.module.scss';
-import KanbanUI from './shared/Kanban';
+import { KanbanUI } from './shared/Kanban';
 import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.component';
-import PersonalUI from './shared/PersonalStatus';
+import { PersonalStatusUI } from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
 
 const routes = ['me', 'team'];
@@ -89,7 +89,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                 <div className={styles.Content}>
                     <Switch>
                         <Route path={`${this.props.routerUrl}me`}>
-                            <PersonalUI
+                            <PersonalStatusUI
                                 multiCaster={this.multiCaster}
                                 deps={this.props.deps}
                                 needAttentionTask={this.state.needAttentionTask}

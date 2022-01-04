@@ -9,7 +9,7 @@ import { Deps } from '@core/dep/deps';
 import * as events from '@core/entity/events';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
-import { TaskAction, getActions } from '@core/entity/taskAction';
+import { getActions } from '@core/entity/taskAction';
 
 import { Delivered, InProgress, Upcoming } from '../../data/task.filter';
 import styles from './Personal.module.scss';
@@ -43,7 +43,7 @@ interface IProps {
     ) => void;
 }
 
-export default class PersonalStatusUI extends Component<IProps> {
+export class PersonalStatusUI extends Component<IProps> {
     public render(): ReactElement {
         return (
             <div className={styles.PersonalStatus}>
