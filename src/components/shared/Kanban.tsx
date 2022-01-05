@@ -22,7 +22,6 @@ interface IProps {
     tasks: Task[];
     findPotentialOwnersForTask?: (taskId: number| string) => Promise<User[]>;
     taskSelectingOwner?: Task;
-    // multiCaster: csp.Multicaster<events.MutationEvent>;
     onViewTaskDetailClick?: (taskId: number| string) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;

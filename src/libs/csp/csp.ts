@@ -32,13 +32,7 @@ export interface PutChannel<T> extends BaseChannel {
 
 // Normally a channel can both pop/receive and be put/send data.
 // The documentation will use pop/receive and put/send interchangeably.
-// export interface BaseChannel<T> extends PopChannel<T>, PutChannel<T> {}
 
-// A SelectableChannel implements ready() method that will be used by select() function.
-// The signature of this method is subject to change.
-// export interface SeletableChannel<T> extends PopChannel<T> {
-//     ready(): Promise<SeletableChannel<T>>;
-// }
 
 export interface Channel<T> extends PopChannel<T>, PutChannel<T> {}
 

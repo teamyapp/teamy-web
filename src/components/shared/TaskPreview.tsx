@@ -8,16 +8,13 @@ import React, {
     createRef,
 } from 'react';
 
-import * as csp from '@lib/csp/csp';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
-import * as events from '@core/entity/events';
 import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { goalLengthLimit } from '@core/service/task.service';
 
-// import { NamedValueUI } from '@ui/NamedValue';
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
 
@@ -26,7 +23,7 @@ interface IProps {
     task: Task;
     isEditing?: boolean;
     isOwnerSelected: boolean;
-    // multiCaster: csp.Multicaster<events.MutationEvent>;
+
     onTaskDetailClick?: (taskId: number| string) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number| string) => void;

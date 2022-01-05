@@ -2,13 +2,13 @@ import { IdentityClient } from '@lib/identity/Identity.client';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { LocalStore } from '@lib/store/localStore';
-// import { ResponsiveStateService } from '@lib/store/responsiveState.service';
+
 
 import { getConfig } from '@core/config/config';
 import * as events from '@core/entity/events';
 import { getEnvironment } from '@core/env/environment';
 import { CommentService } from '@core/service/comment.service';
-// import { createNetworkStateMutator } from '@core/service/networkStateMutator';
+
 import { PageService } from '@core/service/page.service';
 import { TaskService } from '@core/service/task.service';
 import { TeamService } from '@core/service/team.service';
@@ -46,11 +46,7 @@ export function initDeps(): Deps {
     const commentService = new CommentService(teamyGraphQLClient);
     const pageService = new PageService(teamyGraphQLClient);
     const localStore = createStore();
-    // const networkStateMutator = createNetworkStateMutator(taskService);
-    // const responsiveStateService = new ResponsiveStateService<
-    //     IAppState,
-    //     events.MutationEvent
-    // >(localStore, networkStateMutator);
+
     new NetworkStateSynchronizer(localStore, taskService, pageService);
     return {
         taskService,
@@ -60,6 +56,5 @@ export function initDeps(): Deps {
         pageService,
         identityClient,
         localStore,
-        // responsiveStateService,
     };
 }

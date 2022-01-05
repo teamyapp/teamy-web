@@ -1,13 +1,12 @@
 import classNames from 'classnames';
 import React, { Component, MouseEvent, ReactElement, createRef } from 'react';
 
-import * as csp from '@lib/csp/csp';
 import { ButtonUI } from '@lib/ui/Button';
 import { DatePickerUI } from '@lib/ui/DatePicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
-// import { NamedValueUI } from '@ui/NamedValue';
+
 import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';

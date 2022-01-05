@@ -32,7 +32,7 @@ interface IProps {
     needAttentionTask?: Task;
     personalTasks: Task[];
     taskSelectingOwner?: Task;
-    // multiCaster: csp.Multicaster<events.MutationEvent>;
+
     onViewTaskDetailClick?: (taskId: number| string) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;

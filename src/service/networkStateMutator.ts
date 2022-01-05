@@ -5,14 +5,6 @@ import { PageService } from './page.service';
 import { LocalStore } from '@lib/store/localStore';
 import { IAppState } from '@core/state/state';
 
-// export function createNetworkStateMutator(
-//     taskService: TaskService,
-// ): (event: MutationEvent) => Promise<void> {
-//     return async (event: MutationEvent) => {
-
-//     };
-// }
-
 export class NetworkStateSynchronizer {
 
     constructor(

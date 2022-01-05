@@ -9,7 +9,7 @@ export type MutationEvent =
     | DeleteTask
     | StartTask
     | CompleteTask
-// | RefreshTeam;
+
 
 export interface TaskCreationInput {
     goal: string
@@ -45,9 +45,3 @@ export interface CompleteTask extends Event {
     taskId: number| string;
 }
 
-// export interface RefreshTeam extends Event {
-//     type: 'RefreshTeam';
-//     currentUserId: number;
-//     tasksNeedAttention: Task[];
-//     teamTasks: Task[];
-// }
