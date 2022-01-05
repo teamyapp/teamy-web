@@ -182,6 +182,7 @@ class AppComponent extends Component<IProps, IState> {
         const data = await this.props.deps.pageService.fetchMePage(policy);
         const teams: Team[] = data.me?.teams;
         const activeTeamId = data.me?.activeTeam?.id;
+        this.props.deps.localStore.getState().activeTeamId = activeTeamId;
         this.setState({
             me: data.me,
             teams,
