@@ -171,7 +171,7 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
         window.removeEventListener('resize', this.onBodyResize);
     }
 
-    public async open(taskId: number| string) {
+    public async open(taskId: number | string) {
         await this.refreshWithTaskId(taskId);
         this.adjustSize();
         this.modalRef.current?.open();

@@ -1,16 +1,15 @@
 import { MutationEvent } from '@core/entity/events';
-import * as csp from "../libs/csp/csp";
+import * as csp from '../libs/csp/csp';
 import { TaskService } from '@core/service/task.service';
 import { PageService } from './page.service';
 import { LocalStore } from '@lib/store/localStore';
 import { IAppState } from '@core/state/state';
 
 export class NetworkStateSynchronizer {
-
     constructor(
         localStore: LocalStore<IAppState, MutationEvent>,
         taskService: TaskService,
-        pageService: PageService
+        pageService: PageService,
     ) {
         // starts a coroutine that listen to mutationChan forever
         (async () => {
@@ -20,26 +19,26 @@ export class NetworkStateSynchronizer {
             // it is possible for the user the lost their local data
             // if local data contains more data than the server
             // we don't have a merge algorithm yet
-            console.log("init local store from network");
-            let data = await pageService.fetchMePage('network-only')
+            console.log('init local store from network');
+            let data = await pageService.fetchMePage('network-only');
             localStore.setState((state) => {
                 state.currentUserId = data.me.id;
                 state.activeTeamId = data.me.activeTeam.id;
                 state.needAttentionTask = data.me.activeTeam.tasksNeedAttention;
-                state.teamTasks =  data.me.activeTeam.tasks;
+                state.teamTasks = data.me.activeTeam.tasks;
                 return state;
             });
-            console.log("init done");
+            console.log('init done');
 
-            console.log("start NetworkStateSynchronizer coroutine");
+            console.log('start NetworkStateSynchronizer coroutine');
             let mutationChan = localStore.subscribeMutationEvent();
-            while(true) {
-                console.log("wait for local store mutation events");
+            while (true) {
+                console.log('wait for local store mutation events');
                 let event = await mutationChan.pop();
                 if (event === undefined || mutationChan.closed()) {
                     return;
                 }
-                console.log("handling", event.type, "for network");
+                console.log('handling', event.type, 'for network');
                 switch (event.type) {
                     case 'CreateTask':
                         await taskService.createTask(event.task, event.teamId);
@@ -57,31 +56,35 @@ export class NetworkStateSynchronizer {
                         await taskService.completeTask(event.taskId);
                         break;
                     default:
-                        console.log("NetworkStateSynchronizer does not handle", event);
+                        console.log(
+                            'NetworkStateSynchronizer does not handle',
+                            event,
+                        );
                         // continue the loop because we don't care about this event
                         continue;
                 }
 
                 // after this mutation event is handled, check if the mutation channel is empty
                 // if empty, then do a refresh
-                if(!await isEmpty(mutationChan)) {
+                if (!(await isEmpty(mutationChan))) {
                     // more events pending, do not query the backend
                     continue;
                 }
                 // query the backend for the newest state
-                let data = await pageService.fetchMePage('network-only')
-                if(!await isEmpty(mutationChan)) {
+                let data = await pageService.fetchMePage('network-only');
+                if (!(await isEmpty(mutationChan))) {
                     // more events have happend during the query,
                     // discard the result
                     continue;
                 }
                 // the localstore state
-                console.log("set local store", data);
+                console.log('set local store', data);
                 localStore.setState((state) => {
                     state.currentUserId = data.me.id;
                     state.activeTeamId = data.me.activeTeam.id;
-                    state.needAttentionTask = data.me.activeTeam.tasksNeedAttention;
-                    state.teamTasks =  data.me.activeTeam.tasks;
+                    state.needAttentionTask =
+                        data.me.activeTeam.tasksNeedAttention;
+                    state.teamTasks = data.me.activeTeam.tasks;
                     return state;
                 });
             }

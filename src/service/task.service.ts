@@ -17,7 +17,10 @@ export class TaskService {
         this.graphQLClient = graphQLClient;
     }
 
-    public fetchTask(taskId: number | string, policy: FetchPolicy): Promise<Task> {
+    public fetchTask(
+        taskId: number | string,
+        policy: FetchPolicy,
+    ): Promise<Task> {
         return this.graphQLClient
             .query({
                 query: queries.task,
@@ -44,14 +47,14 @@ export class TaskService {
         });
     }
 
-    public deleteTask(taskId: number| string): Promise<Task> {
+    public deleteTask(taskId: number | string): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: mutations.deleteTask,
             variables: { taskId: taskId },
         });
     }
 
-    public startTask(taskId: number| string): Promise<any> {
+    public startTask(taskId: number | string): Promise<any> {
         return this.graphQLClient.mutate({
             mutation: mutations.startTask,
             variables: {
@@ -63,7 +66,7 @@ export class TaskService {
         });
     }
 
-    public completeTask(taskId: number| string): Promise<any> {
+    public completeTask(taskId: number | string): Promise<any> {
         return this.graphQLClient.mutate({
             mutation: mutations.completeTask,
             variables: {

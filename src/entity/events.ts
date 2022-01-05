@@ -8,15 +8,14 @@ export type MutationEvent =
     | UpdateTask
     | DeleteTask
     | StartTask
-    | CompleteTask
-
+    | CompleteTask;
 
 export interface TaskCreationInput {
-    goal: string
-    context?: string
-    dueAt?: string
-    ownerUserId?: string | number
-    status?: TaskStatus
+    goal: string;
+    context?: string;
+    dueAt?: string;
+    ownerUserId?: string | number;
+    status?: TaskStatus;
 }
 
 export interface CreateTask extends Event {
@@ -32,16 +31,15 @@ export interface UpdateTask extends Event {
 
 export interface DeleteTask extends Event {
     type: 'DeleteTask';
-    taskId: number| string;
+    taskId: number | string;
 }
 
 export interface StartTask extends Event {
     type: 'StartTask';
-    taskId: number| string;
+    taskId: number | string;
 }
 
 export interface CompleteTask extends Event {
     type: 'CompleteTask';
-    taskId: number| string;
+    taskId: number | string;
 }
-

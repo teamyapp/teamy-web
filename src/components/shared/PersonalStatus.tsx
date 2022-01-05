@@ -17,13 +17,13 @@ import { TaskPreviewUI } from './TaskPreview';
 
 const upcomingColumnFilter = (needAttentionTaskId: number | string) => {
     return (t: Task) => {
-        console.log("personal status component", needAttentionTaskId, t)
+        console.log('personal status component', needAttentionTaskId, t);
         return Or<Task>(
             Upcoming,
             And(InProgress, (task: Task) => task.id !== needAttentionTaskId),
-        )(t)
-    }
-}
+        )(t);
+    };
+};
 const deliveredColumnFilter = Delivered;
 
 interface IProps {
@@ -33,14 +33,14 @@ interface IProps {
     personalTasks: Task[];
     taskSelectingOwner?: Task;
 
-    onViewTaskDetailClick?: (taskId: number| string) => void;
+    onViewTaskDetailClick?: (taskId: number | string) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number| string) => void;
-    onStartTaskClick?: (taskId: number| string) => void;
-    onCompleteTaskClick?: (taskId: number| string) => void;
+    onDeleteTaskClick?: (taskId: number | string) => void;
+    onStartTaskClick?: (taskId: number | string) => void;
+    onCompleteTaskClick?: (taskId: number | string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,

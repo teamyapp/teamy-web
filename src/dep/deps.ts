@@ -3,7 +3,6 @@ import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { LocalStore } from '@lib/store/localStore';
 
-
 import { getConfig } from '@core/config/config';
 import * as events from '@core/entity/events';
 import { getEnvironment } from '@core/env/environment';

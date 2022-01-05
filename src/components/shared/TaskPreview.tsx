@@ -24,11 +24,11 @@ interface IProps {
     isEditing?: boolean;
     isOwnerSelected: boolean;
 
-    onTaskDetailClick?: (taskId: number| string) => void;
+    onTaskDetailClick?: (taskId: number | string) => void;
     onTaskFinishEditing?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number| string) => void;
-    onStartTaskClick?: (taskId: number| string) => void;
-    onCompleteTaskClick?: (taskId: number| string) => void;
+    onDeleteTaskClick?: (taskId: number | string) => void;
+    onStartTaskClick?: (taskId: number | string) => void;
+    onCompleteTaskClick?: (taskId: number | string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,

@@ -3,7 +3,10 @@ import * as event from '@lib/event/event';
 
 const storeDataKey = 'storeData';
 
-export type MutateState<State, MutationEvent> = (state: State, event: MutationEvent) => State;
+export type MutateState<State, MutationEvent> = (
+    state: State,
+    event: MutationEvent,
+) => State;
 
 interface Data<State, MutationEvent> {
     initialState: State;
@@ -19,15 +22,15 @@ export class LocalStore<State, MutationEvent extends event.Event> {
 
     // external dependency
     private readonly mutateState: MutateState<State, MutationEvent>;
-    
+
     // channels
     private readonly stateChangeChan = csp.chan<State>();
     private readonly stateChangeCaster: csp.Multicaster<State | undefined> =
         csp.multi(this.stateChangeChan);
     private readonly mutationEventsChan = csp.chan<MutationEvent>();
-    private readonly mutationEventsMultiCaster: csp.Multicaster<MutationEvent | undefined> = 
-        csp.multi(this.mutationEventsChan);
-
+    private readonly mutationEventsMultiCaster: csp.Multicaster<
+        MutationEvent | undefined
+    > = csp.multi(this.mutationEventsChan);
 
     constructor(
         initialState: State,
@@ -62,9 +65,9 @@ export class LocalStore<State, MutationEvent extends event.Event> {
     }
     public setState(setter: (s: State) => State) {
         // it's all references
-        // todo: consider immutable.js or 
+        // todo: consider immutable.js or
         // other structural sharing solutions in the future
-        this.currentState = setter(this.currentState); 
+        this.currentState = setter(this.currentState);
         this.persistData();
         this.stateChangeChan.put(this.currentState);
     }

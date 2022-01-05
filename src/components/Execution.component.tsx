@@ -58,7 +58,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
             showPotentialTaskOwnersList: false,
             taskOwnersListLeft: -1000,
             taskOwnersListTop: -1000,
-            currentUserId: -1,  // when not logged in yet
+            currentUserId: -1, // when not logged in yet
             teamTasks: [],
             potentialTaskOwners: [],
         };
@@ -109,7 +109,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}team`}>
                             <KanbanUI
-                             
                                 tasks={this.state.teamTasks}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
@@ -136,7 +135,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
                     taskSelectingOwner={this.state.taskSelectingOwner?.id}
-               
                     onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
                 />
                 {this.state.showPotentialTaskOwnersList && (
@@ -175,20 +173,20 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.onTabClick(0);
         window.addEventListener('resize', this.onWindowResize);
 
-        this.stateChangeChan = this.props.deps.localStore.subscribeStateChange();
+        this.stateChangeChan =
+            this.props.deps.localStore.subscribeStateChange();
         (async () => {
             while (true) {
-                console.log("waiting for localStore state changes");
+                console.log('waiting for localStore state changes');
                 const state = await this.stateChangeChan!.pop();
                 if (state === undefined) {
-                    // check undefined instead of falsy because 
+                    // check undefined instead of falsy because
                     // a falsy data could be valid data per channel's concern.
                     return;
                 }
                 this.updateState(state);
             }
         })().then();
-
     }
 
     public componentWillUnmount() {
@@ -196,7 +194,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         window.removeEventListener('resize', this.onWindowResize);
     }
 
-    public showTaskDetail(taskId: number| string) {
+    public showTaskDetail(taskId: number | string) {
         this.taskDetailModalRef.current?.open(taskId);
     }
 
@@ -206,7 +204,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private updateState = (state: IAppState) => {
-        console.log("Execution Component update state", state);
+        console.log('Execution Component update state', state);
         this.setState({
             currentUserId: state.currentUserId,
             needAttentionTask: state.needAttentionTask,
@@ -292,7 +290,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.taskOwnersPopupRef.current?.blur();
     };
 
-    private onViewTaskDetailClick = async (taskId: number| string): Promise<void> => {
+    private onViewTaskDetailClick = async (
+        taskId: number | string,
+    ): Promise<void> => {
         this.showTaskDetail(taskId);
     };
 
@@ -304,7 +304,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onCreateTask = (task: Task): void => {
         if (task.goal.length > 0) {
-            console.log("creating task");
+            console.log('creating task');
             this.props.deps.localStore.mutate({
                 type: 'CreateTask',
                 task: task,
@@ -325,7 +325,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onDeleteTaskClick = (taskId: number| string): void => {
+    private onDeleteTaskClick = (taskId: number | string): void => {
         // don't care if the consumer is ready to pop, no await
         this.props.deps.localStore.mutate({
             type: 'DeleteTask',
@@ -333,7 +333,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onStartTaskClick = (taskId: number| string): void => {
+    private onStartTaskClick = (taskId: number | string): void => {
         // don't care if the consumer is ready to pop, no await
         this.props.deps.localStore.mutate({
             type: 'StartTask',
@@ -341,7 +341,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onCompleteTaskClick = (taskId: number| string): void => {
+    private onCompleteTaskClick = (taskId: number | string): void => {
         // don't care if the consumer is ready to pop, no await
         this.props.deps.localStore.mutate({
             type: 'CompleteTask',

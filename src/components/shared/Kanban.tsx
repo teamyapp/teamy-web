@@ -20,16 +20,16 @@ const deliveredColumnFilter = Delivered;
 interface IProps {
     taskAdding?: Task;
     tasks: Task[];
-    findPotentialOwnersForTask?: (taskId: number| string) => Promise<User[]>;
+    findPotentialOwnersForTask?: (taskId: number | string) => Promise<User[]>;
     taskSelectingOwner?: Task;
-    onViewTaskDetailClick?: (taskId: number| string) => void;
+    onViewTaskDetailClick?: (taskId: number | string) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number| string) => void;
-    onStartTaskClick?: (taskId: number| string) => void;
-    onCompleteTaskClick?: (taskId: number| string) => void;
+    onDeleteTaskClick?: (taskId: number | string) => void;
+    onStartTaskClick?: (taskId: number | string) => void;
+    onCompleteTaskClick?: (taskId: number | string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,

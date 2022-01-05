@@ -15,10 +15,10 @@ function createTaskMutateState(
         // temperary id until the server creates an id for it
         // todo: in the future, need a distributed id solution
         // uuid+user-id is a good solution
-        id: "-1",
+        id: '-1',
         availableActions: getActions('UPCOMING'),
-        status: 'UPCOMING'
-    })
+        status: 'UPCOMING',
+    });
     return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
         teamTasks: state.teamTasks.concat(task),
     });
@@ -94,7 +94,7 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
     state: IAppState,
     event: events.MutationEvent,
 ): IAppState => {
-    console.log("handling", event);
+    console.log('handling', event);
     switch (event.type) {
         case 'CreateTask':
             return createTaskMutateState(state, event);
@@ -110,7 +110,7 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
 };
 
 function updateTask(
-    targetTaskId: number| string,
+    targetTaskId: number | string,
     oldTask: Task,
     taskStatus: TaskStatus,
 ): Task {
