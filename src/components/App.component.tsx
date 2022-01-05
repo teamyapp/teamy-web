@@ -182,7 +182,7 @@ class AppComponent extends Component<IProps, IState> {
         const data = await this.props.deps.pageService.fetchMePage(policy);
         const teams: Team[] = data.me?.teams;
         const activeTeamId = data.me?.activeTeam?.id;
-        // We know that this is a hack. But in order to not hack, we need to get rid of refreshEvent first.
+        // TODO: We know that this is a hack. But in order to not hack, we need to get rid of refreshEvent first.
         this.props.deps.localStore.getState().activeTeamId = activeTeamId;
         this.setState({
             me: data.me,
