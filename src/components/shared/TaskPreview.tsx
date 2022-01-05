@@ -26,12 +26,12 @@ interface IProps {
     task: Task;
     isEditing?: boolean;
     isOwnerSelected: boolean;
-    multiCaster: csp.Multicaster<events.MutationEvent>;
-    onTaskDetailClick?: (taskId: number) => void;
+    // multiCaster: csp.Multicaster<events.MutationEvent>;
+    onTaskDetailClick?: (taskId: number| string) => void;
     onTaskFinishEditing?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number) => void;
-    onStartTaskClick?: (taskId: number) => void;
-    onCompleteTaskClick?: (taskId: number) => void;
+    onDeleteTaskClick?: (taskId: number| string) => void;
+    onStartTaskClick?: (taskId: number| string) => void;
+    onCompleteTaskClick?: (taskId: number| string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,

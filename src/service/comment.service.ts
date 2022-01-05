@@ -15,7 +15,7 @@ export class CommentService {
     }
 
     public fetchTaskComments(
-        taskId: number,
+        taskId: number | string,
         fetchPolicy: FetchPolicy,
     ): Promise<Message[]> {
         return this.graphQLClient
@@ -37,7 +37,7 @@ export class CommentService {
             });
     }
 
-    public async createComment(taskId: number, content: string) {
+    public async createComment(taskId: number | string, content: string) {
         await this.graphQLClient.mutate({
             mutation: mutations.createComment,
             variables: { taskId: taskId, content: content },

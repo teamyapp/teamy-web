@@ -13,7 +13,6 @@ import { IAppState } from '@core/state/state';
 //     };
 // }
 
-
 export class NetworkStateSynchronizer {
 
     constructor(
@@ -23,8 +22,10 @@ export class NetworkStateSynchronizer {
     ) {
         // starts a coroutine that listen to mutationChan forever
         (async () => {
+            console.log("start NetworkStateSynchronizer coroutine");
             let mutationChan = localStore.subscribeMutationEvent();
             while(true) {
+                console.log("wait for local store mutation events");
                 let event = await mutationChan.pop();
                 if (event === undefined || mutationChan.closed()) {
                     return;
@@ -66,6 +67,7 @@ export class NetworkStateSynchronizer {
                     continue;
                 }
                 // the localstore state
+                console.log("set local store", data);
                 localStore.setState((state) => {
                     state.activeTeamId = data.me.activeTeam.id;
                     state.needAttentionTask = data.me.activeTeam.tasksNeedAttention;

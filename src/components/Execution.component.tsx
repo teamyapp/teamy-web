@@ -51,12 +51,12 @@ interface IState {
 export class ExecutionComponent extends Component<IProps, IState> {
     private readonly taskDetailModalRef = createRef<TaskDetailModalComponent>();
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
-    private readonly mutationChan = csp.chan<events.MutationEvent>();
-    private readonly multiCaster: csp.Multicaster<events.MutationEvent> =
-        csp.multi<events.MutationEvent>(this.mutationChan);
-    private readonly mutationOutputChan: csp.PopChannel<
-        events.MutationEvent | undefined
-    > = this.multiCaster.copy();
+    // private readonly mutationChan = csp.chan<events.MutationEvent>();
+    // private readonly multiCaster: csp.Multicaster<events.MutationEvent> =
+    //     csp.multi<events.MutationEvent>(this.mutationChan);
+    // private readonly mutationOutputChan: csp.PopChannel<
+    //     events.MutationEvent | undefined
+    // > = this.multiCaster.copy();
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
 
     constructor(props: IProps) {
@@ -90,7 +90,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalStatusUI
-                                multiCaster={this.multiCaster}
+                                // multiCaster={this.multiCaster}
                                 deps={this.props.deps}
                                 needAttentionTask={this.state.needAttentionTask}
                                 personalTasks={personalTasks}
@@ -117,7 +117,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}team`}>
                             <KanbanUI
-                                multiCaster={this.multiCaster}
+                                // multiCaster={this.multiCaster}
                                 tasks={this.state.teamTasks}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
@@ -144,7 +144,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
                     taskSelectingOwner={this.state.taskSelectingOwner?.id}
-                    mutationOutputChan={this.mutationChan}
+                    // mutationOutputChan={this.mutationChan}
                     onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
                 />
                 {this.state.showPotentialTaskOwnersList && (
@@ -213,12 +213,12 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     public componentWillUnmount() {
-        this.mutationChan?.close();
+        // this.mutationChan?.close();
         this.stateChangeChan?.close();
         window.removeEventListener('resize', this.onWindowResize);
     }
 
-    public showTaskDetail(taskId: number) {
+    public showTaskDetail(taskId: number| string) {
         this.taskDetailModalRef.current?.open(taskId);
     }
 
@@ -276,7 +276,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onSelectTaskOwner = (userId: number) => {
-        this.mutationChan.put({
+        this.props.deps.localStore.mutate({
             type: 'UpdateTask',
             task: Object.assign({}, this.state.taskSelectingOwner, {
                 owner: Object.assign({}, this.state.taskSelectingOwner?.owner, {
@@ -331,7 +331,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.taskOwnersPopupRef.current?.blur();
     };
 
-    private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
+    private onViewTaskDetailClick = async (taskId: number| string): Promise<void> => {
         this.showTaskDetail(taskId);
     };
 
@@ -343,7 +343,8 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onCreateTask = (task: Task): void => {
         if (task.goal.length > 0) {
-            this.mutationChan.put({
+            console.log("creating task");
+            this.props.deps.localStore.mutate({
                 type: 'CreateTask',
                 task: task,
                 teamId: this.props.deps.localStore.getState().activeTeamId,
@@ -357,31 +358,31 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onUpdateTask = (task: Task) => {
-        this.mutationChan.put({
+        this.props.deps.localStore.mutate({
             type: 'UpdateTask',
             task: task,
         });
     };
 
-    private onDeleteTaskClick = (taskId: number): void => {
+    private onDeleteTaskClick = (taskId: number| string): void => {
         // don't care if the consumer is ready to pop, no await
-        this.mutationChan.put({
+        this.props.deps.localStore.mutate({
             type: 'DeleteTask',
             taskId: taskId,
         });
     };
 
-    private onStartTaskClick = (taskId: number): void => {
+    private onStartTaskClick = (taskId: number| string): void => {
         // don't care if the consumer is ready to pop, no await
-        this.mutationChan.put({
+        this.props.deps.localStore.mutate({
             type: 'StartTask',
             taskId: taskId,
         });
     };
 
-    private onCompleteTaskClick = (taskId: number): void => {
+    private onCompleteTaskClick = (taskId: number| string): void => {
         // don't care if the consumer is ready to pop, no await
-        this.mutationChan.put({
+        this.props.deps.localStore.mutate({
             type: 'CompleteTask',
             taskId: taskId,
         });

@@ -6,6 +6,7 @@ import { Task } from '@core/entity/task';
 
 import * as mutations from './mutations';
 import * as queries from './queries';
+import { TaskCreationInput } from '@core/entity/events';
 
 export const goalLengthLimit = 100;
 
@@ -16,7 +17,7 @@ export class TaskService {
         this.graphQLClient = graphQLClient;
     }
 
-    public fetchTask(taskId: number, policy: FetchPolicy): Promise<Task> {
+    public fetchTask(taskId: number | string, policy: FetchPolicy): Promise<Task> {
         return this.graphQLClient
             .query({
                 query: queries.task,
@@ -43,14 +44,14 @@ export class TaskService {
         });
     }
 
-    public deleteTask(taskId: number): Promise<Task> {
+    public deleteTask(taskId: number| string): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: mutations.deleteTask,
             variables: { taskId: taskId },
         });
     }
 
-    public startTask(taskId: number): Promise<any> {
+    public startTask(taskId: number| string): Promise<any> {
         return this.graphQLClient.mutate({
             mutation: mutations.startTask,
             variables: {
@@ -62,7 +63,7 @@ export class TaskService {
         });
     }
 
-    public completeTask(taskId: number): Promise<any> {
+    public completeTask(taskId: number| string): Promise<any> {
         return this.graphQLClient.mutate({
             mutation: mutations.completeTask,
             variables: {
@@ -74,13 +75,11 @@ export class TaskService {
         });
     }
 
-    public createTask(task: Task, teamId: string): Promise<Task> {
+    public createTask(task: TaskCreationInput, teamId: string): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: mutations.createTask,
             variables: {
-                taskInput: Object.assign({}, task, {
-                    ownerUserId: task.owner ? task.owner?.id : undefined,
-                }),
+                taskInput: task,
                 teamId: teamId,
             },
         });

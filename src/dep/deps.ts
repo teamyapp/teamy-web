@@ -15,6 +15,7 @@ import { TeamService } from '@core/service/team.service';
 import { UserService } from '@core/service/user.service';
 import { IAppState } from '@core/state/state';
 import { createStore } from '@core/state/store';
+import { NetworkStateSynchronizer } from '@core/service/networkStateMutator';
 
 export interface Deps {
     taskService: TaskService;
@@ -50,6 +51,7 @@ export function initDeps(): Deps {
     //     IAppState,
     //     events.MutationEvent
     // >(localStore, networkStateMutator);
+    new NetworkStateSynchronizer(localStore, taskService, pageService);
     return {
         taskService,
         teamService,
