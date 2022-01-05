@@ -341,7 +341,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
 
     private onCreateTask = (task: Task): void => {
         if (task.goal.length > 0) {
-            console.log(this.props.deps.localStore.getState().activeTeamId)
+            console.log(this.props.deps.localStore.getState().activeTeamId);
             this.mutationChan.put({
                 type: 'CreateTask',
                 task: task,
