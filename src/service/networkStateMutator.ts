@@ -22,6 +22,23 @@ export class NetworkStateSynchronizer {
     ) {
         // starts a coroutine that listen to mutationChan forever
         (async () => {
+            // query the backend for the first time, to init the state
+            // from the backend
+            // todo:
+            // it is possible for the user the lost their local data
+            // if local data contains more data than the server
+            // we don't have a merge algorithm yet
+            console.log("init local store from network");
+            let data = await pageService.fetchMePage('network-only')
+            localStore.setState((state) => {
+                state.currentUserId = data.me.id;
+                state.activeTeamId = data.me.activeTeam.id;
+                state.needAttentionTask = data.me.activeTeam.tasksNeedAttention;
+                state.teamTasks =  data.me.activeTeam.tasks;
+                return state;
+            });
+            console.log("init done");
+
             console.log("start NetworkStateSynchronizer coroutine");
             let mutationChan = localStore.subscribeMutationEvent();
             while(true) {
@@ -69,6 +86,7 @@ export class NetworkStateSynchronizer {
                 // the localstore state
                 console.log("set local store", data);
                 localStore.setState((state) => {
+                    state.currentUserId = data.me.id;
                     state.activeTeamId = data.me.activeTeam.id;
                     state.needAttentionTask = data.me.activeTeam.tasksNeedAttention;
                     state.teamTasks =  data.me.activeTeam.tasks;

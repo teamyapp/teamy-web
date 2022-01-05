@@ -65,7 +65,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
             showPotentialTaskOwnersList: false,
             taskOwnersListLeft: -1000,
             taskOwnersListTop: -1000,
-            currentUserId: -1,
+            currentUserId: -1,  // when not logged in yet
             teamTasks: [],
             potentialTaskOwners: [],
         };
@@ -246,6 +246,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     // };
 
     private updateState = (state: IAppState) => {
+        console.log("Execution Component update state", state);
         this.setState({
             currentUserId: state.currentUserId,
             needAttentionTask: state.needAttentionTask,

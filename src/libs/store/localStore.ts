@@ -65,6 +65,7 @@ export class LocalStore<State, MutationEvent extends event.Event> {
         // todo: consider immutable.js or 
         // other structural sharing solutions in the future
         this.currentState = setter(this.currentState); 
+        this.persistData();
         this.stateChangeChan.put(this.currentState);
     }
 
