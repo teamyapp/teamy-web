@@ -146,6 +146,7 @@ class AppComponent extends Component<IProps, IState> {
                 this.setState({
                     activeTeamId: event.activeTeamId
                 });
+                await this.refresh('network-only');
             }
         })();
     }
@@ -195,7 +196,7 @@ class AppComponent extends Component<IProps, IState> {
     private async refresh(policy: FetchPolicy) {
         console.log('refresh App', policy);
         const data = await this.props.deps.pageService.fetchMePage(policy);
-        const teams: Team[] = data.me?.teams;
+        const teams: Team[] = data.me.teams;
         this.setState({
             me: data.me,
             teams,

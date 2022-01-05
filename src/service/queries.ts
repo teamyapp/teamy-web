@@ -28,26 +28,29 @@ export const mePage = gql`
             firstName
             lastName
             profileUrl
-            activeTeam {
-                id
-                name
-                tasksNeedAttention(isMine: true) {
-                    ...taskPreview
-                }
-                upcomingTasks: tasks(input: { status: UPCOMING }) {
-                    ...taskPreview
-                }
-                inProgressTasks: tasks(input: { status: IN_PROGRESS }) {
-                    ...taskPreview
-                }
-                deliveredTasks: tasks(input: { status: DELIVERED }) {
-                    ...taskPreview
-                }
-            }
+            #activeTeam {
+                #    id
+                #name
+                #tasksNeedAttention(isMine: true) {
+                    #    ...taskPreview
+                    #}
+                    #upcomingTasks: tasks(input: { status: UPCOMING }) {
+                        #...taskPreview
+                        #}
+                        #inProgressTasks: tasks(input: { status: IN_PROGRESS }) {
+                            #...taskPreview
+                            #}
+                            #deliveredTasks: tasks(input: { status: DELIVERED }) {
+                                #...taskPreview
+                                #}
+                                #}
             teams {
                 id
                 name
                 iconUrl
+                tasks {
+                    ...taskPreview
+                }
             }
         }
     }
