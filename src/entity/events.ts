@@ -8,7 +8,7 @@ export type MutationEvent =
     | DeleteTask
     | StartTask
     | CompleteTask
-    | RefreshTeam;
+    // | RefreshTeam;
 
 export interface CreateTask extends Event {
     type: 'CreateTask';
@@ -36,9 +36,9 @@ export interface CompleteTask extends Event {
     taskId: number;
 }
 
-export interface RefreshTeam extends Event {
-    type: 'RefreshTeam';
-    currentUserId: number;
-    tasksNeedAttention: Task[];
-    teamTasks: Task[];
-}
+// export interface RefreshTeam extends Event {
+//     type: 'RefreshTeam';
+//     currentUserId: number;
+//     tasksNeedAttention: Task[];
+//     teamTasks: Task[];
+// }

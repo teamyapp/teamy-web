@@ -29,12 +29,12 @@ export class ResponsiveStateService<LocalState, MutationEvent extends Event> {
     }
 
     public listen(
-        stateSyncer: IStateSyncer<LocalState>,
+        // stateSyncer: IStateSyncer<LocalState>,
         mutationChan: PopChannel<MutationEvent | undefined>,
     ) {
         // move all elements from array1 which meet the given condition into array2
         // creating 2 new arrays
-        this.syncNetworkStateInBackground(stateSyncer);
+        // this.syncNetworkStateInBackground(stateSyncer);
 
         // synchronized part of mutation listener
         (async () => {
@@ -44,7 +44,7 @@ export class ResponsiveStateService<LocalState, MutationEvent extends Event> {
                     return;
                 }
                 const state = this.localStore.mutate(event, false);
-                stateSyncer.updateLocalState(state);
+                // stateSyncer.updateLocalState(state);
                 // after synchronized updates, do async network refresh
                 // do not await
                 this.networkMutationEventChan.put(event);

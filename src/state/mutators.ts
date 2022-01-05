@@ -83,29 +83,29 @@ function completeTaskMutateState(
     });
 }
 
-function refreshTeamMutateState(
-    state: IAppState,
-    event: events.RefreshTeam,
-): IAppState {
-    let needAttentionTask = event.tasksNeedAttention[0];
-    if (needAttentionTask) {
-        needAttentionTask = replaceTask(
-            needAttentionTask,
-            needAttentionTask,
-            'NEED_ATTENTION',
-        );
-    }
-    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
-        currentUserId: event.currentUserId,
-        teamTasks: event.teamTasks.map((task) =>
-            Object.assign<any, Task, Partial<Task>>({}, task, {
-                availableActions: getActions(task.status),
-            }),
-        ),
-        needAttentionTask: needAttentionTask,
-        // todo: use apollo cli to compile query to TS interfaces to have type hint
-    });
-}
+// function refreshTeamMutateState(
+//     state: IAppState,
+//     // event: events.RefreshTeam,
+// ): IAppState {
+//     let needAttentionTask = event.tasksNeedAttention[0];
+//     if (needAttentionTask) {
+//         needAttentionTask = replaceTask(
+//             needAttentionTask,
+//             needAttentionTask,
+//             'NEED_ATTENTION',
+//         );
+//     }
+//     return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+//         currentUserId: event.currentUserId,
+//         teamTasks: event.teamTasks.map((task) =>
+//             Object.assign<any, Task, Partial<Task>>({}, task, {
+//                 availableActions: getActions(task.status),
+//             }),
+//         ),
+//         needAttentionTask: needAttentionTask,
+//         // todo: use apollo cli to compile query to TS interfaces to have type hint
+//     });
+// }
 
 export const mutateState: MutateState<IAppState, events.MutationEvent> = (
     state: IAppState,
@@ -122,8 +122,8 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
             return startTaskMutateState(state, event);
         case 'CompleteTask':
             return completeTaskMutateState(state, event);
-        case 'RefreshTeam':
-            return refreshTeamMutateState(state, event);
+        // case 'RefreshTeam':
+        //     return refreshTeamMutateState(state, event);
     }
 };
 

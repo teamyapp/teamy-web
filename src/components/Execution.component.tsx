@@ -11,7 +11,7 @@ import { TabsUI } from '@lib/ui/Tabs';
 import { OwnedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import * as events from '@core/entity/events';
-import { RefreshTeam } from '@core/entity/events';
+// import { RefreshTeam } from '@core/entity/events';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
@@ -183,30 +183,30 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.onTabClick(0);
         window.addEventListener('resize', this.onWindowResize);
 
-        this.stateChangeChan =
-            this.props.deps.localStore.subscribeStateChange();
+        this.stateChangeChan = this.props.deps.localStore.subscribeStateChange();
         (async () => {
             while (true) {
                 const state = await this.stateChangeChan!.pop();
-                if (!state) {
-                    break;
+                if (state === undefined) {
+                    // check undefined instead of falsy because 
+                    // a falsy data could be valid data per channel's concern.
+                    return;
                 }
-
                 this.updateState(state);
             }
         })().then();
 
-        const stateSyncer: IStateSyncer<IAppState> = {
-            fetchNetworkState: async (): Promise<any> => {
-                return await this.props.deps.pageService.fetchMePage(
-                    'network-only',
-                );
-            },
-            updateLocalStateWithRawData: this.updateLocalStateWithRawData,
-            updateLocalState: this.updateState,
-        };
+        // const stateSyncer: IStateSyncer<IAppState> = {
+        //     fetchNetworkState: async (): Promise<any> => {
+        //         return await this.props.deps.pageService.fetchMePage(
+        //             'network-only',
+        //         );
+        //     },
+        //     // updateLocalStateWithRawData: this.updateLocalStateWithRawData,
+        //     updateLocalState: this.updateState,
+        // };
         this.props.deps.responsiveStateService.listen(
-            stateSyncer,
+            // stateSyncer,
             this.mutationOutputChan,
         );
     }
@@ -224,24 +224,25 @@ export class ExecutionComponent extends Component<IProps, IState> {
     public async refresh(policy: FetchPolicy) {
         console.log('refresh', policy);
         const data = await this.props.deps.pageService.fetchMePage(policy);
-        this.refreshState(data);
+        // todo: what now?
+        // this.refreshState(data);
     }
 
-    private refreshState = (data: any) => {
-        const event = createRefreshTeamEvent(data);
-        if (event) {
-            this.props.deps.localStore.mutate(event);
-        }
-    };
+    // private refreshState = (data: any) => {
+    //     const event = createRefreshTeamEvent(data);
+    //     if (event) {
+    //         this.props.deps.localStore.mutate(event);
+    //     }
+    // };
 
-    private updateLocalStateWithRawData = async (data: any) => {
-        const event = createRefreshTeamEvent(data);
-        if (event) {
-            const newState = this.props.deps.localStore.mutate(event, false);
-            this.updateState(newState);
-            await this.taskDetailModalRef.current?.refresh();
-        }
-    };
+    // private updateLocalStateWithRawData = async (data: any) => {
+    //     const event = createRefreshTeamEvent(data);
+    //     if (event) {
+    //         const newState = this.props.deps.localStore.mutate(event, false);
+    //         this.updateState(newState);
+    //         await this.taskDetailModalRef.current?.refresh();
+    //     }
+    // };
 
     private updateState = (state: IAppState) => {
         this.setState({
@@ -421,21 +422,21 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 }
 
-function createRefreshTeamEvent(data: any): RefreshTeam | null {
-    const activeTeam = data.me?.activeTeam;
-    if (activeTeam) {
-        return {
-            type: 'RefreshTeam',
-            currentUserId: data.me?.id,
-            tasksNeedAttention: activeTeam.tasksNeedAttention,
-            // TODO: replace with activeTeam.tasks once backend is ready
-            teamTasks: activeTeam.upcomingTasks
-                .concat(activeTeam.inProgressTasks)
-                .concat(activeTeam.deliveredTasks),
-        };
-    }
-    return null;
-}
+// function createRefreshTeamEvent(data: any): RefreshTeam | null {
+//     const activeTeam = data.me?.activeTeam;
+//     if (activeTeam) {
+//         return {
+//             type: 'RefreshTeam',
+//             currentUserId: data.me?.id,
+//             tasksNeedAttention: activeTeam.tasksNeedAttention,
+//             // TODO: replace with activeTeam.tasks once backend is ready
+//             teamTasks: activeTeam.upcomingTasks
+//                 .concat(activeTeam.inProgressTasks)
+//                 .concat(activeTeam.deliveredTasks),
+//         };
+//     }
+//     return null;
+// }
 
 interface IHookProps {
     executionRef: RefObject<ExecutionComponent>;
