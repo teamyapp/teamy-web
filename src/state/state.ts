@@ -10,5 +10,5 @@ export interface IAppState {
 export const initialState: IAppState = {
     currentUserId: -1,
     teamTasks: [],
-    activeTeamId: "-1"
+    activeTeamId: '-1',
 };

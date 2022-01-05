@@ -81,7 +81,7 @@ export class TaskService {
                 taskInput: Object.assign({}, task, {
                     ownerUserId: task.owner ? task.owner?.id : undefined,
                 }),
-                teamId: teamId
+                teamId: teamId,
             },
         });
     }

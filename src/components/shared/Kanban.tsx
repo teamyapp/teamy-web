@@ -1,7 +1,6 @@
 import React, { Component, ReactElement } from 'react';
 
 import * as csp from '@lib/csp/csp';
-import { Or } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
@@ -14,7 +13,7 @@ import { User } from '@core/entity/user';
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
-const upcomingColumnFilter = Or<Task>(Upcoming, InProgress);
+const upcomingColumnFilter = Upcoming;
 const inProgressColumnFilter = InProgress;
 const deliveredColumnFilter = Delivered;
 
