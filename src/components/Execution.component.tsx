@@ -4,14 +4,13 @@ import React, { Component, ReactElement, RefObject, createRef } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import * as csp from '@lib/csp/csp';
-// import { IStateSyncer } from '@lib/store/responsiveState.service';
+
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
 import { OwnedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
-import * as events from '@core/entity/events';
-// import { RefreshTeam } from '@core/entity/events';
+
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
@@ -51,12 +50,6 @@ interface IState {
 export class ExecutionComponent extends Component<IProps, IState> {
     private readonly taskDetailModalRef = createRef<TaskDetailModalComponent>();
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
-    // private readonly mutationChan = csp.chan<events.MutationEvent>();
-    // private readonly multiCaster: csp.Multicaster<events.MutationEvent> =
-    //     csp.multi<events.MutationEvent>(this.mutationChan);
-    // private readonly mutationOutputChan: csp.PopChannel<
-    //     events.MutationEvent | undefined
-    // > = this.multiCaster.copy();
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
 
     constructor(props: IProps) {
@@ -90,7 +83,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalStatusUI
-                                // multiCaster={this.multiCaster}
                                 deps={this.props.deps}
                                 needAttentionTask={this.state.needAttentionTask}
                                 personalTasks={personalTasks}
@@ -117,7 +109,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}team`}>
                             <KanbanUI
-                                // multiCaster={this.multiCaster}
+                             
                                 tasks={this.state.teamTasks}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
@@ -144,7 +136,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
                     taskSelectingOwner={this.state.taskSelectingOwner?.id}
-                    // mutationOutputChan={this.mutationChan}
+               
                     onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
                 />
                 {this.state.showPotentialTaskOwnersList && (
@@ -197,23 +189,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
             }
         })().then();
 
-        // const stateSyncer: IStateSyncer<IAppState> = {
-        //     fetchNetworkState: async (): Promise<any> => {
-        //         return await this.props.deps.pageService.fetchMePage(
-        //             'network-only',
-        //         );
-        //     },
-        //     // updateLocalStateWithRawData: this.updateLocalStateWithRawData,
-        //     updateLocalState: this.updateState,
-        // };
-        // this.props.deps.responsiveStateService.listen(
-        //     // stateSyncer,
-        //     this.mutationOutputChan,
-        // );
     }
 
     public componentWillUnmount() {
-        // this.mutationChan?.close();
         this.stateChangeChan?.close();
         window.removeEventListener('resize', this.onWindowResize);
     }
@@ -225,25 +203,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     public async refresh(policy: FetchPolicy) {
         console.log('refresh', policy);
         const data = await this.props.deps.pageService.fetchMePage(policy);
-        // todo: what now?
-        // this.refreshState(data);
     }
-
-    // private refreshState = (data: any) => {
-    //     const event = createRefreshTeamEvent(data);
-    //     if (event) {
-    //         this.props.deps.localStore.mutate(event);
-    //     }
-    // };
-
-    // private updateLocalStateWithRawData = async (data: any) => {
-    //     const event = createRefreshTeamEvent(data);
-    //     if (event) {
-    //         const newState = this.props.deps.localStore.mutate(event, false);
-    //         this.updateState(newState);
-    //         await this.taskDetailModalRef.current?.refresh();
-    //     }
-    // };
 
     private updateState = (state: IAppState) => {
         console.log("Execution Component update state", state);
@@ -424,22 +384,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 }
-
-// function createRefreshTeamEvent(data: any): RefreshTeam | null {
-//     const activeTeam = data.me?.activeTeam;
-//     if (activeTeam) {
-//         return {
-//             type: 'RefreshTeam',
-//             currentUserId: data.me?.id,
-//             tasksNeedAttention: activeTeam.tasksNeedAttention,
-//             // TODO: replace with activeTeam.tasks once backend is ready
-//             teamTasks: activeTeam.upcomingTasks
-//                 .concat(activeTeam.inProgressTasks)
-//                 .concat(activeTeam.deliveredTasks),
-//         };
-//     }
-//     return null;
-// }
 
 interface IHookProps {
     executionRef: RefObject<ExecutionComponent>;
