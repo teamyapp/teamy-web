@@ -15,11 +15,15 @@ import { Delivered, InProgress, Upcoming } from '../../data/task.filter';
 import styles from './Personal.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
-const upcomingColumnFilter = (needAttentionTaskId: number | string) =>
-    Or<Task>(
-        Upcoming,
-        And(InProgress, (task: Task) => task.id !== needAttentionTaskId),
-    );
+const upcomingColumnFilter = (needAttentionTaskId: number | string) => {
+    return (t: Task) => {
+        console.log("personal status component", needAttentionTaskId, t)
+        return Or<Task>(
+            Upcoming,
+            And(InProgress, (task: Task) => task.id !== needAttentionTaskId),
+        )(t)
+    }
+}
 const deliveredColumnFilter = Delivered;
 
 interface IProps {
