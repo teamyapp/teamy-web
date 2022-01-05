@@ -4,7 +4,7 @@ import React, { Component, ReactElement, RefObject, createRef } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import * as csp from '@lib/csp/csp';
-import { IStateSyncer } from '@lib/store/responsiveState.service';
+// import { IStateSyncer } from '@lib/store/responsiveState.service';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
@@ -57,7 +57,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private readonly mutationOutputChan: csp.PopChannel<
         events.MutationEvent | undefined
     > = this.multiCaster.copy();
-    private stateChangeChan?: csp.PopChannel<IAppState>;
+    private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
 
     constructor(props: IProps) {
         super(props);
@@ -186,6 +186,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.stateChangeChan = this.props.deps.localStore.subscribeStateChange();
         (async () => {
             while (true) {
+                console.log("waiting for localStore state changes");
                 const state = await this.stateChangeChan!.pop();
                 if (state === undefined) {
                     // check undefined instead of falsy because 
@@ -205,10 +206,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
         //     // updateLocalStateWithRawData: this.updateLocalStateWithRawData,
         //     updateLocalState: this.updateState,
         // };
-        this.props.deps.responsiveStateService.listen(
-            // stateSyncer,
-            this.mutationOutputChan,
-        );
+        // this.props.deps.responsiveStateService.listen(
+        //     // stateSyncer,
+        //     this.mutationOutputChan,
+        // );
     }
 
     public componentWillUnmount() {

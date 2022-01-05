@@ -43,6 +43,9 @@ export const mePage = gql`
                 deliveredTasks: tasks(input: { status: DELIVERED }) {
                     ...taskPreview
                 }
+                tasks {
+                    ...taskPreview
+                }
             }
             teams {
                 id
