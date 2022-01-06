@@ -1,5 +1,11 @@
 import classNames from 'classnames';
-import React, { Component, MouseEvent, ReactElement, createRef } from 'react';
+import React, {
+    Component,
+    Fragment,
+    MouseEvent,
+    ReactElement,
+    createRef,
+} from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 import { DatePickerUI } from '@lib/ui/DatePicker';
@@ -12,6 +18,7 @@ import { Deps } from '@core/dep/deps';
 import { Message } from '@core/entity/message';
 import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
+import { FormatService } from '@core/service/format.service';
 import { goalLengthLimit } from '@core/service/task.service';
 
 import { ThreadUI } from '../Thread';
@@ -82,9 +89,17 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
                                 onClick={this.onAssignOwnerClick}
                             >
                                 {this.state.task?.owner ? (
-                                    <UserProfileUI
-                                        user={this.state.task.owner}
-                                    />
+                                    <Fragment>
+                                        <UserProfileUI
+                                            user={this.state.task.owner}
+                                        />
+                                        <div className={styles.TaskOwnerName}>
+                                            {`${FormatService.getShortName(
+                                                this.state.task.owner.firstName,
+                                                this.state.task.owner.lastName,
+                                            )}`}
+                                        </div>
+                                    </Fragment>
                                 ) : (
                                     <MaterialIconUI>face</MaterialIconUI>
                                 )}
