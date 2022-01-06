@@ -1,11 +1,9 @@
 import React, { Component, ReactElement } from 'react';
 
-import * as csp from '@lib/csp/csp';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
 import { Delivered, InProgress, Upcoming } from '@core/data/task.filter';
-import * as events from '@core/entity/events';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
