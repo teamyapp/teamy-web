@@ -24,7 +24,6 @@ const verticalMargin = 40;
 interface IProps {
     deps: Deps;
     taskSelectingOwner?: number | string;
-    // mutationOutputChan: csp.PutChannel<events.MutationEvent | undefined>;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,
