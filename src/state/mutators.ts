@@ -94,7 +94,7 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
     state: IAppState,
     event: events.MutationEvent,
 ): IAppState => {
-    console.log('handling', event);
+    console.log('processing', event);
     switch (event.type) {
         case 'CreateTask':
             return createTaskMutateState(state, event);
