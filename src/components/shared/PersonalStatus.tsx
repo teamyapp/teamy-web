@@ -1,12 +1,10 @@
 import React, { Component, ReactElement } from 'react';
 
-import * as csp from '@lib/csp/csp';
 import { And, Or } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
 import { Deps } from '@core/dep/deps';
-import * as events from '@core/entity/events';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
