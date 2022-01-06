@@ -13,14 +13,11 @@ import { Delivered, InProgress, Upcoming } from '../../data/task.filter';
 import styles from './Personal.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
-const upcomingColumnFilter = (needAttentionTaskId: number | string) => {
-    return (t: Task) => {
-        return Or<Task>(
-            Upcoming,
-            And(InProgress, (task: Task) => task.id !== needAttentionTaskId),
-        )(t);
-    };
-};
+const upcomingColumnFilter = (needAttentionTaskId: number | string) =>
+    Or<Task>(
+        Upcoming,
+        And(InProgress, (task: Task) => task.id !== needAttentionTaskId),
+    );
 const deliveredColumnFilter = Delivered;
 
 interface IProps {
@@ -80,7 +77,7 @@ export class PersonalStatusUI extends Component<IProps> {
                                     .filter(
                                         upcomingColumnFilter(
                                             this.props.needAttentionTask?.id ||
-                                                -1,
+                                            -1,
                                         ),
                                     )
                                     .map(withUpcomingActions)
