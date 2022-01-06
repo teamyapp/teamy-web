@@ -24,10 +24,6 @@ export interface Deps {
     pageService: PageService;
     identityClient: IdentityClient;
     localStore: LocalStore<IAppState, events.MutationEvent>;
-    // responsiveStateService: ResponsiveStateService<
-    //     IAppState,
-    //     events.MutationEvent
-    // >;
 }
 
 export function initDeps(): Deps {
