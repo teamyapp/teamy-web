@@ -53,17 +53,6 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         };
     }
 
-    private static renderReportBlocked(index: number): ReactElement {
-        return (
-            <div
-                className={`${styles.Action} ${styles.MarkTaskBlockIcon}`}
-                key={index}
-            >
-                <MaterialIconUI>report</MaterialIconUI>
-            </div>
-        );
-    }
-
     public render(): ReactElement {
         return (
             <div ref={this.ref} className={styles.Task}>
@@ -104,39 +93,58 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         );
     }
 
-    private renderCompleteTask(index: number): ReactElement {
+    private renderStartTask(index: number): ReactElement {
         return (
-            <div
-                className={`${styles.Action} ${styles.TaskCompletedIcon}`}
-                key={index}
-                onClick={this.onCompleteTaskClick}
-            >
-                <MaterialIconUI>check_circle</MaterialIconUI>
-            </div>
+            <TooltipUI message={'Start'}>
+                <div
+                    className={`${styles.Action} ${styles.StartTaskIcon}`}
+                    key={index}
+                    onClick={this.onStartTaskClick}
+                >
+                    <MaterialIconUI>play_arrow</MaterialIconUI>
+                </div>
+            </TooltipUI>
         );
     }
 
-    private renderStartTask(index: number): ReactElement {
+    private renderCompleteTask(index: number): ReactElement {
         return (
-            <div
-                className={`${styles.Action} ${styles.StartTaskIcon}`}
-                key={index}
-                onClick={this.onStartTaskClick}
-            >
-                <MaterialIconUI>play_arrow</MaterialIconUI>
-            </div>
+            <TooltipUI message={'Complete'}>
+                <div
+                    className={`${styles.Action} ${styles.TaskCompletedIcon}`}
+                    key={index}
+                    onClick={this.onCompleteTaskClick}
+                >
+                    <MaterialIconUI>check_circle</MaterialIconUI>
+                </div>
+            </TooltipUI>
+        );
+    }
+
+    private static renderReportBlocked(index: number): ReactElement {
+        return (
+            <TooltipUI message={'Report Blocked'}>
+                <div
+                    className={`${styles.Action} ${styles.MarkTaskBlockIcon}`}
+                    key={index}
+                >
+                    <MaterialIconUI>report</MaterialIconUI>
+                </div>
+            </TooltipUI>
         );
     }
 
     private renderDeleteTask(index: number): ReactElement {
         return (
-            <div
-                className={`${styles.Action} ${styles.DeleteTaskIcon}`}
-                key={index}
-                onClick={this.onDeleteTaskClick}
-            >
-                <MaterialIconUI>remove_circle</MaterialIconUI>
-            </div>
+            <TooltipUI message={'Delete'}>
+                <div
+                    className={`${styles.Action} ${styles.DeleteTaskIcon}`}
+                    key={index}
+                    onClick={this.onDeleteTaskClick}
+                >
+                    <MaterialIconUI>remove_circle</MaterialIconUI>
+                </div>
+            </TooltipUI>
         );
     }
 
@@ -171,13 +179,15 @@ export class TaskPreviewUI extends Component<IProps, IState> {
 
     private renderTaskDetail(index: number): ReactElement {
         return (
-            <div
-                className={`${styles.Action} ${styles.TaskDetailIcon}`}
-                key={index}
-                onClick={this.onTaskDetailClick}
-            >
-                <MaterialIconUI>settings</MaterialIconUI>
-            </div>
+            <TooltipUI message={'Detail'}>
+                <div
+                    className={`${styles.Action} ${styles.TaskDetailIcon}`}
+                    key={index}
+                    onClick={this.onTaskDetailClick}
+                >
+                    <MaterialIconUI>settings</MaterialIconUI>
+                </div>
+            </TooltipUI>
         );
     }
 
