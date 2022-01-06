@@ -376,7 +376,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onCloseTaskOwnersListClick = () => {
-        console.log('+++++');
         this.setState({
             potentialTaskOwners: [],
             taskSelectingOwner: undefined,
