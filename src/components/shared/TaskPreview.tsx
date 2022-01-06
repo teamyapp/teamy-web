@@ -9,10 +9,12 @@ import React, {
 } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
+import { FormatService } from '@core/service/format.service';
 import { goalLengthLimit } from '@core/service/task.service';
 
 import styles from './TaskPreview.module.scss';
@@ -139,22 +141,30 @@ export class TaskPreviewUI extends Component<IProps, IState> {
     }
 
     private renderAssignOwner(index: number): ReactElement {
+        const name = this.props.task.owner
+            ? FormatService.getShortName(
+                  this.props.task.owner.firstName,
+                  this.props.task.owner.lastName,
+              )
+            : 'Unassigned';
         return (
             <div key={index} className={styles.AssignOwner}>
-                <div
-                    className={`${styles.Action} ${
-                        styles.AssignOwnerIcon
-                    } ${classNames({
-                        [styles.Active]: this.props.isOwnerSelected,
-                    })}`}
-                    onClick={this.onAssignOwnerClick}
-                >
-                    {this.props.task.owner ? (
-                        <UserProfileUI user={this.props.task.owner} />
-                    ) : (
-                        <MaterialIconUI>face</MaterialIconUI>
-                    )}
-                </div>
+                <TooltipUI message={name}>
+                    <div
+                        className={`${styles.Action} ${
+                            styles.AssignOwnerIcon
+                        } ${classNames({
+                            [styles.Active]: this.props.isOwnerSelected,
+                        })}`}
+                        onClick={this.onAssignOwnerClick}
+                    >
+                        {this.props.task.owner ? (
+                            <UserProfileUI user={this.props.task.owner} />
+                        ) : (
+                            <MaterialIconUI>face</MaterialIconUI>
+                        )}
+                    </div>
+                </TooltipUI>
             </div>
         );
     }

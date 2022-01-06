@@ -10,7 +10,7 @@ import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
 
 import { Delivered, InProgress, Upcoming } from '../../data/task.filter';
-import styles from './Personal.module.scss';
+import styles from './PersonalStatus.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
 const upcomingColumnFilter = (needAttentionTaskId: number | string) =>

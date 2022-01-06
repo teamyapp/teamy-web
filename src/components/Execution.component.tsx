@@ -34,6 +34,7 @@ interface IProps {
 interface IState {
     showPotentialTaskOwnersList: boolean;
     findTaskOwnersAlignTargetBoundBox?: IBoundingBoxFinder;
+    taskOwnersListVisible: boolean;
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
     currentUserId: number;
@@ -53,8 +54,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
         super(props);
         this.state = {
             showPotentialTaskOwnersList: false,
-            taskOwnersListLeft: -1000,
-            taskOwnersListTop: -1000,
+            taskOwnersListVisible: false,
+            taskOwnersListLeft: 0,
+            taskOwnersListTop: 0,
             currentUserId: -1, // when not logged in yet
             teamTasks: [],
             potentialTaskOwners: [],
@@ -141,6 +143,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
                         style={{
                             left: this.state.taskOwnersListLeft,
                             top: this.state.taskOwnersListTop,
+                            visibility: this.state.taskOwnersListVisible
+                                ? 'visible'
+                                : 'hidden',
                         }}
                         tabIndex={-1}
                         onBlur={this.onCloseTaskOwnersListClick}
@@ -220,6 +225,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
 
         setTimeout(() => {
+            this.setState({
+                taskOwnersListVisible: true,
+            });
+
             this.taskOwnersPopupRef.current?.focus();
             this.updateTaskOwnersListPosition();
         });
@@ -237,6 +246,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.setState({
             potentialTaskOwners: [],
             showPotentialTaskOwnersList: false,
+            taskOwnersListVisible: false,
             taskSelectingOwner: undefined,
         });
     };
@@ -369,9 +379,8 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.setState({
             potentialTaskOwners: [],
             taskSelectingOwner: undefined,
+            taskOwnersListVisible: false,
             showPotentialTaskOwnersList: false,
-            taskOwnersListLeft: -1000,
-            taskOwnersListTop: -1000,
         });
     };
 }
