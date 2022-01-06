@@ -1,12 +1,10 @@
 import React, { Component, ReactElement } from 'react';
 
-import * as csp from '@lib/csp/csp';
 import { And, Or } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
 import { Deps } from '@core/dep/deps';
-import * as events from '@core/entity/events';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
@@ -15,7 +13,7 @@ import { Delivered, InProgress, Upcoming } from '../../data/task.filter';
 import styles from './Personal.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
-const upcomingColumnFilter = (needAttentionTaskId: number) =>
+const upcomingColumnFilter = (needAttentionTaskId: number | string) =>
     Or<Task>(
         Upcoming,
         And(InProgress, (task: Task) => task.id !== needAttentionTaskId),
@@ -28,15 +26,15 @@ interface IProps {
     needAttentionTask?: Task;
     personalTasks: Task[];
     taskSelectingOwner?: Task;
-    multiCaster: csp.Multicaster<events.MutationEvent>;
-    onViewTaskDetailClick?: (taskId: number) => void;
+
+    onViewTaskDetailClick?: (taskId: number | string) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number) => void;
-    onStartTaskClick?: (taskId: number) => void;
-    onCompleteTaskClick?: (taskId: number) => void;
+    onDeleteTaskClick?: (taskId: number | string) => void;
+    onStartTaskClick?: (taskId: number | string) => void;
+    onCompleteTaskClick?: (taskId: number | string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,
@@ -79,7 +77,7 @@ export class PersonalStatusUI extends Component<IProps> {
                                     .filter(
                                         upcomingColumnFilter(
                                             this.props.needAttentionTask?.id ||
-                                                -1,
+                                            -1,
                                         ),
                                     )
                                     .map(withUpcomingActions)
@@ -120,7 +118,6 @@ export class PersonalStatusUI extends Component<IProps> {
             return (
                 <div key={task.id}>
                     <TaskPreviewUI
-                        multiCaster={this.props.multiCaster}
                         canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}

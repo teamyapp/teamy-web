@@ -6,7 +6,7 @@ export class UnreachableError extends Error {
 }
 
 // 2 base methods that all kinds of channels have to implement.
-interface base {
+export interface BaseChannel {
     // Close this channel. This method does not block and returns immediately.
     // One might argue that if a IO like object implement this interface,
     // its close behavior might need to block.
@@ -15,34 +15,25 @@ interface base {
 
     // Check if this channel is closed.
     closed(): boolean;
+    ready(): Promise<BaseChannel>;
 }
 
 // One can only receive data from a PopChannel.
-export interface PopChannel<T> extends base {
+export interface PopChannel<T> extends BaseChannel, AsyncIterableIterator<T> {
     // Receive data from this channel.
     pop(): Promise<T | undefined>;
 }
 
 // One can only send data to a PutChannel.
-export interface PutChannel<T> extends base {
+export interface PutChannel<T> extends BaseChannel {
     // Send data to this channel.
     put(ele: T): Promise<void>;
 }
 
 // Normally a channel can both pop/receive and be put/send data.
 // The documentation will use pop/receive and put/send interchangeably.
-export interface BaseChannel<T> extends PopChannel<T>, PutChannel<T> {}
 
-// A SelectableChannel implements ready() method that will be used by select() function.
-// The signature of this method is subject to change.
-export interface SeletableChannel<T> extends PopChannel<T> {
-    ready(): Promise<SeletableChannel<T>>;
-}
-
-export interface Channel<T>
-    extends SeletableChannel<T>,
-        PutChannel<T>,
-        AsyncIterableIterator<T> {}
+export interface Channel<T> extends PopChannel<T>, PutChannel<T> {}
 
 interface PopperOnResolver<T> {
     (ele: { value: undefined; done: true } | { value: T; done: false }): void;
@@ -182,7 +173,7 @@ interface DefaultCase<T> {
 // and does the same thing and should have identical behavior.
 // https://stackoverflow.com/questions/37021194/how-are-golang-select-statements-implemented
 export async function select<Result>(
-    channels: [SeletableChannel<any>, onSelect<any, Result>][],
+    channels: [Channel<any>, onSelect<any, Result>][],
     defaultCase?: DefaultCase<Result>,
 ): Promise<Result> {
     let promises: Promise<number>[] = channels.map(async ([c, func], i) => {

@@ -1,11 +1,9 @@
 import React, { Component, ReactElement } from 'react';
 
-import * as csp from '@lib/csp/csp';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
 import { Delivered, InProgress, Upcoming } from '@core/data/task.filter';
-import * as events from '@core/entity/events';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
@@ -20,17 +18,16 @@ const deliveredColumnFilter = Delivered;
 interface IProps {
     taskAdding?: Task;
     tasks: Task[];
-    findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
+    findPotentialOwnersForTask?: (taskId: number | string) => Promise<User[]>;
     taskSelectingOwner?: Task;
-    multiCaster: csp.Multicaster<events.MutationEvent>;
-    onViewTaskDetailClick?: (taskId: number) => void;
+    onViewTaskDetailClick?: (taskId: number | string) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number) => void;
-    onStartTaskClick?: (taskId: number) => void;
-    onCompleteTaskClick?: (taskId: number) => void;
+    onDeleteTaskClick?: (taskId: number | string) => void;
+    onStartTaskClick?: (taskId: number | string) => void;
+    onCompleteTaskClick?: (taskId: number | string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,
@@ -114,7 +111,7 @@ export class KanbanUI extends Component<IProps> {
             return (
                 <div key={task.id}>
                     <TaskPreviewUI
-                        multiCaster={this.props.multiCaster}
+                        // multiCaster={this.props.multiCaster}
                         canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}

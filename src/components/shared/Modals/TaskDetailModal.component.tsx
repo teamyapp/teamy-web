@@ -1,17 +1,15 @@
 import classNames from 'classnames';
 import React, { Component, MouseEvent, ReactElement, createRef } from 'react';
 
-import * as csp from '@lib/csp/csp';
 import { ButtonUI } from '@lib/ui/Button';
 import { DatePickerUI } from '@lib/ui/DatePicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
-// import { NamedValueUI } from '@ui/NamedValue';
+
 import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
-import * as events from '@core/entity/events';
 import { Message } from '@core/entity/message';
 import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
@@ -25,8 +23,7 @@ const verticalMargin = 40;
 
 interface IProps {
     deps: Deps;
-    taskSelectingOwner?: number;
-    mutationOutputChan: csp.PutChannel<events.MutationEvent | undefined>;
+    taskSelectingOwner?: number | string;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,
@@ -172,7 +169,7 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
         window.removeEventListener('resize', this.onBodyResize);
     }
 
-    public async open(taskId: number) {
+    public async open(taskId: number | string) {
         await this.refreshWithTaskId(taskId);
         this.adjustSize();
         this.modalRef.current?.open();
@@ -201,7 +198,7 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
-            await this.props.mutationOutputChan.put({
+            await this.props.deps.localStore.mutate({
                 type: 'UpdateTask',
                 task: Object.assign<any, Task, Partial<Task>>(
                     {},
@@ -248,7 +245,7 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
         threadDivEl?.scrollTo(0, threadDivEl?.scrollHeight);
     }
 
-    private async refreshWithTaskId(taskId: number) {
+    private async refreshWithTaskId(taskId: number | string) {
         const mePromise = this.props.deps.userService.fetchMe('cache-first');
         const taskPromise = this.props.deps.taskService.fetchTask(
             taskId,

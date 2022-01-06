@@ -161,7 +161,6 @@ class AppComponent extends Component<IProps, IState> {
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
         await this.props.deps.teamService.updateActiveTeamId(teamId);
         await this.refresh('network-only');
-        await this.executionRef.current?.refresh('cache-first');
     };
 
     private onTeamMembersAdded = async (teamId: number) => {

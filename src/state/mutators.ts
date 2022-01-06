@@ -11,9 +11,16 @@ function createTaskMutateState(
     state: IAppState,
     event: events.CreateTask,
 ): IAppState {
-    event.task.availableActions = getActions('UPCOMING');
+    let task: Task = Object.assign({}, event.task, {
+        // temperary id until the server creates an id for it
+        // todo: in the future, need a distributed id solution
+        // uuid+user-id is a good solution
+        id: '-1',
+        availableActions: getActions('UPCOMING'),
+        status: 'UPCOMING',
+    });
     return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
-        teamTasks: state.teamTasks.concat(event.task),
+        teamTasks: state.teamTasks.concat(task),
     });
 }
 
@@ -83,34 +90,11 @@ function completeTaskMutateState(
     });
 }
 
-function refreshTeamMutateState(
-    state: IAppState,
-    event: events.RefreshTeam,
-): IAppState {
-    let needAttentionTask = event.tasksNeedAttention[0];
-    if (needAttentionTask) {
-        needAttentionTask = replaceTask(
-            needAttentionTask,
-            needAttentionTask,
-            'NEED_ATTENTION',
-        );
-    }
-    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
-        currentUserId: event.currentUserId,
-        teamTasks: event.teamTasks.map((task) =>
-            Object.assign<any, Task, Partial<Task>>({}, task, {
-                availableActions: getActions(task.status),
-            }),
-        ),
-        needAttentionTask: needAttentionTask,
-        // todo: use apollo cli to compile query to TS interfaces to have type hint
-    });
-}
-
 export const mutateState: MutateState<IAppState, events.MutationEvent> = (
     state: IAppState,
     event: events.MutationEvent,
 ): IAppState => {
+    console.log('processing', event);
     switch (event.type) {
         case 'CreateTask':
             return createTaskMutateState(state, event);
@@ -122,13 +106,11 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
             return startTaskMutateState(state, event);
         case 'CompleteTask':
             return completeTaskMutateState(state, event);
-        case 'RefreshTeam':
-            return refreshTeamMutateState(state, event);
     }
 };
 
 function updateTask(
-    targetTaskId: number,
+    targetTaskId: number | string,
     oldTask: Task,
     taskStatus: TaskStatus,
 ): Task {
