@@ -40,8 +40,18 @@ export class LocalStore<State, MutationEvent extends event.Event> {
         const data = this.loadData();
 
         if (data) {
-            this.initialState = data.initialState;
-            this.currentState = data.currentState;
+            // fields for initialState are used as back up when new data
+            // structure is added to local state
+            this.initialState = Object.assign(
+                {},
+                initialState,
+                data.initialState,
+            );
+            this.currentState = Object.assign(
+                {},
+                initialState,
+                data.currentState,
+            );
             this.events = data.events;
         } else {
             this.currentState = this.initialState = initialState;
