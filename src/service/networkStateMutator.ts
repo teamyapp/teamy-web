@@ -1,5 +1,5 @@
 import { MutationEvent } from '@core/entity/events';
-import * as csp from '../libs/csp/csp';
+import * as csp from '@lib/csp/csp';
 import { TaskService } from '@core/service/task.service';
 import { PageService } from './page.service';
 import { LocalStore } from '@lib/store/localStore';
