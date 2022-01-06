@@ -1,4 +1,3 @@
-import { FetchPolicy } from '@apollo/client';
 import { History, LocationState } from 'history';
 import React, { Component, ReactElement, RefObject, createRef } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
@@ -197,11 +196,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
     public showTaskDetail(taskId: number | string) {
         this.taskDetailModalRef.current?.open(taskId);
     }
-
-    // public async refresh(policy: FetchPolicy) {
-    //     console.log('refresh', policy);
-    //     const data = await this.props.deps.pageService.fetchMePage(policy);
-    // }
 
     private updateState = (state: IAppState) => {
         console.log('Execution Component update state', state);
