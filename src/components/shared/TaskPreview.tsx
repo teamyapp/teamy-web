@@ -179,7 +179,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
 
     private renderTaskDetail(index: number): ReactElement {
         return (
-            <TooltipUI message={'Show Detail'}>
+            <TooltipUI message={'Detail'}>
                 <div
                     className={`${styles.Action} ${styles.TaskDetailIcon}`}
                     key={index}
