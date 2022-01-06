@@ -77,7 +77,7 @@ export class PersonalStatusUI extends Component<IProps> {
                                     .filter(
                                         upcomingColumnFilter(
                                             this.props.needAttentionTask?.id ||
-                                            -1,
+                                                -1,
                                         ),
                                     )
                                     .map(withUpcomingActions)

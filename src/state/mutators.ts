@@ -90,6 +90,15 @@ function completeTaskMutateState(
     });
 }
 
+function updateActiveTeamMutateState(
+    state: IAppState,
+    event: events.UpdateActiveTeam,
+) {
+    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+        activeTeamId: event.teamId,
+    });
+}
+
 export const mutateState: MutateState<IAppState, events.MutationEvent> = (
     state: IAppState,
     event: events.MutationEvent,
@@ -106,6 +115,8 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
             return startTaskMutateState(state, event);
         case 'CompleteTask':
             return completeTaskMutateState(state, event);
+        case 'UpdateActiveTeam':
+            return updateActiveTeamMutateState(state, event);
     }
 };
 

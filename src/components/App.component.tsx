@@ -2,12 +2,14 @@ import { FetchPolicy } from '@apollo/client';
 import React, { Component, ReactElement, createRef } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import * as csp from '@lib/csp/csp';
 import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
+import { IAppState } from '@core/state/state';
 
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
@@ -27,7 +29,7 @@ interface IProps {
 interface IState {
     me?: User;
     teams: Team[];
-    activeTeamId: number;
+    activeTeamId: string;
     isDrawerOpen: boolean;
 }
 
@@ -36,13 +38,14 @@ class AppComponent extends Component<IProps, IState> {
     private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
     private addTeamMembersModalRef = createRef<AddTeamMembersModalComponent>();
     private userModalRef = createRef<UserSettingsModalComponent>();
+    private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
 
     constructor(props: any) {
         super(props);
         this.state = {
             isDrawerOpen: false,
             teams: [],
-            activeTeamId: -1,
+            activeTeamId: '-1',
         };
     }
 
@@ -133,7 +136,24 @@ class AppComponent extends Component<IProps, IState> {
     }
 
     public async componentDidMount() {
-        await this.refresh('cache-first');
+        this.stateChangeChan =
+            this.props.deps.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                console.log('waiting for localStore state changes');
+                const state = await this.stateChangeChan!.pop();
+                if (state === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+                this.updateState(state);
+            }
+        })().then();
+    }
+
+    public componentWillUnmount() {
+        this.stateChangeChan?.close();
     }
 
     private onMenuToggle = () => {
@@ -146,24 +166,26 @@ class AppComponent extends Component<IProps, IState> {
         this.userModalRef.current?.open(this.state.me!);
     };
 
-    private onAddTeamMembersClick = (teamId: number) => {
+    private onAddTeamMembersClick = (teamId: string) => {
         this.addTeamMembersModalRef.current?.open(teamId);
     };
 
-    private onShowTeamMembersClick = (teamId: number) => {
+    private onShowTeamMembersClick = (teamId: string) => {
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
 
-    private onViewTeamSettings = (teamId: number) => {
+    private onViewTeamSettings = (teamId: string) => {
         this.teamSettingsModalRef.current?.open(teamId);
     };
 
-    private onActiveTeamSelect = async (teamId: number): Promise<void> => {
-        await this.props.deps.teamService.updateActiveTeamId(teamId);
-        await this.refresh('network-only');
+    private onActiveTeamSelect = (teamId: string): void => {
+        this.props.deps.localStore.mutate({
+            type: 'UpdateActiveTeam',
+            teamId: `${teamId}`,
+        });
     };
 
-    private onTeamMembersAdded = async (teamId: number) => {
+    private onTeamMembersAdded = async (teamId: string) => {
         await this.refresh('network-only');
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
@@ -182,11 +204,20 @@ class AppComponent extends Component<IProps, IState> {
         const teams: Team[] = data.me?.teams;
         const activeTeamId = data.me?.activeTeam?.id;
         // TODO: We know that this is a hack. But in order to not hack, we need to get rid of refreshEvent first.
-        this.props.deps.localStore.getState().activeTeamId = activeTeamId;
+        this.props.deps.localStore.setState((state: IAppState) =>
+            Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+                currentUser: data.me,
+                teams,
+                activeTeamId,
+            }),
+        );
+    }
+
+    private updateState(state: IAppState) {
         this.setState({
-            me: data.me,
-            teams,
-            activeTeamId,
+            me: state.currentUser,
+            teams: state.teams,
+            activeTeamId: state.activeTeamId,
         });
     }
 }

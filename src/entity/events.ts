@@ -1,6 +1,7 @@
 import { Event } from '@lib/event/event';
 
 import { Task } from '@core/entity/task';
+
 import { TaskStatus } from './taskStatus';
 
 export type MutationEvent =
@@ -8,7 +9,8 @@ export type MutationEvent =
     | UpdateTask
     | DeleteTask
     | StartTask
-    | CompleteTask;
+    | CompleteTask
+    | UpdateActiveTeam;
 
 export interface TaskCreationInput {
     goal: string;
@@ -42,4 +44,9 @@ export interface StartTask extends Event {
 export interface CompleteTask extends Event {
     type: 'CompleteTask';
     taskId: number | string;
+}
+
+export interface UpdateActiveTeam extends Event {
+    type: 'UpdateActiveTeam';
+    teamId: string;
 }

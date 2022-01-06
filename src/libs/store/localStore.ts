@@ -61,7 +61,7 @@ export class LocalStore<State, MutationEvent extends event.Event> {
     }
 
     public getState(): State {
-        return this.currentState;
+        return Object.assign({}, this.currentState);
     }
     public setState(setter: (s: State) => State) {
         // it's all references
