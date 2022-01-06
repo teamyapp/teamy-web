@@ -14,7 +14,7 @@ const itemSeparator = ',';
 
 interface IProps {
     deps: Deps;
-    onTeamMembersAdded?: (teamId: number) => void;
+    onTeamMembersAdded?: (teamId: string) => void;
 }
 
 interface IState {
@@ -61,7 +61,7 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
         );
     }
 
-    public open = async (teamId: number) => {
+    public open = async (teamId: string) => {
         const team = await this.props.deps.teamService.fetchTeam(teamId);
         this.setState({
             team,

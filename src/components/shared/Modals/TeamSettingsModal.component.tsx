@@ -15,7 +15,7 @@ import styles from './TeamSettingsModal.component.module.scss';
 
 interface IProps {
     deps: Deps;
-    onAddTeamMemberClick?: (teamId: number) => void;
+    onAddTeamMemberClick?: (teamId: string) => void;
     onTeamUpdated?: () => void;
 }
 
@@ -70,7 +70,7 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
         );
     }
 
-    public open = async (teamId: number, defaultTabIndex: number = 0) => {
+    public open = async (teamId: string, defaultTabIndex: number = 0) => {
         const team = await this.props.deps.teamService.fetchTeam(teamId);
         this.setState({
             defaultTabIndex,

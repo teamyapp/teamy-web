@@ -2,11 +2,11 @@ import { FetchPolicy } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
+import { TaskCreationInput } from '@core/entity/events';
 import { Task } from '@core/entity/task';
 
 import * as mutations from './mutations';
 import * as queries from './queries';
-import { TaskCreationInput } from '@core/entity/events';
 
 export const goalLengthLimit = 100;
 

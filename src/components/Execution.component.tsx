@@ -3,13 +3,11 @@ import React, { Component, ReactElement, RefObject, createRef } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import * as csp from '@lib/csp/csp';
-
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
 import { OwnedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
-
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
@@ -198,9 +196,8 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     private updateState = (state: IAppState) => {
-        console.log('Execution Component update state', state);
         this.setState({
-            currentUserId: state.currentUserId,
+            currentUserId: state.currentUser.id,
             needAttentionTask: state.needAttentionTask,
             teamTasks: state.teamTasks,
         });

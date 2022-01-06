@@ -9,13 +9,13 @@ import styles from './Drawer.module.scss';
 
 interface IProps {
     teams: Team[];
-    activeTeamId: number;
+    activeTeamId: string;
     onMenuClose?: () => void;
-    onActiveTeamSelect?: (teamId: number) => void;
+    onActiveTeamSelect?: (teamId: string) => void;
     isDrawerOpen: boolean;
-    onAddTeamMembersClick?: (teamId: number) => void;
-    onShowTeamMembersClick?: (teamId: number) => void;
-    onViewTeamSettings?: (teamId: number) => void;
+    onAddTeamMembersClick?: (teamId: string) => void;
+    onShowTeamMembersClick?: (teamId: string) => void;
+    onViewTeamSettings?: (teamId: string) => void;
 }
 
 interface IState {
@@ -25,7 +25,7 @@ interface IState {
 }
 
 export class DrawerUI extends Component<IProps, IState> {
-    private selectedTeamId?: number;
+    private selectedTeamId?: string;
     private teamContextMenuRef: RefObject<any> = createRef();
 
     constructor(props: IProps) {
@@ -121,14 +121,14 @@ export class DrawerUI extends Component<IProps, IState> {
         this.props.onMenuClose?.call(null);
     };
 
-    private onTeamClick = (teamId: number): (() => void) => {
+    private onTeamClick = (teamId: string): (() => void) => {
         return () => {
             this.props.onActiveTeamSelect?.call(null, teamId);
         };
     };
 
     private onTeamContextMenu = (
-        teamId: number,
+        teamId: string,
     ): ((event: MouseEvent<HTMLElement>) => void) => {
         return (event: MouseEvent<HTMLElement>) => {
             event.preventDefault();
@@ -136,7 +136,7 @@ export class DrawerUI extends Component<IProps, IState> {
         };
     };
 
-    private showTeamContextMenu(teamId: number, left: number, top: number) {
+    private showTeamContextMenu(teamId: string, left: number, top: number) {
         this.selectedTeamId = teamId;
         this.setState({
             showTeamContextMenu: true,
@@ -161,20 +161,23 @@ export class DrawerUI extends Component<IProps, IState> {
     }
 
     private onAddMembersClick = () => {
-        this.props.onAddTeamMembersClick?.call(null, this.selectedTeamId || -1);
+        this.props.onAddTeamMembersClick?.call(
+            null,
+            this.selectedTeamId || '-1',
+        );
         this.closeTeamContextMenu();
     };
 
     private onShowMembersClick = () => {
         this.props.onShowTeamMembersClick?.call(
             null,
-            this.selectedTeamId || -1,
+            this.selectedTeamId || '-1',
         );
         this.closeTeamContextMenu();
     };
 
     private onViewTeamSettingsClick = () => {
-        this.props.onViewTeamSettings?.call(null, this.selectedTeamId || -1);
+        this.props.onViewTeamSettings?.call(null, this.selectedTeamId || '-1');
         this.closeTeamContextMenu();
     };
 }

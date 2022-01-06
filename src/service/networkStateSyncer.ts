@@ -1,24 +1,34 @@
-import { MutationEvent } from '@core/entity/events';
 import * as csp from '@lib/csp/csp';
-import { TaskService } from '@core/service/task.service';
-import { PageService } from './page.service';
 import { LocalStore } from '@lib/store/localStore';
+
+import { MutationEvent } from '@core/entity/events';
+import { TaskService } from '@core/service/task.service';
+import { TeamService } from '@core/service/team.service';
 import { IAppState } from '@core/state/state';
+
+import { PageService } from './page.service';
 
 export class NetworkStateSynchronizer {
     constructor(
         localStore: LocalStore<IAppState, MutationEvent>,
         taskService: TaskService,
+        teamService: TeamService,
         pageService: PageService,
     ) {
-
         function setState(data: any) {
             localStore.setState((state) => {
-                state.currentUserId = data.me.id;
-                state.activeTeamId = data.me.activeTeam.id;
-                state.needAttentionTask = data.me.activeTeam.tasksNeedAttention[0];
-                state.teamTasks = data.me.activeTeam.tasks;
-                return state;
+                return Object.assign<any, IAppState, Partial<IAppState>>(
+                    {},
+                    state,
+                    {
+                        currentUser: data.me,
+                        teams: data.me?.teams,
+                        activeTeamId: data.me?.activeTeam?.id,
+                        needAttentionTask:
+                            data.me?.activeTeam?.tasksNeedAttention[0],
+                        teamTasks: data.me?.activeTeam?.tasks,
+                    },
+                );
             });
         }
 
@@ -60,6 +70,9 @@ export class NetworkStateSynchronizer {
                     case 'CompleteTask':
                         await taskService.completeTask(event.taskId);
                         break;
+                    case 'UpdateActiveTeam':
+                        await teamService.updateActiveTeamId(event.teamId);
+                        break;
                     default:
                         console.log(
                             'NetworkStateSynchronizer does not handle',
@@ -84,7 +97,7 @@ export class NetworkStateSynchronizer {
                 }
                 // the localstore state
                 console.log('set local store', data);
-                setState(data) 
+                setState(data);
             }
         })();
     }
