@@ -198,10 +198,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
         this.taskDetailModalRef.current?.open(taskId);
     }
 
-    public async refresh(policy: FetchPolicy) {
-        console.log('refresh', policy);
-        const data = await this.props.deps.pageService.fetchMePage(policy);
-    }
+    // public async refresh(policy: FetchPolicy) {
+    //     console.log('refresh', policy);
+    //     const data = await this.props.deps.pageService.fetchMePage(policy);
+    // }
 
     private updateState = (state: IAppState) => {
         console.log('Execution Component update state', state);
