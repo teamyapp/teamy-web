@@ -24,6 +24,7 @@ import { goalLengthLimit } from '@core/service/task.service';
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
 import styles from './TaskDetailModal.component.module.scss';
+import { FetchPolicy } from '@apollo/client';
 
 const verticalMargin = 40;
 
@@ -184,15 +185,15 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
     }
 
     public async open(taskId: number | string) {
-        await this.refreshWithTaskId(taskId);
+        await this.refreshWithTaskId(taskId, 'cache-first');
         this.adjustSize();
         this.modalRef.current?.open();
         this.scrollToCommentsBottom();
     }
 
-    public async refresh() {
+    public async refresh(policy: FetchPolicy) {
         if (this.state.task) {
-            await this.refreshWithTaskId(this.state.task.id);
+            await this.refreshWithTaskId(this.state.task.id, policy);
         }
     }
 
@@ -235,23 +236,24 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
         };
     }
 
+    // todo: use mutation event
     private onPostComment = async (content: string) => {
         await this.props.deps.commentService.createComment(
             this.state.task?.id || -1,
             content,
         );
-        await this.refresh();
+        await this.refresh('network-only');
         this.scrollToCommentsBottom();
     };
 
     private onDeleteComment = async (commentId: number) => {
         await this.props.deps.commentService.deleteComment(commentId);
-        await this.refresh();
+        await this.refresh('network-only');
     };
 
     private onUpdateComment = async (commentId: number, content: string) => {
         await this.props.deps.commentService.updateComment(commentId, content);
-        await this.refresh();
+        await this.refresh('network-only');
     };
 
     private scrollToCommentsBottom() {
@@ -259,16 +261,17 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
         threadDivEl?.scrollTo(0, threadDivEl?.scrollHeight);
     }
 
-    private async refreshWithTaskId(taskId: number | string) {
-        const mePromise = this.props.deps.userService.fetchMe('cache-first');
+    private async refreshWithTaskId(taskId: number | string, policy: FetchPolicy) {
+        console.log("refreshWithTaskId");
+        const mePromise = this.props.deps.userService.fetchMe(policy);
         const taskPromise = this.props.deps.taskService.fetchTask(
             taskId,
-            'network-only',
+            policy,
         );
         const commentsPromise =
             this.props.deps.commentService.fetchTaskComments(
                 taskId,
-                'network-only',
+                policy,
             );
         const [me, task, comments] = await Promise.all([
             mePromise,
