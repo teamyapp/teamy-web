@@ -16,10 +16,3 @@ export const initialState: IAppState = {
     teamTasks: [],
     activeTeamId: '-1',
 };
-
-export interface StateMachine {
-    state: string
-    size: number
-    
-}
-
