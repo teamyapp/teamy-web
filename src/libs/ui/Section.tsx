@@ -5,6 +5,7 @@ import styles from './Section.module.scss';
 interface IProps {
     title: string;
     actions?: ReactElement;
+    taskCount: number;
 }
 
 export class SectionUI extends Component<IProps> {
@@ -13,6 +14,7 @@ export class SectionUI extends Component<IProps> {
             <section className={styles.Section}>
                 <div className={styles.Header}>
                     <div>{this.props.title}</div>
+                    <p>--{this.props.taskCount}</p>
                     <div className={styles.Actions}>{this.props.actions}</div>
                 </div>
                 <div className={styles.Content}>{this.props.children}</div>

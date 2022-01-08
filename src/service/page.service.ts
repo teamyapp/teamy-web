@@ -14,7 +14,7 @@ export class PageService {
     public async fetchMePage(policy: FetchPolicy): Promise<any> {
         return await this.graphQLClient.query({
             fetchPolicy: policy,
-            query: queries.mePage,
+            query: queries.myDataOfInterests,
         });
     }
 }

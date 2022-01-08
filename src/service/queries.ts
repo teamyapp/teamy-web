@@ -21,7 +21,7 @@ fragment taskPreview on Task {
 }
 `;
 
-export const mePage = gql`
+export const myDataOfInterests = gql`
     query me {
         me {
             id

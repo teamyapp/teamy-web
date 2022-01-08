@@ -58,6 +58,7 @@ export class KanbanUI extends Component<IProps> {
                                 </div>
                             </div>
                         }
+                        taskCount={this.props.tasks.length}
                     >
                         <div className={styles.TaskList}>
                             {this.props.taskAdding &&
@@ -71,7 +72,7 @@ export class KanbanUI extends Component<IProps> {
                 <div
                     className={`${styles.TaskListSection} ${styles.InProgressSection}`}
                 >
-                    <SectionUI title={'In Progress'}>
+                    <SectionUI title={'In Progress'} taskCount={this.props.tasks.length}>
                         <div className={styles.TaskList}>
                             {this.props.tasks
                                 .filter(inProgressColumnFilter)
@@ -82,7 +83,7 @@ export class KanbanUI extends Component<IProps> {
                 <div
                     className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
                 >
-                    <SectionUI title={'Delivered'}>
+                    <SectionUI title={'Delivered'} taskCount={this.props.tasks.length}>
                         <div className={styles.TaskList}>
                             {this.props.tasks
                                 .filter(deliveredColumnFilter)

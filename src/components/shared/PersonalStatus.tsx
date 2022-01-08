@@ -49,7 +49,7 @@ export class PersonalStatusUI extends Component<IProps> {
         return (
             <div className={styles.PersonalStatus}>
                 <div className={styles.NeedAttentionSection}>
-                    <SectionUI title={'Need Attention'}>
+                    <SectionUI title={'Need Attention'} taskCount={1}>
                         {this.props.needAttentionTask &&
                             this.renderExistingTask()(
                                 this.props.needAttentionTask,
@@ -72,6 +72,7 @@ export class PersonalStatusUI extends Component<IProps> {
                                     </div>
                                 </div>
                             }
+                            taskCount={this.props.personalTasks.length}
                         >
                             <div className={styles.TaskList}>
                                 {this.props.taskAdding &&
@@ -91,7 +92,7 @@ export class PersonalStatusUI extends Component<IProps> {
                     <div
                         className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
                     >
-                        <SectionUI title={'Delivered'}>
+                        <SectionUI title={'Delivered'} taskCount={this.props.personalTasks.length}>
                             <div className={styles.TaskList}>
                                 {this.props.personalTasks
                                     .filter(deliveredColumnFilter)
