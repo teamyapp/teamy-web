@@ -262,7 +262,6 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
     }
 
     private async refreshWithTaskId(taskId: number | string, policy: FetchPolicy) {
-        console.log("refreshWithTaskId");
         const mePromise = this.props.deps.userService.fetchMe(policy);
         const taskPromise = this.props.deps.taskService.fetchTask(
             taskId,
