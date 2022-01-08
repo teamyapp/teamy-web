@@ -150,6 +150,7 @@ export const teamsWithMembers = gql`
 export const taskComments = gql`
     query comments($taskId: ID!) {
         task(id: $taskId) {
+            id
             comments {
                 id
                 content

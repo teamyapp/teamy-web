@@ -37,6 +37,7 @@ export class CommentService {
             });
     }
 
+    // TODO: use mutation event
     public async createComment(taskId: number | string, content: string) {
         await this.graphQLClient.mutate({
             mutation: mutations.createComment,
