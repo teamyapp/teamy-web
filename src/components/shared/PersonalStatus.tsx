@@ -46,10 +46,22 @@ interface IProps {
 
 export class PersonalStatusUI extends Component<IProps> {
     public render(): ReactElement {
+        const delivered = this.props.personalTasks
+            .filter(deliveredColumnFilter)
+            .map(this.renderExistingTask())
+        const upcoming = this.props.personalTasks
+            .filter(
+                upcomingColumnFilter(
+                    this.props.needAttentionTask?.id ||
+                    -1,
+                ),
+            )
+            .map(withUpcomingActions)
+            .map(this.renderExistingTask())
         return (
             <div className={styles.PersonalStatus}>
                 <div className={styles.NeedAttentionSection}>
-                    <SectionUI title={'Need Attention'} taskCount={1}>
+                    <SectionUI title={'Need Attention'} taskCount={this.props.needAttentionTask? 1: 0}>
                         {this.props.needAttentionTask &&
                             this.renderExistingTask()(
                                 this.props.needAttentionTask,
@@ -72,31 +84,21 @@ export class PersonalStatusUI extends Component<IProps> {
                                     </div>
                                 </div>
                             }
-                            taskCount={this.props.personalTasks.length}
+                            taskCount={upcoming.length}
                         >
                             <div className={styles.TaskList}>
                                 {this.props.taskAdding &&
                                     this.renderNewTask()(this.props.taskAdding)}
-                                {this.props.personalTasks
-                                    .filter(
-                                        upcomingColumnFilter(
-                                            this.props.needAttentionTask?.id ||
-                                                -1,
-                                        ),
-                                    )
-                                    .map(withUpcomingActions)
-                                    .map(this.renderExistingTask())}
+                                {upcoming}
                             </div>
                         </SectionUI>
                     </div>
                     <div
                         className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
                     >
-                        <SectionUI title={'Delivered'} taskCount={this.props.personalTasks.length}>
+                        <SectionUI title={'Delivered'} taskCount={delivered.length}>
                             <div className={styles.TaskList}>
-                                {this.props.personalTasks
-                                    .filter(deliveredColumnFilter)
-                                    .map(this.renderExistingTask())}
+                                {delivered}
                             </div>
                         </SectionUI>
                     </div>

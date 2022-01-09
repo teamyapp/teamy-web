@@ -41,6 +41,15 @@ export class KanbanUI extends Component<IProps> {
     }
 
     render(): ReactElement {
+        const upcoming = this.props.tasks
+            .filter(upcomingColumnFilter)
+            .map(this.renderExistingTask())
+        const in_progress = this.props.tasks
+            .filter(inProgressColumnFilter)
+            .map(this.renderExistingTask())
+        const delivered = this.props.tasks
+            .filter(deliveredColumnFilter)
+            .map(this.renderExistingTask())
         return (
             <div className={`${styles.TeamStatus} ${styles.TaskLists}`}>
                 <div
@@ -58,36 +67,30 @@ export class KanbanUI extends Component<IProps> {
                                 </div>
                             </div>
                         }
-                        taskCount={this.props.tasks.length}
+                        taskCount={upcoming.length}
                     >
                         <div className={styles.TaskList}>
                             {this.props.taskAdding &&
                                 this.renderNewTask()(this.props.taskAdding)}
-                            {this.props.tasks
-                                .filter(upcomingColumnFilter)
-                                .map(this.renderExistingTask())}
+                            {upcoming}
                         </div>
                     </SectionUI>
                 </div>
                 <div
                     className={`${styles.TaskListSection} ${styles.InProgressSection}`}
                 >
-                    <SectionUI title={'In Progress'} taskCount={this.props.tasks.length}>
+                    <SectionUI title={'In Progress'} taskCount={in_progress.length}>
                         <div className={styles.TaskList}>
-                            {this.props.tasks
-                                .filter(inProgressColumnFilter)
-                                .map(this.renderExistingTask())}
+                            {in_progress}
                         </div>
                     </SectionUI>
                 </div>
                 <div
                     className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
                 >
-                    <SectionUI title={'Delivered'} taskCount={this.props.tasks.length}>
+                    <SectionUI title={'Delivered'} taskCount={delivered.length}>
                         <div className={styles.TaskList}>
-                            {this.props.tasks
-                                .filter(deliveredColumnFilter)
-                                .map(this.renderExistingTask())}
+                            {delivered}
                         </div>
                     </SectionUI>
                 </div>
