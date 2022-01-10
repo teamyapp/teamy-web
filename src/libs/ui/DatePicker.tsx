@@ -202,6 +202,10 @@ export class DatePickerUI extends Component<IProps, IState> {
         );
     };
 
+    public get value(): Date {
+        return this.state.selectedDate;
+    }
+
     private onTextFieldContentChange = (newValue: string) => {
         this.setState({
             textFieldContent: newValue,

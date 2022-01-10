@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { ChangeEvent, Component, createRef } from 'react';
 
 import { DatePickerUI } from '@lib/ui/DatePicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -17,13 +17,18 @@ interface Props {
 
 interface State {
     teamMembers: User[];
+    selectedTaskOwners: Set<string>;
 }
 
 export class FilterListComponent extends Component<Props, State> {
+    private startDataPickerRef = createRef<DatePickerUI>();
+    private endDataPickerRef = createRef<DatePickerUI>();
+
     constructor(props: Props) {
         super(props);
         this.state = {
             teamMembers: [],
+            selectedTaskOwners: new Set<string>(),
         };
     }
 
@@ -35,7 +40,10 @@ export class FilterListComponent extends Component<Props, State> {
                     <SpacerUI />
                     <div className={styles.Actions}>
                         <TooltipUI message={'Apply'}>
-                            <div className={styles.Action}>
+                            <div
+                                className={styles.Action}
+                                onClick={this.onApplyFiltersClick}
+                            >
                                 <MaterialIconUI>check_circle</MaterialIconUI>
                             </div>
                         </TooltipUI>
@@ -43,13 +51,19 @@ export class FilterListComponent extends Component<Props, State> {
                 </div>
                 <div className={styles.Content}>
                     <div className={styles.Group}>
-                        <div className={styles.GroupName}>Time Range: </div>
+                        <div className={styles.GroupName}>Time Range:</div>
                         <div className={styles.GroupContent}>
                             <div className={styles.Input}>
-                                <DatePickerUI label={'Start'} />
+                                <DatePickerUI
+                                    ref={this.startDataPickerRef}
+                                    label={'Start'}
+                                />
                             </div>
                             <div className={styles.Input}>
-                                <DatePickerUI label={'End'} />
+                                <DatePickerUI
+                                    ref={this.endDataPickerRef}
+                                    label={'End'}
+                                />
                             </div>
                         </div>
                     </div>
@@ -62,13 +76,15 @@ export class FilterListComponent extends Component<Props, State> {
     private renderTaskOwnerFilterGroup() {
         return (
             <div className={styles.Group}>
-                <div className={styles.GroupName}>Task Owner: </div>
+                <div className={styles.GroupName}>Task Owner:</div>
                 <div className={styles.GroupContent}>
                     <div className={`${styles.Input} ${styles.Option}`}>
                         <input
                             type={'checkbox'}
                             className={styles.Checkbox}
                             value={'all'}
+                            checked={this.state.selectedTaskOwners.has('all')}
+                            onChange={this.onTaskOwnersCheckBoxChange}
                         />
                         <div className={styles.Label}>All</div>
                     </div>
@@ -78,6 +94,10 @@ export class FilterListComponent extends Component<Props, State> {
                             type={'checkbox'}
                             className={styles.Checkbox}
                             value={'unassigned'}
+                            checked={this.state.selectedTaskOwners.has(
+                                'unassigned',
+                            )}
+                            onChange={this.onTaskOwnersCheckBoxChange}
                         />
                         <div className={styles.Label}>Unassigned</div>
                     </div>
@@ -92,6 +112,8 @@ export class FilterListComponent extends Component<Props, State> {
                 type={'checkbox'}
                 className={styles.Checkbox}
                 value={`user/${user.id}`}
+                checked={this.state.selectedTaskOwners.has(`user/${user.id}`)}
+                onChange={this.onTaskOwnersCheckBoxChange}
             />
             <div className={styles.Label}>
                 {FormatService.getShortName(user.firstName, user.lastName)}
@@ -106,4 +128,30 @@ export class FilterListComponent extends Component<Props, State> {
             teamMembers,
         });
     }
+
+    private onTaskOwnersCheckBoxChange = (
+        event: ChangeEvent<HTMLInputElement>,
+    ) => {
+        const value = event.currentTarget.value;
+        const hasValue = this.state.selectedTaskOwners.has(value);
+        if (value === 'all') {
+            this.state.selectedTaskOwners.clear();
+        } else {
+            this.state.selectedTaskOwners.delete('all');
+        }
+
+        if (!hasValue) {
+            this.state.selectedTaskOwners.add(value);
+        } else {
+            this.state.selectedTaskOwners.delete(value);
+        }
+
+        this.forceUpdate();
+    };
+
+    private onApplyFiltersClick = () => {
+        const startDate = this.startDataPickerRef.current?.value;
+        const endDate = this.endDataPickerRef.current?.value;
+        // TODO: connect with local store
+    };
 }
