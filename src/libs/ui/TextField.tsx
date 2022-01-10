@@ -22,6 +22,7 @@ interface IProps {
 
 interface IState {
     isFocused: boolean;
+    value: string;
 }
 
 export class TextFieldUI extends Component<IProps, IState> {
@@ -29,6 +30,7 @@ export class TextFieldUI extends Component<IProps, IState> {
         super(props);
         this.state = {
             isFocused: false,
+            value: props.value || '',
         };
     }
 
@@ -46,7 +48,7 @@ export class TextFieldUI extends Component<IProps, IState> {
                         autoComplete={'off'}
                         autoCorrect={'off'}
                         spellCheck={false}
-                        value={this.props.value}
+                        value={this.state.value}
                         placeholder={this.props.placeholder || ' '}
                         maxLength={this.props.maxLength || defaultMaxLength}
                         onChange={this.onChange}
@@ -65,30 +67,36 @@ export class TextFieldUI extends Component<IProps, IState> {
                 </div>
                 {this.props.showLengthCounter && (
                     <div className={styles.LengthHint}>
-                        {`${this.props.value?.length} / ${this.props.maxLength}`}
+                        {`${this.state.value.length} / ${this.props.maxLength}`}
                     </div>
                 )}
             </div>
         );
     }
 
+    public get value(): string {
+        return this.state.value;
+    }
+
     private onChange = (event: FormEvent<HTMLInputElement>) => {
-        this.props.onChange?.call(this, event.currentTarget.value);
+        const value = event.currentTarget.value;
+        this.setState({
+            value: value,
+        });
+        this.props.onChange?.call(null, value);
     };
 
     private onFocus = () => {
         this.setState({
             isFocused: true,
         });
-
-        this.props.onFocus?.call(this);
+        this.props.onFocus?.call(null);
     };
 
     private onBlur = () => {
         this.setState({
             isFocused: false,
         });
-
-        this.props.onBlur?.call(this);
+        this.props.onBlur?.call(null);
     };
 }

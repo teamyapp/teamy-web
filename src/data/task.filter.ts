@@ -5,42 +5,64 @@
 // Transducer https://clojure.org/reference/transducers
 // Transduction is a generalization of reduction & other functional paradigm.
 // In short, a transducer transforms(A->B) & reduces(many->one) data.
-import { Filter, GroupBy } from '@lib/data/filter';
+import { Filter, groupBy } from '@lib/data/filter';
 
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
-export const Upcoming: Filter<Task> = (task: Task) =>
+export const allTasks: Filter<Task> = (task: Task) => true;
+
+export const upcoming: Filter<Task> = (task: Task) =>
     task.status === 'UPCOMING';
-export const InProgress: Filter<Task> = (task: Task) =>
+export const inProgress: Filter<Task> = (task: Task) =>
     task.status === 'IN_PROGRESS';
-export const Delivered: Filter<Task> = (task: Task) =>
+export const delivered: Filter<Task> = (task: Task) =>
     task.status === 'DELIVERED';
 
-export function OwnedBy(ownerUserId: number): Filter<Task> {
+export function ownedBy(ownerUserId: string): Filter<Task> {
     return (task: Task) => task.owner?.id === ownerUserId;
 }
 
-export function Between(begin: Date, end: Date): Filter<Task> {
+export function between(
+    begin: Date | null,
+    end: Date | null,
+    selectDate: (task: Task) => string | undefined,
+): Filter<Task> {
     return (task: Task) => {
-        return (
-            task.dueAt !== undefined &&
-            begin.getUTCMilliseconds() < Date.parse(task.dueAt) &&
-            Date.parse(task.dueAt) < end.getUTCMilliseconds()
-        );
+        if (!begin && !end) {
+            return true;
+        }
+
+        const dateString = selectDate(task);
+        if (!dateString) {
+            return false;
+        }
+        const date = Date.parse(dateString);
+
+        if (!begin) {
+            return date <= end!.getUTCMilliseconds();
+        } else if (!end) {
+            return begin.getUTCMilliseconds() <= date;
+        } else {
+            return (
+                begin.getUTCMilliseconds() <= date &&
+                date <= end.getUTCMilliseconds()
+            );
+        }
     };
 }
 
-export function Contains(text: string): Filter<Task> {
+export function contains(text: string): Filter<Task> {
+    const regex = new RegExp(text, 'i');
     return (task: Task) =>
-        task.goal.includes(text) ||
-        (task.context !== undefined && task.context.includes(text));
+        regex.test(task.goal) ||
+        (task.context !== undefined && regex.test(task.context));
 }
 
 // Given a sequence of tasks, split it to N sequences of tasks where N is the number of unique assignees.
 // this is useful when the UI wants to group tasks by owners instead of status.
-export function GroupByOwners(tasks: Task[]): Map<User | undefined, Task[]> {
-    return GroupBy(tasks, (task: Task) => {
+export function groupByOwners(tasks: Task[]): Map<User | undefined, Task[]> {
+    return groupBy(tasks, (task: Task) => {
         if (task.owner === null) {
             return undefined; // treat both null & undefined as undefined
         } else {

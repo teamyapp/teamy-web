@@ -1,15 +1,22 @@
 import React, { ChangeEvent, Component, createRef } from 'react';
 
+import { Filter, or } from '@lib/data/filter';
 import { DatePickerUI } from '@lib/ui/DatePicker';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
-import { TooltipUI } from '@lib/ui/Tooltip';
+import { TextFieldUI } from '@lib/ui/TextField';
 
+import { allTasks, between, contains, ownedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
+import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 import { FormatService } from '@core/service/format.service';
+import { IAppState } from '@core/state/state';
 
 import styles from './FilterList.component.module.scss';
+
+const all = 'all';
+const unassigned = 'unassigned';
+const userPrefix = 'user/';
 
 interface Props {
     deps: Deps;
@@ -23,12 +30,15 @@ interface State {
 export class FilterListComponent extends Component<Props, State> {
     private startDataPickerRef = createRef<DatePickerUI>();
     private endDataPickerRef = createRef<DatePickerUI>();
+    private keywordTextFieldRef = createRef<TextFieldUI>();
 
     constructor(props: Props) {
         super(props);
+        const selectedTaskOwners = new Set<string>();
+        selectedTaskOwners.add(all);
         this.state = {
             teamMembers: [],
-            selectedTaskOwners: new Set<string>(),
+            selectedTaskOwners: selectedTaskOwners,
         };
     }
 
@@ -39,35 +49,18 @@ export class FilterListComponent extends Component<Props, State> {
                     <div className={styles.Title}>Filters</div>
                     <SpacerUI />
                     <div className={styles.Actions}>
-                        <TooltipUI message={'Apply'}>
-                            <div
-                                className={styles.Action}
-                                onClick={this.onApplyFiltersClick}
-                            >
-                                <MaterialIconUI>check_circle</MaterialIconUI>
-                            </div>
-                        </TooltipUI>
+                        <div
+                            className={styles.Action}
+                            onClick={this.onApplyFiltersClick}
+                        >
+                            Apply
+                        </div>
                     </div>
                 </div>
                 <div className={styles.Content}>
-                    <div className={styles.Group}>
-                        <div className={styles.GroupName}>Time Range:</div>
-                        <div className={styles.GroupContent}>
-                            <div className={styles.Input}>
-                                <DatePickerUI
-                                    ref={this.startDataPickerRef}
-                                    label={'Start'}
-                                />
-                            </div>
-                            <div className={styles.Input}>
-                                <DatePickerUI
-                                    ref={this.endDataPickerRef}
-                                    label={'End'}
-                                />
-                            </div>
-                        </div>
-                    </div>
+                    {this.renderTimeRangeFilterGroup()}
                     {this.renderTaskOwnerFilterGroup()}
+                    {this.renderKeywordFilterGroup()}
                 </div>
             </div>
         );
@@ -81,6 +74,28 @@ export class FilterListComponent extends Component<Props, State> {
         });
     }
 
+    private renderTimeRangeFilterGroup() {
+        return (
+            <div className={styles.Group}>
+                <div className={styles.GroupName}>Time Range:</div>
+                <div className={styles.GroupContent}>
+                    <div className={`${styles.Input} ${styles.TextField}`}>
+                        <DatePickerUI
+                            ref={this.startDataPickerRef}
+                            label={'Start'}
+                        />
+                    </div>
+                    <div className={`${styles.Input} ${styles.TextField}`}>
+                        <DatePickerUI
+                            ref={this.endDataPickerRef}
+                            label={'End'}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     private renderTaskOwnerFilterGroup() {
         return (
             <div className={styles.Group}>
@@ -90,8 +105,8 @@ export class FilterListComponent extends Component<Props, State> {
                         <input
                             type={'checkbox'}
                             className={styles.Checkbox}
-                            value={'all'}
-                            checked={this.state.selectedTaskOwners.has('all')}
+                            value={all}
+                            checked={this.state.selectedTaskOwners.has(all)}
                             onChange={this.onTaskOwnersCheckBoxChange}
                         />
                         <div className={styles.Label}>All</div>
@@ -101,13 +116,29 @@ export class FilterListComponent extends Component<Props, State> {
                         <input
                             type={'checkbox'}
                             className={styles.Checkbox}
-                            value={'unassigned'}
+                            value={unassigned}
                             checked={this.state.selectedTaskOwners.has(
-                                'unassigned',
+                                unassigned,
                             )}
                             onChange={this.onTaskOwnersCheckBoxChange}
                         />
                         <div className={styles.Label}>Unassigned</div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    private renderKeywordFilterGroup() {
+        return (
+            <div className={styles.Group}>
+                <div className={styles.GroupName}>Contains:</div>
+                <div className={styles.GroupContent}>
+                    <div className={`${styles.Input} ${styles.TextField}`}>
+                        <TextFieldUI
+                            ref={this.keywordTextFieldRef}
+                            label={'Keyword'}
+                        />
                     </div>
                 </div>
             </div>
@@ -119,8 +150,10 @@ export class FilterListComponent extends Component<Props, State> {
             <input
                 type={'checkbox'}
                 className={styles.Checkbox}
-                value={`user/${user.id}`}
-                checked={this.state.selectedTaskOwners.has(`user/${user.id}`)}
+                value={`${userPrefix}${user.id}`}
+                checked={this.state.selectedTaskOwners.has(
+                    `${userPrefix}${user.id}`,
+                )}
                 onChange={this.onTaskOwnersCheckBoxChange}
             />
             <div className={styles.Label}>
@@ -134,10 +167,10 @@ export class FilterListComponent extends Component<Props, State> {
     ) => {
         const value = event.currentTarget.value;
         const hasValue = this.state.selectedTaskOwners.has(value);
-        if (value === 'all') {
+        if (value === all) {
             this.state.selectedTaskOwners.clear();
         } else {
-            this.state.selectedTaskOwners.delete('all');
+            this.state.selectedTaskOwners.delete(all);
         }
 
         if (!hasValue) {
@@ -150,8 +183,43 @@ export class FilterListComponent extends Component<Props, State> {
     };
 
     private onApplyFiltersClick = () => {
-        // TODO: connect with local store
-        // const startDate = this.startDataPickerRef.current?.value;
-        // const endDate = this.endDataPickerRef.current?.value;
+        const startDate = this.startDataPickerRef.current?.value || null;
+        const endDate = this.endDataPickerRef.current?.value || null;
+        const keyword = this.keywordTextFieldRef.current?.value || null;
+
+        this.props.deps.localStore.setState((state: IAppState) =>
+            Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+                taskFilters: {
+                    timeRangeFilter: between(
+                        startDate,
+                        endDate,
+                        (task: Task) => task.dueAt,
+                    ),
+                    taskOwnerFilter: this.getTaskOwnerFilter(),
+                    keywordFilter: keyword ? contains(keyword) : undefined,
+                },
+            }),
+        );
     };
+
+    private getTaskOwnerFilter(): Filter<Task> {
+        if (this.state.selectedTaskOwners.has(all)) {
+            return allTasks;
+        }
+
+        const filters = Array.from(this.state.selectedTaskOwners).map(
+            (key: string): Filter<Task> => {
+                if (key === unassigned) {
+                    return (task: Task) =>
+                        !task.owner || task.owner.id === '-1';
+                } else if (key.startsWith(userPrefix)) {
+                    const parts = key.split('/');
+                    return ownedBy(parts[1]);
+                } else {
+                    return allTasks;
+                }
+            },
+        );
+        return or(...filters);
+    }
 }

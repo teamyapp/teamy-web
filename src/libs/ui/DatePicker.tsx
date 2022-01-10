@@ -58,8 +58,10 @@ export class DatePickerUI extends Component<IProps, IState> {
         };
     }
 
-    public get value(): Date {
-        return this.state.selectedDate;
+    public get value(): Date | null {
+        return this.state.textFieldContent
+            ? new Date(this.state.textFieldContent)
+            : null;
     }
 
     private static getMonthDays(date: Date): (null | number)[] {

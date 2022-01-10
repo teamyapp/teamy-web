@@ -13,7 +13,7 @@ import { UserProfileUI } from './UserProfile';
 
 interface IProps {
     messages: Message[];
-    editorUserId: number;
+    editorUserId: string;
     postButtonLabel?: string;
     onPostMessage?: (message: string) => void;
     onUpdateMessage?: (messageId: number, message: string) => Promise<void>;

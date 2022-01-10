@@ -3,7 +3,7 @@ import React, { Component, ReactElement } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
-import { Delivered, InProgress, Upcoming } from '@core/data/task.filter';
+import * as filters from '@core/data/task.filter';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
@@ -11,9 +11,9 @@ import { User } from '@core/entity/user';
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
-const upcomingColumnFilter = Upcoming;
-const inProgressColumnFilter = InProgress;
-const deliveredColumnFilter = Delivered;
+const upcomingColumnFilter = filters.upcoming;
+const inProgressColumnFilter = filters.inProgress;
+const deliveredColumnFilter = filters.delivered;
 
 interface IProps {
     taskAdding?: Task;

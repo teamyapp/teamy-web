@@ -8,7 +8,7 @@
 export type Filter<T> = (data: T) => boolean;
 
 // Or reduces a sequence of filters to one filters with Or/Union semantics.
-export function Or<T>(...filterers: Filter<T>[]): Filter<T> {
+export function or<T>(...filterers: Filter<T>[]): Filter<T> {
     return (data: T) => {
         for (let f of filterers) {
             if (f(data)) {
@@ -20,7 +20,7 @@ export function Or<T>(...filterers: Filter<T>[]): Filter<T> {
 }
 
 // And reduces a sequence of filters to one filterers with And/Intersection semantics.
-export function And<T>(...filterers: Filter<T>[]): Filter<T> {
+export function and<T>(...filterers: Filter<T>[]): Filter<T> {
     return (data: T) => {
         for (let f of filterers) {
             if (!f(data)) {
@@ -32,7 +32,7 @@ export function And<T>(...filterers: Filter<T>[]): Filter<T> {
 }
 
 // Generic GroupBy
-export function GroupBy<T, Group>(
+export function groupBy<T, Group>(
     data: T[],
     groupBy: (ele: T) => Group,
 ): Map<Group | undefined, T[]> {
