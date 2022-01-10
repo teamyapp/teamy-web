@@ -7,7 +7,6 @@ import { and } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
-import { allTasks } from '@core/data/task.filter';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
@@ -69,8 +68,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
     }
 
     public render(): ReactElement {
+        // TODO: will change when PersonalStatus is merged with Kanban
         let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
-        let teamTasksFilter = allTasks;
+        let teamTasksFilter = filters.allTasks;
 
         if (this.state.taskFilters.timeRangeFilter) {
             personalTasksFilter = and(
