@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import _ from 'lodash';
 import moment from 'moment';
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactElement, createRef } from 'react';
 
 import styles from './DatePicker.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
@@ -45,6 +45,8 @@ interface IState {
 }
 
 export class DatePickerUI extends Component<IProps, IState> {
+    private calendarRef = createRef<HTMLDivElement>();
+
     constructor(props: IProps) {
         super(props);
         this.state = {
@@ -87,7 +89,12 @@ export class DatePickerUI extends Component<IProps, IState> {
                     onBlur={this.onTextFieldBlur}
                 />
                 {this.state.showCalendar && (
-                    <div className={styles.Calendar}>
+                    <div
+                        ref={this.calendarRef}
+                        tabIndex={-1}
+                        className={styles.Calendar}
+                        onBlur={this.onCalendarBlur}
+                    >
                         {this.renderCalendarControls()}
                         {this.state.showSelectYear
                             ? this.renderSelectYear()
@@ -278,8 +285,21 @@ export class DatePickerUI extends Component<IProps, IState> {
     };
 
     private onCalendarIconClick = () => {
+        const showCalendar = !this.state.showCalendar;
         this.setState({
-            showCalendar: !this.state.showCalendar,
+            showCalendar: showCalendar,
+        });
+
+        if (showCalendar) {
+            setTimeout(() => {
+                this.calendarRef.current?.focus();
+            });
+        }
+    };
+
+    private onCalendarBlur = () => {
+        this.setState({
+            showCalendar: false,
         });
     };
 

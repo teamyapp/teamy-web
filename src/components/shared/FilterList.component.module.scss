@@ -1,0 +1,92 @@
+.Section {
+    margin: 14px;
+    color: white;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.05);
+
+    .TopBar {
+        display: flex;
+        align-items: center;
+        border-radius: 4px 4px 0 0;
+        padding: 6px 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+
+        .Title {
+            font-size: 24px;
+            font-weight: 500;
+        }
+
+        .Actions {
+            .Action {
+                padding: 4px;
+                border-radius: 4px;
+                cursor: pointer;
+                --icon-color: white;
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.2);
+                }
+            }
+        }
+    }
+
+    .Content {
+        padding: 14px 20px;
+        box-sizing: border-box;
+    }
+
+    .Group {
+        display: flex;
+
+        &:not(:first-child) {
+            margin-top: 14px;
+        }
+
+        .GroupName {
+            vertical-align: top;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .GroupContent {
+            display: flex;
+            align-items: center;
+            margin-left: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+    }
+
+    .Input {
+        --background-color: #445057;
+        --icon-color: white;
+        --font-color: white;
+        --border: 2px solid rgba(255, 255, 255, 0.6);
+        --outline-color: white;
+        --hint-color: rgba(255, 255, 255, 0.6);
+        display: block;
+    }
+
+    .Option {
+        display: flex;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 0 10px;
+        border-radius: 4px;
+        align-items: center;
+        height: 26px;
+
+        .Checkbox {
+            border: none;
+            outline: none;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
+        .Label {
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+    }
+}

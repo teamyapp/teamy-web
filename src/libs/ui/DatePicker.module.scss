@@ -4,7 +4,6 @@
 
 .DatePicker {
     position: relative;
-    --icon-color: black;
 
     .Calendar {
         position: absolute;
@@ -17,6 +16,7 @@
         border-radius: 4px;
         background-color: white;
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+        color: #424242;
 
         .Controls {
             font-weight: bold;
