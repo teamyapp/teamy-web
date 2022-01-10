@@ -73,6 +73,14 @@ export class FilterListComponent extends Component<Props, State> {
         );
     }
 
+    public async componentDidMount() {
+        const teamMembers =
+            await this.props.deps.teamService.fetchTeamMembers();
+        this.setState({
+            teamMembers,
+        });
+    }
+
     private renderTaskOwnerFilterGroup() {
         return (
             <div className={styles.Group}>
@@ -120,14 +128,6 @@ export class FilterListComponent extends Component<Props, State> {
             </div>
         </div>
     );
-
-    public async componentDidMount() {
-        const teamMembers =
-            await this.props.deps.teamService.fetchTeamMembers();
-        this.setState({
-            teamMembers,
-        });
-    }
 
     private onTaskOwnersCheckBoxChange = (
         event: ChangeEvent<HTMLInputElement>,

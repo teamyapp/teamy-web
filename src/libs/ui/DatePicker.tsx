@@ -58,6 +58,10 @@ export class DatePickerUI extends Component<IProps, IState> {
         };
     }
 
+    public get value(): Date {
+        return this.state.selectedDate;
+    }
+
     private static getMonthDays(date: Date): (null | number)[] {
         const year = date.getFullYear();
         const month = date.getMonth();
@@ -201,10 +205,6 @@ export class DatePickerUI extends Component<IProps, IState> {
             <div key={index} className={`${styles.Cell}`} />
         );
     };
-
-    public get value(): Date {
-        return this.state.selectedDate;
-    }
 
     private onTextFieldContentChange = (newValue: string) => {
         this.setState({

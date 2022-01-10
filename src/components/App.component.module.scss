@@ -38,15 +38,15 @@
 
             .UserActionSection {
                 .Action {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
                     width: 28px;
                     height: 28px;
-                    display: flex;
+                    user-select: none;
                     border-radius: 3px;
-                    justify-content: center;
-                    align-items: center;
                     --icon-color: white;
                     --icon-size: 24px;
-                    user-select: none;
 
                     &.Active {
                         background-color: white;
@@ -67,8 +67,8 @@
                 display: flex;
                 align-items: center;
                 height: 100%;
-                margin-left: 23px;
                 margin-right: 26px;
+                margin-left: 23px;
 
                 .UserProfile {
                     border: 3px solid transparent;

@@ -53,6 +53,20 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         };
     }
 
+    private static renderReportBlocked(index: number): ReactElement {
+        return (
+            <div key={index}>
+                <TooltipUI message={'Report Blocked'}>
+                    <div
+                        className={`${styles.Action} ${styles.MarkTaskBlockIcon}`}
+                    >
+                        <MaterialIconUI>report</MaterialIconUI>
+                    </div>
+                </TooltipUI>
+            </div>
+        );
+    }
+
     public render(): ReactElement {
         return (
             <div ref={this.ref} className={styles.Task}>
@@ -117,20 +131,6 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                         onClick={this.onCompleteTaskClick}
                     >
                         <MaterialIconUI>check_circle</MaterialIconUI>
-                    </div>
-                </TooltipUI>
-            </div>
-        );
-    }
-
-    private static renderReportBlocked(index: number): ReactElement {
-        return (
-            <div key={index}>
-                <TooltipUI message={'Report Blocked'}>
-                    <div
-                        className={`${styles.Action} ${styles.MarkTaskBlockIcon}`}
-                    >
-                        <MaterialIconUI>report</MaterialIconUI>
                     </div>
                 </TooltipUI>
             </div>

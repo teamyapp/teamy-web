@@ -15,6 +15,7 @@ export interface BaseChannel {
 
     // Check if this channel is closed.
     closed(): boolean;
+
     ready(): Promise<BaseChannel>;
 }
 

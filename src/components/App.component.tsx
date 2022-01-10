@@ -118,6 +118,27 @@ class AppComponent extends Component<IProps, IState> {
         );
     }
 
+    public async componentDidMount() {
+        this.stateChangeChan =
+            this.props.deps.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                console.log('waiting for localStore state changes');
+                const state = await this.stateChangeChan!.pop();
+                if (state === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+                this.updateState(state);
+            }
+        })().then();
+    }
+
+    public componentWillUnmount() {
+        this.stateChangeChan?.close();
+    }
+
     private renderHeader(): ReactElement {
         return (
             <header className={styles.Header}>
@@ -163,27 +184,6 @@ class AppComponent extends Component<IProps, IState> {
                 )}
             </header>
         );
-    }
-
-    public async componentDidMount() {
-        this.stateChangeChan =
-            this.props.deps.localStore.subscribeStateChange();
-        (async () => {
-            while (true) {
-                console.log('waiting for localStore state changes');
-                const state = await this.stateChangeChan!.pop();
-                if (state === undefined) {
-                    // check undefined instead of falsy because
-                    // a falsy data could be valid data per channel's concern.
-                    return;
-                }
-                this.updateState(state);
-            }
-        })().then();
-    }
-
-    public componentWillUnmount() {
-        this.stateChangeChan?.close();
     }
 
     private onMenuToggle = () => {

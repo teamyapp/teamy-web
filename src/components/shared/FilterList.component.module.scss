@@ -7,8 +7,8 @@
     .TopBar {
         display: flex;
         align-items: center;
-        border-radius: 4px 4px 0 0;
         padding: 6px 20px;
+        border-radius: 4px 4px 0 0;
         background-color: rgba(255, 255, 255, 0.1);
 
         .Title {
@@ -19,8 +19,8 @@
         .Actions {
             .Action {
                 padding: 4px;
-                border-radius: 4px;
                 cursor: pointer;
+                border-radius: 4px;
                 --icon-color: white;
 
                 &:hover {
@@ -31,8 +31,8 @@
     }
 
     .Content {
-        padding: 14px 20px;
         box-sizing: border-box;
+        padding: 14px 20px;
     }
 
     .Group {
@@ -43,37 +43,37 @@
         }
 
         .GroupName {
-            vertical-align: top;
             font-size: 20px;
             font-weight: bold;
+            vertical-align: top;
         }
 
         .GroupContent {
             display: flex;
             align-items: center;
-            margin-left: 10px;
             flex-wrap: wrap;
+            margin-left: 10px;
             gap: 10px;
         }
     }
 
     .Input {
+        display: block;
         --background-color: #445057;
         --icon-color: white;
         --font-color: white;
         --border: 2px solid rgba(255, 255, 255, 0.6);
         --outline-color: white;
         --hint-color: rgba(255, 255, 255, 0.6);
-        display: block;
     }
 
     .Option {
         display: flex;
-        background-color: rgba(255, 255, 255, 0.1);
-        padding: 0 10px;
-        border-radius: 4px;
         align-items: center;
         height: 26px;
+        padding: 0 10px;
+        border-radius: 4px;
+        background-color: rgba(255, 255, 255, 0.1);
 
         .Checkbox {
             border: none;

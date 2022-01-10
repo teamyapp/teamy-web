@@ -37,14 +37,14 @@ $backgroundColor: var(--background-color, white);
         width: 100%;
         height: $fontSize;
         letter-spacing: 1px;
+        color: $fontColor;
         border: none;
         outline: none;
         background-color: transparent;
-        color: $fontColor;
 
         &::placeholder {
-            color: $hintColor;
             opacity: 0;
+            color: $hintColor;
         }
 
         &:focus,
