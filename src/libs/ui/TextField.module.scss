@@ -2,13 +2,15 @@
 @import 'styleguide/easing';
 
 $fontSize: var(--font-size, 18px);
+$fontColor: var(--font-color, black);
 $outlineColor: var(--outline-color, #1976d2);
 $labelActiveColor: var(--label-active-color, $outlineColor);
 $border: var(--border, #{1px solid black});
 $iconSize: var(--icon-size, 24px);
 $iconPadding: 2px;
 $paddingSide: 10px;
-$hintColor: #757575;
+$hintColor: var(--hint-color, #757575);
+$backgroundColor: var(--background-color, white);
 
 .TextField {
     font-size: $fontSize;
@@ -19,7 +21,7 @@ $hintColor: #757575;
     padding: 6px $paddingSide;
     border: $border;
     border-radius: 4px;
-    background-color: white;
+    background-color: $backgroundColor;
 
     &.Focus {
         outline: 2px solid $outlineColor;
@@ -35,12 +37,14 @@ $hintColor: #757575;
         width: 100%;
         height: $fontSize;
         letter-spacing: 1px;
+        color: $fontColor;
         border: none;
         outline: none;
         background-color: transparent;
 
         &::placeholder {
             opacity: 0;
+            color: $hintColor;
         }
 
         &:focus,
@@ -74,7 +78,7 @@ $hintColor: #757575;
         transition: all 200ms $easeOutExpo;
         transform: translateY(-50%);
         color: $hintColor;
-        background-color: white;
+        background-color: $backgroundColor;
     }
 
     .Icon {

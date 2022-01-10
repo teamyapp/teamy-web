@@ -1,6 +1,7 @@
 @import '../libs/ui/styleguide/color';
 @import '../libs/ui/styleguide/utility';
 @import '../libs/ui/styleguide/easing';
+@import '../libs/ui/styleguide/elevation';
 @import './shared/shared';
 
 .App {
@@ -8,7 +9,7 @@
     display: flex;
     height: 100vh;
 
-    .Content {
+    > .Content {
         @include header;
         display: flex;
         flex-direction: column;
@@ -35,8 +36,31 @@
                 letter-spacing: 1px;
             }
 
-            .Spacer {
-                flex: 1;
+            .UserActionSection {
+                .Action {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 28px;
+                    height: 28px;
+                    user-select: none;
+                    border-radius: 3px;
+                    --icon-color: white;
+                    --icon-size: 24px;
+
+                    &.Active {
+                        background-color: white;
+                        --icon-color: #{$primaryColor};
+                    }
+
+                    &:hover {
+                        cursor: pointer;
+
+                        &:not(.Active) {
+                            background-color: rgba(0, 0, 0, 0.15);
+                        }
+                    }
+                }
             }
 
             .UserSection {
@@ -44,6 +68,7 @@
                 align-items: center;
                 height: 100%;
                 margin-right: 26px;
+                margin-left: 23px;
 
                 .UserProfile {
                     border: 3px solid transparent;
@@ -60,14 +85,21 @@
                 .UserName {
                     font-size: 20px;
                     font-weight: 500;
-                    margin-left: 16px;
+                    margin-left: 6px;
                 }
             }
+        }
+
+        .PageOptionsSection {
+            display: flex;
+            justify-content: center;
+            background-color: #37474f;
         }
 
         .Execution {
             overflow-y: hidden;
             flex: 1;
+            box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px;
         }
     }
 }

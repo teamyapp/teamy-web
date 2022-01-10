@@ -20,14 +20,14 @@ $divider: 2px solid #eeeeee;
         background-color: #f1f1f1;
 
         .AssignOwner {
-            --profile-height: 26px;
-            --profile-width: 26px;
             display: flex;
             align-items: center;
+            --profile-height: 26px;
+            --profile-width: 26px;
 
             .TaskOwnerName {
-                margin-left: 6px;
                 font-weight: bold;
+                margin-left: 6px;
             }
         }
 

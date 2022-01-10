@@ -53,6 +53,20 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         };
     }
 
+    private static renderReportBlocked(index: number): ReactElement {
+        return (
+            <div key={index}>
+                <TooltipUI message={'Report Blocked'}>
+                    <div
+                        className={`${styles.Action} ${styles.MarkTaskBlockIcon}`}
+                    >
+                        <MaterialIconUI>report</MaterialIconUI>
+                    </div>
+                </TooltipUI>
+            </div>
+        );
+    }
+
     public render(): ReactElement {
         return (
             <div ref={this.ref} className={styles.Task}>
@@ -95,56 +109,46 @@ export class TaskPreviewUI extends Component<IProps, IState> {
 
     private renderStartTask(index: number): ReactElement {
         return (
-            <TooltipUI message={'Start'}>
-                <div
-                    className={`${styles.Action} ${styles.StartTaskIcon}`}
-                    key={index}
-                    onClick={this.onStartTaskClick}
-                >
-                    <MaterialIconUI>play_arrow</MaterialIconUI>
-                </div>
-            </TooltipUI>
+            <div key={index}>
+                <TooltipUI message={'Start'}>
+                    <div
+                        className={`${styles.Action} ${styles.StartTaskIcon}`}
+                        onClick={this.onStartTaskClick}
+                    >
+                        <MaterialIconUI>play_arrow</MaterialIconUI>
+                    </div>
+                </TooltipUI>
+            </div>
         );
     }
 
     private renderCompleteTask(index: number): ReactElement {
         return (
-            <TooltipUI message={'Complete'}>
-                <div
-                    className={`${styles.Action} ${styles.TaskCompletedIcon}`}
-                    key={index}
-                    onClick={this.onCompleteTaskClick}
-                >
-                    <MaterialIconUI>check_circle</MaterialIconUI>
-                </div>
-            </TooltipUI>
-        );
-    }
-
-    private static renderReportBlocked(index: number): ReactElement {
-        return (
-            <TooltipUI message={'Report Blocked'}>
-                <div
-                    className={`${styles.Action} ${styles.MarkTaskBlockIcon}`}
-                    key={index}
-                >
-                    <MaterialIconUI>report</MaterialIconUI>
-                </div>
-            </TooltipUI>
+            <div key={index}>
+                <TooltipUI message={'Complete'}>
+                    <div
+                        className={`${styles.Action} ${styles.TaskCompletedIcon}`}
+                        onClick={this.onCompleteTaskClick}
+                    >
+                        <MaterialIconUI>check_circle</MaterialIconUI>
+                    </div>
+                </TooltipUI>
+            </div>
         );
     }
 
     private renderDeleteTask(index: number): ReactElement {
         return (
-            <TooltipUI message={'Delete'}>
-                <div
-                    className={`${styles.Action} ${styles.DeleteTaskIcon}`}
-                    key={index}
-                    onClick={this.onDeleteTaskClick}
-                >
-                    <MaterialIconUI>remove_circle</MaterialIconUI>
-                </div>
-            </TooltipUI>
+            <div key={index}>
+                <TooltipUI message={'Delete'}>
+                    <div
+                        className={`${styles.Action} ${styles.DeleteTaskIcon}`}
+                        onClick={this.onDeleteTaskClick}
+                    >
+                        <MaterialIconUI>remove_circle</MaterialIconUI>
+                    </div>
+                </TooltipUI>
+            </div>
         );
     }
 
@@ -179,15 +183,16 @@ export class TaskPreviewUI extends Component<IProps, IState> {
 
     private renderTaskDetail(index: number): ReactElement {
         return (
-            <TooltipUI message={'Detail'}>
-                <div
-                    className={`${styles.Action} ${styles.TaskDetailIcon}`}
-                    key={index}
-                    onClick={this.onTaskDetailClick}
-                >
-                    <MaterialIconUI>settings</MaterialIconUI>
-                </div>
-            </TooltipUI>
+            <div key={index}>
+                <TooltipUI message={'Detail'}>
+                    <div
+                        className={`${styles.Action} ${styles.TaskDetailIcon}`}
+                        onClick={this.onTaskDetailClick}
+                    >
+                        <MaterialIconUI>settings</MaterialIconUI>
+                    </div>
+                </TooltipUI>
+            </div>
         );
     }
 

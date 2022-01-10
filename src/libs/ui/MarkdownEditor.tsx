@@ -44,6 +44,10 @@ export class MarkdownEditorUI extends Component<IProps, IState> {
         };
     }
 
+    public get content() {
+        return this.state.content;
+    }
+
     render(): ReactElement {
         return (
             <div
@@ -94,10 +98,6 @@ export class MarkdownEditorUI extends Component<IProps, IState> {
                 </div>
             </div>
         );
-    }
-
-    public get content() {
-        return this.state.content;
     }
 
     private onTextAreaContentChange = (

@@ -1,10 +1,13 @@
 import { FetchPolicy } from '@apollo/client';
+import classNames from 'classnames';
 import React, { Component, ReactElement, createRef } from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import * as csp from '@lib/csp/csp';
 import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { SpacerUI } from '@lib/ui/Spacer';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
@@ -17,6 +20,7 @@ import ExecutionComponentHook, {
     ExecutionComponent,
 } from './Execution.component';
 import { DrawerUI } from './shared/Drawer';
+import { FilterListComponent } from './shared/FilterList.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
 import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
@@ -31,6 +35,7 @@ interface IState {
     teams: Team[];
     activeTeamId: string;
     isDrawerOpen: boolean;
+    shouldShowFiltersSection: boolean;
 }
 
 class AppComponent extends Component<IProps, IState> {
@@ -44,6 +49,7 @@ class AppComponent extends Component<IProps, IState> {
         super(props);
         this.state = {
             isDrawerOpen: false,
+            shouldShowFiltersSection: false,
             teams: [],
             activeTeamId: '-1',
         };
@@ -71,39 +77,16 @@ class AppComponent extends Component<IProps, IState> {
                             onViewTeamSettings={this.onViewTeamSettings}
                         />
                         <div className={styles.Content}>
-                            <header className={styles.Header}>
-                                <div className={styles.MenuButtonPlaceHolder}>
-                                    {!this.state.isDrawerOpen && (
-                                        <div
-                                            className={styles.MenuButton}
-                                            onClick={this.onMenuToggle}
-                                        >
-                                            <MaterialIconUI>
-                                                menu
-                                            </MaterialIconUI>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className={styles.TeamName}>
-                                    {this.state.me?.activeTeam?.name}
-                                </div>
-                                <div className={styles.Spacer} />
-                                {this.state.me && (
-                                    <div className={styles.UserSection}>
-                                        <div
-                                            className={styles.UserProfile}
-                                            onClick={this.onUserProfileClick}
-                                        >
-                                            <UserProfileUI
-                                                user={this.state.me}
-                                            />
-                                        </div>
-                                        <div className={styles.UserName}>
-                                            {`${this.state.me?.firstName} ${this.state.me?.lastName}`}
-                                        </div>
+                            {this.renderHeader()}
+                            <div className={styles.PageOptionsSection}>
+                                {this.state.shouldShowFiltersSection && (
+                                    <div className={styles.FilterListComponent}>
+                                        <FilterListComponent
+                                            deps={this.props.deps}
+                                        />
                                     </div>
                                 )}
-                            </header>
+                            </div>
                             <div className={styles.Execution}>
                                 {
                                     <ExecutionComponentHook
@@ -156,6 +139,53 @@ class AppComponent extends Component<IProps, IState> {
         this.stateChangeChan?.close();
     }
 
+    private renderHeader(): ReactElement {
+        return (
+            <header className={styles.Header}>
+                <div className={styles.MenuButtonPlaceHolder}>
+                    {!this.state.isDrawerOpen && (
+                        <div
+                            className={styles.MenuButton}
+                            onClick={this.onMenuToggle}
+                        >
+                            <MaterialIconUI>menu</MaterialIconUI>
+                        </div>
+                    )}
+                </div>
+                <div className={styles.TeamName}>
+                    {this.state.me?.activeTeam?.name}
+                </div>
+                <SpacerUI />
+                <div className={styles.UserActionSection}>
+                    <TooltipUI message={'Filters'}>
+                        <div
+                            className={`${styles.Action} ${classNames({
+                                [styles.Active]:
+                                    this.state.shouldShowFiltersSection,
+                            })}`}
+                            onClick={this.onFilterActionClick}
+                        >
+                            <MaterialIconUI>filter_alt</MaterialIconUI>
+                        </div>
+                    </TooltipUI>
+                </div>
+                {this.state.me && (
+                    <div className={styles.UserSection}>
+                        <div
+                            className={styles.UserProfile}
+                            onClick={this.onUserProfileClick}
+                        >
+                            <UserProfileUI user={this.state.me} />
+                        </div>
+                        <div className={styles.UserName}>
+                            {`${this.state.me?.firstName} ${this.state.me?.lastName}`}
+                        </div>
+                    </div>
+                )}
+            </header>
+        );
+    }
+
     private onMenuToggle = () => {
         this.setState({
             isDrawerOpen: !this.state.isDrawerOpen,
@@ -196,6 +226,12 @@ class AppComponent extends Component<IProps, IState> {
 
     private onUserUpdated = () => {
         this.refresh('network-only');
+    };
+
+    private onFilterActionClick = () => {
+        this.setState({
+            shouldShowFiltersSection: !this.state.shouldShowFiltersSection,
+        });
     };
 
     private async refresh(policy: FetchPolicy) {

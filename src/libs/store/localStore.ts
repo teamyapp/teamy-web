@@ -73,6 +73,7 @@ export class LocalStore<State, MutationEvent extends event.Event> {
     public getState(): State {
         return Object.assign({}, this.currentState);
     }
+
     public setState(setter: (s: State) => State) {
         // it's all references
         // todo: consider immutable.js or
@@ -90,6 +91,7 @@ export class LocalStore<State, MutationEvent extends event.Event> {
         chan.put(this.currentState);
         return chan;
     }
+
     // If a consumer is interested in the individual events that happens to the store,
     // should call this function to subscribe
     public subscribeMutationEvent(): csp.PopChannel<MutationEvent | undefined> {

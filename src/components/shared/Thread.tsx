@@ -2,6 +2,7 @@ import React, { Component, createRef } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { SpacerUI } from '@lib/ui/Spacer';
 import { TextAreaUI } from '@lib/ui/TextArea';
 
 import { Message } from '@core/entity/message';
@@ -82,7 +83,7 @@ export class ThreadUI extends Component<IProps, IState> {
                             <div className={styles.MessagePostedAt}>
                                 {FormatService.timeFromNow(message.createdAt)}
                             </div>
-                            <div className={styles.Spacer} />
+                            <SpacerUI />
                             <div className={styles.MessageActions}>
                                 {this.props.editorUserId === author.id && (
                                     <div
