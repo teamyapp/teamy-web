@@ -150,8 +150,8 @@ export class FilterListComponent extends Component<Props, State> {
     };
 
     private onApplyFiltersClick = () => {
-        const startDate = this.startDataPickerRef.current?.value;
-        const endDate = this.endDataPickerRef.current?.value;
         // TODO: connect with local store
+        // const startDate = this.startDataPickerRef.current?.value;
+        // const endDate = this.endDataPickerRef.current?.value;
     };
 }
