@@ -1,6 +1,6 @@
 import React, { Component, ReactElement } from 'react';
 
-import { And, Or } from '@lib/data/filter';
+import { and, or } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 
@@ -9,16 +9,19 @@ import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
 
-import { Delivered, InProgress, Upcoming } from '../../data/task.filter';
+import * as filters from '../../data/task.filter';
 import styles from './PersonalStatus.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
 const upcomingColumnFilter = (needAttentionTaskId: number | string) =>
-    Or<Task>(
-        Upcoming,
-        And(InProgress, (task: Task) => task.id !== needAttentionTaskId),
+    or<Task>(
+        filters.upcoming,
+        and(
+            filters.inProgress,
+            (task: Task) => task.id !== needAttentionTaskId,
+        ),
     );
-const deliveredColumnFilter = Delivered;
+const deliveredColumnFilter = filters.delivered;
 
 interface IProps {
     deps: Deps;

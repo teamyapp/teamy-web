@@ -10,8 +10,8 @@ import { UserProfileUI } from './UserProfile';
 
 interface IProps {
     users: User[];
-    selectedUserId?: number;
-    onSelectUser?: (userId: number) => void;
+    selectedUserId?: string;
+    onSelectUser?: (userId: string) => void;
 }
 
 export class SelectUserListUI extends Component<IProps> {
@@ -42,7 +42,7 @@ export class SelectUserListUI extends Component<IProps> {
             </div>
         );
     };
-    private onUserRowClick = (userId: number): (() => void) => {
+    private onUserRowClick = (userId: string): (() => void) => {
         return () => {
             this.props.onSelectUser?.call(null, userId);
         };

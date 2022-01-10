@@ -1,3 +1,4 @@
+import { TaskFilters } from '@core/entity/filters';
 import { Task } from '@core/entity/task';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
@@ -8,11 +9,13 @@ export interface IAppState {
     teams: Team[];
     teamTasks: Task[];
     activeTeamId: string;
+    taskFilters: TaskFilters;
 }
 
 export const initialState: IAppState = {
-    currentUser: { id: -1 },
+    currentUser: { id: '-1' },
     teams: [],
     teamTasks: [],
     activeTeamId: '-1',
+    taskFilters: {},
 };

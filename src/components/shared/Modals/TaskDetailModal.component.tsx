@@ -1,3 +1,4 @@
+import { FetchPolicy } from '@apollo/client';
 import classNames from 'classnames';
 import React, {
     Component,
@@ -24,7 +25,6 @@ import { goalLengthLimit } from '@core/service/task.service';
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
 import styles from './TaskDetailModal.component.module.scss';
-import { FetchPolicy } from '@apollo/client';
 
 const verticalMargin = 40;
 
@@ -40,7 +40,7 @@ interface IProps {
 interface IState {
     task?: Task;
     comments: Message[];
-    meUserId?: number;
+    meUserId?: string;
     heightWithMargin: number;
 }
 
@@ -162,7 +162,7 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
                             >
                                 <ThreadUI
                                     messages={this.state.comments}
-                                    editorUserId={this.state.meUserId || -1}
+                                    editorUserId={this.state.meUserId || '-1'}
                                     postButtonLabel={'Comment'}
                                     onPostMessage={this.onPostComment}
                                     onDeleteMessage={this.onDeleteComment}
@@ -261,17 +261,17 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
         threadDivEl?.scrollTo(0, threadDivEl?.scrollHeight);
     }
 
-    private async refreshWithTaskId(taskId: number | string, policy: FetchPolicy) {
+    private async refreshWithTaskId(
+        taskId: number | string,
+        policy: FetchPolicy,
+    ) {
         const mePromise = this.props.deps.userService.fetchMe(policy);
         const taskPromise = this.props.deps.taskService.fetchTask(
             taskId,
             policy,
         );
         const commentsPromise =
-            this.props.deps.commentService.fetchTaskComments(
-                taskId,
-                policy,
-            );
+            this.props.deps.commentService.fetchTaskComments(taskId, policy);
         const [me, task, comments] = await Promise.all([
             mePromise,
             taskPromise,

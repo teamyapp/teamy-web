@@ -3,11 +3,14 @@ import React, { Component, ReactElement, RefObject, createRef } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import * as csp from '@lib/csp/csp';
+import { and } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
-import { OwnedBy } from '@core/data/task.filter';
+import { allTasks } from '@core/data/task.filter';
+import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
+import { TaskFilters } from '@core/entity/filters';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
@@ -37,12 +40,13 @@ interface IState {
     taskOwnersListVisible: boolean;
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
-    currentUserId: number;
+    currentUserId: string;
     needAttentionTask?: Task;
     teamTasks: Task[];
     taskSelectingOwner?: Task;
     potentialTaskOwners: User[];
     taskAdding?: Task;
+    taskFilters: TaskFilters;
 }
 
 export class ExecutionComponent extends Component<IProps, IState> {
@@ -57,16 +61,53 @@ export class ExecutionComponent extends Component<IProps, IState> {
             taskOwnersListVisible: false,
             taskOwnersListLeft: 0,
             taskOwnersListTop: 0,
-            currentUserId: -1, // when not logged in yet
+            currentUserId: '-1', // when not logged in yet
             teamTasks: [],
             potentialTaskOwners: [],
+            taskFilters: {},
         };
     }
 
     public render(): ReactElement {
-        const personalTasks = this.state.teamTasks.filter(
-            OwnedBy(this.state.currentUserId),
-        );
+        let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
+        let teamTasksFilter = allTasks;
+
+        if (this.state.taskFilters.timeRangeFilter) {
+            personalTasksFilter = and(
+                personalTasksFilter,
+                this.state.taskFilters.timeRangeFilter,
+            );
+            teamTasksFilter = and(
+                teamTasksFilter,
+                this.state.taskFilters.timeRangeFilter,
+            );
+        }
+
+        if (this.state.taskFilters.taskOwnerFilter) {
+            teamTasksFilter = and(
+                teamTasksFilter,
+                this.state.taskFilters.taskOwnerFilter,
+            );
+        }
+
+        if (this.state.taskFilters.keywordFilter) {
+            personalTasksFilter = and(
+                personalTasksFilter,
+                this.state.taskFilters.keywordFilter,
+            );
+            teamTasksFilter = and(
+                teamTasksFilter,
+                this.state.taskFilters.keywordFilter,
+            );
+        }
+
+        let needAttention = this.state.needAttentionTask;
+        if (needAttention) {
+            if (!personalTasksFilter(needAttention)) {
+                needAttention = undefined;
+            }
+        }
+
         return (
             <div className={styles.Execution} onScrollCapture={this.onScroll}>
                 <div className={styles.Tabs}>
@@ -83,8 +124,10 @@ export class ExecutionComponent extends Component<IProps, IState> {
                         <Route path={`${this.props.routerUrl}me`}>
                             <PersonalStatusUI
                                 deps={this.props.deps}
-                                needAttentionTask={this.state.needAttentionTask}
-                                personalTasks={personalTasks}
+                                needAttentionTask={needAttention}
+                                personalTasks={this.state.teamTasks.filter(
+                                    personalTasksFilter,
+                                )}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
                                     this.state.taskSelectingOwner
@@ -108,7 +151,9 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     <Switch>
                         <Route path={`${this.props.routerUrl}team`}>
                             <KanbanUI
-                                tasks={this.state.teamTasks}
+                                tasks={this.state.teamTasks.filter(
+                                    teamTasksFilter,
+                                )}
                                 taskAdding={this.state.taskAdding}
                                 taskSelectingOwner={
                                     this.state.taskSelectingOwner
@@ -205,6 +250,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
             currentUserId: state.currentUser.id,
             needAttentionTask: state.needAttentionTask,
             teamTasks: state.teamTasks,
+            taskFilters: state.taskFilters,
         });
     };
 
@@ -234,7 +280,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onSelectTaskOwner = (userId: number) => {
+    private onSelectTaskOwner = (userId: string) => {
         this.props.deps.localStore.mutate({
             type: 'UpdateTask',
             task: Object.assign({}, this.state.taskSelectingOwner, {

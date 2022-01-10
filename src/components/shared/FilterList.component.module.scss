@@ -18,13 +18,15 @@
 
         .Actions {
             .Action {
-                padding: 4px;
+                padding: 4px 10px;
+                font-weight: bold;
+                background-color: rgba(0, 0, 0, 0.15);
                 cursor: pointer;
                 border-radius: 4px;
                 --icon-color: white;
 
                 &:hover {
-                    background-color: rgba(0, 0, 0, 0.2);
+                    background-color: rgba(0, 0, 0, 0.25);
                 }
             }
         }
@@ -43,6 +45,9 @@
         }
 
         .GroupName {
+            width: 120px;
+            display: flex;
+            align-items: center;
             font-size: 20px;
             font-weight: bold;
             vertical-align: top;
@@ -65,6 +70,10 @@
         --border: 2px solid rgba(255, 255, 255, 0.6);
         --outline-color: white;
         --hint-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .TextField {
+        width: 250px;
     }
 
     .Option {
