@@ -15,7 +15,8 @@ export type MutationEvent =
 export interface TaskCreationInput {
     goal: string;
     context?: string;
-    dueAt?: string;
+    createdAt: Date;
+    dueAt?: Date;
     ownerUserId?: string | number;
     status?: TaskStatus;
 }

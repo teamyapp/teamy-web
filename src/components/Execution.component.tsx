@@ -354,7 +354,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
             console.log('creating task');
             this.props.deps.localStore.mutate({
                 type: 'CreateTask',
-                task: task,
+                task: {...task, createdAt: new Date()},
                 teamId: this.props.deps.localStore.getState().activeTeamId,
             });
         }

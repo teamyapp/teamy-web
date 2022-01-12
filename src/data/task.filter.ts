@@ -26,27 +26,26 @@ export function ownedBy(ownerUserId: string): Filter<Task> {
 export function between(
     begin: Date | null,
     end: Date | null,
-    selectDate: (task: Task) => string | undefined,
+    selectDate: (task: Task) => Date | undefined,
 ): Filter<Task> {
     return (task: Task) => {
         if (!begin && !end) {
             return true;
         }
 
-        const dateString = selectDate(task);
-        if (!dateString) {
+        const date = selectDate(task);
+        if (!date) {
             return false;
         }
-        const date = Date.parse(dateString);
 
         if (!begin) {
-            return date <= end!.getUTCMilliseconds();
+            return date <= end!;
         } else if (!end) {
-            return begin.getUTCMilliseconds() <= date;
+            return begin <= date;
         } else {
             return (
-                begin.getUTCMilliseconds() <= date &&
-                date <= end.getUTCMilliseconds()
+                begin <= date &&
+                date <= end
             );
         }
     };
