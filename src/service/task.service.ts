@@ -2,7 +2,7 @@ import { FetchPolicy } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import { TaskCreationInput } from '@core/entity/events';
+import {TaskCreationInput, TaskUpdateInput} from '@core/entity/events';
 import { Task } from '@core/entity/task';
 
 import * as mutations from './mutations';
@@ -32,7 +32,7 @@ export class TaskService {
             });
     }
 
-    public updateTask(task: Task): Promise<Task> {
+    public updateTask(task: TaskUpdateInput): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: mutations.updateTask,
             variables: {
@@ -41,7 +41,7 @@ export class TaskService {
                     context: task.context,
                     dueAt: task.dueAt,
                     goal: task.goal,
-                    ownerUserId: task.owner?.id,
+                    ownerUserId: task.ownerUserId
                 },
             },
         });

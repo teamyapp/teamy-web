@@ -24,8 +24,6 @@ export class NetworkStateSynchronizer {
                         currentUser: data.me,
                         teams: data.me?.teams,
                         activeTeamId: data.me?.activeTeam?.id,
-                        needAttentionTask:
-                            data.me?.activeTeam?.tasksNeedAttention[0],
                         teamTasks: data.me?.activeTeam?.tasks,
                     },
                 );
