@@ -57,9 +57,6 @@ function startTaskMutateState(
     const tasks = state.teamTasks.map((oldTask: Task) =>
         updateTask(event.taskId, oldTask, 'IN_PROGRESS'),
     );
-    const needAttentionTask = state.teamTasks.filter(
-        (task: Task) => task.id === event.taskId,
-    )[0];
     return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
         teamTasks: tasks,
     });
