@@ -52,11 +52,12 @@ export function between(
     };
 }
 
-export function contains(text: string): Filter<Task> {
-    const regex = new RegExp(text, 'i');
+export function contains(keyword: string): Filter<Task> {
+    const lowerKeyword = keyword.toLocaleLowerCase();
     return (task: Task) =>
-        regex.test(task.goal) ||
-        (task.context !== undefined && regex.test(task.context));
+        task.goal.toLocaleLowerCase().includes(lowerKeyword) ||
+        (task.context !== undefined &&
+            task.context.toLocaleLowerCase().includes(lowerKeyword));
 }
 
 // Given a sequence of tasks, split it to N sequences of tasks where N is the number of unique assignees.
