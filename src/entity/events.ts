@@ -15,8 +15,7 @@ export type MutationEvent =
 export interface TaskCreationInput {
     goal: string;
     context?: string;
-    createdAt: Date;
-    dueAt?: Date;
+    dueAt?: string;
     ownerUserId?: string | number;
     status?: TaskStatus;
 }
@@ -27,18 +26,9 @@ export interface CreateTask extends Event {
     teamId: string;
 }
 
-export interface TaskUpdateInput {
-    id: string | number;
-    goal: string;
-    context?: string;
-    dueAt?: Date;
-    ownerUserId?: string | number;
-    status?: TaskStatus;
-}
-
 export interface UpdateTask extends Event {
     type: 'UpdateTask';
-    task: TaskUpdateInput;
+    task: Task;
 }
 
 export interface DeleteTask extends Event {
