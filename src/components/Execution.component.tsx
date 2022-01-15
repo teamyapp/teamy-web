@@ -14,14 +14,13 @@ import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { User } from '@core/entity/user';
-import { IAppState, needAttentionTask } from '@core/state/state';
+import { IAppState } from '@core/state/state';
 
 import styles from './Execution.component.module.scss';
 import { KanbanUI } from './shared/Kanban';
 import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.component';
 import { PersonalStatusUI } from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
-import {TaskUpdateInput} from "@core/entity/events";
 
 const routes = ['me', 'team'];
 
@@ -249,7 +248,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     private updateState = (state: IAppState) => {
         this.setState({
             currentUserId: state.currentUser.id,
-            needAttentionTask: needAttentionTask(state),
+            needAttentionTask: state.needAttentionTask,
             teamTasks: state.teamTasks,
             taskFilters: state.taskFilters,
         });
@@ -355,7 +354,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
             console.log('creating task');
             this.props.deps.localStore.mutate({
                 type: 'CreateTask',
-                task: {...task, createdAt: new Date()},
+                task: task,
                 teamId: this.props.deps.localStore.getState().activeTeamId,
             });
         }
@@ -366,7 +365,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
         });
     };
 
-    private onUpdateTask = (task: TaskUpdateInput) => {
+    private onUpdateTask = (task: Task) => {
         this.props.deps.localStore.mutate({
             type: 'UpdateTask',
             task: task,
