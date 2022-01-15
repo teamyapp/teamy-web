@@ -12,6 +12,7 @@ import { getActions } from '@core/entity/taskAction';
 import * as filters from '../../data/task.filter';
 import styles from './PersonalStatus.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
+import {TaskUpdateInput} from "@core/entity/events";
 
 const upcomingColumnFilter = (needAttentionTaskId: number | string) =>
     or<Task>(
@@ -34,7 +35,7 @@ interface IProps {
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
-    onUpdateTask?: (task: Task) => void;
+    onUpdateTask?: (task: TaskUpdateInput) => void;
     onDeleteTaskClick?: (taskId: number | string) => void;
     onStartTaskClick?: (taskId: number | string) => void;
     onCompleteTaskClick?: (taskId: number | string) => void;

@@ -10,6 +10,7 @@ import { User } from '@core/entity/user';
 
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
+import {TaskUpdateInput} from "@core/entity/events";
 
 const upcomingColumnFilter = filters.upcoming;
 const inProgressColumnFilter = filters.inProgress;
@@ -24,7 +25,7 @@ interface IProps {
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
-    onUpdateTask?: (task: Task) => void;
+    onUpdateTask?: (task: TaskUpdateInput) => void;
     onDeleteTaskClick?: (taskId: number | string) => void;
     onStartTaskClick?: (taskId: number | string) => void;
     onCompleteTaskClick?: (taskId: number | string) => void;

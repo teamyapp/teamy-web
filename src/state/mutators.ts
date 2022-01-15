@@ -6,6 +6,7 @@ import { getActions } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
 
 import { IAppState } from './state';
+import {TaskUpdateInput} from "@core/entity/events";
 
 function createTaskMutateState(
     state: IAppState,
@@ -29,19 +30,11 @@ function updateTaskMutateState(
     event: events.UpdateTask,
 ): IAppState {
     const tasks = state.teamTasks.map((oldTask: Task) =>
-        replaceTask(event.task, oldTask, event.task.status!),
+        replaceTask(event.task, oldTask),
     );
-    let needAttentionTask = state.needAttentionTask;
-    if (needAttentionTask) {
-        needAttentionTask = replaceTask(
-            event.task,
-            needAttentionTask,
-            'NEED_ATTENTION',
-        );
-    }
+
     return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
         teamTasks: tasks,
-        needAttentionTask: needAttentionTask,
     });
 }
 
@@ -54,10 +47,6 @@ function deleteTaskMutateState(
     );
     return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
         teamTasks: tasks,
-        needAttentionTask:
-            state.needAttentionTask?.id === event.taskId
-                ? undefined
-                : state.needAttentionTask,
     });
 }
 
@@ -68,12 +57,8 @@ function startTaskMutateState(
     const tasks = state.teamTasks.map((oldTask: Task) =>
         updateTask(event.taskId, oldTask, 'IN_PROGRESS'),
     );
-    const needAttentionTask = state.teamTasks.filter(
-        (task: Task) => task.id === event.taskId,
-    )[0];
     return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
         teamTasks: tasks,
-        needAttentionTask,
     });
 }
 
@@ -86,7 +71,6 @@ function completeTaskMutateState(
     );
     return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
         teamTasks: tasks,
-        needAttentionTask: undefined,
     });
 }
 
@@ -136,16 +120,12 @@ function updateTask(
 }
 
 function replaceTask(
-    newTask: Task,
-    oldTask: Task,
-    taskStatus: TaskStatus,
+    taskUpdate: TaskUpdateInput,
+    task: Task
 ): Task {
-    if (oldTask.id === newTask.id) {
-        return Object.assign({}, newTask, {
-            status: taskStatus,
-            availableActions: getActions(taskStatus),
-        });
+    if (task.id === taskUpdate.id) {
+        return Object.assign({}, task, taskUpdate);
     } else {
-        return oldTask;
+        return task;
     }
 }

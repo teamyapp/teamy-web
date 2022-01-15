@@ -5,7 +5,8 @@ import { User } from './user';
 export interface Task {
     id: number | string;
     goal: string;
-    dueAt?: string; // RFC3339 string, todo: create a RFC3339 type
+    createdAt?: Date;
+    dueAt?: Date;
     context?: string;
     owner?: User;
     availableActions: TaskAction[];
