@@ -78,6 +78,12 @@ export class TextFieldUI extends Component<IProps, IState> {
         return this.state.value;
     }
 
+    public set value(val: string) {
+        this.setState({
+            value: val,
+        });
+    }
+
     private onChange = (event: FormEvent<HTMLInputElement>) => {
         const value = event.currentTarget.value;
         this.setState({

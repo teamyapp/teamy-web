@@ -5,7 +5,6 @@ $divider: 2px solid #eeeeee;
 
 .ModalContent {
     display: flex;
-    overflow-y: hidden;
     flex-direction: column;
 
     .Title {
@@ -65,7 +64,6 @@ $divider: 2px solid #eeeeee;
         }
 
         .RightSection {
-            overflow-y: auto;
             width: 200px;
             margin-left: 20px;
 

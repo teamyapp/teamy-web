@@ -41,10 +41,10 @@ interface IState {
     showSelectYear: boolean;
     selectedDate: Date;
     shownDate: Date;
-    textFieldContent: string;
 }
 
 export class DatePickerUI extends Component<IProps, IState> {
+    private textFieldRef = createRef<TextFieldUI>();
     private calendarRef = createRef<HTMLDivElement>();
 
     constructor(props: IProps) {
@@ -54,14 +54,12 @@ export class DatePickerUI extends Component<IProps, IState> {
             showSelectYear: false,
             selectedDate: today,
             shownDate: today,
-            textFieldContent: '',
         };
     }
 
     public get value(): Date | null {
-        return this.state.textFieldContent
-            ? new Date(this.state.textFieldContent)
-            : null;
+        const value = this.textFieldRef.current?.value;
+        return value ? new Date(value) : null;
     }
 
     private static getMonthDays(date: Date): (null | number)[] {
@@ -86,11 +84,10 @@ export class DatePickerUI extends Component<IProps, IState> {
         return (
             <div className={styles.DatePicker}>
                 <TextFieldUI
-                    value={this.state.textFieldContent}
+                    ref={this.textFieldRef}
                     label={this.props.label}
                     placeholder={dateFormat.toLowerCase()}
                     icon={'date_range'}
-                    onChange={this.onTextFieldContentChange}
                     onIconClick={this.onCalendarIconClick}
                     onBlur={this.onTextFieldBlur}
                 />
@@ -208,14 +205,12 @@ export class DatePickerUI extends Component<IProps, IState> {
         );
     };
 
-    private onTextFieldContentChange = (newValue: string) => {
-        this.setState({
-            textFieldContent: newValue,
-        });
-    };
-
     private onTextFieldBlur = () => {
-        let momentDate = moment(this.state.textFieldContent, dateFormat, true);
+        let momentDate = moment(
+            this.textFieldRef.current?.value || new Date(),
+            dateFormat,
+            true,
+        );
         if (momentDate.isValid()) {
             const date = momentDate.toDate();
             this.setState({
@@ -235,11 +230,14 @@ export class DatePickerUI extends Component<IProps, IState> {
         return () => {
             const newDate = new Date(this.state.shownDate);
             newDate.setDate(monthDay);
+            if (this.textFieldRef.current) {
+                this.textFieldRef.current.value =
+                    moment(newDate).format(dateFormat);
+            }
             this.setState({
                 selectedDate: newDate,
                 shownDate: newDate,
                 showCalendar: false,
-                textFieldContent: moment(newDate).format(dateFormat),
             });
         };
     };
