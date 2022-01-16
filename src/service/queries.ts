@@ -84,6 +84,7 @@ export const task = gql`
             }
             availableActions
             createdAt
+            status
         }
     }
 `;
