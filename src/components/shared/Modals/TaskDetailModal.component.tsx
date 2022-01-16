@@ -8,7 +8,6 @@ import React, {
     createRef,
 } from 'react';
 
-import { ButtonUI } from '@lib/ui/Button';
 import { DatePickerUI } from '@lib/ui/DatePicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -105,6 +104,14 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
                                     <MaterialIconUI>face</MaterialIconUI>
                                 )}
                             </div>
+                            <div className={styles.SaveAction}>
+                                <div
+                                    className={`${styles.Button}`}
+                                    onClick={this.onSaveButtonClick}
+                                >
+                                    Save
+                                </div>
+                            </div>
                         </div>
                         <div className={styles.TaskDetailSection}>
                             <div className={styles.LeftSection}>
@@ -141,14 +148,6 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
                                     {/*    }`}*/}
                                     {/*/>*/}
                                     {/*</div>*/}
-                                </div>
-                                <div className={styles.Actions}>
-                                    <div className={styles.SaveAction}>
-                                        <ButtonUI
-                                            label={'Save'}
-                                            onClick={this.onSaveButtonClick}
-                                        />
-                                    </div>
                                 </div>
                             </div>
                         </div>
