@@ -51,9 +51,9 @@ export class FilterListComponent extends Component<Props, State> {
                     <div className={styles.Actions}>
                         <div
                             className={styles.Action}
-                            onClick={this.onApplyFiltersClick}
+                            onClick={this.onSaveFiltersClick}
                         >
-                            Apply
+                            Save
                         </div>
                     </div>
                 </div>
@@ -83,12 +83,14 @@ export class FilterListComponent extends Component<Props, State> {
                         <DatePickerUI
                             ref={this.startDataPickerRef}
                             label={'Start'}
+                            onChange={this.onStartDateChange}
                         />
                     </div>
                     <div className={`${styles.Input} ${styles.TextField}`}>
                         <DatePickerUI
                             ref={this.endDataPickerRef}
                             label={'End'}
+                            onChange={this.onEndDateChange}
                         />
                     </div>
                 </div>
@@ -138,6 +140,7 @@ export class FilterListComponent extends Component<Props, State> {
                         <TextFieldUI
                             ref={this.keywordTextFieldRef}
                             label={'Keyword'}
+                            onChange={this.onKeywordChange}
                         />
                     </div>
                 </div>
@@ -180,26 +183,45 @@ export class FilterListComponent extends Component<Props, State> {
         }
 
         this.forceUpdate();
+        this.props.deps.localStore.setState((state: IAppState) => {
+            state.taskFilters.taskOwnerFilter = this.getTaskOwnerFilter();
+            return state;
+        });
     };
 
-    private onApplyFiltersClick = () => {
-        const startDate = this.startDataPickerRef.current?.value || null;
+    private onStartDateChange = (date?: Date) => {
         const endDate = this.endDataPickerRef.current?.value || null;
-        const keyword = this.keywordTextFieldRef.current?.value || null;
+        this.props.deps.localStore.setState((state: IAppState) => {
+            state.taskFilters.timeRangeFilter = between(
+                date || null,
+                endDate,
+                (task: Task) => task.dueAt,
+            );
+            return state;
+        });
+    };
 
-        this.props.deps.localStore.setState((state: IAppState) =>
-            Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
-                taskFilters: {
-                    timeRangeFilter: between(
-                        startDate,
-                        endDate,
-                        (task: Task) => task.dueAt,
-                    ),
-                    taskOwnerFilter: this.getTaskOwnerFilter(),
-                    keywordFilter: keyword ? contains(keyword) : undefined,
-                },
-            }),
-        );
+    private onEndDateChange = (date?: Date) => {
+        const startDate = this.startDataPickerRef.current?.value || null;
+        this.props.deps.localStore.setState((state: IAppState) => {
+            state.taskFilters.timeRangeFilter = between(
+                startDate,
+                date || null,
+                (task: Task) => task.dueAt,
+            );
+            return state;
+        });
+    };
+
+    private onKeywordChange = (keyword: string) => {
+        this.props.deps.localStore.setState((state: IAppState) => {
+            state.taskFilters.keywordFilter = contains(keyword);
+            return state;
+        });
+    };
+
+    private onSaveFiltersClick = () => {
+        console.log('onSaveFiltersClick');
     };
 
     private getTaskOwnerFilter(): Filter<Task> {
