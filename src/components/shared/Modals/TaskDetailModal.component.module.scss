@@ -69,43 +69,46 @@ $divider: 2px solid #eeeeee;
     }
 
     .TaskDetailSection {
-        display: flex;
         width: 800px;
         padding: 20px;
         --outline-color: #1976d2;
         --border: 2px solid #{$secondaryColor};
         --font-size: 18px;
 
-        .LeftSection {
-            flex: 1;
+        .TaskDetailTop {
+            display: flex;
+            margin-bottom: 10px;
 
-            .Context {
-                height: 120px;
-                margin-top: 10px;
+            .LeftSection {
+                flex: 1;
             }
-        }
 
-        .RightSection {
-            width: 200px;
-            margin-left: 20px;
+            .RightSection {
+                width: 200px;
+                margin-left: 20px;
 
-            .Attributes {
-                display: flex;
-                align-items: flex-end;
-                flex-direction: column;
-
-                .Row {
+                .Attributes {
                     display: flex;
+                    align-items: flex-end;
+                    flex-direction: column;
 
-                    &:not(:first-child) {
-                        margin-top: 10px;
-                    }
+                    .Row {
+                        display: flex;
 
-                    .Effort {
-                        --color: #1976d2;
+                        &:not(:first-child) {
+                            margin-top: 10px;
+                        }
+
+                        .Effort {
+                            --color: #1976d2;
+                        }
                     }
                 }
             }
+        }
+
+        .Context {
+            height: 180px;
         }
     }
 

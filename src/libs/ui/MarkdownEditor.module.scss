@@ -62,6 +62,7 @@ $outlineColor: var(--outline-color, #1976d2);
 
     .Content {
         flex: 1;
+        overflow-y: hidden;
 
         .Preview {
             overflow-y: auto;

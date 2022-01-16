@@ -114,41 +114,43 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
                             </div>
                         </div>
                         <div className={styles.TaskDetailSection}>
-                            <div className={styles.LeftSection}>
-                                <TextFieldUI
-                                    value={this.state.task.goal}
-                                    label={'Goal'}
-                                    showLengthCounter={true}
-                                    maxLength={goalLengthLimit}
-                                    onChange={this.onTextFieldChangeHandler(
-                                        'goal',
-                                    )}
-                                />
-                                <div className={styles.Context}>
-                                    <MarkdownEditorUI
-                                        label={'Context'}
-                                        content={this.state.task.context}
-                                        ref={this.markdownEditorRef}
+                            <div className={styles.TaskDetailTop}>
+                                <div className={styles.LeftSection}>
+                                    <TextFieldUI
+                                        value={this.state.task.goal}
+                                        label={'Goal'}
+                                        showLengthCounter={true}
+                                        maxLength={goalLengthLimit}
+                                        onChange={this.onTextFieldChangeHandler(
+                                            'goal',
+                                        )}
                                     />
                                 </div>
-                            </div>
-                            <div className={styles.RightSection}>
-                                <div className={styles.Attributes}>
-                                    <div className={styles.Row}>
-                                        <DatePickerUI label={'Due at'} />
+                                <div className={styles.RightSection}>
+                                    <div className={styles.Attributes}>
+                                        <div className={styles.Row}>
+                                            <DatePickerUI label={'Due at'} />
+                                        </div>
+                                        {/*<div*/}
+                                        {/*    className={`${styles.Row} ${styles.Effort}`}*/}
+                                        {/*>*/}
+                                        {/*<NamedValueUI*/}
+                                        {/*    name={'Effort'}*/}
+                                        {/*    value={`${*/}
+                                        {/*        this.state.task.effort ||*/}
+                                        {/*        'Unknown'*/}
+                                        {/*    }`}*/}
+                                        {/*/>*/}
+                                        {/*</div>*/}
                                     </div>
-                                    {/*<div*/}
-                                    {/*    className={`${styles.Row} ${styles.Effort}`}*/}
-                                    {/*>*/}
-                                    {/*<NamedValueUI*/}
-                                    {/*    name={'Effort'}*/}
-                                    {/*    value={`${*/}
-                                    {/*        this.state.task.effort ||*/}
-                                    {/*        'Unknown'*/}
-                                    {/*    }`}*/}
-                                    {/*/>*/}
-                                    {/*</div>*/}
                                 </div>
+                            </div>
+                            <div className={styles.Context}>
+                                <MarkdownEditorUI
+                                    label={'Context'}
+                                    content={this.state.task.context}
+                                    ref={this.markdownEditorRef}
+                                />
                             </div>
                         </div>
                         <div className={styles.CommentsSection}>
