@@ -34,6 +34,7 @@ interface IProps {
     label?: string;
     minYear?: number;
     maxYear?: number;
+    onChange?: (date?: Date) => void;
 }
 
 interface IState {
@@ -206,17 +207,20 @@ export class DatePickerUI extends Component<IProps, IState> {
     };
 
     private onTextFieldBlur = () => {
-        let momentDate = moment(
-            this.textFieldRef.current?.value || new Date(),
-            dateFormat,
-            true,
-        );
+        const value = this.textFieldRef.current?.value;
+        if (!value) {
+            this.props.onChange?.call(null, undefined);
+            return;
+        }
+
+        let momentDate = moment(value, dateFormat, true);
         if (momentDate.isValid()) {
             const date = momentDate.toDate();
             this.setState({
                 selectedDate: date,
                 shownDate: date,
             });
+            this.props.onChange?.call(null, date);
         }
     };
 
@@ -239,6 +243,7 @@ export class DatePickerUI extends Component<IProps, IState> {
                 shownDate: newDate,
                 showCalendar: false,
             });
+            this.props.onChange?.call(null, newDate);
         };
     };
 
@@ -246,10 +251,16 @@ export class DatePickerUI extends Component<IProps, IState> {
         return () => {
             const newDate = new Date(this.state.shownDate);
             newDate.setFullYear(year);
+            if (this.textFieldRef.current) {
+                this.textFieldRef.current.value =
+                    moment(newDate).format(dateFormat);
+            }
 
             this.setState({
+                selectedDate: newDate,
                 shownDate: newDate,
             });
+            this.props.onChange?.call(null, newDate);
         };
     };
 

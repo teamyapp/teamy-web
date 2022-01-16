@@ -397,7 +397,6 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onPersonalAddClick = async (): Promise<void> => {
-        console.log('onPersonalAddClick');
         const user = await this.props.deps.userService.fetchMe('cache-first');
         this.setState({
             taskAdding: {
