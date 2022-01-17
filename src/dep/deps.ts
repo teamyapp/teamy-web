@@ -1,6 +1,7 @@
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { Router } from '@lib/router/router';
 import { LocalStore } from '@lib/store/localStore';
 
 import { getConfig } from '@core/config/config';
@@ -23,6 +24,7 @@ export interface Deps {
     pageService: PageService;
     identityClient: IdentityClient;
     localStore: LocalStore<IAppState, events.MutationEvent>;
+    router: Router;
 }
 
 export function initDeps(): Deps {
@@ -40,6 +42,8 @@ export function initDeps(): Deps {
     const commentService = new CommentService(teamyGraphQLClient);
     const pageService = new PageService(teamyGraphQLClient);
     const localStore = createStore();
+    const router = new Router();
+    router.browserInit();
 
     new NetworkStateSynchronizer(
         localStore,
@@ -55,5 +59,6 @@ export function initDeps(): Deps {
         pageService,
         identityClient,
         localStore,
+        router,
     };
 }

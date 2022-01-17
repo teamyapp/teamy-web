@@ -1,9 +1,8 @@
-import { History, LocationState } from 'history';
-import React, { Component, ReactElement, RefObject, createRef } from 'react';
-import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+import React, { Component, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { and } from '@lib/data/filter';
+import { Route } from '@lib/router/Route';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
@@ -22,15 +21,13 @@ import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.compon
 import { PersonalStatusUI } from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
 
-const routes = ['me', 'team'];
+const routes = ['/me', '/team'];
 
 const taskOwnersListVerticalOffset = 4;
 const taskOwnersListHorizontalOffset = 10;
 
 interface IProps {
     deps: Deps;
-    routerUrl: string;
-    routerHistory: History<LocationState>;
 }
 
 interface IState {
@@ -120,60 +117,52 @@ export class ExecutionComponent extends Component<IProps, IState> {
                     </div>
                 </div>
                 <div className={styles.Content}>
-                    <Switch>
-                        <Route path={`${this.props.routerUrl}me`}>
-                            <PersonalStatusUI
-                                deps={this.props.deps}
-                                needAttentionTask={needAttention}
-                                personalTasks={this.state.teamTasks.filter(
-                                    personalTasksFilter,
-                                )}
-                                taskAdding={this.state.taskAdding}
-                                taskSelectingOwner={
-                                    this.state.taskSelectingOwner
-                                }
-                                onAddClick={this.onPersonalAddClick}
-                                onViewTaskDetailClick={
-                                    this.onViewTaskDetailClick
-                                }
-                                onNewTaskChange={this.onNewTaskChange}
-                                onCreateTask={this.onCreateTask}
-                                onUpdateTask={this.onUpdateTask}
-                                onDeleteTaskClick={this.onDeleteTaskClick}
-                                onStartTaskClick={this.onStartTaskClick}
-                                onCompleteTaskClick={this.onCompleteTaskClick}
-                                onShowPotentialTaskOwners={
-                                    this.onShowPotentialTaskOwners
-                                }
-                            />
-                        </Route>
-                    </Switch>
-                    <Switch>
-                        <Route path={`${this.props.routerUrl}team`}>
-                            <KanbanUI
-                                tasks={this.state.teamTasks.filter(
-                                    teamTasksFilter,
-                                )}
-                                taskAdding={this.state.taskAdding}
-                                taskSelectingOwner={
-                                    this.state.taskSelectingOwner
-                                }
-                                onAddClick={this.onTeamAddClick}
-                                onViewTaskDetailClick={
-                                    this.onViewTaskDetailClick
-                                }
-                                onNewTaskChange={this.onNewTaskChange}
-                                onCreateTask={this.onCreateTask}
-                                onUpdateTask={this.onUpdateTask}
-                                onDeleteTaskClick={this.onDeleteTaskClick}
-                                onStartTaskClick={this.onStartTaskClick}
-                                onCompleteTaskClick={this.onCompleteTaskClick}
-                                onShowPotentialTaskOwners={
-                                    this.onShowPotentialTaskOwners
-                                }
-                            />
-                        </Route>
-                    </Switch>
+                    <Route
+                        router={this.props.deps.router}
+                        pathPattern={routes[0]}
+                    >
+                        <PersonalStatusUI
+                            deps={this.props.deps}
+                            needAttentionTask={needAttention}
+                            personalTasks={this.state.teamTasks.filter(
+                                personalTasksFilter,
+                            )}
+                            taskAdding={this.state.taskAdding}
+                            taskSelectingOwner={this.state.taskSelectingOwner}
+                            onAddClick={this.onPersonalAddClick}
+                            onViewTaskDetailClick={this.onViewTaskDetailClick}
+                            onNewTaskChange={this.onNewTaskChange}
+                            onCreateTask={this.onCreateTask}
+                            onUpdateTask={this.onUpdateTask}
+                            onDeleteTaskClick={this.onDeleteTaskClick}
+                            onStartTaskClick={this.onStartTaskClick}
+                            onCompleteTaskClick={this.onCompleteTaskClick}
+                            onShowPotentialTaskOwners={
+                                this.onShowPotentialTaskOwners
+                            }
+                        />
+                    </Route>
+                    <Route
+                        router={this.props.deps.router}
+                        pathPattern={routes[1]}
+                    >
+                        <KanbanUI
+                            tasks={this.state.teamTasks.filter(teamTasksFilter)}
+                            taskAdding={this.state.taskAdding}
+                            taskSelectingOwner={this.state.taskSelectingOwner}
+                            onAddClick={this.onTeamAddClick}
+                            onViewTaskDetailClick={this.onViewTaskDetailClick}
+                            onNewTaskChange={this.onNewTaskChange}
+                            onCreateTask={this.onCreateTask}
+                            onUpdateTask={this.onUpdateTask}
+                            onDeleteTaskClick={this.onDeleteTaskClick}
+                            onStartTaskClick={this.onStartTaskClick}
+                            onCompleteTaskClick={this.onCompleteTaskClick}
+                            onShowPotentialTaskOwners={
+                                this.onShowPotentialTaskOwners
+                            }
+                        />
+                    </Route>
                 </div>
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
@@ -255,7 +244,7 @@ export class ExecutionComponent extends Component<IProps, IState> {
     };
 
     private onTabClick = (index: number) => {
-        this.props.routerHistory.push(routes[index]);
+        this.props.deps.router.navigateTo(routes[index]);
     };
 
     private onShowPotentialTaskOwners = async (
@@ -428,22 +417,4 @@ export class ExecutionComponent extends Component<IProps, IState> {
             showPotentialTaskOwnersList: false,
         });
     };
-}
-
-interface IHookProps {
-    executionRef: RefObject<ExecutionComponent>;
-    deps: Deps;
-}
-
-export default function ExecutionComponentHook(props: IHookProps) {
-    const { url } = useRouteMatch();
-    const routerHistory = useHistory();
-    return (
-        <ExecutionComponent
-            ref={props.executionRef}
-            deps={props.deps}
-            routerUrl={url}
-            routerHistory={routerHistory}
-        />
-    );
 }

@@ -1,10 +1,10 @@
 import { FetchPolicy } from '@apollo/client';
 import classNames from 'classnames';
 import React, { Component, ReactElement, createRef } from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import * as csp from '@lib/csp/csp';
 import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
+import { Route } from '@lib/router/Route';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -16,9 +16,7 @@ import { IAppState } from '@core/state/state';
 
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
-import ExecutionComponentHook, {
-    ExecutionComponent,
-} from './Execution.component';
+import { ExecutionComponent } from './Execution.component';
 import { DrawerUI } from './shared/Drawer';
 import { FilterListComponent } from './shared/FilterList.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
@@ -58,46 +56,44 @@ class AppComponent extends Component<IProps, IState> {
     public render() {
         return (
             <div className={styles.App}>
-                <Switch>
-                    <Route path={'/debug'}>
-                        <DebugComponent
-                            repoOwner={'teamyapp'}
-                            repoName={'teamy-web'}
-                        />
-                    </Route>
-                    <Route path={'/'}>
-                        <DrawerUI
-                            activeTeamId={this.state.activeTeamId}
-                            teams={this.state.teams}
-                            isDrawerOpen={this.state.isDrawerOpen}
-                            onMenuClose={this.onMenuToggle}
-                            onActiveTeamSelect={this.onActiveTeamSelect}
-                            onAddTeamMembersClick={this.onAddTeamMembersClick}
-                            onShowTeamMembersClick={this.onShowTeamMembersClick}
-                            onViewTeamSettings={this.onViewTeamSettings}
-                        />
-                        <div className={styles.Content}>
-                            {this.renderHeader()}
-                            <div className={styles.PageOptionsSection}>
-                                {this.state.shouldShowFiltersSection && (
-                                    <div className={styles.FilterListComponent}>
-                                        <FilterListComponent
-                                            deps={this.props.deps}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                            <div className={styles.Execution}>
-                                {
-                                    <ExecutionComponentHook
-                                        executionRef={this.executionRef}
+                <Route router={this.props.deps.router} pathPattern={'/debug'}>
+                    <DebugComponent
+                        repoOwner={'teamyapp'}
+                        repoName={'teamy-web'}
+                    />
+                </Route>
+                <Route router={this.props.deps.router} pathPattern={'/'}>
+                    <DrawerUI
+                        activeTeamId={this.state.activeTeamId}
+                        teams={this.state.teams}
+                        isDrawerOpen={this.state.isDrawerOpen}
+                        onMenuClose={this.onMenuToggle}
+                        onActiveTeamSelect={this.onActiveTeamSelect}
+                        onAddTeamMembersClick={this.onAddTeamMembersClick}
+                        onShowTeamMembersClick={this.onShowTeamMembersClick}
+                        onViewTeamSettings={this.onViewTeamSettings}
+                    />
+                    <div className={styles.Content}>
+                        {this.renderHeader()}
+                        <div className={styles.PageOptionsSection}>
+                            {this.state.shouldShowFiltersSection && (
+                                <div className={styles.FilterListComponent}>
+                                    <FilterListComponent
                                         deps={this.props.deps}
                                     />
-                                }
-                            </div>
+                                </div>
+                            )}
                         </div>
-                    </Route>
-                </Switch>
+                        <div className={styles.Execution}>
+                            {
+                                <ExecutionComponent
+                                    ref={this.executionRef}
+                                    deps={this.props.deps}
+                                />
+                            }
+                        </div>
+                    </div>
+                </Route>
                 <TeamSettingsModalComponent
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
@@ -267,9 +263,5 @@ export default function AppComponentHook(props: IHookProps): ReactElement {
         props.deps.identityClient,
         AppComponent,
     );
-    return (
-        <BrowserRouter>
-            <AppWithIdentityVerification deps={props.deps} />
-        </BrowserRouter>
-    );
+    return <AppWithIdentityVerification deps={props.deps} />;
 }
