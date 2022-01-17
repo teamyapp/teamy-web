@@ -17,6 +17,7 @@
             "@lib/event/*": ["libs/event/*"],
             "@lib/store/*": ["libs/store/*"],
             "@lib/data/*": ["libs/data/*"],
+            "@lib/router/*": ["libs/router/*"],
             "@lib/testing/*": ["libs/testing/*"]
         }
     }
