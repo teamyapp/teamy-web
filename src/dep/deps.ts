@@ -1,6 +1,7 @@
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { Router } from '@lib/router/router';
 import { LocalStore } from '@lib/store/localStore';
 
 import { getConfig } from '@core/config/config';
@@ -14,8 +15,6 @@ import { TeamService } from '@core/service/team.service';
 import { UserService } from '@core/service/user.service';
 import { IAppState } from '@core/state/state';
 import { createStore } from '@core/state/store';
-
-import { Router } from '@lib/router/router';
 
 export interface Deps {
     taskService: TaskService;

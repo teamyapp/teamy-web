@@ -2,6 +2,7 @@ import React, { Component, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { and } from '@lib/data/filter';
+import { Route } from '@lib/router/Route';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
@@ -14,7 +15,6 @@ import { TaskAction } from '@core/entity/taskAction';
 import { User } from '@core/entity/user';
 import { IAppState } from '@core/state/state';
 
-import { Route } from '@lib/router/Route';
 import styles from './Execution.component.module.scss';
 import { KanbanUI } from './shared/Kanban';
 import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.component';

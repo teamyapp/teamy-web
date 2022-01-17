@@ -1,17 +1,18 @@
 import { FetchPolicy } from '@apollo/client';
+import classNames from 'classnames';
+import React, { Component, ReactElement, createRef } from 'react';
+
+import * as csp from '@lib/csp/csp';
+import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
+import { Route } from '@lib/router/Route';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { SpacerUI } from '@lib/ui/Spacer';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { IAppState } from '@core/state/state';
-import * as csp from '@lib/csp/csp';
-import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { SpacerUI } from '@lib/ui/Spacer';
-import { TooltipUI } from '@lib/ui/Tooltip';
-import classNames from 'classnames';
-import React, { Component, createRef, ReactElement } from 'react';
-import { Route } from '@lib/router/Route';
 
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
@@ -156,7 +157,7 @@ class AppComponent extends Component<IProps, IState> {
                         <div
                             className={`${styles.Action} ${classNames({
                                 [styles.Active]:
-                                this.state.shouldShowFiltersSection,
+                                    this.state.shouldShowFiltersSection,
                             })}`}
                             onClick={this.onFilterActionClick}
                         >
@@ -262,7 +263,5 @@ export default function AppComponentHook(props: IHookProps): ReactElement {
         props.deps.identityClient,
         AppComponent,
     );
-    return (
-        <AppWithIdentityVerification deps={props.deps} />
-    );
+    return <AppWithIdentityVerification deps={props.deps} />;
 }
