@@ -13,7 +13,7 @@ import {
 interface Props {
     router: Router;
     pathPattern: string;
-    renderChild?: (params: Params) => ReactElement;
+    renderChild?: (params: Params) => ReactElement | null;
 }
 
 interface State {

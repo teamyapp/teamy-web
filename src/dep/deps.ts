@@ -43,7 +43,6 @@ export function initDeps(): Deps {
     const pageService = new PageService(teamyGraphQLClient);
     const localStore = createStore();
     const router = new Router();
-    router.browserInit();
 
     new NetworkStateSynchronizer(
         localStore,

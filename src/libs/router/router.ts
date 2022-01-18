@@ -41,11 +41,16 @@ export class Router {
         children: {},
     };
     private currUri?: string;
+    private _currParams: Params = {
+        pathParams: {},
+        queryParams: {},
+    };
 
-    public browserInit() {
-        this.currUri = window.location.pathname;
+    public initUri() {
+        // this.currUri = window.location.pathname;
 
         window.addEventListener('popstate', this.onPopState);
+        this.navigateTo(window.location.pathname);
     }
 
     public registerRoute(routePattern: string): Errors | undefined {
@@ -98,6 +103,7 @@ export class Router {
                 if (!currRoot.pathParam) {
                     currRoot.pathParam = pathParam;
                 } else if (currRoot.pathParam !== pathParam) {
+                    console.log(currRoot, pathParam);
                     return 'PathParamNotMatch';
                 }
             }
@@ -169,6 +175,7 @@ export class Router {
         const pathPattern = `${pathDelimiter}${routePattenSegments.join(
             pathDelimiter,
         )}`;
+        this._currParams = params;
 
         window.history.pushState({}, '', uri);
         this.routeChangeChan.put({
@@ -183,6 +190,14 @@ export class Router {
 
     public dispose() {
         this.routeChangeChan.close();
+    }
+
+    public get currentParams(): Params {
+        return this._currParams;
+    }
+
+    public goBack() {
+        window.history.back();
     }
 
     private navigateToCurrUri() {

@@ -1,6 +1,6 @@
 import { FetchPolicy } from '@apollo/client';
 import classNames from 'classnames';
-import React, { Component, ReactElement, createRef } from 'react';
+import React, { Component, Fragment, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
@@ -14,6 +14,9 @@ import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { IAppState } from '@core/state/state';
 
+import { MutationEvent } from '../entity/events';
+import { RouteUpdate, Router } from '../libs/router/router';
+import { LocalStore } from '../libs/store/localStore';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
@@ -24,76 +27,97 @@ import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.co
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
 import { UserProfileUI } from './shared/UserProfile';
 
-interface IProps {
+interface Props {
     deps: Deps;
 }
 
-interface IState {
+interface State {
     me?: User;
     teams: Team[];
-    activeTeamId: string;
+    activeTeamId?: string;
     isDrawerOpen: boolean;
     shouldShowFiltersSection: boolean;
 }
 
-class AppComponent extends Component<IProps, IState> {
-    private executionRef = createRef<ExecutionComponent>();
+class AppComponent extends Component<Props, State> {
     private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
     private addTeamMembersModalRef = createRef<AddTeamMembersModalComponent>();
     private userModalRef = createRef<UserSettingsModalComponent>();
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
+    private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
+    private readonly router: Router;
+    private readonly localStore: LocalStore<IAppState, MutationEvent>;
 
-    constructor(props: any) {
+    constructor(props: Props) {
         super(props);
+        this.router = props.deps.router;
+        this.localStore = props.deps.localStore;
         this.state = {
             isDrawerOpen: false,
             shouldShowFiltersSection: false,
             teams: [],
-            activeTeamId: '-1',
         };
     }
 
     public render() {
         return (
             <div className={styles.App}>
-                <Route router={this.props.deps.router} pathPattern={'/debug'}>
+                <Route router={this.router} pathPattern={'/debug'}>
                     <DebugComponent
                         repoOwner={'teamyapp'}
                         repoName={'teamy-web'}
                     />
                 </Route>
-                <Route router={this.props.deps.router} pathPattern={'/'}>
-                    <DrawerUI
-                        activeTeamId={this.state.activeTeamId}
-                        teams={this.state.teams}
-                        isDrawerOpen={this.state.isDrawerOpen}
-                        onMenuClose={this.onMenuToggle}
-                        onActiveTeamSelect={this.onActiveTeamSelect}
-                        onAddTeamMembersClick={this.onAddTeamMembersClick}
-                        onShowTeamMembersClick={this.onShowTeamMembersClick}
-                        onViewTeamSettings={this.onViewTeamSettings}
-                    />
-                    <div className={styles.Content}>
-                        {this.renderHeader()}
-                        <div className={styles.PageOptionsSection}>
-                            {this.state.shouldShowFiltersSection && (
-                                <div className={styles.FilterListComponent}>
-                                    <FilterListComponent
-                                        deps={this.props.deps}
-                                    />
+                {this.state.activeTeamId && (
+                    <Route router={this.router} pathPattern={'/'}>
+                        <Fragment>
+                            <DrawerUI
+                                activeTeamId={this.state.activeTeamId}
+                                teams={this.state.teams}
+                                isDrawerOpen={this.state.isDrawerOpen}
+                                onMenuClose={this.onMenuToggle}
+                                onActiveTeamSelect={this.onActiveTeamSelect}
+                                onAddTeamMembersClick={
+                                    this.onAddTeamMembersClick
+                                }
+                                onShowTeamMembersClick={
+                                    this.onShowTeamMembersClick
+                                }
+                                onViewTeamSettings={this.onViewTeamSettings}
+                            />
+                            <div className={styles.Content}>
+                                {this.renderHeader()}
+                                <div className={styles.PageOptionsSection}>
+                                    {this.state.shouldShowFiltersSection && (
+                                        <div
+                                            className={
+                                                styles.FilterListComponent
+                                            }
+                                        >
+                                            <FilterListComponent
+                                                deps={this.props.deps}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                        <div className={styles.Execution}>
-                            {
-                                <ExecutionComponent
-                                    ref={this.executionRef}
-                                    deps={this.props.deps}
-                                />
-                            }
-                        </div>
-                    </div>
-                </Route>
+                                <div className={styles.Execution}>
+                                    {
+                                        <Route
+                                            router={this.router}
+                                            pathPattern={'/teams/{teamId}'}
+                                        >
+                                            <ExecutionComponent
+                                                teamId={this.state.activeTeamId}
+                                                deps={this.props.deps}
+                                            />
+                                            ;
+                                        </Route>
+                                    }
+                                </div>
+                            </div>
+                        </Fragment>
+                    </Route>
+                )}
                 <TeamSettingsModalComponent
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
@@ -115,8 +139,7 @@ class AppComponent extends Component<IProps, IState> {
     }
 
     public async componentDidMount() {
-        this.stateChangeChan =
-            this.props.deps.localStore.subscribeStateChange();
+        this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
                 console.log('waiting for localStore state changes');
@@ -129,10 +152,30 @@ class AppComponent extends Component<IProps, IState> {
                 this.updateState(state);
             }
         })().then();
+
+        this.router.registerRoute('/teams/{teamId}');
+        this.routeChangeChan = this.router.subscribeRouteChange();
+        this.router.initUri();
+        (async () => {
+            while (true) {
+                const route = await this.routeChangeChan!.pop();
+                if (route === undefined) {
+                    return;
+                }
+
+                const { teamId } = route.params.pathParams;
+                if (teamId) {
+                    this.setState({
+                        activeTeamId: teamId,
+                    });
+                }
+            }
+        })().then();
     }
 
     public componentWillUnmount() {
         this.stateChangeChan?.close();
+        this.routeChangeChan?.close();
     }
 
     private renderHeader(): ReactElement {
@@ -205,7 +248,7 @@ class AppComponent extends Component<IProps, IState> {
     };
 
     private onActiveTeamSelect = (teamId: string): void => {
-        this.props.deps.localStore.mutate({
+        this.localStore.mutate({
             type: 'UpdateActiveTeam',
             teamId: `${teamId}`,
         });
@@ -234,13 +277,11 @@ class AppComponent extends Component<IProps, IState> {
         console.log('refresh App', policy);
         const data = await this.props.deps.pageService.fetchMePage(policy);
         const teams: Team[] = data.me?.teams;
-        const activeTeamId = data.me?.activeTeam?.id;
         // TODO: We know that this is a hack. But in order to not hack, we need to get rid of refreshEvent first.
-        this.props.deps.localStore.setState((state: IAppState) =>
+        this.localStore.setState((state: IAppState) =>
             Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
                 currentUser: data.me,
                 teams,
-                activeTeamId,
             }),
         );
     }
@@ -249,8 +290,16 @@ class AppComponent extends Component<IProps, IState> {
         this.setState({
             me: state.currentUser,
             teams: state.teams,
-            activeTeamId: state.activeTeamId,
         });
+
+        if (!this.router.currentParams.pathParams['teamId']) {
+            // show active team during app boostrap
+            this.router.navigateTo(`/teams/${state.activeTeamId}`);
+        } else {
+            this.setState({
+                activeTeamId: state.activeTeamId,
+            });
+        }
     }
 }
 
