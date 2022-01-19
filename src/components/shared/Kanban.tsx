@@ -2,6 +2,7 @@ import React, { Component, ReactElement } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
+import { SpacerUI } from '@lib/ui/Spacer';
 
 import * as filters from '@core/data/task.filter';
 import { IBoundingBoxFinder } from '@core/entity/position';
@@ -41,6 +42,9 @@ export class KanbanUI extends Component<IProps> {
     }
 
     render(): ReactElement {
+        const upcoming = this.props.tasks.filter(upcomingColumnFilter);
+        const inProgress = this.props.tasks.filter(inProgressColumnFilter);
+        const delivered = this.props.tasks.filter(deliveredColumnFilter);
         return (
             <div className={`${styles.TeamStatus} ${styles.TaskLists}`}>
                 <div
@@ -49,7 +53,13 @@ export class KanbanUI extends Component<IProps> {
                     <SectionUI
                         title={'Upcoming'}
                         actions={
-                            <div className={styles.UpcomingActions}>
+                            <div
+                                className={`${styles.SectionTopBar} ${styles.Upcoming}`}
+                            >
+                                <div className={styles.TaskCounter}>
+                                    {upcoming.length}
+                                </div>
+                                <SpacerUI />
                                 <div
                                     className={styles.UpcomingAction}
                                     onClick={this.props.onAddClick}
@@ -62,31 +72,49 @@ export class KanbanUI extends Component<IProps> {
                         <div className={styles.TaskList}>
                             {this.props.taskAdding &&
                                 this.renderNewTask()(this.props.taskAdding)}
-                            {this.props.tasks
-                                .filter(upcomingColumnFilter)
-                                .map(this.renderExistingTask())}
+                            {upcoming.map(this.renderExistingTask())}
                         </div>
                     </SectionUI>
                 </div>
                 <div
                     className={`${styles.TaskListSection} ${styles.InProgressSection}`}
                 >
-                    <SectionUI title={'In Progress'}>
+                    <SectionUI
+                        title={'In Progress'}
+                        actions={
+                            <div
+                                className={`${styles.SectionTopBar} ${styles.InProgress}`}
+                            >
+                                <div className={styles.TaskCounter}>
+                                    {inProgress.length}
+                                </div>
+                                <SpacerUI />
+                            </div>
+                        }
+                    >
                         <div className={styles.TaskList}>
-                            {this.props.tasks
-                                .filter(inProgressColumnFilter)
-                                .map(this.renderExistingTask())}
+                            {inProgress.map(this.renderExistingTask())}
                         </div>
                     </SectionUI>
                 </div>
                 <div
                     className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
                 >
-                    <SectionUI title={'Delivered'}>
+                    <SectionUI
+                        title={'Delivered'}
+                        actions={
+                            <div
+                                className={`${styles.SectionTopBar} ${styles.Delivered}`}
+                            >
+                                <div className={styles.TaskCounter}>
+                                    {delivered.length}
+                                </div>
+                                <SpacerUI />
+                            </div>
+                        }
+                    >
                         <div className={styles.TaskList}>
-                            {this.props.tasks
-                                .filter(deliveredColumnFilter)
-                                .map(this.renderExistingTask())}
+                            {delivered.map(this.renderExistingTask())}
                         </div>
                     </SectionUI>
                 </div>
