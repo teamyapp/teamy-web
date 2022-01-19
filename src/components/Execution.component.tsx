@@ -241,7 +241,6 @@ export class ExecutionComponent extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        console.log('[ExecutionComponent]componentWillUnmount');
         window.removeEventListener('resize', this.onWindowResize);
         this.stateChangeChan?.close();
         this.routeChangeChan?.close();
@@ -288,7 +287,7 @@ export class ExecutionComponent extends Component<Props, State> {
         }
 
         switch (tabId) {
-            case 'me':
+            case tabIds[0]:
                 return (
                     <PersonalStatusUI
                         deps={this.props.deps}
@@ -311,7 +310,7 @@ export class ExecutionComponent extends Component<Props, State> {
                         }
                     />
                 );
-            case 'team':
+            case tabIds[1]:
                 return (
                     <KanbanUI
                         tasks={this.state.teamTasks.filter(teamTasksFilter)}

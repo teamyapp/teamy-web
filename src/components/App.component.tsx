@@ -154,6 +154,7 @@ class AppComponent extends Component<Props, State> {
                 this.updateState(state);
             }
         })().then();
+
         for (const routePattern of acceptedRoutePatterns) {
             this.router.registerRoute(routePattern, false);
         }
