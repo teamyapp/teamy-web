@@ -7,23 +7,27 @@ import React, {
     forwardRef,
 } from 'react';
 
+import { Router } from '../router/router';
 import { IdentityClient } from './Identity.client';
 import { SignInComponent } from './SignIn.component';
 
-interface IState {
+interface State {
     isLoaded: boolean;
     isSignedIn: boolean;
 }
 
-interface IProps {
+interface Props {
     forwardedRef: ForwardedRef<any>;
 }
 
-export function withIdentityVerification(
+export function WithIdentityVerification(
     identityClient: IdentityClient,
+    router: Router,
+    signInUri: string,
     WrappedComponent: ComponentType<any>,
 ): ExoticComponent<any> {
-    class IdentityComponent extends Component<IProps, IState> {
+    class IdentityComponent extends Component<Props, State> {
+        private currUri?: string;
         constructor(props: any) {
             super(props);
             this.state = {
@@ -34,6 +38,11 @@ export function withIdentityVerification(
 
         public async componentDidMount() {
             const isSignedIn = await identityClient.isSignedIn();
+            this.currUri = router.CurrentUri;
+            if (!isSignedIn) {
+                router.navigateTo(signInUri);
+            }
+
             this.setState({
                 isSignedIn: isSignedIn,
                 isLoaded: true,
@@ -57,13 +66,16 @@ export function withIdentityVerification(
         }
 
         private onSignInSucceed = () => {
+            if (this.currUri) {
+                router.navigateTo(this.currUri);
+            }
             this.setState({
                 isSignedIn: true,
             });
         };
     }
 
-    return forwardRef<any, IProps>((props, ref) => {
+    return forwardRef<any, Props>((props, ref) => {
         return <IdentityComponent {...props} forwardedRef={ref} />;
     });
 }

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { Component, Fragment, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
-import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
+import { WithIdentityVerification } from '@lib/identity/withIdentityVerification';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { LocalStore } from '@lib/store/localStore';
@@ -23,6 +23,8 @@ import { ExecutionComponent } from './Execution.component';
 import {
     debugRoutePattern,
     getTeamId,
+    identityRoutePattern,
+    signInPath,
     teamPath,
     teamRoutePattern,
 } from './routing';
@@ -330,8 +332,11 @@ interface IHookProps {
 }
 
 export default function AppComponentHook(props: IHookProps): ReactElement {
-    const AppWithIdentityVerification = withIdentityVerification(
+    props.deps.router.registerRoute(identityRoutePattern);
+    const AppWithIdentityVerification = WithIdentityVerification(
         props.deps.identityClient,
+        props.deps.router,
+        signInPath,
         AppComponent,
     );
     return <AppWithIdentityVerification deps={props.deps} />;

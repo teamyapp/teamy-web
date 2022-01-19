@@ -111,7 +111,7 @@ export class IdentityClient {
                 body: accessToken,
             },
         );
-        return !result[1];
+        return result[1] === null;
     }
 
     private async getSessionId(): Promise<Result<number, Errors>> {
