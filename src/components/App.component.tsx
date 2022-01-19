@@ -5,18 +5,18 @@ import React, { Component, Fragment, ReactElement, createRef } from 'react';
 import * as csp from '@lib/csp/csp';
 import { withIdentityVerification } from '@lib/identity/withIdentityVerification';
 import { Route } from '@lib/router/Route';
+import { RouteUpdate, Router } from '@lib/router/router';
+import { LocalStore } from '@lib/store/localStore';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { Deps } from '@core/dep/deps';
+import { MutationEvent } from '@core/entity/events';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { IAppState } from '@core/state/state';
 
-import { MutationEvent } from '../entity/events';
-import { RouteUpdate, Router } from '../libs/router/router';
-import { LocalStore } from '../libs/store/localStore';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';

@@ -3,11 +3,14 @@ import React, { Component, ReactElement, createRef } from 'react';
 import * as csp from '@lib/csp/csp';
 import { and } from '@lib/data/filter';
 import { Route } from '@lib/router/Route';
+import { RouteUpdate, Router } from '@lib/router/router';
+import { LocalStore } from '@lib/store/localStore';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
+import { MutationEvent } from '@core/entity/events';
 import { TaskFilters } from '@core/entity/filters';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
@@ -15,9 +18,6 @@ import { TaskAction } from '@core/entity/taskAction';
 import { User } from '@core/entity/user';
 import { IAppState } from '@core/state/state';
 
-import { MutationEvent } from '../entity/events';
-import { RouteUpdate, Router } from '../libs/router/router';
-import { LocalStore } from '../libs/store/localStore';
 import styles from './Execution.component.module.scss';
 import {
     executionTabPath,
