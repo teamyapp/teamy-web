@@ -4,9 +4,9 @@ const teamIdParam = 'teamId';
 const tabIdParam = 'tabId';
 const taskIdParam = 'taskId';
 
-export const getTeamId = (params: Params) => params.pathParams[teamIdParam];
-export const getTabId = (params: Params) => params.pathParams[tabIdParam];
-export const getTaskId = (params: Params) => params.pathParams[taskIdParam];
+export const getTeamId = (params?: Params) => params?.pathParams[teamIdParam];
+export const getTabId = (params?: Params) => params?.pathParams[tabIdParam];
+export const getTaskId = (params?: Params) => params?.pathParams[taskIdParam];
 
 export const rootRoutePattern = '/';
 export const debugRoutePattern = `${rootRoutePattern}debug`;

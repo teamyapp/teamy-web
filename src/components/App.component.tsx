@@ -23,7 +23,6 @@ import { ExecutionComponent } from './Execution.component';
 import {
     debugRoutePattern,
     getTeamId,
-    rootRoutePattern,
     teamPath,
     teamRoutePattern,
 } from './routing';
@@ -46,16 +45,16 @@ interface State {
     shouldShowFiltersSection: boolean;
 }
 
-const acceptedRoutePatterns = [teamRoutePattern];
+const acceptedRoutePatterns = [teamRoutePattern, debugRoutePattern];
 
 class AppComponent extends Component<Props, State> {
+    private readonly router: Router;
+    private readonly localStore: LocalStore<IAppState, MutationEvent>;
     private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
     private addTeamMembersModalRef = createRef<AddTeamMembersModalComponent>();
     private userModalRef = createRef<UserSettingsModalComponent>();
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
-    private readonly router: Router;
-    private readonly localStore: LocalStore<IAppState, MutationEvent>;
 
     constructor(props: Props) {
         super(props);
@@ -78,7 +77,7 @@ class AppComponent extends Component<Props, State> {
                     />
                 </Route>
                 {this.state.activeTeamId && (
-                    <Route router={this.router} pattern={rootRoutePattern}>
+                    <Route router={this.router} pattern={teamRoutePattern}>
                         <Fragment>
                             <DrawerUI
                                 activeTeamId={this.state.activeTeamId}
@@ -111,15 +110,10 @@ class AppComponent extends Component<Props, State> {
                                 </div>
                                 <div className={styles.Execution}>
                                     {
-                                        <Route
-                                            router={this.router}
-                                            pattern={teamRoutePattern}
-                                        >
-                                            <ExecutionComponent
-                                                teamId={this.state.activeTeamId}
-                                                deps={this.props.deps}
-                                            />
-                                        </Route>
+                                        <ExecutionComponent
+                                            teamId={this.state.activeTeamId}
+                                            deps={this.props.deps}
+                                        />
                                     }
                                 </div>
                             </div>
@@ -319,7 +313,12 @@ class AppComponent extends Component<Props, State> {
             teams: state.teams,
             activeTeamId: state.activeTeamId,
         });
-        if (!getTeamId(this.router.currentParams)) {
+
+        const isAcceptedPattern = acceptedRoutePatterns.includes(
+            this.router.currentRouteUpdate?.routePattern,
+        );
+        const teamId = getTeamId(this.router.currentRouteUpdate?.params);
+        if (!isAcceptedPattern && !teamId) {
             this.router.navigateTo(teamPath(state.activeTeamId));
         }
     }

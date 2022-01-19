@@ -214,8 +214,8 @@ export class Router {
         this.routeChangeChan.close();
     }
 
-    public get currentParams(): Params {
-        return this.currRouteUpdate?.params || {};
+    public get currentRouteUpdate(): RouteUpdate {
+        return this.currRouteUpdate;
     }
 
     public navigateToCurrUri() {
