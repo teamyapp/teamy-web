@@ -218,6 +218,10 @@ export class Router {
         return this.currRouteUpdate;
     }
 
+    public get CurrentUri(): string | undefined {
+        return this.currUri;
+    }
+
     public navigateToCurrUri() {
         if (this.currUri) {
             this.navigateTo(this.currUri, true);
