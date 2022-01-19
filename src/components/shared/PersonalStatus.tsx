@@ -3,14 +3,14 @@ import React, { Component, ReactElement } from 'react';
 import { and, or } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
+import { SpacerUI } from '@lib/ui/Spacer';
 
+import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
 
-import * as filters from '../../data/task.filter';
-import { SpacerUI } from '../../libs/ui/Spacer';
 import styles from './PersonalStatus.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
