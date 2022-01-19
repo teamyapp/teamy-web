@@ -16,9 +16,9 @@ export const executionTaskRoutePattern = `${executionTabRoutePattern}/tasks/{${t
 
 export const teamPath = (teamId: string) => `/teams/${teamId}`;
 export const executionTabPath = (teamId: string, tabId: string) =>
-    `/teams/${teamId}/execution/${tabId}`;
+    `${teamPath(teamId)}/execution/${tabId}`;
 export const executionTaskPath = (
     teamId: string,
     tabId: string,
     taskId: string,
-) => `/teams/${teamId}/execution/${tabId}/tasks/${taskId}`;
+) => `${executionTabPath(teamId, tabId)}/tasks/${taskId}`;

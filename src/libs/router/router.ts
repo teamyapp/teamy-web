@@ -116,13 +116,10 @@ export class Router {
 
             if (index === segments.length - 1) {
                 currRoot.isPath = true;
-                if (hasUpdated) {
-                    // if no pattern has been updated, then is no need to notify new subscribers who's pattern may match
-                    // the current uri
-                    // console.log('index === segments.length - 1', this.root, routePattern)
-                    if (replayCurrUri) {
-                        this.navigateToCurrUri();
-                    }
+                // if no pattern has been updated, then is no need to notify new subscribers who's pattern may match
+                // the current uri
+                if (hasUpdated && replayCurrUri) {
+                    this.navigateToCurrUri();
                 }
                 return;
             }
@@ -219,10 +216,6 @@ export class Router {
 
     public get currentParams(): Params {
         return this.currRouteUpdate?.params || {};
-    }
-
-    public goBack() {
-        window.history.back();
     }
 
     public navigateToCurrUri() {
