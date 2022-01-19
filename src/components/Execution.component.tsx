@@ -19,6 +19,14 @@ import { MutationEvent } from '../entity/events';
 import { RouteUpdate, Router } from '../libs/router/router';
 import { LocalStore } from '../libs/store/localStore';
 import styles from './Execution.component.module.scss';
+import {
+    executionTabPath,
+    executionTabRoutePattern,
+    executionTaskPath,
+    executionTaskRoutePattern,
+    getTabId,
+    getTaskId,
+} from './routing';
 import { KanbanUI } from './shared/Kanban';
 import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.component';
 import { PersonalStatusUI } from './shared/PersonalStatus';
@@ -49,6 +57,13 @@ interface State {
     taskAdding?: Task;
     taskFilters: TaskFilters;
 }
+
+const acceptedRoutePatterns = [
+    executionTabRoutePattern,
+    executionTaskRoutePattern,
+];
+
+console.log(acceptedRoutePatterns);
 
 export class ExecutionComponent extends Component<Props, State> {
     private readonly localStore: LocalStore<IAppState, MutationEvent>;
@@ -94,7 +109,7 @@ export class ExecutionComponent extends Component<Props, State> {
                     {this.state.activeTabIndex >= 0 && (
                         <Route
                             router={this.router}
-                            pathPattern={'/teams/{teamId}/{tabId}'}
+                            pattern={executionTabRoutePattern}
                         >
                             {this.renderTabContent(
                                 tabIds[this.state.activeTabIndex],
@@ -144,7 +159,7 @@ export class ExecutionComponent extends Component<Props, State> {
         );
     }
 
-    public async componentDidMount() {
+    public componentDidMount() {
         window.addEventListener('resize', this.onWindowResize);
 
         this.stateChangeChan = this.localStore.subscribeStateChange();
@@ -161,20 +176,42 @@ export class ExecutionComponent extends Component<Props, State> {
             }
         })().then();
 
-        this.router.registerRoute(`/teams/{teamId}/{tabId}`);
-        this.router.registerRoute(`/teams/{teamId}/{tabId}/tasks/{taskId}`);
+        for (const routePattern of acceptedRoutePatterns) {
+            this.router.registerRoute(routePattern, false);
+        }
+        this.router.navigateToCurrUri();
         this.routeChangeChan = this.router.subscribeRouteChange();
-
+        console.log('[ExecutionComponent]subscribing');
         (async () => {
             while (true) {
-                const route = await this.routeChangeChan!.pop();
-                if (route === undefined) {
+                const routeUpdate = await this.routeChangeChan!.pop();
+                if (routeUpdate === undefined) {
                     return;
                 }
 
-                console.log(route);
+                if (
+                    !acceptedRoutePatterns.includes(routeUpdate.routePattern) ||
+                    routeUpdate.suffix
+                ) {
+                    console.log(
+                        '[ExecutionComponent][Discarded]',
+                        routeUpdate.routePattern,
+                        routeUpdate.suffix,
+                        routeUpdate.params.pathParams,
+                    );
+                    this.onTabClick(0);
+                    continue;
+                }
 
-                const { tabId, taskId } = route.params.pathParams;
+                console.log(
+                    '[ExecutionComponent][Accepted]',
+                    routeUpdate.routePattern,
+                    routeUpdate.suffix,
+                    routeUpdate.params.pathParams,
+                );
+
+                const tabId = getTabId(routeUpdate.params);
+                const taskId = getTaskId(routeUpdate.params);
                 if (!tabId || tabIds.indexOf(tabId) < 0) {
                     this.onTabClick(0);
                     continue;
@@ -197,16 +234,14 @@ export class ExecutionComponent extends Component<Props, State> {
         snapshot?: any,
     ) {
         if (prevProps.teamId !== this.props.teamId) {
-            console.log(
-                'componentDidUpdate',
-                prevProps.teamId,
-                this.props.teamId,
-            );
-            this.onTabClick(this.state.activeTabIndex);
+            if (this.state.activeTabIndex >= 0) {
+                this.onTabClick(this.state.activeTabIndex);
+            }
         }
     }
 
     public componentWillUnmount() {
+        console.log('[ExecutionComponent]componentWillUnmount');
         window.removeEventListener('resize', this.onWindowResize);
         this.stateChangeChan?.close();
         this.routeChangeChan?.close();
@@ -302,9 +337,11 @@ export class ExecutionComponent extends Component<Props, State> {
 
     private showTaskDetail(taskId: number | string) {
         this.router.navigateTo(
-            `/teams/${this.props.teamId}/${
-                tabIds[this.state.activeTabIndex!]
-            }/tasks/${taskId}`,
+            executionTaskPath(
+                this.props.teamId,
+                tabIds[this.state.activeTabIndex!],
+                `${taskId}`,
+            ),
         );
     }
 
@@ -322,7 +359,9 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onTabClick = (index: number) => {
-        this.router.navigateTo(`/teams/${this.props.teamId}/${tabIds[index]}`);
+        this.router.navigateTo(
+            executionTabPath(this.props.teamId, tabIds[index]),
+        );
     };
 
     private onShowPotentialTaskOwners = async (

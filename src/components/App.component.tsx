@@ -20,6 +20,13 @@ import { LocalStore } from '../libs/store/localStore';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
+import {
+    debugRoutePattern,
+    getTeamId,
+    rootRoutePattern,
+    teamPath,
+    teamRoutePattern,
+} from './routing';
 import { DrawerUI } from './shared/Drawer';
 import { FilterListComponent } from './shared/FilterList.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
@@ -38,6 +45,8 @@ interface State {
     isDrawerOpen: boolean;
     shouldShowFiltersSection: boolean;
 }
+
+const acceptedRoutePatterns = [teamRoutePattern];
 
 class AppComponent extends Component<Props, State> {
     private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
@@ -62,14 +71,14 @@ class AppComponent extends Component<Props, State> {
     public render() {
         return (
             <div className={styles.App}>
-                <Route router={this.router} pathPattern={'/debug'}>
+                <Route router={this.router} pattern={debugRoutePattern}>
                     <DebugComponent
                         repoOwner={'teamyapp'}
                         repoName={'teamy-web'}
                     />
                 </Route>
                 {this.state.activeTeamId && (
-                    <Route router={this.router} pathPattern={'/'}>
+                    <Route router={this.router} pattern={rootRoutePattern}>
                         <Fragment>
                             <DrawerUI
                                 activeTeamId={this.state.activeTeamId}
@@ -104,13 +113,12 @@ class AppComponent extends Component<Props, State> {
                                     {
                                         <Route
                                             router={this.router}
-                                            pathPattern={'/teams/{teamId}'}
+                                            pattern={teamRoutePattern}
                                         >
                                             <ExecutionComponent
                                                 teamId={this.state.activeTeamId}
                                                 deps={this.props.deps}
                                             />
-                                            ;
                                         </Route>
                                     }
                                 </div>
@@ -138,7 +146,7 @@ class AppComponent extends Component<Props, State> {
         );
     }
 
-    public async componentDidMount() {
+    public componentDidMount() {
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -152,18 +160,37 @@ class AppComponent extends Component<Props, State> {
                 this.updateState(state);
             }
         })().then();
-
-        this.router.registerRoute('/teams/{teamId}');
+        for (const routePattern of acceptedRoutePatterns) {
+            this.router.registerRoute(routePattern, false);
+        }
+        this.router.navigateToCurrUri();
         this.routeChangeChan = this.router.subscribeRouteChange();
-        this.router.initUri();
+        console.log('[AppComponent]subscribing');
         (async () => {
             while (true) {
-                const route = await this.routeChangeChan!.pop();
-                if (route === undefined) {
+                const routeUpdate = await this.routeChangeChan!.pop();
+                if (routeUpdate === undefined) {
                     return;
                 }
 
-                const { teamId } = route.params.pathParams;
+                if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
+                    console.log(
+                        '[AppComponent][Discarded]',
+                        routeUpdate.routePattern,
+                        routeUpdate.suffix,
+                        routeUpdate.params.pathParams,
+                    );
+                    continue;
+                }
+
+                console.log(
+                    '[AppComponent][Accepted]',
+                    routeUpdate.routePattern,
+                    routeUpdate.suffix,
+                    routeUpdate.params.pathParams,
+                );
+
+                const teamId = getTeamId(routeUpdate.params);
                 if (teamId) {
                     this.setState({
                         activeTeamId: teamId,
@@ -290,15 +317,10 @@ class AppComponent extends Component<Props, State> {
         this.setState({
             me: state.currentUser,
             teams: state.teams,
+            activeTeamId: state.activeTeamId,
         });
-
-        if (!this.router.currentParams.pathParams['teamId']) {
-            // show active team during app boostrap
-            this.router.navigateTo(`/teams/${state.activeTeamId}`);
-        } else {
-            this.setState({
-                activeTeamId: state.activeTeamId,
-            });
+        if (!getTeamId(this.router.currentParams)) {
+            this.router.navigateTo(teamPath(state.activeTeamId));
         }
     }
 }
