@@ -1,7 +1,8 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
 
 export interface RouteUpdate {
-    pathPattern: string;
+    routePattern: string;
+    suffix?: string;
     params: Params;
 }
 
@@ -41,14 +42,20 @@ export class Router {
         children: {},
     };
     private currUri?: string;
+    private currRouteUpdate!: RouteUpdate;
 
-    public browserInit() {
-        this.currUri = window.location.pathname;
-
+    constructor() {
         window.addEventListener('popstate', this.onPopState);
     }
 
-    public registerRoute(routePattern: string): Errors | undefined {
+    initBrowserUri() {
+        this.currUri = window.location.pathname;
+    }
+
+    public registerRoute(
+        routePattern: string,
+        replayCurrUri: boolean = true,
+    ): Errors | undefined {
         if (!routePattern) {
             return 'InvalidRoutePatten';
         }
@@ -59,7 +66,9 @@ export class Router {
 
         if (routePattern === pathDelimiter) {
             this.root.isPath = true;
-            this.navigateToCurrUri();
+            if (replayCurrUri) {
+                this.navigateToCurrUri();
+            }
             return;
         }
 
@@ -72,6 +81,7 @@ export class Router {
         let currRoot = this.root;
 
         const pathParams = new Set<string>();
+        let hasUpdated = false;
 
         for (let index = 0; index < segments.length; index++) {
             let segment = segments[index];
@@ -91,12 +101,14 @@ export class Router {
                     isPath: false,
                     children: {},
                 };
+                hasUpdated = true;
             }
 
             currRoot = currRoot.children[segment];
             if (pathParam) {
                 if (!currRoot.pathParam) {
                     currRoot.pathParam = pathParam;
+                    hasUpdated = true;
                 } else if (currRoot.pathParam !== pathParam) {
                     return 'PathParamNotMatch';
                 }
@@ -104,7 +116,11 @@ export class Router {
 
             if (index === segments.length - 1) {
                 currRoot.isPath = true;
-                this.navigateToCurrUri();
+                // if no pattern has been updated, then is no need to notify new subscribers who's pattern may match
+                // the current uri
+                if (hasUpdated && replayCurrUri) {
+                    this.navigateToCurrUri();
+                }
                 return;
             }
         }
@@ -141,8 +157,10 @@ export class Router {
         let currRoot = this.root;
         const routePattenSegments = [];
         let routeFound = this.root.isPath;
+        let suffix: string | undefined;
 
-        for (const segment of segments) {
+        for (let index = 0; index < segments.length; index++) {
+            const segment = segments[index];
             if (currRoot.children[segment]) {
                 currRoot = currRoot.children[segment];
                 routePattenSegments.push(segment);
@@ -150,9 +168,14 @@ export class Router {
                 currRoot = currRoot.children[wildcard];
                 params.pathParams[currRoot.pathParam!] = segment;
                 routePattenSegments.push(`{${currRoot.pathParam}}`);
-            } else if (!currRoot.isPath) {
+            } else {
+                suffix = segments.slice(index).join(pathDelimiter);
+                if (currRoot.isPath) {
+                    routeFound = true;
+                }
                 break;
             }
+
             routeFound = routeFound || currRoot.isPath;
         }
 
@@ -166,26 +189,36 @@ export class Router {
         }
 
         this.currUri = uri;
-        const pathPattern = `${pathDelimiter}${routePattenSegments.join(
+        const routePattern = `${pathDelimiter}${routePattenSegments.join(
             pathDelimiter,
         )}`;
 
         window.history.pushState({}, '', uri);
-        this.routeChangeChan.put({
-            pathPattern: pathPattern,
+        this.currRouteUpdate = {
+            routePattern: routePattern,
+            suffix,
             params: params,
-        });
+        };
+        this.routeChangeChan.put(this.currRouteUpdate);
     }
 
     public subscribeRouteChange(): PopChannel<RouteUpdate | undefined> {
-        return this.routeChangeMultiCaster.copy();
+        const ch = this.routeChangeMultiCaster.copy();
+        if (this.currRouteUpdate) {
+            ch.put(this.currRouteUpdate);
+        }
+        return ch;
     }
 
     public dispose() {
         this.routeChangeChan.close();
     }
 
-    private navigateToCurrUri() {
+    public get currentRouteUpdate(): RouteUpdate {
+        return this.currRouteUpdate;
+    }
+
+    public navigateToCurrUri() {
         if (this.currUri) {
             this.navigateTo(this.currUri, true);
         }
@@ -217,11 +250,14 @@ function includeQueryParams(
     }
 }
 
-export function sanitizePathPattern(pathPattern: string): string {
-    if (pathPattern.length > 1 && pathPattern[pathPattern.length - 1] === '/') {
-        return pathPattern.substring(0, pathPattern.length - 1);
+export function sanitizeRoutePattern(routePattern: string): string {
+    if (
+        routePattern.length > 1 &&
+        routePattern[routePattern.length - 1] === '/'
+    ) {
+        return routePattern.substring(0, routePattern.length - 1);
     }
-    return pathPattern;
+    return routePattern;
 }
 
 function parseParamName(segment: string): string {
@@ -233,4 +269,10 @@ function isPathParameter(segment: string): boolean {
         return false;
     }
     return segment[0] === '{' && segment[segment.length - 1] === '}';
+}
+
+export function createBrowserRouter(): Router {
+    const router = new Router();
+    router.initBrowserUri();
+    return router;
 }

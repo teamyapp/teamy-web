@@ -6,18 +6,19 @@ import styles from './Modal.module.scss';
 const transitionDurationMilliseconds = 400;
 const baseElevation = 1000;
 
-interface IProps {
+interface Props {
     level?: number;
+    onClose?: () => void;
 }
 
-interface IState {
+interface State {
     isVisible: boolean;
     isOpen: boolean;
     isAnimating: boolean;
 }
 
-export class ModalUI extends Component<IProps, IState> {
-    constructor(props: IProps) {
+export class ModalUI extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             isVisible: false,
@@ -89,6 +90,7 @@ export class ModalUI extends Component<IProps, IState> {
             isOpen: false,
             isAnimating: true,
         });
+        this.props.onClose?.call(null);
 
         setTimeout(() => {
             this.setState({

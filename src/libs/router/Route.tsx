@@ -7,13 +7,13 @@ import {
     Params,
     RouteUpdate,
     Router,
-    sanitizePathPattern,
+    sanitizeRoutePattern,
 } from './router';
 
 interface Props {
     router: Router;
-    pathPattern: string;
-    renderChild?: (params: Params) => ReactElement;
+    pattern: string;
+    renderChild?: (params: Params) => ReactElement | null;
 }
 
 interface State {
@@ -33,8 +33,8 @@ export class Route extends Component<Props, State> {
     }
 
     public componentDidMount() {
-        const pathPattern = sanitizePathPattern(this.props.pathPattern);
-        const err = this.props.router.registerRoute(pathPattern);
+        const routePattern = sanitizeRoutePattern(this.props.pattern);
+        const err = this.props.router.registerRoute(routePattern);
         if (err) {
             this.setState({
                 err,
@@ -43,6 +43,7 @@ export class Route extends Component<Props, State> {
         }
 
         this.routeChangeChan = this.props.router.subscribeRouteChange();
+        console.log('subscribe', routePattern);
         (async () => {
             while (true) {
                 const route = await this.routeChangeChan?.pop();
@@ -50,7 +51,7 @@ export class Route extends Component<Props, State> {
                     return;
                 }
 
-                if (!route.pathPattern.startsWith(pathPattern)) {
+                if (!route.routePattern.startsWith(routePattern)) {
                     this.setState({
                         shouldShow: false,
                     });

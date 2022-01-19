@@ -27,28 +27,29 @@ import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 40;
 
-interface IProps {
+interface Props {
     deps: Deps;
     taskSelectingOwner?: number | string;
+    onClose?: () => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,
     ) => void;
 }
 
-interface IState {
+interface State {
     task?: Task;
     comments: Message[];
     meUserId?: string;
     heightWithMargin: number;
 }
 
-export class TaskDetailModalComponent extends Component<IProps, IState> {
+export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly modalRef = createRef<ModalUI>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             comments: [],
@@ -58,7 +59,7 @@ export class TaskDetailModalComponent extends Component<IProps, IState> {
 
     public render(): ReactElement {
         return (
-            <ModalUI ref={this.modalRef}>
+            <ModalUI ref={this.modalRef} onClose={this.props.onClose}>
                 {this.state.task && (
                     <div
                         className={styles.ModalContent}
