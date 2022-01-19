@@ -40,7 +40,6 @@ export function WithIdentityVerification(
             const isSignedIn = await identityClient.isSignedIn();
             this.currUri = router.CurrentUri;
             if (!isSignedIn) {
-                console.log(signInUri);
                 router.navigateTo(signInUri);
             }
 
