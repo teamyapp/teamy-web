@@ -10,6 +10,7 @@ import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
 
 import * as filters from '../../data/task.filter';
+import { SpacerUI } from '../../libs/ui/Spacer';
 import styles from './PersonalStatus.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
@@ -46,22 +47,18 @@ interface IProps {
 
 export class PersonalStatusUI extends Component<IProps> {
     public render(): ReactElement {
-        const delivered = this.props.personalTasks
-            .filter(deliveredColumnFilter)
-            .map(this.renderExistingTask())
+        const delivered = this.props.personalTasks.filter(
+            deliveredColumnFilter,
+        );
         const upcoming = this.props.personalTasks
             .filter(
-                upcomingColumnFilter(
-                    this.props.needAttentionTask?.id ||
-                    -1,
-                ),
+                upcomingColumnFilter(this.props.needAttentionTask?.id || -1),
             )
-            .map(withUpcomingActions)
-            .map(this.renderExistingTask())
+            .map(withUpcomingActions);
         return (
             <div className={styles.PersonalStatus}>
                 <div className={styles.NeedAttentionSection}>
-                    <SectionUI title={'Need Attention'} taskCount={this.props.needAttentionTask? 1: 0}>
+                    <SectionUI title={'Need Attention'}>
                         {this.props.needAttentionTask &&
                             this.renderExistingTask()(
                                 this.props.needAttentionTask,
@@ -75,7 +72,13 @@ export class PersonalStatusUI extends Component<IProps> {
                         <SectionUI
                             title={'Upcoming'}
                             actions={
-                                <div className={styles.UpcomingActions}>
+                                <div
+                                    className={`${styles.SectionTopBar} ${styles.Upcoming}`}
+                                >
+                                    <div className={styles.TaskCounter}>
+                                        {upcoming.length}
+                                    </div>
+                                    <SpacerUI />
                                     <div
                                         className={styles.UpcomingAction}
                                         onClick={this.props.onAddClick}
@@ -84,21 +87,32 @@ export class PersonalStatusUI extends Component<IProps> {
                                     </div>
                                 </div>
                             }
-                            taskCount={upcoming.length}
                         >
                             <div className={styles.TaskList}>
                                 {this.props.taskAdding &&
                                     this.renderNewTask()(this.props.taskAdding)}
-                                {upcoming}
+                                {upcoming.map(this.renderExistingTask())}
                             </div>
                         </SectionUI>
                     </div>
                     <div
                         className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
                     >
-                        <SectionUI title={'Delivered'} taskCount={delivered.length}>
+                        <SectionUI
+                            title={'Delivered'}
+                            actions={
+                                <div
+                                    className={`${styles.SectionTopBar} ${styles.Delivered}`}
+                                >
+                                    <div className={styles.TaskCounter}>
+                                        {delivered.length}
+                                    </div>
+                                    <SpacerUI />
+                                </div>
+                            }
+                        >
                             <div className={styles.TaskList}>
-                                {delivered}
+                                {delivered.map(this.renderExistingTask())}
                             </div>
                         </SectionUI>
                     </div>

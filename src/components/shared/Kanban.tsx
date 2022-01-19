@@ -8,6 +8,7 @@ import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
+import { SpacerUI } from '../../libs/ui/Spacer';
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
@@ -41,15 +42,9 @@ export class KanbanUI extends Component<IProps> {
     }
 
     render(): ReactElement {
-        const upcoming = this.props.tasks
-            .filter(upcomingColumnFilter)
-            .map(this.renderExistingTask())
-        const inProgress = this.props.tasks
-            .filter(inProgressColumnFilter)
-            .map(this.renderExistingTask())
-        const delivered = this.props.tasks
-            .filter(deliveredColumnFilter)
-            .map(this.renderExistingTask())
+        const upcoming = this.props.tasks.filter(upcomingColumnFilter);
+        const inProgress = this.props.tasks.filter(inProgressColumnFilter);
+        const delivered = this.props.tasks.filter(deliveredColumnFilter);
         return (
             <div className={`${styles.TeamStatus} ${styles.TaskLists}`}>
                 <div
@@ -58,7 +53,13 @@ export class KanbanUI extends Component<IProps> {
                     <SectionUI
                         title={'Upcoming'}
                         actions={
-                            <div className={styles.UpcomingActions}>
+                            <div
+                                className={`${styles.SectionTopBar} ${styles.Upcoming}`}
+                            >
+                                <div className={styles.TaskCounter}>
+                                    {upcoming.length}
+                                </div>
+                                <SpacerUI />
                                 <div
                                     className={styles.UpcomingAction}
                                     onClick={this.props.onAddClick}
@@ -67,30 +68,53 @@ export class KanbanUI extends Component<IProps> {
                                 </div>
                             </div>
                         }
-                        taskCount={upcoming.length}
                     >
                         <div className={styles.TaskList}>
                             {this.props.taskAdding &&
                                 this.renderNewTask()(this.props.taskAdding)}
-                            {upcoming}
+                            {upcoming.map(this.renderExistingTask())}
                         </div>
                     </SectionUI>
                 </div>
                 <div
                     className={`${styles.TaskListSection} ${styles.InProgressSection}`}
                 >
-                    <SectionUI title={'In Progress'} taskCount={inProgress.length}>
+                    <SectionUI
+                        title={'In Progress'}
+                        actions={
+                            <div
+                                className={`${styles.SectionTopBar} ${styles.InProgress}`}
+                            >
+                                <div className={styles.TaskCounter}>
+                                    {inProgress.length}
+                                </div>
+                                <SpacerUI />
+                            </div>
+                        }
+                    >
                         <div className={styles.TaskList}>
-                            {inProgress}
+                            {inProgress.map(this.renderExistingTask())}
                         </div>
                     </SectionUI>
                 </div>
                 <div
                     className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
                 >
-                    <SectionUI title={'Delivered'} taskCount={delivered.length}>
+                    <SectionUI
+                        title={'Delivered'}
+                        actions={
+                            <div
+                                className={`${styles.SectionTopBar} ${styles.Delivered}`}
+                            >
+                                <div className={styles.TaskCounter}>
+                                    {delivered.length}
+                                </div>
+                                <SpacerUI />
+                            </div>
+                        }
+                    >
                         <div className={styles.TaskList}>
-                            {delivered}
+                            {delivered.map(this.renderExistingTask())}
                         </div>
                     </SectionUI>
                 </div>

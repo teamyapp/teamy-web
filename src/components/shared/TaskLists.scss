@@ -1,5 +1,9 @@
 @import './shared';
 
+$upcomingPrimary: #1e88e5;
+$inProgressPrimary: #ff7043;
+$deliveredPrimary: #43a047;
+
 .TaskLists {
     display: grid;
     overflow-y: hidden;
@@ -14,6 +18,27 @@
         overflow-y: hidden;
         flex-direction: column;
         height: 100%;
+
+        .SectionTopBar {
+            margin-left: 14px;
+            display: flex;
+            justify-content: right;
+            align-items: center;
+            --icon-size: 30px;
+            --background-color: transparent;
+
+            .TaskCounter {
+                line-height: 14px;
+                font-size: 14px;
+                color: white;
+                width: 30px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 24px;
+                border-radius: 4px;
+            }
+        }
     }
 
     .TaskList {
@@ -26,30 +51,40 @@
 }
 
 .UpcomingSection {
-    --title-color: #0074b1;
+    --title-color: #{$upcomingPrimary};
     --background-color: #f2fcff;
 
-    .UpcomingActions {
-        display: flex;
-        justify-content: right;
-        --icon-size: 30px;
-        --icon-color: #0074b1;
-        --background-color: transparent;
+    .TaskCounter {
+        background-color: $upcomingPrimary;
+    }
 
-        .UpcomingAction {
-            user-select: none;
-            border-radius: 4px;
+    .UpcomingAction {
+        --icon-color: #{$upcomingPrimary};
+        user-select: none;
+        border-radius: 4px;
 
-            &:hover {
-                cursor: pointer;
-                background-color: #0074b1;
-                --icon-color: white;
-            }
+        &:hover {
+            cursor: pointer;
+            background-color: $upcomingPrimary;
+            --icon-color: white;
         }
     }
 }
 
+.InProgressSection {
+    --title-color: #{$inProgressPrimary};
+    --background-color: #fff8e1;
+
+    .TaskCounter {
+        background-color: $inProgressPrimary;
+    }
+}
+
 .DeliveredSection {
-    --title-color: #25a100;
+    --title-color: #{$deliveredPrimary};
     --background-color: #efffec;
+
+    .TaskCounter {
+        background-color: $deliveredPrimary;
+    }
 }
