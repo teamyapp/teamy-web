@@ -20,10 +20,10 @@ export function getActions(status: TaskStatus) {
         case 'NEED_ATTENTION':
         case 'IN_PROGRESS':
             return [
-                TaskAction.Delete,
-                TaskAction.AssignOwner,
-                TaskAction.ReportBlocked,
                 TaskAction.MarkComplete,
+                TaskAction.ReportBlocked,
+                TaskAction.AssignOwner,
+                TaskAction.Delete,
             ];
         case 'DELIVERED':
             return [TaskAction.Delete, TaskAction.AssignOwner];
