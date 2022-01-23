@@ -38,8 +38,8 @@ export const removeTaskOwner = gql`
 `;
 
 export const startTask = gql`
-    mutation startTask($taskId: ID!, $task: TaskInput!) {
-        updateTask(taskId: $taskId, task: $task) {
+    mutation startTask($taskId: ID!) {
+        updateTask(taskId: $taskId, task: { status: IN_PROGRESS }) {
             status
             id
         }
@@ -50,8 +50,8 @@ export const startTask = gql`
 `;
 
 export const completeTask = gql`
-    mutation completeTask($taskId: ID!, $task: TaskInput!) {
-        updateTask(taskId: $taskId, task: $task) {
+    mutation completeTask($taskId: ID!) {
+        updateTask(taskId: $taskId, task: { status: DELIVERED }) {
             id
             status
         }
