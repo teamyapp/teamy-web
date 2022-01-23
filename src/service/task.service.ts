@@ -59,9 +59,6 @@ export class TaskService {
             mutation: mutations.startTask,
             variables: {
                 taskId: taskId,
-                task: {
-                    status: 'IN_PROGRESS',
-                },
             },
         });
     }
@@ -71,9 +68,6 @@ export class TaskService {
             mutation: mutations.completeTask,
             variables: {
                 taskId: taskId,
-                task: {
-                    status: 'DELIVERED',
-                },
             },
         });
     }
