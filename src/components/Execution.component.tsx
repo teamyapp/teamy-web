@@ -474,7 +474,12 @@ export class ExecutionComponent extends Component<Props, State> {
             console.log('creating task');
             this.localStore.mutate({
                 type: 'CreateTask',
-                task: task,
+                task: {
+                    goal: task.goal,
+                    context: task.context,
+                    dueAt: task.dueAt,
+                    ownerUserId: task.owner?.id || undefined,
+                },
                 teamId: this.props.teamId,
             });
         }
