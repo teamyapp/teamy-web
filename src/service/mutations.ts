@@ -13,10 +13,26 @@ export const updateTask = gql`
         }
     }
 `;
+
 export const deleteTask = gql`
     mutation deleteTask($taskId: ID!) {
         deleteTask(taskId: $taskId) {
             id
+        }
+    }
+`;
+
+export const removeTaskOwner = gql`
+    mutation removeTaskOwner($taskId: ID!) {
+        taskUpdate(taskId: $taskId) {
+            removeOwner {
+                task {
+                    id
+                    owner {
+                        id
+                    }
+                }
+            }
         }
     }
 `;

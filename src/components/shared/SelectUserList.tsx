@@ -8,16 +8,19 @@ import { FormatService } from '@core/service/format.service';
 import styles from './SelectUserList.module.scss';
 import { UserProfileUI } from './UserProfile';
 
-interface IProps {
+interface Props {
+    emptySelectionUserName: string;
     users: User[];
     selectedUserId?: string;
     onSelectUser?: (userId: string) => void;
+    onRemoveSelection?: () => void;
 }
 
-export class SelectUserListUI extends Component<IProps> {
+export class SelectUserListUI extends Component<Props> {
     render(): ReactElement {
         return (
             <div className={styles.SelectUserList}>
+                {this.renderEmptySelection()}
                 {this.props.users.map(this.renderUser)}
             </div>
         );
@@ -42,6 +45,29 @@ export class SelectUserListUI extends Component<IProps> {
             </div>
         );
     };
+
+    private renderEmptySelection() {
+        console.log('renderEmptySelection', this.props.selectedUserId);
+        return (
+            <div
+                className={styles.UserRow}
+                onClick={this.props.onRemoveSelection}
+            >
+                <div className={styles.SelectionIndicator}>
+                    {this.props.selectedUserId === undefined && (
+                        <MaterialIconUI>check</MaterialIconUI>
+                    )}
+                </div>
+                <div className={styles.EmptySelectionFace}>
+                    <MaterialIconUI>face</MaterialIconUI>
+                </div>
+                <div className={styles.Name}>
+                    {this.props.emptySelectionUserName}
+                </div>
+            </div>
+        );
+    }
+
     private onUserRowClick = (userId: string): (() => void) => {
         return () => {
             this.props.onSelectUser?.call(null, userId);

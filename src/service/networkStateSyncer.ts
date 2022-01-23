@@ -70,6 +70,9 @@ export class NetworkStateSynchronizer {
                     case 'CompleteTask':
                         await taskService.completeTask(event.taskId);
                         break;
+                    case 'RemoveTaskOwner':
+                        await taskService.removeTaskOwner(event.taskId);
+                        break;
                     case 'UpdateActiveTeam':
                         await teamService.updateActiveTeamId(event.teamId);
                         break;

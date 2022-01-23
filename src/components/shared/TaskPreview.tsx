@@ -71,7 +71,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         return (
             <div ref={this.ref} className={styles.Task}>
                 <div className={styles.LeftSection}>
-                    {this.props.task.id > 0 && (
+                    {this.props.task.id !== '-1' && (
                         <div className={styles.TopRow}>
                             <span
                                 className={`${styles.Attribute} ${styles.Id}`}

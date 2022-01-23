@@ -87,4 +87,11 @@ export class TaskService {
             },
         });
     }
+
+    public removeTaskOwner(taskId: string) {
+        return this.graphQLClient.mutate({
+            mutation: mutations.removeTaskOwner,
+            variables: { taskId: taskId },
+        });
+    }
 }
