@@ -147,11 +147,13 @@ export class ExecutionComponent extends Component<Props, State> {
                             </div>
                         </div>
                         <SelectUserListUI
+                            emptySelectionUserName={'Unassigned'}
                             selectedUserId={
                                 this.state.taskSelectingOwner?.owner?.id
                             }
                             users={this.state.potentialTaskOwners}
                             onSelectUser={this.onSelectTaskOwner}
+                            onRemoveSelection={this.onRemoveTaskOwner}
                         />
                     </div>
                 )}
@@ -385,6 +387,19 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
+    private onRemoveTaskOwner = () => {
+        this.localStore.mutate({
+            type: 'RemoveTaskOwner',
+            taskId: this.state.taskSelectingOwner?.id || '-1',
+        });
+        this.setState({
+            potentialTaskOwners: [],
+            showPotentialTaskOwnersList: false,
+            taskOwnersListVisible: false,
+            taskSelectingOwner: undefined,
+        });
+    };
+
     private onSelectTaskOwner = (userId: string) => {
         this.localStore.mutate({
             type: 'UpdateTask',
@@ -505,7 +520,7 @@ export class ExecutionComponent extends Component<Props, State> {
         const user = await this.props.deps.userService.fetchMe('cache-first');
         this.setState({
             taskAdding: {
-                id: -1,
+                id: '-1',
                 goal: '',
                 owner: user,
                 availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
@@ -517,7 +532,7 @@ export class ExecutionComponent extends Component<Props, State> {
     private onTeamAddClick = () => {
         this.setState({
             taskAdding: {
-                id: -1,
+                id: '-1',
                 goal: '',
                 availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
                 status: 'UPCOMING',

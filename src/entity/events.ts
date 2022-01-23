@@ -10,6 +10,7 @@ export type MutationEvent =
     | DeleteTask
     | StartTask
     | CompleteTask
+    | RemoveTaskOwner
     | UpdateActiveTeam;
 
 export interface TaskCreationInput {
@@ -44,6 +45,11 @@ export interface StartTask extends Event {
 export interface CompleteTask extends Event {
     type: 'CompleteTask';
     taskId: number | string;
+}
+
+export interface RemoveTaskOwner extends Event {
+    type: 'RemoveTaskOwner';
+    taskId: string;
 }
 
 export interface UpdateActiveTeam extends Event {

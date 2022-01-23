@@ -90,6 +90,25 @@ function completeTaskMutateState(
     });
 }
 
+function removeTaskOwnerMutateState(
+    state: IAppState,
+    event: events.RemoveTaskOwner,
+): IAppState {
+    const task = state.teamTasks.filter(
+        (task: Task) => task.id === event.taskId,
+    )[0];
+    if (task) {
+        const newTask = Object.assign({}, task, {
+            owner: undefined,
+        });
+        return updateTaskMutateState(state, {
+            type: 'UpdateTask',
+            task: newTask,
+        });
+    }
+    return state;
+}
+
 function updateActiveTeamMutateState(
     state: IAppState,
     event: events.UpdateActiveTeam,
@@ -115,6 +134,8 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
             return startTaskMutateState(state, event);
         case 'CompleteTask':
             return completeTaskMutateState(state, event);
+        case 'RemoveTaskOwner':
+            return removeTaskOwnerMutateState(state, event);
         case 'UpdateActiveTeam':
             return updateActiveTeamMutateState(state, event);
     }
