@@ -11,15 +11,6 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
-import { Deps } from '@core/dep/deps';
-import { MutationEvent } from '@core/entity/events';
-import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
-import { IAppState } from '@core/state/state';
-
-import styles from './App.component.module.scss';
-import { DebugComponent } from './Debug.component';
-import { ExecutionComponent } from './Execution.component';
 import {
     debugRoutePattern,
     getTeamId,
@@ -27,7 +18,17 @@ import {
     signInPath,
     teamPath,
     teamRoutePattern,
-} from './routing';
+} from '@core/config/routing';
+import { Deps } from '@core/dep/deps';
+import { Team } from '@core/entity/team';
+import { User } from '@core/entity/user';
+import { MutationEvent } from '@core/event/mutation';
+import { IAppState } from '@core/state/state';
+
+import { UserActionEvent } from '../event/userAction';
+import styles from './App.component.module.scss';
+import { DebugComponent } from './Debug.component';
+import { ExecutionComponent } from './Execution.component';
 import { DrawerUI } from './shared/Drawer';
 import { FilterListComponent } from './shared/FilterList.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
@@ -52,11 +53,15 @@ const acceptedRoutePatterns = [teamRoutePattern, debugRoutePattern];
 class AppComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly localStore: LocalStore<IAppState, MutationEvent>;
-    private teamSettingsModalRef = createRef<TeamSettingsModalComponent>();
-    private addTeamMembersModalRef = createRef<AddTeamMembersModalComponent>();
-    private userModalRef = createRef<UserSettingsModalComponent>();
+    private readonly teamSettingsModalRef =
+        createRef<TeamSettingsModalComponent>();
+    private readonly addTeamMembersModalRef =
+        createRef<AddTeamMembersModalComponent>();
+    private readonly userModalRef = createRef<UserSettingsModalComponent>();
+    private readonly filterListRef = createRef<FilterListComponent>();
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
+    private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
 
     constructor(props: Props) {
         super(props);
@@ -105,6 +110,7 @@ class AppComponent extends Component<Props, State> {
                                             }
                                         >
                                             <FilterListComponent
+                                                ref={this.filterListRef}
                                                 deps={this.props.deps}
                                             />
                                         </div>
@@ -195,11 +201,26 @@ class AppComponent extends Component<Props, State> {
                 }
             }
         })().then();
+
+        this.userActionChan =
+            this.props.deps.shortcutMonitor.subscribeUserAction();
+        (async () => {
+            while (true) {
+                const userAction = await this.userActionChan?.pop();
+                if (userAction === undefined) {
+                    return;
+                }
+
+                this.processUserAction(userAction);
+            }
+        })();
     }
 
     public componentWillUnmount() {
         this.stateChangeChan?.close();
         this.routeChangeChan?.close();
+        this.userActionChan?.close();
+        this.props.deps.shortcutMonitor.dispose();
     }
 
     private renderHeader(): ReactElement {
@@ -323,6 +344,17 @@ class AppComponent extends Component<Props, State> {
         const teamId = getTeamId(this.router.currentRouteUpdate?.params);
         if (!isAcceptedPattern && !teamId) {
             this.router.navigateTo(teamPath(state.activeTeamId));
+        }
+    }
+
+    private processUserAction(userAction: UserActionEvent) {
+        switch (userAction) {
+            case 'findKeyword':
+                this.onFilterActionClick();
+                if (this.state.shouldShowFiltersSection) {
+                    this.filterListRef.current?.focusOnKeywordInput();
+                }
+                break;
         }
     }
 }

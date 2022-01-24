@@ -6,17 +6,17 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 import { SpacerUI } from '@lib/ui/Spacer';
 
+import {
+    deliveredSectionId,
+    needAttentionSectionId,
+    upcomingSectionId,
+} from '@core/config/sections';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
 
-import {
-    deliveredSectionId,
-    needAttentionSectionId,
-    upcomingSectionId,
-} from '../sections';
 import styles from './PersonalStatus.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 

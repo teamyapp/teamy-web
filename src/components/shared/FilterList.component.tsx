@@ -74,6 +74,10 @@ export class FilterListComponent extends Component<Props, State> {
         });
     }
 
+    public focusOnKeywordInput = () => {
+        this.keywordTextFieldRef.current?.focus();
+    };
+
     private renderTimeRangeFilterGroup() {
         return (
             <div className={styles.Group}>
