@@ -1,9 +1,9 @@
 import { MutateState } from '@lib/store/localStore';
 
-import * as events from '@core/entity/events';
 import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
+import * as events from '@core/event/mutation';
 
 import { IAppState } from './state';
 

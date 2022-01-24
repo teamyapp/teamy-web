@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Component, FormEvent, ReactElement } from 'react';
+import React, { Component, FormEvent, ReactElement, createRef } from 'react';
 
 import { MaterialIconUI } from './MaterialIcon';
 import './TextField.module.scss';
@@ -26,6 +26,8 @@ interface IState {
 }
 
 export class TextFieldUI extends Component<IProps, IState> {
+    private readonly textInputRef = createRef<HTMLInputElement>();
+
     constructor(props: IProps) {
         super(props);
         this.state = {
@@ -43,6 +45,7 @@ export class TextFieldUI extends Component<IProps, IState> {
                     })}`}
                 >
                     <input
+                        ref={this.textInputRef}
                         type={'text'}
                         className={styles.Input}
                         autoComplete={'off'}
@@ -82,6 +85,10 @@ export class TextFieldUI extends Component<IProps, IState> {
         this.setState({
             value: val,
         });
+    }
+
+    public focus() {
+        this.textInputRef.current?.focus();
     }
 
     private onChange = (event: FormEvent<HTMLInputElement>) => {

@@ -5,16 +5,16 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 import { SpacerUI } from '@lib/ui/Spacer';
 
+import {
+    deliveredSectionId,
+    inProgressSectionId,
+    upcomingSectionId,
+} from '@core/config/sections';
 import * as filters from '@core/data/task.filter';
 import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
-import {
-    deliveredSectionId,
-    inProgressSectionId,
-    upcomingSectionId,
-} from '../sections';
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 

@@ -1,8 +1,7 @@
 import { Event } from '@lib/event/event';
 
+import { TaskCreationInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
-
-import { TaskStatus } from './taskStatus';
 
 export type MutationEvent =
     | CreateTask
@@ -12,14 +11,6 @@ export type MutationEvent =
     | CompleteTask
     | RemoveTaskOwner
     | UpdateActiveTeam;
-
-export interface TaskCreationInput {
-    goal: string;
-    context?: string;
-    dueAt?: string;
-    ownerUserId?: string | number;
-    status?: TaskStatus;
-}
 
 export interface CreateTask extends Event {
     type: 'CreateTask';

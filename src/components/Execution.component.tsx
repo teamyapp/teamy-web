@@ -8,17 +8,6 @@ import { LocalStore } from '@lib/store/localStore';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
-import * as filters from '@core/data/task.filter';
-import { Deps } from '@core/dep/deps';
-import { MutationEvent } from '@core/entity/events';
-import { TaskFilters } from '@core/entity/filters';
-import { IBoundingBoxFinder } from '@core/entity/position';
-import { Task } from '@core/entity/task';
-import { TaskAction } from '@core/entity/taskAction';
-import { User } from '@core/entity/user';
-import { IAppState } from '@core/state/state';
-
-import styles from './Execution.component.module.scss';
 import {
     executionTabPath,
     executionTabRoutePattern,
@@ -26,7 +15,18 @@ import {
     executionTaskRoutePattern,
     getTabId,
     getTaskId,
-} from './routing';
+} from '@core/config/routing';
+import * as filters from '@core/data/task.filter';
+import { Deps } from '@core/dep/deps';
+import { TaskFilters } from '@core/entity/filters';
+import { IBoundingBoxFinder } from '@core/entity/position';
+import { Task } from '@core/entity/task';
+import { TaskAction } from '@core/entity/taskAction';
+import { User } from '@core/entity/user';
+import { MutationEvent } from '@core/event/mutation';
+import { IAppState } from '@core/state/state';
+
+import styles from './Execution.component.module.scss';
 import { KanbanUI } from './shared/Kanban';
 import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.component';
 import { PersonalStatusUI } from './shared/PersonalStatus';

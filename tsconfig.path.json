@@ -7,6 +7,7 @@
             "@core/config/*": ["config/*"],
             "@core/service/*": ["service/*"],
             "@core/state/*": ["state/*"],
+            "@core/event/*": ["event/*"],
             "@core/data/*": ["data/*"],
             "@core/dep/*": ["dep/*"],
             "@lib/csp/*": ["libs/csp/*"],
@@ -18,6 +19,7 @@
             "@lib/store/*": ["libs/store/*"],
             "@lib/data/*": ["libs/data/*"],
             "@lib/router/*": ["libs/router/*"],
+            "@lib/shortcut/*": ["libs/shortcut/*"],
             "@lib/testing/*": ["libs/testing/*"]
         }
     }

@@ -2,11 +2,13 @@ import { IdentityClient } from '@lib/identity/Identity.client';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { Router, createBrowserRouter } from '@lib/router/router';
+import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { LocalStore } from '@lib/store/localStore';
 
 import { getConfig } from '@core/config/config';
-import * as events from '@core/entity/events';
 import { getEnvironment } from '@core/env/environment';
+import * as mutationEvents from '@core/event/mutation';
+import { UserActionEvent } from '@core/event/userAction';
 import { CommentService } from '@core/service/comment.service';
 import { NetworkStateSynchronizer } from '@core/service/networkStateSyncer';
 import { PageService } from '@core/service/page.service';
@@ -16,6 +18,8 @@ import { UserService } from '@core/service/user.service';
 import { IAppState } from '@core/state/state';
 import { createStore } from '@core/state/store';
 
+import { shortcuts } from '../config/shortcut';
+
 export interface Deps {
     taskService: TaskService;
     teamService: TeamService;
@@ -23,8 +27,9 @@ export interface Deps {
     commentService: CommentService;
     pageService: PageService;
     identityClient: IdentityClient;
-    localStore: LocalStore<IAppState, events.MutationEvent>;
+    localStore: LocalStore<IAppState, mutationEvents.MutationEvent>;
     router: Router;
+    shortcutMonitor: ShortcutMonitor<UserActionEvent>;
 }
 
 export function initDeps(): Deps {
@@ -43,7 +48,7 @@ export function initDeps(): Deps {
     const pageService = new PageService(teamyGraphQLClient);
     const localStore = createStore();
     const router = createBrowserRouter();
-
+    const shortcutMonitor = new ShortcutMonitor(shortcuts);
     new NetworkStateSynchronizer(
         localStore,
         taskService,
@@ -59,5 +64,6 @@ export function initDeps(): Deps {
         identityClient,
         localStore,
         router,
+        shortcutMonitor,
     };
 }

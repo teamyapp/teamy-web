@@ -1,7 +1,7 @@
 import * as csp from '@lib/csp/csp';
 import { LocalStore } from '@lib/store/localStore';
 
-import { MutationEvent } from '@core/entity/events';
+import { MutationEvent } from '@core/event/mutation';
 import { TaskService } from '@core/service/task.service';
 import { TeamService } from '@core/service/team.service';
 import { IAppState } from '@core/state/state';
