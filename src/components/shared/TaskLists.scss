@@ -4,6 +4,16 @@ $upcomingPrimary: #1e88e5;
 $inProgressPrimary: #ff7043;
 $deliveredPrimary: #43a047;
 
+.TaskListSection {
+    border: 4px solid transparent;
+    border-radius: 10px;
+
+    &.isReceiving {
+        cursor: pointer;
+        border: 4px solid #1e88e5;
+    }
+}
+
 .TaskLists {
     display: grid;
     overflow-y: hidden;
@@ -18,6 +28,7 @@ $deliveredPrimary: #43a047;
         overflow-y: hidden;
         flex-direction: column;
         height: 100%;
+        box-sizing: border-box;
 
         .SectionTopBar {
             margin-left: 14px;

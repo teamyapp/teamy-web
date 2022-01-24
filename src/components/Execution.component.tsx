@@ -56,14 +56,13 @@ interface State {
     potentialTaskOwners: User[];
     taskAdding?: Task;
     taskFilters: TaskFilters;
+    receivingSectionId?: string;
 }
 
 const acceptedRoutePatterns = [
     executionTabRoutePattern,
     executionTaskRoutePattern,
 ];
-
-console.log(acceptedRoutePatterns);
 
 export class ExecutionComponent extends Component<Props, State> {
     private readonly localStore: LocalStore<IAppState, MutationEvent>;
@@ -72,6 +71,10 @@ export class ExecutionComponent extends Component<Props, State> {
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
+
+    private dragEnterCount: number = 0;
+    private sourceSectionId?: string;
+    private draggingTaskId?: string;
 
     constructor(props: Props) {
         super(props);
@@ -293,6 +296,7 @@ export class ExecutionComponent extends Component<Props, State> {
                 return (
                     <PersonalStatusUI
                         deps={this.props.deps}
+                        receivingSectionId={this.state.receivingSectionId}
                         needAttentionTask={needAttention}
                         personalTasks={this.state.teamTasks.filter(
                             personalTasksFilter,
@@ -310,12 +314,17 @@ export class ExecutionComponent extends Component<Props, State> {
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
+                        onDragTaskStart={this.onDragTaskStart}
+                        onDropTask={this.onDropTask}
+                        onDragEnterSection={this.onDragEnterSection}
+                        onDragLeaveSection={this.onDragLeaveSection}
                     />
                 );
             case tabIds[1]:
                 return (
                     <KanbanUI
                         tasks={this.state.teamTasks.filter(teamTasksFilter)}
+                        receivingSectionId={this.state.receivingSectionId}
                         taskAdding={this.state.taskAdding}
                         taskSelectingOwner={this.state.taskSelectingOwner}
                         onAddClick={this.onTeamAddClick}
@@ -329,6 +338,10 @@ export class ExecutionComponent extends Component<Props, State> {
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
+                        onDragTaskStart={this.onDragTaskStart}
+                        onDropTask={this.onDropTask}
+                        onDragEnterSection={this.onDragEnterSection}
+                        onDragLeaveSection={this.onDragLeaveSection}
                     />
                 );
             default:
@@ -497,7 +510,7 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
-    private onDeleteTaskClick = (taskId: number | string): void => {
+    private onDeleteTaskClick = (taskId: string): void => {
         // don't care if the consumer is ready to pop, no await
         this.localStore.mutate({
             type: 'DeleteTask',
@@ -505,7 +518,7 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
-    private onStartTaskClick = (taskId: number | string): void => {
+    private onStartTaskClick = (taskId: string): void => {
         // don't care if the consumer is ready to pop, no await
         this.localStore.mutate({
             type: 'StartTask',
@@ -513,7 +526,7 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
-    private onCompleteTaskClick = (taskId: number | string): void => {
+    private onCompleteTaskClick = (taskId: string): void => {
         // don't care if the consumer is ready to pop, no await
         this.localStore.mutate({
             type: 'CompleteTask',
@@ -552,5 +565,61 @@ export class ExecutionComponent extends Component<Props, State> {
             taskOwnersListVisible: false,
             showPotentialTaskOwnersList: false,
         });
+    };
+
+    private onDragTaskStart = (sectionId: string, taskId: string) => {
+        this.sourceSectionId = sectionId;
+        this.draggingTaskId = taskId;
+    };
+
+    private onDropTask = (destSectionId: string) => {
+        if (this.sourceSectionId && this.draggingTaskId) {
+            switch (this.sourceSectionId) {
+                case 'upcoming':
+                    switch (destSectionId) {
+                        case 'needAttention':
+                        case 'inProgress':
+                            this.onStartTaskClick(this.draggingTaskId);
+                            break;
+                    }
+                    break;
+                case 'needAttention':
+                case 'inProgress':
+                    switch (destSectionId) {
+                        case 'delivered':
+                            this.onCompleteTaskClick(this.draggingTaskId);
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        this.onDragLeaveSection(destSectionId);
+        this.sourceSectionId = undefined;
+        this.draggingTaskId = undefined;
+    };
+
+    private onDragEnterSection = (sectionId: string) => {
+        if (sectionId !== this.sourceSectionId) {
+            if (this.state.receivingSectionId !== sectionId) {
+                this.setState({
+                    receivingSectionId: sectionId,
+                });
+            } else {
+                this.dragEnterCount++;
+            }
+        }
+    };
+
+    private onDragLeaveSection = (sectionId: string) => {
+        if (sectionId === this.state.receivingSectionId) {
+            if (this.dragEnterCount === 0) {
+                this.setState({
+                    receivingSectionId: undefined,
+                });
+            } else {
+                this.dragEnterCount--;
+            }
+        }
     };
 }

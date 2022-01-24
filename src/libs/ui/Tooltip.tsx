@@ -19,7 +19,8 @@ interface State {
 export class TooltipUI extends Component<Props, State> {
     private componentRef = createRef<HTMLDivElement>();
     private tooltipRef = createRef<HTMLDivElement>();
-    private timer?: ReturnType<typeof setTimeout>;
+    private outerTimer?: any;
+    private innerTimer?: any;
 
     constructor(props: Props) {
         super(props);
@@ -64,14 +65,18 @@ export class TooltipUI extends Component<Props, State> {
         );
     }
 
+    public componentWillUnmount() {
+        this.dispose();
+    }
+
     private onComponentMouseEnter = () => {
-        this.timer = setTimeout(() => {
+        this.outerTimer = setTimeout(() => {
             this.setState({
                 showTooltip: true,
             });
             this.componentRef.current?.focus();
 
-            setTimeout(() => {
+            this.innerTimer = setTimeout(() => {
                 const component = this.componentRef.current;
                 if (!component) {
                     return;
@@ -105,14 +110,23 @@ export class TooltipUI extends Component<Props, State> {
     };
 
     private hideTooltip() {
-        if (this.timer) {
-            clearTimeout(this.timer);
-            this.timer = undefined;
-        }
-
         this.setState({
             showTooltip: false,
             tooltipVisible: false,
         });
+
+        this.dispose();
+    }
+
+    private dispose() {
+        if (this.outerTimer) {
+            clearTimeout(this.outerTimer);
+            this.outerTimer = undefined;
+        }
+
+        if (this.innerTimer) {
+            clearTimeout(this.innerTimer);
+            this.innerTimer = undefined;
+        }
     }
 }

@@ -1,4 +1,5 @@
-import React, { Component, ReactElement } from 'react';
+import classNames from 'classnames';
+import React, { Component, DragEvent, ReactElement } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
@@ -9,6 +10,11 @@ import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
+import {
+    deliveredSectionId,
+    inProgressSectionId,
+    upcomingSectionId,
+} from '../sections';
 import styles from './Kanban.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
@@ -17,22 +23,27 @@ const inProgressColumnFilter = filters.inProgress;
 const deliveredColumnFilter = filters.delivered;
 
 interface IProps {
+    receivingSectionId?: string;
     taskAdding?: Task;
     tasks: Task[];
-    findPotentialOwnersForTask?: (taskId: number | string) => Promise<User[]>;
+    findPotentialOwnersForTask?: (taskId: string) => Promise<User[]>;
     taskSelectingOwner?: Task;
-    onViewTaskDetailClick?: (taskId: number | string) => void;
+    onViewTaskDetailClick?: (taskId: string) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number | string) => void;
-    onStartTaskClick?: (taskId: number | string) => void;
-    onCompleteTaskClick?: (taskId: number | string) => void;
+    onDeleteTaskClick?: (taskId: string) => void;
+    onStartTaskClick?: (taskId: string) => void;
+    onCompleteTaskClick?: (taskId: string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,
     ) => void;
+    onDragTaskStart?: (sectionId: string, taskId: string) => void;
+    onDropTask?: (sectionId: string) => void;
+    onDragEnterSection?: (sectionId: string) => void;
+    onDragLeaveSection?: (sectionId: string) => void;
 }
 
 export class KanbanUI extends Component<IProps> {
@@ -48,7 +59,16 @@ export class KanbanUI extends Component<IProps> {
         return (
             <div className={`${styles.TeamStatus} ${styles.TaskLists}`}>
                 <div
-                    className={`${styles.TaskListSection} ${styles.UpcomingSection}`}
+                    className={`${styles.TaskListSection} ${
+                        styles.UpcomingSection
+                    } ${classNames({
+                        [styles.isReceiving]:
+                            this.props.receivingSectionId === upcomingSectionId,
+                    })}`}
+                    onDragEnter={this.onDragEnterSection(upcomingSectionId)}
+                    onDragLeave={this.onDragLeaveSection(upcomingSectionId)}
+                    onDragOver={onDragOverSection}
+                    onDrop={this.onDropTask(upcomingSectionId)}
                 >
                     <SectionUI
                         title={'Upcoming'}
@@ -71,13 +91,27 @@ export class KanbanUI extends Component<IProps> {
                     >
                         <div className={styles.TaskList}>
                             {this.props.taskAdding &&
-                                this.renderNewTask()(this.props.taskAdding)}
-                            {upcoming.map(this.renderExistingTask())}
+                                this.renderNewTask(upcomingSectionId)(
+                                    this.props.taskAdding,
+                                )}
+                            {upcoming.map(
+                                this.renderExistingTask(upcomingSectionId),
+                            )}
                         </div>
                     </SectionUI>
                 </div>
                 <div
-                    className={`${styles.TaskListSection} ${styles.InProgressSection}`}
+                    className={`${styles.TaskListSection} ${
+                        styles.InProgressSection
+                    } ${classNames({
+                        [styles.isReceiving]:
+                            this.props.receivingSectionId ===
+                            inProgressSectionId,
+                    })}`}
+                    onDragEnter={this.onDragEnterSection(inProgressSectionId)}
+                    onDragLeave={this.onDragLeaveSection(inProgressSectionId)}
+                    onDragOver={onDragOverSection}
+                    onDrop={this.onDropTask(inProgressSectionId)}
                 >
                     <SectionUI
                         title={'In Progress'}
@@ -93,12 +127,24 @@ export class KanbanUI extends Component<IProps> {
                         }
                     >
                         <div className={styles.TaskList}>
-                            {inProgress.map(this.renderExistingTask())}
+                            {inProgress.map(
+                                this.renderExistingTask(inProgressSectionId),
+                            )}
                         </div>
                     </SectionUI>
                 </div>
                 <div
-                    className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
+                    className={`${styles.TaskListSection} ${
+                        styles.DeliveredSection
+                    } ${classNames({
+                        [styles.isReceiving]:
+                            this.props.receivingSectionId ===
+                            deliveredSectionId,
+                    })}`}
+                    onDragEnter={this.onDragEnterSection(deliveredSectionId)}
+                    onDragLeave={this.onDragLeaveSection(deliveredSectionId)}
+                    onDragOver={onDragOverSection}
+                    onDrop={this.onDropTask(deliveredSectionId)}
                 >
                     <SectionUI
                         title={'Delivered'}
@@ -114,7 +160,9 @@ export class KanbanUI extends Component<IProps> {
                         }
                     >
                         <div className={styles.TaskList}>
-                            {delivered.map(this.renderExistingTask())}
+                            {delivered.map(
+                                this.renderExistingTask(deliveredSectionId),
+                            )}
                         </div>
                     </SectionUI>
                 </div>
@@ -122,24 +170,32 @@ export class KanbanUI extends Component<IProps> {
         );
     }
 
-    private renderNewTask = (): ((task: Task) => ReactElement) => {
-        return this.renderTask(true, false, this.props.onCreateTask);
+    private renderNewTask = (
+        sectionId: string,
+    ): ((task: Task) => ReactElement) => {
+        return this.renderTask(sectionId, true, false, this.props.onCreateTask);
     };
 
-    private renderExistingTask = (): ((task: Task) => ReactElement) => {
-        return this.renderTask(false, true, this.props.onUpdateTask);
+    private renderExistingTask = (
+        sectionId: string,
+    ): ((task: Task) => ReactElement) => {
+        return this.renderTask(sectionId, false, true, this.props.onUpdateTask);
     };
 
     private renderTask = (
+        sectionId: string,
         isEditing: boolean,
         canViewDetail: boolean,
         onTaskFinishEditing?: (task: Task) => void,
     ): ((task: Task) => ReactElement) => {
         return (task: Task) => {
             return (
-                <div key={task.id}>
+                <div
+                    key={task.id}
+                    draggable={true}
+                    onDragStart={this.onDragTaskStart(sectionId, task.id)}
+                >
                     <TaskPreviewUI
-                        // multiCaster={this.props.multiCaster}
                         canViewDetail={canViewDetail}
                         task={task}
                         isEditing={isEditing}
@@ -159,4 +215,32 @@ export class KanbanUI extends Component<IProps> {
             );
         };
     };
+
+    private onDragTaskStart(sectionId: string, taskId: string) {
+        return () => {
+            this.props.onDragTaskStart?.call(null, sectionId, taskId);
+        };
+    }
+
+    private onDragEnterSection(sectionId: string) {
+        return () => {
+            this.props.onDragEnterSection?.call(null, sectionId);
+        };
+    }
+
+    private onDragLeaveSection(sectionId: string) {
+        return () => {
+            this.props.onDragLeaveSection?.call(null, sectionId);
+        };
+    }
+
+    private onDropTask(sectionId: string) {
+        return () => {
+            this.props.onDropTask?.call(null, sectionId);
+        };
+    }
+}
+
+function onDragOverSection(event: DragEvent) {
+    event.preventDefault();
 }
