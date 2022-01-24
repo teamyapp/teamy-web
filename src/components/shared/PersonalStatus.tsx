@@ -1,4 +1,5 @@
-import React, { Component, ReactElement } from 'react';
+import classNames from 'classnames';
+import React, { Component, DragEvent, ReactElement } from 'react';
 
 import { and, or } from '@lib/data/filter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -11,6 +12,11 @@ import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
 
+import {
+    deliveredSectionId,
+    needAttentionSectionId,
+    upcomingSectionId,
+} from '../sections';
 import styles from './PersonalStatus.module.scss';
 import { TaskPreviewUI } from './TaskPreview';
 
@@ -24,28 +30,32 @@ const upcomingColumnFilter = (needAttentionTaskId: number | string) =>
     );
 const deliveredColumnFilter = filters.delivered;
 
-interface IProps {
+interface Props {
     deps: Deps;
+    receivingSectionId?: string;
     taskAdding?: Task;
     needAttentionTask?: Task;
     personalTasks: Task[];
     taskSelectingOwner?: Task;
-
-    onViewTaskDetailClick?: (taskId: number | string) => void;
+    onViewTaskDetailClick?: (taskId: string) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number | string) => void;
-    onStartTaskClick?: (taskId: number | string) => void;
-    onCompleteTaskClick?: (taskId: number | string) => void;
+    onDeleteTaskClick?: (taskId: string) => void;
+    onStartTaskClick?: (taskId: string) => void;
+    onCompleteTaskClick?: (taskId: string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: IBoundingBoxFinder,
     ) => void;
+    onDragTaskStart?: (sectionId: string, taskId: string) => void;
+    onDropTask?: (sectionId: string) => void;
+    onDragEnterSection?: (sectionId: string) => void;
+    onDragLeaveSection?: (sectionId: string) => void;
 }
 
-export class PersonalStatusUI extends Component<IProps> {
+export class PersonalStatusUI extends Component<Props> {
     public render(): ReactElement {
         const delivered = this.props.personalTasks.filter(
             deliveredColumnFilter,
@@ -57,17 +67,43 @@ export class PersonalStatusUI extends Component<IProps> {
             .map(withUpcomingActions);
         return (
             <div className={styles.PersonalStatus}>
-                <div className={styles.NeedAttentionSection}>
+                <div
+                    className={`${styles.TaskListSection} ${
+                        styles.NeedAttentionSection
+                    } ${classNames({
+                        [styles.isReceiving]:
+                            this.props.receivingSectionId ===
+                            needAttentionSectionId,
+                    })}`}
+                    onDragEnter={this.onDragEnterSection(
+                        needAttentionSectionId,
+                    )}
+                    onDragLeave={this.onDragLeaveSection(
+                        needAttentionSectionId,
+                    )}
+                    onDragOver={onDragOverSection}
+                    onDrop={this.onDropTask(needAttentionSectionId)}
+                >
                     <SectionUI title={'Need Attention'}>
                         {this.props.needAttentionTask &&
-                            this.renderExistingTask()(
+                            this.renderExistingTask(needAttentionSectionId)(
                                 this.props.needAttentionTask,
                             )}
                     </SectionUI>
                 </div>
                 <div className={`${styles.TaskLists}`}>
                     <div
-                        className={`${styles.TaskListSection} ${styles.UpcomingSection}`}
+                        className={`${styles.TaskListSection} ${
+                            styles.UpcomingSection
+                        } ${classNames({
+                            [styles.isReceiving]:
+                                this.props.receivingSectionId ===
+                                upcomingSectionId,
+                        })}`}
+                        onDragEnter={this.onDragEnterSection(upcomingSectionId)}
+                        onDragLeave={this.onDragLeaveSection(upcomingSectionId)}
+                        onDragOver={onDragOverSection}
+                        onDrop={this.onDropTask(upcomingSectionId)}
                     >
                         <SectionUI
                             title={'Upcoming'}
@@ -90,13 +126,31 @@ export class PersonalStatusUI extends Component<IProps> {
                         >
                             <div className={styles.TaskList}>
                                 {this.props.taskAdding &&
-                                    this.renderNewTask()(this.props.taskAdding)}
-                                {upcoming.map(this.renderExistingTask())}
+                                    this.renderNewTask(upcomingSectionId)(
+                                        this.props.taskAdding,
+                                    )}
+                                {upcoming.map(
+                                    this.renderExistingTask(upcomingSectionId),
+                                )}
                             </div>
                         </SectionUI>
                     </div>
                     <div
-                        className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
+                        className={`${styles.TaskListSection} ${
+                            styles.DeliveredSection
+                        } ${classNames({
+                            [styles.isReceiving]:
+                                this.props.receivingSectionId ===
+                                deliveredSectionId,
+                        })}`}
+                        onDragEnter={this.onDragEnterSection(
+                            deliveredSectionId,
+                        )}
+                        onDragLeave={this.onDragLeaveSection(
+                            deliveredSectionId,
+                        )}
+                        onDragOver={onDragOverSection}
+                        onDrop={this.onDropTask(deliveredSectionId)}
                     >
                         <SectionUI
                             title={'Delivered'}
@@ -112,7 +166,9 @@ export class PersonalStatusUI extends Component<IProps> {
                             }
                         >
                             <div className={styles.TaskList}>
-                                {delivered.map(this.renderExistingTask())}
+                                {delivered.map(
+                                    this.renderExistingTask(deliveredSectionId),
+                                )}
                             </div>
                         </SectionUI>
                     </div>
@@ -121,22 +177,31 @@ export class PersonalStatusUI extends Component<IProps> {
         );
     }
 
-    private renderNewTask = (): ((task: Task) => ReactElement) => {
-        return this.renderTask(true, false, this.props.onCreateTask);
+    private renderNewTask = (
+        sectionId: string,
+    ): ((task: Task) => ReactElement) => {
+        return this.renderTask(sectionId, true, false, this.props.onCreateTask);
     };
 
-    private renderExistingTask = (): ((task: Task) => ReactElement) => {
-        return this.renderTask(false, true, this.props.onUpdateTask);
+    private renderExistingTask = (
+        sectionId: string,
+    ): ((task: Task) => ReactElement) => {
+        return this.renderTask(sectionId, false, true, this.props.onUpdateTask);
     };
 
     private renderTask = (
+        sectionId: string,
         isEditing: boolean,
         canViewDetail: boolean,
         onTaskFinishEditing?: (task: Task) => void,
     ): ((task: Task) => ReactElement) => {
         return (task: Task) => {
             return (
-                <div key={task.id}>
+                <div
+                    key={task.id}
+                    draggable={true}
+                    onDragStart={this.onDragTaskStart(sectionId, task.id)}
+                >
                     <TaskPreviewUI
                         canViewDetail={canViewDetail}
                         task={task}
@@ -157,6 +222,34 @@ export class PersonalStatusUI extends Component<IProps> {
             );
         };
     };
+
+    private onDragTaskStart(sectionId: string, taskId: string) {
+        return () => {
+            this.props.onDragTaskStart?.call(null, sectionId, taskId);
+        };
+    }
+
+    private onDragEnterSection(sectionId: string) {
+        return () => {
+            this.props.onDragEnterSection?.call(null, sectionId);
+        };
+    }
+
+    private onDragLeaveSection(sectionId: string) {
+        return () => {
+            this.props.onDragLeaveSection?.call(null, sectionId);
+        };
+    }
+
+    private onDropTask(sectionId: string) {
+        return () => {
+            this.props.onDropTask?.call(null, sectionId);
+        };
+    }
+}
+
+function onDragOverSection(event: DragEvent) {
+    event.preventDefault();
 }
 
 function withUpcomingActions(task: Task): Task {
