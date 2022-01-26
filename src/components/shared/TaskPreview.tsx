@@ -10,8 +10,8 @@ import React, {
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
+import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
-import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { FormatService } from '@core/service/format.service';
@@ -33,7 +33,7 @@ interface IProps {
     onCompleteTaskClick?: (taskId: string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
-        findAlignTargetBoundBox: IBoundingBoxFinder,
+        findAlignTargetBoundBox: BoundingBoxFinder,
     ) => void;
 }
 

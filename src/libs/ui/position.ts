@@ -5,6 +5,6 @@ export interface Rect {
     height: number;
 }
 
-export interface IBoundingBoxFinder {
+export interface BoundingBoxFinder {
     (): Rect;
 }
