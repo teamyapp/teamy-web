@@ -38,13 +38,6 @@ export function between(
             return false;
         }
         const date = new Date(dateString);
-
-        console.log(
-            dateString,
-            date.toLocaleString(),
-            begin?.toLocaleString(),
-            end?.toLocaleString(),
-        );
         if (!begin) {
             return date.getTime() <= end!.getTime();
         } else if (!end) {
@@ -52,7 +45,7 @@ export function between(
         } else {
             return (
                 begin.getTime() <= date.getTime() &&
-                date.getTime() <= end.getTime() + 1
+                date.getTime() <= end.getTime()
             );
         }
     };
