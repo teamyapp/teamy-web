@@ -191,6 +191,12 @@ export class KanbanUI extends Component<IProps> {
         onTaskFinishEditing?: (task: Task) => void,
     ): ((task: Task) => ReactElement) => {
         return (task: Task) => {
+            const taskFinishEditing = (task: Task) => {
+                this.props.deps.dragAndDropController.turnOnDragging(
+                    draggableTask,
+                );
+                onTaskFinishEditing?.call(null, task);
+            };
             return (
                 <div key={task.id}>
                     <Draggable
@@ -209,7 +215,8 @@ export class KanbanUI extends Component<IProps> {
                                 this.props.taskSelectingOwner?.id === task.id
                             }
                             onTaskDetailClick={this.props.onViewTaskDetailClick}
-                            onTaskFinishEditing={onTaskFinishEditing}
+                            onTaskStartEditing={this.onTaskStartEditing}
+                            onTaskFinishEditing={taskFinishEditing}
                             onDeleteTaskClick={this.props.onDeleteTaskClick}
                             onStartTaskClick={this.props.onStartTaskClick}
                             onCompleteTaskClick={this.props.onCompleteTaskClick}
@@ -221,5 +228,9 @@ export class KanbanUI extends Component<IProps> {
                 </div>
             );
         };
+    };
+
+    private onTaskStartEditing = (taskId: string) => {
+        this.props.deps.dragAndDropController.turnOffDragging(draggableTask);
     };
 }
