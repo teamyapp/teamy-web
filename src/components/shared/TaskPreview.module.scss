@@ -51,10 +51,24 @@ $edgeSpace: 10px;
         }
 
         .DueAt {
-            font-size: 16px;
+            background-color: #546e7a;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            --icon-size: 18px;
+            --icon-color: white;
+            color: white;
             font-weight: 500;
-            margin-top: 6px;
-            color: #585858;
+
+            .Time {
+                font-size: 16px;
+                margin-left: 4px;
+            }
+
+            &.PastDue {
+                background-color: #c62828;
+            }
         }
 
         .Attributes {
@@ -115,6 +129,11 @@ $edgeSpace: 10px;
         .Id {
             background-color: #d6f0ff;
         }
+    }
+
+    .BottomRow {
+        display: flex;
+        margin-top: 10px;
     }
 }
 

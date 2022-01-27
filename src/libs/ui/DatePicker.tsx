@@ -29,32 +29,42 @@ const defaultMaxYear = 2100;
 const dateFormat = 'MM/DD/YYYY';
 
 const today = new Date();
+today.setHours(0);
+today.setUTCMinutes(0);
+today.setSeconds(0);
+today.setMilliseconds(0);
 
-interface IProps {
+interface Props {
     label?: string;
+    value?: Date;
     minYear?: number;
     maxYear?: number;
     onChange?: (date?: Date) => void;
 }
 
-interface IState {
+interface State {
+    value: string;
     showCalendar: boolean;
     showSelectYear: boolean;
     selectedDate: Date;
     shownDate: Date;
 }
 
-export class DatePickerUI extends Component<IProps, IState> {
+export class DatePickerUI extends Component<Props, State> {
     private textFieldRef = createRef<TextFieldUI>();
     private calendarRef = createRef<HTMLDivElement>();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
+        const date = this.props.value || today;
         this.state = {
+            value: this.props.value
+                ? moment(this.props.value).format(dateFormat)
+                : '',
             showCalendar: false,
             showSelectYear: false,
-            selectedDate: today,
-            shownDate: today,
+            selectedDate: date,
+            shownDate: date,
         };
     }
 
@@ -87,6 +97,7 @@ export class DatePickerUI extends Component<IProps, IState> {
                 <TextFieldUI
                     ref={this.textFieldRef}
                     label={this.props.label}
+                    value={this.state.value}
                     placeholder={dateFormat.toLowerCase()}
                     icon={'date_range'}
                     onIconClick={this.onCalendarIconClick}
