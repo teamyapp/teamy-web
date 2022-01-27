@@ -18,7 +18,6 @@ import { TaskAction } from '@core/entity/taskAction';
 import { FormatService } from '@core/service/format.service';
 import { goalLengthLimit } from '@core/service/task.service';
 
-import { SpacerUI } from '../../libs/ui/Spacer';
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
 
