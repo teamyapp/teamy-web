@@ -245,15 +245,13 @@ export class TaskPreviewUI extends Component<IProps, IState> {
     }
 
     private renderDueDate = () => {
-        const dueAt = this.props.task.dueAt
-            ? new Date(this.props.task.dueAt)
-            : undefined;
-        const now = new Date().getTime();
+        const dueAt = byTheEndOf(this.props.task.dueAt);
+        const now = new Date();
         return (
             dueAt && (
                 <div
                     className={`${styles.DueAt} ${classNames({
-                        [styles.PastDue]: dueAt.getTime() < now,
+                        [styles.PastDue]: dueAt.getTime() < now.getTime(),
                     })}`}
                 >
                     <MaterialIconUI>alarm</MaterialIconUI>
@@ -336,4 +334,15 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             },
         );
     };
+}
+
+function byTheEndOf(dateString?: string): Date | undefined {
+    if (!dateString) {
+        return undefined;
+    }
+    const date = new Date(dateString);
+    date?.setHours(23);
+    date?.setMinutes(59);
+    date?.setSeconds(59);
+    return date;
 }
