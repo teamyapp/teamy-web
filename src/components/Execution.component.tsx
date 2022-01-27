@@ -604,78 +604,22 @@ export class ExecutionComponent extends Component<Props, State> {
         task: Task,
     ) {
         switch (srcSectionId) {
-            case 'upcoming':
+            case upcomingSectionId:
                 switch (destSectionId) {
-                    case 'needAttention':
-                    case 'inProgress':
+                    case needAttentionSectionId:
+                    case inProgressSectionId:
                         this.onStartTaskClick(task.id);
                         break;
                 }
                 break;
-            case 'needAttention':
-            case 'inProgress':
+            case needAttentionSectionId:
+            case inProgressSectionId:
                 switch (destSectionId) {
-                    case 'delivered':
+                    case deliveredSectionId:
                         this.onCompleteTaskClick(task.id);
                         break;
                 }
                 break;
         }
     }
-
-    private onDragTaskStart = (sectionId: string, taskId: string) => {
-        this.sourceSectionId = sectionId;
-        this.draggingTaskId = taskId;
-    };
-
-    private onDropTask = (destSectionId: string) => {
-        if (this.sourceSectionId && this.draggingTaskId) {
-            switch (this.sourceSectionId) {
-                case 'upcoming':
-                    switch (destSectionId) {
-                        case 'needAttention':
-                        case 'inProgress':
-                            this.onStartTaskClick(this.draggingTaskId);
-                            break;
-                    }
-                    break;
-                case 'needAttention':
-                case 'inProgress':
-                    switch (destSectionId) {
-                        case 'delivered':
-                            this.onCompleteTaskClick(this.draggingTaskId);
-                            break;
-                    }
-                    break;
-            }
-        }
-
-        this.onDragLeaveSection(destSectionId);
-        this.sourceSectionId = undefined;
-        this.draggingTaskId = undefined;
-    };
-
-    private onDragEnterSection = (sectionId: string) => {
-        if (sectionId !== this.sourceSectionId) {
-            if (this.state.receivingSectionId !== sectionId) {
-                this.setState({
-                    receivingSectionId: sectionId,
-                });
-            } else {
-                this.dragEnterCount++;
-            }
-        }
-    };
-
-    private onDragLeaveSection = (sectionId: string) => {
-        if (sectionId === this.state.receivingSectionId) {
-            if (this.dragEnterCount === 0) {
-                this.setState({
-                    receivingSectionId: undefined,
-                });
-            } else {
-                this.dragEnterCount--;
-            }
-        }
-    };
 }

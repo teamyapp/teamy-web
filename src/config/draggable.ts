@@ -1,4 +1,4 @@
-import { Size, SizeTransformer } from '../libs/dragAndDrop/size';
+import { Size, SizeTransformer } from '@lib/dragAndDrop/size';
 
 export const draggableTask = 'task';
 
