@@ -12,6 +12,7 @@ import {
 } from './DragAndDropController';
 
 const dragMinMouseMove = 5;
+const mainButton = 0;
 
 interface Props {
     dragAndDropController: DragAndDropController;
@@ -96,6 +97,9 @@ export class Draggable extends Component<Props, State> {
     }
 
     private onMouseDown = (event: ReactMouseEvent) => {
+        if (event.button !== mainButton) {
+            return;
+        }
         if (!this.isDraggingEnabled) {
             return;
         }
