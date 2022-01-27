@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import moment from 'moment';
 import React, {
     ChangeEvent,
     Component,
@@ -17,6 +18,7 @@ import { TaskAction } from '@core/entity/taskAction';
 import { FormatService } from '@core/service/format.service';
 import { goalLengthLimit } from '@core/service/task.service';
 
+import { SpacerUI } from '../../libs/ui/Spacer';
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
 
@@ -81,12 +83,9 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                         </div>
                     )}
                     {this.renderGoal()}
-                    {this.props.task.dueAt && (
-                        <div className={styles.DueAt}>
-                            Due:{' '}
-                            {new Date(this.props.task.dueAt).toLocaleString()}
-                        </div>
-                    )}
+                    <div className={styles.BottomRow}>
+                        {this.renderDueDate()}
+                    </div>
                     {/*<div className={styles.Attributes}>*/}
                     {/*    {this.state.task.effort && (*/}
                     {/*        <span className={styles.EffortAttribute}>*/}
@@ -245,6 +244,34 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         }
         return actions.map(this.renderAction);
     }
+
+    private renderDueDate = () => {
+        const dueAt = this.props.task.dueAt
+            ? new Date(this.props.task.dueAt)
+            : undefined;
+        const now = new Date().getTime();
+        return (
+            dueAt && (
+                <div
+                    className={`${styles.DueAt} ${classNames({
+                        [styles.PastDue]: dueAt.getTime() < now,
+                    })}`}
+                >
+                    <MaterialIconUI>alarm</MaterialIconUI>
+                    <div className={styles.Time}>
+                        {moment(this.props.task.dueAt).calendar({
+                            lastDay: '[Yesterday]',
+                            sameDay: '[Today]',
+                            nextDay: '[Tomorrow]',
+                            lastWeek: '[Last] dddd',
+                            nextWeek: 'dddd',
+                            sameElse: 'L',
+                        })}
+                    </div>
+                </div>
+            )
+        );
+    };
 
     private onGoalBlur = () => {
         this.finishEditing();

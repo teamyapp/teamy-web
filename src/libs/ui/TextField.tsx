@@ -7,7 +7,7 @@ import styles from './TextField.module.scss';
 
 const defaultMaxLength = 524288;
 
-interface IProps {
+interface Props {
     value?: string;
     label?: string;
     placeholder?: string;
@@ -20,15 +20,15 @@ interface IProps {
     onIconClick?: () => void;
 }
 
-interface IState {
+interface State {
     isFocused: boolean;
     value: string;
 }
 
-export class TextFieldUI extends Component<IProps, IState> {
+export class TextFieldUI extends Component<Props, State> {
     private readonly textInputRef = createRef<HTMLInputElement>();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             isFocused: false,

@@ -37,16 +37,22 @@ export function between(
         if (!dateString) {
             return false;
         }
-        const date = Date.parse(dateString);
+        const date = new Date(dateString);
 
+        console.log(
+            dateString,
+            date.toLocaleString(),
+            begin?.toLocaleString(),
+            end?.toLocaleString(),
+        );
         if (!begin) {
-            return date <= end!.getUTCMilliseconds();
+            return date.getTime() <= end!.getTime();
         } else if (!end) {
-            return begin.getUTCMilliseconds() <= date;
+            return begin.getTime() <= date.getTime();
         } else {
             return (
-                begin.getUTCMilliseconds() <= date &&
-                date <= end.getUTCMilliseconds()
+                begin.getTime() <= date.getTime() &&
+                date.getTime() <= end.getTime() + 1
             );
         }
     };

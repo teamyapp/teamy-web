@@ -48,6 +48,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly modalRef = createRef<ModalUI>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
+    private readonly dueAtDatePicker = createRef<DatePickerUI>();
 
     constructor(props: Props) {
         super(props);
@@ -58,6 +59,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     public render(): ReactElement {
+        const dueAt = this.state.task?.dueAt
+            ? new Date(this.state.task.dueAt)
+            : undefined;
         return (
             <ModalUI ref={this.modalRef} onClose={this.props.onClose}>
                 {this.state.task && (
@@ -130,7 +134,11 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                 <div className={styles.RightSection}>
                                     <div className={styles.Attributes}>
                                         <div className={styles.Row}>
-                                            <DatePickerUI label={'Due at'} />
+                                            <DatePickerUI
+                                                ref={this.dueAtDatePicker}
+                                                label={'Due at'}
+                                                value={dueAt}
+                                            />
                                         </div>
                                         {/*<div*/}
                                         {/*    className={`${styles.Row} ${styles.Effort}`}*/}
@@ -215,6 +223,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
+            const dueAt = this.dueAtDatePicker.current?.value?.toISOString();
             await this.props.deps.localStore.mutate({
                 type: 'UpdateTask',
                 task: Object.assign<any, Task, Partial<Task>>(
@@ -222,6 +231,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                     this.state.task,
                     {
                         context: this.markdownEditorRef.current?.content,
+                        dueAt,
                     },
                 ),
             });
