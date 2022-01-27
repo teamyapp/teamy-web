@@ -6,7 +6,6 @@ $deliveredPrimary: #43a047;
 $borderRadius: 10px;
 
 .TaskListSection {
-    border: 4px solid transparent;
     border-radius: $borderRadius;
     --border-radius: #{$borderRadius};
 
@@ -23,7 +22,7 @@ $borderRadius: 10px;
     height: 100%;
     grid-auto-rows: min-content;
     grid-template-rows: 1fr;
-    grid-column-gap: $sectionSpace;
+    grid-column-gap: $sectionSpace - 4px;
 
     > .TaskListSection {
         display: flex;
