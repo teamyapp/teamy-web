@@ -1,3 +1,4 @@
+import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
@@ -6,6 +7,7 @@ import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { LocalStore } from '@lib/store/localStore';
 
 import { getConfig } from '@core/config/config';
+import { shortcuts } from '@core/config/shortcut';
 import { getEnvironment } from '@core/env/environment';
 import * as mutationEvents from '@core/event/mutation';
 import { UserActionEvent } from '@core/event/userAction';
@@ -18,8 +20,6 @@ import { UserService } from '@core/service/user.service';
 import { IAppState } from '@core/state/state';
 import { createStore } from '@core/state/store';
 
-import { shortcuts } from '../config/shortcut';
-
 export interface Deps {
     taskService: TaskService;
     teamService: TeamService;
@@ -30,6 +30,7 @@ export interface Deps {
     localStore: LocalStore<IAppState, mutationEvents.MutationEvent>;
     router: Router;
     shortcutMonitor: ShortcutMonitor<UserActionEvent>;
+    dragAndDropController: DragAndDropController;
 }
 
 export function initDeps(): Deps {
@@ -47,14 +48,15 @@ export function initDeps(): Deps {
     const commentService = new CommentService(teamyGraphQLClient);
     const pageService = new PageService(teamyGraphQLClient);
     const localStore = createStore();
-    const router = createBrowserRouter();
-    const shortcutMonitor = new ShortcutMonitor(shortcuts);
     new NetworkStateSynchronizer(
         localStore,
         taskService,
         teamService,
         pageService,
     );
+    const router = createBrowserRouter();
+    const shortcutMonitor = new ShortcutMonitor(shortcuts);
+    const dragAndDropController = new DragAndDropController();
     return {
         taskService,
         teamService,
@@ -65,5 +67,6 @@ export function initDeps(): Deps {
         localStore,
         router,
         shortcutMonitor,
+        dragAndDropController,
     };
 }

@@ -1,6 +1,6 @@
-import { UserActionEvent } from '@core/event/userAction';
-
 import { Shortcut } from '@lib/shortcut/monitor';
+
+import { UserActionEvent } from '@core/event/userAction';
 
 export const shortcuts: Shortcut<UserActionEvent>[] = [
     {

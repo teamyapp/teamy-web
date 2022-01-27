@@ -10,8 +10,8 @@ import React, {
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
+import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
-import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { FormatService } from '@core/service/format.service';
@@ -25,15 +25,15 @@ interface IProps {
     task: Task;
     isEditing?: boolean;
     isOwnerSelected: boolean;
-
     onTaskDetailClick?: (taskId: string) => void;
+    onTaskStartEditing?: (taskId: string) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: string) => void;
     onStartTaskClick?: (taskId: string) => void;
     onCompleteTaskClick?: (taskId: string) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
-        findAlignTargetBoundBox: IBoundingBoxFinder,
+        findAlignTargetBoundBox: BoundingBoxFinder,
     ) => void;
 }
 
@@ -273,6 +273,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             editingTask: this.props.task,
             isEditing: true,
         });
+        this.props.onTaskStartEditing?.call(null, this.props.task.id);
     };
 
     private finishEditing() {

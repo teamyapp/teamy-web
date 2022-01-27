@@ -20,6 +20,7 @@
             "@lib/data/*": ["libs/data/*"],
             "@lib/router/*": ["libs/router/*"],
             "@lib/shortcut/*": ["libs/shortcut/*"],
+            "@lib/dragAndDrop/*": ["libs/dragAndDrop/*"],
             "@lib/testing/*": ["libs/testing/*"]
         }
     }

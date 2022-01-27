@@ -2,12 +2,15 @@ import React, { Component, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { and } from '@lib/data/filter';
+import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { LocalStore } from '@lib/store/localStore';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
+import { BoundingBoxFinder } from '@lib/ui/position';
 
+import { draggableTask } from '@core/config/draggable';
 import {
     executionTabPath,
     executionTabRoutePattern,
@@ -16,10 +19,15 @@ import {
     getTabId,
     getTaskId,
 } from '@core/config/routing';
+import {
+    deliveredSectionId,
+    inProgressSectionId,
+    needAttentionSectionId,
+    upcomingSectionId,
+} from '@core/config/sections';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
-import { IBoundingBoxFinder } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { User } from '@core/entity/user';
@@ -37,6 +45,13 @@ const taskOwnersListHorizontalOffset = 10;
 
 const tabIds = ['me', 'team'];
 
+const sectionIds = [
+    upcomingSectionId,
+    inProgressSectionId,
+    deliveredSectionId,
+    needAttentionSectionId,
+];
+
 interface Props {
     deps: Deps;
     teamId: string;
@@ -45,7 +60,7 @@ interface Props {
 interface State {
     activeTabIndex: number;
     showPotentialTaskOwnersList: boolean;
-    findTaskOwnersAlignTargetBoundBox?: IBoundingBoxFinder;
+    findTaskOwnersAlignTargetBoundBox?: BoundingBoxFinder;
     taskOwnersListVisible: boolean;
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
@@ -71,6 +86,7 @@ export class ExecutionComponent extends Component<Props, State> {
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
+    private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent | undefined>;
 
     private dragEnterCount: number = 0;
     private sourceSectionId?: string;
@@ -231,6 +247,29 @@ export class ExecutionComponent extends Component<Props, State> {
                 }
             }
         })().then();
+
+        this.dragAndDropEventChan =
+            this.props.deps.dragAndDropController.subscribeDragAndDropEvent();
+        (async () => {
+            while (true) {
+                const event = await this.dragAndDropEventChan?.pop();
+                if (event === undefined) {
+                    return;
+                }
+                if (
+                    event.type === 'Drop' &&
+                    sectionIds.includes(event.srcContainId) &&
+                    sectionIds.includes(event.destContainerId) &&
+                    event.target.type === draggableTask
+                ) {
+                    this.processTaskDrop(
+                        event.srcContainId,
+                        event.destContainerId,
+                        event.target.data,
+                    );
+                }
+            }
+        })().then();
     }
 
     public componentDidUpdate(
@@ -249,6 +288,7 @@ export class ExecutionComponent extends Component<Props, State> {
         window.removeEventListener('resize', this.onWindowResize);
         this.stateChangeChan?.close();
         this.routeChangeChan?.close();
+        this.dragAndDropEventChan?.close();
     }
 
     private renderTabContent(tabId: string): ReactElement | null {
@@ -296,7 +336,6 @@ export class ExecutionComponent extends Component<Props, State> {
                 return (
                     <PersonalStatusUI
                         deps={this.props.deps}
-                        receivingSectionId={this.state.receivingSectionId}
                         needAttentionTask={needAttention}
                         personalTasks={this.state.teamTasks.filter(
                             personalTasksFilter,
@@ -314,17 +353,13 @@ export class ExecutionComponent extends Component<Props, State> {
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
-                        onDragTaskStart={this.onDragTaskStart}
-                        onDropTask={this.onDropTask}
-                        onDragEnterSection={this.onDragEnterSection}
-                        onDragLeaveSection={this.onDragLeaveSection}
                     />
                 );
             case tabIds[1]:
                 return (
                     <KanbanUI
+                        deps={this.props.deps}
                         tasks={this.state.teamTasks.filter(teamTasksFilter)}
-                        receivingSectionId={this.state.receivingSectionId}
                         taskAdding={this.state.taskAdding}
                         taskSelectingOwner={this.state.taskSelectingOwner}
                         onAddClick={this.onTeamAddClick}
@@ -338,10 +373,6 @@ export class ExecutionComponent extends Component<Props, State> {
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
-                        onDragTaskStart={this.onDragTaskStart}
-                        onDropTask={this.onDropTask}
-                        onDragEnterSection={this.onDragEnterSection}
-                        onDragLeaveSection={this.onDragLeaveSection}
                     />
                 );
             default:
@@ -380,7 +411,7 @@ export class ExecutionComponent extends Component<Props, State> {
 
     private onShowPotentialTaskOwners = async (
         task: Task,
-        findAlignTargetBoundBox: IBoundingBoxFinder,
+        findAlignTargetBoundBox: BoundingBoxFinder,
     ) => {
         const owners = await this.props.deps.teamService.fetchTeamMembers();
         this.setState({
@@ -567,59 +598,28 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
-    private onDragTaskStart = (sectionId: string, taskId: string) => {
-        this.sourceSectionId = sectionId;
-        this.draggingTaskId = taskId;
-    };
-
-    private onDropTask = (destSectionId: string) => {
-        if (this.sourceSectionId && this.draggingTaskId) {
-            switch (this.sourceSectionId) {
-                case 'upcoming':
-                    switch (destSectionId) {
-                        case 'needAttention':
-                        case 'inProgress':
-                            this.onStartTaskClick(this.draggingTaskId);
-                            break;
-                    }
-                    break;
-                case 'needAttention':
-                case 'inProgress':
-                    switch (destSectionId) {
-                        case 'delivered':
-                            this.onCompleteTaskClick(this.draggingTaskId);
-                            break;
-                    }
-                    break;
-            }
+    private processTaskDrop(
+        srcSectionId: string,
+        destSectionId: string,
+        task: Task,
+    ) {
+        switch (srcSectionId) {
+            case upcomingSectionId:
+                switch (destSectionId) {
+                    case needAttentionSectionId:
+                    case inProgressSectionId:
+                        this.onStartTaskClick(task.id);
+                        break;
+                }
+                break;
+            case needAttentionSectionId:
+            case inProgressSectionId:
+                switch (destSectionId) {
+                    case deliveredSectionId:
+                        this.onCompleteTaskClick(task.id);
+                        break;
+                }
+                break;
         }
-
-        this.onDragLeaveSection(destSectionId);
-        this.sourceSectionId = undefined;
-        this.draggingTaskId = undefined;
-    };
-
-    private onDragEnterSection = (sectionId: string) => {
-        if (sectionId !== this.sourceSectionId) {
-            if (this.state.receivingSectionId !== sectionId) {
-                this.setState({
-                    receivingSectionId: sectionId,
-                });
-            } else {
-                this.dragEnterCount++;
-            }
-        }
-    };
-
-    private onDragLeaveSection = (sectionId: string) => {
-        if (sectionId === this.state.receivingSectionId) {
-            if (this.dragEnterCount === 0) {
-                this.setState({
-                    receivingSectionId: undefined,
-                });
-            } else {
-                this.dragEnterCount--;
-            }
-        }
-    };
+    }
 }

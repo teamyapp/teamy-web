@@ -13,10 +13,10 @@ import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 import { TextFieldUI } from '@lib/ui/TextField';
+import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { Deps } from '@core/dep/deps';
 import { Message } from '@core/entity/message';
-import { IBoundingBoxFinder, Rect } from '@core/entity/position';
 import { Task } from '@core/entity/task';
 import { FormatService } from '@core/service/format.service';
 import { goalLengthLimit } from '@core/service/task.service';
@@ -33,7 +33,7 @@ interface Props {
     onClose?: () => void;
     onShowPotentialTaskOwners?: (
         task: Task,
-        findAlignTargetBoundBox: IBoundingBoxFinder,
+        findAlignTargetBoundBox: BoundingBoxFinder,
     ) => void;
 }
 

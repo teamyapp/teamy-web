@@ -1,3 +1,8 @@
+export interface Point {
+    left: number;
+    top: number;
+}
+
 export interface Rect {
     left: number;
     top: number;
@@ -5,6 +10,6 @@ export interface Rect {
     height: number;
 }
 
-export interface IBoundingBoxFinder {
+export interface BoundingBoxFinder {
     (): Rect;
 }
