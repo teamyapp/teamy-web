@@ -8,7 +8,10 @@ import { SectionUI } from '@lib/ui/Section';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
-import { draggableTask } from '@core/config/draggable';
+import {
+    draggableTask,
+    sectionItemSizeTransformer,
+} from '@core/config/draggable';
 import {
     deliveredSectionId,
     needAttentionSectionId,
@@ -73,6 +76,7 @@ export class PersonalStatusUI extends Component<Props> {
                         }
                         containerId={needAttentionSectionId}
                         itemType={draggableTask}
+                        itemSizeTransformer={sectionItemSizeTransformer}
                     >
                         <SectionUI title={'Need Attention'}>
                             {this.props.needAttentionTask &&
@@ -92,6 +96,7 @@ export class PersonalStatusUI extends Component<Props> {
                             }
                             containerId={upcomingSectionId}
                             itemType={draggableTask}
+                            itemSizeTransformer={sectionItemSizeTransformer}
                         >
                             <SectionUI
                                 title={'Upcoming'}
@@ -135,6 +140,7 @@ export class PersonalStatusUI extends Component<Props> {
                             }
                             containerId={deliveredSectionId}
                             itemType={draggableTask}
+                            itemSizeTransformer={sectionItemSizeTransformer}
                         >
                             <SectionUI
                                 title={'Delivered'}
@@ -182,6 +188,10 @@ export class PersonalStatusUI extends Component<Props> {
         canViewDetail: boolean,
         onTaskFinishEditing?: (task: Task) => void,
     ): ((task: Task) => ReactElement) => {
+        const taskFinishEditing = (task: Task) => {
+            this.props.deps.dragAndDropController.turnOnDragging(draggableTask);
+            onTaskFinishEditing?.call(null, task);
+        };
         return (task: Task) => {
             return (
                 <div key={task.id}>
@@ -201,7 +211,8 @@ export class PersonalStatusUI extends Component<Props> {
                                 this.props.taskSelectingOwner?.id === task.id
                             }
                             onTaskDetailClick={this.props.onViewTaskDetailClick}
-                            onTaskFinishEditing={onTaskFinishEditing}
+                            onTaskStartEditing={this.onTaskStartEditing}
+                            onTaskFinishEditing={taskFinishEditing}
                             onDeleteTaskClick={this.props.onDeleteTaskClick}
                             onStartTaskClick={this.props.onStartTaskClick}
                             onCompleteTaskClick={this.props.onCompleteTaskClick}
@@ -213,6 +224,10 @@ export class PersonalStatusUI extends Component<Props> {
                 </div>
             );
         };
+    };
+
+    private onTaskStartEditing = (taskId: string) => {
+        this.props.deps.dragAndDropController.turnOffDragging(draggableTask);
     };
 }
 

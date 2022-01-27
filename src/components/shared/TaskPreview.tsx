@@ -25,8 +25,8 @@ interface IProps {
     task: Task;
     isEditing?: boolean;
     isOwnerSelected: boolean;
-
     onTaskDetailClick?: (taskId: string) => void;
+    onTaskStartEditing?: (taskId: string) => void;
     onTaskFinishEditing?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: string) => void;
     onStartTaskClick?: (taskId: string) => void;
@@ -273,6 +273,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             editingTask: this.props.task,
             isEditing: true,
         });
+        this.props.onTaskStartEditing?.call(null, this.props.task.id);
     };
 
     private finishEditing() {

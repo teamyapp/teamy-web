@@ -7,7 +7,10 @@ import { SectionUI } from '@lib/ui/Section';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
-import { draggableTask } from '@core/config/draggable';
+import {
+    draggableTask,
+    sectionItemSizeTransformer,
+} from '@core/config/draggable';
 import {
     deliveredSectionId,
     inProgressSectionId,
@@ -66,6 +69,7 @@ export class KanbanUI extends Component<IProps> {
                         }
                         containerId={upcomingSectionId}
                         itemType={draggableTask}
+                        itemSizeTransformer={sectionItemSizeTransformer}
                     >
                         <SectionUI
                             title={'Upcoming'}
@@ -107,6 +111,7 @@ export class KanbanUI extends Component<IProps> {
                         }
                         containerId={inProgressSectionId}
                         itemType={draggableTask}
+                        itemSizeTransformer={sectionItemSizeTransformer}
                     >
                         <SectionUI
                             title={'In Progress'}
@@ -140,6 +145,7 @@ export class KanbanUI extends Component<IProps> {
                         }
                         containerId={deliveredSectionId}
                         itemType={draggableTask}
+                        itemSizeTransformer={sectionItemSizeTransformer}
                     >
                         <SectionUI
                             title={'Delivered'}
