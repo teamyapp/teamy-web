@@ -1,0 +1,10 @@
+@import '../TaskLists.module.scss';
+
+.TaskListSection {
+    display: flex;
+    height: 100%;
+    width: 100%;
+
+    --title-color: #cc18ae;
+    --background-color: #fff6ff;
+}

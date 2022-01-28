@@ -1,28 +1,19 @@
 import React, { Component, ReactElement } from 'react';
 
 import { and, or } from '@lib/data/filter';
-import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
 import { Draggable } from '@lib/dragAndDrop/Draggable';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { SectionUI } from '@lib/ui/Section';
-import { SpacerUI } from '@lib/ui/Spacer';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
-import {
-    draggableTask,
-    sectionItemSizeTransformer,
-} from '@core/config/draggable';
-import {
-    deliveredSectionId,
-    needAttentionSectionId,
-    upcomingSectionId,
-} from '@core/config/sections';
+import { draggableTask } from '@core/config/draggable';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
 
 import styles from './PersonalStatus.module.scss';
+import { DeliveredSection } from './TaskListSections/DeliveredSection';
+import { NeedAttentionSection } from './TaskListSections/NeedAttentionSection';
+import { UpcomingSection } from './TaskListSections/UpcomingSection';
 import { TaskPreviewUI } from './TaskPreview';
 
 const upcomingColumnFilter = (needAttentionTaskId: number | string) =>
@@ -57,10 +48,10 @@ interface Props {
 
 export class PersonalStatusUI extends Component<Props> {
     public render(): ReactElement {
-        const delivered = this.props.personalTasks.filter(
+        const deliveredTasks = this.props.personalTasks.filter(
             deliveredColumnFilter,
         );
-        const upcoming = this.props.personalTasks
+        const upcomingTasks = this.props.personalTasks
             .filter(
                 upcomingColumnFilter(this.props.needAttentionTask?.id || -1),
             )
@@ -70,111 +61,68 @@ export class PersonalStatusUI extends Component<Props> {
                 <div
                     className={`${styles.TaskListSection} ${styles.NeedAttentionSection}`}
                 >
-                    <DragAndDropContainer
+                    <NeedAttentionSection
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
-                        containerId={needAttentionSectionId}
-                        itemType={draggableTask}
-                        itemSizeTransformer={sectionItemSizeTransformer}
-                    >
-                        <SectionUI title={'Need Attention'}>
-                            {this.props.needAttentionTask &&
-                                this.renderExistingTask(needAttentionSectionId)(
-                                    this.props.needAttentionTask,
-                                )}
-                        </SectionUI>
-                    </DragAndDropContainer>
+                        needAttentionTask={this.props.needAttentionTask}
+                        taskSelectingOwner={this.props.taskSelectingOwner}
+                        onUpdateTask={this.props.onUpdateTask}
+                        onViewTaskDetailClick={this.props.onViewTaskDetailClick}
+                        onDeleteTaskClick={this.props.onDeleteTaskClick}
+                        onStartTaskClick={this.props.onStartTaskClick}
+                        onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        onShowPotentialTaskOwners={
+                            this.props.onShowPotentialTaskOwners
+                        }
+                    />
                 </div>
                 <div className={`${styles.TaskLists}`}>
-                    <div
-                        className={`${styles.TaskListSection} ${styles.UpcomingSection}`}
-                    >
-                        <DragAndDropContainer
+                    <div className={`${styles.TaskListSection}`}>
+                        <UpcomingSection
                             dragAndDropController={
                                 this.props.deps.dragAndDropController
                             }
-                            containerId={upcomingSectionId}
-                            itemType={draggableTask}
-                            itemSizeTransformer={sectionItemSizeTransformer}
-                        >
-                            <SectionUI
-                                title={'Upcoming'}
-                                actions={
-                                    <div
-                                        className={`${styles.SectionTopBar} ${styles.Upcoming}`}
-                                    >
-                                        <div className={styles.TaskCounter}>
-                                            {upcoming.length}
-                                        </div>
-                                        <SpacerUI />
-                                        <div
-                                            className={styles.UpcomingAction}
-                                            onClick={this.props.onAddClick}
-                                        >
-                                            <MaterialIconUI>add</MaterialIconUI>
-                                        </div>
-                                    </div>
-                                }
-                            >
-                                <div className={styles.TaskList}>
-                                    {this.props.taskAdding &&
-                                        this.renderNewTask(upcomingSectionId)(
-                                            this.props.taskAdding,
-                                        )}
-                                    {upcoming.map(
-                                        this.renderExistingTask(
-                                            upcomingSectionId,
-                                        ),
-                                    )}
-                                </div>
-                            </SectionUI>
-                        </DragAndDropContainer>
+                            tasks={upcomingTasks}
+                            taskAdding={this.props.taskAdding}
+                            taskSelectingOwner={this.props.taskSelectingOwner}
+                            onAddClick={this.props.onAddClick}
+                            onCreateTask={this.props.onCreateTask}
+                            onUpdateTask={this.props.onUpdateTask}
+                            onViewTaskDetailClick={
+                                this.props.onViewTaskDetailClick
+                            }
+                            onDeleteTaskClick={this.props.onDeleteTaskClick}
+                            onStartTaskClick={this.props.onStartTaskClick}
+                            onCompleteTaskClick={this.props.onCompleteTaskClick}
+                            onShowPotentialTaskOwners={
+                                this.props.onShowPotentialTaskOwners
+                            }
+                        />
                     </div>
-                    <div
-                        className={`${styles.TaskListSection} ${styles.DeliveredSection}`}
-                    >
-                        <DragAndDropContainer
+                    <div className={`${styles.TaskListSection}`}>
+                        <DeliveredSection
                             dragAndDropController={
                                 this.props.deps.dragAndDropController
                             }
-                            containerId={deliveredSectionId}
-                            itemType={draggableTask}
-                            itemSizeTransformer={sectionItemSizeTransformer}
-                        >
-                            <SectionUI
-                                title={'Delivered'}
-                                actions={
-                                    <div
-                                        className={`${styles.SectionTopBar} ${styles.Delivered}`}
-                                    >
-                                        <div className={styles.TaskCounter}>
-                                            {delivered.length}
-                                        </div>
-                                        <SpacerUI />
-                                    </div>
-                                }
-                            >
-                                <div className={styles.TaskList}>
-                                    {delivered.map(
-                                        this.renderExistingTask(
-                                            deliveredSectionId,
-                                        ),
-                                    )}
-                                </div>
-                            </SectionUI>
-                        </DragAndDropContainer>
+                            tasks={deliveredTasks}
+                            taskSelectingOwner={this.props.taskSelectingOwner}
+                            onUpdateTask={this.props.onUpdateTask}
+                            onViewTaskDetailClick={
+                                this.props.onViewTaskDetailClick
+                            }
+                            onDeleteTaskClick={this.props.onDeleteTaskClick}
+                            onStartTaskClick={this.props.onStartTaskClick}
+                            onCompleteTaskClick={this.props.onCompleteTaskClick}
+                            onShowPotentialTaskOwners={
+                                this.props.onShowPotentialTaskOwners
+                            }
+                        />
                     </div>
                 </div>
             </div>
         );
     }
-
-    private renderNewTask = (
-        sectionId: string,
-    ): ((task: Task) => ReactElement) => {
-        return this.renderTask(sectionId, true, false, this.props.onCreateTask);
-    };
 
     private renderExistingTask = (
         sectionId: string,

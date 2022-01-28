@@ -1,0 +1,28 @@
+@import '../TaskLists.module.scss';
+
+.TaskListSection {
+    display: flex;
+    height: 100%;
+    width: 100%;
+
+    --title-color: #{$upcomingPrimary};
+    --background-color: #f2fcff;
+
+    .SectionTopBar {
+        .TaskCounter {
+            background-color: $upcomingPrimary;
+        }
+
+        .Actions {
+            --icon-color: #{$upcomingPrimary};
+            user-select: none;
+            border-radius: 4px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: $upcomingPrimary;
+                --icon-color: white;
+            }
+        }
+    }
+}
