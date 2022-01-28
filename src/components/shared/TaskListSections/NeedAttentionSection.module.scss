@@ -1,10 +1,10 @@
-@import '../TaskLists.module.scss';
+$needAttentionPrimary: #cc18ae;
 
 .TaskListSection {
     display: flex;
     height: 100%;
     width: 100%;
 
-    --title-color: #cc18ae;
+    --title-color: $needAttentionPrimary;
     --background-color: #fff6ff;
 }
