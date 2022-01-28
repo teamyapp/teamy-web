@@ -54,9 +54,7 @@ export class DeliveredSection extends Component<Props> {
                     >
                         <div className={styles.TaskList}>
                             {this.props.tasks.map(
-                                this.renderTaskListItemExistingTask(
-                                    deliveredSectionId,
-                                ),
+                                this.renderTask(deliveredSectionId),
                             )}
                         </div>
                     </SectionUI>
@@ -65,17 +63,8 @@ export class DeliveredSection extends Component<Props> {
         );
     }
 
-    private renderTaskListItemExistingTask = (
-        sectionId: string,
-    ): ((task: Task) => ReactElement) => {
-        return this.renderTask(sectionId, false, true, this.props.onUpdateTask);
-    };
-
     private renderTask = (
         sectionId: string,
-        isEditing: boolean,
-        canViewDetail: boolean,
-        onTaskFinishEditing?: (task: Task) => void,
     ): ((task: Task) => ReactElement) => {
         return (task: Task) => {
             return (
@@ -84,10 +73,10 @@ export class DeliveredSection extends Component<Props> {
                         dragAndDropController={this.props.dragAndDropController}
                         task={task}
                         sectionId={sectionId}
-                        isEditing={isEditing}
-                        canViewDetail={canViewDetail}
+                        isEditing={false}
+                        canViewDetail={true}
                         taskSelectingOwner={this.props.taskSelectingOwner}
-                        onTaskFinishEditing={onTaskFinishEditing}
+                        onTaskFinishEditing={this.props.onUpdateTask}
                         onViewTaskDetailClick={this.props.onViewTaskDetailClick}
                         onDeleteTaskClick={this.props.onDeleteTaskClick}
                         onStartTaskClick={this.props.onStartTaskClick}
