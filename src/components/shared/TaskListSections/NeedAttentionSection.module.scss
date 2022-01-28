@@ -7,6 +7,6 @@ $needAttentionPrimary: #cc18ae;
     height: 100%;
     width: 100%;
 
-    --title-color: $needAttentionPrimary;
+    --title-color: #{$needAttentionPrimary};
     --background-color: #fff6ff;
 }
