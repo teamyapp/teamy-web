@@ -1,5 +1,5 @@
 @import './shared';
-@import 'TaskLists';
+@import 'TaskLists.module';
 
 .PersonalStatus {
     display: flex;
@@ -13,6 +13,4 @@
 
 .NeedAttentionSection {
     margin-bottom: $sectionSpace - 4px;
-    --title-color: #cc18ae;
-    --background-color: #fff6ff;
 }

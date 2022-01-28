@@ -1,0 +1,15 @@
+$deliveredPrimary: #43a047;
+
+.TaskListSection {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    --title-color: #{$deliveredPrimary};
+    --background-color: #efffec;
+
+    .SectionTopBar {
+        .TaskCounter {
+            background-color: $deliveredPrimary;
+        }
+    }
+}
