@@ -1,10 +1,8 @@
 import React, { Component, ReactElement } from 'react';
 
 import { and, or } from '@lib/data/filter';
-import { Draggable } from '@lib/dragAndDrop/Draggable';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
-import { draggableTask } from '@core/config/draggable';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { Task } from '@core/entity/task';
@@ -14,7 +12,6 @@ import styles from './PersonalStatus.module.scss';
 import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { NeedAttentionSection } from './TaskListSections/NeedAttentionSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
-import { TaskPreviewUI } from './TaskPreview';
 
 const upcomingColumnFilter = (needAttentionTaskId: number | string) =>
     or<Task>(
@@ -123,60 +120,6 @@ export class PersonalStatusUI extends Component<Props> {
             </div>
         );
     }
-
-    private renderExistingTask = (
-        sectionId: string,
-    ): ((task: Task) => ReactElement) => {
-        return this.renderTask(sectionId, false, true, this.props.onUpdateTask);
-    };
-
-    private renderTask = (
-        sectionId: string,
-        isEditing: boolean,
-        canViewDetail: boolean,
-        onTaskFinishEditing?: (task: Task) => void,
-    ): ((task: Task) => ReactElement) => {
-        const taskFinishEditing = (task: Task) => {
-            this.props.deps.dragAndDropController.turnOnDragging(draggableTask);
-            onTaskFinishEditing?.call(null, task);
-        };
-        return (task: Task) => {
-            return (
-                <div key={task.id}>
-                    <Draggable
-                        dragAndDropController={
-                            this.props.deps.dragAndDropController
-                        }
-                        containerId={sectionId}
-                        itemType={draggableTask}
-                        data={task}
-                    >
-                        <TaskPreviewUI
-                            canViewDetail={canViewDetail}
-                            task={task}
-                            isEditing={isEditing}
-                            isOwnerSelected={
-                                this.props.taskSelectingOwner?.id === task.id
-                            }
-                            onTaskDetailClick={this.props.onViewTaskDetailClick}
-                            onTaskStartEditing={this.onTaskStartEditing}
-                            onTaskFinishEditing={taskFinishEditing}
-                            onDeleteTaskClick={this.props.onDeleteTaskClick}
-                            onStartTaskClick={this.props.onStartTaskClick}
-                            onCompleteTaskClick={this.props.onCompleteTaskClick}
-                            onShowPotentialTaskOwners={
-                                this.props.onShowPotentialTaskOwners
-                            }
-                        />
-                    </Draggable>
-                </div>
-            );
-        };
-    };
-
-    private onTaskStartEditing = (taskId: string) => {
-        this.props.deps.dragAndDropController.turnOffDragging(draggableTask);
-    };
 }
 
 function withUpcomingActions(task: Task): Task {
