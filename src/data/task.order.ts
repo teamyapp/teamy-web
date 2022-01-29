@@ -1,6 +1,7 @@
 import { Task } from '@core/entity/task';
 
 export const orderByPriority = (tasks: Task[]): Task[] => {
+    // TODO: implement me
     return tasks;
 };
 export const orderByUrgency = (tasks: Task[]): Task[] => {
@@ -20,8 +21,10 @@ export const orderByUrgency = (tasks: Task[]): Task[] => {
     });
 };
 export const orderByValue = (tasks: Task[]): Task[] => {
+    // TODO: implement me
     return tasks;
 };
 export const orderByEffort = (tasks: Task[]): Task[] => {
+    // TODO: implement me
     return tasks;
 };
