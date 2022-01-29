@@ -16,6 +16,7 @@ import {
     teamRoutePattern,
 } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
+import { TaskFilters } from '@core/entity/filters';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { MutationEvent } from '@core/event/mutation';
@@ -26,8 +27,7 @@ import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
 import { DrawerUI } from './shared/Drawer';
-import { FilterListComponent } from './shared/FilterList.component';
-import { HeaderUI } from './shared/Header';
+import { HeaderComponent } from './shared/Header.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
 import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
@@ -41,7 +41,7 @@ interface State {
     teams: Team[];
     activeTeamId?: string;
     isDrawerOpen: boolean;
-    shouldShowFiltersSection: boolean;
+    taskFilters: TaskFilters;
 }
 
 const acceptedRoutePatterns = [teamRoutePattern, debugRoutePattern];
@@ -54,7 +54,7 @@ class AppComponent extends Component<Props, State> {
     private readonly addTeamMembersModalRef =
         createRef<AddTeamMembersModalComponent>();
     private readonly userModalRef = createRef<UserSettingsModalComponent>();
-    private readonly filterListRef = createRef<FilterListComponent>();
+    private readonly headerRef = createRef<HeaderComponent>();
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
@@ -65,8 +65,8 @@ class AppComponent extends Component<Props, State> {
         this.localStore = props.deps.localStore;
         this.state = {
             isDrawerOpen: false,
-            shouldShowFiltersSection: false,
             teams: [],
+            taskFilters: {},
         };
     }
 
@@ -97,34 +97,24 @@ class AppComponent extends Component<Props, State> {
                                 onViewTeamSettings={this.onViewTeamSettings}
                             />
                             <div className={styles.Content}>
-                                <HeaderUI
+                                <HeaderComponent
+                                    deps={this.props.deps}
+                                    ref={this.headerRef}
                                     me={this.state.me}
                                     isDrawerOpen={this.state.isDrawerOpen}
+                                    taskFilters={this.state.taskFilters}
                                     onMenuToggle={this.onMenuToggle}
-                                    onFilterActionClick={
-                                        this.onFilterActionClick
-                                    }
                                     onUserProfileClick={this.onUserProfileClick}
+                                    onTaskFiltersChange={
+                                        this.onTaskFiltersChange
+                                    }
                                 />
-                                <div className={styles.PageOptionsSection}>
-                                    {this.state.shouldShowFiltersSection && (
-                                        <div
-                                            className={
-                                                styles.FilterListComponent
-                                            }
-                                        >
-                                            <FilterListComponent
-                                                ref={this.filterListRef}
-                                                deps={this.props.deps}
-                                            />
-                                        </div>
-                                    )}
-                                </div>
                                 <div className={styles.Execution}>
                                     {
                                         <ExecutionComponent
-                                            teamId={this.state.activeTeamId}
                                             deps={this.props.deps}
+                                            teamId={this.state.activeTeamId}
+                                            taskFilters={this.state.taskFilters}
                                         />
                                     }
                                 </div>
@@ -227,6 +217,12 @@ class AppComponent extends Component<Props, State> {
         this.props.deps.shortcutMonitor.dispose();
     }
 
+    private onTaskFiltersChange = (taskFilters: TaskFilters) => {
+        this.setState({
+            taskFilters,
+        });
+    };
+
     private onMenuToggle = () => {
         this.setState({
             isDrawerOpen: !this.state.isDrawerOpen,
@@ -269,12 +265,6 @@ class AppComponent extends Component<Props, State> {
         this.refresh('network-only');
     };
 
-    private onFilterActionClick = () => {
-        this.setState({
-            shouldShowFiltersSection: !this.state.shouldShowFiltersSection,
-        });
-    };
-
     private async refresh(policy: FetchPolicy) {
         console.log('refresh App', policy);
         const data = await this.props.deps.pageService.fetchMePage(policy);
@@ -307,10 +297,7 @@ class AppComponent extends Component<Props, State> {
     private processUserAction(userAction: UserActionEvent) {
         switch (userAction) {
             case 'findKeyword':
-                this.onFilterActionClick();
-                if (this.state.shouldShowFiltersSection) {
-                    this.filterListRef.current?.focusOnKeywordInput();
-                }
+                this.headerRef.current?.toggleSearchInputFocus();
                 break;
         }
     }
