@@ -8,11 +8,22 @@ $upcomingPrimary: #1e88e5;
     width: 100%;
 
     --title-color: #{$upcomingPrimary};
-    --background-color: #f2fcff;
+    --background-color: #effcff;
 
     .SectionTopBar {
         .TaskCounter {
             background-color: $upcomingPrimary;
+        }
+
+        .SortOrder {
+            height: 100%;
+            margin-left: 10px;
+
+            --drop-down-width: 100px;
+            --drop-down-height: 24px;
+            --drop-down-font-size: 14px;
+            --drop-down-color: #{$upcomingPrimary};
+            --drop-down-button-darkness: 0.1;
         }
 
         .Actions {

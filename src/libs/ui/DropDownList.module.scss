@@ -1,0 +1,81 @@
+$width: var(--drop-down-width, auto);
+$height: var(--drop-down-height, 24px);
+$fontSize: var(--drop-down-font-size, 14px);
+$dropDownColor: var(--drop-down-color, #546e7a);
+$dropDownButtonDarkness: var(--drop-down-button-darkness, 0.2);
+$optionPadding: 8px;
+
+.DropDownList {
+    width: $width;
+    height: $height;
+    color: white;
+    border-radius: 4px;
+    background-color: $dropDownColor;
+    font-size: $fontSize;
+    user-select: none;
+
+    .SelectedOption {
+        height: 100%;
+        display: flex;
+
+        .Option {
+            display: flex;
+            flex: 1;
+            align-items: center;
+            line-height: $fontSize;
+            padding: 0 $optionPadding;
+            box-sizing: border-box;
+            height: 100%;
+            border-radius: 4px 0 0 4px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: rgba(255, 255, 255, 0.08);
+            }
+        }
+
+        .DropDownButton {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: $height;
+            height: $height;
+            border-radius: 0 4px 4px 0;
+            background-color: rgba(0, 0, 0, $dropDownButtonDarkness);
+            --icon-size: #{$height - 6px};
+            --icon-color: white;
+
+            &:hover {
+                cursor: pointer;
+                background-color: rgba(
+                    0,
+                    0,
+                    0,
+                    calc(#{$dropDownButtonDarkness} + 0.05)
+                );
+            }
+        }
+    }
+
+    .AvailableOptions {
+        margin: 3px 4px 0 4px;
+        position: relative;
+        z-index: 1000;
+        color: black;
+        background-color: white;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+        outline: none;
+
+        .Option {
+            height: $height;
+            display: flex;
+            align-items: center;
+            padding: 0 $optionPadding;
+
+            &:hover {
+                cursor: pointer;
+                background-color: rgba(0, 0, 0, 0.05);
+            }
+        }
+    }
+}

@@ -25,9 +25,11 @@ import {
     needAttentionSectionId,
     upcomingSectionId,
 } from '@core/config/sections';
+import { taskUrgencyOrder } from '@core/config/sortOrder';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
+import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { User } from '@core/entity/user';
@@ -72,6 +74,7 @@ interface State {
     taskAdding?: Task;
     taskFilters: TaskFilters;
     receivingSectionId?: string;
+    sortOrders: SortOrders;
 }
 
 const acceptedRoutePatterns = [
@@ -88,10 +91,6 @@ export class ExecutionComponent extends Component<Props, State> {
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent | undefined>;
 
-    private dragEnterCount: number = 0;
-    private sourceSectionId?: string;
-    private draggingTaskId?: string;
-
     constructor(props: Props) {
         super(props);
         this.localStore = props.deps.localStore;
@@ -106,6 +105,9 @@ export class ExecutionComponent extends Component<Props, State> {
             teamTasks: [],
             potentialTaskOwners: [],
             taskFilters: {},
+            sortOrders: {
+                upcoming: taskUrgencyOrder,
+            },
         };
     }
 
@@ -342,6 +344,7 @@ export class ExecutionComponent extends Component<Props, State> {
                         )}
                         taskAdding={this.state.taskAdding}
                         taskSelectingOwner={this.state.taskSelectingOwner}
+                        sortOrders={this.state.sortOrders}
                         onAddClick={this.onPersonalAddClick}
                         onViewTaskDetailClick={this.onViewTaskDetailClick}
                         onNewTaskChange={this.onNewTaskChange}
@@ -353,6 +356,7 @@ export class ExecutionComponent extends Component<Props, State> {
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
+                        onSelectUpcomingOrder={this.onSelectUpcomingOrder}
                     />
                 );
             case tabIds[1]:
@@ -362,6 +366,7 @@ export class ExecutionComponent extends Component<Props, State> {
                         tasks={this.state.teamTasks.filter(teamTasksFilter)}
                         taskAdding={this.state.taskAdding}
                         taskSelectingOwner={this.state.taskSelectingOwner}
+                        sortOrders={this.state.sortOrders}
                         onAddClick={this.onTeamAddClick}
                         onViewTaskDetailClick={this.onViewTaskDetailClick}
                         onNewTaskChange={this.onNewTaskChange}
@@ -373,6 +378,7 @@ export class ExecutionComponent extends Component<Props, State> {
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
+                        onSelectUpcomingOrder={this.onSelectUpcomingOrder}
                     />
                 );
             default:
@@ -595,6 +601,18 @@ export class ExecutionComponent extends Component<Props, State> {
             taskSelectingOwner: undefined,
             taskOwnersListVisible: false,
             showPotentialTaskOwnersList: false,
+        });
+    };
+
+    private onSelectUpcomingOrder = (order: string) => {
+        this.setState({
+            sortOrders: Object.assign<any, SortOrders, Partial<SortOrders>>(
+                {},
+                this.state.sortOrders,
+                {
+                    upcoming: order,
+                },
+            ),
         });
     };
 

@@ -5,6 +5,7 @@ import { BoundingBoxFinder } from '@lib/ui/position';
 
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
+import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 import { getActions } from '@core/entity/taskAction';
 
@@ -29,6 +30,7 @@ interface Props {
     needAttentionTask?: Task;
     personalTasks: Task[];
     taskSelectingOwner?: Task;
+    sortOrders: SortOrders;
     onViewTaskDetailClick?: (taskId: string) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
@@ -41,6 +43,7 @@ interface Props {
         task: Task,
         findAlignTargetBoundBox: BoundingBoxFinder,
     ) => void;
+    onSelectUpcomingOrder?: (order: string) => void;
 }
 
 export class PersonalStatusUI extends Component<Props> {
@@ -83,6 +86,7 @@ export class PersonalStatusUI extends Component<Props> {
                             tasks={upcomingTasks}
                             taskAdding={this.props.taskAdding}
                             taskSelectingOwner={this.props.taskSelectingOwner}
+                            sortOrder={this.props.sortOrders.upcoming}
                             onAddClick={this.props.onAddClick}
                             onCreateTask={this.props.onCreateTask}
                             onUpdateTask={this.props.onUpdateTask}
@@ -95,6 +99,7 @@ export class PersonalStatusUI extends Component<Props> {
                             onShowPotentialTaskOwners={
                                 this.props.onShowPotentialTaskOwners
                             }
+                            onSelectSortOrder={this.props.onSelectUpcomingOrder}
                         />
                     </div>
                     <div className={`${styles.TaskListSection}`}>

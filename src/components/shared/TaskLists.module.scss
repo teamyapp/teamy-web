@@ -43,6 +43,7 @@ $borderRadius: 10px;
     display: flex;
     justify-content: right;
     align-items: center;
+    height: 24px;
     --icon-size: 30px;
     --background-color: transparent;
 
@@ -51,10 +52,10 @@ $borderRadius: 10px;
         font-size: 14px;
         color: white;
         width: 30px;
+        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 24px;
         border-radius: 4px;
     }
 }
