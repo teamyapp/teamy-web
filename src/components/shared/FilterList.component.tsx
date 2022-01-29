@@ -33,10 +33,9 @@ export class FilterListComponent extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        const selectedTaskOwners = props.taskFiltersData.selectedTaskOwners;
         this.state = {
             teamMembers: [],
-            selectedTaskOwners: selectedTaskOwners,
+            selectedTaskOwners: props.taskFiltersData.selectedTaskOwners,
         };
     }
 
