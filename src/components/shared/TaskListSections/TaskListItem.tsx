@@ -14,6 +14,7 @@ interface Props {
     task: Task;
     sectionId: string;
     isEditing: boolean;
+    showPastDue?: boolean;
     canViewDetail: boolean;
     taskSelectingOwner?: Task;
     onTaskFinishEditing?: (task: Task) => void;
@@ -43,6 +44,7 @@ export class TaskListItem extends Component<Props> {
                     isOwnerSelected={
                         this.props.taskSelectingOwner?.id === this.props.task.id
                     }
+                    showPastDue={this.props.showPastDue === undefined}
                     onTaskDetailClick={this.props.onViewTaskDetailClick}
                     onTaskStartEditing={this.onTaskStartEditing}
                     onTaskFinishEditing={this.taskFinishEditing}
