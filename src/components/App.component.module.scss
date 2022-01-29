@@ -10,7 +10,6 @@
     height: 100vh;
 
     > .Content {
-        @include header;
         display: flex;
         flex-direction: column;
         width: 100%;
@@ -18,77 +17,6 @@
         --tabs-background-color: white;
         --tab-text-color: #{$secondaryColor};
         --tab-hover-opacity: 0.03;
-
-        .Header {
-            position: relative;
-            z-index: 100;
-            padding: 0 0 0 16px;
-            color: $onPrimaryColor;
-
-            .MenuButtonPlaceHolder {
-                margin-right: 10px;
-            }
-
-            .TeamName {
-                font-size: 22px;
-                font-weight: 500;
-                transition: left 400ms $easeOutExpo;
-                letter-spacing: 1px;
-            }
-
-            .UserActionSection {
-                .Action {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 28px;
-                    height: 28px;
-                    user-select: none;
-                    border-radius: 3px;
-                    --icon-color: white;
-                    --icon-size: 24px;
-
-                    &.Active {
-                        background-color: white;
-                        --icon-color: #{$primaryColor};
-                    }
-
-                    &:hover {
-                        cursor: pointer;
-
-                        &:not(.Active) {
-                            background-color: rgba(0, 0, 0, 0.15);
-                        }
-                    }
-                }
-            }
-
-            .UserSection {
-                display: flex;
-                align-items: center;
-                height: 100%;
-                margin-right: 26px;
-                margin-left: 23px;
-
-                .UserProfile {
-                    border: 3px solid transparent;
-                    border-radius: 50%;
-                    --profile-width: 28px;
-                    --profile-height: 28px;
-
-                    &:hover {
-                        cursor: pointer;
-                        border: 3px solid white;
-                    }
-                }
-
-                .UserName {
-                    font-size: 20px;
-                    font-weight: 500;
-                    margin-left: 6px;
-                }
-            }
-        }
 
         .PageOptionsSection {
             display: flex;

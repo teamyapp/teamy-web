@@ -51,15 +51,15 @@ $edgeSpace: 10px;
         }
 
         .DueAt {
-            background-color: #546e7a;
-            padding: 3px 8px;
-            border-radius: 4px;
+            font-weight: 500;
             display: flex;
             align-items: center;
+            padding: 3px 8px;
+            color: white;
+            border-radius: 4px;
+            background-color: #546e7a;
             --icon-size: 18px;
             --icon-color: white;
-            color: white;
-            font-weight: 500;
 
             .Time {
                 font-size: 16px;
