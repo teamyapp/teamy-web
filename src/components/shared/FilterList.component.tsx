@@ -3,14 +3,13 @@ import React, { ChangeEvent, Component, createRef } from 'react';
 import { Filter, or } from '@lib/data/filter';
 import { DatePickerUI } from '@lib/ui/DatePicker';
 import { SpacerUI } from '@lib/ui/Spacer';
-import { TextFieldUI } from '@lib/ui/TextField';
 
-import { allTasks, between, contains, ownedBy } from '@core/data/task.filter';
+import { allTasks, between, ownedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
+import { TaskFilters } from '@core/entity/filters';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 import { FormatService } from '@core/service/format.service';
-import { IAppState } from '@core/state/state';
 
 import styles from './FilterList.component.module.scss';
 
@@ -20,6 +19,8 @@ const userPrefix = 'user/';
 
 interface Props {
     deps: Deps;
+    taskFilters: TaskFilters;
+    onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
 }
 
 interface State {
@@ -30,7 +31,6 @@ interface State {
 export class FilterListComponent extends Component<Props, State> {
     private startDataPickerRef = createRef<DatePickerUI>();
     private endDataPickerRef = createRef<DatePickerUI>();
-    private keywordTextFieldRef = createRef<TextFieldUI>();
 
     constructor(props: Props) {
         super(props);
@@ -46,7 +46,7 @@ export class FilterListComponent extends Component<Props, State> {
         return (
             <div className={styles.Section}>
                 <div className={styles.TopBar}>
-                    <div className={styles.Title}>Filters</div>
+                    <div className={styles.Title}>Task Filters</div>
                     <SpacerUI />
                     <div className={styles.Actions}>
                         <div
@@ -60,7 +60,6 @@ export class FilterListComponent extends Component<Props, State> {
                 <div className={styles.Content}>
                     {this.renderTimeRangeFilterGroup()}
                     {this.renderTaskOwnerFilterGroup()}
-                    {this.renderKeywordFilterGroup()}
                 </div>
             </div>
         );
@@ -73,10 +72,6 @@ export class FilterListComponent extends Component<Props, State> {
             teamMembers,
         });
     }
-
-    public focusOnKeywordInput = () => {
-        this.keywordTextFieldRef.current?.focus();
-    };
 
     private renderTimeRangeFilterGroup() {
         return (
@@ -135,23 +130,6 @@ export class FilterListComponent extends Component<Props, State> {
         );
     }
 
-    private renderKeywordFilterGroup() {
-        return (
-            <div className={styles.Group}>
-                <div className={styles.GroupName}>Contains:</div>
-                <div className={styles.GroupContent}>
-                    <div className={`${styles.Input} ${styles.TextField}`}>
-                        <TextFieldUI
-                            ref={this.keywordTextFieldRef}
-                            label={'Keyword'}
-                            onChange={this.onKeywordChange}
-                        />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     private renderOption = (user: User, index: number) => (
         <div className={`${styles.Input} ${styles.Option}`} key={index}>
             <input
@@ -187,41 +165,52 @@ export class FilterListComponent extends Component<Props, State> {
         }
 
         this.forceUpdate();
-        this.props.deps.localStore.setState((state: IAppState) => {
-            state.taskFilters.taskOwnerFilter = this.getTaskOwnerFilter();
-            return state;
-        });
+        this.props.onTaskFiltersChange?.call(
+            null,
+            Object.assign<any, TaskFilters, Partial<TaskFilters>>(
+                {},
+                this.props.taskFilters,
+                {
+                    taskOwnerFilter: this.getTaskOwnerFilter(),
+                },
+            ),
+        );
     };
 
     private onStartDateChange = (date?: Date) => {
         const endDate = this.endDataPickerRef.current?.value || null;
-        this.props.deps.localStore.setState((state: IAppState) => {
-            state.taskFilters.timeRangeFilter = between(
-                date || null,
-                endDate,
-                (task: Task) => task.dueAt,
-            );
-            return state;
-        });
+        this.props.onTaskFiltersChange?.call(
+            null,
+            Object.assign<any, TaskFilters, Partial<TaskFilters>>(
+                {},
+                this.props.taskFilters,
+                {
+                    timeRangeFilter: between(
+                        date || null,
+                        endDate,
+                        (task: Task) => task.dueAt,
+                    ),
+                },
+            ),
+        );
     };
 
     private onEndDateChange = (date?: Date) => {
         const startDate = this.startDataPickerRef.current?.value || null;
-        this.props.deps.localStore.setState((state: IAppState) => {
-            state.taskFilters.timeRangeFilter = between(
-                startDate,
-                date || null,
-                (task: Task) => task.dueAt,
-            );
-            return state;
-        });
-    };
-
-    private onKeywordChange = (keyword: string) => {
-        this.props.deps.localStore.setState((state: IAppState) => {
-            state.taskFilters.keywordFilter = contains(keyword);
-            return state;
-        });
+        this.props.onTaskFiltersChange?.call(
+            null,
+            Object.assign<any, TaskFilters, Partial<TaskFilters>>(
+                {},
+                this.props.taskFilters,
+                {
+                    timeRangeFilter: between(
+                        startDate,
+                        date || null,
+                        (task: Task) => task.dueAt,
+                    ),
+                },
+            ),
+        );
     };
 
     private onSaveFiltersClick = () => {

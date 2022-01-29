@@ -28,6 +28,7 @@ export function WithIdentityVerification(
 ): ExoticComponent<any> {
     class IdentityComponent extends Component<Props, State> {
         private currUri?: string;
+
         constructor(props: any) {
             super(props);
             this.state = {

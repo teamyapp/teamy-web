@@ -57,6 +57,7 @@ const sectionIds = [
 interface Props {
     deps: Deps;
     teamId: string;
+    taskFilters: TaskFilters;
 }
 
 interface State {
@@ -72,7 +73,6 @@ interface State {
     taskSelectingOwner?: Task;
     potentialTaskOwners: User[];
     taskAdding?: Task;
-    taskFilters: TaskFilters;
     receivingSectionId?: string;
     sortOrders: SortOrders;
 }
@@ -104,7 +104,7 @@ export class ExecutionComponent extends Component<Props, State> {
             currentUserId: '-1', // when not logged in yet
             teamTasks: [],
             potentialTaskOwners: [],
-            taskFilters: {},
+            // taskFilters: {},
             sortOrders: {
                 upcoming: taskUrgencyOrder,
             },
@@ -297,32 +297,32 @@ export class ExecutionComponent extends Component<Props, State> {
         let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
         let teamTasksFilter = filters.allTasks;
 
-        if (this.state.taskFilters.timeRangeFilter) {
+        if (this.props.taskFilters.timeRangeFilter) {
             personalTasksFilter = and(
                 personalTasksFilter,
-                this.state.taskFilters.timeRangeFilter,
+                this.props.taskFilters.timeRangeFilter,
             );
             teamTasksFilter = and(
                 teamTasksFilter,
-                this.state.taskFilters.timeRangeFilter,
+                this.props.taskFilters.timeRangeFilter,
             );
         }
 
-        if (this.state.taskFilters.taskOwnerFilter) {
+        if (this.props.taskFilters.taskOwnerFilter) {
             teamTasksFilter = and(
                 teamTasksFilter,
-                this.state.taskFilters.taskOwnerFilter,
+                this.props.taskFilters.taskOwnerFilter,
             );
         }
 
-        if (this.state.taskFilters.keywordFilter) {
+        if (this.props.taskFilters.keywordFilter) {
             personalTasksFilter = and(
                 personalTasksFilter,
-                this.state.taskFilters.keywordFilter,
+                this.props.taskFilters.keywordFilter,
             );
             teamTasksFilter = and(
                 teamTasksFilter,
-                this.state.taskFilters.keywordFilter,
+                this.props.taskFilters.keywordFilter,
             );
         }
 
@@ -405,7 +405,6 @@ export class ExecutionComponent extends Component<Props, State> {
             currentUserId: state.currentUser.id,
             needAttentionTask: state.needAttentionTask,
             teamTasks: state.teamTasks,
-            taskFilters: state.taskFilters,
         });
     };
 
