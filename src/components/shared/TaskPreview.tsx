@@ -26,6 +26,7 @@ interface IProps {
     task: Task;
     isEditing?: boolean;
     isOwnerSelected: boolean;
+    showPastDue: boolean;
     onTaskDetailClick?: (taskId: string) => void;
     onTaskStartEditing?: (taskId: string) => void;
     onTaskFinishEditing?: (task: Task) => void;
@@ -251,7 +252,9 @@ export class TaskPreviewUI extends Component<IProps, IState> {
             dueAt && (
                 <div
                     className={`${styles.DueAt} ${classNames({
-                        [styles.PastDue]: dueAt.getTime() < now.getTime(),
+                        [styles.PastDue]: this.props.showPastDue
+                            ? dueAt.getTime() < now.getTime()
+                            : false,
                     })}`}
                 >
                     <MaterialIconUI>alarm</MaterialIconUI>

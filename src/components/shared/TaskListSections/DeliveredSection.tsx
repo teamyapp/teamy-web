@@ -74,6 +74,7 @@ export class DeliveredSection extends Component<Props> {
                         task={task}
                         sectionId={sectionId}
                         isEditing={false}
+                        showPastDue={false}
                         canViewDetail={true}
                         taskSelectingOwner={this.props.taskSelectingOwner}
                         onTaskFinishEditing={this.props.onUpdateTask}
