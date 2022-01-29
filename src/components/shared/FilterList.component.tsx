@@ -4,22 +4,21 @@ import { Filter, or } from '@lib/data/filter';
 import { DatePickerUI } from '@lib/ui/DatePicker';
 import { SpacerUI } from '@lib/ui/Spacer';
 
+import { userAll, userPrefix, userUnassigned } from '@core/config/filter';
 import { allTasks, between, ownedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
-import { TaskFilters } from '@core/entity/filters';
+import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 import { FormatService } from '@core/service/format.service';
 
 import styles from './FilterList.component.module.scss';
 
-const all = 'all';
-const unassigned = 'unassigned';
-const userPrefix = 'user/';
-
 interface Props {
     deps: Deps;
+    taskFiltersData: TaskFiltersData;
     taskFilters: TaskFilters;
+    onTaskFiltersDataChange?: (taskFiltersData: TaskFiltersData) => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
 }
 
@@ -34,8 +33,7 @@ export class FilterListComponent extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        const selectedTaskOwners = new Set<string>();
-        selectedTaskOwners.add(all);
+        const selectedTaskOwners = props.taskFiltersData.selectedTaskOwners;
         this.state = {
             teamMembers: [],
             selectedTaskOwners: selectedTaskOwners,
@@ -81,6 +79,7 @@ export class FilterListComponent extends Component<Props, State> {
                     <div className={`${styles.Input} ${styles.TextField}`}>
                         <DatePickerUI
                             ref={this.startDataPickerRef}
+                            value={this.props.taskFiltersData.startDate}
                             label={'Start'}
                             onChange={this.onStartDateChange}
                         />
@@ -88,6 +87,7 @@ export class FilterListComponent extends Component<Props, State> {
                     <div className={`${styles.Input} ${styles.TextField}`}>
                         <DatePickerUI
                             ref={this.endDataPickerRef}
+                            value={this.props.taskFiltersData.endDate}
                             label={'End'}
                             onChange={this.onEndDateChange}
                         />
@@ -106,8 +106,8 @@ export class FilterListComponent extends Component<Props, State> {
                         <input
                             type={'checkbox'}
                             className={styles.Checkbox}
-                            value={all}
-                            checked={this.state.selectedTaskOwners.has(all)}
+                            value={userAll}
+                            checked={this.state.selectedTaskOwners.has(userAll)}
                             onChange={this.onTaskOwnersCheckBoxChange}
                         />
                         <div className={styles.Label}>All</div>
@@ -117,9 +117,9 @@ export class FilterListComponent extends Component<Props, State> {
                         <input
                             type={'checkbox'}
                             className={styles.Checkbox}
-                            value={unassigned}
+                            value={userUnassigned}
                             checked={this.state.selectedTaskOwners.has(
-                                unassigned,
+                                userUnassigned,
                             )}
                             onChange={this.onTaskOwnersCheckBoxChange}
                         />
@@ -152,10 +152,10 @@ export class FilterListComponent extends Component<Props, State> {
     ) => {
         const value = event.currentTarget.value;
         const hasValue = this.state.selectedTaskOwners.has(value);
-        if (value === all) {
+        if (value === userAll) {
             this.state.selectedTaskOwners.clear();
         } else {
-            this.state.selectedTaskOwners.delete(all);
+            this.state.selectedTaskOwners.delete(userAll);
         }
 
         if (!hasValue) {
@@ -165,6 +165,16 @@ export class FilterListComponent extends Component<Props, State> {
         }
 
         this.forceUpdate();
+        this.props.onTaskFiltersDataChange?.call(
+            null,
+            Object.assign<any, TaskFiltersData, Partial<TaskFiltersData>>(
+                {},
+                this.props.taskFiltersData,
+                {
+                    selectedTaskOwners: this.state.selectedTaskOwners,
+                },
+            ),
+        );
         this.props.onTaskFiltersChange?.call(
             null,
             Object.assign<any, TaskFilters, Partial<TaskFilters>>(
@@ -179,6 +189,16 @@ export class FilterListComponent extends Component<Props, State> {
 
     private onStartDateChange = (date?: Date) => {
         const endDate = this.endDataPickerRef.current?.value || null;
+        this.props.onTaskFiltersDataChange?.call(
+            null,
+            Object.assign<any, TaskFiltersData, Partial<TaskFiltersData>>(
+                {},
+                this.props.taskFiltersData,
+                {
+                    startDate: date,
+                },
+            ),
+        );
         this.props.onTaskFiltersChange?.call(
             null,
             Object.assign<any, TaskFilters, Partial<TaskFilters>>(
@@ -197,6 +217,16 @@ export class FilterListComponent extends Component<Props, State> {
 
     private onEndDateChange = (date?: Date) => {
         const startDate = this.startDataPickerRef.current?.value || null;
+        this.props.onTaskFiltersDataChange?.call(
+            null,
+            Object.assign<any, TaskFiltersData, Partial<TaskFiltersData>>(
+                {},
+                this.props.taskFiltersData,
+                {
+                    endDate: date,
+                },
+            ),
+        );
         this.props.onTaskFiltersChange?.call(
             null,
             Object.assign<any, TaskFilters, Partial<TaskFilters>>(
@@ -218,13 +248,13 @@ export class FilterListComponent extends Component<Props, State> {
     };
 
     private getTaskOwnerFilter(): Filter<Task> {
-        if (this.state.selectedTaskOwners.has(all)) {
+        if (this.state.selectedTaskOwners.has(userAll)) {
             return allTasks;
         }
 
         const filters = Array.from(this.state.selectedTaskOwners).map(
             (key: string): Filter<Task> => {
-                if (key === unassigned) {
+                if (key === userUnassigned) {
                     return (task: Task) =>
                         !task.owner || task.owner.id === '-1';
                 } else if (key.startsWith(userPrefix)) {
