@@ -56,9 +56,7 @@ export class DropDownList extends Component<Props, State> {
                     </div>
                 </div>
                 {this.state.showAvailableOptions && (
-                    <div
-                        className={styles.AvailableOptions}
-                    >
+                    <div className={styles.AvailableOptions}>
                         {this.props.options.map(this.renderOption)}
                     </div>
                 )}
