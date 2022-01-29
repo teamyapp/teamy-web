@@ -1,6 +1,5 @@
-import React, { Component, createRef } from 'react';
-
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import React, { Component, createRef } from 'react';
 
 import styles from './DropDownList.module.scss';
 
@@ -21,7 +20,7 @@ interface State {
 }
 
 export class DropDownList extends Component<Props, State> {
-    private readonly availableOptionsRef = createRef<HTMLDivElement>();
+    private readonly ref = createRef<HTMLDivElement>();
 
     constructor(props: Props) {
         super(props);
@@ -40,26 +39,24 @@ export class DropDownList extends Component<Props, State> {
 
     public render() {
         return (
-            <div className={styles.DropDownList}>
+            <div ref={this.ref}
+                 className={styles.DropDownList}
+                 tabIndex={-1}
+                 onBlur={this.onDropDownBlur}>
                 <div
                     className={styles.SelectedOption}
                     onClick={this.onSelectedOptionClick}
                 >
                     <div className={styles.Option}>
                         {this.state.selectedOption &&
-                            this.state.selectedOption.description}
+                        this.state.selectedOption.description}
                     </div>
                     <div className={styles.DropDownButton}>
                         <MaterialIconUI>arrow_drop_down</MaterialIconUI>
                     </div>
                 </div>
                 {this.state.showAvailableOptions && (
-                    <div
-                        ref={this.availableOptionsRef}
-                        className={styles.AvailableOptions}
-                        tabIndex={-1}
-                        onBlur={this.onAvailableOptionsBlur}
-                    >
+                    <div className={styles.AvailableOptions}>
                         {this.props.options.map(this.renderOption)}
                     </div>
                 )}
@@ -102,11 +99,11 @@ export class DropDownList extends Component<Props, State> {
             showAvailableOptions: !this.state.showAvailableOptions,
         });
         if (this.state.showAvailableOptions) {
-            this.availableOptionsRef.current?.focus();
+            this.ref.current?.focus();
         }
     }
 
-    private onAvailableOptionsBlur = () => {
+    private onDropDownBlur = () => {
         this.setState({
             showAvailableOptions: false,
         });
