@@ -4,8 +4,8 @@ $inProgressPrimary: #ff7043;
 
 .TaskListSection {
     display: flex;
-    height: 100%;
     width: 100%;
+    height: 100%;
 
     --title-color: #{$inProgressPrimary};
     --background-color: #fff8e1;

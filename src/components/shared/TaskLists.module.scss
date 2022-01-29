@@ -25,8 +25,8 @@ $borderRadius: 10px;
         display: flex;
         overflow-y: hidden;
         flex-direction: column;
-        height: 100%;
         box-sizing: border-box;
+        height: 100%;
     }
 }
 
@@ -39,23 +39,23 @@ $borderRadius: 10px;
 }
 
 .SectionTopBar {
-    margin-left: 14px;
     display: flex;
-    justify-content: right;
     align-items: center;
+    justify-content: right;
     height: 24px;
+    margin-left: 14px;
     --icon-size: 30px;
     --background-color: transparent;
 
     .TaskCounter {
-        line-height: 14px;
         font-size: 14px;
-        color: white;
+        line-height: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 30px;
         height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
+        color: white;
         border-radius: 4px;
     }
 }

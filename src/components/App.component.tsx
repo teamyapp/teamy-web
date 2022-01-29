@@ -1,5 +1,4 @@
 import { FetchPolicy } from '@apollo/client';
-import classNames from 'classnames';
 import React, { Component, Fragment, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -7,9 +6,6 @@ import { WithIdentityVerification } from '@lib/identity/withIdentityVerification
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { LocalStore } from '@lib/store/localStore';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { SpacerUI } from '@lib/ui/Spacer';
-import { TooltipUI } from '@lib/ui/Tooltip';
 
 import {
     debugRoutePattern,
@@ -31,10 +27,10 @@ import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
 import { DrawerUI } from './shared/Drawer';
 import { FilterListComponent } from './shared/FilterList.component';
+import { HeaderUI } from './shared/Header';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
 import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
-import { UserProfileUI } from './shared/UserProfile';
 
 interface Props {
     deps: Deps;
@@ -83,7 +79,7 @@ class AppComponent extends Component<Props, State> {
                         repoName={'teamy-web'}
                     />
                 </Route>
-                {this.state.activeTeamId && (
+                {this.state.me && this.state.activeTeamId && (
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <Fragment>
                             <DrawerUI
@@ -101,7 +97,15 @@ class AppComponent extends Component<Props, State> {
                                 onViewTeamSettings={this.onViewTeamSettings}
                             />
                             <div className={styles.Content}>
-                                {this.renderHeader()}
+                                <HeaderUI
+                                    me={this.state.me}
+                                    isDrawerOpen={this.state.isDrawerOpen}
+                                    onMenuToggle={this.onMenuToggle}
+                                    onFilterActionClick={
+                                        this.onFilterActionClick
+                                    }
+                                    onUserProfileClick={this.onUserProfileClick}
+                                />
                                 <div className={styles.PageOptionsSection}>
                                     {this.state.shouldShowFiltersSection && (
                                         <div
@@ -221,53 +225,6 @@ class AppComponent extends Component<Props, State> {
         this.routeChangeChan?.close();
         this.userActionChan?.close();
         this.props.deps.shortcutMonitor.dispose();
-    }
-
-    private renderHeader(): ReactElement {
-        return (
-            <header className={styles.Header}>
-                <div className={styles.MenuButtonPlaceHolder}>
-                    {!this.state.isDrawerOpen && (
-                        <div
-                            className={styles.MenuButton}
-                            onClick={this.onMenuToggle}
-                        >
-                            <MaterialIconUI>menu</MaterialIconUI>
-                        </div>
-                    )}
-                </div>
-                <div className={styles.TeamName}>
-                    {this.state.me?.activeTeam?.name}
-                </div>
-                <SpacerUI />
-                <div className={styles.UserActionSection}>
-                    <TooltipUI message={'Filters'}>
-                        <div
-                            className={`${styles.Action} ${classNames({
-                                [styles.Active]:
-                                    this.state.shouldShowFiltersSection,
-                            })}`}
-                            onClick={this.onFilterActionClick}
-                        >
-                            <MaterialIconUI>filter_alt</MaterialIconUI>
-                        </div>
-                    </TooltipUI>
-                </div>
-                {this.state.me && (
-                    <div className={styles.UserSection}>
-                        <div
-                            className={styles.UserProfile}
-                            onClick={this.onUserProfileClick}
-                        >
-                            <UserProfileUI user={this.state.me} />
-                        </div>
-                        <div className={styles.UserName}>
-                            {`${this.state.me?.firstName} ${this.state.me?.lastName}`}
-                        </div>
-                    </div>
-                )}
-            </header>
-        );
     }
 
     private onMenuToggle = () => {
