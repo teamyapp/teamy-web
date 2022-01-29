@@ -36,6 +36,16 @@ export class TextFieldUI extends Component<Props, State> {
         };
     }
 
+    public get value(): string {
+        return this.state.value;
+    }
+
+    public set value(val: string) {
+        this.setState({
+            value: val,
+        });
+    }
+
     public render(): ReactElement {
         return (
             <div>
@@ -75,16 +85,6 @@ export class TextFieldUI extends Component<Props, State> {
                 )}
             </div>
         );
-    }
-
-    public get value(): string {
-        return this.state.value;
-    }
-
-    public set value(val: string) {
-        this.setState({
-            value: val,
-        });
     }
 
     public focus() {

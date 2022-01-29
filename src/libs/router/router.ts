@@ -48,6 +48,14 @@ export class Router {
         window.addEventListener('popstate', this.onPopState);
     }
 
+    public get currentRouteUpdate(): RouteUpdate {
+        return this.currRouteUpdate;
+    }
+
+    public get CurrentUri(): string | undefined {
+        return this.currUri;
+    }
+
     initBrowserUri() {
         this.currUri = window.location.pathname;
     }
@@ -212,14 +220,6 @@ export class Router {
 
     public dispose() {
         this.routeChangeChan.close();
-    }
-
-    public get currentRouteUpdate(): RouteUpdate {
-        return this.currRouteUpdate;
-    }
-
-    public get CurrentUri(): string | undefined {
-        return this.currUri;
     }
 
     public navigateToCurrUri() {

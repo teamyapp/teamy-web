@@ -19,9 +19,11 @@ $backgroundColor: #424242;
         color: white;
         border-radius: 3px;
         background-color: $backgroundColor;
+
         &.Show {
             display: block;
         }
+
         .Triangle {
             position: absolute;
             left: 50%;
