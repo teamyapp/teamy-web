@@ -98,15 +98,11 @@ export class DropDownList extends Component<Props, State> {
     };
 
     private toggleAvailableActions() {
-        const showAvailableOptions = this.state.showAvailableOptions;
         this.setState({
             showAvailableOptions: !this.state.showAvailableOptions,
         });
-
-        if (!showAvailableOptions) {
-            setTimeout(() => {
-                this.availableOptionsRef.current?.focus();
-            });
+        if (this.state.showAvailableOptions) {
+            this.availableOptionsRef.current?.focus();
         }
     }
 
