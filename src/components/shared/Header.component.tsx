@@ -3,9 +3,10 @@ import React, { ChangeEvent, Component, FocusEvent, createRef } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
 
+import { userAll } from '@core/config/filter';
 import { contains } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
-import { TaskFilters } from '@core/entity/filters';
+import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
 import { User } from '@core/entity/user';
 
 import { FilterListComponent } from './FilterList.component';
@@ -24,6 +25,7 @@ interface Props {
 
 interface State {
     isSearchBarFocused: boolean;
+    taskFiltersData: TaskFiltersData;
 }
 
 export class HeaderComponent extends Component<Props, State> {
@@ -34,6 +36,9 @@ export class HeaderComponent extends Component<Props, State> {
         super(props);
         this.state = {
             isSearchBarFocused: false,
+            taskFiltersData: {
+                selectedTaskOwners: new Set<string>([userAll]),
+            },
         };
     }
 
@@ -77,9 +82,13 @@ export class HeaderComponent extends Component<Props, State> {
                         <div className={styles.Filters}>
                             <FilterListComponent
                                 deps={this.props.deps}
+                                taskFiltersData={this.state.taskFiltersData}
                                 taskFilters={this.props.taskFilters}
                                 onTaskFiltersChange={
                                     this.props.onTaskFiltersChange
+                                }
+                                onTaskFiltersDataChange={
+                                    this.onTaskFiltersDataChange
                                 }
                             />
                         </div>
@@ -140,5 +149,11 @@ export class HeaderComponent extends Component<Props, State> {
                 },
             ),
         );
+    };
+
+    private onTaskFiltersDataChange = (taskFiltersData: TaskFiltersData) => {
+        this.setState({
+            taskFiltersData,
+        });
     };
 }

@@ -248,6 +248,8 @@ export class DatePickerUI extends Component<Props, State> {
             if (this.textFieldRef.current) {
                 this.textFieldRef.current.value =
                     moment(newDate).format(dateFormat);
+
+                this.textFieldRef.current.focus();
             }
             this.setState({
                 selectedDate: newDate,
