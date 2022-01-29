@@ -104,7 +104,6 @@ export class ExecutionComponent extends Component<Props, State> {
             currentUserId: '-1', // when not logged in yet
             teamTasks: [],
             potentialTaskOwners: [],
-            // taskFilters: {},
             sortOrders: {
                 upcoming: taskUrgencyOrder,
             },
