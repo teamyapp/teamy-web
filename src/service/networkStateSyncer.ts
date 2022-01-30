@@ -29,17 +29,6 @@ export class NetworkStateSynchronizer {
             // it is possible for the user the lost their local data
             // if local data contains more data than the server
             // we don't have a merge algorithm yet
-            console.log('init local store from network');
-
-            // let data;
-            // try {
-            //     data = await pageService.fetchMePage('network-only');
-            // } catch (err) {
-            //     continue
-            // }
-            // setState(data);
-            // console.log('init done');
-
             console.log('start NetworkStateSynchronizer coroutine');
             let mutationChan = localStore.subscribeMutationEvent();
             while (true) {
