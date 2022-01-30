@@ -9,28 +9,17 @@ import { IAppState } from '@core/state/state';
 import { PageService } from './page.service';
 
 export class NetworkStateSynchronizer {
+    private readonly localStore: LocalStore<IAppState, MutationEvent>;
+    private readonly pageService: PageService;
+
     constructor(
         localStore: LocalStore<IAppState, MutationEvent>,
         taskService: TaskService,
         teamService: TeamService,
         pageService: PageService,
     ) {
-        function setState(data: any) {
-            localStore.setState((state) => {
-                return Object.assign<any, IAppState, Partial<IAppState>>(
-                    {},
-                    state,
-                    {
-                        currentUser: data.me,
-                        teams: data.me?.teams,
-                        activeTeamId: data.me?.activeTeam?.id,
-                        needAttentionTask:
-                            data.me?.activeTeam?.tasksNeedAttention[0],
-                        teamTasks: data.me?.activeTeam?.tasks,
-                    },
-                );
-            });
-        }
+        this.localStore = localStore;
+        this.pageService = pageService;
 
         // starts a coroutine that listen to mutationChan forever
         (async () => {
@@ -41,9 +30,15 @@ export class NetworkStateSynchronizer {
             // if local data contains more data than the server
             // we don't have a merge algorithm yet
             console.log('init local store from network');
-            let data = await pageService.fetchMePage('network-only');
-            setState(data);
-            console.log('init done');
+
+            // let data;
+            // try {
+            //     data = await pageService.fetchMePage('network-only');
+            // } catch (err) {
+            //     continue
+            // }
+            // setState(data);
+            // console.log('init done');
 
             console.log('start NetworkStateSynchronizer coroutine');
             let mutationChan = localStore.subscribeMutationEvent();
@@ -100,9 +95,31 @@ export class NetworkStateSynchronizer {
                 }
                 // the localstore state
                 console.log('set local store', data);
-                setState(data);
+                this.setState(data);
             }
         })();
+    }
+
+    public async syncState() {
+        const data = await this.pageService.fetchMePage('network-only');
+        this.setState(data);
+    }
+
+    private setState(data: any) {
+        this.localStore.setState((state) => {
+            return Object.assign<any, IAppState, Partial<IAppState>>(
+                {},
+                state,
+                {
+                    currentUser: data.me,
+                    teams: data.me?.teams,
+                    activeTeamId: data.me?.activeTeam?.id,
+                    needAttentionTask:
+                        data.me?.activeTeam?.tasksNeedAttention[0],
+                    teamTasks: data.me?.activeTeam?.tasks,
+                },
+            );
+        });
     }
 }
 
