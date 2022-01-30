@@ -29,18 +29,21 @@ export class SignInComponent extends Component<IProps> {
         oauthProviderName: string,
     ): () => Promise<void> {
         return async () => {
-            const [sessionID, error] =
+            let [sessionID, error] =
                 await this.props.identityClient.prepareSignIn();
             if (error) {
                 // TODO: show error
                 console.log(error);
                 return;
             }
-            this.props.identityClient.tryOAuthSignIn(
+            error = await this.props.identityClient.tryOAuthSignIn(
                 oauthProviderName,
                 sessionID!,
             );
-            await this.props.identityClient.waitForSignFinish();
+            if (error) {
+                console.log(error);
+                return;
+            }
             this.props.onSignInSucceed?.call(null);
         };
     }
