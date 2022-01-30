@@ -28,8 +28,8 @@ const stagingConfig: Config = {
     httpProtocol: 'https',
     webSocketProtocol: 'wss',
     apiBaseEndpoint: 'cloud.staging.teamyapp.com/identity',
-    cookieDomain: 'staging.teamyapp.com',
-    cookieSecure: true,
+    cookieDomain: 'localhost',
+    cookieSecure: false,
 };
 
 const productionConfig: Config = {

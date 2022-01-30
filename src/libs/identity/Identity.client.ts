@@ -57,15 +57,21 @@ export class IdentityClient {
         return [null, error];
     }
 
-    public tryOAuthSignIn(oauthProvider: string, sessionID: number): void {
+    public async tryOAuthSignIn(
+        oauthProvider: string,
+        sessionID: number,
+    ): Promise<Errors | null> {
         const oauthURL = new URL(
             `${this.httpBaseEndpoint}/sign-in/oauth/${oauthProvider}`,
         );
         oauthURL.searchParams.set('session-id', `${sessionID}`);
-        window.open(oauthURL.href);
+        const openedWindow = window.open(oauthURL.href);
+        const error = await this.waitForSignFinish();
+        openedWindow?.close();
+        return error;
     }
 
-    public async waitForSignFinish(): Promise<Errors | null> {
+    private async waitForSignFinish(): Promise<Errors | null> {
         const [accessToken, error] = await readMessage(
             this.channel!.onMessageReceived(),
             this.channel!.onError(),
