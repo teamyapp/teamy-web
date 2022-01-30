@@ -28,6 +28,7 @@ export interface Deps {
     pageService: PageService;
     identityClient: IdentityClient;
     localStore: LocalStore<IAppState, mutationEvents.MutationEvent>;
+    networkStateSyncer: NetworkStateSynchronizer;
     router: Router;
     shortcutMonitor: ShortcutMonitor<UserActionEvent>;
     dragAndDropController: DragAndDropController;
@@ -48,7 +49,7 @@ export function initDeps(): Deps {
     const commentService = new CommentService(teamyGraphQLClient);
     const pageService = new PageService(teamyGraphQLClient);
     const localStore = createStore();
-    new NetworkStateSynchronizer(
+    const networkStateSyncer = new NetworkStateSynchronizer(
         localStore,
         taskService,
         teamService,
@@ -65,6 +66,7 @@ export function initDeps(): Deps {
         pageService,
         identityClient,
         localStore,
+        networkStateSyncer,
         router,
         shortcutMonitor,
         dragAndDropController,

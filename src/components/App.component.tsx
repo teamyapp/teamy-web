@@ -1,4 +1,3 @@
-import { FetchPolicy } from '@apollo/client';
 import React, { Component, Fragment, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -20,9 +19,9 @@ import { TaskFilters } from '@core/entity/filters';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { MutationEvent } from '@core/event/mutation';
+import { UserActionEvent } from '@core/event/userAction';
 import { IAppState } from '@core/state/state';
 
-import { UserActionEvent } from '../event/userAction';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
@@ -156,6 +155,7 @@ class AppComponent extends Component<Props, State> {
                 this.updateState(state);
             }
         })().then();
+        this.props.deps.networkStateSyncer.syncState();
 
         for (const routePattern of acceptedRoutePatterns) {
             this.router.registerRoute(routePattern, false);
@@ -253,30 +253,17 @@ class AppComponent extends Component<Props, State> {
     };
 
     private onTeamMembersAdded = async (teamId: string) => {
-        await this.refresh('network-only');
+        this.props.deps.networkStateSyncer.syncState();
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
 
     private onTeamUpdated = () => {
-        this.refresh('network-only');
+        this.props.deps.networkStateSyncer.syncState();
     };
 
     private onUserUpdated = () => {
-        this.refresh('network-only');
+        this.props.deps.networkStateSyncer.syncState();
     };
-
-    private async refresh(policy: FetchPolicy) {
-        console.log('refresh App', policy);
-        const data = await this.props.deps.pageService.fetchMePage(policy);
-        const teams: Team[] = data.me?.teams;
-        // TODO: We know that this is a hack. But in order to not hack, we need to get rid of refreshEvent first.
-        this.localStore.setState((state: IAppState) =>
-            Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
-                currentUser: data.me,
-                teams,
-            }),
-        );
-    }
 
     private updateState(state: IAppState) {
         this.setState({
