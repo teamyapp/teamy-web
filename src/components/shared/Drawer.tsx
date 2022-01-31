@@ -10,7 +10,7 @@ import styles from './Drawer.module.scss';
 
 interface Props {
     teams: Team[];
-    activeTeamId: string;
+    activeTeamId?: string;
     onMenuClose?: () => void;
     onActiveTeamSelect?: (teamId: string) => void;
     isDrawerOpen: boolean;
@@ -107,7 +107,6 @@ export class DrawerUI extends Component<Props, State> {
     };
 
     private renderTeam = (team: Team, index: number) => {
-        console.log('renderTeam', team);
         return (
             <div
                 className={`${styles.IconFrameBorder} ${classNames({
