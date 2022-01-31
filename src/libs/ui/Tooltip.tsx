@@ -36,7 +36,6 @@ export class TooltipUI extends Component<Props, State> {
     }
 
     render(): ReactElement {
-        console.log(this.props.message, this.props.position);
         return (
             <div className={styles.Box}>
                 <div
