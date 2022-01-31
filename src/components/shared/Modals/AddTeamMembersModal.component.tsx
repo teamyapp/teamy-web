@@ -51,10 +51,7 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
                         />
                     </div>
                     <div className={styles.AddAction}>
-                        <ButtonUI
-                            label={'Add'}
-                            onClick={this.onAddButtonClick}
-                        />
+                        <ButtonUI label={'Add'} onClick={this.onAddClick} />
                     </div>
                 </div>
             </ModalUI>
@@ -73,7 +70,7 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
         this.modalRef.current?.close();
     };
 
-    private onAddButtonClick = async () => {
+    private onAddClick = async () => {
         const teamId = this.state.team!.id;
         const userIdsString = this.userIDTextAreaRef.current?.content || '';
         const userIds = userIdsString

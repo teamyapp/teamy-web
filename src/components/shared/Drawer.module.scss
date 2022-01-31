@@ -2,12 +2,15 @@
 @import '../../libs/ui/styleguide/easing';
 @import '../../libs/ui/styleguide/elevation';
 @import './shared';
+@import 'color';
 
 @include menuButton;
 
 $drawerBackgroundColor: #f2eee9;
 $selectedTeamIndicatorColor: #1976d2;
 $contextMenuSidePadding: 20px;
+$teamIconRoundCorner: 10px;
+$teamIconSize: 40px;
 
 .Drawer {
     display: flex;
@@ -40,10 +43,9 @@ $contextMenuSidePadding: 20px;
         flex-direction: column;
         justify-content: center;
 
-        .Team {
-            $roundCorner: 10px;
+        .IconFrameBorder {
             border: 4px solid transparent;
-            border-radius: $roundCorner;
+            border-radius: $teamIconRoundCorner + 4px;
 
             &.Active {
                 border-color: $selectedTeamIndicatorColor;
@@ -51,7 +53,7 @@ $contextMenuSidePadding: 20px;
 
             &:hover {
                 &:not(.Active) {
-                    border-color: #acacac;
+                    border-color: #b4b4b4;
                 }
             }
 
@@ -59,24 +61,64 @@ $contextMenuSidePadding: 20px;
                 margin-top: 10px;
             }
 
-            $size: 40px;
-
             .IconFrame {
                 display: flex;
                 align-items: center;
-                width: $size;
-                height: $size;
+                justify-content: center;
+                width: $teamIconSize;
+                height: $teamIconSize;
                 padding: 10px;
                 cursor: pointer;
                 border: none;
-                border-radius: $roundCorner;
+                border-radius: $teamIconRoundCorner;
                 background-color: white;
 
                 .Icon {
-                    min-width: $size - 10px;
-                    max-width: $size;
-                    min-height: $size - 10px;
-                    max-height: $size;
+                    border-radius: 4px;
+                    min-width: $teamIconSize - 10px;
+                    max-width: $teamIconSize;
+                    min-height: $teamIconSize - 10px;
+                    max-height: $teamIconSize;
+                }
+
+                .IconDefault {
+                    border-radius: 4px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 30px;
+                    line-height: 40px;
+                    font-weight: bold;
+                    background-color: $defaultTeamIconBackground;
+                    color: white;
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+        }
+
+        .CreateTeamFrame {
+            &:not(:first-child) {
+                margin-top: 14px;
+            }
+
+            .CreateTeamButton {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: $teamIconSize;
+                height: $teamIconSize;
+                padding: 10px;
+                border-radius: $teamIconRoundCorner;
+                background-color: rgba(0, 0, 0, 0.05);
+                font-weight: bold;
+                --icon-color: #828282;
+                --icon-size: 40px;
+
+                &:hover {
+                    cursor: pointer;
+                    background-color: #828282;
+                    --icon-color: white;
                 }
             }
         }

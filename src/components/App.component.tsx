@@ -28,6 +28,7 @@ import { ExecutionComponent } from './Execution.component';
 import { DrawerUI } from './shared/Drawer';
 import { HeaderComponent } from './shared/Header.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
+import { CreateTeamModalComponent } from './shared/Modals/CreateTeamModal.component';
 import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
 
@@ -53,6 +54,7 @@ class AppComponent extends Component<Props, State> {
     private readonly addTeamMembersModalRef =
         createRef<AddTeamMembersModalComponent>();
     private readonly userModalRef = createRef<UserSettingsModalComponent>();
+    private readonly createTeamModalRef = createRef<CreateTeamModalComponent>();
     private readonly headerRef = createRef<HeaderComponent>();
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
@@ -93,7 +95,10 @@ class AppComponent extends Component<Props, State> {
                                 onShowTeamMembersClick={
                                     this.onShowTeamMembersClick
                                 }
-                                onViewTeamSettings={this.onViewTeamSettings}
+                                onViewTeamSettingsClick={
+                                    this.onViewTeamSettingsClick
+                                }
+                                onCreateTeamClick={this.onCreateTeamClick}
                             />
                             <div className={styles.Content}>
                                 <HeaderComponent
@@ -136,6 +141,10 @@ class AppComponent extends Component<Props, State> {
                     ref={this.userModalRef}
                     deps={this.props.deps}
                     onUserUpdated={this.onUserUpdated}
+                />
+                <CreateTeamModalComponent
+                    ref={this.createTeamModalRef}
+                    deps={this.props.deps}
                 />
             </div>
         );
@@ -241,8 +250,12 @@ class AppComponent extends Component<Props, State> {
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
 
-    private onViewTeamSettings = (teamId: string) => {
+    private onViewTeamSettingsClick = (teamId: string) => {
         this.teamSettingsModalRef.current?.open(teamId);
+    };
+
+    private onCreateTeamClick = () => {
+        this.createTeamModalRef.current?.open();
     };
 
     private onActiveTeamSelect = (teamId: string): void => {

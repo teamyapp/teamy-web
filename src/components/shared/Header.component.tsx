@@ -45,18 +45,20 @@ export class HeaderComponent extends Component<Props, State> {
     render() {
         return (
             <header className={styles.Header}>
-                <div className={styles.MenuButtonPlaceHolder}>
-                    {!this.props.isDrawerOpen && (
-                        <div
-                            className={styles.MenuButton}
-                            onClick={this.props.onMenuToggle}
-                        >
-                            <MaterialIconUI>menu</MaterialIconUI>
-                        </div>
-                    )}
-                </div>
-                <div className={styles.TeamName}>
-                    {this.props.me.activeTeam?.name}
+                <div className={styles.LeftSection}>
+                    <div className={styles.MenuButtonPlaceHolder}>
+                        {!this.props.isDrawerOpen && (
+                            <div
+                                className={styles.MenuButton}
+                                onClick={this.props.onMenuToggle}
+                            >
+                                <MaterialIconUI>menu</MaterialIconUI>
+                            </div>
+                        )}
+                    </div>
+                    <div className={styles.TeamName}>
+                        {this.props.me.activeTeam?.name}
+                    </div>
                 </div>
                 <SpacerUI />
                 <div
@@ -95,20 +97,22 @@ export class HeaderComponent extends Component<Props, State> {
                     )}
                 </div>
                 <SpacerUI />
-                <div className={styles.UserActionSection}></div>
-                {this.props.me && (
-                    <div className={styles.UserSection}>
-                        <div
-                            className={styles.UserProfile}
-                            onClick={this.props.onUserProfileClick}
-                        >
-                            <UserProfileUI user={this.props.me} />
+                <div className={styles.RightSection}>
+                    <div className={styles.UserActionSection}></div>
+                    {this.props.me && (
+                        <div className={styles.UserSection}>
+                            <div
+                                className={styles.UserProfile}
+                                onClick={this.props.onUserProfileClick}
+                            >
+                                <UserProfileUI user={this.props.me} />
+                            </div>
+                            <div className={styles.UserName}>
+                                {`${this.props.me.firstName} ${this.props.me.lastName}`}
+                            </div>
                         </div>
-                        <div className={styles.UserName}>
-                            {`${this.props.me.firstName} ${this.props.me.lastName}`}
-                        </div>
-                    </div>
-                )}
+                    )}
+                </div>
             </header>
         );
     }

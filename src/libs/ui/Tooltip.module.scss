@@ -13,7 +13,6 @@ $backgroundColor: #424242;
         z-index: 100;
         display: none;
         visibility: hidden;
-        margin-top: 6px;
         padding: 6px 10px;
         white-space: nowrap;
         color: white;
@@ -26,12 +25,62 @@ $backgroundColor: #424242;
 
         .Triangle {
             position: absolute;
-            left: 50%;
-            margin-top: -10px;
-            transform: translateX(-50%);
-            border-right: transparent solid 14px;
-            border-bottom: $backgroundColor solid 10px;
-            border-left: transparent solid 14px;
+        }
+
+        &.Top,
+        &.Bottom {
+            .Triangle {
+                left: 50%;
+                transform: translateX(-50%);
+                border-left: transparent solid 8px;
+                border-right: transparent solid 8px;
+            }
+        }
+
+        &.Top {
+            margin-top: -8px;
+
+            .Triangle {
+                bottom: -6px;
+                border-top: $backgroundColor solid 6px;
+            }
+        }
+
+        &.Bottom {
+            margin-top: 8px;
+
+            .Triangle {
+                top: -6px;
+                border-bottom: $backgroundColor solid 6px;
+            }
+        }
+
+        &.Left,
+        &.Right {
+            .Triangle {
+                top: 50%;
+                transform: translateY(-50%);
+                border-top: transparent solid 8px;
+                border-bottom: transparent solid 8px;
+            }
+        }
+
+        &.Left {
+            margin-left: -8px;
+
+            .Triangle {
+                right: -6px;
+                border-left: $backgroundColor solid 6px;
+            }
+        }
+
+        &.Right {
+            margin-left: 8px;
+
+            .Triangle {
+                left: -6px;
+                border-right: $backgroundColor solid 6px;
+            }
         }
     }
 }

@@ -118,6 +118,16 @@ function updateActiveTeamMutateState(
     });
 }
 
+function createTeamMutateState(state: IAppState, event: events.CreateTeam) {
+    const newTeam = {
+        id: '-1',
+        name: event.team.name,
+    };
+    return Object.assign<any, IAppState, Partial<IAppState>>({}, state, {
+        teams: state.teams.concat([newTeam]),
+    });
+}
+
 export const mutateState: MutateState<IAppState, events.MutationEvent> = (
     state: IAppState,
     event: events.MutationEvent,
@@ -138,6 +148,8 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
             return removeTaskOwnerMutateState(state, event);
         case 'UpdateActiveTeam':
             return updateActiveTeamMutateState(state, event);
+        case 'CreateTeam':
+            return createTeamMutateState(state, event);
     }
 };
 
