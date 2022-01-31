@@ -1,5 +1,6 @@
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
+import { CreateTeamInput } from '@core/entity/input';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 
@@ -78,6 +79,15 @@ export class TeamService {
                 teamInput: {
                     name: team.name,
                 },
+            },
+        });
+    }
+
+    public createTeam(team: CreateTeamInput) {
+        return this.graphQLClient.mutate({
+            mutation: mutations.createTeam,
+            variables: {
+                team,
             },
         });
     }

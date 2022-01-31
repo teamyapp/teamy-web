@@ -5,8 +5,11 @@ import styles from './Tooltip.module.scss';
 
 const minHoverMilliseconds = 500;
 
+type Position = 'Top' | 'Bottom' | 'Left' | 'Right';
+
 interface Props {
     message: string;
+    position?: Position;
 }
 
 interface State {
@@ -33,6 +36,7 @@ export class TooltipUI extends Component<Props, State> {
     }
 
     render(): ReactElement {
+        console.log(this.props.message, this.props.position);
         return (
             <div className={styles.Box}>
                 <div
@@ -49,6 +53,12 @@ export class TooltipUI extends Component<Props, State> {
                     ref={this.tooltipRef}
                     className={`${styles.Tooltip} ${classNames({
                         [styles.Show]: this.state.showTooltip,
+                        [styles.Top]: this.props.position === 'Top',
+                        [styles.Right]: this.props.position === 'Right',
+                        [styles.Bottom]:
+                            !this.props.position ||
+                            this.props.position === 'Bottom',
+                        [styles.Left]: this.props.position === 'Left',
                     })}`}
                     style={{
                         top: this.state.tooltipTop,
@@ -82,16 +92,9 @@ export class TooltipUI extends Component<Props, State> {
                     return;
                 }
 
-                const rect = component.getBoundingClientRect();
-                const componentLeft = rect.left;
-                const componentTop = rect.top;
-                const componentWidth = rect.width;
-                const componentHeight = rect.height;
-                const tooltipWidth = this.tooltipRef.current?.offsetWidth || 0;
-                const tooltipLeft =
-                    componentLeft + componentWidth / 2 - tooltipWidth / 2;
-                const tooltipTop = componentTop + componentHeight;
-
+                const { tooltipLeft, tooltipTop } = this.getPosition(
+                    this.componentRef.current!,
+                );
                 this.setState({
                     tooltipVisible: true,
                     tooltipTop,
@@ -116,6 +119,51 @@ export class TooltipUI extends Component<Props, State> {
         });
 
         this.dispose();
+    }
+
+    private getPosition(component: HTMLDivElement) {
+        const rect = component.getBoundingClientRect();
+        const componentLeft = rect.left;
+        const componentTop = rect.top;
+        const componentWidth = rect.width;
+        const componentHeight = rect.height;
+        const tooltipWidth = this.tooltipRef.current?.offsetWidth || 0;
+        const tooltipHeight = this.tooltipRef.current?.offsetHeight || 0;
+
+        let tooltipLeft;
+        let tooltipTop;
+
+        switch (this.props.position) {
+            case 'Top': {
+                tooltipLeft =
+                    componentLeft + componentWidth / 2 - tooltipWidth / 2;
+                tooltipTop = componentTop - tooltipHeight;
+                break;
+            }
+            case 'Left': {
+                tooltipLeft = componentLeft - tooltipWidth;
+                tooltipTop =
+                    componentTop + componentHeight / 2 - tooltipHeight / 2;
+                break;
+            }
+            case 'Right': {
+                tooltipLeft = componentLeft + componentWidth;
+                tooltipTop =
+                    componentTop + componentHeight / 2 - tooltipHeight / 2;
+                break;
+            }
+            default: {
+                tooltipLeft =
+                    componentLeft + componentWidth / 2 - tooltipWidth / 2;
+                tooltipTop = componentTop + componentHeight;
+                break;
+            }
+        }
+
+        return {
+            tooltipLeft,
+            tooltipTop,
+        };
     }
 
     private dispose() {

@@ -59,7 +59,7 @@ export const completeTask = gql`
 `;
 
 export const createTask = gql`
-    mutation createTask($taskInput: TaskCreationInput!, $teamId: ID!) {
+    mutation createTask($taskInput: CreateTaskInput!, $teamId: ID!) {
         createTask(task: $taskInput) {
             ownedByTeam(id: $teamId) {
                 task {
@@ -149,6 +149,16 @@ export const updateComment = gql`
                 comment {
                     id
                 }
+            }
+        }
+    }
+`;
+
+export const createTeam = gql`
+    mutation createTeam($team: CreateTeamInput!) {
+        createTeam(input: $team) {
+            team {
+                id
             }
         }
     }

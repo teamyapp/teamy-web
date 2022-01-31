@@ -60,6 +60,9 @@ export class NetworkStateSynchronizer {
                     case 'UpdateActiveTeam':
                         await teamService.updateActiveTeamId(event.teamId);
                         break;
+                    case 'CreateTeam':
+                        await teamService.createTeam(event.team);
+                        break;
                     default:
                         console.log(
                             'NetworkStateSynchronizer does not handle',

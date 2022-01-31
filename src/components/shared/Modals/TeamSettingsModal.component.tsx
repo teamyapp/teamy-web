@@ -87,11 +87,18 @@ export class TeamSettingsModalComponent extends Component<IProps, IState> {
                 <div className={styles.TeamProfileTab}>
                     <div className={styles.TeamProfileTabContent}>
                         <div className={styles.TeamIcon}>
-                            <img
-                                alt={this.state.team?.name}
-                                className={styles.TeamIconImg}
-                                src={this.state.team?.iconUrl}
-                            />
+                            {this.state.team?.iconUrl ? (
+                                <img
+                                    alt={this.state.team?.name}
+                                    className={styles.TeamIconImg}
+                                    src={this.state.team?.iconUrl}
+                                />
+                            ) : (
+                                <div className={styles.TeamIconDefault}>
+                                    {this.state.team?.name[0]?.toUpperCase()}
+                                </div>
+                            )}
+
                             <div className={styles.UploadTeamIconButton}>
                                 Upload profile
                             </div>

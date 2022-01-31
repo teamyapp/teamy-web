@@ -2,12 +2,13 @@ import classNames from 'classnames';
 import React, { Component, MouseEvent, RefObject, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { Team } from '@core/entity/team';
 
 import styles from './Drawer.module.scss';
 
-interface IProps {
+interface Props {
     teams: Team[];
     activeTeamId: string;
     onMenuClose?: () => void;
@@ -15,20 +16,21 @@ interface IProps {
     isDrawerOpen: boolean;
     onAddTeamMembersClick?: (teamId: string) => void;
     onShowTeamMembersClick?: (teamId: string) => void;
-    onViewTeamSettings?: (teamId: string) => void;
+    onViewTeamSettingsClick?: (teamId: string) => void;
+    onCreateTeamClick?: () => void;
 }
 
-interface IState {
+interface State {
     showTeamContextMenu: boolean;
     teamContextMenuLeft: number;
     teamContextMenuTop: number;
 }
 
-export class DrawerUI extends Component<IProps, IState> {
+export class DrawerUI extends Component<Props, State> {
     private selectedTeamId?: string;
     private teamContextMenuRef: RefObject<any> = createRef();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             showTeamContextMenu: false,
@@ -58,6 +60,16 @@ export class DrawerUI extends Component<IProps, IState> {
                 </div>
                 <div className={styles.Teams}>
                     {this.props.teams.map(this.renderTeam)}
+                    <div className={styles.CreateTeamFrame}>
+                        <TooltipUI message={'Create Team'} position={'Right'}>
+                            <div
+                                className={styles.CreateTeamButton}
+                                onClick={this.props.onCreateTeamClick}
+                            >
+                                <MaterialIconUI>add</MaterialIconUI>
+                            </div>
+                        </TooltipUI>
+                    </div>
                 </div>
                 {this.state.showTeamContextMenu && (
                     <ul
@@ -95,24 +107,33 @@ export class DrawerUI extends Component<IProps, IState> {
     };
 
     private renderTeam = (team: Team, index: number) => {
+        console.log('renderTeam', team);
         return (
             <div
-                className={`${styles.Team} ${classNames({
+                className={`${styles.IconFrameBorder} ${classNames({
                     [styles.Active]: this.props.activeTeamId === team.id,
                 })}`}
                 key={index}
             >
-                <div
-                    className={styles.IconFrame}
-                    onClick={this.onTeamClick(team.id)}
-                    onContextMenu={this.onTeamContextMenu(team.id)}
-                >
-                    <img
-                        className={styles.Icon}
-                        src={team.iconUrl}
-                        alt={team.name}
-                    />
-                </div>
+                <TooltipUI message={team.name} position={'Right'}>
+                    <div
+                        className={styles.IconFrame}
+                        onClick={this.onTeamClick(team.id)}
+                        onContextMenu={this.onTeamContextMenu(team.id)}
+                    >
+                        {team.iconUrl ? (
+                            <img
+                                className={styles.Icon}
+                                src={team.iconUrl}
+                                alt={team.name}
+                            />
+                        ) : (
+                            <div className={styles.IconDefault}>
+                                {team.name[0].toUpperCase()}
+                            </div>
+                        )}
+                    </div>
+                </TooltipUI>
             </div>
         );
     };
@@ -177,7 +198,10 @@ export class DrawerUI extends Component<IProps, IState> {
     };
 
     private onViewTeamSettingsClick = () => {
-        this.props.onViewTeamSettings?.call(null, this.selectedTeamId || '-1');
+        this.props.onViewTeamSettingsClick?.call(
+            null,
+            this.selectedTeamId || '-1',
+        );
         this.closeTeamContextMenu();
     };
 }

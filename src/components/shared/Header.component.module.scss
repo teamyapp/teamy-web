@@ -6,9 +6,20 @@
 .Header {
     position: relative;
     z-index: 100;
-    padding: 0 0 0 16px;
+    padding: 0 16px;
     color: $onPrimaryColor;
     @include menuButton;
+
+    .LeftSection,
+    .RightSection {
+        width: 280px;
+        align-items: center;
+        display: flex;
+    }
+
+    .RightSection {
+        justify-content: flex-end;
+    }
 
     .MenuButtonPlaceHolder {
         margin-right: 10px;
