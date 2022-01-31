@@ -341,6 +341,7 @@ export class DatePickerUI extends Component<Props, State> {
 
     private updateMonth = (nextMonth: (currMonth: number) => number) => {
         const newDate = new Date(this.state.shownDate);
+        newDate.setDate(1);
         newDate.setMonth(nextMonth(newDate.getMonth()));
         this.setState({
             shownDate: newDate,
