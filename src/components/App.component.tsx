@@ -80,7 +80,7 @@ class AppComponent extends Component<Props, State> {
                         repoName={'teamy-web'}
                     />
                 </Route>
-                {this.state.me && this.state.activeTeamId && (
+                {this.state.me && (
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <Fragment>
                             <DrawerUI
@@ -113,15 +113,22 @@ class AppComponent extends Component<Props, State> {
                                         this.onTaskFiltersChange
                                     }
                                 />
-                                <div className={styles.Execution}>
-                                    {
-                                        <ExecutionComponent
-                                            deps={this.props.deps}
-                                            teamId={this.state.activeTeamId}
-                                            taskFilters={this.state.taskFilters}
-                                        />
-                                    }
-                                </div>
+
+                                {this.state.activeTeamId ? (
+                                    <div className={styles.Execution}>
+                                        {
+                                            <ExecutionComponent
+                                                deps={this.props.deps}
+                                                teamId={this.state.activeTeamId}
+                                                taskFilters={
+                                                    this.state.taskFilters
+                                                }
+                                            />
+                                        }
+                                    </div>
+                                ) : (
+                                    <div>Please select default team.</div>
+                                )}
                             </div>
                         </Fragment>
                     </Route>
