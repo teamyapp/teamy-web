@@ -35,7 +35,6 @@ interface Props {
 interface State {
     team?: Team;
     invitationLink?: string;
-    defaultTabIndex: number;
     currentTabIndex: number;
 }
 
@@ -49,7 +48,6 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            defaultTabIndex: 0,
             currentTabIndex: 0,
         };
     }
@@ -69,7 +67,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                 <div className={styles.Content}>
                     <div key={0} className={styles.Tabs}>
                         <TabsUI
-                            defaultSelectedIndex={this.state.defaultTabIndex}
+                            defaultSelectedIndex={this.state.currentTabIndex}
                             tabNames={['User IDs', 'Invitation']}
                             onTabClick={this.onTabClick}
                         />
@@ -84,8 +82,8 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
     public open = async (teamId: string, defaultTabIndex: number = 0) => {
         const team = await this.props.deps.teamService.fetchTeam(teamId);
         this.setState({
-            defaultTabIndex,
             currentTabIndex: defaultTabIndex,
+            invitationLink: undefined,
             team,
         });
         this.modalRef.current?.open();

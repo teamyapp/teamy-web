@@ -37,7 +37,6 @@ interface Props {
 }
 
 interface State {
-    defaultTabIndex: number;
     currentTabIndex: number;
     initialTeamName?: string;
     team?: Team;
@@ -51,7 +50,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     constructor(props: any) {
         super(props);
         this.state = {
-            defaultTabIndex: 0,
             currentTabIndex: 0,
             invitations: [],
         };
@@ -74,7 +72,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         <div key={0} className={styles.Tabs}>
                             <TabsUI
                                 defaultSelectedIndex={
-                                    this.state.defaultTabIndex
+                                    this.state.currentTabIndex
                                 }
                                 tabNames={['Profile', 'Members', 'Invitations']}
                                 onTabClick={this.onTabClick}
@@ -133,7 +131,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 new Date(invitation2.createdAt).getTime(),
         );
         this.setState({
-            defaultTabIndex,
             currentTabIndex: defaultTabIndex,
             team,
             initialTeamName: team.name,
