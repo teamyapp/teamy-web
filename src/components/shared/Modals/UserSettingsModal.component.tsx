@@ -83,13 +83,27 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
                 <div className={styles.UserProfileTab}>
                     <div className={styles.UserProfileTabContent}>
                         <div className={styles.UserProfile}>
-                            <img
-                                alt={`${this.state.user?.firstName} ${this.state.user?.lastName}`}
-                                className={styles.UserProfileImg}
-                                src={this.state.user?.profileUrl}
-                            />
+                            {this.state.user?.profileUrl ? (
+                                <img
+                                    alt={`${this.state.user?.firstName} ${this.state.user?.lastName}`}
+                                    className={styles.UserProfileImg}
+                                    src={this.state.user?.profileUrl}
+                                />
+                            ) : (
+                                <div className={styles.DefaultUserProfile}>
+                                    {this.state.user?.firstName &&
+                                        this.state.user?.firstName[0].toUpperCase()}
+                                </div>
+                            )}
+
                             <div className={styles.UploadUserProfileButton}>
                                 Upload profile
+                            </div>
+                        </div>
+                        <div className={styles.UserIdSection}>
+                            <div>ID:</div>
+                            <div className={styles.UserId}>
+                                {this.state.user?.id}
                             </div>
                         </div>
                         <div className={styles.UserNameSection}>

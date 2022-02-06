@@ -52,7 +52,7 @@ export function WithIdentityVerification(
 
         public render(): ReactElement {
             if (!this.state.isLoaded) {
-                return <div></div>;
+                return <div />;
             }
 
             const { forwardedRef, ...rest } = this.props;

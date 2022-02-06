@@ -199,6 +199,7 @@ export const invitations = gql`
             receiverFirstName
             receiverLastName
             team {
+                id
                 name
                 iconUrl
             }

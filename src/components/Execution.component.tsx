@@ -400,11 +400,13 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private updateState = (state: IAppState) => {
-        this.setState({
-            currentUserId: state.currentUser.id,
-            needAttentionTask: state.needAttentionTask,
-            teamTasks: state.teamTasks,
-        });
+        if (state.currentUser) {
+            this.setState({
+                currentUserId: state.currentUser.id,
+                needAttentionTask: state.needAttentionTask,
+                teamTasks: state.teamTasks,
+            });
+        }
     };
 
     private onTabClick = (index: number) => {

@@ -58,7 +58,7 @@ export class InvitationComponent extends Component<Props, State> {
         }
 
         this.setState({
-            me: this.props.deps.localStore.getState().currentUser,
+            me: await this.props.deps.userService.fetchMe('network-only'),
             invitation,
         });
     }

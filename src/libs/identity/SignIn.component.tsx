@@ -13,7 +13,7 @@ export class SignInComponent extends Component<IProps> {
         return (
             <div className={styles.SignInOptions}>
                 <div className={styles.SignInOptionsCard}>
-                    <div className={styles.Title}>Teamy</div>
+                    <div className={styles.Title}>Sign In</div>
                     <div
                         className={`${styles.Button} ${styles.Google}`}
                         onClick={this.onOAuthSignInButtonClick('google')}

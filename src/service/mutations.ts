@@ -75,8 +75,22 @@ export const createTask = gql`
     }
 `;
 
+export const createUser = gql`
+    mutation createUser($input: CreateUserInput!) {
+        createUser(input: $input) {
+            user {
+                id
+                profileUrl
+                activeTeam {
+                    id
+                }
+            }
+        }
+    }
+`;
+
 export const updateUser = gql`
-    mutation updateUser($userId: ID!, $userInput: UserUpdateInput!) {
+    mutation updateUser($userId: ID!, $userInput: UpdateUserInput!) {
         user(id: $userId) {
             updateUser(input: $userInput) {
                 user {
