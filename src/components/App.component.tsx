@@ -261,7 +261,7 @@ class AppComponent extends Component<Props, State> {
     };
 
     private onAddTeamMembersClick = (teamId: string) => {
-        this.addTeamMembersModalRef.current?.open(teamId);
+        this.addTeamMembersModalRef.current?.open(teamId, 0);
     };
 
     private onShowTeamMembersClick = (teamId: string) => {

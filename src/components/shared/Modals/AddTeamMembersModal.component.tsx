@@ -81,9 +81,11 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
         );
     }
 
-    public open = async (teamId: string) => {
+    public open = async (teamId: string, defaultTabIndex: number = 0) => {
         const team = await this.props.deps.teamService.fetchTeam(teamId);
         this.setState({
+            defaultTabIndex,
+            currentTabIndex: defaultTabIndex,
             team,
         });
         this.modalRef.current?.open();
