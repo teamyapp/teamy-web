@@ -57,7 +57,7 @@ export class Router {
     }
 
     initBrowserUri() {
-        this.currUri = window.location.pathname;
+        this.currUri = `${window.location.pathname}${window.location.search}`;
     }
 
     public registerRoute(

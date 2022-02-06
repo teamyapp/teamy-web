@@ -71,17 +71,6 @@ export class IdentityClient {
         return error;
     }
 
-    private async waitForSignFinish(): Promise<Errors | null> {
-        const [accessToken, error] = await readMessage(
-            this.channel!.onMessageReceived(),
-            this.channel!.onError(),
-        );
-        if (!error) {
-            this.saveAccessToken(accessToken!);
-        }
-        return error;
-    }
-
     public onShowSignInOptions(): Channel<null> {
         return this.onShowSignInOptionsCh;
     }
@@ -92,6 +81,17 @@ export class IdentityClient {
 
     public dispose() {
         this.channel?.close();
+    }
+
+    private async waitForSignFinish(): Promise<Errors | null> {
+        const [accessToken, error] = await readMessage(
+            this.channel!.onMessageReceived(),
+            this.channel!.onError(),
+        );
+        if (!error) {
+            this.saveAccessToken(accessToken!);
+        }
+        return error;
     }
 
     private async getChannel(sessionId: number): Promise<IChannel> {

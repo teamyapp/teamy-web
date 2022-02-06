@@ -1,4 +1,5 @@
 import * as csp from '@lib/csp/csp';
+import { PopChannel } from '@lib/csp/csp';
 import { LocalStore } from '@lib/store/localStore';
 
 import { MutationEvent } from '@core/event/mutation';
@@ -11,6 +12,10 @@ import { PageService } from './page.service';
 export class NetworkStateSynchronizer {
     private readonly localStore: LocalStore<IAppState, MutationEvent>;
     private readonly pageService: PageService;
+    private readonly syncNetworkStateChan = csp.chan<boolean>();
+    private readonly syncNetworkStateMultiCaster = csp.multi<boolean>(
+        this.syncNetworkStateChan,
+    );
 
     constructor(
         localStore: LocalStore<IAppState, MutationEvent>,
@@ -95,6 +100,11 @@ export class NetworkStateSynchronizer {
     public async syncState() {
         const data = await this.pageService.fetchMePage('network-only');
         this.setState(data);
+        this.syncNetworkStateChan.put(true);
+    }
+
+    public subscribeOnSyncState(): PopChannel<boolean | undefined> {
+        return this.syncNetworkStateMultiCaster.copy();
     }
 
     private setState(data: any) {

@@ -1,21 +1,24 @@
+@use 'sass:math';
 @import 'Modal.shared.module';
 
 @import '../color';
 
 $memberProfileWidth: 60px;
 $memberProfileHeight: 60px;
+$tableRowGap: 12px;
 
 .TeamSettingsModal {
     display: flex;
     flex-direction: column;
-    width: 800px;
-    height: 600px;
+    width: 1000px;
+    height: 700px;
 
     .Tabs {
         background-color: #f5f5f5;
     }
 
     .TabContent {
+        overflow: hidden;
         flex: 1;
     }
 
@@ -58,16 +61,16 @@ $memberProfileHeight: 60px;
                 }
 
                 .TeamIconDefault {
+                    font-size: 90px;
+                    font-weight: bold;
+                    line-height: 90px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 90px;
-                    line-height: 90px;
-                    font-weight: bold;
-                    background-color: $defaultTeamIconBackground;
-                    color: white;
                     width: 100%;
                     height: 100%;
+                    color: white;
+                    background-color: $defaultTeamIconBackground;
                 }
 
                 &:hover {
@@ -125,52 +128,194 @@ $memberProfileHeight: 60px;
     }
 
     .TeamMembersTab {
-        position: relative;
-        display: flex;
+        overflow: hidden;
+        box-sizing: border-box;
         height: 100%;
+        padding: 30px 6px;
 
-        .TeamMemberList {
-            display: grid;
-            box-sizing: border-box;
-            width: 100%;
-            padding: 40px;
-            --profile-width: #{$memberProfileWidth};
-            --profile-height: #{$memberProfileHeight};
-            grid-template-columns: repeat(5, 1fr);
-            gap: 10px;
+        .Scrollable {
+            overflow-y: auto;
+            height: 100%;
+            padding: 0 14px;
 
-            .Cell {
-                display: flex;
-                align-items: center;
-                flex-direction: column;
+            .TeamMemberList {
+                display: grid;
+                box-sizing: border-box;
+                width: 100%;
+                --profile-width: #{$memberProfileWidth};
+                --profile-height: #{$memberProfileHeight};
+                grid-template-columns: repeat(5, 1fr);
+                column-gap: 20px;
+                row-gap: 40px;
 
-                .AddButton {
-                    font-weight: bold;
+                .Cell {
                     display: flex;
                     align-items: center;
-                    justify-content: center;
+                    flex-direction: column;
 
-                    width: $memberProfileWidth;
-
-                    height: $memberProfileHeight;
-                    cursor: pointer;
-                    border-radius: 50%;
-                    background-color: #ad1457;
-
-                    &:hover {
-                        opacity: 0.8;
+                    .InvitedUserProfile {
+                        font-size: 36px;
+                        font-weight: bold;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: $memberProfileWidth;
+                        height: $memberProfileHeight;
+                        user-select: none;
+                        color: white;
+                        border-radius: 50%;
+                        background-color: #37474f;
                     }
 
-                    --icon-color: white;
-                    --icon-size: 30px;
-                }
+                    .AddButton {
+                        font-weight: bold;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        width: $memberProfileWidth;
+                        height: $memberProfileHeight;
+                        cursor: pointer;
+                        border-radius: 50%;
+                        background-color: #ad1457;
 
-                .MemberName {
-                    font-size: 18px;
-                    font-weight: bold;
-                    margin-top: 10px;
+                        &:hover {
+                            opacity: 0.8;
+                        }
+
+                        --icon-color: white;
+                        --icon-size: 30px;
+                    }
+
+                    .MemberName {
+                        font-size: 18px;
+                        font-weight: bold;
+                        margin-top: 10px;
+                    }
+
+                    .InvitationStatus {
+                        margin-top: 10px;
+                    }
+
+                    .Actions {
+                        margin-top: 10px;
+                    }
                 }
             }
+        }
+    }
+
+    .Actions {
+        display: flex;
+        justify-content: center;
+        column-gap: 10px;
+
+        .Action {
+            &:hover {
+                cursor: pointer;
+                opacity: 0.8;
+            }
+        }
+
+        .CopyLinkAction {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            margin: 3px;
+            border-radius: 50%;
+            background-color: #1976d2;
+            --icon-size: 19px;
+            --icon-color: white;
+        }
+
+        .DeleteAction {
+            font-weight: 500;
+            --icon-size: 34px;
+            --icon-color: #ff0000;
+        }
+    }
+
+    .InvitationsTab {
+        overflow: hidden;
+        box-sizing: border-box;
+        height: 100%;
+        padding: 20px 6px;
+
+        .Scrollable {
+            overflow-y: auto;
+            height: 100%;
+            padding: 0 14px;
+
+            .Invitations {
+                width: 100%;
+                border-collapse: collapse;
+
+                th {
+                    position: sticky;
+                    top: 0;
+                    color: white;
+                    background-color: #424242;
+                }
+
+                td,
+                th {
+                    padding: math.div($tableRowGap, 2) 0;
+                }
+
+                td {
+                    height: 22px;
+                }
+
+                tbody {
+                    tr:first-child {
+                        td {
+                            padding-top: $tableRowGap;
+                        }
+                    }
+                }
+
+                .Invitation {
+                    font-size: 14px;
+                    font-weight: bold;
+                    text-align: center;
+
+                    .LastName {
+                        margin-right: 10px;
+                        margin-left: 10px;
+                    }
+
+                    .InvitationStatus {
+                        display: block;
+                        margin: 0 auto;
+                    }
+                }
+            }
+        }
+    }
+
+    .InvitationStatus {
+        font-size: 14px;
+        font-weight: bold;
+        line-height: 14px;
+        width: 100px;
+        padding: 4px 0;
+        text-align: center;
+        border-radius: 4px;
+
+        &.PENDING {
+            color: white;
+            background-color: #f57c00;
+        }
+
+        &.ACCEPTED {
+            color: white;
+            background-color: #2e7d32;
+        }
+
+        &.DECLINED {
+            color: white;
+            background-color: #424242;
         }
     }
 }

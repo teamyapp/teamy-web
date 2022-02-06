@@ -163,3 +163,49 @@ export const createTeam = gql`
         }
     }
 `;
+
+export const createInvitation = gql`
+    mutation createInvitation($input: CreateInvitationInput!) {
+        createInvitation(input: $input) {
+            invitation {
+                id
+                code
+                status
+            }
+        }
+    }
+`;
+
+export const acceptInvitation = gql`
+    mutation acceptInvitation($code: String!) {
+        invitationUpdateWithCode(code: $code) {
+            accept {
+                invitation {
+                    status
+                }
+            }
+        }
+    }
+`;
+
+export const declineInvitation = gql`
+    mutation acceptInvitation($code: String!) {
+        invitationUpdateWithCode(code: $code) {
+            decline {
+                invitation {
+                    status
+                }
+            }
+        }
+    }
+`;
+
+export const deleteInvitation = gql`
+    mutation deleteInvitation($id: ID!) {
+        invitationUpdate(id: $id) {
+            delete {
+                id
+            }
+        }
+    }
+`;

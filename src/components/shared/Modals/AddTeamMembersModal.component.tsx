@@ -1,40 +1,62 @@
+import moment from 'moment';
 import React, { Component, createRef } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
+import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
+import { TabsUI } from '@lib/ui/Tabs';
 import { TextAreaUI } from '@lib/ui/TextArea';
+import { TextFieldUI } from '@lib/ui/TextField';
 
+import { invitationLink } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
 
 import styles from './AddTeamMembersModal.component.module.scss';
 
 const itemSeparator = ',';
+const expirationPeriodOptions: Option[] = [
+    {
+        key: 'P7D',
+        description: '1 Week',
+    },
+    {
+        key: 'P1D',
+        description: '1 Day',
+    },
+];
 
-interface IProps {
+interface Props {
     deps: Deps;
     onTeamMembersAdded?: (teamId: string) => void;
 }
 
-interface IState {
+interface State {
     team?: Team;
+    invitationLink?: string;
+    currentTabIndex: number;
 }
 
-export class AddTeamMembersModalComponent extends Component<IProps, IState> {
-    private modalRef = createRef<ModalUI>();
-    private userIDTextAreaRef = createRef<TextAreaUI>();
+export class AddTeamMembersModalComponent extends Component<Props, State> {
+    private readonly modalRef = createRef<ModalUI>();
+    private readonly userIDTextAreaRef = createRef<TextAreaUI>();
+    private readonly firstNameTextFieldRef = createRef<TextFieldUI>();
+    private readonly lastNameTextFieldRef = createRef<TextFieldUI>();
+    private readonly dropDownListRef = createRef<DropDownList>();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
-        this.state = {};
+        this.state = {
+            currentTabIndex: 0,
+        };
     }
 
     public render() {
         return (
             <ModalUI ref={this.modalRef} level={1}>
                 <div className={styles.Header}>
-                    Add New Members to {this.state.team?.name}
+                    Add Members to {this.state.team?.name}
                     <div
                         className={styles.CloseButton}
                         onClick={this.onCloseButtonClick}
@@ -43,6 +65,44 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
                     </div>
                 </div>
                 <div className={styles.Content}>
+                    <div key={0} className={styles.Tabs}>
+                        <TabsUI
+                            defaultSelectedIndex={this.state.currentTabIndex}
+                            tabNames={['User IDs', 'Invitation']}
+                            onTabClick={this.onTabClick}
+                        />
+                    </div>
+                    {this.renderUserIdsTab()}
+                    {this.renderInvitationTab()}
+                </div>
+            </ModalUI>
+        );
+    }
+
+    public open = async (teamId: string, defaultTabIndex: number = 0) => {
+        const team = await this.props.deps.teamService.fetchTeam(teamId);
+        this.setState({
+            currentTabIndex: defaultTabIndex,
+            invitationLink: undefined,
+            team,
+        });
+        this.modalRef.current?.open();
+    };
+
+    private onCloseButtonClick = () => {
+        this.modalRef.current?.close();
+    };
+
+    private onTabClick = (tabIndex: number) => {
+        this.setState({
+            currentTabIndex: tabIndex,
+        });
+    };
+
+    private renderUserIdsTab = () => {
+        return (
+            this.state.currentTabIndex === 0 && (
+                <div className={styles.Section}>
                     <div className={styles.UserIds}>
                         <TextAreaUI
                             ref={this.userIDTextAreaRef}
@@ -54,20 +114,50 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
                         <ButtonUI label={'Add'} onClick={this.onAddClick} />
                     </div>
                 </div>
-            </ModalUI>
+            )
         );
-    }
-
-    public open = async (teamId: string) => {
-        const team = await this.props.deps.teamService.fetchTeam(teamId);
-        this.setState({
-            team,
-        });
-        this.modalRef.current?.open();
     };
 
-    private onCloseButtonClick = () => {
-        this.modalRef.current?.close();
+    private renderInvitationTab = () => {
+        return (
+            this.state.currentTabIndex === 1 && (
+                <div className={styles.Section}>
+                    <div className={styles.FirstName}>
+                        <TextFieldUI
+                            label={'First Name'}
+                            ref={this.firstNameTextFieldRef}
+                        />
+                    </div>
+                    <div className={styles.LastName}>
+                        <TextFieldUI
+                            label={'Last Name'}
+                            ref={this.lastNameTextFieldRef}
+                        />
+                    </div>
+                    <div className={styles.ExpirationPeriod}>
+                        <div className={styles.Label}>Expire In:</div>
+                        <div className={styles.DropDown}>
+                            <DropDownList
+                                ref={this.dropDownListRef}
+                                selectOptionKey={expirationPeriodOptions[0].key}
+                                options={expirationPeriodOptions}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.GenerateLinkAction}>
+                        <ButtonUI
+                            label={'Get Invitation Link'}
+                            onClick={this.onGenerateLinkClick}
+                        />
+                    </div>
+                    {this.state.invitationLink && (
+                        <div className={styles.InvitationLink}>
+                            {this.state.invitationLink}
+                        </div>
+                    )}
+                </div>
+            )
+        );
     };
 
     private onAddClick = async () => {
@@ -83,5 +173,25 @@ export class AddTeamMembersModalComponent extends Component<IProps, IState> {
         );
         this.modalRef.current?.close();
         this.props.onTeamMembersAdded?.call(null, teamId);
+    };
+
+    private onGenerateLinkClick = async () => {
+        const firstName = this.firstNameTextFieldRef.current?.value;
+        const lastName = this.lastNameTextFieldRef.current?.value;
+        const expirationPeriod =
+            this.dropDownListRef.current?.value ||
+            expirationPeriodOptions[0].key;
+        const expireAt = moment().add(moment.duration(expirationPeriod));
+        const invitationCode =
+            await this.props.deps.invitationService.createInvitation({
+                teamId: this.state.team!.id,
+                receiverFirstName: firstName || '',
+                receiverLastName: lastName || '',
+                expireAt: expireAt.toDate(),
+            });
+        this.setState({
+            invitationLink: invitationLink(invitationCode),
+        });
+        await this.props.deps.networkStateSyncer.syncState();
     };
 }

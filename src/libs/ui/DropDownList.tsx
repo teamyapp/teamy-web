@@ -38,6 +38,10 @@ export class DropDownList extends Component<Props, State> {
         };
     }
 
+    public get value(): string | undefined {
+        return this.state.selectedOption?.key;
+    }
+
     public render() {
         return (
             <div

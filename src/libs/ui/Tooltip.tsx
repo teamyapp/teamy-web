@@ -1,6 +1,8 @@
 import classNames from 'classnames';
 import React, { Component, ReactElement, createRef } from 'react';
 
+import { Point } from '@lib/ui/position';
+
 import styles from './Tooltip.module.scss';
 
 const minHoverMilliseconds = 500;
@@ -10,6 +12,7 @@ type Position = 'Top' | 'Bottom' | 'Left' | 'Right';
 interface Props {
     message: string;
     position?: Position;
+    parentOffset?: Point;
 }
 
 interface State {
@@ -122,8 +125,8 @@ export class TooltipUI extends Component<Props, State> {
 
     private getPosition(component: HTMLDivElement) {
         const rect = component.getBoundingClientRect();
-        const componentLeft = rect.left;
-        const componentTop = rect.top;
+        const componentLeft = rect.left - (this.props.parentOffset?.left || 0);
+        const componentTop = rect.top - (this.props.parentOffset?.top || 0);
         const componentWidth = rect.width;
         const componentHeight = rect.height;
         const tooltipWidth = this.tooltipRef.current?.offsetWidth || 0;

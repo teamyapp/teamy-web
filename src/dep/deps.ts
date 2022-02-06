@@ -12,6 +12,7 @@ import { getEnvironment } from '@core/env/environment';
 import * as mutationEvents from '@core/event/mutation';
 import { UserActionEvent } from '@core/event/userAction';
 import { CommentService } from '@core/service/comment.service';
+import { InvitationService } from '@core/service/invitation.service';
 import { NetworkStateSynchronizer } from '@core/service/networkStateSyncer';
 import { PageService } from '@core/service/page.service';
 import { TaskService } from '@core/service/task.service';
@@ -26,6 +27,7 @@ export interface Deps {
     userService: UserService;
     commentService: CommentService;
     pageService: PageService;
+    invitationService: InvitationService;
     identityClient: IdentityClient;
     localStore: LocalStore<IAppState, mutationEvents.MutationEvent>;
     networkStateSyncer: NetworkStateSynchronizer;
@@ -48,6 +50,7 @@ export function initDeps(): Deps {
     const userService = new UserService(teamyGraphQLClient);
     const commentService = new CommentService(teamyGraphQLClient);
     const pageService = new PageService(teamyGraphQLClient);
+    const invitationService = new InvitationService(teamyGraphQLClient);
     const localStore = createStore();
     const networkStateSyncer = new NetworkStateSynchronizer(
         localStore,
@@ -64,6 +67,7 @@ export function initDeps(): Deps {
         userService,
         commentService,
         pageService,
+        invitationService,
         identityClient,
         localStore,
         networkStateSyncer,
