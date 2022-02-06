@@ -70,6 +70,7 @@ export function WithIdentityVerification(
             if (this.currUri) {
                 router.navigateTo(this.currUri);
             }
+
             this.setState({
                 isSignedIn: true,
             });

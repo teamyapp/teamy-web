@@ -1,5 +1,7 @@
 import classNames from 'classnames';
-import React, { Component, ReactElement } from 'react';
+import React, { Component, Fragment, ReactElement, createRef } from 'react';
+
+import { Point } from '@lib/ui/position';
 
 import styles from './Modal.module.scss';
 
@@ -18,6 +20,8 @@ interface State {
 }
 
 export class ModalUI extends Component<Props, State> {
+    private readonly contentRef = createRef<HTMLDivElement>();
+
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -32,8 +36,9 @@ export class ModalUI extends Component<Props, State> {
         return (
             <div className={styles.Modal}>
                 {this.state.isVisible && (
-                    <div>
+                    <Fragment>
                         <div
+                            ref={this.contentRef}
                             className={`${styles.Content} ${classNames({
                                 [styles.Show]: this.state.isOpen,
                             })}`}
@@ -54,13 +59,13 @@ export class ModalUI extends Component<Props, State> {
                             }}
                             onClick={this.onOverlayClick}
                         />
-                    </div>
+                    </Fragment>
                 )}
             </div>
         );
     }
 
-    open(): void {
+    public open(): void {
         if (this.state.isAnimating) {
             return;
         }
@@ -81,7 +86,7 @@ export class ModalUI extends Component<Props, State> {
         }, transitionDurationMilliseconds);
     }
 
-    close(): void {
+    public close(): void {
         if (this.state.isAnimating) {
             return;
         }
@@ -100,7 +105,22 @@ export class ModalUI extends Component<Props, State> {
         }, transitionDurationMilliseconds);
     }
 
-    onOverlayClick = () => {
+    public Position(): Point {
+        const rect = this.contentRef.current?.getBoundingClientRect();
+        if (rect) {
+            return {
+                left: rect.left,
+                top: rect.top,
+            };
+        } else {
+            return {
+                left: 0,
+                top: 0,
+            };
+        }
+    }
+
+    private onOverlayClick = () => {
         this.close();
     };
 }

@@ -10,6 +10,8 @@ import {
     debugRoutePattern,
     getTeamId,
     identityRoutePattern,
+    invitationRoutePattern,
+    rootRoutePattern,
     signInPath,
     teamPath,
     teamRoutePattern,
@@ -25,6 +27,7 @@ import { IAppState } from '@core/state/state';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
+import { InvitationComponent } from './Invitation.component';
 import { DrawerUI } from './shared/Drawer';
 import { HeaderComponent } from './shared/Header.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
@@ -44,7 +47,11 @@ interface State {
     taskFilters: TaskFilters;
 }
 
-const acceptedRoutePatterns = [teamRoutePattern, debugRoutePattern];
+const acceptedRoutePatterns = [
+    debugRoutePattern,
+    teamRoutePattern,
+    invitationRoutePattern,
+];
 
 class AppComponent extends Component<Props, State> {
     private readonly router: Router;
@@ -95,6 +102,9 @@ class AppComponent extends Component<Props, State> {
                                 onShowTeamMembersClick={
                                     this.onShowTeamMembersClick
                                 }
+                                onShowInvitationsClick={
+                                    this.onShowInvitationsClick
+                                }
                                 onViewTeamSettingsClick={
                                     this.onViewTeamSettingsClick
                                 }
@@ -133,6 +143,9 @@ class AppComponent extends Component<Props, State> {
                         </Fragment>
                     </Route>
                 )}
+                <Route router={this.router} pattern={invitationRoutePattern}>
+                    <InvitationComponent deps={this.props.deps} />
+                </Route>
                 <TeamSettingsModalComponent
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
@@ -173,9 +186,6 @@ class AppComponent extends Component<Props, State> {
         })().then();
         this.props.deps.networkStateSyncer.syncState();
 
-        for (const routePattern of acceptedRoutePatterns) {
-            this.router.registerRoute(routePattern, false);
-        }
         this.router.navigateToCurrUri();
         this.routeChangeChan = this.router.subscribeRouteChange();
         console.log('[AppComponent]subscribing');
@@ -187,6 +197,7 @@ class AppComponent extends Component<Props, State> {
                 }
 
                 if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
+                    this.tryRedirect(this.state.activeTeamId);
                     console.log(
                         '[AppComponent][Discarded]',
                         routeUpdate.routePattern,
@@ -257,6 +268,10 @@ class AppComponent extends Component<Props, State> {
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
 
+    private onShowInvitationsClick = (teamId: string) => {
+        this.teamSettingsModalRef.current?.open(teamId, 2);
+    };
+
     private onViewTeamSettingsClick = (teamId: string) => {
         this.teamSettingsModalRef.current?.open(teamId);
     };
@@ -292,12 +307,21 @@ class AppComponent extends Component<Props, State> {
             activeTeamId: state.activeTeamId,
         });
 
+        this.tryRedirect(state.activeTeamId);
+    }
+
+    private tryRedirect(activeTeamId?: string) {
+        if (!activeTeamId) {
+            return;
+        }
+
         const isAcceptedPattern = acceptedRoutePatterns.includes(
             this.router.currentRouteUpdate?.routePattern,
         );
+
         const teamId = getTeamId(this.router.currentRouteUpdate?.params);
         if (!isAcceptedPattern && !teamId) {
-            this.router.navigateTo(teamPath(state.activeTeamId));
+            this.router.navigateTo(teamPath(activeTeamId));
         }
     }
 
@@ -315,7 +339,12 @@ interface IHookProps {
 }
 
 export default function AppComponentHook(props: IHookProps): ReactElement {
+    props.deps.router.registerRoute(rootRoutePattern);
     props.deps.router.registerRoute(identityRoutePattern);
+    for (const routePattern of acceptedRoutePatterns) {
+        props.deps.router.registerRoute(routePattern, false);
+    }
+
     const AppWithIdentityVerification = WithIdentityVerification(
         props.deps.identityClient,
         props.deps.router,

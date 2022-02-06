@@ -166,3 +166,43 @@ export const taskComments = gql`
         }
     }
 `;
+
+export const teamInvitations = gql`
+    query invitations($teamId: ID!) {
+        teams(ids: [$teamId]) {
+            invitations {
+                id
+                createdAt
+                expireAt
+                receiverFirstName
+                receiverLastName
+                receiver {
+                    id
+                }
+                status
+                code
+            }
+        }
+    }
+`;
+
+export const invitations = gql`
+    query invitations($filter: InvitationFilter!) {
+        invitations(input: $filter) {
+            id
+            createdAt
+            expireAt
+            sender {
+                firstName
+                lastName
+            }
+            receiverFirstName
+            receiverLastName
+            team {
+                name
+                iconUrl
+            }
+            status
+        }
+    }
+`;

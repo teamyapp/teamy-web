@@ -16,6 +16,7 @@ interface Props {
     isDrawerOpen: boolean;
     onAddTeamMembersClick?: (teamId: string) => void;
     onShowTeamMembersClick?: (teamId: string) => void;
+    onShowInvitationsClick?: (teamId: string) => void;
     onViewTeamSettingsClick?: (teamId: string) => void;
     onCreateTeamClick?: () => void;
 }
@@ -93,6 +94,12 @@ export class DrawerUI extends Component<Props, State> {
                             onClick={this.onShowMembersClick}
                         >
                             Show members
+                        </li>
+                        <li
+                            className={styles.ContextMenuItem}
+                            onClick={this.onShowInvitationsClick}
+                        >
+                            Show invitations
                         </li>
                         <li
                             className={styles.ContextMenuItem}
@@ -190,6 +197,14 @@ export class DrawerUI extends Component<Props, State> {
 
     private onShowMembersClick = () => {
         this.props.onShowTeamMembersClick?.call(
+            null,
+            this.selectedTeamId || '-1',
+        );
+        this.closeTeamContextMenu();
+    };
+
+    private onShowInvitationsClick = () => {
+        this.props.onShowInvitationsClick?.call(
             null,
             this.selectedTeamId || '-1',
         );

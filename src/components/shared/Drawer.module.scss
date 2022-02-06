@@ -17,6 +17,7 @@ $teamIconSize: 40px;
     overflow: hidden;
     flex-direction: column;
     width: 0;
+    height: 100%;
     transition: width 400ms $easeOutExpo;
     background-color: $drawerBackgroundColor;
 
@@ -74,25 +75,25 @@ $teamIconSize: 40px;
                 background-color: white;
 
                 .Icon {
-                    border-radius: 4px;
                     min-width: $teamIconSize - 10px;
                     max-width: $teamIconSize;
                     min-height: $teamIconSize - 10px;
                     max-height: $teamIconSize;
+                    border-radius: 4px;
                 }
 
                 .IconDefault {
-                    border-radius: 4px;
+                    font-size: 30px;
+                    font-weight: bold;
+                    line-height: 40px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    font-size: 30px;
-                    line-height: 40px;
-                    font-weight: bold;
-                    background-color: $defaultTeamIconBackground;
-                    color: white;
                     width: 100%;
                     height: 100%;
+                    color: white;
+                    border-radius: 4px;
+                    background-color: $defaultTeamIconBackground;
                 }
             }
         }
@@ -103,6 +104,7 @@ $teamIconSize: 40px;
             }
 
             .CreateTeamButton {
+                font-weight: bold;
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -111,7 +113,6 @@ $teamIconSize: 40px;
                 padding: 10px;
                 border-radius: $teamIconRoundCorner;
                 background-color: rgba(0, 0, 0, 0.05);
-                font-weight: bold;
                 --icon-color: #828282;
                 --icon-size: 40px;
 
