@@ -147,6 +147,8 @@ export class InvitationComponent extends Component<Props, State> {
         const code = getInvitationCode(
             this.props.deps.router.currentRouteUpdate.params,
         );
+
+        // TODO: replace with mutation event
         await this.props.deps.invitationService.acceptInvitation(code!);
 
         const teamId = this.state.invitation?.team?.id!;
@@ -161,6 +163,8 @@ export class InvitationComponent extends Component<Props, State> {
         const code = getInvitationCode(
             this.props.deps.router.currentRouteUpdate.params,
         );
+
+        // TODO: replace with mutation event
         await this.props.deps.invitationService.declineInvitation(code!);
         this.onGoHomePageClick();
     };

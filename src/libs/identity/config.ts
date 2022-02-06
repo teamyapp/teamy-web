@@ -28,8 +28,8 @@ const stagingConfig: Config = {
     httpProtocol: 'https',
     webSocketProtocol: 'wss',
     apiBaseEndpoint: 'cloud.staging.teamyapp.com/identity',
-    cookieDomain: 'localhost',
-    cookieSecure: false,
+    cookieDomain: 'staging.teamyapp.com',
+    cookieSecure: true,
 };
 
 const productionConfig: Config = {
@@ -43,7 +43,7 @@ const productionConfig: Config = {
 export function getConfig(env: Environment): Config {
     switch (env) {
         case Environment.Development:
-            return stagingConfig;
+            return developmentConfig;
         case Environment.Testing:
             return testingConfig;
         case Environment.Staging:

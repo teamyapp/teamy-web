@@ -412,6 +412,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private onDeleteInvitationClick = (invitationId: string) => {
         return async () => {
+            // TODO: replace with mutation event
             await this.props.deps.invitationService.deleteInvitation(
                 invitationId,
             );
