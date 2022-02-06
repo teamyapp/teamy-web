@@ -1,3 +1,4 @@
+@use 'sass:math';
 @import 'Modal.shared.module';
 
 @import '../color';
@@ -259,7 +260,7 @@ $tableRowGap: 12px;
 
                 td,
                 th {
-                    padding: $tableRowGap/2 0;
+                    padding: math.div($tableRowGap, 2) 0;
                 }
 
                 td {
