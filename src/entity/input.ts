@@ -18,3 +18,9 @@ export interface CreateInvitationInput {
     receiverLastName: string;
     expireAt: Date;
 }
+
+export interface CreateUserInput {
+    lastName: string;
+    firstName: string;
+    profileUrl?: string;
+}

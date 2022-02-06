@@ -5,6 +5,8 @@ import { WithIdentityVerification } from '@lib/identity/withIdentityVerification
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { LocalStore } from '@lib/store/localStore';
+import { ButtonUI } from '@lib/ui/Button';
+import { DropDownList, Option } from '@lib/ui/DropDownList';
 
 import {
     debugRoutePattern,
@@ -13,6 +15,7 @@ import {
     invitationRoutePattern,
     rootRoutePattern,
     signInPath,
+    signUpPath,
     teamPath,
     teamRoutePattern,
 } from '@core/config/routing';
@@ -28,6 +31,7 @@ import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
 import { InvitationComponent } from './Invitation.component';
+import { WithSignUp } from './WithSignUp.component';
 import { DrawerUI } from './shared/Drawer';
 import { HeaderComponent } from './shared/Header.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
@@ -137,7 +141,7 @@ class AppComponent extends Component<Props, State> {
                                         }
                                     </div>
                                 ) : (
-                                    <div>Please select default team.</div>
+                                    this.renderNoActiveTeam()
                                 )}
                             </div>
                         </Fragment>
@@ -170,7 +174,53 @@ class AppComponent extends Component<Props, State> {
         );
     }
 
-    public componentDidMount() {
+    private renderNoActiveTeam() {
+        const teamOptions: Option[] = this.state.teams.map((team) => ({
+            key: team.id,
+            description: team.name,
+        }));
+        return (
+            <div className={styles.NoTeamSelected}>
+                <div className={styles.Center}>
+                    {teamOptions.length > 0 && (
+                        <Fragment>
+                            <div className={styles.SelectActiveTeam}>
+                                <div className={styles.Description}>
+                                    Please select active team
+                                </div>
+                                <div className={styles.DropDown}>
+                                    <DropDownList
+                                        options={teamOptions}
+                                        onSelectOption={this.onActiveTeamSelect}
+                                    />
+                                </div>
+                            </div>
+                            <div className={styles.OrDivider}>Or</div>
+                        </Fragment>
+                    )}
+                    <div className={styles.Actions}>
+                        <div
+                            className={`${styles.Action} ${styles.CreateTeam}`}
+                        >
+                            <ButtonUI
+                                label={'Create a New Team'}
+                                onClick={this.onCreateTeamClick}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    public async componentDidMount() {
+        const me = await this.props.deps.userService.fetchMe('network-only');
+        if (!me) {
+            this.router.navigateTo(signUpPath);
+        } else {
+            this.props.deps.networkStateSyncer.syncState();
+        }
+
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -184,7 +234,6 @@ class AppComponent extends Component<Props, State> {
                 this.updateState(state);
             }
         })().then();
-        this.props.deps.networkStateSyncer.syncState();
 
         this.router.navigateToCurrUri();
         this.routeChangeChan = this.router.subscribeRouteChange();
@@ -234,7 +283,7 @@ class AppComponent extends Component<Props, State> {
 
                 this.processUserAction(userAction);
             }
-        })();
+        })().then();
     }
 
     public componentWillUnmount() {
@@ -334,11 +383,11 @@ class AppComponent extends Component<Props, State> {
     }
 }
 
-interface IHookProps {
+interface HookProps {
     deps: Deps;
 }
 
-export default function AppComponentHook(props: IHookProps): ReactElement {
+export default function AppComponentHook(props: HookProps): ReactElement {
     props.deps.router.registerRoute(rootRoutePattern);
     props.deps.router.registerRoute(identityRoutePattern);
     for (const routePattern of acceptedRoutePatterns) {
@@ -349,7 +398,7 @@ export default function AppComponentHook(props: IHookProps): ReactElement {
         props.deps.identityClient,
         props.deps.router,
         signInPath,
-        AppComponent,
+        WithSignUp(props.deps, AppComponent),
     );
     return <AppWithIdentityVerification deps={props.deps} />;
 }
