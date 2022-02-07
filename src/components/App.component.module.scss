@@ -38,41 +38,47 @@
             justify-content: center;
             flex: 1;
 
-            .SelectActiveTeam {
-                .Description {
-                    font-size: 22px;
-                    margin-bottom: 20px;
+            .Center {
+                background-color: #f5f5f5;
+                padding: 40px;
+                border-radius: 10px;
+
+                .SelectActiveTeam {
+                    .Description {
+                        font-size: 22px;
+                        margin-bottom: 20px;
+                        font-weight: bold;
+                    }
+
+                    .DropDown {
+                        --drop-down-color: #{$primaryColor};
+                        margin: 0 auto;
+                        width: 160px;
+                    }
+                }
+
+                .OrDivider {
+                    margin: 40px 0;
+                    text-align: center;
+                    font-size: 30px;
+                    color: #616161;
                     font-weight: bold;
                 }
 
-                .DropDown {
-                    --drop-down-color: #{$primaryColor};
-                    margin: 0 auto;
-                    width: 160px;
-                }
-            }
+                .Actions {
+                    display: flex;
+                    justify-content: center;
 
-            .OrDivider {
-                margin: 40px 0;
-                text-align: center;
-                font-size: 30px;
-                color: #616161;
-                font-weight: bold;
-            }
+                    .Action {
+                        &:not(:first-child) {
+                            margin-top: 10px;
+                        }
 
-            .Actions {
-                display: flex;
-                justify-content: center;
-
-                .Action {
-                    &:not(:first-child) {
-                        margin-top: 10px;
-                    }
-
-                    &.CreateTeam {
-                        width: 240px;
-                        --background-color: #388e3c;
-                        --border-color: #2e7d32;
+                        &.CreateTeam {
+                            width: 240px;
+                            --background-color: #388e3c;
+                            --border-color: #2e7d32;
+                        }
                     }
                 }
             }

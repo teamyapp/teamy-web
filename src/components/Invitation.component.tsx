@@ -106,13 +106,24 @@ export class InvitationComponent extends Component<Props, State> {
                                     invited you to join
                                 </div>
                                 <div className={styles.Team}>
-                                    <img
-                                        className={styles.TeamIcon}
-                                        alt={this.state.invitation?.team.name}
-                                        src={
-                                            this.state.invitation?.team.iconUrl
-                                        }
-                                    />
+                                    {this.state.invitation?.team.iconUrl ? (
+                                        <img
+                                            className={styles.TeamIcon}
+                                            alt={
+                                                this.state.invitation?.team.name
+                                            }
+                                            src={
+                                                this.state.invitation?.team
+                                                    .iconUrl
+                                            }
+                                        />
+                                    ) : (
+                                        <div className={styles.DefaultTeamIcon}>
+                                            {this.state.invitation?.team.name
+                                                ? this.state.invitation?.team.name[0].toUpperCase()
+                                                : '?'}
+                                        </div>
+                                    )}
                                     <div className={styles.TeamName}>
                                         {this.state.invitation?.team.name}
                                     </div>

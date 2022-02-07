@@ -42,9 +42,23 @@
                     width: 80px;
                     height: 80px;
                     margin: auto;
-                    padding: 20px;
                     user-select: none;
                     border-radius: 50%;
+                }
+
+                .DefaultTeamIcon {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    user-select: none;
+                    margin: auto;
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    background-color: #455a64;
+                    font-size: 60px;
+                    line-height: 60px;
+                    color: white;
                 }
 
                 .TeamName {
