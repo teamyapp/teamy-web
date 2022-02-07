@@ -259,7 +259,6 @@ class AppComponent extends Component<Props, State> {
 
                 const teamId = getTeamId(routeUpdate.params);
                 if (teamId && this.state.activeTeamId !== teamId) {
-                    console.log('++++++');
                     this.onActiveTeamSelect(teamId);
                 }
             }
