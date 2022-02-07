@@ -22,6 +22,7 @@ export const invitationRoutePattern = `${rootRoutePattern}invitation`;
 export const executionTabRoutePattern = `${teamRoutePattern}/execution/{${tabIdParam}}`;
 export const executionTaskRoutePattern = `${executionTabRoutePattern}/tasks/{${taskIdParam}}`;
 
+export const rootPath = rootRoutePattern;
 export const signInPath = `/identity/sign-in`;
 export const signUpPath = signUpRoutePattern;
 

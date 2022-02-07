@@ -92,43 +92,37 @@ class AppComponent extends Component<Props, State> {
                     />
                 </Route>
                 {this.state.me && (
-                    <Route router={this.router} pattern={teamRoutePattern}>
-                        <Fragment>
-                            <DrawerUI
-                                activeTeamId={this.state.activeTeamId}
-                                teams={this.state.teams}
+                    <Fragment>
+                        <DrawerUI
+                            activeTeamId={this.state.activeTeamId}
+                            teams={this.state.teams}
+                            isDrawerOpen={this.state.isDrawerOpen}
+                            onMenuClose={this.onMenuToggle}
+                            onActiveTeamSelect={this.onActiveTeamSelect}
+                            onAddTeamMembersClick={this.onAddTeamMembersClick}
+                            onShowTeamMembersClick={this.onShowTeamMembersClick}
+                            onShowInvitationsClick={this.onShowInvitationsClick}
+                            onViewTeamSettingsClick={
+                                this.onViewTeamSettingsClick
+                            }
+                            onCreateTeamClick={this.onCreateTeamClick}
+                        />
+                        <div className={styles.Content}>
+                            <HeaderComponent
+                                deps={this.props.deps}
+                                ref={this.headerRef}
+                                me={this.state.me}
                                 isDrawerOpen={this.state.isDrawerOpen}
-                                onMenuClose={this.onMenuToggle}
-                                onActiveTeamSelect={this.onActiveTeamSelect}
-                                onAddTeamMembersClick={
-                                    this.onAddTeamMembersClick
-                                }
-                                onShowTeamMembersClick={
-                                    this.onShowTeamMembersClick
-                                }
-                                onShowInvitationsClick={
-                                    this.onShowInvitationsClick
-                                }
-                                onViewTeamSettingsClick={
-                                    this.onViewTeamSettingsClick
-                                }
-                                onCreateTeamClick={this.onCreateTeamClick}
+                                taskFilters={this.state.taskFilters}
+                                onMenuToggle={this.onMenuToggle}
+                                onUserProfileClick={this.onUserProfileClick}
+                                onTaskFiltersChange={this.onTaskFiltersChange}
                             />
-                            <div className={styles.Content}>
-                                <HeaderComponent
-                                    deps={this.props.deps}
-                                    ref={this.headerRef}
-                                    me={this.state.me}
-                                    isDrawerOpen={this.state.isDrawerOpen}
-                                    taskFilters={this.state.taskFilters}
-                                    onMenuToggle={this.onMenuToggle}
-                                    onUserProfileClick={this.onUserProfileClick}
-                                    onTaskFiltersChange={
-                                        this.onTaskFiltersChange
-                                    }
-                                />
-
-                                {this.state.activeTeamId ? (
+                            {this.state.activeTeamId ? (
+                                <Route
+                                    router={this.router}
+                                    pattern={teamRoutePattern}
+                                >
                                     <div className={styles.Execution}>
                                         {
                                             <ExecutionComponent
@@ -140,12 +134,12 @@ class AppComponent extends Component<Props, State> {
                                             />
                                         }
                                     </div>
-                                ) : (
-                                    this.renderNoActiveTeam()
-                                )}
-                            </div>
-                        </Fragment>
-                    </Route>
+                                </Route>
+                            ) : (
+                                this.renderNoActiveTeam()
+                            )}
+                        </div>
+                    </Fragment>
                 )}
                 <Route router={this.router} pattern={invitationRoutePattern}>
                     <InvitationComponent deps={this.props.deps} />
@@ -218,7 +212,7 @@ class AppComponent extends Component<Props, State> {
         if (!me) {
             this.router.navigateTo(signUpPath);
         } else {
-            this.props.deps.networkStateSyncer.syncState();
+            await this.props.deps.networkStateSyncer.syncState();
         }
 
         this.stateChangeChan = this.localStore.subscribeStateChange();
@@ -264,10 +258,9 @@ class AppComponent extends Component<Props, State> {
                 );
 
                 const teamId = getTeamId(routeUpdate.params);
-                if (teamId) {
-                    this.setState({
-                        activeTeamId: teamId,
-                    });
+                if (teamId && this.state.activeTeamId !== teamId) {
+                    console.log('++++++');
+                    this.onActiveTeamSelect(teamId);
                 }
             }
         })().then();
