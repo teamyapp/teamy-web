@@ -30,6 +30,7 @@ export class TeamProfileUpdatedFeedbackComponent extends Component<Props> {
                 if (feedback === undefined) {
                     return;
                 }
+
                 if (feedback.type === 'TeamProfileUpdated') {
                     this.feedbackRef.current?.show();
                 } else {

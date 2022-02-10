@@ -30,6 +30,7 @@ export class UserProfileUpdatedFeedbackComponent extends Component<Props> {
                 if (feedback === undefined) {
                     return;
                 }
+
                 if (feedback.type === 'UserProfileUpdated') {
                     this.feedbackRef.current?.show();
                 } else {
