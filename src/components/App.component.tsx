@@ -39,9 +39,9 @@ import { CreateTeamModalComponent } from './shared/Modals/CreateTeamModal.compon
 import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
 import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/InviationLinkCopiedFeedbackComponent';
-import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedMessageComponent';
-import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedMessageComponent';
-import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedMessageComponent';
+import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedbackComponent';
+import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedbackComponent';
+import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedbackComponent';
 
 interface Props {
     deps: Deps;
