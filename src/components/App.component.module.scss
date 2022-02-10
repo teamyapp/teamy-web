@@ -32,37 +32,37 @@
         }
 
         .NoTeamSelected {
-            text-align: center;
             display: flex;
             align-items: center;
-            justify-content: center;
             flex: 1;
+            justify-content: center;
+            text-align: center;
 
             .Center {
-                background-color: #f5f5f5;
                 padding: 40px;
                 border-radius: 10px;
+                background-color: #f5f5f5;
 
                 .SelectActiveTeam {
                     .Description {
                         font-size: 22px;
-                        margin-bottom: 20px;
                         font-weight: bold;
+                        margin-bottom: 20px;
                     }
 
                     .DropDown {
-                        --drop-down-color: #{$primaryColor};
-                        margin: 0 auto;
                         width: 160px;
+                        margin: 0 auto;
+                        --drop-down-color: #{$primaryColor};
                     }
                 }
 
                 .OrDivider {
+                    font-size: 30px;
+                    font-weight: bold;
                     margin: 40px 0;
                     text-align: center;
-                    font-size: 30px;
                     color: #616161;
-                    font-weight: bold;
                 }
 
                 .Actions {

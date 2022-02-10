@@ -235,6 +235,10 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                     },
                 ),
             });
+            await this.props.deps.feedbackPubSub.publish({
+                type: 'TaskUpdated',
+                task: this.state.task,
+            });
         }
     };
 

@@ -87,6 +87,7 @@ export class ExecutionComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly taskDetailModalRef = createRef<TaskDetailModalComponent>();
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
+
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent | undefined>;
@@ -540,9 +541,14 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
-    private onUpdateTask = (task: Task) => {
-        this.localStore.mutate({
+    private onUpdateTask = async (task: Task) => {
+        await this.localStore.mutate({
             type: 'UpdateTask',
+            task: task,
+        });
+
+        await this.props.deps.feedbackPubSub.publish({
+            type: 'TaskUpdated',
             task: task,
         });
     };

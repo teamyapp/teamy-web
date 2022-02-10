@@ -47,18 +47,18 @@
                 }
 
                 .DefaultTeamIcon {
+                    font-size: 60px;
+                    line-height: 60px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    user-select: none;
-                    margin: auto;
                     width: 80px;
                     height: 80px;
+                    margin: auto;
+                    user-select: none;
+                    color: white;
                     border-radius: 50%;
                     background-color: #455a64;
-                    font-size: 60px;
-                    line-height: 60px;
-                    color: white;
                 }
 
                 .TeamName {
