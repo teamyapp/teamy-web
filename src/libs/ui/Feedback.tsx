@@ -17,7 +17,7 @@ interface State {
 }
 
 export class FeedbackUI extends Component<Props, State> {
-    private scheduledClose?: any;
+    private scheduledHide?: any;
 
     constructor(props: Props) {
         super(props);
@@ -66,19 +66,24 @@ export class FeedbackUI extends Component<Props, State> {
 
     private onActionClick = () => {
         this.props.onActionClick?.call(null);
-        this.close();
+        this.hide();
     };
 
     private scheduleClose() {
-        if (this.scheduledClose) {
-            clearTimeout(this.scheduledClose);
+        if (this.scheduledHide) {
+            clearTimeout(this.scheduledHide);
         }
-        this.scheduledClose = setTimeout(() => {
-            this.close();
+        this.scheduledHide = setTimeout(() => {
+            this.hide();
         }, visibleDurationSeconds * 1000);
     }
 
-    private close() {
+    public hide() {
+        if (this.scheduledHide) {
+            clearTimeout(this.scheduledHide);
+            this.scheduledHide = undefined;
+        }
+
         this.setState({
             visible: false,
         });

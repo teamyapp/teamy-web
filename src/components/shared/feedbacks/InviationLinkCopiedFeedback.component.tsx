@@ -48,11 +48,14 @@ export class InvitationLinkCopiedFeedbackComponent extends Component<
                 if (feedback === undefined) {
                     return;
                 }
+
                 if (feedback.type === 'InvitationLinkCopied') {
                     this.setState({
                         invitation: feedback.invitation,
                     });
                     this.feedbackRef.current?.show();
+                } else {
+                    this.feedbackRef.current?.hide();
                 }
             }
         })().then();

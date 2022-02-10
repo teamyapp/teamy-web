@@ -44,11 +44,14 @@ export class TaskUpdatedFeedbackComponent extends Component<Props, State> {
                 if (feedback === undefined) {
                     return;
                 }
+
                 if (feedback.type === 'TaskUpdated') {
                     this.setState({
                         task: feedback.task,
                     });
                     this.feedbackRef.current?.show();
+                } else {
+                    this.feedbackRef.current?.hide();
                 }
             }
         })().then();
