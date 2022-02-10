@@ -38,6 +38,10 @@ import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModa
 import { CreateTeamModalComponent } from './shared/Modals/CreateTeamModal.component';
 import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
+import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/InviationLinkCopiedFeedback.component';
+import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedback.component';
+import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
+import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
 
 interface Props {
     deps: Deps;
@@ -60,13 +64,14 @@ const acceptedRoutePatterns = [
 class AppComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly localStore: LocalStore<IAppState, MutationEvent>;
+    private readonly headerRef = createRef<HeaderComponent>();
     private readonly teamSettingsModalRef =
         createRef<TeamSettingsModalComponent>();
     private readonly addTeamMembersModalRef =
         createRef<AddTeamMembersModalComponent>();
     private readonly userModalRef = createRef<UserSettingsModalComponent>();
     private readonly createTeamModalRef = createRef<CreateTeamModalComponent>();
-    private readonly headerRef = createRef<HeaderComponent>();
+
     private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
@@ -164,45 +169,10 @@ class AppComponent extends Component<Props, State> {
                     ref={this.createTeamModalRef}
                     deps={this.props.deps}
                 />
-            </div>
-        );
-    }
-
-    private renderNoActiveTeam() {
-        const teamOptions: Option[] = this.state.teams.map((team) => ({
-            key: team.id,
-            description: team.name,
-        }));
-        return (
-            <div className={styles.NoTeamSelected}>
-                <div className={styles.Center}>
-                    {teamOptions.length > 0 && (
-                        <Fragment>
-                            <div className={styles.SelectActiveTeam}>
-                                <div className={styles.Description}>
-                                    Please select active team
-                                </div>
-                                <div className={styles.DropDown}>
-                                    <DropDownList
-                                        options={teamOptions}
-                                        onSelectOption={this.onActiveTeamSelect}
-                                    />
-                                </div>
-                            </div>
-                            <div className={styles.OrDivider}>Or</div>
-                        </Fragment>
-                    )}
-                    <div className={styles.Actions}>
-                        <div
-                            className={`${styles.Action} ${styles.CreateTeam}`}
-                        >
-                            <ButtonUI
-                                label={'Create a New Team'}
-                                onClick={this.onCreateTeamClick}
-                            />
-                        </div>
-                    </div>
-                </div>
+                <TaskUpdatedFeedbackComponent deps={this.props.deps} />
+                <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
+                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps} />
+                <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
             </div>
         );
     }
@@ -283,6 +253,45 @@ class AppComponent extends Component<Props, State> {
         this.routeChangeChan?.close();
         this.userActionChan?.close();
         this.props.deps.shortcutMonitor.dispose();
+    }
+
+    private renderNoActiveTeam() {
+        const teamOptions: Option[] = this.state.teams.map((team) => ({
+            key: team.id,
+            description: team.name,
+        }));
+        return (
+            <div className={styles.NoTeamSelected}>
+                <div className={styles.Center}>
+                    {teamOptions.length > 0 && (
+                        <Fragment>
+                            <div className={styles.SelectActiveTeam}>
+                                <div className={styles.Description}>
+                                    Please select active team
+                                </div>
+                                <div className={styles.DropDown}>
+                                    <DropDownList
+                                        options={teamOptions}
+                                        onSelectOption={this.onActiveTeamSelect}
+                                    />
+                                </div>
+                            </div>
+                            <div className={styles.OrDivider}>Or</div>
+                        </Fragment>
+                    )}
+                    <div className={styles.Actions}>
+                        <div
+                            className={`${styles.Action} ${styles.CreateTeam}`}
+                        >
+                            <ButtonUI
+                                label={'Create a New Team'}
+                                onClick={this.onCreateTeamClick}
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     private onTaskFiltersChange = (taskFilters: TaskFilters) => {

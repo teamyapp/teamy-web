@@ -18,6 +18,7 @@
             "@lib/event/*": ["libs/event/*"],
             "@lib/store/*": ["libs/store/*"],
             "@lib/data/*": ["libs/data/*"],
+            "@lib/pubSub/*": ["libs/pubSub/*"],
             "@lib/router/*": ["libs/router/*"],
             "@lib/shortcut/*": ["libs/shortcut/*"],
             "@lib/dragAndDrop/*": ["libs/dragAndDrop/*"],

@@ -1,0 +1,47 @@
+@import './styleguide/elevation';
+
+.Feedback {
+    font-size: 16px;
+    position: fixed;
+    z-index: 2000;
+
+    @include elevation(5);
+    bottom: 10px;
+    left: 50%;
+    display: none;
+    align-items: center;
+    padding: 10px;
+    transition-timing-function: ease-in-out;
+    transition-property: opacity;
+    transform: translateX(-50%);
+    opacity: 0;
+    border-radius: 4px;
+    background-color: #424242;
+
+    &.Show {
+        display: flex;
+    }
+
+    &.Visible {
+        opacity: 1;
+    }
+
+    .Content {
+        flex: 1;
+        padding: 10px;
+        color: white;
+    }
+
+    .Action {
+        font-weight: bold;
+        padding: 4px 10px;
+        text-transform: uppercase;
+        color: #fff59d;
+        border-radius: 2px;
+
+        &:hover {
+            cursor: pointer;
+            background-color: rgba(255, 255, 255, 0.07);
+        }
+    }
+}

@@ -2,12 +2,14 @@ import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { PubSub } from '@lib/pubSub/pubSub';
 import { Router, createBrowserRouter } from '@lib/router/router';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { LocalStore } from '@lib/store/localStore';
 
 import { getConfig } from '@core/config/config';
 import { shortcuts } from '@core/config/shortcut';
+import { Feedback } from '@core/entity/feedback';
 import { getEnvironment } from '@core/env/environment';
 import * as mutationEvents from '@core/event/mutation';
 import { UserActionEvent } from '@core/event/userAction';
@@ -34,6 +36,7 @@ export interface Deps {
     router: Router;
     shortcutMonitor: ShortcutMonitor<UserActionEvent>;
     dragAndDropController: DragAndDropController;
+    feedbackPubSub: PubSub<Feedback>;
 }
 
 export function initDeps(): Deps {
@@ -61,6 +64,7 @@ export function initDeps(): Deps {
     const router = createBrowserRouter();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
     const dragAndDropController = new DragAndDropController();
+    const feedbackPubSub = new PubSub<Feedback>();
     return {
         taskService,
         teamService,
@@ -74,5 +78,6 @@ export function initDeps(): Deps {
         router,
         shortcutMonitor,
         dragAndDropController,
+        feedbackPubSub,
     };
 }

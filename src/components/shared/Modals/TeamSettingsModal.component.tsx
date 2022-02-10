@@ -41,6 +41,7 @@ interface State {
     initialTeamName?: string;
     team?: Team;
     invitations: Invitation[];
+    modalPosition?: Point;
 }
 
 export class TeamSettingsModalComponent extends Component<Props, State> {
@@ -135,6 +136,11 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             team,
             initialTeamName: team.name,
             invitations,
+        });
+        setTimeout(() => {
+            this.setState({
+                modalPosition: this.modalRef.current?.Position(),
+            });
         });
     }
 
@@ -299,10 +305,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     };
 
     private renderInvitation = (invitation: Invitation, index: number) => {
-        const modalPosition = this.modalRef.current?.Position() || {
-            left: 0,
-            top: 0,
-        };
         return (
             <tr key={index} className={styles.Invitation}>
                 <td>{invitation.receiver?.id}</td>
@@ -326,13 +328,11 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 <td className={styles.Actions}>
                     <TooltipUI
                         message={'Copy Link'}
-                        parentOffset={modalPosition}
+                        parentOffset={this.state.modalPosition}
                     >
                         <div
                             className={`${styles.Action} ${styles.CopyLinkAction}`}
-                            onClick={this.onCopyInvitationLinkClick(
-                                invitation.code,
-                            )}
+                            onClick={this.onCopyInvitationLinkClick(invitation)}
                         >
                             <MaterialIconUI iconStyle={'outline'}>
                                 link
@@ -341,7 +341,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     </TooltipUI>
                     {this.renderDeleteInvitationAction(
                         invitation,
-                        modalPosition,
+                        this.state.modalPosition!,
                     )}
                 </td>
             </tr>
@@ -387,6 +387,9 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     private onSaveTeamProfileClick = () => {
         this.props.deps.teamService.updateTeam(this.state.team!);
         this.props.onTeamUpdated?.call(null);
+        this.props.deps.feedbackPubSub.publish({
+            type: 'TeamProfileUpdated',
+        });
     };
 
     private onDeleteTeamClick = () => {
@@ -397,12 +400,15 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         await this.props.onAddTeamMemberClick?.call(null, this.state.team!.id);
     };
 
-    private onCopyInvitationLinkClick = (invitationCode: string) => {
+    private onCopyInvitationLinkClick = (invitation: Invitation) => {
         return async () => {
+            const link = invitationLink(invitation.code);
             if (navigator.clipboard) {
-                await navigator.clipboard.writeText(
-                    invitationLink(invitationCode),
-                );
+                await navigator.clipboard.writeText(link);
+                this.props.deps.feedbackPubSub.publish({
+                    type: 'InvitationLinkCopied',
+                    invitation: invitation,
+                });
             }
         };
     };

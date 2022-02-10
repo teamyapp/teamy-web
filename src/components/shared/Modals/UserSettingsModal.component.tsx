@@ -165,5 +165,8 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
     private onSaveUserProfileClick = async () => {
         await this.props.deps.userService.updateUser(this.state.user!);
         this.props.onUserUpdated?.call(null);
+        await this.props.deps.feedbackPubSub.publish({
+            type: 'UserProfileUpdated',
+        });
     };
 }
