@@ -53,6 +53,8 @@ export class InvitationLinkCopiedFeedbackComponent extends Component<
                         invitation: feedback.invitation,
                     });
                     this.feedbackRef.current?.show();
+                } else {
+                    this.feedbackRef.current?.hide();
                 }
             }
         })().then();
