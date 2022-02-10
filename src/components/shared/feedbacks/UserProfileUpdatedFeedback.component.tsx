@@ -10,14 +10,14 @@ export interface Props {
     deps: Deps;
 }
 
-export class TeamProfileUpdatedFeedbackComponent extends Component<Props> {
+export class UserProfileUpdatedFeedbackComponent extends Component<Props> {
     private feedbackChan?: csp.PopChannel<Feedback | undefined>;
     private readonly feedbackRef = createRef<FeedbackUI>();
 
     public render() {
         return (
             <FeedbackUI ref={this.feedbackRef}>
-                Team profile is updated.
+                User profile is updated.
             </FeedbackUI>
         );
     }
@@ -30,10 +30,14 @@ export class TeamProfileUpdatedFeedbackComponent extends Component<Props> {
                 if (feedback === undefined) {
                     return;
                 }
-                if (feedback.type === 'TeamProfileUpdated') {
+                if (feedback.type === 'UserProfileUpdated') {
                     this.feedbackRef.current?.show();
                 }
             }
         })().then();
+    }
+
+    public componentWillUnmount() {
+        this.feedbackChan?.close();
     }
 }
