@@ -114,7 +114,7 @@ export class ExecutionComponent extends Component<Props, State> {
     public render(): ReactElement {
         // TODO: will change when PersonalStatus is merged with Kanban
         return (
-            <div className={styles.Execution} onScrollCapture={this.onScroll}>
+            <div className={styles.Execution}>
                 <div className={styles.Tabs}>
                     <div className={styles.Container}>
                         {this.state.activeTabIndex >= 0 && (
@@ -498,14 +498,6 @@ export class ExecutionComponent extends Component<Props, State> {
 
     private onWindowResize = () => {
         this.updateTaskOwnersListPosition();
-    };
-
-    private onScroll = () => {
-        if (!this.state.showPotentialTaskOwnersList) {
-            return;
-        }
-
-        this.taskOwnersPopupRef.current?.blur();
     };
 
     private onViewTaskDetailClick = async (
