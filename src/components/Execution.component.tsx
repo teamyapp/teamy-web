@@ -500,15 +500,6 @@ export class ExecutionComponent extends Component<Props, State> {
         this.updateTaskOwnersListPosition();
     };
 
-    private onScroll = () => {
-        console.log('-----');
-        if (!this.state.showPotentialTaskOwnersList) {
-            return;
-        }
-
-        this.taskOwnersPopupRef.current?.blur();
-    };
-
     private onViewTaskDetailClick = async (
         taskId: number | string,
     ): Promise<void> => {
