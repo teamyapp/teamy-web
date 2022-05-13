@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import { getConfig as getIdentityConfig } from '@lib/identity/config';
 
@@ -58,7 +58,7 @@ export class DebugComponent extends Component<IProps, IState> {
         });
     }
 
-    public render(): ReactElement {
+    public render(): ReactNode {
         return (
             <div className={styles.Debug}>
                 <div className={`${styles.Card} ${styles.InfoCard}`}>
@@ -71,7 +71,7 @@ export class DebugComponent extends Component<IProps, IState> {
         );
     }
 
-    private renderConfigRow = (configRow: ConfigRow): ReactElement => {
+    private renderConfigRow = (configRow: ConfigRow): ReactNode => {
         return (
             <tr>
                 <td className={styles.RowName}>{configRow.name}</td>

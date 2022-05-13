@@ -3,7 +3,7 @@ import React, {
     ComponentType,
     ExoticComponent,
     ForwardedRef,
-    ReactElement,
+    ReactNode,
     createRef,
     forwardRef,
 } from 'react';
@@ -11,7 +11,7 @@ import React, {
 import { ButtonUI } from '@lib/ui/Button';
 import { TextFieldUI } from '@lib/ui/TextField';
 
-import { signUpPath, signUpRoutePattern } from '@core/config/routing';
+// import { signUpPath, signUpRoutePattern } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 
 import styles from './SignUp.component.module.scss';
@@ -50,8 +50,8 @@ export function WithSignUp(
             let isSignedUp = true;
             if (!me) {
                 isSignedUp = false;
-                deps.router.registerRoute(signUpRoutePattern);
-                deps.router.navigateTo(signUpPath);
+                // deps.router.registerRoute(signUpRoutePattern);
+                // deps.router.navigateTo(signUpPath);
             }
 
             this.setState({
@@ -60,7 +60,7 @@ export function WithSignUp(
             });
         }
 
-        public render(): ReactElement {
+        public render(): ReactNode {
             if (!this.state.isLoaded) {
                 return <div />;
             }

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Component, ReactElement, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import { Point } from '@lib/ui/position';
 
@@ -38,7 +38,7 @@ export class TooltipUI extends Component<Props, State> {
         };
     }
 
-    render(): ReactElement {
+    render(): ReactNode {
         return (
             <div className={styles.Box}>
                 <div

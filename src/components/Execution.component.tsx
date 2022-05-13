@@ -1,4 +1,4 @@
-import React, { Component, ReactElement, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { and } from '@lib/data/filter';
@@ -111,7 +111,7 @@ export class ExecutionComponent extends Component<Props, State> {
         };
     }
 
-    public render(): ReactElement {
+    public render(): ReactNode {
         // TODO: will change when PersonalStatus is merged with Kanban
         return (
             <div className={styles.Execution}>
@@ -293,7 +293,7 @@ export class ExecutionComponent extends Component<Props, State> {
         this.dragAndDropEventChan?.close();
     }
 
-    private renderTabContent(tabId: string): ReactElement | null {
+    private renderTabContent(tabId: string): ReactNode | null {
         let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
         let teamTasksFilter = filters.allTasks;
 

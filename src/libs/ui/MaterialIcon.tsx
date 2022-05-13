@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import styles from './MaterialIcon.module.scss';
 
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export class MaterialIconUI extends Component<Props> {
-    public render(): ReactElement {
+    public render(): ReactNode {
         return (
             <i
                 className={styles.Icon}

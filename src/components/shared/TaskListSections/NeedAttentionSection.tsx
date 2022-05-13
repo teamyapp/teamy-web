@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
@@ -51,9 +51,7 @@ export class NeedAttentionSection extends Component<Props> {
         );
     }
 
-    private renderTask = (
-        sectionId: string,
-    ): ((task: Task) => ReactElement) => {
+    private renderTask = (sectionId: string): ((task: Task) => ReactNode) => {
         return (task: Task) => {
             return (
                 <div key={task.id}>

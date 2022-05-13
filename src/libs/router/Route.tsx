@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
 
@@ -13,7 +13,7 @@ import {
 interface Props {
     router: Router;
     pattern: string;
-    renderChild?: (params: Params) => ReactElement | null;
+    renderChild?: (params: Params) => ReactNode | null;
 }
 
 interface State {

@@ -9,13 +9,12 @@ import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 
 import {
+    cloudRoutePattern,
     debugRoutePattern,
     getTeamId,
-    identityRoutePattern,
     invitationRoutePattern,
     rootRoutePattern,
     signInPath,
-    signUpPath,
     teamPath,
     teamRoutePattern,
 } from '@core/config/routing';
@@ -27,11 +26,11 @@ import { MutationEvent } from '@core/event/mutation';
 import { UserActionEvent } from '@core/event/userAction';
 import { IAppState } from '@core/state/state';
 
+import { CloudComponent } from '../cloud/Cloud.component';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
 import { InvitationComponent } from './Invitation.component';
-import { WithSignUp } from './WithSignUp.component';
 import { DrawerUI } from './shared/Drawer';
 import { HeaderComponent } from './shared/Header.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
@@ -95,6 +94,9 @@ class AppComponent extends Component<Props, State> {
                         repoOwner={'teamyapp'}
                         repoName={'teamy-web'}
                     />
+                </Route>
+                <Route router={this.router} pattern={cloudRoutePattern}>
+                    <CloudComponent deps={this.props.deps} />
                 </Route>
                 {this.state.me && (
                     <Fragment>
@@ -180,7 +182,7 @@ class AppComponent extends Component<Props, State> {
     public async componentDidMount() {
         const me = await this.props.deps.userService.fetchMe('network-only');
         if (!me) {
-            this.router.navigateTo(signUpPath);
+            // this.router.navigateTo(signUpPath);
         } else {
             await this.props.deps.networkStateSyncer.syncState();
         }
@@ -390,7 +392,7 @@ interface HookProps {
 
 export default function AppComponentHook(props: HookProps): ReactElement {
     props.deps.router.registerRoute(rootRoutePattern);
-    props.deps.router.registerRoute(identityRoutePattern);
+    props.deps.router.registerRoute(signInPath);
     for (const routePattern of acceptedRoutePatterns) {
         props.deps.router.registerRoute(routePattern, false);
     }
@@ -398,8 +400,7 @@ export default function AppComponentHook(props: HookProps): ReactElement {
     const AppWithIdentityVerification = WithIdentityVerification(
         props.deps.identityClient,
         props.deps.router,
-        signInPath,
-        WithSignUp(props.deps, AppComponent),
+        AppComponent,
     );
     return <AppWithIdentityVerification deps={props.deps} />;
 }

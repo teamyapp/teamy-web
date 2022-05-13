@@ -1,6 +1,5 @@
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { IdentityClient } from '@lib/identity/Identity.client';
-import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { PubSub } from '@lib/pubSub/pubSub';
 import { Router, createBrowserRouter } from '@lib/router/router';
@@ -41,8 +40,7 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
-    let httpClient = new FetchHTTPClient();
-    const identityClient = new IdentityClient(env, httpClient);
+    const identityClient = new IdentityClient(env);
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
         identityClient,

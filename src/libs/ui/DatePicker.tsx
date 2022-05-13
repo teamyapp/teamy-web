@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import _ from 'lodash';
 import moment from 'moment';
-import React, { Component, ReactElement, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import styles from './DatePicker.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
@@ -91,7 +91,7 @@ export class DatePickerUI extends Component<Props, State> {
         return days.concat(_.range(startDay, endDay + 1));
     }
 
-    render(): ReactElement {
+    render(): ReactNode {
         return (
             <div className={styles.DatePicker}>
                 <TextFieldUI
@@ -120,7 +120,7 @@ export class DatePickerUI extends Component<Props, State> {
         );
     }
 
-    private renderCalendarControls(): ReactElement {
+    private renderCalendarControls(): ReactNode {
         const year = this.state.shownDate.getFullYear();
         const month = this.state.shownDate.getMonth();
 
@@ -156,7 +156,7 @@ export class DatePickerUI extends Component<Props, State> {
         );
     }
 
-    private renderSelectYear(): ReactElement {
+    private renderSelectYear(): ReactNode {
         const years = _.range(
             this.props.minYear || defaultMinYear,
             (this.props.maxYear || defaultMaxYear) + 1,
@@ -168,7 +168,7 @@ export class DatePickerUI extends Component<Props, State> {
         );
     }
 
-    private renderYear = (year: number, index: number): ReactElement => {
+    private renderYear = (year: number, index: number): ReactNode => {
         return (
             <div
                 key={index}
@@ -182,7 +182,7 @@ export class DatePickerUI extends Component<Props, State> {
         );
     };
 
-    private renderSelectMonthDay(): ReactElement {
+    private renderSelectMonthDay(): ReactNode {
         return (
             <div className={styles.Month}>
                 {weekDayTitles.map(this.renderWeekDay)}
@@ -191,7 +191,7 @@ export class DatePickerUI extends Component<Props, State> {
         );
     }
 
-    private renderMonthDays(): ReactElement[] {
+    private renderMonthDays(): ReactNode[] {
         return DatePickerUI.getMonthDays(this.state.shownDate).map(
             this.renderMonthDay,
         );
@@ -200,7 +200,7 @@ export class DatePickerUI extends Component<Props, State> {
     private renderMonthDay = (
         monthDay: null | number,
         index: number,
-    ): ReactElement => {
+    ): ReactNode => {
         return monthDay ? (
             <div
                 key={index}
@@ -301,7 +301,7 @@ export class DatePickerUI extends Component<Props, State> {
     private renderWeekDay = (
         weekDayTitle: string,
         index: number,
-    ): ReactElement => {
+    ): ReactNode => {
         return (
             <div
                 key={index}

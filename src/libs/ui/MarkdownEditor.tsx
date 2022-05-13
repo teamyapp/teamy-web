@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import marked from 'marked';
 import prismjs from 'prismjs';
-import React, { Component, FormEvent, ReactElement } from 'react';
+import React, { Component, FormEvent, ReactNode } from 'react';
 
 import styles from './MarkdownEditor.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
@@ -48,7 +48,7 @@ export class MarkdownEditorUI extends Component<IProps, IState> {
         return this.state.content;
     }
 
-    render(): ReactElement {
+    render(): ReactNode {
         return (
             <div
                 className={`${styles.MarkdownEditor} ${classNames({

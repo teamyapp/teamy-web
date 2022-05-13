@@ -3,13 +3,14 @@ import React, {
     ComponentType,
     ExoticComponent,
     ForwardedRef,
-    ReactElement,
+    ReactNode,
     forwardRef,
 } from 'react';
 
+import { signInPath } from '@core/config/routing';
+
 import { Router } from '../router/router';
 import { IdentityClient } from './Identity.client';
-import { SignInComponent } from './SignIn.component';
 
 interface State {
     isLoaded: boolean;
@@ -23,58 +24,26 @@ interface Props {
 export function WithIdentityVerification(
     identityClient: IdentityClient,
     router: Router,
-    signInUri: string,
     WrappedComponent: ComponentType<any>,
 ): ExoticComponent<any> {
     class IdentityComponent extends Component<Props, State> {
-        private currUri?: string;
-
-        constructor(props: any) {
-            super(props);
-            this.state = {
-                isLoaded: false,
-                isSignedIn: false,
-            };
-        }
-
         public async componentDidMount() {
+            if (router.CurrentUri?.startsWith(signInPath)) {
+                return;
+            }
+
             const isSignedIn = await identityClient.isSignedIn();
-            this.currUri = router.CurrentUri;
             if (!isSignedIn) {
-                router.navigateTo(signInUri);
+                const currUrl = window.location.href;
+                identityClient.saveSignInRedirectUrl(currUrl);
+                router.navigateTo(signInPath);
             }
-
-            this.setState({
-                isSignedIn: isSignedIn,
-                isLoaded: true,
-            });
         }
 
-        public render(): ReactElement {
-            if (!this.state.isLoaded) {
-                return <div />;
-            }
-
+        public render(): ReactNode {
             const { forwardedRef, ...rest } = this.props;
-            return this.state.isSignedIn ? (
-                <WrappedComponent ref={forwardedRef} {...rest} />
-            ) : (
-                <SignInComponent
-                    identityClient={identityClient}
-                    onSignInSucceed={this.onSignInSucceed}
-                />
-            );
+            return <WrappedComponent ref={forwardedRef} {...rest} />;
         }
-
-        private onSignInSucceed = () => {
-            if (this.currUri) {
-                router.navigateTo(this.currUri);
-            }
-
-            this.setState({
-                isSignedIn: true,
-            });
-        };
     }
 
     return forwardRef<any, Props>((props, ref) => {

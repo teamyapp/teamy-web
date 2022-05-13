@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import styles from './NamedValue.module.scss';
 
@@ -8,7 +8,7 @@ interface IProps {
 }
 
 export class NamedValueUI extends Component<IProps> {
-    public render(): ReactElement {
+    public render(): ReactNode {
         return (
             <div className={styles.NamedValue}>
                 <div className={styles.Name}>{this.props.name}</div>

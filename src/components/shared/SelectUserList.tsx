@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export class SelectUserListUI extends Component<Props> {
-    render(): ReactElement {
+    render(): ReactNode {
         return (
             <div className={styles.SelectUserList}>
                 {this.renderEmptySelection()}
@@ -26,7 +26,7 @@ export class SelectUserListUI extends Component<Props> {
         );
     }
 
-    public renderUser = (user: User, index: number): ReactElement => {
+    public renderUser = (user: User, index: number): ReactNode => {
         return (
             <div
                 className={styles.UserRow}
