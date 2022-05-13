@@ -1,3 +1,4 @@
+import { absoluteRootPath, signInFinishPath } from '@core/config/routing';
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
@@ -40,7 +41,7 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
-    const identityClient = new IdentityClient(env);
+    const identityClient = new IdentityClient(env, signInFinishPath, absoluteRootPath);
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
         identityClient,

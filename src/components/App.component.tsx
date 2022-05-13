@@ -1,7 +1,7 @@
 import React, { Component, Fragment, ReactElement, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
-import { WithIdentityVerification } from '@lib/identity/withIdentityVerification';
+import { WithIdentityVerification } from '@lib/identity/WithIdentityVerification';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { LocalStore } from '@lib/store/localStore';
@@ -13,8 +13,7 @@ import {
     debugRoutePattern,
     getTeamId,
     invitationRoutePattern,
-    rootRoutePattern,
-    signInPath,
+    rootRoutePattern, signInFinishRoutePattern, signInRoutePattern, signUpRoutePattern,
     teamPath,
     teamRoutePattern,
 } from '@core/config/routing';
@@ -41,6 +40,8 @@ import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/Inviat
 import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
 import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
+import { SignUpComponent } from './SignUp.component';
+import { WithSignUp } from './WithSignUp.component';
 
 interface Props {
     deps: Deps;
@@ -56,6 +57,9 @@ interface State {
 
 const acceptedRoutePatterns = [
     debugRoutePattern,
+    signUpRoutePattern,
+    signInRoutePattern,
+    signInFinishRoutePattern,
     teamRoutePattern,
     invitationRoutePattern,
 ];
@@ -97,6 +101,9 @@ class AppComponent extends Component<Props, State> {
                 </Route>
                 <Route router={this.router} pattern={cloudRoutePattern}>
                     <CloudComponent deps={this.props.deps} />
+                </Route>
+                <Route router={this.router} pattern={signUpRoutePattern}>
+                    <SignUpComponent deps={this.props.deps}/>
                 </Route>
                 {this.state.me && (
                     <Fragment>
@@ -182,11 +189,10 @@ class AppComponent extends Component<Props, State> {
     public async componentDidMount() {
         const me = await this.props.deps.userService.fetchMe('network-only');
         if (!me) {
-            // this.router.navigateTo(signUpPath);
-        } else {
-            await this.props.deps.networkStateSyncer.syncState();
+            return;
         }
 
+        await this.props.deps.networkStateSyncer.syncState();
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -392,7 +398,6 @@ interface HookProps {
 
 export default function AppComponentHook(props: HookProps): ReactElement {
     props.deps.router.registerRoute(rootRoutePattern);
-    props.deps.router.registerRoute(signInPath);
     for (const routePattern of acceptedRoutePatterns) {
         props.deps.router.registerRoute(routePattern, false);
     }
@@ -400,7 +405,9 @@ export default function AppComponentHook(props: HookProps): ReactElement {
     const AppWithIdentityVerification = WithIdentityVerification(
         props.deps.identityClient,
         props.deps.router,
-        AppComponent,
+        signInRoutePattern,
+        signInFinishRoutePattern,
+        WithSignUp(props.deps, AppComponent),
     );
     return <AppWithIdentityVerification deps={props.deps} />;
 }

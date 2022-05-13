@@ -20,8 +20,8 @@ const testingConfig: Config = {
 
 const stagingConfig: Config = {
     apiBaseEndpoint: 'https://cloud.staging.teamyapp.com/identity',
-    cookieDomain: 'staging.teamyapp.com',
-    cookieSecure: true,
+    cookieDomain: 'localhost',
+    cookieSecure: false,
 };
 
 const productionConfig: Config = {

@@ -7,8 +7,6 @@ import React, {
     forwardRef,
 } from 'react';
 
-import { signInPath } from '@core/config/routing';
-
 import { Router } from '../router/router';
 import { IdentityClient } from './Identity.client';
 
@@ -24,11 +22,14 @@ interface Props {
 export function WithIdentityVerification(
     identityClient: IdentityClient,
     router: Router,
+    signInRoutePattern: string,
+    signInFinishRoutePattern: string,
     WrappedComponent: ComponentType<any>,
 ): ExoticComponent<any> {
-    class IdentityComponent extends Component<Props, State> {
+    const skippedRoutes = [signInRoutePattern, signInFinishRoutePattern];
+    class EmbeddedComponent extends Component<Props, State> {
         public async componentDidMount() {
-            if (router.CurrentUri?.startsWith(signInPath)) {
+            if (skippedRoutes.includes(router.currentRouteUpdate.routePattern)) {
                 return;
             }
 
@@ -36,7 +37,8 @@ export function WithIdentityVerification(
             if (!isSignedIn) {
                 const currUrl = window.location.href;
                 identityClient.saveSignInRedirectUrl(currUrl);
-                router.navigateTo(signInPath);
+                router.registerRoute(signInRoutePattern);
+                router.navigateTo(signInRoutePattern);
             }
         }
 
@@ -47,6 +49,6 @@ export function WithIdentityVerification(
     }
 
     return forwardRef<any, Props>((props, ref) => {
-        return <IdentityComponent {...props} forwardedRef={ref} />;
+        return <EmbeddedComponent {...props} forwardedRef={ref} />;
     });
 }

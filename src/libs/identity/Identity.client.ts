@@ -2,7 +2,6 @@ import Cookies from 'js-cookie';
 
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 
-import { rootPath, signInFinishLink } from '@core/config/routing';
 import { Environment } from '@core/env/environment';
 
 import { Config, getConfig } from './config';
@@ -16,7 +15,10 @@ export class IdentityClient {
     private readonly httpClient = new FetchHTTPClient();
     private readonly config: Config;
 
-    constructor(env: Environment) {
+    constructor(
+        env: Environment,
+        private signInFinishLink: string,
+        private homePageUrl: string) {
         this.config = getConfig(env);
     }
 
@@ -38,22 +40,21 @@ export class IdentityClient {
     }
 
     public tryOAuthSignIn(authProvider: string) {
-        const signInUrl = new URL(
+        const signInApi = new URL(
             `${this.config.apiBaseEndpoint}/sign-in/oauth/${authProvider}`,
         );
-        signInUrl.searchParams.set(redirectUrlParam, signInFinishLink);
-        window.location.replace(signInUrl.toString());
+        signInApi.searchParams.set(redirectUrlParam, this.signInFinishLink);
+        window.location.replace(signInApi.toString());
     }
 
     public finishSignIn(accessToken: string) {
-        console.log('++++++++');
         Cookies.set(accessTokenKey, accessToken, {
             domain: this.config.cookieDomain,
             secure: this.config.cookieSecure,
         });
         const redirectUrl = localStorage.getItem(signInRedirectKey);
         localStorage.removeItem(signInRedirectKey);
-        window.location.replace(redirectUrl || rootPath);
+        window.location.replace(redirectUrl || this.homePageUrl);
     }
 
     private async verifyToken(accessToken: string): Promise<boolean> {

@@ -1,6 +1,6 @@
 import { Params } from '@lib/router/router';
 
-const absoluteRootPath = `${window.location.protocol}//${window.location.host}`;
+export const absoluteRootPath = `${window.location.protocol}//${window.location.host}`;
 
 const teamIdParam = 'teamId';
 const tabIdParam = 'tabId';
@@ -20,13 +20,9 @@ export const invitationRoutePattern = `${rootRoutePattern}invitation`;
 export const executionTabRoutePattern = `${teamRoutePattern}/execution/{${tabIdParam}}`;
 export const executionTaskRoutePattern = `${executionTabRoutePattern}/tasks/{${taskIdParam}}`;
 export const cloudRoutePattern = `${rootRoutePattern}cloud`;
-
-export const rootPath = rootRoutePattern;
-export const cloudPath = `${rootPath}cloud`;
-export const signInPath = `${cloudPath}/identity/sign-in`;
-export const signInFinishPath = `${cloudPath}/identity/sign-in/finish`;
-// export const signInFinishPath = `${cloudPath}/identity/sign-in/finish`;
-// export const signUpPath = signUpRoutePattern;
+export const signUpRoutePattern = `${rootRoutePattern}sign-up`;
+export const signInRoutePattern = `${cloudRoutePattern}/identity/sign-in`;
+export const signInFinishRoutePattern = `${cloudRoutePattern}/identity/sign-in/finish`;
 
 export const teamPath = (teamId: string) => `/teams/${teamId}`;
 export const executionTabPath = (teamId: string, tabId: string) =>
@@ -37,7 +33,7 @@ export const executionTaskPath = (
     taskId: string,
 ) => `${executionTabPath(teamId, tabId)}/tasks/${taskId}`;
 
-export const signInFinishLink = `${absoluteRootPath}${signInFinishPath}`;
+export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`;
 
 export const invitationLink = (code: string) =>
     `${absoluteRootPath}${invitationRoutePattern}?code=${code}`;

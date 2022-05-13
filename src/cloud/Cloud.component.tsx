@@ -1,13 +1,14 @@
-import React, { Component, ReactNode } from 'react';
+import { PopChannel } from '@lib/csp/csp';
+import React, { Component, Fragment, ReactNode } from 'react';
 
 import {
     IdentityClient,
     accessTokenParam,
 } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
-import { Router } from '@lib/router/router';
+import { Router, RouteUpdate } from '@lib/router/router';
 
-import { signInFinishPath, signInPath } from '@core/config/routing';
+import { signInFinishRoutePattern, signInRoutePattern } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 
 import { SignInComponent } from './identity/SignIn.component';
@@ -19,6 +20,7 @@ interface Props {
 export class CloudComponent extends Component<Props> {
     private readonly router: Router;
     private readonly identityClient: IdentityClient;
+    private  routeChangeCh?: PopChannel<RouteUpdate | undefined>;
 
     constructor(props: Props) {
         super(props);
@@ -27,13 +29,18 @@ export class CloudComponent extends Component<Props> {
     }
 
     public async componentDidMount() {
-        this.router.registerRoute(signInFinishPath);
-        const routeChangeCh = this.router.subscribeRouteChange();
+        this.router.registerRoute(signInFinishRoutePattern);
+        this.routeChangeCh = this.router.subscribeRouteChange();
 
         (async () => {
             while (true) {
-                const routeUpdate = await routeChangeCh.pop();
-                if (routeUpdate?.routePattern === signInFinishPath) {
+                const routeUpdate = await this.routeChangeCh?.pop();
+                if (routeUpdate === undefined) {
+                    return
+                }
+
+                if (routeUpdate?.routePattern === signInFinishRoutePattern) {
+                    console.log('+++++++')
                     this.identityClient.finishSignIn(
                         routeUpdate.params.queryParams[accessTokenParam],
                     );
@@ -42,14 +49,20 @@ export class CloudComponent extends Component<Props> {
         })().then();
     }
 
+    public componentWillUnmount() {
+        this.routeChangeCh?.close();
+    }
+
     public render(): ReactNode {
         return (
-            <Route router={this.router} pattern={signInPath}>
-                <SignInComponent
-                    identityClient={this.identityClient}
-                    router={this.router}
-                />
-            </Route>
+            <Fragment>
+                <Route router={this.router} pattern={signInRoutePattern}>
+                    <SignInComponent
+                        identityClient={this.identityClient}
+                        router={this.router}
+                    />
+                </Route>
+            </Fragment>
         );
     }
 }
