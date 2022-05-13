@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Component, FormEvent, ReactElement, createRef } from 'react';
+import React, { Component, FormEvent, ReactNode, createRef } from 'react';
 
 import { MaterialIconUI } from './MaterialIcon';
 import './TextField.module.scss';
@@ -46,7 +46,7 @@ export class TextFieldUI extends Component<Props, State> {
         });
     }
 
-    public render(): ReactElement {
+    public render(): ReactNode {
         return (
             <div>
                 <div

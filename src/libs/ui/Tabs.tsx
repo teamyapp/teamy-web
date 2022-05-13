@@ -1,4 +1,4 @@
-import React, { Component, ReactElement, RefObject, createRef } from 'react';
+import React, { Component, ReactNode, RefObject, createRef } from 'react';
 
 import styles from './Tabs.module.scss';
 
@@ -29,7 +29,7 @@ export class TabsUI extends Component<IProps, IState> {
         this.tabsRef = this.props.tabNames.map((_: string) => createRef());
     }
 
-    renderTab = (name: string, index: number): ReactElement => {
+    renderTab = (name: string, index: number): ReactNode => {
         return (
             <div
                 ref={this.tabsRef[index]}
@@ -42,7 +42,7 @@ export class TabsUI extends Component<IProps, IState> {
         );
     };
 
-    public render(): ReactElement {
+    public render(): ReactNode {
         let indicatorLeft = this.getActiveTabIndicatorLeft();
         return (
             <div ref={this.containerRef} className={styles.Tabs}>

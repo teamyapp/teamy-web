@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
@@ -107,13 +107,13 @@ export class UpcomingSection extends Component<Props> {
 
     private renderTaskListItemNewTask = (
         sectionId: string,
-    ): ((task: Task) => ReactElement) => {
+    ): ((task: Task) => ReactNode) => {
         return this.renderTask(sectionId, true, false, this.props.onCreateTask);
     };
 
     private renderTaskListItemExistingTask = (
         sectionId: string,
-    ): ((task: Task) => ReactElement) => {
+    ): ((task: Task) => ReactNode) => {
         return this.renderTask(sectionId, false, true, this.props.onUpdateTask);
     };
 
@@ -122,7 +122,7 @@ export class UpcomingSection extends Component<Props> {
         isEditing: boolean,
         canViewDetail: boolean,
         onTaskFinishEditing?: (task: Task) => void,
-    ): ((task: Task) => ReactElement) => {
+    ): ((task: Task) => ReactNode) => {
         return (task: Task) => {
             return (
                 <div key={task.id}>

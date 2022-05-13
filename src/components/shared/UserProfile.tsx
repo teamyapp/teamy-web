@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import { User } from '@core/entity/user';
 
@@ -9,7 +9,7 @@ interface IProps {
 }
 
 export class UserProfileUI extends Component<IProps> {
-    public render(): ReactElement {
+    public render(): ReactNode {
         const name = `${this.props.user.firstName} ${
             this.props.user.lastName
                 ? this.props.user.lastName[0].toUpperCase()

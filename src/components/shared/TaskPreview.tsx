@@ -5,7 +5,7 @@ import React, {
     Component,
     KeyboardEvent,
     MouseEvent,
-    ReactElement,
+    ReactNode,
     createRef,
 } from 'react';
 
@@ -55,7 +55,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         };
     }
 
-    private static renderReportBlocked(index: number): ReactElement {
+    private static renderReportBlocked(index: number): ReactNode {
         return (
             <div key={index}>
                 <TooltipUI message={'Report Blocked'}>
@@ -69,7 +69,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         );
     }
 
-    public render(): ReactElement {
+    public render(): ReactNode {
         return (
             <div ref={this.ref} className={styles.Task}>
                 <div className={styles.LeftSection}>
@@ -106,7 +106,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         );
     }
 
-    private renderStartTask(index: number): ReactElement {
+    private renderStartTask(index: number): ReactNode {
         return (
             <div key={index}>
                 <TooltipUI message={'Start'}>
@@ -121,7 +121,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         );
     }
 
-    private renderCompleteTask(index: number): ReactElement {
+    private renderCompleteTask(index: number): ReactNode {
         return (
             <div key={index}>
                 <TooltipUI message={'Complete'}>
@@ -136,7 +136,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         );
     }
 
-    private renderDeleteTask(index: number): ReactElement {
+    private renderDeleteTask(index: number): ReactNode {
         return (
             <div key={index}>
                 <TooltipUI message={'Delete'}>
@@ -151,7 +151,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         );
     }
 
-    private renderAssignOwner(index: number): ReactElement {
+    private renderAssignOwner(index: number): ReactNode {
         const name = this.props.task.owner
             ? FormatService.getShortName(
                   this.props.task.owner.firstName,
@@ -180,7 +180,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         );
     }
 
-    private renderTaskDetail(index: number): ReactElement {
+    private renderTaskDetail(index: number): ReactNode {
         return (
             <div key={index}>
                 <TooltipUI message={'Detail'}>
@@ -195,7 +195,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         );
     }
 
-    private renderGoal(): ReactElement {
+    private renderGoal(): ReactNode {
         return this.state.isEditing ? (
             <textarea
                 autoFocus
@@ -217,10 +217,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         );
     }
 
-    private renderAction = (
-        action: TaskAction,
-        index: number,
-    ): ReactElement => {
+    private renderAction = (action: TaskAction, index: number): ReactNode => {
         switch (action) {
             case TaskAction.Start:
                 return this.renderStartTask(index);
@@ -237,7 +234,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         }
     };
 
-    private renderActions(): ReactElement[] {
+    private renderActions(): ReactNode[] {
         let actions = this.props.task.availableActions;
         if (this.props.canViewDetail) {
             actions = actions.concat(TaskAction.ViewDetail);

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Component, Fragment, ReactElement, createRef } from 'react';
+import React, { Component, Fragment, ReactNode, createRef } from 'react';
 
 import { Point } from '@lib/ui/position';
 
@@ -31,7 +31,7 @@ export class ModalUI extends Component<Props, State> {
         };
     }
 
-    public render(): ReactElement {
+    public render(): ReactNode {
         const elevation = (this.props.level || 0) + baseElevation;
         return (
             <div className={styles.Modal}>

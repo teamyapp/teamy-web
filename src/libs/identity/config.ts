@@ -1,41 +1,31 @@
 import { Environment } from '@core/env/environment';
 
 export interface Config {
-    httpProtocol: string;
-    webSocketProtocol: string;
     apiBaseEndpoint: string;
     cookieDomain: string;
     cookieSecure: boolean;
 }
 
 const developmentConfig: Config = {
-    httpProtocol: 'http',
-    webSocketProtocol: 'ws',
-    apiBaseEndpoint: 'localhost:9500/identity',
+    apiBaseEndpoint: 'http://localhost:9500/identity',
     cookieDomain: 'localhost',
     cookieSecure: false,
 };
 
 const testingConfig: Config = {
-    httpProtocol: 'https',
-    webSocketProtocol: 'wss',
-    apiBaseEndpoint: 'cloud.testing.teamyapp.com/identity',
+    apiBaseEndpoint: 'https://cloud.testing.teamyapp.com/identity',
     cookieDomain: 'testing.teamyapp.com',
     cookieSecure: true,
 };
 
 const stagingConfig: Config = {
-    httpProtocol: 'https',
-    webSocketProtocol: 'wss',
-    apiBaseEndpoint: 'cloud.staging.teamyapp.com/identity',
+    apiBaseEndpoint: 'https://cloud.staging.teamyapp.com/identity',
     cookieDomain: 'staging.teamyapp.com',
     cookieSecure: true,
 };
 
 const productionConfig: Config = {
-    httpProtocol: 'https',
-    webSocketProtocol: 'wss',
-    apiBaseEndpoint: 'cloud.teamyapp.com/identity',
+    apiBaseEndpoint: 'https://cloud.teamyapp.com/identity',
     cookieDomain: 'teamyapp.com',
     cookieSecure: true,
 };

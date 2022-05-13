@@ -4,7 +4,7 @@ import React, {
     Component,
     Fragment,
     MouseEvent,
-    ReactElement,
+    ReactNode,
     createRef,
 } from 'react';
 
@@ -58,7 +58,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         };
     }
 
-    public render(): ReactElement {
+    public render(): ReactNode {
         const dueAt = this.state.task?.dueAt
             ? new Date(this.state.task.dueAt)
             : undefined;

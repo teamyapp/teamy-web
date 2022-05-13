@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import { BoundingBoxFinder } from '@lib/ui/position';
 
@@ -45,7 +45,7 @@ export class KanbanUI extends Component<Props> {
         this.state = {};
     }
 
-    render(): ReactElement {
+    render(): ReactNode {
         const upcomingTasks = this.props.tasks.filter(upcomingColumnFilter);
         const inProgressTasks = this.props.tasks.filter(inProgressColumnFilter);
         const deliveredTasks = this.props.tasks.filter(deliveredColumnFilter);

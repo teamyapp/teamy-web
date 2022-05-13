@@ -1,4 +1,4 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import { and, or } from '@lib/data/filter';
 import { BoundingBoxFinder } from '@lib/ui/position';
@@ -47,7 +47,7 @@ interface Props {
 }
 
 export class PersonalStatusUI extends Component<Props> {
-    public render(): ReactElement {
+    public render(): ReactNode {
         const deliveredTasks = this.props.personalTasks.filter(
             deliveredColumnFilter,
         );

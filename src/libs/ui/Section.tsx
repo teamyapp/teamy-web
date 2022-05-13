@@ -1,14 +1,14 @@
-import React, { Component, ReactElement } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import styles from './Section.module.scss';
 
 interface IProps {
     title: string;
-    actions?: ReactElement;
+    actions?: ReactNode;
 }
 
 export class SectionUI extends Component<IProps> {
-    public render(): ReactElement {
+    public render(): ReactNode {
         return (
             <section className={styles.Section}>
                 <div className={styles.Header}>

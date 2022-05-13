@@ -1,4 +1,4 @@
-import React, { Component, ReactElement, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -35,7 +35,7 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
         };
     }
 
-    public render(): ReactElement {
+    public render(): ReactNode {
         return (
             <ModalUI ref={this.modalRef}>
                 {this.state.user && (
