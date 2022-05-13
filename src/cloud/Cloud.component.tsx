@@ -40,7 +40,6 @@ export class CloudComponent extends Component<Props> {
                 }
 
                 if (routeUpdate?.routePattern === signInFinishRoutePattern) {
-                    console.log('+++++++')
                     this.identityClient.finishSignIn(
                         routeUpdate.params.queryParams[accessTokenParam],
                     );
