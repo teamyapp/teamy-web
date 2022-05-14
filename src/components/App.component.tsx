@@ -44,6 +44,8 @@ import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeed
 import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
 import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
 
+export const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
 interface Props {
     deps: Deps;
 }
@@ -228,6 +230,8 @@ export class AppComponent extends Component<Props, State> {
                 if (routeUpdate === undefined) {
                     return;
                 }
+
+                await delay(5000)
 
                 if (!publicRoutePatterns.includes(routeUpdate.routePattern)) {
                     const isSignedIn = await this.identityClient.isSignedIn();
