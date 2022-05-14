@@ -29,7 +29,7 @@ export class CloudComponent extends Component<Props> {
     }
 
     public async componentDidMount() {
-        this.router.registerRoute(signInFinishRoutePattern);
+        this.router.registerRoute(signInFinishRoutePattern, false);
         this.routeChangeCh = this.router.subscribeRouteChange();
 
         (async () => {

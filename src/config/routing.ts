@@ -15,7 +15,8 @@ export const getInvitationCode = (params?: Params) =>
 
 export const rootRoutePattern = '/';
 export const debugRoutePattern = `${rootRoutePattern}debug`;
-export const teamRoutePattern = `${rootRoutePattern}teams/{${teamIdParam}}`;
+export const teamsRoutePattern = `${rootRoutePattern}teams`;
+export const teamRoutePattern = `${teamsRoutePattern}/{${teamIdParam}}`;
 export const invitationRoutePattern = `${rootRoutePattern}invitation`;
 export const executionTabRoutePattern = `${teamRoutePattern}/execution/{${tabIdParam}}`;
 export const executionTaskRoutePattern = `${executionTabRoutePattern}/tasks/{${taskIdParam}}`;

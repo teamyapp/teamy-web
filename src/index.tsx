@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { initDeps } from '@core/dep/deps';
 
-import AppComponentHook from './components/App.component';
+import {AppComponent} from './components/App.component';
 import './index.scss';
 import reportWebVitals from './reportWebVitals';
 
@@ -11,7 +11,7 @@ const deps = initDeps();
 
 ReactDOM.render(
     <React.StrictMode>
-        <AppComponentHook deps={deps} />
+        <AppComponent deps={deps} />
     </React.StrictMode>,
     document.getElementById('root'),
 );
