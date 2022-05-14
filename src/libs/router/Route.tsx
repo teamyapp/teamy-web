@@ -7,7 +7,7 @@ import {
     Params,
     RouteUpdate,
     Router,
-    sanitizeRoutePattern,
+    sanitizeRoutePattern, pathDelimiter,
 } from './router';
 
 interface Props {
@@ -51,7 +51,7 @@ export class Route extends Component<Props, State> {
                     return;
                 }
 
-                if (!route.routePattern.startsWith(routePattern)) {
+                if (!startsWith(route.routePattern.split(pathDelimiter), routePattern.split(pathDelimiter))) {
                     this.setState({
                         shouldShow: false,
                     });
@@ -83,4 +83,18 @@ export class Route extends Component<Props, State> {
     public componentWillUnmount() {
         this.routeChangeChan?.close();
     }
+}
+
+function startsWith(long: string[], prefix: string[]): boolean {
+    if (long.length < prefix.length) {
+        return false;
+    }
+
+    for (let index = 0; index < prefix.length; index++) {
+        if (long[index] !== prefix[index]) {
+            return false;
+        }
+    }
+
+    return true;
 }

@@ -22,7 +22,7 @@ export const executionTaskRoutePattern = `${executionTabRoutePattern}/tasks/{${t
 export const cloudRoutePattern = `${rootRoutePattern}cloud`;
 export const signUpRoutePattern = `${rootRoutePattern}sign-up`;
 export const signInRoutePattern = `${cloudRoutePattern}/identity/sign-in`;
-export const signInFinishRoutePattern = `${cloudRoutePattern}/identity/sign-in/finish`;
+export const signInFinishRoutePattern = `${cloudRoutePattern}/identity/sign-in-finish`;
 
 export const teamPath = (teamId: string) => `/teams/${teamId}`;
 export const executionTabPath = (teamId: string, tabId: string) =>

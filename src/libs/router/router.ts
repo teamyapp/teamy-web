@@ -29,7 +29,7 @@ export type Errors =
 const wildcard = '{*}';
 
 const queryDelimiter = '?';
-const pathDelimiter = '/';
+export const pathDelimiter = '/';
 const paramDelimiter = '=';
 
 export class Router {
