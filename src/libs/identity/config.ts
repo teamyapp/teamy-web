@@ -13,7 +13,7 @@ const developmentConfig: Config = {
     cookieDomain: 'localhost',
     cookieSecure: false,
     signInLink: '/cloud/identity/sign-in',
-    signInFinishLink: '/cloud/identity/sign-in/finish',
+    signInFinishLink: '/cloud/identity/sign-in-finish',
 };
 
 const testingConfig: Config = {
@@ -21,7 +21,7 @@ const testingConfig: Config = {
     cookieDomain: 'testing.teamyapp.com',
     cookieSecure: true,
     signInLink: '/cloud/identity/sign-in',
-    signInFinishLink: '/cloud/identity/sign-in/finish',
+    signInFinishLink: '/cloud/identity/sign-in-finish',
 };
 
 const stagingConfig: Config = {
@@ -29,7 +29,7 @@ const stagingConfig: Config = {
     cookieDomain: 'staging.teamyapp.com',
     cookieSecure: true,
     signInLink: '/cloud/identity/sign-in',
-    signInFinishLink: '/cloud/identity/sign-in/finish',
+    signInFinishLink: '/cloud/identity/sign-in-finish',
 };
 
 const productionConfig: Config = {
@@ -37,7 +37,7 @@ const productionConfig: Config = {
     cookieDomain: 'teamyapp.com',
     cookieSecure: true,
     signInLink: '/cloud/identity/sign-in',
-    signInFinishLink: '/cloud/identity/sign-in/finish',
+    signInFinishLink: '/cloud/identity/sign-in-finish',
 };
 
 export function getConfig(env: Environment): Config {
