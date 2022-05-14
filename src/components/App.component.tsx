@@ -1,7 +1,7 @@
-import { IdentityClient } from '@lib/identity/Identity.client';
 import React, { Component, Fragment, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
+import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { LocalStore } from '@lib/store/localStore';
@@ -12,7 +12,10 @@ import {
     debugRoutePattern,
     getTeamId,
     invitationRoutePattern,
-    rootRoutePattern, signInFinishRoutePattern, signInRoutePattern, signUpRoutePattern,
+    rootRoutePattern,
+    signInFinishRoutePattern,
+    signInRoutePattern,
+    signUpRoutePattern,
     teamPath,
     teamRoutePattern,
 } from '@core/config/routing';
@@ -29,6 +32,7 @@ import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
 import { InvitationComponent } from './Invitation.component';
+import { SignUpComponent, signUpRedirectKey } from './SignUp.component';
 import { DrawerUI } from './shared/Drawer';
 import { HeaderComponent } from './shared/Header.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
@@ -39,8 +43,6 @@ import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/Inviat
 import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
 import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
-import { SignUpComponent } from './SignUp.component';
-import { signUpRedirectKey } from './WithSignUp.component';
 
 interface Props {
     deps: Deps;
@@ -193,7 +195,14 @@ export class AppComponent extends Component<Props, State> {
     }
 
     public async componentDidMount() {
-        this.props.deps.router.registerRoute(rootRoutePattern, false);
+        this.monitorStateChanges();
+        await this.monitorRouteChanges();
+        this.monitorUserActions();
+        this.userActionChan =
+            this.props.deps.shortcutMonitor.subscribeUserAction();
+    }
+
+    private monitorStateChanges() {
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -207,7 +216,10 @@ export class AppComponent extends Component<Props, State> {
                 this.updateState(state);
             }
         })().then();
+    }
 
+    private monitorRouteChanges() {
+        this.props.deps.router.registerRoute(rootRoutePattern, false);
         this.routeChangeChan = this.router.subscribeRouteChange();
         console.log('[AppComponent]subscribing');
         (async () => {
@@ -223,9 +235,11 @@ export class AppComponent extends Component<Props, State> {
                         this.identityClient.trySignIn();
                         continue;
                     } else {
-                        const me = await this.props.deps.userService.fetchMe('network-only');
+                        const me = await this.props.deps.userService.fetchMe(
+                            'network-only',
+                        );
                         if (!me) {
-                            this.signUp();
+                            this.trySignUp(routeUpdate.routePattern);
                             continue;
                         } else {
                             await this.props.deps.networkStateSyncer.syncState();
@@ -258,7 +272,9 @@ export class AppComponent extends Component<Props, State> {
             }
         })().then();
         this.router.navigateToCurrUri();
+    }
 
+    private monitorUserActions() {
         this.userActionChan =
             this.props.deps.shortcutMonitor.subscribeUserAction();
         (async () => {
@@ -408,7 +424,11 @@ export class AppComponent extends Component<Props, State> {
         }
     }
 
-    private signUp() {
+    private trySignUp(currRoutePattern: string) {
+        if (currRoutePattern === signUpRoutePattern) {
+            return;
+        }
+
         const currUrl = window.location.href;
         localStorage.setItem(signUpRedirectKey, currUrl);
         this.props.deps.router.navigateTo(signUpRoutePattern);

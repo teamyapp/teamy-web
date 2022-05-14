@@ -1,11 +1,14 @@
-import { absoluteRootPath } from '@core/config/routing';
-import { Deps } from '@core/dep/deps';
+import React, { Component, ReactNode, createRef } from 'react';
+
 import { ButtonUI } from '@lib/ui/Button';
 import { TextFieldUI } from '@lib/ui/TextField';
-import React, { Component, createRef, ReactNode } from 'react';
+
+import { absoluteRootPath } from '@core/config/routing';
+import { Deps } from '@core/dep/deps';
 
 import styles from './SignUp.component.module.scss';
-import { signUpRedirectKey } from './WithSignUp.component';
+
+export const signUpRedirectKey = 'signUpRedirect';
 
 interface Props {
     deps: Deps;

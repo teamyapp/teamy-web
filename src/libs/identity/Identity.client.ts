@@ -18,7 +18,8 @@ export class IdentityClient {
     constructor(
         env: Environment,
         private signInFinishLink: string,
-        private homePageUrl: string) {
+        private homePageUrl: string,
+    ) {
         this.config = getConfig(env);
     }
 

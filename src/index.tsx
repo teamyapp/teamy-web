@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { initDeps } from '@core/dep/deps';
 
-import {AppComponent} from './components/App.component';
+import { AppComponent } from './components/App.component';
 import './index.scss';
 import reportWebVitals from './reportWebVitals';
 

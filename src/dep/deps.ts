@@ -1,4 +1,3 @@
-import { absoluteRootPath, signInFinishPath } from '@core/config/routing';
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
@@ -8,6 +7,7 @@ import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { LocalStore } from '@lib/store/localStore';
 
 import { getConfig } from '@core/config/config';
+import { absoluteRootPath, signInFinishPath } from '@core/config/routing';
 import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
 import { getEnvironment } from '@core/env/environment';
@@ -41,7 +41,11 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
-    const identityClient = new IdentityClient(env, signInFinishPath, absoluteRootPath);
+    const identityClient = new IdentityClient(
+        env,
+        signInFinishPath,
+        absoluteRootPath,
+    );
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
         identityClient,
