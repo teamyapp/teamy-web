@@ -220,10 +220,6 @@ export class AppComponent extends Component<Props, State> {
 
     private monitorRouteChanges() {
         this.props.deps.router.registerRoute(rootRoutePattern, false);
-        for(const pattern in acceptedRoutePatterns) {
-            this.props.deps.router.registerRoute(pattern, false);
-        }
-
         this.routeChangeChan = this.router.subscribeRouteChange();
         console.log('[AppComponent]subscribing');
         (async () => {
