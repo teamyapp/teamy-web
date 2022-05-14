@@ -288,6 +288,7 @@ export class ExecutionComponent extends Component<Props, State> {
 
     public componentWillUnmount() {
         window.removeEventListener('resize', this.onWindowResize);
+
         this.stateChangeChan?.close();
         this.routeChangeChan?.close();
         this.dragAndDropEventChan?.close();

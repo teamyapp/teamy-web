@@ -18,7 +18,8 @@ export class IdentityClient {
     constructor(
         env: Environment,
         private signInFinishLink: string,
-        private homePageUrl: string) {
+        private homePageUrl: string,
+    ) {
         this.config = getConfig(env);
     }
 
@@ -26,7 +27,7 @@ export class IdentityClient {
         return Cookies.get(accessTokenKey) || '';
     }
 
-    public saveSignInRedirectUrl(redirectUrl: string): void {
+    private saveSignInRedirectUrl(redirectUrl: string): void {
         localStorage.setItem(signInRedirectKey, redirectUrl);
     }
 
@@ -37,6 +38,12 @@ export class IdentityClient {
         }
 
         return await this.verifyToken(token);
+    }
+
+    public trySignIn() {
+        const currUrl = window.location.href;
+        this.saveSignInRedirectUrl(currUrl);
+        window.location.replace(this.config.signInLink);
     }
 
     public tryOAuthSignIn(authProvider: string) {

@@ -34,7 +34,7 @@ export class Route extends Component<Props, State> {
 
     public componentDidMount() {
         const routePattern = sanitizeRoutePattern(this.props.pattern);
-        const err = this.props.router.registerRoute(routePattern);
+        const err = this.props.router.registerRoute(routePattern, false);
         if (err) {
             this.setState({
                 err,

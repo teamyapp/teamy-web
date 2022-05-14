@@ -1,14 +1,17 @@
-import { PopChannel } from '@lib/csp/csp';
 import React, { Component, Fragment, ReactNode } from 'react';
 
+import { PopChannel } from '@lib/csp/csp';
 import {
     IdentityClient,
     accessTokenParam,
 } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
-import { Router, RouteUpdate } from '@lib/router/router';
+import { RouteUpdate, Router } from '@lib/router/router';
 
-import { signInFinishRoutePattern, signInRoutePattern } from '@core/config/routing';
+import {
+    signInFinishRoutePattern,
+    signInRoutePattern,
+} from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 
 import { SignInComponent } from './identity/SignIn.component';
@@ -20,7 +23,7 @@ interface Props {
 export class CloudComponent extends Component<Props> {
     private readonly router: Router;
     private readonly identityClient: IdentityClient;
-    private  routeChangeCh?: PopChannel<RouteUpdate | undefined>;
+    private routeChangeCh?: PopChannel<RouteUpdate | undefined>;
 
     constructor(props: Props) {
         super(props);
@@ -29,14 +32,14 @@ export class CloudComponent extends Component<Props> {
     }
 
     public async componentDidMount() {
-        this.router.registerRoute(signInFinishRoutePattern);
+        this.router.registerRoute(signInFinishRoutePattern, false);
         this.routeChangeCh = this.router.subscribeRouteChange();
 
         (async () => {
             while (true) {
                 const routeUpdate = await this.routeChangeCh?.pop();
                 if (routeUpdate === undefined) {
-                    return
+                    return;
                 }
 
                 if (routeUpdate?.routePattern === signInFinishRoutePattern) {

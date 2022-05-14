@@ -1,7 +1,7 @@
-import React, { Component, Fragment, ReactElement, createRef } from 'react';
+import React, { Component, Fragment, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
-import { WithIdentityVerification } from '@lib/identity/WithIdentityVerification';
+import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { LocalStore } from '@lib/store/localStore';
@@ -9,11 +9,13 @@ import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 
 import {
-    cloudRoutePattern,
     debugRoutePattern,
     getTeamId,
     invitationRoutePattern,
-    rootRoutePattern, signInFinishRoutePattern, signInRoutePattern, signUpRoutePattern,
+    rootRoutePattern,
+    signInFinishRoutePattern,
+    signInRoutePattern,
+    signUpRoutePattern,
     teamPath,
     teamRoutePattern,
 } from '@core/config/routing';
@@ -30,6 +32,7 @@ import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
 import { InvitationComponent } from './Invitation.component';
+import { SignUpComponent, signUpRedirectKey } from './SignUp.component';
 import { DrawerUI } from './shared/Drawer';
 import { HeaderComponent } from './shared/Header.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
@@ -40,8 +43,6 @@ import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/Inviat
 import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
 import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
-import { SignUpComponent } from './SignUp.component';
-import { WithSignUp } from './WithSignUp.component';
 
 interface Props {
     deps: Deps;
@@ -55,6 +56,12 @@ interface State {
     taskFilters: TaskFilters;
 }
 
+const publicRoutePatterns = [
+    signInRoutePattern,
+    signInFinishRoutePattern,
+    debugRoutePattern,
+];
+
 const acceptedRoutePatterns = [
     debugRoutePattern,
     signUpRoutePattern,
@@ -64,8 +71,10 @@ const acceptedRoutePatterns = [
     invitationRoutePattern,
 ];
 
-class AppComponent extends Component<Props, State> {
+export class AppComponent extends Component<Props, State> {
     private readonly router: Router;
+    private readonly identityClient: IdentityClient;
+
     private readonly localStore: LocalStore<IAppState, MutationEvent>;
     private readonly headerRef = createRef<HeaderComponent>();
     private readonly teamSettingsModalRef =
@@ -82,6 +91,7 @@ class AppComponent extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.router = props.deps.router;
+        this.identityClient = props.deps.identityClient;
         this.localStore = props.deps.localStore;
         this.state = {
             isDrawerOpen: false,
@@ -99,11 +109,9 @@ class AppComponent extends Component<Props, State> {
                         repoName={'teamy-web'}
                     />
                 </Route>
-                <Route router={this.router} pattern={cloudRoutePattern}>
-                    <CloudComponent deps={this.props.deps} />
-                </Route>
+                <CloudComponent deps={this.props.deps} />
                 <Route router={this.router} pattern={signUpRoutePattern}>
-                    <SignUpComponent deps={this.props.deps}/>
+                    <SignUpComponent deps={this.props.deps} />
                 </Route>
                 {this.state.me && (
                     <Fragment>
@@ -187,12 +195,14 @@ class AppComponent extends Component<Props, State> {
     }
 
     public async componentDidMount() {
-        const me = await this.props.deps.userService.fetchMe('network-only');
-        if (!me) {
-            return;
-        }
+        this.monitorStateChanges();
+        await this.monitorRouteChanges();
+        this.monitorUserActions();
+        this.userActionChan =
+            this.props.deps.shortcutMonitor.subscribeUserAction();
+    }
 
-        await this.props.deps.networkStateSyncer.syncState();
+    private monitorStateChanges() {
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -206,8 +216,10 @@ class AppComponent extends Component<Props, State> {
                 this.updateState(state);
             }
         })().then();
+    }
 
-        this.router.navigateToCurrUri();
+    private monitorRouteChanges() {
+        this.props.deps.router.registerRoute(rootRoutePattern, false);
         this.routeChangeChan = this.router.subscribeRouteChange();
         console.log('[AppComponent]subscribing');
         (async () => {
@@ -215,6 +227,24 @@ class AppComponent extends Component<Props, State> {
                 const routeUpdate = await this.routeChangeChan!.pop();
                 if (routeUpdate === undefined) {
                     return;
+                }
+
+                if (!publicRoutePatterns.includes(routeUpdate.routePattern)) {
+                    const isSignedIn = await this.identityClient.isSignedIn();
+                    if (!isSignedIn) {
+                        this.identityClient.trySignIn();
+                        continue;
+                    } else {
+                        const me = await this.props.deps.userService.fetchMe(
+                            'network-only',
+                        );
+                        if (!me) {
+                            this.trySignUp(routeUpdate.routePattern);
+                            continue;
+                        } else {
+                            await this.props.deps.networkStateSyncer.syncState();
+                        }
+                    }
                 }
 
                 if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
@@ -241,7 +271,10 @@ class AppComponent extends Component<Props, State> {
                 }
             }
         })().then();
+        this.router.navigateToCurrUri();
+    }
 
+    private monitorUserActions() {
         this.userActionChan =
             this.props.deps.shortcutMonitor.subscribeUserAction();
         (async () => {
@@ -346,7 +379,7 @@ class AppComponent extends Component<Props, State> {
     };
 
     private onTeamMembersAdded = async (teamId: string) => {
-        this.props.deps.networkStateSyncer.syncState();
+        await this.props.deps.networkStateSyncer.syncState();
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
 
@@ -390,24 +423,14 @@ class AppComponent extends Component<Props, State> {
                 break;
         }
     }
-}
 
-interface HookProps {
-    deps: Deps;
-}
+    private trySignUp(currRoutePattern: string) {
+        if (currRoutePattern === signUpRoutePattern) {
+            return;
+        }
 
-export default function AppComponentHook(props: HookProps): ReactElement {
-    props.deps.router.registerRoute(rootRoutePattern);
-    for (const routePattern of acceptedRoutePatterns) {
-        props.deps.router.registerRoute(routePattern, false);
+        const currUrl = window.location.href;
+        localStorage.setItem(signUpRedirectKey, currUrl);
+        this.props.deps.router.navigateTo(signUpRoutePattern);
     }
-
-    const AppWithIdentityVerification = WithIdentityVerification(
-        props.deps.identityClient,
-        props.deps.router,
-        signInRoutePattern,
-        signInFinishRoutePattern,
-        WithSignUp(props.deps, AppComponent),
-    );
-    return <AppWithIdentityVerification deps={props.deps} />;
 }
