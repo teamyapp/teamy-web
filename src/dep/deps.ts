@@ -47,16 +47,20 @@ export function initDeps(): Deps {
         absoluteRootPath,
     );
     const config = getConfig(env);
-    const teamyGraphQLClient = new GraphQLClient(
+    const teamyGraphQLV1Client = new GraphQLClient(
         identityClient,
         config.teamyGraphQLEndpoint,
     );
-    const taskService = new TaskService(teamyGraphQLClient);
-    const teamService = new TeamService(teamyGraphQLClient);
-    const userService = new UserService(teamyGraphQLClient);
-    const commentService = new CommentService(teamyGraphQLClient);
-    const pageService = new PageService(teamyGraphQLClient);
-    const invitationService = new InvitationService(teamyGraphQLClient);
+    const teamyGraphQLV2Client = new GraphQLClient(
+        identityClient,
+        config.teamyGraphQLV2Endpoint,
+    );
+    const taskService = new TaskService(teamyGraphQLV1Client);
+    const teamService = new TeamService(teamyGraphQLV1Client);
+    const userService = new UserService(teamyGraphQLV1Client);
+    const commentService = new CommentService(teamyGraphQLV1Client);
+    const pageService = new PageService(teamyGraphQLV1Client);
+    const invitationService = new InvitationService(teamyGraphQLV1Client);
     const localStore = createStore();
     const networkStateSyncer = new NetworkStateSynchronizer(
         localStore,

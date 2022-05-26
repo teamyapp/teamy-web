@@ -3,6 +3,7 @@
         "baseUrl": "./src",
         "paths": {
             "@core/entity/*": ["entity/*"],
+            "@core/entityv2/*": ["entityv2/*"],
             "@core/env/*": ["env/*"],
             "@core/config/*": ["config/*"],
             "@core/service/*": ["service/*"],
