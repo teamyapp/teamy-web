@@ -188,7 +188,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
                         className={`${styles.Action} ${styles.TaskDetailIcon}`}
                         onClick={this.onTaskDetailClick}
                     >
-                        <MaterialIconUI>settings</MaterialIconUI>
+                        <MaterialIconUI>more_vert</MaterialIconUI>
                     </div>
                 </TooltipUI>
             </div>
