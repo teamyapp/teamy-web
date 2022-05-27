@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 import { Task } from '@core/entityv2/task';
 import { TaskStatus } from '@core/entityv2/taskStatus';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+import {Team} from "@core/entityv2/team";
 
 export interface CreateTaskInput {
     goal: string;
@@ -65,6 +66,35 @@ export class TaskClient {
         .then((payload: any) => payload?.tasks[0]);
     }
 
+    getTasksPreview(teamId: number): Promise<Task[]> {
+        return this.graphQLClient.query({
+            query: gql`
+                query getTasksPreview($teamId: ID!) {
+                    teams(filter : {
+                        teamId: $teamId
+                    }) {
+                        id
+                        tasks {
+                            id
+                            goal
+                            dueAt
+                            status
+                            owner {
+                                id
+                                firstName
+                                lastName
+                                profileUrl
+                            }
+                        } 
+                    }
+                }`,
+            variables: {
+                teamId,
+            },
+        })
+        .then((payload: any) => payload.getTasksPreview);
+    }
+
     createTask(teamId: number, task: CreateTaskInput): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: gql`
@@ -86,7 +116,7 @@ export class TaskClient {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation updateTask($taskId: ID!, $input: UpdateTaskInput!) {
-                    updateTask(taskId: $taskId, input: $input) {
+                    updateTask(taskId : $taskId, input : $input) {
                         id
                     }
                 }
@@ -112,10 +142,10 @@ export class TaskClient {
                 taskId,
             },
         })
-        .then((payload: any) => payload.updateTask);
+        .then((payload: any) => payload.deleteTask);
     }
 
-    startTask(taskId: number): Promise<Task> {
+    startTask(teamId: number, taskId: number): Promise<Task> {
         // TODO: implement me
         return Promise.resolve<any>({});
     }

@@ -1,4 +1,6 @@
 import { Message } from '@core/entityv2/message';
+import {GraphQLClient} from "@lib/network/GraphQL.client";
+import {gql} from "@apollo/client";
 
 export interface CreateMessageInput {
     body: string;
@@ -9,15 +11,59 @@ export interface UpdateMessageInput {
 }
 
 export class MessageClient {
-    createMessage(threadId: number, message: CreateMessageInput): Promise<Message> {
-        // TODO: implement me
+    private readonly graphQLClient: GraphQLClient;
+
+    constructor(graphQLClient: GraphQLClient) {
+        this.graphQLClient = graphQLClient;
+    }
+
+    createMessage(threadId: number, input: CreateMessageInput): Promise<Message> {
+        return this.graphQLClient.mutate({
+            mutation: gql`
+                mutation createMessage($threadId: ID!, $message: CreateMessageInput!) {
+                    createMessage(threadId: $threadId, message: $message) {
+                        id
+                    }
+                }
+            `,
+            variables: {
+                threadId,
+                input,
+            },
+        })
+        .then((payload: any) => payload.createMessage);
     }
 
     updateMessage(messageId: number, input: UpdateMessageInput): Promise<Message> {
-        // TODO: implement me
+        return this.graphQLClient.mutate({
+            mutation: gql`
+                mutation updateMessage($messageId: ID!, $input: UpdateMessageInput!) {
+                    updateMessage(messageId: $messageId, input: $input) {
+                        id
+                    }
+                }
+            `,
+            variables: {
+                messageId,
+                input,
+            },
+        })
+        .then((payload: any) => payload.updateMessage);
     }
 
     deleteMessage(messageId: number): Promise<Message> {
-        // TODO: implement me
+        return this.graphQLClient.mutate({
+            mutation: gql`
+                mutation deleteMessage($messageId: ID!) {
+                    deleteMessage(messageId: $messageId) {
+                        id
+                    }
+                }
+            `,
+            variables: {
+                messageId,
+            },
+        })
+        .then((payload: any) => payload.deleteMessage);
     }
 }

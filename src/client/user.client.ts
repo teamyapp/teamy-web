@@ -1,4 +1,6 @@
 import { User } from '@core/entityv2/user';
+import {gql} from "@apollo/client";
+import {GraphQLClient} from "@lib/network/GraphQL.client";
 
 export interface CreateUserInput {
     lastName: string;
@@ -13,15 +15,65 @@ export interface UpdateUserInput {
 }
 
 export class UserClient {
-    getMe(): Promise<User> {
-        // TODO: implement me
+    private readonly graphQLClient: GraphQLClient;
+
+    constructor(graphQLClient: GraphQLClient) {
+        this.graphQLClient = graphQLClient;
     }
 
-    createUser(user: CreateUserInput): Promise<User> {
-        // TODO: implement me
+    getMe(): Promise<User> {
+        return this.graphQLClient.query({
+            query: gql`
+                query getMe() {
+                    me {
+                        id
+                        firstName
+                        lastName
+                        profileUrl
+                        createdAt
+                        teams {
+                            id
+                        }
+                    }
+                }`,
+        })
+        .then((payload: any) => payload.getMe);
+    }
+
+    createUser(input: CreateUserInput): Promise<User> {
+        return this.graphQLClient.mutate({
+            mutation: gql`
+                mutation createUser($input: CreateTaskInput!) {
+                    createUser(user : $input) {
+                        id
+                        firstName
+                        lastName
+                        createdAt
+                        profileUrl
+                    }
+                }
+            `,
+            variables: {
+                input,
+            },
+        })
+        .then((payload: any) => payload.createUser);
     }
 
     updateUser(userId: number, input: UpdateUserInput): Promise<User> {
-        // TODO: implement me
+        return this.graphQLClient.mutate({
+            mutation: gql`
+                mutation updateTask($taskId: ID!, $input: UpdateTaskInput!) {
+                    updateUser(userId : $userId, input : $input) {
+                        id
+                    }
+                }
+            `,
+            variables: {
+                userId,
+                input,
+            },
+        })
+        .then((payload: any) => payload.updateUser);
     }
 }
