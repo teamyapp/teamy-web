@@ -61,23 +61,24 @@ export function initDeps(): Deps {
         identityClient,
         config.teamyGraphQLEndpoint,
     );
-    const teamyGraphQLV2Client = new GraphQLClient(
-        identityClient,
-        config.teamyGraphQLV2Endpoint,
-    );
     const taskService = new TaskService(teamyGraphQLV1Client);
     const teamService = new TeamService(teamyGraphQLV1Client);
     const userService = new UserService(teamyGraphQLV1Client);
     const commentService = new CommentService(teamyGraphQLV1Client);
     const pageService = new PageService(teamyGraphQLV1Client);
+    const invitationService = new InvitationService(teamyGraphQLV1Client);
 
+
+    const teamyGraphQLV2Client = new GraphQLClient(
+        identityClient,
+        config.teamyGraphQLV2Endpoint,
+    );
     const userClient = new UserClient(teamyGraphQLV2Client);
     const teamClient = new TeamClient(teamyGraphQLV2Client);
     const taskClient = new TaskClient(teamyGraphQLV2Client);
     const messageClient = new MessageClient(teamyGraphQLV2Client);
     const invitationClient = new InvitationClient(teamyGraphQLV2Client);
 
-    const invitationService = new InvitationService(teamyGraphQLV1Client);
     const localStore = createStore();
     const networkStateSyncer = new NetworkStateSynchronizer(
         localStore,
