@@ -21,10 +21,10 @@ export class UserClient {
         this.graphQLClient = graphQLClient;
     }
 
-    getMe(): Promise<User> {
+    public getMe(): Promise<User> {
         return this.graphQLClient.query({
             query: gql`
-                query getMe() {
+                query getMe {
                     me {
                         id
                         firstName
@@ -40,11 +40,11 @@ export class UserClient {
         .then((payload: any) => payload.getMe);
     }
 
-    createUser(input: CreateUserInput): Promise<User> {
+    public createUser(input: CreateUserInput): Promise<User> {
         return this.graphQLClient.mutate({
             mutation: gql`
-                mutation createUser($input: CreateTaskInput!) {
-                    createUser(user : $input) {
+                mutation createUser($input: CreateUserInput!) {
+                    createUser(user: $input) {
                         id
                         firstName
                         lastName
@@ -60,10 +60,10 @@ export class UserClient {
         .then((payload: any) => payload.createUser);
     }
 
-    updateUser(userId: number, input: UpdateUserInput): Promise<User> {
+    public updateUser(userId: number, input: UpdateUserInput): Promise<User> {
         return this.graphQLClient.mutate({
             mutation: gql`
-                mutation updateTask($taskId: ID!, $input: UpdateTaskInput!) {
+                mutation updateTask($userId: ID!, $input: UpdateUserInput!) {
                     updateUser(userId : $userId, input : $input) {
                         id
                     }

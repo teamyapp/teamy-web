@@ -16,16 +16,16 @@ export class InvitationClient {
         this.graphQLClient = graphQLClient;
     }
 
-    getInvitations(teamId: number): Promise<Invitation[]> {
+    public getInvitations(teamId: number): Promise<Invitation[]> {
         // TODO: implement me
         return Promise.resolve([]);
     }
 
-    createInvitation(teamId: number, input: CreateInvitationInput): Promise<Invitation> {
+    public createInvitation(teamId: number, input: CreateInvitationInput): Promise<Invitation> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation createInvitation($teamId: ID!, $input: CreateInvitationInput!) {
-                    createInvitation(teamId: $teamId, input: $input) {
+                    createInvitation(teamId: $teamId, invitation: $input) {
                         id
                     }
                 }
@@ -35,10 +35,10 @@ export class InvitationClient {
                 input,
             },
         })
-        .then((payload: any) => payload.createInvitation);
+        .then((payload: any) => payload?.createInvitation);
     }
 
-    updateInvitation(invitationId: number, input: UpdateInvitationInput): Promise<Invitation> {
+    public updateInvitation(invitationId: number, input: UpdateInvitationInput): Promise<Invitation> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation updateInvitation($invitationId: ID!, $input: UpdateInvitationInput!) {
@@ -52,10 +52,10 @@ export class InvitationClient {
                 input,
             },
         })
-        .then((payload: any) => payload.updateInvitation);
+        .then((payload: any) => payload?.updateInvitation);
     }
 
-    deleteInvitation(invitationId: number): Promise<Invitation> {
+    public deleteInvitation(invitationId: number): Promise<Invitation> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation deleteInvitation($invitationId: ID!) {
@@ -71,13 +71,13 @@ export class InvitationClient {
         .then((payload: any) => payload.deleteInvitation);
     }
 
-    getInvitation(invitationId: number, invitationCode: string): Promise<Invitation> {
+    public getInvitation(invitationId: number, invitationCode: string): Promise<Invitation> {
         return this.graphQLClient.query({
             query: gql`
                 query getInvitations($invitationId: ID, $invitationCode: String) {
-                    invitations(filter : {
+                    invitations(filter: {
                         invitationId: $invitationId
-                        invitationCode: $invitationCode
+                        code: $invitationCode
                     }) {
                         id
                         expireAt
@@ -89,10 +89,10 @@ export class InvitationClient {
                 invitationCode,
             },
         })
-        .then((payload: any) => payload.getInvitation);
+        .then((payload: any) => payload?.invitations[0]);
     }
 
-    acceptInvitation(invitationId: number, invitationCode: string): Promise<Invitation> {
+    public acceptInvitation(invitationId: number, invitationCode: string): Promise<Invitation> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation acceptInvitation($invitationId: ID!, $invitationCode: String!) {
@@ -106,10 +106,10 @@ export class InvitationClient {
                 invitationCode,
             },
         })
-        .then((payload: any) => payload.acceptInvitation);
+        .then((payload: any) => payload?.acceptInvitation);
     }
 
-    declineInvitation(invitationId: number, invitationCode: string): Promise<Invitation> {
+    public declineInvitation(invitationId: number, invitationCode: string): Promise<Invitation> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation declineInvitation($invitationId: ID!, $invitationCode: String!) {
@@ -123,6 +123,6 @@ export class InvitationClient {
                 invitationCode,
             },
         })
-        .then((payload: any) => payload.declineInvitation);
+        .then((payload: any) => payload?.declineInvitation);
     }
 }

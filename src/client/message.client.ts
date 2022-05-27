@@ -17,7 +17,7 @@ export class MessageClient {
         this.graphQLClient = graphQLClient;
     }
 
-    createMessage(threadId: number, input: CreateMessageInput): Promise<Message> {
+    public createMessage(threadId: number, input: CreateMessageInput): Promise<Message> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation createMessage($threadId: ID!, $message: CreateMessageInput!) {
@@ -31,10 +31,10 @@ export class MessageClient {
                 input,
             },
         })
-        .then((payload: any) => payload.createMessage);
+        .then((payload: any) => payload?.createMessage);
     }
 
-    updateMessage(messageId: number, input: UpdateMessageInput): Promise<Message> {
+    public updateMessage(messageId: number, input: UpdateMessageInput): Promise<Message> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation updateMessage($messageId: ID!, $input: UpdateMessageInput!) {
@@ -48,10 +48,10 @@ export class MessageClient {
                 input,
             },
         })
-        .then((payload: any) => payload.updateMessage);
+        .then((payload: any) => payload?.updateMessage);
     }
 
-    deleteMessage(messageId: number): Promise<Message> {
+    public deleteMessage(messageId: number): Promise<Message> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation deleteMessage($messageId: ID!) {
@@ -64,6 +64,6 @@ export class MessageClient {
                 messageId,
             },
         })
-        .then((payload: any) => payload.deleteMessage);
+        .then((payload: any) => payload?.deleteMessage);
     }
 }

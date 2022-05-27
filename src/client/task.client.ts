@@ -2,7 +2,6 @@ import { gql } from '@apollo/client';
 import { Task } from '@core/entityv2/task';
 import { TaskStatus } from '@core/entityv2/taskStatus';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
-import {Team} from "@core/entityv2/team";
 
 export interface CreateTaskInput {
     goal: string;
@@ -92,7 +91,7 @@ export class TaskClient {
                 teamId,
             },
         })
-        .then((payload: any) => payload.getTasksPreview);
+        .then((payload: any) => payload?.getTasksPreview);
     }
 
     createTask(teamId: number, task: CreateTaskInput): Promise<Task> {
@@ -109,7 +108,7 @@ export class TaskClient {
                 task,
             },
         })
-        .then((payload: any) => payload.createTask);
+        .then((payload: any) => payload?.createTask);
     }
 
     updateTask(taskId: number, input: UpdateTaskInput): Promise<Task> {
@@ -126,7 +125,7 @@ export class TaskClient {
                 input,
             },
         })
-        .then((payload: any) => payload.updateTask);
+        .then((payload: any) => payload?.updateTask);
     }
 
     deleteTask(taskId: number): Promise<Task> {
@@ -142,7 +141,7 @@ export class TaskClient {
                 taskId,
             },
         })
-        .then((payload: any) => payload.deleteTask);
+        .then((payload: any) => payload?.deleteTask);
     }
 
     startTask(teamId: number, taskId: number): Promise<Task> {

@@ -2,7 +2,6 @@ import { Team } from '@core/entityv2/team';
 import { User } from '@core/entityv2/user';
 import {gql} from "@apollo/client";
 import {GraphQLClient} from "@lib/network/GraphQL.client";
-import {Task} from "@core/entityv2/task";
 
 export interface CreateTeamInput {
     name: string;
@@ -21,11 +20,11 @@ export class TeamClient {
         this.graphQLClient = graphQLClient;
     }
 
-    createTeam(input: CreateTeamInput): Promise<Team> {
+    public createTeam(input: CreateTeamInput): Promise<Team> {
         return this.graphQLClient.mutate({
             mutation: gql`
-                mutation createTeam($input: CreateTeamInput) {
-                    createTeam(team : $input) {
+                mutation createTeam($input: CreateTeamInput!) {
+                    createTeam(team: $input) {
                         id
                     }
                 }
@@ -34,13 +33,13 @@ export class TeamClient {
                 input,
             },
         })
-        .then((payload: any) => payload.createTeam)
+        .then((payload: any) => payload?.createTeam)
     }
 
-    updateTeam(teamId: number, input: UpdateTeamInput): Promise<Team> {
+    public updateTeam(teamId: number, input: UpdateTeamInput): Promise<Team> {
         return this.graphQLClient.mutate({
             mutation: gql`
-                mutation updateTeam($teamId: ID!,$input: UpdateTeamInput) {
+                mutation updateTeam($teamId: ID!,$input: UpdateTeamInput!) {
                     updateTeam(teamId: $teamId, input : $input) {
                         id
                     }
@@ -51,15 +50,15 @@ export class TeamClient {
                 input,
             },
         })
-        .then((payload: any) => payload.updateTeam)
+        .then((payload: any) => payload?.updateTeam)
     }
 
-    getTeamMembers(teamId: number): Promise<User[]> {
+    public getTeamMembers(teamId: number): Promise<User[]> {
         // TODO: implement me
         return Promise.resolve<any>({});
     }
 
-    addMemberToTeam(teamId: number, memberUserId: number): Promise<Team> {
+    public addMemberToTeam(teamId: number, memberUserId: number): Promise<Team> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation addMemberToTeam($teamId: ID!, $memberId: ID!) {
@@ -73,10 +72,10 @@ export class TeamClient {
                 memberUserId,
             },
         })
-        .then((payload: any) => payload.addMemberToTeam)
+        .then((payload: any) => payload?.addMemberToTeam)
     }
 
-    removeMemberFromTeam(teamId: number, memberUserId: number): Promise<Team> {
+    public removeMemberFromTeam(teamId: number, memberUserId: number): Promise<Team> {
         return this.graphQLClient.mutate({
             mutation: gql`
                 mutation removeMemberFromTeam($teamId: ID!, $memberId: ID!) {
@@ -90,6 +89,6 @@ export class TeamClient {
                 memberUserId,
             },
         })
-        .then((payload: any) => payload.removeMemberFromTeam)
+        .then((payload: any) => payload?.removeMemberFromTeam)
     }
 }
