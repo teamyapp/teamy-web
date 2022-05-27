@@ -33,6 +33,8 @@ export class UserClient {
                         createdAt
                         teams {
                             id
+                            name
+                            iconUrl
                         }
                     }
                 }`,
@@ -46,10 +48,6 @@ export class UserClient {
                 mutation createUser($input: CreateUserInput!) {
                     createUser(user: $input) {
                         id
-                        firstName
-                        lastName
-                        createdAt
-                        profileUrl
                     }
                 }
             `,

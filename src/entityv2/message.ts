@@ -7,5 +7,5 @@ export interface Message {
     author: User;
     thread: Thread;
     createdAt: Date;
-    updatedAt: Date;
+    updatedAt?: Date;
 }

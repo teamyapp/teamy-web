@@ -15,6 +15,6 @@ export interface Task {
     comments: Thread;
     createdAt: Date;
     updatedAt?: Date;
-    dueAt: Date;
+    dueAt?: Date;
     availableActions: TaskAction[]
 }

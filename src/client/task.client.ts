@@ -1,13 +1,12 @@
 import { gql } from '@apollo/client';
 import { Task } from '@core/entityv2/task';
-import { TaskStatus } from '@core/entityv2/taskStatus';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 export interface CreateTaskInput {
     goal: string;
     context?: string;
     ownerUserId: number;
-    dueAt: Date;
+    dueAt?: Date;
 }
 
 export interface UpdateTaskInput {
@@ -15,7 +14,6 @@ export interface UpdateTaskInput {
     context?: string;
     ownerUserId?: number;
     owningTeamId: number;
-    status: TaskStatus;
     effort?: number;
     dueAt?: Date;
 }
