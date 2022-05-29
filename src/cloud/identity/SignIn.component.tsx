@@ -22,6 +22,12 @@ export class SignInComponent extends Component<Props> {
                     >
                         Sign in with Google
                     </div>
+                    <div
+                        className={`${styles.Button} ${styles.Github}`}
+                        onClick={this.onOAuthSignInButtonClick('github')}
+                    >
+                        Sign in with Github
+                    </div>
                 </div>
             </div>
         );
