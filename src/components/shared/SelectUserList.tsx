@@ -11,8 +11,8 @@ import { UserProfileUI } from './UserProfile';
 interface Props {
     emptySelectionUserName: string;
     users: User[];
-    selectedUserId?: string;
-    onSelectUser?: (userId: string) => void;
+    selectedUserId?: number;
+    onSelectUser?: (userId: number) => void;
     onRemoveSelection?: () => void;
 }
 
@@ -68,7 +68,7 @@ export class SelectUserListUI extends Component<Props> {
         );
     }
 
-    private onUserRowClick = (userId: string): (() => void) => {
+    private onUserRowClick = (userId: number): (() => void) => {
         return () => {
             this.props.onSelectUser?.call(null, userId);
         };

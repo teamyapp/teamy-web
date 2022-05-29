@@ -51,7 +51,7 @@ interface Props {
 interface State {
     me?: User;
     teams: Team[];
-    activeTeamId?: string;
+    activeTeamId?: number;
     isDrawerOpen: boolean;
     taskFilters: TaskFilters;
 }
@@ -265,9 +265,12 @@ export class AppComponent extends Component<Props, State> {
                     routeUpdate.params.pathParams,
                 );
 
-                const teamId = getTeamId(routeUpdate.params);
-                if (teamId && this.state.activeTeamId !== teamId) {
-                    this.onActiveTeamSelect(teamId);
+                const teamIdParam = getTeamId(routeUpdate.params);
+                if (teamIdParam) {
+                    const teamId = parseInt(teamIdParam);
+                    if (this.state.activeTeamId !== teamId) {
+                        this.onActiveTeamSelect(teamId);
+                    }
                 }
             }
         })().then();
@@ -298,7 +301,7 @@ export class AppComponent extends Component<Props, State> {
 
     private renderNoActiveTeam() {
         const teamOptions: Option[] = this.state.teams.map((team) => ({
-            key: team.id,
+            key: `${team.id}`,
             description: team.name,
         }));
         return (
@@ -313,7 +316,7 @@ export class AppComponent extends Component<Props, State> {
                                 <div className={styles.DropDown}>
                                     <DropDownList
                                         options={teamOptions}
-                                        onSelectOption={this.onActiveTeamSelect}
+                                        onSelectOption={this.onActiveTeamOptionSelect}
                                     />
                                 </div>
                             </div>
@@ -335,6 +338,10 @@ export class AppComponent extends Component<Props, State> {
         );
     }
 
+    private onActiveTeamOptionSelect = (teamId: string) => {
+        this.onActiveTeamSelect(parseInt(teamId));
+    }
+
     private onTaskFiltersChange = (taskFilters: TaskFilters) => {
         this.setState({
             taskFilters,
@@ -351,19 +358,19 @@ export class AppComponent extends Component<Props, State> {
         this.userModalRef.current?.open(this.state.me!);
     };
 
-    private onAddTeamMembersClick = (teamId: string) => {
+    private onAddTeamMembersClick = (teamId: number) => {
         this.addTeamMembersModalRef.current?.open(teamId, 0);
     };
 
-    private onShowTeamMembersClick = (teamId: string) => {
+    private onShowTeamMembersClick = (teamId: number) => {
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
 
-    private onShowInvitationsClick = (teamId: string) => {
+    private onShowInvitationsClick = (teamId: number) => {
         this.teamSettingsModalRef.current?.open(teamId, 2);
     };
 
-    private onViewTeamSettingsClick = (teamId: string) => {
+    private onViewTeamSettingsClick = (teamId: number) => {
         this.teamSettingsModalRef.current?.open(teamId);
     };
 
@@ -371,14 +378,14 @@ export class AppComponent extends Component<Props, State> {
         this.createTeamModalRef.current?.open();
     };
 
-    private onActiveTeamSelect = (teamId: string): void => {
+    private onActiveTeamSelect = (teamId: number): void => {
         this.localStore.mutate({
             type: 'UpdateActiveTeam',
-            teamId: `${teamId}`,
+            teamId: teamId,
         });
     };
 
-    private onTeamMembersAdded = async (teamId: string) => {
+    private onTeamMembersAdded = async (teamId: number) => {
         await this.props.deps.networkStateSyncer.syncState();
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
@@ -401,7 +408,7 @@ export class AppComponent extends Component<Props, State> {
         this.tryRedirect(state.activeTeamId);
     }
 
-    private tryRedirect(activeTeamId?: string) {
+    private tryRedirect(activeTeamId?: number) {
         if (!activeTeamId) {
             return;
         }

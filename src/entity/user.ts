@@ -2,7 +2,7 @@ import { Task } from './task';
 import { Team } from './team';
 
 export interface User {
-    id: string;
+    id: number;
     firstName?: string;
     lastName?: string;
     profileUrl?: string;

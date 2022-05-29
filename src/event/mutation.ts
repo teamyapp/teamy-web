@@ -16,7 +16,7 @@ export type MutationEvent =
 export interface CreateTask extends Event {
     type: 'CreateTask';
     task: CreateTaskInput;
-    teamId: string;
+    teamId: number;
 }
 
 export interface UpdateTask extends Event {
@@ -26,27 +26,27 @@ export interface UpdateTask extends Event {
 
 export interface DeleteTask extends Event {
     type: 'DeleteTask';
-    taskId: number | string;
+    taskId: number;
 }
 
 export interface StartTask extends Event {
     type: 'StartTask';
-    taskId: number | string;
+    taskId: number;
 }
 
 export interface CompleteTask extends Event {
     type: 'CompleteTask';
-    taskId: number | string;
+    taskId: number;
 }
 
 export interface RemoveTaskOwner extends Event {
     type: 'RemoveTaskOwner';
-    taskId: string;
+    taskId: number;
 }
 
 export interface UpdateActiveTeam extends Event {
     type: 'UpdateActiveTeam';
-    teamId: string;
+    teamId: number;
 }
 
 export interface CreateTeam extends Event {

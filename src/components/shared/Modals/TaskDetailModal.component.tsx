@@ -40,7 +40,7 @@ interface Props {
 interface State {
     task?: Task;
     comments: Message[];
-    meUserId?: string;
+    meUserId?: number;
     heightWithMargin: number;
 }
 
@@ -172,7 +172,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                             >
                                 <ThreadUI
                                     messages={this.state.comments}
-                                    editorUserId={this.state.meUserId || '-1'}
+                                    editorUserId={this.state.meUserId || -1}
                                     postButtonLabel={'Comment'}
                                     onPostMessage={this.onPostComment}
                                     onDeleteMessage={this.onDeleteComment}

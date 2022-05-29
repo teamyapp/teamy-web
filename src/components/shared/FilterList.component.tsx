@@ -255,10 +255,10 @@ export class FilterListComponent extends Component<Props, State> {
             (key: string): Filter<Task> => {
                 if (key === userUnassigned) {
                     return (task: Task) =>
-                        !task.owner || task.owner.id === '-1';
+                        !task.owner || task.owner.id === -1;
                 } else if (key.startsWith(userPrefix)) {
                     const parts = key.split('/');
-                    return ownedBy(parts[1]);
+                    return ownedBy(parseInt(parts[1]));
                 } else {
                     return allTasks;
                 }

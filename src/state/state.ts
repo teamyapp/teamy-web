@@ -7,7 +7,7 @@ export interface IAppState {
     needAttentionTask?: Task;
     teams: Team[];
     teamTasks: Task[];
-    activeTeamId?: string;
+    activeTeamId?: number;
 }
 
 export const initialState: IAppState = {

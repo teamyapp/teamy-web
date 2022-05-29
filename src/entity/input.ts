@@ -13,7 +13,7 @@ export interface CreateTeamInput {
 }
 
 export interface CreateInvitationInput {
-    teamId: string;
+    teamId: number;
     receiverFirstName: string;
     receiverLastName: string;
     expireAt: Date;

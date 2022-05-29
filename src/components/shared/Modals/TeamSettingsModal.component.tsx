@@ -32,7 +32,7 @@ const invitationStatusOrder: Map<InvitationStatus, number> = new Map<
 
 interface Props {
     deps: Deps;
-    onAddTeamMemberClick?: (teamId: string) => void;
+    onAddTeamMemberClick?: (teamId: number) => void;
     onTeamUpdated?: () => void;
 }
 
@@ -114,12 +114,12 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         this.onSyncStateChan?.close();
     }
 
-    public open = async (teamId: string, defaultTabIndex: number = 0) => {
+    public open = async (teamId: number, defaultTabIndex: number = 0) => {
         await this.syncState(teamId, defaultTabIndex);
         this.modalRef.current?.open();
     };
 
-    private async syncState(teamId: string, defaultTabIndex: number) {
+    private async syncState(teamId: number, defaultTabIndex: number) {
         const team = await this.props.deps.teamService.fetchTeam(teamId);
         let invitations =
             await this.props.deps.invitationService.findInvitationsForTeam(
@@ -413,7 +413,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         };
     };
 
-    private onDeleteInvitationClick = (invitationId: string) => {
+    private onDeleteInvitationClick = (invitationId: number) => {
         return async () => {
             // TODO: replace with mutation event
             await this.props.deps.invitationService.deleteInvitation(

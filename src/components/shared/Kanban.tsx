@@ -21,17 +21,17 @@ interface Props {
     deps: Deps;
     taskAdding?: Task;
     tasks: Task[];
-    findPotentialOwnersForTask?: (taskId: string) => Promise<User[]>;
+    findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     taskSelectingOwner?: Task;
     sortOrders: SortOrders;
-    onViewTaskDetailClick?: (taskId: string) => void;
+    onViewTaskDetailClick?: (taskId: number) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: string) => void;
-    onStartTaskClick?: (taskId: string) => void;
-    onCompleteTaskClick?: (taskId: string) => void;
+    onDeleteTaskClick?: (taskId: number) => void;
+    onStartTaskClick?: (taskId: number) => void;
+    onCompleteTaskClick?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: BoundingBoxFinder,

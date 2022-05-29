@@ -27,12 +27,12 @@ interface IProps {
     isEditing?: boolean;
     isOwnerSelected: boolean;
     showPastDue: boolean;
-    onTaskDetailClick?: (taskId: string) => void;
-    onTaskStartEditing?: (taskId: string) => void;
+    onTaskDetailClick?: (taskId: number) => void;
+    onTaskStartEditing?: (taskId: number) => void;
     onTaskFinishEditing?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: string) => void;
-    onStartTaskClick?: (taskId: string) => void;
-    onCompleteTaskClick?: (taskId: string) => void;
+    onDeleteTaskClick?: (taskId: number) => void;
+    onStartTaskClick?: (taskId: number) => void;
+    onCompleteTaskClick?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: BoundingBoxFinder,
@@ -73,7 +73,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         return (
             <div ref={this.ref} className={styles.Task}>
                 <div className={styles.LeftSection}>
-                    {this.props.task.id !== '-1' && (
+                    {this.props.task.id !== -1 && (
                         <div className={styles.TopRow}>
                             <span
                                 className={`${styles.Attribute} ${styles.Id}`}

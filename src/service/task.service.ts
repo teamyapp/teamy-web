@@ -72,7 +72,7 @@ export class TaskService {
         });
     }
 
-    public createTask(task: CreateTaskInput, teamId: string): Promise<Task> {
+    public createTask(task: CreateTaskInput, teamId: number): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: mutations.createTask,
             variables: {
@@ -82,7 +82,7 @@ export class TaskService {
         });
     }
 
-    public removeTaskOwner(taskId: string) {
+    public removeTaskOwner(taskId: number) {
         return this.graphQLClient.mutate({
             mutation: mutations.removeTaskOwner,
             variables: { taskId: taskId },

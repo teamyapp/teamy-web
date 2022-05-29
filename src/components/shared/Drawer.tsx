@@ -10,14 +10,14 @@ import styles from './Drawer.module.scss';
 
 interface Props {
     teams: Team[];
-    activeTeamId?: string;
+    activeTeamId?: number;
     onMenuClose?: () => void;
-    onActiveTeamSelect?: (teamId: string) => void;
+    onActiveTeamSelect?: (teamId: number) => void;
     isDrawerOpen: boolean;
-    onAddTeamMembersClick?: (teamId: string) => void;
-    onShowTeamMembersClick?: (teamId: string) => void;
-    onShowInvitationsClick?: (teamId: string) => void;
-    onViewTeamSettingsClick?: (teamId: string) => void;
+    onAddTeamMembersClick?: (teamId: number) => void;
+    onShowTeamMembersClick?: (teamId: number) => void;
+    onShowInvitationsClick?: (teamId: number) => void;
+    onViewTeamSettingsClick?: (teamId: number) => void;
     onCreateTeamClick?: () => void;
 }
 
@@ -28,7 +28,7 @@ interface State {
 }
 
 export class DrawerUI extends Component<Props, State> {
-    private selectedTeamId?: string;
+    private selectedTeamId?: number;
     private teamContextMenuRef: RefObject<any> = createRef();
 
     constructor(props: Props) {
@@ -148,14 +148,14 @@ export class DrawerUI extends Component<Props, State> {
         this.props.onMenuClose?.call(null);
     };
 
-    private onTeamClick = (teamId: string): (() => void) => {
+    private onTeamClick = (teamId: number): (() => void) => {
         return () => {
             this.props.onActiveTeamSelect?.call(null, teamId);
         };
     };
 
     private onTeamContextMenu = (
-        teamId: string,
+        teamId: number,
     ): ((event: MouseEvent<HTMLElement>) => void) => {
         return (event: MouseEvent<HTMLElement>) => {
             event.preventDefault();
@@ -163,7 +163,7 @@ export class DrawerUI extends Component<Props, State> {
         };
     };
 
-    private showTeamContextMenu(teamId: string, left: number, top: number) {
+    private showTeamContextMenu(teamId: number, left: number, top: number) {
         this.selectedTeamId = teamId;
         this.setState({
             showTeamContextMenu: true,
@@ -190,7 +190,7 @@ export class DrawerUI extends Component<Props, State> {
     private onAddMembersClick = () => {
         this.props.onAddTeamMembersClick?.call(
             null,
-            this.selectedTeamId || '-1',
+            this.selectedTeamId || -1,
         );
         this.closeTeamContextMenu();
     };
@@ -198,7 +198,7 @@ export class DrawerUI extends Component<Props, State> {
     private onShowMembersClick = () => {
         this.props.onShowTeamMembersClick?.call(
             null,
-            this.selectedTeamId || '-1',
+            this.selectedTeamId || -1,
         );
         this.closeTeamContextMenu();
     };
@@ -206,7 +206,7 @@ export class DrawerUI extends Component<Props, State> {
     private onShowInvitationsClick = () => {
         this.props.onShowInvitationsClick?.call(
             null,
-            this.selectedTeamId || '-1',
+            this.selectedTeamId || -1,
         );
         this.closeTeamContextMenu();
     };
@@ -214,7 +214,7 @@ export class DrawerUI extends Component<Props, State> {
     private onViewTeamSettingsClick = () => {
         this.props.onViewTeamSettingsClick?.call(
             null,
-            this.selectedTeamId || '-1',
+            this.selectedTeamId || -1,
         );
         this.closeTeamContextMenu();
     };

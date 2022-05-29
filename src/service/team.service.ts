@@ -30,7 +30,7 @@ export class TeamService {
             });
     }
 
-    public fetchTeam(teamId: string): Promise<Team> {
+    public fetchTeam(teamId: number): Promise<Team> {
         return this.graphQLClient
             .query({
                 query: queries.teamsWithMembers,
@@ -52,7 +52,7 @@ export class TeamService {
             });
     }
 
-    public updateActiveTeamId(teamId: string): Promise<void> {
+    public updateActiveTeamId(teamId: number): Promise<void> {
         return this.graphQLClient.mutate({
             mutation: mutations.updateActiveTeam,
             variables: {
@@ -61,7 +61,7 @@ export class TeamService {
         });
     }
 
-    public addTeamMember(teamId: string, newMemberId: number): Promise<void> {
+    public addTeamMember(teamId: number, newMemberId: number): Promise<void> {
         return this.graphQLClient.mutate({
             mutation: mutations.addTeamMember,
             variables: {
