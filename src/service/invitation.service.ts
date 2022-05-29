@@ -34,7 +34,7 @@ export class InvitationService {
         const result = await this.graphQLClient.query({
             query: queries.teamInvitations,
             variables: {
-                teamId,
+                teamId: `${teamId}`
             },
             fetchPolicy: policy,
         });
@@ -77,7 +77,7 @@ export class InvitationService {
         await this.graphQLClient.mutate({
             mutation: mutations.deleteInvitation,
             variables: {
-                id: id,
+                id: `${id}`,
             },
         });
     }

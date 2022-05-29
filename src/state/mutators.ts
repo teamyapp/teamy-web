@@ -154,7 +154,7 @@ export const mutateState: MutateState<IAppState, events.MutationEvent> = (
 };
 
 function updateTask(
-    targetTaskId: number | string,
+    targetTaskId: number,
     oldTask: Task,
     taskStatus: TaskStatus,
 ): Task {

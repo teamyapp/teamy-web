@@ -14,7 +14,7 @@ import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { NeedAttentionSection } from './TaskListSections/NeedAttentionSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
 
-const upcomingColumnFilter = (needAttentionTaskId: number | string) =>
+const upcomingColumnFilter = (needAttentionTaskId: number) =>
     or<Task>(
         filters.upcoming,
         and(

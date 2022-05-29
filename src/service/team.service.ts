@@ -34,7 +34,7 @@ export class TeamService {
         return this.graphQLClient
             .query({
                 query: queries.teamsWithMembers,
-                variables: { ids: [teamId] },
+                variables: { ids: [`${teamId}`] },
             })
             .then((payload: any) => {
                 return payload?.me?.teams || [];
@@ -56,7 +56,7 @@ export class TeamService {
         return this.graphQLClient.mutate({
             mutation: mutations.updateActiveTeam,
             variables: {
-                teamId,
+                teamId: `${teamId}`
             },
         });
     }
@@ -65,7 +65,7 @@ export class TeamService {
         return this.graphQLClient.mutate({
             mutation: mutations.addTeamMember,
             variables: {
-                teamId,
+                teamId: `${teamId}`,
                 newMemberId: `${newMemberId}`,
             },
         });

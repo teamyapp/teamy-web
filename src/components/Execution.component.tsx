@@ -234,7 +234,7 @@ export class ExecutionComponent extends Component<Props, State> {
                 );
 
                 const tabId = getTabId(routeUpdate.params);
-                const taskId = getTaskId(routeUpdate.params);
+                const taskIdParam = getTaskId(routeUpdate.params);
                 if (!tabId || tabIds.indexOf(tabId) < 0) {
                     this.onTabClick(0);
                     continue;
@@ -244,7 +244,8 @@ export class ExecutionComponent extends Component<Props, State> {
                     activeTabIndex: tabIds.indexOf(tabId),
                 });
 
-                if (taskId) {
+                if (taskIdParam) {
+                    const taskId = parseInt(taskIdParam);
                     this.taskDetailModalRef.current?.open(taskId);
                 }
             }
@@ -387,7 +388,7 @@ export class ExecutionComponent extends Component<Props, State> {
         }
     }
 
-    private showTaskDetail(taskId: number | string) {
+    private showTaskDetail(taskId: number) {
         this.router.navigateTo(
             executionTaskPath(
                 this.props.teamId,
@@ -502,7 +503,7 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onViewTaskDetailClick = async (
-        taskId: number | string,
+        taskId: number,
     ): Promise<void> => {
         this.showTaskDetail(taskId);
     };

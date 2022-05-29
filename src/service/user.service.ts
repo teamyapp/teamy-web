@@ -36,7 +36,7 @@ export class UserService {
         return this.graphQLClient.mutate({
             mutation: mutations.updateUser,
             variables: {
-                userId: user.id,
+                userId: `${user.id}`,
                 userInput: user,
             },
         });

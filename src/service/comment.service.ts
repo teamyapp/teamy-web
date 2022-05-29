@@ -15,13 +15,13 @@ export class CommentService {
     }
 
     public fetchTaskComments(
-        taskId: number | string,
+        taskId: number,
         fetchPolicy: FetchPolicy,
     ): Promise<Message[]> {
         return this.graphQLClient
             .query({
                 query: queries.taskComments,
-                variables: { taskId: taskId },
+                variables: { taskId: `${taskId}` },
                 fetchPolicy: fetchPolicy,
             })
             .then((payload: any) => {
@@ -38,7 +38,7 @@ export class CommentService {
     }
 
     // TODO: use mutation event
-    public async createComment(taskId: number | string, content: string) {
+    public async createComment(taskId: number, content: string) {
         await this.graphQLClient.mutate({
             mutation: mutations.createComment,
             variables: { taskId: taskId, content: content },
