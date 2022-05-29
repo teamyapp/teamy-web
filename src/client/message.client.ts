@@ -1,6 +1,8 @@
-import { Message } from '@core/entityv2/message';
-import {GraphQLClient} from "@lib/network/GraphQL.client";
-import {gql} from "@apollo/client";
+import { gql } from '@apollo/client';
+
+import { GraphQLClient } from '@lib/network/GraphQL.client';
+
+import { RemoteMessage } from '@core/client/entity/remoteMessage';
 
 export interface CreateMessageInput {
     body: string;
@@ -17,53 +19,68 @@ export class MessageClient {
         this.graphQLClient = graphQLClient;
     }
 
-    public createMessage(threadId: number, input: CreateMessageInput): Promise<Message> {
-        return this.graphQLClient.mutate({
-            mutation: gql`
-                mutation createMessage($threadId: ID!, $message: CreateMessageInput!) {
-                    createMessage(threadId: $threadId, message: $message) {
-                        id
+    public createMessage(
+        threadId: number,
+        input: CreateMessageInput,
+    ): Promise<RemoteMessage> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation createMessage(
+                        $threadId: ID!
+                        $message: CreateMessageInput!
+                    ) {
+                        createMessage(threadId: $threadId, message: $message) {
+                            id
+                        }
                     }
-                }
-            `,
-            variables: {
-                threadId,
-                input,
-            },
-        })
-        .then((payload: any) => payload?.createMessage);
+                `,
+                variables: {
+                    threadId,
+                    input,
+                },
+            })
+            .then((payload: any) => payload?.createMessage);
     }
 
-    public updateMessage(messageId: number, input: UpdateMessageInput): Promise<Message> {
-        return this.graphQLClient.mutate({
-            mutation: gql`
-                mutation updateMessage($messageId: ID!, $input: UpdateMessageInput!) {
-                    updateMessage(messageId: $messageId, input: $input) {
-                        id
+    public updateMessage(
+        messageId: number,
+        input: UpdateMessageInput,
+    ): Promise<RemoteMessage> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation updateMessage(
+                        $messageId: ID!
+                        $input: UpdateMessageInput!
+                    ) {
+                        updateMessage(messageId: $messageId, input: $input) {
+                            id
+                        }
                     }
-                }
-            `,
-            variables: {
-                messageId,
-                input,
-            },
-        })
-        .then((payload: any) => payload?.updateMessage);
+                `,
+                variables: {
+                    messageId,
+                    input,
+                },
+            })
+            .then((payload: any) => payload?.updateMessage);
     }
 
-    public deleteMessage(messageId: number): Promise<Message> {
-        return this.graphQLClient.mutate({
-            mutation: gql`
-                mutation deleteMessage($messageId: ID!) {
-                    deleteMessage(messageId: $messageId) {
-                        id
+    public deleteMessage(messageId: number): Promise<RemoteMessage> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation deleteMessage($messageId: ID!) {
+                        deleteMessage(messageId: $messageId) {
+                            id
+                        }
                     }
-                }
-            `,
-            variables: {
-                messageId,
-            },
-        })
-        .then((payload: any) => payload?.deleteMessage);
+                `,
+                variables: {
+                    messageId,
+                },
+            })
+            .then((payload: any) => payload?.deleteMessage);
     }
 }

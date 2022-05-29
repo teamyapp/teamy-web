@@ -22,11 +22,13 @@ import { TeamService } from '@core/service/team.service';
 import { UserService } from '@core/service/user.service';
 import { IAppState } from '@core/state/state';
 import { createStore } from '@core/state/store';
-import { InvitationClient } from '../client/invitation.client';
-import { MessageClient } from '../client/message.client';
+
+// import { InvitationClient } from '../client/invitation.client';
+// import { MessageClient } from '../client/message.client';
 import { TaskClient } from '../client/task.client';
-import { TeamClient } from '../client/team.client';
+// import { TeamClient } from '../client/team.client';
 import { UserClient } from '../client/user.client';
+import { GraphSource } from '../graph/graphSource';
 
 export interface Deps {
     taskService: TaskService;
@@ -35,11 +37,7 @@ export interface Deps {
     commentService: CommentService;
     pageService: PageService;
     invitationService: InvitationService;
-    userClient: UserClient;
-    teamClient: TeamClient;
-    taskClient: TaskClient;
-    messageClient: MessageClient;
-    invitationClient: InvitationClient;
+    graphSource: GraphSource;
     identityClient: IdentityClient;
     localStore: LocalStore<IAppState, mutationEvents.MutationEvent>;
     networkStateSyncer: NetworkStateSynchronizer;
@@ -68,17 +66,16 @@ export function initDeps(): Deps {
     const pageService = new PageService(teamyGraphQLV1Client);
     const invitationService = new InvitationService(teamyGraphQLV1Client);
 
-
     const teamyGraphQLV2Client = new GraphQLClient(
         identityClient,
         config.teamyGraphQLV2Endpoint,
     );
     const userClient = new UserClient(teamyGraphQLV2Client);
-    const teamClient = new TeamClient(teamyGraphQLV2Client);
+    // const teamClient = new TeamClient(teamyGraphQLV2Client);
     const taskClient = new TaskClient(teamyGraphQLV2Client);
-    const messageClient = new MessageClient(teamyGraphQLV2Client);
-    const invitationClient = new InvitationClient(teamyGraphQLV2Client);
-
+    // const messageClient = new MessageClient(teamyGraphQLV2Client);
+    // const invitationClient = new InvitationClient(teamyGraphQLV2Client);
+    const graphSource = new GraphSource(userClient, taskClient);
     const localStore = createStore();
     const networkStateSyncer = new NetworkStateSynchronizer(
         localStore,
@@ -97,11 +94,7 @@ export function initDeps(): Deps {
         commentService,
         pageService,
         invitationService,
-        userClient,
-        teamClient,
-        taskClient,
-        messageClient,
-        invitationClient,
+        graphSource,
         identityClient,
         localStore,
         networkStateSyncer,

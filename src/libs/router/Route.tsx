@@ -7,7 +7,8 @@ import {
     Params,
     RouteUpdate,
     Router,
-    sanitizeRoutePattern, pathDelimiter,
+    pathDelimiter,
+    sanitizeRoutePattern,
 } from './router';
 
 interface Props {
@@ -51,7 +52,12 @@ export class Route extends Component<Props, State> {
                     return;
                 }
 
-                if (!startsWith(route.routePattern.split(pathDelimiter), routePattern.split(pathDelimiter))) {
+                if (
+                    !startsWith(
+                        route.routePattern.split(pathDelimiter),
+                        routePattern.split(pathDelimiter),
+                    )
+                ) {
                     this.setState({
                         shouldShow: false,
                     });
