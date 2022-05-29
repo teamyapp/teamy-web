@@ -9,7 +9,7 @@ const initialMessages: Message[] = [
     {
         id: 1,
         author: {
-            id: '1',
+            id: 1,
             firstName: 'Albert',
             lastName: 'Wang',
             profileUrl: 'profiles/boy1.png',
@@ -20,7 +20,7 @@ const initialMessages: Message[] = [
     {
         id: 4,
         author: {
-            id: '3',
+            id: 3,
             firstName: 'Girl',
             lastName: 'Cool',
             profileUrl: 'profiles/girl1.png',
@@ -31,7 +31,7 @@ const initialMessages: Message[] = [
     {
         id: 2,
         author: {
-            id: '2',
+            id: 2,
             firstName: 'Harry',
             lastName: 'Liu',
             profileUrl: 'profiles/boy2.png',
@@ -42,7 +42,7 @@ const initialMessages: Message[] = [
     {
         id: 3,
         author: {
-            id: '1',
+            id: 1,
             firstName: 'Albert',
             lastName: 'Wang',
             profileUrl: 'profiles/boy1.png',
@@ -53,7 +53,7 @@ const initialMessages: Message[] = [
     {
         id: 4,
         author: {
-            id: '3',
+            id: 3,
             firstName: 'Girl',
             lastName: 'Cool',
             profileUrl: 'profiles/girl1.png',
@@ -103,6 +103,6 @@ const Template: ComponentStory<typeof ThreadUI> = ({
 
 export const Primary = Template.bind({});
 Primary.args = {
-    editorUserId: '2',
+    editorUserId: 2,
     messages: initialMessages,
 };

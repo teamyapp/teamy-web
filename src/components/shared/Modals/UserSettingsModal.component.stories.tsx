@@ -25,7 +25,7 @@ class ModalStory extends Component<any, any> {
 
     public componentDidMount() {
         this.modalRef.current?.open({
-            id: '2',
+            id: 2,
             firstName: 'Cute',
             lastName: 'Girl',
             profileUrl: '/profiles/girl1.png',

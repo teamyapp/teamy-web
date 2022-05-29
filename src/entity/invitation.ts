@@ -4,7 +4,7 @@ import { User } from '@core/entity/user';
 import { InvitationStatus } from './invitationStatus';
 
 export interface Invitation {
-    id: string;
+    id: number;
     sender: User;
     receiverFirstName: string;
     receiverLastName: string;

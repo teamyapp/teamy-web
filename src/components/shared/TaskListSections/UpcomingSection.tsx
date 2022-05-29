@@ -40,10 +40,10 @@ interface Props {
     onAddClick?: () => void;
     onCreateTask?: (task: Task) => void;
     onUpdateTask?: (task: Task) => void;
-    onViewTaskDetailClick?: (taskId: string) => void;
-    onDeleteTaskClick?: (taskId: string) => void;
-    onStartTaskClick?: (taskId: string) => void;
-    onCompleteTaskClick?: (taskId: string) => void;
+    onViewTaskDetailClick?: (taskId: number) => void;
+    onDeleteTaskClick?: (taskId: number) => void;
+    onStartTaskClick?: (taskId: number) => void;
+    onCompleteTaskClick?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
         findAlignTargetBoundBox: BoundingBoxFinder,

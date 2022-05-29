@@ -29,7 +29,7 @@ const expirationPeriodOptions: Option[] = [
 
 interface Props {
     deps: Deps;
-    onTeamMembersAdded?: (teamId: string) => void;
+    onTeamMembersAdded?: (teamId: number) => void;
 }
 
 interface State {
@@ -79,7 +79,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
         );
     }
 
-    public open = async (teamId: string, defaultTabIndex: number = 0) => {
+    public open = async (teamId: number, defaultTabIndex: number = 0) => {
         const team = await this.props.deps.teamService.fetchTeam(teamId);
         this.setState({
             currentTabIndex: defaultTabIndex,

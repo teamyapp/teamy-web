@@ -19,7 +19,7 @@ export const inProgress: Filter<Task> = (task: Task) =>
 export const delivered: Filter<Task> = (task: Task) =>
     task.status === 'DELIVERED';
 
-export function ownedBy(ownerUserId: string): Filter<Task> {
+export function ownedBy(ownerUserId: number): Filter<Task> {
     return (task: Task) => task.owner?.id === ownerUserId;
 }
 

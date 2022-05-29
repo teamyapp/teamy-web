@@ -4,7 +4,7 @@ export interface CreateTaskInput {
     goal: string;
     context?: string;
     dueAt?: string;
-    ownerUserId?: string | number;
+    ownerUserId?: number;
     status?: TaskStatus;
 }
 
@@ -13,7 +13,7 @@ export interface CreateTeamInput {
 }
 
 export interface CreateInvitationInput {
-    teamId: string;
+    teamId: number;
     receiverFirstName: string;
     receiverLastName: string;
     expireAt: Date;

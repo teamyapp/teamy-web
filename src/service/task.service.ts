@@ -18,13 +18,13 @@ export class TaskService {
     }
 
     public fetchTask(
-        taskId: number | string,
+        taskId: number,
         policy: FetchPolicy,
     ): Promise<Task> {
         return this.graphQLClient
             .query({
                 query: queries.task,
-                variables: { id: taskId },
+                variables: { id: `${taskId}` },
                 fetchPolicy: policy,
             })
             .then((payload: any) => {
@@ -36,56 +36,56 @@ export class TaskService {
         return this.graphQLClient.mutate({
             mutation: mutations.updateTask,
             variables: {
-                taskId: task.id,
+                taskId: `${task.id}`,
                 taskInput: {
                     context: task.context,
                     dueAt: task.dueAt,
                     goal: task.goal,
-                    ownerUserId: task.owner?.id,
+                    ownerUserId: `${task.owner?.id}`,
                 },
             },
         });
     }
 
-    public deleteTask(taskId: number | string): Promise<Task> {
+    public deleteTask(taskId: number): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: mutations.deleteTask,
-            variables: { taskId: taskId },
+            variables: { taskId: `${taskId}` },
         });
     }
 
-    public startTask(taskId: number | string): Promise<any> {
+    public startTask(taskId: number): Promise<any> {
         return this.graphQLClient.mutate({
             mutation: mutations.startTask,
             variables: {
-                taskId: taskId,
+                taskId: `${taskId}`,
             },
         });
     }
 
-    public completeTask(taskId: number | string): Promise<any> {
+    public completeTask(taskId: number): Promise<any> {
         return this.graphQLClient.mutate({
             mutation: mutations.completeTask,
             variables: {
-                taskId: taskId,
+                taskId: `${taskId}`,
             },
         });
     }
 
-    public createTask(task: CreateTaskInput, teamId: string): Promise<Task> {
+    public createTask(task: CreateTaskInput, teamId: number): Promise<Task> {
         return this.graphQLClient.mutate({
             mutation: mutations.createTask,
             variables: {
                 taskInput: task,
-                teamId: teamId,
+                teamId: `${teamId}`,
             },
         });
     }
 
-    public removeTaskOwner(taskId: string) {
+    public removeTaskOwner(taskId: number) {
         return this.graphQLClient.mutate({
             mutation: mutations.removeTaskOwner,
-            variables: { taskId: taskId },
+            variables: { taskId: `${taskId}` },
         });
     }
 }

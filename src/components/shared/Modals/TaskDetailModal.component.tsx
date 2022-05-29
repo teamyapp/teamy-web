@@ -29,7 +29,7 @@ const verticalMargin = 40;
 
 interface Props {
     deps: Deps;
-    taskSelectingOwner?: number | string;
+    taskSelectingOwner?: number;
     onClose?: () => void;
     onShowPotentialTaskOwners?: (
         task: Task,
@@ -40,7 +40,7 @@ interface Props {
 interface State {
     task?: Task;
     comments: Message[];
-    meUserId?: string;
+    meUserId?: number;
     heightWithMargin: number;
 }
 
@@ -172,7 +172,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                             >
                                 <ThreadUI
                                     messages={this.state.comments}
-                                    editorUserId={this.state.meUserId || '-1'}
+                                    editorUserId={this.state.meUserId || -1}
                                     postButtonLabel={'Comment'}
                                     onPostMessage={this.onPostComment}
                                     onDeleteMessage={this.onDeleteComment}
@@ -194,7 +194,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         window.removeEventListener('resize', this.onBodyResize);
     }
 
-    public async open(taskId: number | string) {
+    public async open(taskId: number) {
         await this.refreshWithTaskId(taskId, 'cache-first');
         this.adjustSize();
         this.modalRef.current?.open();
@@ -278,7 +278,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     private async refreshWithTaskId(
-        taskId: number | string,
+        taskId: number,
         policy: FetchPolicy,
     ) {
         const mePromise = this.props.deps.userService.fetchMe(policy);

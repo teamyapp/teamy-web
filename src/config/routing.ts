@@ -24,11 +24,11 @@ export const signUpRoutePattern = `${rootRoutePattern}sign-up`;
 export const signInRoutePattern = `${cloudRoutePattern}/identity/sign-in`;
 export const signInFinishRoutePattern = `${cloudRoutePattern}/identity/sign-in-finish`;
 
-export const teamPath = (teamId: string) => `/teams/${teamId}`;
-export const executionTabPath = (teamId: string, tabId: string) =>
+export const teamPath = (teamId: number) => `/teams/${teamId}`;
+export const executionTabPath = (teamId: number, tabId: string) =>
     `${teamPath(teamId)}/execution/${tabId}`;
 export const executionTaskPath = (
-    teamId: string,
+    teamId: number,
     tabId: string,
     taskId: string,
 ) => `${executionTabPath(teamId, tabId)}/tasks/${taskId}`;

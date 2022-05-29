@@ -56,7 +56,7 @@ const sectionIds = [
 
 interface Props {
     deps: Deps;
-    teamId: string;
+    teamId: number;
     taskFilters: TaskFilters;
 }
 
@@ -67,7 +67,7 @@ interface State {
     taskOwnersListVisible: boolean;
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
-    currentUserId: string;
+    currentUserId: number;
     needAttentionTask?: Task;
     teamTasks: Task[];
     taskSelectingOwner?: Task;
@@ -102,7 +102,7 @@ export class ExecutionComponent extends Component<Props, State> {
             taskOwnersListVisible: false,
             taskOwnersListLeft: 0,
             taskOwnersListTop: 0,
-            currentUserId: '-1', // when not logged in yet
+            currentUserId: -1, // when not logged in yet
             teamTasks: [],
             potentialTaskOwners: [],
             sortOrders: {
@@ -234,7 +234,7 @@ export class ExecutionComponent extends Component<Props, State> {
                 );
 
                 const tabId = getTabId(routeUpdate.params);
-                const taskId = getTaskId(routeUpdate.params);
+                const taskIdParam = getTaskId(routeUpdate.params);
                 if (!tabId || tabIds.indexOf(tabId) < 0) {
                     this.onTabClick(0);
                     continue;
@@ -244,7 +244,8 @@ export class ExecutionComponent extends Component<Props, State> {
                     activeTabIndex: tabIds.indexOf(tabId),
                 });
 
-                if (taskId) {
+                if (taskIdParam) {
+                    const taskId = parseInt(taskIdParam);
                     this.taskDetailModalRef.current?.open(taskId);
                 }
             }
@@ -387,7 +388,7 @@ export class ExecutionComponent extends Component<Props, State> {
         }
     }
 
-    private showTaskDetail(taskId: number | string) {
+    private showTaskDetail(taskId: number) {
         this.router.navigateTo(
             executionTaskPath(
                 this.props.teamId,
@@ -442,7 +443,7 @@ export class ExecutionComponent extends Component<Props, State> {
     private onRemoveTaskOwner = () => {
         this.localStore.mutate({
             type: 'RemoveTaskOwner',
-            taskId: this.state.taskSelectingOwner?.id || '-1',
+            taskId: this.state.taskSelectingOwner?.id || -1,
         });
         this.setState({
             potentialTaskOwners: [],
@@ -452,7 +453,7 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
-    private onSelectTaskOwner = (userId: string) => {
+    private onSelectTaskOwner = (userId: number) => {
         this.localStore.mutate({
             type: 'UpdateTask',
             task: Object.assign({}, this.state.taskSelectingOwner, {
@@ -502,7 +503,7 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onViewTaskDetailClick = async (
-        taskId: number | string,
+        taskId: number,
     ): Promise<void> => {
         this.showTaskDetail(taskId);
     };
@@ -546,7 +547,7 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
-    private onDeleteTaskClick = (taskId: string): void => {
+    private onDeleteTaskClick = (taskId: number): void => {
         // don't care if the consumer is ready to pop, no await
         this.localStore.mutate({
             type: 'DeleteTask',
@@ -554,7 +555,7 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
-    private onStartTaskClick = (taskId: string): void => {
+    private onStartTaskClick = (taskId: number): void => {
         // don't care if the consumer is ready to pop, no await
         this.localStore.mutate({
             type: 'StartTask',
@@ -562,7 +563,7 @@ export class ExecutionComponent extends Component<Props, State> {
         });
     };
 
-    private onCompleteTaskClick = (taskId: string): void => {
+    private onCompleteTaskClick = (taskId: number): void => {
         // don't care if the consumer is ready to pop, no await
         this.localStore.mutate({
             type: 'CompleteTask',
@@ -574,7 +575,7 @@ export class ExecutionComponent extends Component<Props, State> {
         const user = await this.props.deps.userService.fetchMe('cache-first');
         this.setState({
             taskAdding: {
-                id: '-1',
+                id: -1,
                 goal: '',
                 owner: user,
                 availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
@@ -586,7 +587,7 @@ export class ExecutionComponent extends Component<Props, State> {
     private onTeamAddClick = () => {
         this.setState({
             taskAdding: {
-                id: '-1',
+                id: -1,
                 goal: '',
                 availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
                 status: 'UPCOMING',

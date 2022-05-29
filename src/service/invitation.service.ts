@@ -28,13 +28,13 @@ export class InvitationService {
     }
 
     public async findInvitationsForTeam(
-        teamId: string,
+        teamId: number,
         policy: FetchPolicy,
     ): Promise<Invitation[]> {
         const result = await this.graphQLClient.query({
             query: queries.teamInvitations,
             variables: {
-                teamId,
+                teamId: `${teamId}`
             },
             fetchPolicy: policy,
         });
@@ -73,11 +73,11 @@ export class InvitationService {
         });
     }
 
-    public async deleteInvitation(id: string): Promise<void> {
+    public async deleteInvitation(id: number): Promise<void> {
         await this.graphQLClient.mutate({
             mutation: mutations.deleteInvitation,
             variables: {
-                id: id,
+                id: `${id}`,
             },
         });
     }
