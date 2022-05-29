@@ -7,22 +7,22 @@ export interface Config {
 
 const developmentConfig: Config = {
     teamyGraphQLEndpoint: 'http://localhost:9000/graphql',
-    teamyGraphQLV2Endpoint: 'http://localhost:9001/graphql'
+    teamyGraphQLV2Endpoint: 'http://localhost:9001/graphql',
 };
 
 const testingConfig: Config = {
     teamyGraphQLEndpoint: 'https://backend.testing.teamyapp.com/graphql',
-    teamyGraphQLV2Endpoint: 'https://backend-v2.testing.teamyapp.com/graphql'
+    teamyGraphQLV2Endpoint: 'https://backend-v2.testing.teamyapp.com/graphql',
 };
 
 const stagingConfig: Config = {
     teamyGraphQLEndpoint: 'https://backend.staging.teamyapp.com/graphql',
-    teamyGraphQLV2Endpoint: 'https://backend-v2.staging.teamyapp.com/graphql'
+    teamyGraphQLV2Endpoint: 'https://backend-v2.staging.teamyapp.com/graphql',
 };
 
 const productionConfig: Config = {
     teamyGraphQLEndpoint: 'https://backend.teamyapp.com/graphql',
-    teamyGraphQLV2Endpoint: 'https://backend-v2.teamyapp.com/graphql'
+    teamyGraphQLV2Endpoint: 'https://backend-v2.teamyapp.com/graphql',
 };
 
 export function getConfig(env: Environment): Config {

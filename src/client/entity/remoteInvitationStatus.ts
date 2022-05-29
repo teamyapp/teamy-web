@@ -1,4 +1,4 @@
-export type InvitationStatus =
+export type RemoteInvitationStatus =
     | 'PENDING'
     | 'ACCEPTED'
     | 'DECLINED'

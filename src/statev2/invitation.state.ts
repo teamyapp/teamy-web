@@ -1,15 +1,13 @@
-import { InvitationStatus } from './invitationStatus';
-import { Team } from './team';
-import { User } from './user';
+import { InvitationStatus } from '@core/statev2/invitationStatus';
 
-export interface Invitation {
+export interface InvitationState {
     id: number;
-    sender: User;
+    senderUserId: number;
     receiverFirstName?: string;
     receiverLastName?: string;
     receiverEmail?: string;
-    receiver?: User;
-    joiningTeam: Team;
+    receiverUserId?: number;
+    joiningTeamId: number;
     expireAt: Date;
     createdAt: Date;
     updatedAt?: Date;

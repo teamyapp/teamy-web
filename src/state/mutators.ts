@@ -12,7 +12,7 @@ function createTaskMutateState(
     event: events.CreateTask,
 ): IAppState {
     let task: Task = Object.assign({}, event.task, {
-        // temperary id until the server creates an id for it
+        // temporary id until the server creates an id for it
         // todo: in the future, need a distributed id solution
         // uuid+user-id is a good solution
         id: '-1',
