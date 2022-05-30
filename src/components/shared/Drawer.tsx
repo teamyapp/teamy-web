@@ -188,10 +188,7 @@ export class DrawerUI extends Component<Props, State> {
     }
 
     private onAddMembersClick = () => {
-        this.props.onAddTeamMembersClick?.call(
-            null,
-            this.selectedTeamId || -1,
-        );
+        this.props.onAddTeamMembersClick?.call(null, this.selectedTeamId || -1);
         this.closeTeamContextMenu();
     };
 

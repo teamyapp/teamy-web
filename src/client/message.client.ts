@@ -3,14 +3,7 @@ import { gql } from '@apollo/client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
-
-export interface CreateMessageInput {
-    body: string;
-}
-
-export interface UpdateMessageInput {
-    body: string;
-}
+import { CreateMessageInput, UpdateMessageInput } from '@core/entity/input';
 
 export class MessageClient {
     private readonly graphQLClient: GraphQLClient;

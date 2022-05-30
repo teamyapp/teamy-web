@@ -7,7 +7,20 @@ import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteThread } from '@core/client/entity/remoteThread';
 import { RemoteUser } from '@core/client/entity/remoteUser';
 import { TaskClient } from '@core/client/task.client';
+import { TeamClient } from '@core/client/team.client';
 import { UserClient } from '@core/client/user.client';
+import {
+    CreateInvitationInput,
+    CreateMessageInput,
+    CreateTaskInput,
+    CreateTeamInput,
+    CreateUserInput,
+    UpdateMessageInput,
+    UpdateTaskInput,
+    UpdateTeamInput,
+    UpdateUserInput,
+} from '@core/entity/input';
+import { Invitation } from '@core/graph/invitation';
 import { AppState } from '@core/statev2/app.state';
 import { InvitationState } from '@core/statev2/invitation.state';
 import { MessageState } from '@core/statev2/message.state';
@@ -29,6 +42,7 @@ export class GraphSource {
     constructor(
         private userClient: UserClient,
         private taskClient: TaskClient,
+        private teamClient: TeamClient,
     ) {
         const savedState = localStorage.getItem(appStateKey);
         this.appState = savedState
@@ -51,7 +65,7 @@ export class GraphSource {
         this.stateChangeChan.close();
     }
 
-    get currentUser(): User | undefined {
+    currentUser(): User | undefined {
         if (!this.appState.currentUserId) {
             return undefined;
         }
@@ -62,26 +76,54 @@ export class GraphSource {
         );
     }
 
-    get currentTeam(): Team | undefined {
+    currentTeam(): Team | undefined {
         if (!this.appState.currentTeamId) {
             return undefined;
         }
 
-        return new Team(
-            this.appState,
-            this.appState.teams[this.appState.currentTeamId],
-        );
+        return this.team(this.appState.currentTeamId);
     }
 
-    async setMe(currentUserId: number): Promise<void> {
-        if (this.appState.currentUserId === currentUserId) {
+    team(teamId: number): Team | undefined {
+        return new Team(this.appState, this.appState.teams[teamId]);
+    }
+
+    invitation(id: number, code?: string): Invitation | undefined {
+        return;
+    }
+
+    public invitations(teamId: number): Invitation[] {
+        return [];
+    }
+
+    async syncCurrentUserWithTeams(): Promise<void> {
+        if (this.appState.currentUserId) {
+            return;
+        }
+
+        const remoteUser = await this.userClient.getMeWithTeams();
+        if (!remoteUser) {
+            return;
+        }
+
+        this.mergeUser(remoteUser);
+        this.appState.currentUserId = remoteUser.id;
+        await this.onUpdateState();
+    }
+
+    async syncCurrentUser(): Promise<void> {
+        if (this.appState.currentUserId) {
             return;
         }
 
         const remoteUser = await this.userClient.getMe();
+        if (!remoteUser) {
+            return;
+        }
+
         this.mergeUser(remoteUser);
-        this.appState.currentUserId = currentUserId;
-        await this.stateChangeChan.put(true);
+        this.appState.currentUserId = remoteUser.id;
+        await this.onUpdateState();
     }
 
     async setCurrentTeam(currentTeamId: number): Promise<void> {
@@ -94,8 +136,80 @@ export class GraphSource {
         );
         tasksPreview.forEach((taskPreview) => this.mergeTask(taskPreview));
         this.appState.currentTeamId = currentTeamId;
-        await this.stateChangeChan.put(true);
+        await this.onUpdateState();
     }
+
+    public async syncTeam(teamId: number): Promise<void> {}
+
+    public async updateTeam(
+        teamId: number,
+        input: UpdateTeamInput,
+    ): Promise<void> {}
+
+    public async createTeam(team: CreateTeamInput): Promise<void> {}
+
+    public async addTeamMember(teamId: number, userId: number): Promise<void> {}
+
+    public async syncCurrentTeamMembers(): Promise<void> {
+        const currTeam = this.currentTeam();
+        if (!currTeam) {
+            return;
+        }
+
+        if (currTeam.members) {
+            return;
+        }
+
+        const members = await this.teamClient.getTeamMembers(currTeam.id);
+        members.forEach(this.mergeUser);
+        await this.onUpdateState();
+    }
+
+    public async createTask(
+        teamId: number,
+        task: CreateTaskInput,
+    ): Promise<void> {}
+
+    public async updateTask(taskId: number, input: UpdateTaskInput) {}
+
+    public deleteTask(taskId: number) {}
+
+    public moveTaskToInProgress(taskId: number) {}
+
+    public moveTaskToDelivered(taskId: number) {}
+
+    public async updateUser(
+        userId: number,
+        input: UpdateUserInput,
+    ): Promise<void> {}
+
+    public async createUser(user: CreateUserInput): Promise<void> {}
+
+    public async createMessage(
+        threadId: number,
+        input: CreateMessageInput,
+    ): Promise<void> {}
+
+    public async deleteMessage(messageId: number): Promise<void> {}
+
+    public async updateMessage(
+        messageId: number,
+        input: UpdateMessageInput,
+    ): Promise<void> {}
+
+    public async createInvitation(
+        teamId: number,
+        input: CreateInvitationInput,
+    ): Promise<[invitationId: number, invitationCode: string]> {
+        return [0, ''];
+    }
+
+    public async acceptInvitation(
+        invitationId: number,
+        invitationCode: string,
+    ): Promise<void> {}
+
+    public async deleteInvitation(invitationId: number): Promise<void> {}
 
     private async onUpdateState(): Promise<void> {
         localStorage.setItem(appStateKey, JSON.stringify(this.appState));
@@ -133,6 +247,7 @@ export class GraphSource {
                     : remoteTeam.iconUrl,
             createdAt: remoteTeam.createdAt || localOldTeam.createdAt,
             creatorUserId: remoteTeam.creator?.id || localOldTeam.creatorUserId,
+            ownerUserId: remoteTeam.owner?.id || localOldTeam.ownerUserId,
             memberUserIds:
                 remoteTeam.members?.map((user) => user.id) ||
                 localOldTeam.memberUserIds,

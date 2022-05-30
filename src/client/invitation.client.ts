@@ -3,18 +3,10 @@ import { gql } from '@apollo/client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
-
-export interface CreateInvitationInput {
-    receiverFirstName: string;
-    receiverLastName: string;
-    expireAt: Date;
-}
-
-export interface UpdateInvitationInput {
-    receiverFirstName?: string;
-    receiverLastName?: string;
-    expireAt: Date;
-}
+import {
+    CreateInvitationInput,
+    UpdateInvitationInput,
+} from '@core/entity/input';
 
 export class InvitationClient {
     private readonly graphQLClient: GraphQLClient;

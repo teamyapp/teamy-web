@@ -6,12 +6,12 @@ import { InvitationStatus } from './invitationStatus';
 export interface Invitation {
     id: number;
     sender: User;
-    receiverFirstName: string;
-    receiverLastName: string;
+    receiverFirstName?: string;
+    receiverLastName?: string;
     receiver?: User;
-    team: Team;
+    joiningTeam: Team;
     status: InvitationStatus;
     code: string;
-    createdAt: string;
-    expireAt: string;
+    createdAt: Date;
+    expireAt: Date;
 }

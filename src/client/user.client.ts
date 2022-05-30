@@ -3,24 +3,39 @@ import { gql } from '@apollo/client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteUser } from '@core/client/entity/remoteUser';
-
-export interface CreateUserInput {
-    lastName: string;
-    firstName: string;
-    profileUrl?: string;
-}
-
-export interface UpdateUserInput {
-    lastName: string;
-    firstName: string;
-    profileUrl?: string;
-}
+import { CreateUserInput, UpdateUserInput } from '@core/entity/input';
 
 export class UserClient {
     private readonly graphQLClient: GraphQLClient;
 
     constructor(graphQLClient: GraphQLClient) {
         this.graphQLClient = graphQLClient;
+    }
+
+    public getMeWithTeams(): Promise<RemoteUser> {
+        return this.graphQLClient
+            .query({
+                query: gql`
+                    query getMeWithTeams {
+                        me {
+                            id
+                            firstName
+                            lastName
+                            profileUrl
+                            createdAt
+                            teams {
+                                id
+                                name
+                                iconUrl
+                                owner {
+                                    id
+                                }
+                            }
+                        }
+                    }
+                `,
+            })
+            .then((payload: any) => payload?.getMeWithTeams);
     }
 
     public getMe(): Promise<RemoteUser> {
@@ -34,16 +49,11 @@ export class UserClient {
                             lastName
                             profileUrl
                             createdAt
-                            teams {
-                                id
-                                name
-                                iconUrl
-                            }
                         }
                     }
                 `,
             })
-            .then((payload: any) => payload.getMe);
+            .then((payload: any) => payload?.getMe);
     }
 
     public createUser(input: CreateUserInput): Promise<RemoteUser> {
@@ -60,7 +70,7 @@ export class UserClient {
                     input,
                 },
             })
-            .then((payload: any) => payload.createUser);
+            .then((payload: any) => payload?.createUser);
     }
 
     public updateUser(
@@ -84,6 +94,6 @@ export class UserClient {
                     input,
                 },
             })
-            .then((payload: any) => payload.updateUser);
+            .then((payload: any) => payload?.updateUser);
     }
 }

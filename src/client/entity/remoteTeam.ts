@@ -8,6 +8,7 @@ export interface RemoteTeam {
     iconUrl?: string;
     createdAt?: Date;
     creator?: RemoteUser;
+    owner?: RemoteUser;
     members?: RemoteUser[];
     tasks?: RemoteTask[];
     invitations?: RemoteInvitation[];

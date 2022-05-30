@@ -8,10 +8,11 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
 import { User } from '@core/entity/user';
+import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './UserSettingsModal.component.module.scss';
 
-interface IProps {
+interface Props {
     deps: Deps;
     onUserUpdated?: () => void;
 }
@@ -24,11 +25,13 @@ interface IState {
     initialUserLastName?: string;
 }
 
-export class UserSettingsModalComponent extends Component<IProps, IState> {
+export class UserSettingsModalComponent extends Component<Props, IState> {
+    private readonly graphSource: GraphSource;
     private readonly modalRef = createRef<ModalUI>();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
+        this.graphSource = props.deps.graphSource;
         this.state = {
             defaultTabIndex: 0,
             currentTabIndex: 0,
@@ -163,7 +166,12 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
     };
 
     private onSaveUserProfileClick = async () => {
-        await this.props.deps.userService.updateUser(this.state.user!);
+        const user = this.state.user!;
+        await this.graphSource.updateUser(user.id, {
+            firstName: user.firstName,
+            lastName: user.lastName,
+            profileUrl: user.profileUrl,
+        });
         this.props.onUserUpdated?.call(null);
         await this.props.deps.feedbackPubSub.publish({
             type: 'UserProfileUpdated',

@@ -2,11 +2,16 @@ import React, { Component, Fragment } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 
-import { getInvitationCode, rootRoutePattern } from '@core/config/routing';
+import {
+    getInvitationCode,
+    getInvitationId,
+    rootRoutePattern,
+} from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import { Invitation } from '@core/entity/invitation';
 import { InvitationStatus } from '@core/entity/invitationStatus';
 import { User } from '@core/entity/user';
+import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './Invitation.component.module.scss';
 
@@ -17,38 +22,46 @@ interface Props {
 interface State {
     me?: User;
     hasError: boolean;
+    invitationId?: number;
+    invitationCode?: string;
     invitation?: Invitation;
 }
 
 export class InvitationComponent extends Component<Props, State> {
+    private readonly graphSource: GraphSource;
     constructor(props: Props) {
         super(props);
+        this.graphSource = props.deps.graphSource;
         this.state = {
             hasError: false,
         };
     }
 
     public async componentDidMount() {
+        const id = getInvitationId(
+            this.props.deps.router.currentRouteUpdate.params,
+        );
         const code = getInvitationCode(
             this.props.deps.router.currentRouteUpdate.params,
         );
-        if (!code) {
+        if (!code || !id) {
             this.setState({
                 hasError: true,
             });
             return;
         }
 
-        const invitation =
-            await this.props.deps.invitationService.findInvitationByCode(
-                code || '',
-            );
+        const invitation = await this.graphSource.invitation(
+            parseInt(id),
+            code,
+        );
         if (!invitation) {
             this.setState({
                 hasError: true,
             });
             return;
         }
+
         if (invitation.status !== 'PENDING') {
             this.setState({
                 invitation,
@@ -57,8 +70,12 @@ export class InvitationComponent extends Component<Props, State> {
             return;
         }
 
+        await this.graphSource.syncCurrentUser();
+        const currentUser = this.graphSource.currentUser();
         this.setState({
-            me: await this.props.deps.userService.fetchMe('network-only'),
+            me: currentUser,
+            invitationId: parseInt(id),
+            invitationCode: code,
             invitation,
         });
     }
@@ -106,26 +123,32 @@ export class InvitationComponent extends Component<Props, State> {
                                     invited you to join
                                 </div>
                                 <div className={styles.Team}>
-                                    {this.state.invitation?.team.iconUrl ? (
+                                    {this.state.invitation?.joiningTeam
+                                        .iconUrl ? (
                                         <img
                                             className={styles.TeamIcon}
                                             alt={
-                                                this.state.invitation?.team.name
+                                                this.state.invitation
+                                                    ?.joiningTeam.name
                                             }
                                             src={
-                                                this.state.invitation?.team
-                                                    .iconUrl
+                                                this.state.invitation
+                                                    ?.joiningTeam.iconUrl
                                             }
                                         />
                                     ) : (
                                         <div className={styles.DefaultTeamIcon}>
-                                            {this.state.invitation?.team.name
-                                                ? this.state.invitation?.team.name[0].toUpperCase()
+                                            {this.state.invitation?.joiningTeam
+                                                .name
+                                                ? this.state.invitation?.joiningTeam.name[0].toUpperCase()
                                                 : '?'}
                                         </div>
                                     )}
                                     <div className={styles.TeamName}>
-                                        {this.state.invitation?.team.name}
+                                        {
+                                            this.state.invitation?.joiningTeam
+                                                .name
+                                        }
                                     </div>
                                 </div>
                             </div>
@@ -155,28 +178,20 @@ export class InvitationComponent extends Component<Props, State> {
     }
 
     private onAcceptClick = async () => {
-        const code = getInvitationCode(
-            this.props.deps.router.currentRouteUpdate.params,
+        await this.graphSource.acceptInvitation(
+            this.state.invitationId!,
+            this.state.invitationCode!,
         );
-
-        // TODO: replace with mutation event
-        await this.props.deps.invitationService.acceptInvitation(code!);
-
-        const teamId = this.state.invitation?.team?.id!;
-        await this.props.deps.localStore.mutate({
-            type: 'UpdateActiveTeam',
-            teamId: teamId,
-        });
+        const teamId = this.state.invitation?.joiningTeam?.id!;
+        await this.graphSource.setCurrentTeam(teamId);
         this.onGoHomePageClick();
     };
 
     private onDeclineClick = async () => {
-        const code = getInvitationCode(
-            this.props.deps.router.currentRouteUpdate.params,
+        await this.graphSource.invitation(
+            this.state.invitationId!,
+            this.state.invitationCode!,
         );
-
-        // TODO: replace with mutation event
-        await this.props.deps.invitationService.declineInvitation(code!);
         this.onGoHomePageClick();
     };
 

@@ -6,6 +6,7 @@ import { ModalUI } from '@lib/ui/Modal';
 import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
+import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './CreateTeamModal.component.module.scss';
 
@@ -14,8 +15,14 @@ interface Props {
 }
 
 export class CreateTeamModalComponent extends Component<Props> {
+    private readonly graphSource: GraphSource;
     private readonly modalRef = createRef<ModalUI>();
     private readonly teamNameInputRef = createRef<TextFieldUI>();
+
+    constructor(props: Props) {
+        super(props);
+        this.graphSource = props.deps.graphSource;
+    }
 
     public render() {
         return (
@@ -58,20 +65,16 @@ export class CreateTeamModalComponent extends Component<Props> {
         this.modalRef.current?.close();
     };
 
-    private onCreateClick = () => {
+    private onCreateClick = async () => {
         const teamName = this.teamNameInputRef.current?.value;
         if (!teamName) {
             alert('Team name cannot be empty');
             return;
         }
 
-        this.props.deps.localStore.mutate({
-            type: 'CreateTeam',
-            team: {
-                name: teamName,
-            },
+        await this.graphSource.createTeam({
+            name: teamName,
         });
-
         this.modalRef.current?.close();
     };
 }

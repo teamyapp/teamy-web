@@ -1,5 +1,7 @@
 import { Environment } from '@core/env/environment';
 
+export const taskGoalLengthLimit = 100;
+
 export interface Config {
     teamyGraphQLEndpoint: string;
     teamyGraphQLV2Endpoint: string;

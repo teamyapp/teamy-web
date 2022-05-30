@@ -5,7 +5,6 @@ import { and } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
-import { LocalStore } from '@lib/store/localStore';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import { BoundingBoxFinder } from '@lib/ui/position';
@@ -31,10 +30,8 @@ import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
-import { TaskAction } from '@core/entity/taskAction';
 import { User } from '@core/entity/user';
-import { MutationEvent } from '@core/event/mutation';
-import { IAppState } from '@core/state/state';
+import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './Execution.component.module.scss';
 import { KanbanUI } from './shared/Kanban';
@@ -83,19 +80,20 @@ const acceptedRoutePatterns = [
 ];
 
 export class ExecutionComponent extends Component<Props, State> {
-    private readonly localStore: LocalStore<IAppState, MutationEvent>;
     private readonly router: Router;
+    private readonly graphSource: GraphSource;
+
     private readonly taskDetailModalRef = createRef<TaskDetailModalComponent>();
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
 
-    private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
+    private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent | undefined>;
 
     constructor(props: Props) {
         super(props);
-        this.localStore = props.deps.localStore;
         this.router = props.deps.router;
+        this.graphSource = props.deps.graphSource;
         this.state = {
             activeTabIndex: -1,
             showPotentialTaskOwnersList: false,
@@ -185,17 +183,17 @@ export class ExecutionComponent extends Component<Props, State> {
     public componentDidMount() {
         window.addEventListener('resize', this.onWindowResize);
 
-        this.stateChangeChan = this.localStore.subscribeStateChange();
+        this.stateChangeChan = this.graphSource.subscribeStateChange();
         (async () => {
             while (true) {
                 console.log('waiting for localStore state changes');
-                const state = await this.stateChangeChan!.pop();
-                if (state === undefined) {
+                const hasChanged = await this.stateChangeChan!.pop();
+                if (hasChanged === undefined) {
                     // check undefined instead of falsy because
                     // a falsy data could be valid data per channel's concern.
                     return;
                 }
-                this.updateState(state);
+                this.updateState();
             }
         })().then();
 
@@ -402,12 +400,18 @@ export class ExecutionComponent extends Component<Props, State> {
         this.onTabClick(this.state.activeTabIndex);
     };
 
-    private updateState = (state: IAppState) => {
-        if (state.currentUser) {
+    private updateState = () => {
+        const currentUser = this.graphSource.currentUser();
+        const currentTeam = this.graphSource.currentTeam();
+        const teamTasks = currentTeam?.tasks || [];
+        const needAttention = teamTasks.filter(
+            (task) => task.status === 'IN_PROGRESS',
+        )[0];
+        if (currentUser) {
             this.setState({
-                currentUserId: state.currentUser.id,
-                needAttentionTask: state.needAttentionTask,
-                teamTasks: state.teamTasks,
+                currentUserId: currentUser.id,
+                needAttentionTask: needAttention,
+                teamTasks: teamTasks,
             });
         }
     };
@@ -422,7 +426,8 @@ export class ExecutionComponent extends Component<Props, State> {
         task: Task,
         findAlignTargetBoundBox: BoundingBoxFinder,
     ) => {
-        const owners = await this.props.deps.teamService.fetchTeamMembers();
+        await this.graphSource.syncCurrentTeamMembers();
+        const owners = this.graphSource.currentTeam()!.members;
         this.setState({
             potentialTaskOwners: owners,
             taskSelectingOwner: task,
@@ -441,9 +446,12 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onRemoveTaskOwner = () => {
-        this.localStore.mutate({
-            type: 'RemoveTaskOwner',
-            taskId: this.state.taskSelectingOwner?.id || -1,
+        const task = this.state.taskSelectingOwner!;
+        this.graphSource.updateTask(task.id, {
+            goal: task.goal,
+            context: task.context,
+            owningTeamId: this.graphSource.currentTeam()!.id,
+            dueAt: task.dueAt,
         });
         this.setState({
             potentialTaskOwners: [],
@@ -454,13 +462,13 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onSelectTaskOwner = (userId: number) => {
-        this.localStore.mutate({
-            type: 'UpdateTask',
-            task: Object.assign({}, this.state.taskSelectingOwner, {
-                owner: Object.assign({}, this.state.taskSelectingOwner?.owner, {
-                    id: userId,
-                }),
-            }),
+        const task = this.state.taskSelectingOwner!;
+        this.graphSource.updateTask(task.id, {
+            goal: task.goal,
+            context: task.context,
+            ownerUserId: userId,
+            owningTeamId: this.graphSource.currentTeam()!.id,
+            dueAt: task.dueAt,
         });
         this.setState({
             potentialTaskOwners: [],
@@ -502,9 +510,7 @@ export class ExecutionComponent extends Component<Props, State> {
         this.updateTaskOwnersListPosition();
     };
 
-    private onViewTaskDetailClick = async (
-        taskId: number,
-    ): Promise<void> => {
+    private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
         this.showTaskDetail(taskId);
     };
 
@@ -517,15 +523,11 @@ export class ExecutionComponent extends Component<Props, State> {
     private onCreateTask = (task: Task): void => {
         if (task.goal.length > 0) {
             console.log('creating task');
-            this.localStore.mutate({
-                type: 'CreateTask',
-                task: {
-                    goal: task.goal,
-                    context: task.context,
-                    dueAt: task.dueAt,
-                    ownerUserId: task.owner?.id || undefined,
-                },
-                teamId: this.props.teamId,
+            this.graphSource.createTask(this.graphSource.currentTeam()!.id, {
+                context: task.context,
+                dueAt: task.dueAt,
+                goal: task.goal,
+                ownerUserId: task.owner?.id,
             });
         }
 
@@ -536,11 +538,13 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onUpdateTask = async (task: Task) => {
-        await this.localStore.mutate({
-            type: 'UpdateTask',
-            task: task,
+        await this.graphSource.updateTask(task.id, {
+            goal: task.goal,
+            context: task.context,
+            ownerUserId: task.owner?.id,
+            owningTeamId: this.graphSource.currentTeam()!.id,
+            dueAt: task.dueAt,
         });
-
         await this.props.deps.feedbackPubSub.publish({
             type: 'TaskUpdated',
             task: task,
@@ -548,37 +552,28 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onDeleteTaskClick = (taskId: number): void => {
-        // don't care if the consumer is ready to pop, no await
-        this.localStore.mutate({
-            type: 'DeleteTask',
-            taskId: taskId,
-        });
+        this.graphSource.deleteTask(taskId);
     };
 
     private onStartTaskClick = (taskId: number): void => {
-        // don't care if the consumer is ready to pop, no await
-        this.localStore.mutate({
-            type: 'StartTask',
-            taskId: taskId,
-        });
+        this.graphSource.moveTaskToInProgress(taskId);
     };
 
     private onCompleteTaskClick = (taskId: number): void => {
-        // don't care if the consumer is ready to pop, no await
-        this.localStore.mutate({
-            type: 'CompleteTask',
-            taskId: taskId,
-        });
+        this.graphSource.moveTaskToDelivered(taskId);
     };
 
     private onPersonalAddClick = async (): Promise<void> => {
-        const user = await this.props.deps.userService.fetchMe('cache-first');
         this.setState({
             taskAdding: {
-                id: -1,
+                id: 0,
                 goal: '',
-                owner: user,
-                availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
+                owner: this.graphSource.currentUser(),
+                availableActions: ['ASSIGN_OWNER', 'DELETE'],
+                comments: {
+                    id: 0,
+                    messages: [],
+                },
                 status: 'UPCOMING',
             },
         });
@@ -589,7 +584,11 @@ export class ExecutionComponent extends Component<Props, State> {
             taskAdding: {
                 id: -1,
                 goal: '',
-                availableActions: [TaskAction.AssignOwner, TaskAction.Delete],
+                availableActions: ['ASSIGN_OWNER', 'DELETE'],
+                comments: {
+                    id: 0,
+                    messages: [],
+                },
                 status: 'UPCOMING',
             },
         });

@@ -4,6 +4,7 @@ export interface TeamState {
     iconUrl?: string;
     createdAt: Date;
     creatorUserId: number;
+    ownerUserId: number;
     memberUserIds: number[];
     taskIds: number[];
     invitationIds: number[];

@@ -1,4 +1,3 @@
-import { FetchPolicy } from '@apollo/client';
 import classNames from 'classnames';
 import React, {
     Component,
@@ -15,11 +14,12 @@ import { ModalUI } from '@lib/ui/Modal';
 import { TextFieldUI } from '@lib/ui/TextField';
 import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
+import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
 import { Message } from '@core/entity/message';
 import { Task } from '@core/entity/task';
+import { GraphSource } from '@core/graph/graphSource';
 import { FormatService } from '@core/service/format.service';
-import { goalLengthLimit } from '@core/service/task.service';
 
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
@@ -45,6 +45,7 @@ interface State {
 }
 
 export class TaskDetailModalComponent extends Component<Props, State> {
+    private readonly graphSource: GraphSource;
     private readonly modalRef = createRef<ModalUI>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
@@ -52,6 +53,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
+        this.graphSource = props.deps.graphSource;
         this.state = {
             comments: [],
             heightWithMargin: 0,
@@ -125,7 +127,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                         value={this.state.task.goal}
                                         label={'Goal'}
                                         showLengthCounter={true}
-                                        maxLength={goalLengthLimit}
+                                        maxLength={taskGoalLengthLimit}
                                         onChange={this.onTextFieldChangeHandler(
                                             'goal',
                                         )}
@@ -175,8 +177,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                     editorUserId={this.state.meUserId || -1}
                                     postButtonLabel={'Comment'}
                                     onPostMessage={this.onPostComment}
-                                    onDeleteMessage={this.onDeleteComment}
-                                    onUpdateMessage={this.onUpdateComment}
+                                    onDeleteMessage={this.onDeleteMessage}
+                                    onUpdateMessage={this.onUpdateMessage}
                                 />
                             </div>
                         </div>
@@ -195,17 +197,17 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     public async open(taskId: number) {
-        await this.refreshWithTaskId(taskId, 'cache-first');
+        // await this.refreshWithTaskId(taskId, 'cache-first');
         this.adjustSize();
         this.modalRef.current?.open();
         this.scrollToCommentsBottom();
     }
 
-    public async refresh(policy: FetchPolicy) {
-        if (this.state.task) {
-            await this.refreshWithTaskId(this.state.task.id, policy);
-        }
-    }
+    // public async refresh(policy: FetchPolicy) {
+    //     if (this.state.task) {
+    //         await this.refreshWithTaskId(this.state.task.id, policy);
+    //     }
+    // }
 
     private onCloseButtonClick = () => {
         this.modalRef.current?.close();
@@ -223,17 +225,14 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
-            const dueAt = this.dueAtDatePicker.current?.value?.toISOString();
-            await this.props.deps.localStore.mutate({
-                type: 'UpdateTask',
-                task: Object.assign<any, Task, Partial<Task>>(
-                    {},
-                    this.state.task,
-                    {
-                        context: this.markdownEditorRef.current?.content,
-                        dueAt,
-                    },
-                ),
+            const dueAt = this.dueAtDatePicker.current?.value || undefined;
+            const task = this.state.task;
+            await this.graphSource.updateTask(this.state.task.id, {
+                goal: task.goal,
+                context: this.markdownEditorRef.current?.content,
+                ownerUserId: task.owner?.id,
+                owningTeamId: this.graphSource.currentTeam()!.id,
+                dueAt: dueAt,
             });
             await this.props.deps.feedbackPubSub.publish({
                 type: 'TaskUpdated',
@@ -253,23 +252,21 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     // todo: use mutation event
-    private onPostComment = async (content: string) => {
-        await this.props.deps.commentService.createComment(
-            this.state.task?.id || -1,
-            content,
-        );
-        await this.refresh('network-only');
+    private onPostComment = async (body: string) => {
+        await this.graphSource.createMessage(this.state.task!.comments.id, {
+            body,
+        });
         this.scrollToCommentsBottom();
     };
 
-    private onDeleteComment = async (commentId: number) => {
-        await this.props.deps.commentService.deleteComment(commentId);
-        await this.refresh('network-only');
+    private onDeleteMessage = async (messageId: number) => {
+        await this.props.deps.graphSource.deleteMessage(messageId);
     };
 
-    private onUpdateComment = async (commentId: number, content: string) => {
-        await this.props.deps.commentService.updateComment(commentId, content);
-        await this.refresh('network-only');
+    private onUpdateMessage = async (messageId: number, body: string) => {
+        await this.props.deps.graphSource.updateMessage(messageId, {
+            body,
+        });
     };
 
     private scrollToCommentsBottom() {
@@ -277,28 +274,28 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         threadDivEl?.scrollTo(0, threadDivEl?.scrollHeight);
     }
 
-    private async refreshWithTaskId(
-        taskId: number,
-        policy: FetchPolicy,
-    ) {
-        const mePromise = this.props.deps.userService.fetchMe(policy);
-        const taskPromise = this.props.deps.taskService.fetchTask(
-            taskId,
-            policy,
-        );
-        const commentsPromise =
-            this.props.deps.commentService.fetchTaskComments(taskId, policy);
-        const [me, task, comments] = await Promise.all([
-            mePromise,
-            taskPromise,
-            commentsPromise,
-        ]);
-        this.setState({
-            task: task,
-            meUserId: me.id,
-            comments: comments,
-        });
-    }
+    // private async refreshWithTaskId(
+    //     taskId: number,
+    //     policy: FetchPolicy,
+    // ) {
+    //     const mePromise = this.props.deps.userService.fetchMe(policy);
+    //     const taskPromise = this.props.deps.taskService.fetchTask(
+    //         taskId,
+    //         policy,
+    //     );
+    //     const commentsPromise =
+    //         this.props.deps.commentService.fetchTaskComments(taskId, policy);
+    //     const [me, task, comments] = await Promise.all([
+    //         mePromise,
+    //         taskPromise,
+    //         commentsPromise,
+    //     ]);
+    //     this.setState({
+    //         task: task,
+    //         meUserId: me.id,
+    //         comments: comments,
+    //     });
+    // }
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
         const element = event.currentTarget as HTMLDivElement;

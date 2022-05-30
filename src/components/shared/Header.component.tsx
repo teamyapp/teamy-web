@@ -7,6 +7,7 @@ import { userAll } from '@core/config/filter';
 import { contains } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
+import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 
 import { FilterListComponent } from './FilterList.component';
@@ -16,6 +17,7 @@ import { UserProfileUI } from './UserProfile';
 interface Props {
     deps: Deps;
     me: User;
+    currentTeam: Team;
     isDrawerOpen: boolean;
     taskFilters: TaskFilters;
     onMenuToggle?: () => void;
@@ -57,7 +59,7 @@ export class HeaderComponent extends Component<Props, State> {
                         )}
                     </div>
                     <div className={styles.TeamName}>
-                        {this.props.me.activeTeam?.name}
+                        {this.props.currentTeam.name}
                     </div>
                 </div>
                 <SpacerUI />
@@ -84,6 +86,9 @@ export class HeaderComponent extends Component<Props, State> {
                         <div className={styles.Filters}>
                             <FilterListComponent
                                 deps={this.props.deps}
+                                teamMembers={
+                                    this.props.currentTeam.members || []
+                                }
                                 taskFiltersData={this.state.taskFiltersData}
                                 taskFilters={this.props.taskFilters}
                                 onTaskFiltersChange={

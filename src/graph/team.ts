@@ -31,6 +31,13 @@ export class Team {
         );
     }
 
+    get owner(): User {
+        return new User(
+            this.appState,
+            this.appState.users[this.teamState.ownerUserId],
+        );
+    }
+
     get members(): User[] {
         return this.teamState.memberUserIds.map(
             (userId: number) =>

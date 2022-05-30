@@ -3,22 +3,7 @@ import { gql } from '@apollo/client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteTask } from '@core/client/entity/remoteTask';
-
-export interface CreateTaskInput {
-    goal: string;
-    context?: string;
-    ownerUserId: number;
-    dueAt?: Date;
-}
-
-export interface UpdateTaskInput {
-    goal: string;
-    context?: string;
-    ownerUserId?: number;
-    owningTeamId: number;
-    effort?: number;
-    dueAt?: Date;
-}
+import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 
 export class TaskClient {
     private readonly graphQLClient: GraphQLClient;

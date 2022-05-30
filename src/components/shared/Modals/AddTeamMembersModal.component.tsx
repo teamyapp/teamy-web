@@ -12,6 +12,7 @@ import { TextFieldUI } from '@lib/ui/TextField';
 import { invitationLink } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
+import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './AddTeamMembersModal.component.module.scss';
 
@@ -39,6 +40,7 @@ interface State {
 }
 
 export class AddTeamMembersModalComponent extends Component<Props, State> {
+    private readonly graphSource: GraphSource;
     private readonly modalRef = createRef<ModalUI>();
     private readonly userIDTextAreaRef = createRef<TextAreaUI>();
     private readonly firstNameTextFieldRef = createRef<TextFieldUI>();
@@ -47,6 +49,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
+        this.graphSource = props.deps.graphSource;
         this.state = {
             currentTabIndex: 0,
         };
@@ -80,7 +83,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
     }
 
     public open = async (teamId: number, defaultTabIndex: number = 0) => {
-        const team = await this.props.deps.teamService.fetchTeam(teamId);
+        const team = await this.graphSource.team(teamId);
         this.setState({
             currentTabIndex: defaultTabIndex,
             invitationLink: undefined,
@@ -168,7 +171,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
             .map((idString: string) => parseInt(idString));
         await Promise.all(
             userIds.map((userId: number) =>
-                this.props.deps.teamService.addTeamMember(teamId, userId),
+                this.graphSource.addTeamMember(teamId, userId),
             ),
         );
         this.modalRef.current?.close();
@@ -182,16 +185,14 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
             this.dropDownListRef.current?.value ||
             expirationPeriodOptions[0].key;
         const expireAt = moment().add(moment.duration(expirationPeriod));
-        const invitationCode =
-            await this.props.deps.invitationService.createInvitation({
-                teamId: this.state.team!.id,
+        const [invitationId, invitationCode] =
+            await this.graphSource.createInvitation(this.state.team!.id, {
                 receiverFirstName: firstName || '',
                 receiverLastName: lastName || '',
                 expireAt: expireAt.toDate(),
             });
         this.setState({
-            invitationLink: invitationLink(invitationCode),
+            invitationLink: invitationLink(invitationId, invitationCode),
         });
-        await this.props.deps.networkStateSyncer.syncState();
     };
 }

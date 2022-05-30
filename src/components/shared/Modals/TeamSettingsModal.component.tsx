@@ -16,6 +16,7 @@ import { Invitation } from '@core/entity/invitation';
 import { InvitationStatus } from '@core/entity/invitationStatus';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
+import { GraphSource } from '@core/graph/graphSource';
 
 import { UserProfileUI } from '../UserProfile';
 import styles from './TeamSettingsModal.component.module.scss';
@@ -45,11 +46,13 @@ interface State {
 }
 
 export class TeamSettingsModalComponent extends Component<Props, State> {
+    private readonly graphSource: GraphSource;
     private readonly modalRef = createRef<ModalUI>();
-    private onSyncStateChan?: PopChannel<boolean | undefined>;
+    private onStateChangeChan?: PopChannel<boolean | undefined>;
 
     constructor(props: any) {
         super(props);
+        this.graphSource = props.deps.graphSource;
         this.state = {
             currentTabIndex: 0,
             invitations: [],
@@ -91,18 +94,17 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     public componentDidMount() {
-        this.onSyncStateChan =
-            this.props.deps.networkStateSyncer.subscribeOnSyncState();
+        this.onStateChangeChan = this.graphSource.subscribeStateChange();
         (async () => {
             while (true) {
-                const shouldSync = await this.onSyncStateChan?.pop();
-                if (shouldSync === undefined) {
+                const hasChanged = await this.onStateChangeChan?.pop();
+                if (hasChanged === undefined) {
                     return;
                 }
 
-                if (this.state.team?.id) {
-                    await this.syncState(
-                        this.state.team?.id,
+                if (this.state.team) {
+                    await this.updateState(
+                        this.state.team.id,
                         this.state.currentTabIndex,
                     );
                 }
@@ -111,30 +113,27 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        this.onSyncStateChan?.close();
+        this.onStateChangeChan?.close();
     }
 
     public open = async (teamId: number, defaultTabIndex: number = 0) => {
-        await this.syncState(teamId, defaultTabIndex);
+        await this.graphSource.syncTeam(teamId);
+        await this.updateState(teamId, defaultTabIndex);
         this.modalRef.current?.open();
     };
 
-    private async syncState(teamId: number, defaultTabIndex: number) {
-        const team = await this.props.deps.teamService.fetchTeam(teamId);
-        let invitations =
-            await this.props.deps.invitationService.findInvitationsForTeam(
-                teamId,
-                'network-only',
-            );
+    private async updateState(teamId: number, defaultTabIndex: number) {
+        const team = await this.graphSource.team(teamId);
+        let invitations = team!.invitations.map((invitation) => invitation);
         invitations = invitations.sort(
             (invitation1: Invitation, invitation2: Invitation) =>
-                new Date(invitation1.createdAt).getTime() -
-                new Date(invitation2.createdAt).getTime(),
+                invitation1.createdAt.getTime() -
+                invitation2.createdAt.getTime(),
         );
         this.setState({
             currentTabIndex: defaultTabIndex,
             team,
-            initialTeamName: team.name,
+            initialTeamName: team?.name,
             invitations,
         });
         setTimeout(() => {
@@ -385,7 +384,12 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     };
 
     private onSaveTeamProfileClick = () => {
-        this.props.deps.teamService.updateTeam(this.state.team!);
+        const team = this.state.team!;
+        this.graphSource.updateTeam(team.id, {
+            name: team.name,
+            iconUrl: team.iconUrl,
+            ownerUserId: team.owner.id,
+        });
         this.props.onTeamUpdated?.call(null);
         this.props.deps.feedbackPubSub.publish({
             type: 'TeamProfileUpdated',
@@ -402,7 +406,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private onCopyInvitationLinkClick = (invitation: Invitation) => {
         return async () => {
-            const link = invitationLink(invitation.code);
+            const link = invitationLink(invitation.id, invitation.code);
             if (navigator.clipboard) {
                 await navigator.clipboard.writeText(link);
                 this.props.deps.feedbackPubSub.publish({
@@ -414,12 +418,9 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     };
 
     private onDeleteInvitationClick = (invitationId: number) => {
-        return async () => {
+        return () => {
             // TODO: replace with mutation event
-            await this.props.deps.invitationService.deleteInvitation(
-                invitationId,
-            );
-            await this.props.deps.networkStateSyncer.syncState();
+            this.graphSource.deleteInvitation(invitationId);
         };
     };
 }

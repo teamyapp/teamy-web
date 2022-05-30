@@ -4,16 +4,7 @@ import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteUser } from '@core/client/entity/remoteUser';
-
-export interface CreateTeamInput {
-    name: string;
-}
-
-export interface UpdateTeamInput {
-    name: string;
-    iconUrl?: string;
-    ownerUserId: number;
-}
+import { CreateTeamInput, UpdateTeamInput } from '@core/entity/input';
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;
@@ -22,7 +13,7 @@ export class TeamClient {
         this.graphQLClient = graphQLClient;
     }
 
-    public createTeam(input: CreateTeamInput): Promise<RemoteTeam> {
+    public createTeam(team: CreateTeamInput): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
@@ -33,7 +24,7 @@ export class TeamClient {
                     }
                 `,
                 variables: {
-                    input,
+                    input: team,
                 },
             })
             .then((payload: any) => payload?.createTeam);
