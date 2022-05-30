@@ -1,0 +1,134 @@
+@import '../../libs/ui/styleguide/easing';
+@import '../shared/shared';
+
+@include header;
+
+.Header {
+    position: relative;
+    z-index: 100;
+    padding: 0 16px;
+    color: $onPrimaryColor;
+    @include menuButton;
+
+    .LeftSection,
+    .RightSection {
+        display: flex;
+        align-items: center;
+        width: 280px;
+    }
+
+    .RightSection {
+        justify-content: flex-end;
+    }
+
+    .MenuButtonPlaceHolder {
+        margin-right: 10px;
+    }
+
+    .TeamName {
+        font-size: 22px;
+        font-weight: 500;
+        transition: left 400ms $easeOutExpo;
+        letter-spacing: 1px;
+    }
+
+    .UserActionSection {
+        .Action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            user-select: none;
+            border-radius: 3px;
+            --icon-color: white;
+            --icon-size: 24px;
+
+            &.Active {
+                background-color: white;
+                --icon-color: #{$primaryColor};
+            }
+
+            &:hover {
+                cursor: pointer;
+
+                &:not(.Active) {
+                    background-color: rgba(0, 0, 0, 0.15);
+                }
+            }
+        }
+    }
+
+    .UserSection {
+        display: flex;
+        align-items: center;
+        height: 100%;
+        margin-right: 26px;
+        margin-left: 23px;
+
+        .UserProfile {
+            border: 3px solid transparent;
+            border-radius: 50%;
+            --profile-width: 28px;
+            --profile-height: 28px;
+
+            &:hover {
+                cursor: pointer;
+                border: 3px solid white;
+            }
+        }
+
+        .UserName {
+            font-size: 20px;
+            font-weight: 500;
+            margin-left: 6px;
+        }
+    }
+
+    .SearchBar {
+        width: 800px;
+        height: 32px;
+
+        .Input {
+            display: flex;
+            overflow: hidden;
+            align-items: center;
+            height: 100%;
+            border-radius: 4px;
+            background-color: white;
+
+            .TextField {
+                font-size: 16px;
+                font-weight: bold;
+                line-height: 16px;
+                flex: 1;
+                box-sizing: border-box;
+                height: 100%;
+                padding: 2px 20px;
+                border: none;
+                outline: none;
+            }
+
+            .SearchIcon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 32px;
+                height: 32px;
+                user-select: none;
+                background-color: #f5f5f5;
+
+                --icon-color: #424242;
+                --icon-size: 24px;
+            }
+        }
+
+        .Filters {
+            width: 100%;
+            margin-top: 4px;
+            border-radius: 4px;
+            background-color: white;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        }
+    }
+}

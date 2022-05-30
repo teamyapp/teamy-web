@@ -1,0 +1,225 @@
+import { gql } from '@apollo/client';
+
+export const updateTask = gql`
+    mutation updateTask($taskId: ID!, $taskInput: TaskInput!) {
+        updateTask(taskId: $taskId, task: $taskInput) {
+            id
+            goal
+            context
+            dueAt
+            owner {
+                id
+            }
+        }
+    }
+`;
+
+export const deleteTask = gql`
+    mutation deleteTask($taskId: ID!) {
+        deleteTask(taskId: $taskId) {
+            id
+        }
+    }
+`;
+
+export const removeTaskOwner = gql`
+    mutation removeTaskOwner($taskId: ID!) {
+        taskUpdate(taskId: $taskId) {
+            removeOwner {
+                task {
+                    id
+                    owner {
+                        id
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const startTask = gql`
+    mutation startTask($taskId: ID!) {
+        updateTask(taskId: $taskId, task: { status: IN_PROGRESS }) {
+            status
+            id
+        }
+        promoteTaskToNeedAttention(taskId: $taskId) {
+            id
+        }
+    }
+`;
+
+export const completeTask = gql`
+    mutation completeTask($taskId: ID!) {
+        updateTask(taskId: $taskId, task: { status: DELIVERED }) {
+            id
+            status
+        }
+    }
+`;
+
+export const createTask = gql`
+    mutation createTask($taskInput: CreateTaskInput!, $teamId: ID!) {
+        createTask(task: $taskInput) {
+            ownedByTeam(id: $teamId) {
+                task {
+                    id
+                    goal
+                    context
+                    owner {
+                        id
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const createUser = gql`
+    mutation createUser($input: CreateUserInput!) {
+        createUser(input: $input) {
+            user {
+                id
+                profileUrl
+                activeTeam {
+                    id
+                }
+            }
+        }
+    }
+`;
+
+export const updateUser = gql`
+    mutation updateUser($userId: ID!, $userInput: UpdateUserInput!) {
+        user(id: $userId) {
+            updateUser(input: $userInput) {
+                user {
+                    id
+                    firstName
+                    lastName
+                    profileUrl
+                }
+            }
+        }
+    }
+`;
+
+export const updateActiveTeam = gql`
+    mutation updateActiveTeam($teamId: ID!) {
+        updateActiveTeam(teamId: $teamId) {
+            id
+        }
+    }
+`;
+
+export const addTeamMember = gql`
+    mutation addTeamMember($teamId: ID!, $newMemberId: ID!) {
+        team(id: $teamId) {
+            addMember(id: $newMemberId) {
+                team {
+                    members {
+                        id
+                    }
+                }
+            }
+        }
+    }
+`;
+
+export const updateTeam = gql`
+    mutation updateTeam($teamId: ID!, $teamInput: TeamUpdateInput!) {
+        team(id: $teamId) {
+            update(input: $teamInput) {
+                team {
+                    id
+                }
+            }
+        }
+    }
+`;
+
+export const createComment = gql`
+    mutation createComment($taskId: ID!, $content: String!) {
+        createComment(taskId: $taskId, content: $content) {
+            id
+        }
+    }
+`;
+
+export const deleteComment = gql`
+    mutation deleteComment($commentId: ID!) {
+        comment(id: $commentId) {
+            delete {
+                id
+            }
+        }
+    }
+`;
+
+export const updateComment = gql`
+    mutation updateComment($commentId: ID!, $content: String!) {
+        comment(id: $commentId) {
+            updateContent(content: $content) {
+                comment {
+                    id
+                }
+            }
+        }
+    }
+`;
+
+export const createTeam = gql`
+    mutation createTeam($team: CreateTeamInput!) {
+        createTeam(input: $team) {
+            team {
+                id
+            }
+        }
+    }
+`;
+
+export const createInvitation = gql`
+    mutation createInvitation($input: CreateInvitationInput!) {
+        createInvitation(input: $input) {
+            invitation {
+                id
+                code
+                status
+            }
+        }
+    }
+`;
+
+export const acceptInvitation = gql`
+    mutation acceptInvitation($code: String!) {
+        invitationUpdateWithCode(code: $code) {
+            accept {
+                invitation {
+                    status
+                }
+            }
+        }
+    }
+`;
+
+export const declineInvitation = gql`
+    mutation acceptInvitation($code: String!) {
+        invitationUpdateWithCode(code: $code) {
+            decline {
+                invitation {
+                    status
+                }
+            }
+        }
+    }
+`;
+
+export const deleteInvitation = gql`
+    mutation deleteInvitation($id: ID!) {
+        invitationUpdate(id: $id) {
+            delete {
+                id
+            }
+        }
+    }
+`;

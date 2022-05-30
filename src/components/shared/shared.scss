@@ -1,0 +1,33 @@
+@import '../../libs/ui/styleguide/color';
+@import '../../libs/ui/styleguide/utility';
+
+$sectionSpace: 10px;
+
+@mixin menuButton {
+    .MenuButtonPlaceHolder {
+        width: 36px;
+        height: 36px;
+
+        .MenuButton {
+            @include userSelect(none);
+            cursor: pointer;
+            --icon-color: #{$onPrimaryColor};
+            padding: 6px;
+            border-radius: 50%;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+            }
+        }
+    }
+}
+
+@mixin header {
+    .Header {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        max-height: 44px;
+        background-color: $primaryColor;
+    }
+}

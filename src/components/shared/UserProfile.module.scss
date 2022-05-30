@@ -1,0 +1,12 @@
+.UserProfile {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--profile-width, 24px);
+    height: var(--profile-height, 24px);
+    user-select: none;
+    color: white;
+    border-radius: 50%;
+    background-color: var(--profile-background, #455a64);
+}

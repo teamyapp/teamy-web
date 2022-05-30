@@ -3,12 +3,56 @@ type: kubernetes
 name: feature
 
 steps:
-  - name: Run unit tests
-    image: node:14.17.6-alpine3.13
+  - name: restore cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      restore: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: build frontend
+    image: node:16.13.0-alpine3.13
     commands:
-      - apk add --no-cache g++ make python3
+      - apk add --no-cache git g++ make python3
       - yarn install --frozen-lockfile
+      - yarn build:staging
+  - name: run unit tests
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git
       - CI=true yarn test
+  - name: rebuild cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      rebuild: true
+      override: false
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: slack
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: SLACK_WEBHOOK
+      channel: code
+    when:
+      status: [ success, failure ]
 trigger:
   branch:
     - master
@@ -18,10 +62,105 @@ trigger:
 ---
 kind: pipeline
 type: kubernetes
+name: testing
+
+steps:
+  - name: restore cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      restore: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: build frontend
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git g++ make python3
+      - yarn install --frozen-lockfile
+      - yarn build:testing
+  - name: build & publish Docker image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      repo: registry.digitalocean.com/teamyapp/teamy-web-testing
+      registry: registry.digitalocean.com
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web-testing",
+          "tag": "latest"
+        }
+  - name: rebuild cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      rebuild: true
+      override: false
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: slack
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: SLACK_WEBHOOK
+      channel: code
+    when:
+      status: [ success, failure ]
+trigger:
+  branch:
+    - testing
+  event:
+    - push
+---
+kind: pipeline
+type: kubernetes
 name: staging
 
 steps:
-  - name: Build Docker image
+  - name: restore cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      restore: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: build frontend
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git g++ make python3
+      - yarn install --frozen-lockfile
+      - yarn build:staging
+  - name: build & publish Docker image
     image: plugins/docker
     settings:
       username:
@@ -29,11 +168,41 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       repo: registry.digitalocean.com/teamyapp/teamy-web-staging
-      cache_from: registry.digitalocean.com/teamyapp/teamy-web-staging
       registry: registry.digitalocean.com
-      target: production
-      build_args:
-        - ENVIRONMENT=staging
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      content_type: application/json
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web-staging",
+          "tag": "latest"
+        }
+  - name: rebuild cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      rebuild: true
+      override: false
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: slack
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: SLACK_WEBHOOK
+      channel: code
+    when:
+      status: [ success, failure ]
 trigger:
   branch:
     - master
@@ -43,34 +212,31 @@ trigger:
 ---
 kind: pipeline
 type: kubernetes
-name: testing
-
-steps:
-  - name: build image
-    image: plugins/docker
-    settings:
-      username:
-        from_secret: DOCKER_USERNAME
-      password:
-        from_secret: DOCKER_PASSWORD
-      repo: registry.digitalocean.com/teamyapp/teamy-web-testing
-      registry: registry.digitalocean.com
-      target: production
-      cache_from: registry.digitalocean.com/teamyapp/teamy-web-testing
-      build_args:
-        - ENVIRONMENT=testing
-trigger:
-  branch:
-    - testing
-  event:
-    - push
----
-kind: pipeline
-type: kubernetes
 name: production
 
 steps:
-  - name: build image
+  - name: restore cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      restore: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: build frontend
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git g++ make python3
+      - yarn install --frozen-lockfile
+      - yarn build:production
+  - name: build & publish Docker image
     image: plugins/docker
     settings:
       username:
@@ -79,10 +245,39 @@ steps:
         from_secret: DOCKER_PASSWORD
       repo: registry.digitalocean.com/teamyapp/teamy-web
       registry: registry.digitalocean.com
-      target: production
-      cache_from: registry.digitalocean.com/teamyapp/teamy-web-staging
-      build_args:
-        - ENVIRONMENT=production
+  - name: notify image update
+    image: plugins/webhook
+    settings:
+      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      template: |
+        {
+          "name": "registry.digitalocean.com/teamyapp/teamy-web",
+          "tag": "latest"
+        }
+  - name: rebuild cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      rebuild: true
+      override: false
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: slack
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: SLACK_WEBHOOK
+      channel: code
+    when:
+      status: [ success, failure ]
 trigger:
   branch:
     - production

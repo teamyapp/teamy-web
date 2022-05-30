@@ -1,0 +1,10 @@
+@import '../../libs/ui/styleguide/font';
+@import '../../libs/ui/styleguide/elevation';
+
+.Box {
+    @include elevation(5);
+    width: 700px;
+    margin: 20px 0 0 20px;
+    padding: 20px;
+    background-color: white;
+}

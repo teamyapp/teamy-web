@@ -1,0 +1,5 @@
+@import 'TaskLists.module';
+
+.TeamStatus {
+    grid-template-columns: repeat(3, 1fr);
+}

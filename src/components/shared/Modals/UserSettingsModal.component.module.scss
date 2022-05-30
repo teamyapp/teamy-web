@@ -1,0 +1,136 @@
+@import 'Modal.shared.module';
+@import '../../../libs/ui/styleguide/font';
+
+.UserSettingsModal {
+    @include primaryFont;
+    display: flex;
+    flex-direction: column;
+    width: 800px;
+    height: 700px;
+
+    .TabContent {
+        flex: 1;
+    }
+
+    .UserProfileTab {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        box-sizing: border-box;
+        height: 100%;
+        padding: 20px;
+        background-color: #cfd8dc;
+
+        .UserProfileTabContent {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            padding: 40px;
+            border: 4px solid #b0bec5;
+            border-radius: 6px;
+            background-color: white;
+
+            .UserProfile {
+                position: relative;
+                display: flex;
+                overflow: hidden;
+                align-items: center;
+                justify-content: center;
+                width: 150px;
+                height: 150px;
+                border: 4px solid #e0e0e0;
+                border-radius: 50%;
+                background-color: #455a64;
+
+                .UserProfileImg,
+                .DefaultUserProfile {
+                    justify-content: center;
+                    box-sizing: border-box;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 50%;
+                }
+
+                .UserProfileImg {
+                    background-color: white;
+                }
+
+                .DefaultUserProfile {
+                    font-size: 100px;
+                    font-weight: bold;
+                    line-height: 100px;
+                    display: flex;
+                    align-items: center;
+                    color: white;
+                }
+
+                &:hover {
+                    .UploadUserProfileButton {
+                        opacity: 0.9;
+                    }
+                }
+
+                .UploadUserProfileButton {
+                    font-size: 20px;
+                    font-weight: bold;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    box-sizing: border-box;
+                    width: 100%;
+                    height: 100%;
+                    padding: 0 10px;
+                    user-select: none;
+                    text-align: center;
+                    opacity: 0;
+                    color: white;
+                    background-color: #424242;
+
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            .UserIdSection {
+                font-size: 24px;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 120px;
+                margin-top: 20px;
+                padding: 2px 0;
+                border-radius: 4px;
+                background-color: #eeeeee;
+
+                .UserId {
+                    margin-left: 10px;
+                }
+            }
+
+            .UserNameSection {
+                margin-top: 30px;
+                --border: 2px solid #757575;
+
+                .Row:not(:first-child) {
+                    margin-top: 20px;
+                }
+            }
+
+            .ActionsSection {
+                margin-top: 30px;
+                --width: 160px;
+
+                .SaveAction {
+                    --background-color: #388e3c;
+                    --border-color: #2e7d32;
+                }
+            }
+        }
+    }
+}

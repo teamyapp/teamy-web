@@ -1,24 +1,8 @@
-FROM node:14.17.6-alpine3.13 AS builder
-
-WORKDIR /app
-
-RUN apk add --no-cache git bash g++ make python3
-
-COPY package.json yarn.lock ./
-
-RUN yarn install --frozen-lockfile
-
-COPY . .
-
-ARG ENVIRONMENT
-
-RUN yarn build:${ENVIRONMENT}
-
-FROM nginx:1.20.0-alpine AS production
+FROM nginx:1.20.0-alpine
 
 WORKDIR /usr/share/nginx/html
 
-COPY --from=builder /app/build/ ./
+COPY build/ ./
 
 RUN rm -rf /etc/nginx/conf.d/default.conf
 

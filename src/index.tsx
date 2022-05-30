@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import AppComponentContainer from './components/App.component';
-import { initDeps } from './deps';
+
+import { initDeps } from '@core/dep/deps';
+
+import { AppComponent } from './components/App.component';
 import './index.scss';
 import reportWebVitals from './reportWebVitals';
 
@@ -9,10 +11,7 @@ const deps = initDeps();
 
 ReactDOM.render(
     <React.StrictMode>
-        <AppComponentContainer
-            taskService={deps.taskService}
-            executionModeService={deps.executionModeService}
-        />
+        <AppComponent deps={deps} />
     </React.StrictMode>,
     document.getElementById('root'),
 );
