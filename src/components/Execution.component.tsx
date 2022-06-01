@@ -1,5 +1,3 @@
-import { TaskAction } from '@core/statev2/taskAction';
-import { TaskStatus } from '@core/statev2/taskStatus';
 import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';

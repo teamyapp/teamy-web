@@ -200,6 +200,13 @@ export class AppComponent extends Component<Props, State> {
             this.props.deps.shortcutMonitor.subscribeUserAction();
     }
 
+    public componentWillUnmount() {
+        this.stateChangeChan?.close();
+        this.routeChangeChan?.close();
+        this.userActionChan?.close();
+        this.props.deps.shortcutMonitor.dispose();
+    }
+
     private monitorStateChanges() {
         this.stateChangeChan = this.graphSource.subscribeStateChange();
         (async () => {
@@ -288,13 +295,6 @@ export class AppComponent extends Component<Props, State> {
                 this.processUserAction(userAction);
             }
         })().then();
-    }
-
-    public componentWillUnmount() {
-        this.stateChangeChan?.close();
-        this.routeChangeChan?.close();
-        this.userActionChan?.close();
-        this.props.deps.shortcutMonitor.dispose();
     }
 
     private renderNoActiveTeam() {

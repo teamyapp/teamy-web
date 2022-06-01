@@ -1,6 +1,6 @@
-import { and, or } from '@lib/data/filter';
 import React, { Component, ReactNode } from 'react';
 
+import { or } from '@lib/data/filter';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import * as filters from '@core/data/task.filter';

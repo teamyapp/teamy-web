@@ -2,8 +2,8 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import { RemoteTask } from '@core/client/entity/remoteTask';
 import { CreateTaskInput, UpdateTaskInput } from '@core/client/entity/input';
+import { RemoteTask } from '@core/client/entity/remoteTask';
 
 export class TaskClient {
     private readonly graphQLClient: GraphQLClient;
@@ -48,7 +48,7 @@ export class TaskClient {
                     }
                 `,
                 variables: {
-                    taskId
+                    taskId,
                 },
             })
             .then((payload: any) => payload?.tasks[0]);
@@ -81,7 +81,7 @@ export class TaskClient {
                     }
                 `,
                 variables: {
-                    teamId
+                    teamId,
                 },
             })
             .then((payload: any) => payload?.teams[0]?.tasks);
@@ -166,7 +166,7 @@ export class TaskClient {
                     }
                 `,
                 variables: {
-                    taskId
+                    taskId,
                 },
             })
             .then((payload: any) => payload?.deleteTask);
@@ -174,71 +174,74 @@ export class TaskClient {
 
     moveTaskToUpcoming(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
-        .mutate({
-            mutation: gql`
-                mutation moveTaskToUpcoming($taskId: ID!) {
-                    moveTaskToUpcoming(taskId: $taskId) {
-                        id
-                        status
-                        updatedAt
+            .mutate({
+                mutation: gql`
+                    mutation moveTaskToUpcoming($taskId: ID!) {
+                        moveTaskToUpcoming(taskId: $taskId) {
+                            id
+                            status
+                            updatedAt
+                        }
                     }
-                }
-            `,
-            variables: {
-                taskId
-            },
-        })
-        .then((payload: any) => payload?.moveTaskToUpcoming);
+                `,
+                variables: {
+                    taskId,
+                },
+            })
+            .then((payload: any) => payload?.moveTaskToUpcoming);
     }
 
     moveTaskToInProgress(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
-        .mutate({
-            mutation: gql`
-                mutation moveTaskToInProgress($taskId: ID!) {
-                    moveTaskToInProgress(taskId: $taskId) {
-                        id
-                        status
-                        owner {
+            .mutate({
+                mutation: gql`
+                    mutation moveTaskToInProgress($taskId: ID!) {
+                        moveTaskToInProgress(taskId: $taskId) {
                             id
+                            status
+                            owner {
+                                id
+                            }
+                            updatedAt
+                            availableActions
                         }
-                        updatedAt
-                        availableActions
                     }
-                }
-            `,
-            variables: {
-                taskId
-            },
-        })
-        .then((payload: any) => payload?.moveTaskToInProgress);
+                `,
+                variables: {
+                    taskId,
+                },
+            })
+            .then((payload: any) => payload?.moveTaskToInProgress);
     }
 
     moveTaskToDelivered(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
-        .mutate({
-            mutation: gql`
-                mutation moveTaskToDelivered($taskId: ID!) {
-                    moveTaskToDelivered(taskId: $taskId) {
-                        id
-                        status
-                        updatedAt
-                        availableActions
+            .mutate({
+                mutation: gql`
+                    mutation moveTaskToDelivered($taskId: ID!) {
+                        moveTaskToDelivered(taskId: $taskId) {
+                            id
+                            status
+                            updatedAt
+                            availableActions
+                        }
                     }
-                }
-            `,
-            variables: {
-                taskId
-            },
-        })
-        .then((payload: any) => payload?.moveTaskToDelivered);
+                `,
+                variables: {
+                    taskId,
+                },
+            })
+            .then((payload: any) => payload?.moveTaskToDelivered);
     }
 
     moveTaskToBlocked(taskId: string, reason: string): Promise<RemoteTask> {
-        return Promise.resolve<any>({ });
+        return Promise.resolve<any>({});
     }
 
-    moveTaskToAwaiting(taskId: string, awaitOnTaskIds: [string]): Promise<RemoteTask> {
-        return Promise.resolve<any>({ });
+    moveTaskToAwaiting(
+        taskId: string,
+        awaitOnTaskIds: [string],
+    ): Promise<RemoteTask> {
+        return Promise.resolve<any>({});
     }
 }

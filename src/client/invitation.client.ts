@@ -2,11 +2,11 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import {
     CreateInvitationInput,
     UpdateInvitationInput,
 } from '@core/client/entity/input';
+import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 
 export class InvitationClient {
     private readonly graphQLClient: GraphQLClient;
@@ -20,72 +20,70 @@ export class InvitationClient {
         invitationCode: string,
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
-        .query({
-            query: gql`
-                query getInvitations(
-                    $invitationId: ID
-                    $invitationCode: String
-                ) {
-                    invitations(
-                        filter: {
-                            invitationId: $invitationId
-                            code: $invitationCode
-                        }
+            .query({
+                query: gql`
+                    query getInvitations(
+                        $invitationId: ID
+                        $invitationCode: String
                     ) {
-                        id
-                        createdAt
-                        expireAt
-                        code
-                        status
-                        sender {
+                        invitations(
+                            filter: {
+                                invitationId: $invitationId
+                                code: $invitationCode
+                            }
+                        ) {
                             id
-                            lastName
-                            firstName
-                        }
-                        joiningTeam {
-                            id
-                            iconUrl
+                            createdAt
+                            expireAt
+                            code
+                            status
+                            sender {
+                                id
+                                lastName
+                                firstName
+                            }
+                            joiningTeam {
+                                id
+                                iconUrl
+                            }
                         }
                     }
-                }
-            `,
-            variables: {
-                invitationId,
-                invitationCode,
-            },
-        })
-        .then((payload: any) => payload?.invitations[0]);
+                `,
+                variables: {
+                    invitationId,
+                    invitationCode,
+                },
+            })
+            .then((payload: any) => payload?.invitations[0]);
     }
 
     public getInvitations(teamId: string): Promise<RemoteInvitation[]> {
         return this.graphQLClient
-        .query({
-            query: gql`
-                query getInvitations($teamId: ID!) {
-                    teams(filter: {
-                        teamId: $teamId
-                    }) {
-                        invitations {
-                            id
-                            receiverFirstName
-                            receiverLastName
-                            createdAt
-                            joiningTeam {
+            .query({
+                query: gql`
+                    query getInvitations($teamId: ID!) {
+                        teams(filter: { teamId: $teamId }) {
+                            invitations {
                                 id
+                                receiverFirstName
+                                receiverLastName
+                                createdAt
+                                joiningTeam {
+                                    id
+                                }
+                                expireAt
+                                code
+                                status
+                                code
                             }
-                            expireAt
-                            code
-                            status
-                            code
                         }
                     }
-                }
-            `,
-            variables: {
-                teamId
-            },
-        })
-        .then((payload: any) => payload?.teams[0]?.invitations);
+                `,
+                variables: {
+                    teamId,
+                },
+            })
+            .then((payload: any) => payload?.teams[0]?.invitations);
     }
 
     public createInvitation(
@@ -160,7 +158,7 @@ export class InvitationClient {
                     }
                 `,
                 variables: {
-                    invitationId
+                    invitationId,
                 },
             })
             .then((payload: any) => payload.deleteInvitation);

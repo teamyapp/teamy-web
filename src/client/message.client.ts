@@ -2,8 +2,11 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
+import {
+    CreateMessageInput,
+    UpdateMessageInput,
+} from '@core/client/entity/input';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
-import { CreateMessageInput, UpdateMessageInput } from '@core/client/entity/input';
 
 export class MessageClient {
     private readonly graphQLClient: GraphQLClient;
@@ -85,7 +88,7 @@ export class MessageClient {
                     }
                 `,
                 variables: {
-                    messageId
+                    messageId,
                 },
             })
             .then((payload: any) => payload?.deleteMessage);

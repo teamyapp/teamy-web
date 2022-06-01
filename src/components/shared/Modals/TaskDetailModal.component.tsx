@@ -1,4 +1,3 @@
-import { UpdateTaskInput } from '@core/entity/input';
 import classNames from 'classnames';
 import React, {
     Component,
@@ -17,6 +16,7 @@ import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
+import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/graph/graphSource';
 import { FormatService } from '@core/service/format.service';
@@ -39,7 +39,7 @@ interface Props {
 
 interface State {
     task?: Task;
-    updatedTask?: UpdateTaskInput
+    updatedTask?: UpdateTaskInput;
     currentUserId?: number;
     heightWithMargin: number;
 }
@@ -165,7 +165,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         </div>
                         <div className={styles.CommentsSection}>
                             <div className={styles.Title}>
-                                Comments&nbsp;({this.state.task.comments.messages.length})
+                                Comments&nbsp;(
+                                {this.state.task.comments.messages.length})
                             </div>
                             <div
                                 ref={this.threadDivRef}
@@ -197,27 +198,30 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     public async open(taskId: number) {
         const syncPromise = this.graphSource.syncTask(taskId);
-        this.setState({
-            task: undefined
-        }, async ()=>{
-            this.modalRef.current?.open();
-            await syncPromise;
-            const task = this.graphSource.task(taskId);
-            this.setState({
-                task,
-                updatedTask: {
-                    goal: task.goal,
-                    context: task.context,
-                    ownerUserId: task.owner?.id,
-                    owningTeamId: task.owningTeam.id,
-                    effort: task.effort,
-                    dueAt: task.dateAt
-                },
-                currentUserId: this.graphSource.currentUser()?.id
-            });
-            this.adjustSize();
-            this.scrollToCommentsBottom();
-        });
+        this.setState(
+            {
+                task: undefined,
+            },
+            async () => {
+                this.modalRef.current?.open();
+                await syncPromise;
+                const task = this.graphSource.task(taskId);
+                this.setState({
+                    task,
+                    updatedTask: {
+                        goal: task.goal,
+                        context: task.context,
+                        ownerUserId: task.owner?.id,
+                        owningTeamId: task.owningTeam.id,
+                        effort: task.effort,
+                        dueAt: task.dateAt,
+                    },
+                    currentUserId: this.graphSource.currentUser()?.id,
+                });
+                this.adjustSize();
+                this.scrollToCommentsBottom();
+            },
+        );
     }
 
     private onCloseButtonClick = () => {
@@ -237,7 +241,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private onSaveButtonClick = async () => {
         if (this.state.task) {
             const dueAt = this.dueAtDatePicker.current?.value || undefined;
-            const task =  this.state.task!;
+            const task = this.state.task!;
             await this.graphSource.updateTask(task.id, {
                 goal: this.state.updatedTask!.goal,
                 context: this.markdownEditorRef.current?.content,

@@ -2,9 +2,9 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
+import { CreateTeamInput, UpdateTeamInput } from '@core/client/entity/input';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteUser } from '@core/client/entity/remoteUser';
-import { CreateTeamInput, UpdateTeamInput } from '@core/client/entity/input';
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;
@@ -66,27 +66,25 @@ export class TeamClient {
 
     public getTeamMembers(teamId: string): Promise<RemoteUser[]> {
         return this.graphQLClient
-        .query({
-            query: gql`
-                query getTeamMembers($teamId: ID!) {
-                    teams(filter: {
-                        teamId: $teamId
-                    }) {
-                        members {
-                            id
-                            lastName
-                            firstName
-                            profileUrl
-                            createdAt
+            .query({
+                query: gql`
+                    query getTeamMembers($teamId: ID!) {
+                        teams(filter: { teamId: $teamId }) {
+                            members {
+                                id
+                                lastName
+                                firstName
+                                profileUrl
+                                createdAt
+                            }
                         }
                     }
-                }
-            `,
-            variables: {
-                teamId
-            },
-        })
-        .then((payload: any) => payload?.teams[0]?.members);
+                `,
+                variables: {
+                    teamId,
+                },
+            })
+            .then((payload: any) => payload?.teams[0]?.members);
     }
 
     public addMemberToTeam(
@@ -97,7 +95,10 @@ export class TeamClient {
             .mutate({
                 mutation: gql`
                     mutation addMemberToTeam($teamId: ID!, $memberUserId: ID!) {
-                        addMemberToTeam(teamId: $teamId, memberUserId: $memberUserId) {
+                        addMemberToTeam(
+                            teamId: $teamId
+                            memberUserId: $memberUserId
+                        ) {
                             id
                             firstName
                             lastName
@@ -137,7 +138,7 @@ export class TeamClient {
                 `,
                 variables: {
                     teamId,
-                    memberUserId
+                    memberUserId,
                 },
             })
             .then((payload: any) => payload?.removeMemberFromTeam);

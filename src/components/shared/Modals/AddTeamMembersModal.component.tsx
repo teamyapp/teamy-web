@@ -192,7 +192,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                 expireAt: expireAt.toDate(),
             });
         if (!invitationId || !invitationCode) {
-            return
+            return;
         }
 
         this.setState({

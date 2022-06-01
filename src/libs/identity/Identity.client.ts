@@ -27,10 +27,6 @@ export class IdentityClient {
         return Cookies.get(accessTokenKey) || '';
     }
 
-    private saveSignInRedirectUrl(redirectUrl: string): void {
-        localStorage.setItem(signInRedirectKey, redirectUrl);
-    }
-
     public async isSignedIn(): Promise<boolean> {
         const token = this.getAccessToken();
         if (!token || token.length === 0) {
@@ -62,6 +58,10 @@ export class IdentityClient {
         const redirectUrl = localStorage.getItem(signInRedirectKey);
         localStorage.removeItem(signInRedirectKey);
         window.location.replace(redirectUrl || this.homePageUrl);
+    }
+
+    private saveSignInRedirectUrl(redirectUrl: string): void {
+        localStorage.setItem(signInRedirectKey, redirectUrl);
     }
 
     private async verifyToken(accessToken: string): Promise<boolean> {

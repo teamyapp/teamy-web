@@ -1,8 +1,3 @@
-import { InvitationClient } from '@core/client/invitation.client';
-import { MessageClient } from '@core/client/message.client';
-import { Task } from '@core/graph/task';
-import { TaskAction } from '@core/statev2/taskAction';
-import { TaskStatus } from '@core/statev2/taskStatus';
 import { PopChannel, chan, multi } from '@lib/csp/csp';
 
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
@@ -11,6 +6,8 @@ import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteThread } from '@core/client/entity/remoteThread';
 import { RemoteUser } from '@core/client/entity/remoteUser';
+import { InvitationClient } from '@core/client/invitation.client';
+import { MessageClient } from '@core/client/message.client';
 import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { UserClient } from '@core/client/user.client';
@@ -26,10 +23,13 @@ import {
     UpdateUserInput,
 } from '@core/entity/input';
 import { Invitation } from '@core/graph/invitation';
+import { Task } from '@core/graph/task';
 import { AppState } from '@core/statev2/app.state';
 import { InvitationState } from '@core/statev2/invitation.state';
 import { MessageState } from '@core/statev2/message.state';
 import { TaskState } from '@core/statev2/task.state';
+import { TaskAction } from '@core/statev2/taskAction';
+import { TaskStatus } from '@core/statev2/taskStatus';
 import { TeamState } from '@core/statev2/team.state';
 import { ThreadState } from '@core/statev2/thread.state';
 import { UserState } from '@core/statev2/user.state';
@@ -39,7 +39,10 @@ import { User } from './user';
 
 const appStateKey = 'appState';
 
-const availableActions: Map<TaskStatus, TaskAction[]> = new Map<TaskStatus, TaskAction[]>();
+const availableActions: Map<TaskStatus, TaskAction[]> = new Map<
+    TaskStatus,
+    TaskAction[]
+>();
 availableActions.set('PAUSED', ['START', 'DELETE', 'ASSIGN_OWNER']);
 
 export class GraphSource {
@@ -125,7 +128,7 @@ export class GraphSource {
     async syncCurrentTeam(): Promise<void> {
         const currentTeamId = this.currentTeam()?.id;
         if (!currentTeamId) {
-            return
+            return;
         }
         return this.setCurrentTeam(currentTeamId);
     }
@@ -138,7 +141,9 @@ export class GraphSource {
         const tasksPreview = await this.taskClient.getTasksPreview(
             `${currentTeamId}`,
         );
-        this.appState.teams[currentTeamId].taskIds = tasksPreview?.map(task => id(task.id)!);
+        this.appState.teams[currentTeamId].taskIds = tasksPreview?.map(
+            (task) => id(task.id)!,
+        );
         tasksPreview?.forEach((taskPreview) => this.mergeTask(taskPreview));
         this.appState.currentTeamId = currentTeamId;
         this.onUpdateState();
@@ -151,7 +156,7 @@ export class GraphSource {
         const remoteTeam = await this.teamClient.updateTeam(`${teamId}`, {
             name: input.name,
             iconUrl: input.iconUrl,
-            ownerUserId: `${input.ownerUserId}`
+            ownerUserId: `${input.ownerUserId}`,
         });
         this.mergeTeam(remoteTeam);
         this.onUpdateState();
@@ -173,21 +178,26 @@ export class GraphSource {
             return;
         }
 
-        await this.syncTeamMembers(this.appState.currentTeamId)
+        await this.syncTeamMembers(this.appState.currentTeamId);
     }
 
     public async syncTeamMembers(teamId: number): Promise<void> {
-        const members = await this.teamClient.getTeamMembers(`${teamId}`) || [];
+        const members =
+            (await this.teamClient.getTeamMembers(`${teamId}`)) || [];
         members?.forEach(this.mergeUser.bind(this));
         const oldMemberUserIds = this.appState.teams[teamId].memberUserIds;
-        this.appState.teams[teamId].memberUserIds = members === undefined?
-            oldMemberUserIds :
-            members?.map(member => id(member.id)!);
+        this.appState.teams[teamId].memberUserIds =
+            members === undefined
+                ? oldMemberUserIds
+                : members?.map((member) => id(member.id)!);
         this.onUpdateState();
     }
 
     public async addTeamMember(teamId: number, userId: number): Promise<void> {
-        const remoteMember = await this.teamClient.addMemberToTeam(`${teamId}`, `${userId}`);
+        const remoteMember = await this.teamClient.addMemberToTeam(
+            `${teamId}`,
+            `${userId}`,
+        );
         this.mergeUser(remoteMember);
         const memberUserIds = this.appState.teams[teamId].memberUserIds || [];
         memberUserIds.push(userId);
@@ -213,7 +223,7 @@ export class GraphSource {
             goal: task.goal,
             context: task.context,
             ownerUserId: task.ownerUserId ? `${task.ownerUserId}` : undefined,
-            dueAt: task.dueAt
+            dueAt: task.dueAt,
         });
         this.mergeTask(remoteTask);
         this.appState.teams[teamId].taskIds?.push(id(remoteTask.id)!);
@@ -227,7 +237,7 @@ export class GraphSource {
             ownerUserId: input.ownerUserId ? `${input.ownerUserId}` : undefined,
             owningTeamId: `${input.owningTeamId}`,
             effort: input.effort,
-            dueAt: input.dueAt
+            dueAt: input.dueAt,
         });
         this.mergeTask(remoteTask);
         this.onUpdateState();
@@ -238,33 +248,40 @@ export class GraphSource {
         const deletedTask = this.task(taskId);
         delete this.appState.tasks[taskId];
         const owningTeamId = deletedTask.owningTeam.id;
-        const newTaskIds = this.appState.teams[owningTeamId]
-            .taskIds
-            .filter((newTaskId) => newTaskId !== taskId);
+        const newTaskIds = this.appState.teams[owningTeamId].taskIds.filter(
+            (newTaskId) => newTaskId !== taskId,
+        );
         this.appState.teams[owningTeamId].taskIds = newTaskIds;
         this.onUpdateState();
     }
 
     public async moveTaskToInProgress(taskId: number) {
         const currUserId = this.currentUser()!.id;
-        this.currentTeam()?.tasks.filter(task => task.status === 'IN_PROGRESS')
-            .forEach(task => {
+        this.currentTeam()
+            ?.tasks.filter((task) => task.status === 'IN_PROGRESS')
+            .forEach((task) => {
                 const taskState = this.appState.tasks[task.id];
                 if (!taskState.ownerUserId) {
-                    taskState.ownerUserId = currUserId
+                    taskState.ownerUserId = currUserId;
                 }
 
                 taskState.status = 'PAUSED';
-                taskState.availableActions = availableActions.get('PAUSED')?.map(action => action) || [];
+                taskState.availableActions =
+                    availableActions.get('PAUSED')?.map((action) => action) ||
+                    [];
                 this.appState.tasks[task.id] = taskState;
             });
-        const remoteTask = await this.taskClient.moveTaskToInProgress(`${taskId}`);
+        const remoteTask = await this.taskClient.moveTaskToInProgress(
+            `${taskId}`,
+        );
         this.mergeTask(remoteTask);
         this.onUpdateState();
     }
 
     public async moveTaskToDelivered(taskId: number) {
-        const remoteTask = await this.taskClient.moveTaskToDelivered(`${taskId}`);
+        const remoteTask = await this.taskClient.moveTaskToDelivered(
+            `${taskId}`,
+        );
         this.mergeTask(remoteTask);
         this.onUpdateState();
     }
@@ -286,7 +303,10 @@ export class GraphSource {
         threadId: number,
         input: CreateMessageInput,
     ): Promise<void> {
-        const message = await this.messageClient.createMessage(`${threadId}`, input);
+        const message = await this.messageClient.createMessage(
+            `${threadId}`,
+            input,
+        );
         this.mergeMessage(message);
         const messageIds = this.appState.threads[threadId].messageIds || [];
         messageIds.push(id(message.id)!);
@@ -298,8 +318,9 @@ export class GraphSource {
         await this.messageClient.deleteMessage(`${messageId}`);
         const deletedMessage = this.appState.messages[messageId];
         const threadId = deletedMessage.threadId;
-        const newMessageIds = this.appState.threads[threadId].messageIds
-            .filter(newMessageId => newMessageId !== messageId);
+        const newMessageIds = this.appState.threads[threadId].messageIds.filter(
+            (newMessageId) => newMessageId !== messageId,
+        );
         this.appState.threads[threadId].messageIds = newMessageIds;
         delete this.appState.messages[messageId];
         this.onUpdateState();
@@ -309,7 +330,10 @@ export class GraphSource {
         messageId: number,
         input: UpdateMessageInput,
     ): Promise<void> {
-        const message = await this.messageClient.updateMessage(`${messageId}`, input);
+        const message = await this.messageClient.updateMessage(
+            `${messageId}`,
+            input,
+        );
         this.mergeMessage(message);
         this.onUpdateState();
     }
@@ -322,7 +346,10 @@ export class GraphSource {
     }
 
     public async syncInvitation(invitationId: number, invitationCode: string) {
-        const invitation = await this.invitationClient.getInvitation(`${invitationId}`, invitationCode);
+        const invitation = await this.invitationClient.getInvitation(
+            `${invitationId}`,
+            invitationCode,
+        );
         if (invitation) {
             this.mergeInvitation(invitation);
         }
@@ -331,12 +358,15 @@ export class GraphSource {
     }
 
     public async syncInvitations(teamId: number) {
-        const invitations = await this.invitationClient.getInvitations(`${teamId}`);
+        const invitations = await this.invitationClient.getInvitations(
+            `${teamId}`,
+        );
         invitations?.forEach(this.mergeInvitation.bind(this));
         const oldInvitations = this.appState.teams[teamId].invitationIds;
-        this.appState.teams[teamId].invitationIds = invitations === undefined?
-            oldInvitations :
-            invitations.map(invitation => id(invitation.id)!);
+        this.appState.teams[teamId].invitationIds =
+            invitations === undefined
+                ? oldInvitations
+                : invitations.map((invitation) => id(invitation.id)!);
         this.onUpdateState();
     }
 
@@ -344,7 +374,10 @@ export class GraphSource {
         teamId: number,
         input: CreateInvitationInput,
     ): Promise<[invitationId: number, invitationCode: string]> {
-        const invitation = await this.invitationClient.createInvitation(`${teamId}`, input);
+        const invitation = await this.invitationClient.createInvitation(
+            `${teamId}`,
+            input,
+        );
         this.mergeInvitation(invitation);
         const invitationId = id(invitation.id)!;
         this.appState.teams[teamId].invitationIds.push(invitationId);
@@ -356,13 +389,22 @@ export class GraphSource {
         invitationId: number,
         invitationCode: string,
     ): Promise<void> {
-        const invitation = await this.invitationClient.acceptInvitation(`${invitationId}`, invitationCode);
+        const invitation = await this.invitationClient.acceptInvitation(
+            `${invitationId}`,
+            invitationCode,
+        );
         this.mergeInvitation(invitation);
         this.onUpdateState();
     }
 
-    public async declineInvitation(invitationId: number, invitationCode: string) {
-        const invitation = await this.invitationClient.declineInvitation(`${invitationId}`, invitationCode);
+    public async declineInvitation(
+        invitationId: number,
+        invitationCode: string,
+    ) {
+        const invitation = await this.invitationClient.declineInvitation(
+            `${invitationId}`,
+            invitationCode,
+        );
         this.mergeInvitation(invitation);
         this.onUpdateState();
     }
@@ -371,8 +413,11 @@ export class GraphSource {
         await this.invitationClient.deleteInvitation(`${invitationId}`);
         const deletedInvitation = this.appState.invitations[invitationId];
         const teamId = deletedInvitation.joiningTeamId;
-        const newInvitationIds = this.appState.teams[teamId].invitationIds
-            .filter(newInvitationId => newInvitationId !== invitationId);
+        const newInvitationIds = this.appState.teams[
+            teamId
+        ].invitationIds.filter(
+            (newInvitationId) => newInvitationId !== invitationId,
+        );
         this.appState.teams[teamId].invitationIds = newInvitationIds;
         delete this.appState.invitations[invitationId];
         this.onUpdateState();
@@ -386,7 +431,7 @@ export class GraphSource {
     private mergeUser(remoteUser: RemoteUser) {
         const remoteUserId = id(remoteUser.id)!;
         const localOldUser = this.appState.users[remoteUserId] || {
-            teamIds: []
+            teamIds: [],
         };
         const localNewUser: UserState = {
             id: remoteUserId,
@@ -411,7 +456,7 @@ export class GraphSource {
         const localOldTeam = this.appState.teams[remoteTeamId] || {
             taskIds: [],
             memberUserIds: [],
-            invitationIds: []
+            invitationIds: [],
         };
         const localNewTeam: TeamState = {
             id: remoteTeamId,
@@ -420,8 +465,11 @@ export class GraphSource {
                 remoteTeam.iconUrl === undefined
                     ? localOldTeam.iconUrl
                     : remoteTeam.iconUrl,
-            createdAt: remoteTeam.createdAt ? new Date(remoteTeam.createdAt) : localOldTeam.createdAt,
-            creatorUserId: id(remoteTeam.creator?.id) || localOldTeam.creatorUserId,
+            createdAt: remoteTeam.createdAt
+                ? new Date(remoteTeam.createdAt)
+                : localOldTeam.createdAt,
+            creatorUserId:
+                id(remoteTeam.creator?.id) || localOldTeam.creatorUserId,
             ownerUserId: id(remoteTeam.owner?.id) || localOldTeam.ownerUserId,
             memberUserIds:
                 remoteTeam.members?.map((user) => id(user.id)!) ||
@@ -430,8 +478,9 @@ export class GraphSource {
                 remoteTeam.tasks?.map((task) => id(task.id)!) ||
                 localOldTeam.taskIds,
             invitationIds:
-                remoteTeam.invitations?.map((invitation) => id(invitation.id)!) ||
-                localOldTeam.invitationIds,
+                remoteTeam.invitations?.map(
+                    (invitation) => id(invitation.id)!,
+                ) || localOldTeam.invitationIds,
         };
 
         if (remoteTeam.creator) {
@@ -447,7 +496,7 @@ export class GraphSource {
     private mergeTask(remoteTask: RemoteTask) {
         const remoteTaskId = id(remoteTask.id)!;
         const localOldTask = this.appState.tasks[remoteTaskId] || {
-            availableActions:[]
+            availableActions: [],
         };
         const localNewTask: TaskState = {
             id: remoteTaskId,
@@ -456,7 +505,8 @@ export class GraphSource {
                 remoteTask.context === undefined
                     ? localOldTask.goal
                     : remoteTask.context,
-            creatorUserId: id(remoteTask.creator?.id) || localOldTask.creatorUserId,
+            creatorUserId:
+                id(remoteTask.creator?.id) || localOldTask.creatorUserId,
             ownerUserId:
                 remoteTask.owner === undefined
                     ? localOldTask.ownerUserId
@@ -503,13 +553,14 @@ export class GraphSource {
     }
 
     private mergeInvitation(remoteInvitation: RemoteInvitation) {
-        const remoteInvitationId = id(remoteInvitation.id)!
+        const remoteInvitationId = id(remoteInvitation.id)!;
         const localOldInvitation =
             this.appState.invitations[remoteInvitationId] || {};
         const localNewInvitation: InvitationState = {
             id: remoteInvitationId,
             senderUserId:
-                id(remoteInvitation.sender?.id) || localOldInvitation.senderUserId,
+                id(remoteInvitation.sender?.id) ||
+                localOldInvitation.senderUserId,
             receiverFirstName:
                 remoteInvitation.receiverFirstName === undefined
                     ? localOldInvitation.receiverFirstName
@@ -529,8 +580,12 @@ export class GraphSource {
             joiningTeamId:
                 id(remoteInvitation.joiningTeam?.id) ||
                 localOldInvitation.joiningTeamId,
-            expireAt: remoteInvitation.expireAt ? new Date(remoteInvitation.expireAt) : localOldInvitation.expireAt,
-            createdAt: remoteInvitation.createdAt ? new Date(remoteInvitation.createdAt) : localOldInvitation.createdAt,
+            expireAt: remoteInvitation.expireAt
+                ? new Date(remoteInvitation.expireAt)
+                : localOldInvitation.expireAt,
+            createdAt: remoteInvitation.createdAt
+                ? new Date(remoteInvitation.createdAt)
+                : localOldInvitation.createdAt,
             updatedAt:
                 remoteInvitation.updatedAt === undefined
                     ? localOldInvitation.updatedAt
@@ -557,7 +612,7 @@ export class GraphSource {
     private mergeThread(remoteThread: RemoteThread) {
         const remoteThreadId = id(remoteThread.id)!;
         const localOldThread = this.appState.threads[remoteThreadId] || {
-            messageIds: []
+            messageIds: [],
         };
         const localNewThread: ThreadState = {
             id: remoteThreadId,
@@ -576,10 +631,16 @@ export class GraphSource {
         const localNewMessage: MessageState = {
             id: remoteMessageId,
             body: remoteMessage.body || localOldMessage.body,
-            authorUserId: id(remoteMessage.author?.id) || localOldMessage.authorUserId,
+            authorUserId:
+                id(remoteMessage.author?.id) || localOldMessage.authorUserId,
             threadId: id(remoteMessage.thread?.id) || localOldMessage.threadId,
-            createdAt: remoteMessage.createdAt ? new Date(remoteMessage.createdAt) : localOldMessage.createdAt,
-            updatedAt: remoteMessage.updatedAt === undefined ? localOldMessage.updatedAt : new Date(remoteMessage.updatedAt),
+            createdAt: remoteMessage.createdAt
+                ? new Date(remoteMessage.createdAt)
+                : localOldMessage.createdAt,
+            updatedAt:
+                remoteMessage.updatedAt === undefined
+                    ? localOldMessage.updatedAt
+                    : new Date(remoteMessage.updatedAt),
         };
 
         if (remoteMessage.author) {
@@ -596,6 +657,6 @@ export class GraphSource {
 
 function id(idStr: string | undefined): number | undefined {
     if (idStr) {
-        return parseInt(idStr)
+        return parseInt(idStr);
     }
 }

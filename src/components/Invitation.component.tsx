@@ -27,6 +27,7 @@ interface State {
 
 export class InvitationComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
+
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
@@ -71,7 +72,7 @@ export class InvitationComponent extends Component<Props, State> {
         const currentUser = this.graphSource.currentUser();
         this.setState({
             me: currentUser,
-            invitation
+            invitation,
         });
     }
 
@@ -99,75 +100,83 @@ export class InvitationComponent extends Component<Props, State> {
                     ) : (
                         this.state.invitation && (
                             <Fragment>
-                            <div className={styles.Intro}>
-                                <div>
-                                    <div className={styles.Greeting}>
-                                        Hi{' '}
-                                        <span className={styles.MyName}>
-                                            {this.state.me?.firstName}
+                                <div className={styles.Intro}>
+                                    <div>
+                                        <div className={styles.Greeting}>
+                                            Hi{' '}
+                                            <span className={styles.MyName}>
+                                                {this.state.me?.firstName}
+                                            </span>
+                                            ,
+                                        </div>
+                                        <span className={styles.SenderName}>
+                                            {
+                                                this.state.invitation?.sender
+                                                    .firstName
+                                            }
+                                            &nbsp;
+                                            {
+                                                this.state.invitation?.sender
+                                                    .lastName
+                                            }
                                         </span>
-                                        ,
+                                        invited you to join
                                     </div>
-                                    <span className={styles.SenderName}>
-                                        {
-                                            this.state.invitation?.sender
-                                                .firstName
-                                        }
-                                        &nbsp;
-                                        {this.state.invitation?.sender.lastName}
-                                    </span>
-                                    invited you to join
-                                </div>
-                                <div className={styles.Team}>
-                                    {this.state.invitation?.joiningTeam
-                                        .iconUrl ? (
-                                        <img
-                                            className={styles.TeamIcon}
-                                            alt={
+                                    <div className={styles.Team}>
+                                        {this.state.invitation?.joiningTeam
+                                            .iconUrl ? (
+                                            <img
+                                                className={styles.TeamIcon}
+                                                alt={
+                                                    this.state.invitation
+                                                        ?.joiningTeam.name
+                                                }
+                                                src={
+                                                    this.state.invitation
+                                                        ?.joiningTeam.iconUrl
+                                                }
+                                            />
+                                        ) : (
+                                            <div
+                                                className={
+                                                    styles.DefaultTeamIcon
+                                                }
+                                            >
+                                                {this.state.invitation
+                                                    ?.joiningTeam.name
+                                                    ? this.state.invitation?.joiningTeam.name[0].toUpperCase()
+                                                    : '?'}
+                                            </div>
+                                        )}
+                                        <div className={styles.TeamName}>
+                                            {
                                                 this.state.invitation
                                                     ?.joiningTeam.name
                                             }
-                                            src={
-                                                this.state.invitation
-                                                    ?.joiningTeam.iconUrl
-                                            }
-                                        />
-                                    ) : (
-                                        <div className={styles.DefaultTeamIcon}>
-                                            {this.state.invitation?.joiningTeam
-                                                .name
-                                                ? this.state.invitation?.joiningTeam.name[0].toUpperCase()
-                                                : '?'}
                                         </div>
-                                    )}
-                                    <div className={styles.TeamName}>
-                                        {
-                                            this.state.invitation?.joiningTeam
-                                                .name
-                                        }
                                     </div>
                                 </div>
-                            </div>
-                            <div className={styles.Actions}>
-                                <div
-                                    className={`${styles.Action} ${styles.Accept}`}
-                                >
-                                    <ButtonUI
-                                        label={'Accept'}
-                                        onClick={this.onAcceptClick}
-                                    />
+                                <div className={styles.Actions}>
+                                    <div
+                                        className={`${styles.Action} ${styles.Accept}`}
+                                    >
+                                        <ButtonUI
+                                            label={'Accept'}
+                                            onClick={this.onAcceptClick}
+                                        />
+                                    </div>
+                                    <div
+                                        className={`${styles.Action} ${styles.Decline}`}
+                                    >
+                                        <ButtonUI
+                                            label={'Decline'}
+                                            onClick={this.onDeclineClick}
+                                        />
+                                    </div>
                                 </div>
-                                <div
-                                    className={`${styles.Action} ${styles.Decline}`}
-                                >
-                                    <ButtonUI
-                                        label={'Decline'}
-                                        onClick={this.onDeclineClick}
-                                    />
-                                </div>
-                            </div>
-                        </Fragment>
-                        ))}
+                            </Fragment>
+                        )
+                    )}
                 </div>
             </div>
         );

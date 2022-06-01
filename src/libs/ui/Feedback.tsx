@@ -64,20 +64,6 @@ export class FeedbackUI extends Component<Props, State> {
         });
     }
 
-    private onActionClick = () => {
-        this.props.onActionClick?.call(null);
-        this.hide();
-    };
-
-    private scheduleClose() {
-        if (this.scheduledHide) {
-            clearTimeout(this.scheduledHide);
-        }
-        this.scheduledHide = setTimeout(() => {
-            this.hide();
-        }, visibleDurationSeconds * 1000);
-    }
-
     public hide() {
         if (this.scheduledHide) {
             clearTimeout(this.scheduledHide);
@@ -93,5 +79,19 @@ export class FeedbackUI extends Component<Props, State> {
                 show: false,
             });
         }, transitionDurationMilliseconds);
+    }
+
+    private onActionClick = () => {
+        this.props.onActionClick?.call(null);
+        this.hide();
+    };
+
+    private scheduleClose() {
+        if (this.scheduledHide) {
+            clearTimeout(this.scheduledHide);
+        }
+        this.scheduledHide = setTimeout(() => {
+            this.hide();
+        }, visibleDurationSeconds * 1000);
     }
 }

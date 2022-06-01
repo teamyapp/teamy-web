@@ -1,13 +1,12 @@
 import React, { Component, ReactNode } from 'react';
 
-import { and, or } from '@lib/data/filter';
+import { or } from '@lib/data/filter';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
-import { getActions } from '@core/entity/taskAction';
 
 import styles from './PersonalStatus.module.scss';
 import { DeliveredSection } from './TaskListSections/DeliveredSection';
@@ -44,10 +43,8 @@ export class PersonalStatusUI extends Component<Props> {
         const deliveredTasks = this.props.personalTasks.filter(
             deliveredColumnFilter,
         );
-        const upcomingTasks = this.props.personalTasks
-            .filter(
-                upcomingColumnFilter,
-            );
+        const upcomingTasks =
+            this.props.personalTasks.filter(upcomingColumnFilter);
         return (
             <div className={styles.PersonalStatus}>
                 <div

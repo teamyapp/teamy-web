@@ -157,7 +157,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
 
     private onUserLastNameChange = (newName: string) => {
         this.setState({
-            editingUserLastName: newName
+            editingUserLastName: newName,
         });
     };
 
