@@ -5,7 +5,7 @@ import { RemoteThread } from './remoteThread';
 import { RemoteUser } from './remoteUser';
 
 export interface RemoteTask {
-    id: number;
+    id: string;
     goal?: string;
     context?: string;
     creator: RemoteUser;
@@ -16,5 +16,6 @@ export interface RemoteTask {
     createdAt?: Date;
     updatedAt?: Date;
     dueAt?: Date;
+    effort?: number;
     availableActions?: RemoteTaskAction[];
 }

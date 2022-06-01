@@ -27,9 +27,11 @@ export class User {
     }
 
     get teams(): Team[] {
-        return this.userState.teamIds.map(
-            (teamId: number) =>
-                new Team(this.appState, this.appState.teams[teamId]),
+        return (
+            this.userState.teamIds?.map(
+                (teamId: number) =>
+                    new Team(this.appState, this.appState.teams[teamId]),
+            ) || []
         );
     }
 }

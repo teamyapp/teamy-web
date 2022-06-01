@@ -8,27 +8,30 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
 import { User } from '@core/entity/user';
+import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './UserSettingsModal.component.module.scss';
 
-interface IProps {
+interface Props {
     deps: Deps;
     onUserUpdated?: () => void;
 }
 
-interface IState {
+interface State {
     user?: User;
     defaultTabIndex: number;
     currentTabIndex: number;
-    initialUserFirstName?: string;
-    initialUserLastName?: string;
+    editingUserFirstName?: string;
+    editingUserLastName?: string;
 }
 
-export class UserSettingsModalComponent extends Component<IProps, IState> {
+export class UserSettingsModalComponent extends Component<Props, State> {
+    private readonly graphSource: GraphSource;
     private readonly modalRef = createRef<ModalUI>();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
+        this.graphSource = props.deps.graphSource;
         this.state = {
             defaultTabIndex: 0,
             currentTabIndex: 0,
@@ -70,8 +73,8 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
     public open = (user: User) => {
         this.setState({
             user,
-            initialUserFirstName: user.firstName || '',
-            initialUserLastName: user.lastName || '',
+            editingUserFirstName: user.firstName || '',
+            editingUserLastName: user.lastName || '',
         });
 
         this.modalRef.current?.open();
@@ -85,14 +88,14 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
                         <div className={styles.UserProfile}>
                             {this.state.user?.profileUrl ? (
                                 <img
-                                    alt={`${this.state.user?.firstName} ${this.state.user?.lastName}`}
+                                    alt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
                                     className={styles.UserProfileImg}
                                     src={this.state.user?.profileUrl}
                                 />
                             ) : (
                                 <div className={styles.DefaultUserProfile}>
-                                    {this.state.user?.firstName &&
-                                        this.state.user?.firstName[0].toUpperCase()}
+                                    {this.state.editingUserLastName &&
+                                        this.state.editingUserLastName[0].toUpperCase()}
                                 </div>
                             )}
 
@@ -109,14 +112,14 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
                         <div className={styles.UserNameSection}>
                             <div className={styles.Row}>
                                 <TextFieldUI
-                                    value={this.state.user?.firstName}
+                                    value={this.state.editingUserFirstName}
                                     label={'First name'}
                                     onChange={this.onUserFirstNameChange}
                                 />
                             </div>
                             <div className={styles.Row}>
                                 <TextFieldUI
-                                    value={this.state.user?.lastName}
+                                    value={this.state.editingUserLastName}
                                     label={'Last name'}
                                     onChange={this.onUserLastNameChange}
                                 />
@@ -148,22 +151,23 @@ export class UserSettingsModalComponent extends Component<IProps, IState> {
 
     private onUserFirstNameChange = (newName: string) => {
         this.setState({
-            user: Object.assign({}, this.state.user, {
-                firstName: newName,
-            }),
+            editingUserFirstName: newName,
         });
     };
 
     private onUserLastNameChange = (newName: string) => {
         this.setState({
-            user: Object.assign({}, this.state.user, {
-                lastName: newName,
-            }),
+            editingUserLastName: newName,
         });
     };
 
     private onSaveUserProfileClick = async () => {
-        await this.props.deps.userService.updateUser(this.state.user!);
+        const user = this.state.user!;
+        await this.graphSource.updateUser(user.id, {
+            firstName: this.state.editingUserFirstName!,
+            lastName: this.state.editingUserLastName!,
+            profileUrl: user.profileUrl,
+        });
         this.props.onUserUpdated?.call(null);
         await this.props.deps.feedbackPubSub.publish({
             type: 'UserProfileUpdated',

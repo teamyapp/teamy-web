@@ -16,6 +16,7 @@ import styles from './FilterList.component.module.scss';
 
 interface Props {
     deps: Deps;
+    teamMembers: User[];
     taskFiltersData: TaskFiltersData;
     taskFilters: TaskFilters;
     onTaskFiltersDataChange?: (taskFiltersData: TaskFiltersData) => void;
@@ -23,7 +24,6 @@ interface Props {
 }
 
 interface State {
-    teamMembers: User[];
     selectedTaskOwners: Set<string>;
 }
 
@@ -34,7 +34,6 @@ export class FilterListComponent extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            teamMembers: [],
             selectedTaskOwners: props.taskFiltersData.selectedTaskOwners,
         };
     }
@@ -62,13 +61,7 @@ export class FilterListComponent extends Component<Props, State> {
         );
     }
 
-    public async componentDidMount() {
-        const teamMembers =
-            await this.props.deps.teamService.fetchTeamMembers();
-        this.setState({
-            teamMembers,
-        });
-    }
+    public async componentDidMount() {}
 
     private renderTimeRangeFilterGroup() {
         return (
@@ -111,7 +104,7 @@ export class FilterListComponent extends Component<Props, State> {
                         />
                         <div className={styles.Label}>All</div>
                     </div>
-                    {this.state.teamMembers.map(this.renderOption)}
+                    {this.props.teamMembers.map(this.renderOption)}
                     <div className={`${styles.Input} ${styles.Option}`}>
                         <input
                             type={'checkbox'}
@@ -254,8 +247,7 @@ export class FilterListComponent extends Component<Props, State> {
         const filters = Array.from(this.state.selectedTaskOwners).map(
             (key: string): Filter<Task> => {
                 if (key === userUnassigned) {
-                    return (task: Task) =>
-                        !task.owner || task.owner.id === -1;
+                    return (task: Task) => !task.owner || task.owner.id === -1;
                 } else if (key.startsWith(userPrefix)) {
                     const parts = key.split('/');
                     return ownedBy(parseInt(parts[1]));

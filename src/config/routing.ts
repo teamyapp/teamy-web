@@ -5,11 +5,14 @@ export const absoluteRootPath = `${window.location.protocol}//${window.location.
 const teamIdParam = 'teamId';
 const tabIdParam = 'tabId';
 const taskIdParam = 'taskId';
+const invitationIdParam = 'id';
 const invitationCodeParam = 'code';
 
 export const getTeamId = (params?: Params) => params?.pathParams[teamIdParam];
 export const getTabId = (params?: Params) => params?.pathParams[tabIdParam];
 export const getTaskId = (params?: Params) => params?.pathParams[taskIdParam];
+export const getInvitationId = (params?: Params) =>
+    params?.queryParams[invitationIdParam];
 export const getInvitationCode = (params?: Params) =>
     params?.queryParams[invitationCodeParam];
 
@@ -35,5 +38,5 @@ export const executionTaskPath = (
 
 export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`;
 
-export const invitationLink = (code: string) =>
-    `${absoluteRootPath}${invitationRoutePattern}?code=${code}`;
+export const invitationLink = (invitationId: number, code: string) =>
+    `${absoluteRootPath}${invitationRoutePattern}?id=${invitationId}&code=${code}`;

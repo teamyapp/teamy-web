@@ -31,22 +31,29 @@ export class Team {
         );
     }
 
+    get owner(): User {
+        return new User(
+            this.appState,
+            this.appState.users[this.teamState.ownerUserId],
+        );
+    }
+
     get members(): User[] {
-        return this.teamState.memberUserIds.map(
+        return this.teamState.memberUserIds?.map(
             (userId: number) =>
                 new User(this.appState, this.appState.users[userId]),
         );
     }
 
     get tasks(): Task[] {
-        return this.teamState.taskIds.map(
+        return this.teamState.taskIds?.map(
             (taskId: number) =>
                 new Task(this.appState, this.appState.tasks[taskId]),
         );
     }
 
     get invitations(): Invitation[] {
-        return this.teamState.invitationIds.map(
+        return this.teamState.invitationIds?.map(
             (invitationId: number) =>
                 new Invitation(
                     this.appState,

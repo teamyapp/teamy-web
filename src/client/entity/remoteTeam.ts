@@ -3,11 +3,12 @@ import { RemoteTask } from './remoteTask';
 import { RemoteUser } from './remoteUser';
 
 export interface RemoteTeam {
-    id: number;
+    id: string;
     name?: string;
     iconUrl?: string;
-    createdAt?: Date;
+    createdAt?: string;
     creator?: RemoteUser;
+    owner?: RemoteUser;
     members?: RemoteUser[];
     tasks?: RemoteTask[];
     invitations?: RemoteInvitation[];

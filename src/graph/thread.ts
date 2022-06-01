@@ -11,7 +11,7 @@ export class Thread {
     }
 
     get messages(): Message[] {
-        return this.threadState.messageIds.map(
+        return this.threadState.messageIds?.map(
             (messageId: number) =>
                 new Message(this.appState, this.appState.messages[messageId]),
         );

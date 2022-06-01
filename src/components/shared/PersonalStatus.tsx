@@ -1,27 +1,19 @@
 import React, { Component, ReactNode } from 'react';
 
-import { and, or } from '@lib/data/filter';
+import { or } from '@lib/data/filter';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
-import { getActions } from '@core/entity/taskAction';
 
 import styles from './PersonalStatus.module.scss';
 import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { NeedAttentionSection } from './TaskListSections/NeedAttentionSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
 
-const upcomingColumnFilter = (needAttentionTaskId: number) =>
-    or<Task>(
-        filters.upcoming,
-        and(
-            filters.inProgress,
-            (task: Task) => task.id !== needAttentionTaskId,
-        ),
-    );
+const upcomingColumnFilter = or(filters.upcoming, filters.paused);
 const deliveredColumnFilter = filters.delivered;
 
 interface Props {
@@ -51,11 +43,8 @@ export class PersonalStatusUI extends Component<Props> {
         const deliveredTasks = this.props.personalTasks.filter(
             deliveredColumnFilter,
         );
-        const upcomingTasks = this.props.personalTasks
-            .filter(
-                upcomingColumnFilter(this.props.needAttentionTask?.id || -1),
-            )
-            .map(withUpcomingActions);
+        const upcomingTasks =
+            this.props.personalTasks.filter(upcomingColumnFilter);
         return (
             <div className={styles.PersonalStatus}>
                 <div
@@ -125,13 +114,4 @@ export class PersonalStatusUI extends Component<Props> {
             </div>
         );
     }
-}
-
-function withUpcomingActions(task: Task): Task {
-    if (task.status === 'UPCOMING') {
-        return task;
-    }
-    return Object.assign<any, Task, Partial<Task>>({}, task, {
-        availableActions: getActions('UPCOMING'),
-    });
 }

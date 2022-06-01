@@ -11,7 +11,7 @@ import { FormatService } from '@core/service/format.service';
 import styles from './Thread.module.scss';
 import { UserProfileUI } from './UserProfile';
 
-interface IProps {
+interface Props {
     messages: Message[];
     editorUserId: number;
     postButtonLabel?: string;
@@ -20,15 +20,15 @@ interface IProps {
     onDeleteMessage?: (messageId: number) => void;
 }
 
-interface IState {
+interface State {
     editingMessageId: number;
-    editingMessageContent?: string;
+    editingMessageBody?: string;
 }
 
-export class ThreadUI extends Component<IProps, IState> {
+export class ThreadUI extends Component<Props, State> {
     private readonly textAreaRef = createRef<TextAreaUI>();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             editingMessageId: -1,
@@ -112,7 +112,7 @@ export class ThreadUI extends Component<IProps, IState> {
                         {this.state.editingMessageId === message.id ? (
                             <div className={styles.TextArea}>
                                 <TextAreaUI
-                                    content={message.content}
+                                    content={message.body}
                                     autoFocus={true}
                                     onChange={this.onEditingMessageChange}
                                     onBlur={this.onEditingMessageBlur}
@@ -120,7 +120,7 @@ export class ThreadUI extends Component<IProps, IState> {
                             </div>
                         ) : (
                             <div className={styles.MessageContent}>
-                                {message.content}
+                                {message.body}
                             </div>
                         )}
                     </div>
@@ -143,7 +143,7 @@ export class ThreadUI extends Component<IProps, IState> {
         return () => {
             this.setState({
                 editingMessageId: message.id,
-                editingMessageContent: message.content,
+                editingMessageBody: message.body,
             });
         };
     };
@@ -154,9 +154,9 @@ export class ThreadUI extends Component<IProps, IState> {
         };
     };
 
-    private onEditingMessageChange = (messageContent: string) => {
+    private onEditingMessageChange = (messageBody: string) => {
         this.setState({
-            editingMessageContent: messageContent,
+            editingMessageBody: messageBody,
         });
     };
 
@@ -164,7 +164,7 @@ export class ThreadUI extends Component<IProps, IState> {
         await this.props.onUpdateMessage?.call(
             null,
             this.state.editingMessageId,
-            this.state.editingMessageContent || '',
+            this.state.editingMessageBody || '',
         );
         this.setState({
             editingMessageId: -1,

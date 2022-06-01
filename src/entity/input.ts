@@ -1,26 +1,57 @@
-import { TaskStatus } from './taskStatus';
+export interface CreateUserInput {
+    lastName: string;
+    firstName: string;
+    profileUrl?: string;
+}
 
-export interface CreateTaskInput {
-    goal: string;
-    context?: string;
-    dueAt?: string;
-    ownerUserId?: number;
-    status?: TaskStatus;
+export interface UpdateUserInput {
+    lastName: string;
+    firstName: string;
+    profileUrl?: string;
 }
 
 export interface CreateTeamInput {
     name: string;
 }
 
+export interface UpdateTeamInput {
+    name: string;
+    iconUrl?: string;
+    ownerUserId: number;
+}
+
+export interface CreateTaskInput {
+    goal: string;
+    context?: string;
+    ownerUserId?: number;
+    dueAt?: Date;
+}
+
+export interface UpdateTaskInput {
+    goal: string;
+    context?: string;
+    ownerUserId?: number;
+    owningTeamId: number;
+    effort?: number;
+    dueAt?: Date;
+}
+
+export interface CreateMessageInput {
+    body: string;
+}
+
+export interface UpdateMessageInput {
+    body: string;
+}
+
 export interface CreateInvitationInput {
-    teamId: number;
-    receiverFirstName: string;
-    receiverLastName: string;
+    receiverFirstName?: string;
+    receiverLastName?: string;
     expireAt: Date;
 }
 
-export interface CreateUserInput {
-    lastName: string;
-    firstName: string;
-    profileUrl?: string;
+export interface UpdateInvitationInput {
+    receiverFirstName?: string;
+    receiverLastName?: string;
+    expireAt: Date;
 }

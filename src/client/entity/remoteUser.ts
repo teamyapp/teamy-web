@@ -1,7 +1,7 @@
 import { RemoteTeam } from './remoteTeam';
 
 export interface RemoteUser {
-    id: number;
+    id: string;
     firstName?: string;
     lastName?: string;
     profileUrl?: string;

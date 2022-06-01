@@ -1,6 +1,6 @@
 import { RemoteMessage } from './remoteMessage';
 
 export interface RemoteThread {
-    id: number;
+    id: string;
     messages?: RemoteMessage[];
 }

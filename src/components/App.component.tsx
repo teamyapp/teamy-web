@@ -4,7 +4,6 @@ import * as csp from '@lib/csp/csp';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
-import { LocalStore } from '@lib/store/localStore';
 import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 
@@ -23,9 +22,8 @@ import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
-import { MutationEvent } from '@core/event/mutation';
 import { UserActionEvent } from '@core/event/userAction';
-import { IAppState } from '@core/state/state';
+import { GraphSource } from '@core/graph/graphSource';
 
 import { CloudComponent } from '../cloud/Cloud.component';
 import styles from './App.component.module.scss';
@@ -50,6 +48,7 @@ interface Props {
 
 interface State {
     me?: User;
+    currentTeam?: Team;
     teams: Team[];
     activeTeamId?: number;
     isDrawerOpen: boolean;
@@ -73,9 +72,9 @@ const acceptedRoutePatterns = [
 
 export class AppComponent extends Component<Props, State> {
     private readonly router: Router;
+    private readonly graphSource: GraphSource;
     private readonly identityClient: IdentityClient;
 
-    private readonly localStore: LocalStore<IAppState, MutationEvent>;
     private readonly headerRef = createRef<HeaderComponent>();
     private readonly teamSettingsModalRef =
         createRef<TeamSettingsModalComponent>();
@@ -84,7 +83,7 @@ export class AppComponent extends Component<Props, State> {
     private readonly userModalRef = createRef<UserSettingsModalComponent>();
     private readonly createTeamModalRef = createRef<CreateTeamModalComponent>();
 
-    private stateChangeChan?: csp.PopChannel<IAppState | undefined>;
+    private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
 
@@ -92,7 +91,7 @@ export class AppComponent extends Component<Props, State> {
         super(props);
         this.router = props.deps.router;
         this.identityClient = props.deps.identityClient;
-        this.localStore = props.deps.localStore;
+        this.graphSource = props.deps.graphSource;
         this.state = {
             isDrawerOpen: false,
             teams: [],
@@ -134,6 +133,7 @@ export class AppComponent extends Component<Props, State> {
                                 deps={this.props.deps}
                                 ref={this.headerRef}
                                 me={this.state.me}
+                                currentTeam={this.state.currentTeam}
                                 isDrawerOpen={this.state.isDrawerOpen}
                                 taskFilters={this.state.taskFilters}
                                 onMenuToggle={this.onMenuToggle}
@@ -170,7 +170,6 @@ export class AppComponent extends Component<Props, State> {
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
                     onAddTeamMemberClick={this.onAddTeamMembersClick}
-                    onTeamUpdated={this.onTeamUpdated}
                 />
                 <AddTeamMembersModalComponent
                     deps={this.props.deps}
@@ -180,7 +179,6 @@ export class AppComponent extends Component<Props, State> {
                 <UserSettingsModalComponent
                     ref={this.userModalRef}
                     deps={this.props.deps}
-                    onUserUpdated={this.onUserUpdated}
                 />
                 <CreateTeamModalComponent
                     ref={this.createTeamModalRef}
@@ -196,24 +194,32 @@ export class AppComponent extends Component<Props, State> {
 
     public async componentDidMount() {
         this.monitorStateChanges();
-        await this.monitorRouteChanges();
+        this.monitorRouteChanges();
         this.monitorUserActions();
         this.userActionChan =
             this.props.deps.shortcutMonitor.subscribeUserAction();
     }
 
+    public componentWillUnmount() {
+        this.stateChangeChan?.close();
+        this.routeChangeChan?.close();
+        this.userActionChan?.close();
+        this.props.deps.shortcutMonitor.dispose();
+    }
+
     private monitorStateChanges() {
-        this.stateChangeChan = this.localStore.subscribeStateChange();
+        this.stateChangeChan = this.graphSource.subscribeStateChange();
         (async () => {
             while (true) {
                 console.log('waiting for localStore state changes');
-                const state = await this.stateChangeChan!.pop();
-                if (state === undefined) {
+                const hasChanged = await this.stateChangeChan!.pop();
+                if (hasChanged === undefined) {
                     // check undefined instead of falsy because
                     // a falsy data could be valid data per channel's concern.
                     return;
                 }
-                this.updateState(state);
+
+                this.updateState();
             }
         })().then();
     }
@@ -235,14 +241,11 @@ export class AppComponent extends Component<Props, State> {
                         this.identityClient.trySignIn();
                         continue;
                     } else {
-                        const me = await this.props.deps.userService.fetchMe(
-                            'network-only',
-                        );
+                        await this.graphSource.syncCurrentUserWithTeams();
+                        const me = this.graphSource.currentUser()?.id;
                         if (!me) {
                             this.trySignUp(routeUpdate.routePattern);
                             continue;
-                        } else {
-                            await this.props.deps.networkStateSyncer.syncState();
                         }
                     }
                 }
@@ -270,6 +273,8 @@ export class AppComponent extends Component<Props, State> {
                     const teamId = parseInt(teamIdParam);
                     if (this.state.activeTeamId !== teamId) {
                         this.onActiveTeamSelect(teamId);
+                    } else {
+                        await this.graphSource.syncCurrentTeam();
                     }
                 }
             }
@@ -292,13 +297,6 @@ export class AppComponent extends Component<Props, State> {
         })().then();
     }
 
-    public componentWillUnmount() {
-        this.stateChangeChan?.close();
-        this.routeChangeChan?.close();
-        this.userActionChan?.close();
-        this.props.deps.shortcutMonitor.dispose();
-    }
-
     private renderNoActiveTeam() {
         const teamOptions: Option[] = this.state.teams.map((team) => ({
             key: `${team.id}`,
@@ -316,7 +314,9 @@ export class AppComponent extends Component<Props, State> {
                                 <div className={styles.DropDown}>
                                     <DropDownList
                                         options={teamOptions}
-                                        onSelectOption={this.onActiveTeamOptionSelect}
+                                        onSelectOption={
+                                            this.onActiveTeamOptionSelect
+                                        }
                                     />
                                 </div>
                             </div>
@@ -340,7 +340,7 @@ export class AppComponent extends Component<Props, State> {
 
     private onActiveTeamOptionSelect = (teamId: string) => {
         this.onActiveTeamSelect(parseInt(teamId));
-    }
+    };
 
     private onTaskFiltersChange = (taskFilters: TaskFilters) => {
         this.setState({
@@ -379,33 +379,24 @@ export class AppComponent extends Component<Props, State> {
     };
 
     private onActiveTeamSelect = (teamId: number): void => {
-        this.localStore.mutate({
-            type: 'UpdateActiveTeam',
-            teamId: teamId,
-        });
+        this.graphSource.setCurrentTeam(teamId);
     };
 
     private onTeamMembersAdded = async (teamId: number) => {
-        await this.props.deps.networkStateSyncer.syncState();
         this.teamSettingsModalRef.current?.open(teamId, 1);
     };
 
-    private onTeamUpdated = () => {
-        this.props.deps.networkStateSyncer.syncState();
-    };
-
-    private onUserUpdated = () => {
-        this.props.deps.networkStateSyncer.syncState();
-    };
-
-    private updateState(state: IAppState) {
+    private updateState() {
+        const currentUser = this.graphSource.currentUser();
+        const currTeam = this.graphSource.currentTeam();
         this.setState({
-            me: state.currentUser,
-            teams: state.teams,
-            activeTeamId: state.activeTeamId,
+            me: currentUser,
+            currentTeam: currTeam,
+            teams: currentUser?.teams || [],
+            activeTeamId: currTeam?.id,
         });
 
-        this.tryRedirect(state.activeTeamId);
+        this.tryRedirect(currTeam?.id);
     }
 
     private tryRedirect(activeTeamId?: number) {

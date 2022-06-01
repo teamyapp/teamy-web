@@ -2,18 +2,9 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
+import { CreateTeamInput, UpdateTeamInput } from '@core/client/entity/input';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteUser } from '@core/client/entity/remoteUser';
-
-export interface CreateTeamInput {
-    name: string;
-}
-
-export interface UpdateTeamInput {
-    name: string;
-    iconUrl?: string;
-    ownerUserId: number;
-}
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;
@@ -22,25 +13,33 @@ export class TeamClient {
         this.graphQLClient = graphQLClient;
     }
 
-    public createTeam(input: CreateTeamInput): Promise<RemoteTeam> {
+    public createTeam(team: CreateTeamInput): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
                     mutation createTeam($input: CreateTeamInput!) {
                         createTeam(team: $input) {
                             id
+                            name
+                            iconUrl
+                            owner {
+                                id
+                            }
+                            members {
+                                id
+                            }
                         }
                     }
                 `,
                 variables: {
-                    input,
+                    input: team,
                 },
             })
             .then((payload: any) => payload?.createTeam);
     }
 
     public updateTeam(
-        teamId: number,
+        teamId: string,
         input: UpdateTeamInput,
     ): Promise<RemoteTeam> {
         return this.graphQLClient
@@ -52,6 +51,8 @@ export class TeamClient {
                     ) {
                         updateTeam(teamId: $teamId, input: $input) {
                             id
+                            name
+                            iconUrl
                         }
                     }
                 `,
@@ -63,21 +64,45 @@ export class TeamClient {
             .then((payload: any) => payload?.updateTeam);
     }
 
-    public getTeamMembers(teamId: number): Promise<RemoteUser[]> {
-        // TODO: implement me
-        return Promise.resolve<any>({});
+    public getTeamMembers(teamId: string): Promise<RemoteUser[]> {
+        return this.graphQLClient
+            .query({
+                query: gql`
+                    query getTeamMembers($teamId: ID!) {
+                        teams(filter: { teamId: $teamId }) {
+                            members {
+                                id
+                                lastName
+                                firstName
+                                profileUrl
+                                createdAt
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                },
+            })
+            .then((payload: any) => payload?.teams[0]?.members);
     }
 
     public addMemberToTeam(
-        teamId: number,
-        memberUserId: number,
-    ): Promise<RemoteTeam> {
+        teamId: string,
+        memberUserId: string,
+    ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
-                    mutation addMemberToTeam($teamId: ID!, $memberId: ID!) {
-                        addMemberToTeam(teamId: $teamId, memberId: $memberId) {
+                    mutation addMemberToTeam($teamId: ID!, $memberUserId: ID!) {
+                        addMemberToTeam(
+                            teamId: $teamId
+                            memberUserId: $memberUserId
+                        ) {
                             id
+                            firstName
+                            lastName
+                            profileUrl
                         }
                     }
                 `,
@@ -90,21 +115,24 @@ export class TeamClient {
     }
 
     public removeMemberFromTeam(
-        teamId: number,
-        memberUserId: number,
-    ): Promise<RemoteTeam> {
+        teamId: string,
+        memberUserId: string,
+    ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
                     mutation removeMemberFromTeam(
                         $teamId: ID!
-                        $memberId: ID!
+                        $memberUserId: ID!
                     ) {
                         removeMemberFromTeam(
                             teamId: $teamId
-                            memberId: $memberId
+                            memberUserId: $memberUserId
                         ) {
                             id
+                            firstName
+                            lastName
+                            profileUrl
                         }
                     }
                 `,

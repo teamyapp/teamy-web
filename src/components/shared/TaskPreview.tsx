@@ -13,15 +13,15 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
+import { taskGoalLengthLimit } from '@core/config/config';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { FormatService } from '@core/service/format.service';
-import { goalLengthLimit } from '@core/service/task.service';
 
 import styles from './TaskPreview.module.scss';
 import { UserProfileUI } from './UserProfile';
 
-interface IProps {
+interface Props {
     canViewDetail: boolean;
     task: Task;
     isEditing?: boolean;
@@ -39,15 +39,15 @@ interface IProps {
     ) => void;
 }
 
-interface IState {
+interface State {
     editingTask?: Task;
     isEditing: boolean;
 }
 
-export class TaskPreviewUI extends Component<IProps, IState> {
+export class TaskPreviewUI extends Component<Props, State> {
     private ref = createRef<HTMLDivElement>();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             editingTask: this.props.task,
@@ -199,7 +199,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
         return this.state.isEditing ? (
             <textarea
                 autoFocus
-                maxLength={goalLengthLimit}
+                maxLength={taskGoalLengthLimit}
                 className={styles.GoalTextField}
                 value={this.state.editingTask?.goal || ''}
                 onChange={this.onGoalChange}
@@ -219,17 +219,17 @@ export class TaskPreviewUI extends Component<IProps, IState> {
 
     private renderAction = (action: TaskAction, index: number): ReactNode => {
         switch (action) {
-            case TaskAction.Start:
+            case 'START':
                 return this.renderStartTask(index);
-            case TaskAction.MarkComplete:
+            case 'MARK_COMPLETED':
                 return this.renderCompleteTask(index);
-            case TaskAction.ReportBlocked:
+            case 'REPORT_BLOCKED':
                 return TaskPreviewUI.renderReportBlocked(index);
-            case TaskAction.AssignOwner:
+            case 'ASSIGN_OWNER':
                 return this.renderAssignOwner(index);
-            case TaskAction.Delete:
+            case 'DELETE':
                 return this.renderDeleteTask(index);
-            case TaskAction.ViewDetail:
+            case 'VIEW_DETAIL':
                 return this.renderTaskDetail(index);
         }
     };
@@ -237,7 +237,7 @@ export class TaskPreviewUI extends Component<IProps, IState> {
     private renderActions(): ReactNode[] {
         let actions = this.props.task.availableActions;
         if (this.props.canViewDetail) {
-            actions = actions.concat(TaskAction.ViewDetail);
+            actions = actions.concat('VIEW_DETAIL');
         }
         return actions.map(this.renderAction);
     }
@@ -336,11 +336,10 @@ export class TaskPreviewUI extends Component<IProps, IState> {
     };
 }
 
-function byTheEndOf(dateString?: string): Date | undefined {
-    if (!dateString) {
+function byTheEndOf(date?: Date): Date | undefined {
+    if (!date) {
         return undefined;
     }
-    const date = new Date(dateString);
     date?.setHours(23);
     date?.setMinutes(59);
     date?.setSeconds(59);

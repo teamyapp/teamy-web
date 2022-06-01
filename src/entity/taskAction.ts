@@ -1,31 +1,27 @@
 import { TaskStatus } from '@core/entity/taskStatus';
 
-export enum TaskAction {
-    Start = 'START',
-    Delete = 'DELETE',
-    AssignOwner = 'ASSIGN_OWNER',
-    ReportBlocked = 'REPORT_BLOCKED',
-    MarkComplete = 'MARK_COMPLETE',
-    ViewDetail = 'VIEW_DETAIL',
-}
+export type TaskAction =
+    | 'START'
+    | 'DELETE'
+    | 'ASSIGN_OWNER'
+    | 'REPORT_BLOCKED'
+    | 'MARK_COMPLETED'
+    | 'VIEW_DETAIL';
 
-export function getActions(status: TaskStatus) {
+export function getActions(status: TaskStatus): TaskAction[] {
     switch (status) {
         case 'UPCOMING':
-            return [
-                TaskAction.Start,
-                TaskAction.Delete,
-                TaskAction.AssignOwner,
-            ];
-        case 'NEED_ATTENTION':
+            return ['START', 'DELETE', 'ASSIGN_OWNER'];
         case 'IN_PROGRESS':
             return [
-                TaskAction.MarkComplete,
-                TaskAction.ReportBlocked,
-                TaskAction.AssignOwner,
-                TaskAction.Delete,
+                'MARK_COMPLETED',
+                'REPORT_BLOCKED',
+                'ASSIGN_OWNER',
+                'DELETE',
             ];
         case 'DELIVERED':
-            return [TaskAction.Delete, TaskAction.AssignOwner];
+            return ['DELETE', 'ASSIGN_OWNER'];
+        default:
+            return [];
     }
 }

@@ -2,15 +2,11 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
+import {
+    CreateMessageInput,
+    UpdateMessageInput,
+} from '@core/client/entity/input';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
-
-export interface CreateMessageInput {
-    body: string;
-}
-
-export interface UpdateMessageInput {
-    body: string;
-}
 
 export class MessageClient {
     private readonly graphQLClient: GraphQLClient;
@@ -20,7 +16,7 @@ export class MessageClient {
     }
 
     public createMessage(
-        threadId: number,
+        threadId: string,
         input: CreateMessageInput,
     ): Promise<RemoteMessage> {
         return this.graphQLClient
@@ -32,19 +28,24 @@ export class MessageClient {
                     ) {
                         createMessage(threadId: $threadId, message: $message) {
                             id
+                            body
+                            thread {
+                                id
+                            }
+                            createdAt
                         }
                     }
                 `,
                 variables: {
                     threadId,
-                    input,
+                    message: input,
                 },
             })
             .then((payload: any) => payload?.createMessage);
     }
 
     public updateMessage(
-        messageId: number,
+        messageId: string,
         input: UpdateMessageInput,
     ): Promise<RemoteMessage> {
         return this.graphQLClient
@@ -56,6 +57,12 @@ export class MessageClient {
                     ) {
                         updateMessage(messageId: $messageId, input: $input) {
                             id
+                            body
+                            thread {
+                                id
+                            }
+                            createdAt
+                            updatedAt
                         }
                     }
                 `,
@@ -67,13 +74,16 @@ export class MessageClient {
             .then((payload: any) => payload?.updateMessage);
     }
 
-    public deleteMessage(messageId: number): Promise<RemoteMessage> {
+    public deleteMessage(messageId: string): Promise<RemoteMessage> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
                     mutation deleteMessage($messageId: ID!) {
                         deleteMessage(messageId: $messageId) {
                             id
+                            thread {
+                                id
+                            }
                         }
                     }
                 `,

@@ -2,10 +2,10 @@ import { RemoteThread } from './remoteThread';
 import { RemoteUser } from './remoteUser';
 
 export interface RemoteMessage {
-    id: number;
+    id: string;
     body?: string;
     author?: RemoteUser;
     thread?: RemoteThread;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: string;
+    updatedAt?: string;
 }

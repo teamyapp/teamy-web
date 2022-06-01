@@ -5,6 +5,7 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { absoluteRootPath } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
+import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './SignUp.component.module.scss';
 
@@ -15,8 +16,14 @@ interface Props {
 }
 
 export class SignUpComponent extends Component<Props> {
+    private readonly graphSource: GraphSource;
     private readonly firstNameTextFieldRef = createRef<TextFieldUI>();
     private readonly lastNameTextFieldRef = createRef<TextFieldUI>();
+
+    constructor(props: Props) {
+        super(props);
+        this.graphSource = props.deps.graphSource;
+    }
 
     public render(): ReactNode {
         return (
@@ -51,7 +58,7 @@ export class SignUpComponent extends Component<Props> {
     }
 
     private onCreateAccountClick = async () => {
-        await this.props.deps.userService.createUser({
+        await this.graphSource.createUser({
             firstName: this.firstNameTextFieldRef.current?.value || 'New',
             lastName: this.lastNameTextFieldRef.current?.value || 'User',
         });

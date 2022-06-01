@@ -1,5 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 
+import { or } from '@lib/data/filter';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import * as filters from '@core/data/task.filter';
@@ -13,7 +14,7 @@ import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { InProgressSection } from './TaskListSections/InProgressSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
 
-const upcomingColumnFilter = filters.upcoming;
+const upcomingColumnFilter = or(filters.upcoming, filters.paused);
 const inProgressColumnFilter = filters.inProgress;
 const deliveredColumnFilter = filters.delivered;
 
