@@ -40,6 +40,7 @@ interface Props {
 interface State {
     currentTabIndex: number;
     initialTeamName?: string;
+    newTeamName?: string;
     team?: Team;
     invitations: Invitation[];
     modalPosition?: Point;
@@ -65,7 +66,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 {this.state.team && (
                     <div className={styles.TeamSettingsModal}>
                         <div className={styles.Header}>
-                            Team {this.state.initialTeamName}
+                            Settings for {this.state.initialTeamName}
                             <div
                                 className={styles.CloseButton}
                                 onClick={this.onCloseButtonClick}
@@ -117,7 +118,8 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     public open = async (teamId: number, defaultTabIndex: number = 0) => {
-        await this.graphSource.syncTeam(teamId);
+        await this.graphSource.syncTeamMembers(teamId);
+        await this.graphSource.syncInvitations(teamId);
         await this.updateState(teamId, defaultTabIndex);
         this.modalRef.current?.open();
     };
@@ -134,6 +136,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             currentTabIndex: defaultTabIndex,
             team,
             initialTeamName: team?.name,
+            newTeamName: team?.name,
             invitations,
         });
         setTimeout(() => {
@@ -377,21 +380,19 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private onTeamNameChange = (newName: string) => {
         this.setState({
-            team: Object.assign({}, this.state.team, {
-                name: newName,
-            }),
+            newTeamName: newName,
         });
     };
 
-    private onSaveTeamProfileClick = () => {
+    private onSaveTeamProfileClick = async () => {
         const team = this.state.team!;
-        this.graphSource.updateTeam(team.id, {
-            name: team.name,
+        await this.graphSource.updateTeam(team.id, {
+            name: this.state.newTeamName!,
             iconUrl: team.iconUrl,
             ownerUserId: team.owner.id,
         });
         this.props.onTeamUpdated?.call(null);
-        this.props.deps.feedbackPubSub.publish({
+        await this.props.deps.feedbackPubSub.publish({
             type: 'TeamProfileUpdated',
         });
     };

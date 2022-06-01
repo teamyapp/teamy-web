@@ -1,3 +1,5 @@
+import { InvitationClient } from '@core/client/invitation.client';
+import { MessageClient } from '@core/client/message.client';
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
@@ -33,14 +35,16 @@ export function initDeps(): Deps {
         absoluteRootPath,
     );
     const config = getConfig(env);
-    const teamyGraphQLV2Client = new GraphQLClient(
+    const teamyGraphQLClient = new GraphQLClient(
         identityClient,
-        config.teamyGraphQLV2Endpoint,
+        config.teamyGraphQLEndpoint,
     );
-    const userClient = new UserClient(teamyGraphQLV2Client);
-    const taskClient = new TaskClient(teamyGraphQLV2Client);
-    const teamClient = new TeamClient(teamyGraphQLV2Client);
-    const graphSource = new GraphSource(userClient, taskClient, teamClient);
+    const userClient = new UserClient(teamyGraphQLClient);
+    const taskClient = new TaskClient(teamyGraphQLClient);
+    const teamClient = new TeamClient(teamyGraphQLClient);
+    const invitationClient = new InvitationClient(teamyGraphQLClient);
+    const messageClient = new MessageClient(teamyGraphQLClient);
+    const graphSource = new GraphSource(userClient, taskClient, teamClient, invitationClient, messageClient);
     const router = createBrowserRouter();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
     const dragAndDropController = new DragAndDropController();

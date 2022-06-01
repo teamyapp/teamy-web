@@ -70,6 +70,10 @@ export class Task {
         return this.taskState.dueAt;
     }
 
+    get effort(): number | undefined {
+        return this.taskState.effort;
+    }
+
     get availableActions(): TaskAction[] {
         return this.taskState.availableActions;
     }

@@ -35,7 +35,7 @@ export class UserClient {
                     }
                 `,
             })
-            .then((payload: any) => payload?.getMeWithTeams);
+            .then((payload: any) => payload?.me);
     }
 
     public getMe(): Promise<RemoteUser> {
@@ -53,7 +53,7 @@ export class UserClient {
                     }
                 `,
             })
-            .then((payload: any) => payload?.getMe);
+            .then((payload: any) => payload?.me);
     }
 
     public createUser(input: CreateUserInput): Promise<RemoteUser> {
@@ -74,18 +74,21 @@ export class UserClient {
     }
 
     public updateUser(
-        userId: number,
+        userId: string,
         input: UpdateUserInput,
     ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
-                    mutation updateTask(
+                    mutation updateUser(
                         $userId: ID!
                         $input: UpdateUserInput!
                     ) {
                         updateUser(userId: $userId, input: $input) {
                             id
+                            firstName
+                            lastName
+                            profileUrl
                         }
                     }
                 `,

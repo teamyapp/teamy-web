@@ -17,7 +17,7 @@ import { UserProfileUI } from './UserProfile';
 interface Props {
     deps: Deps;
     me: User;
-    currentTeam: Team;
+    currentTeam?: Team;
     isDrawerOpen: boolean;
     taskFilters: TaskFilters;
     onMenuToggle?: () => void;
@@ -59,7 +59,7 @@ export class HeaderComponent extends Component<Props, State> {
                         )}
                     </div>
                     <div className={styles.TeamName}>
-                        {this.props.currentTeam.name}
+                        {this.props.currentTeam?.name}
                     </div>
                 </div>
                 <SpacerUI />
@@ -87,7 +87,7 @@ export class HeaderComponent extends Component<Props, State> {
                             <FilterListComponent
                                 deps={this.props.deps}
                                 teamMembers={
-                                    this.props.currentTeam.members || []
+                                    this.props.currentTeam?.members || []
                                 }
                                 taskFiltersData={this.state.taskFiltersData}
                                 taskFilters={this.props.taskFilters}

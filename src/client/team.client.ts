@@ -4,7 +4,7 @@ import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteUser } from '@core/client/entity/remoteUser';
-import { CreateTeamInput, UpdateTeamInput } from '@core/entity/input';
+import { CreateTeamInput, UpdateTeamInput } from '@core/client/entity/input';
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;
@@ -20,6 +20,14 @@ export class TeamClient {
                     mutation createTeam($input: CreateTeamInput!) {
                         createTeam(team: $input) {
                             id
+                            name
+                            iconUrl
+                            owner {
+                                id
+                            }
+                            members {
+                                id
+                            }
                         }
                     }
                 `,
@@ -31,7 +39,7 @@ export class TeamClient {
     }
 
     public updateTeam(
-        teamId: number,
+        teamId: string,
         input: UpdateTeamInput,
     ): Promise<RemoteTeam> {
         return this.graphQLClient
@@ -43,6 +51,8 @@ export class TeamClient {
                     ) {
                         updateTeam(teamId: $teamId, input: $input) {
                             id
+                            name
+                            iconUrl
                         }
                     }
                 `,
@@ -54,21 +64,44 @@ export class TeamClient {
             .then((payload: any) => payload?.updateTeam);
     }
 
-    public getTeamMembers(teamId: number): Promise<RemoteUser[]> {
-        // TODO: implement me
-        return Promise.resolve<any>({});
+    public getTeamMembers(teamId: string): Promise<RemoteUser[]> {
+        return this.graphQLClient
+        .query({
+            query: gql`
+                query getTeamMembers($teamId: ID!) {
+                    teams(filter: {
+                        teamId: $teamId
+                    }) {
+                        members {
+                            id
+                            lastName
+                            firstName
+                            profileUrl
+                            createdAt
+                        }
+                    }
+                }
+            `,
+            variables: {
+                teamId
+            },
+        })
+        .then((payload: any) => payload?.teams[0]?.members);
     }
 
     public addMemberToTeam(
-        teamId: number,
-        memberUserId: number,
-    ): Promise<RemoteTeam> {
+        teamId: string,
+        memberUserId: string,
+    ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
-                    mutation addMemberToTeam($teamId: ID!, $memberId: ID!) {
-                        addMemberToTeam(teamId: $teamId, memberId: $memberId) {
+                    mutation addMemberToTeam($teamId: ID!, $memberUserId: ID!) {
+                        addMemberToTeam(teamId: $teamId, memberUserId: $memberUserId) {
                             id
+                            firstName
+                            lastName
+                            profileUrl
                         }
                     }
                 `,
@@ -81,27 +114,30 @@ export class TeamClient {
     }
 
     public removeMemberFromTeam(
-        teamId: number,
-        memberUserId: number,
-    ): Promise<RemoteTeam> {
+        teamId: string,
+        memberUserId: string,
+    ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
                     mutation removeMemberFromTeam(
                         $teamId: ID!
-                        $memberId: ID!
+                        $memberUserId: ID!
                     ) {
                         removeMemberFromTeam(
                             teamId: $teamId
-                            memberId: $memberId
+                            memberUserId: $memberUserId
                         ) {
                             id
+                            firstName
+                            lastName
+                            profileUrl
                         }
                     }
                 `,
                 variables: {
                     teamId,
-                    memberUserId,
+                    memberUserId
                 },
             })
             .then((payload: any) => payload?.removeMemberFromTeam);

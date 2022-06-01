@@ -22,8 +22,6 @@ interface Props {
 interface State {
     me?: User;
     hasError: boolean;
-    invitationId?: number;
-    invitationCode?: string;
     invitation?: Invitation;
 }
 
@@ -44,6 +42,7 @@ export class InvitationComponent extends Component<Props, State> {
         const code = getInvitationCode(
             this.props.deps.router.currentRouteUpdate.params,
         );
+
         if (!code || !id) {
             this.setState({
                 hasError: true,
@@ -51,10 +50,9 @@ export class InvitationComponent extends Component<Props, State> {
             return;
         }
 
-        const invitation = await this.graphSource.invitation(
-            parseInt(id),
-            code,
-        );
+        const invitationId = parseInt(id);
+        await this.graphSource.syncInvitation(invitationId, code);
+        const invitation = await this.graphSource.invitation(invitationId);
         if (!invitation) {
             this.setState({
                 hasError: true,
@@ -64,7 +62,6 @@ export class InvitationComponent extends Component<Props, State> {
 
         if (invitation.status !== 'PENDING') {
             this.setState({
-                invitation,
                 hasError: true,
             });
             return;
@@ -74,9 +71,7 @@ export class InvitationComponent extends Component<Props, State> {
         const currentUser = this.graphSource.currentUser();
         this.setState({
             me: currentUser,
-            invitationId: parseInt(id),
-            invitationCode: code,
-            invitation,
+            invitation
         });
     }
 
@@ -102,7 +97,8 @@ export class InvitationComponent extends Component<Props, State> {
                             </div>
                         </Fragment>
                     ) : (
-                        <Fragment>
+                        this.state.invitation && (
+                            <Fragment>
                             <div className={styles.Intro}>
                                 <div>
                                     <div className={styles.Greeting}>
@@ -171,7 +167,7 @@ export class InvitationComponent extends Component<Props, State> {
                                 </div>
                             </div>
                         </Fragment>
-                    )}
+                        ))}
                 </div>
             </div>
         );
@@ -179,8 +175,8 @@ export class InvitationComponent extends Component<Props, State> {
 
     private onAcceptClick = async () => {
         await this.graphSource.acceptInvitation(
-            this.state.invitationId!,
-            this.state.invitationCode!,
+            this.state.invitation?.id!,
+            this.state.invitation?.code!,
         );
         const teamId = this.state.invitation?.joiningTeam?.id!;
         await this.graphSource.setCurrentTeam(teamId);
@@ -188,9 +184,9 @@ export class InvitationComponent extends Component<Props, State> {
     };
 
     private onDeclineClick = async () => {
-        await this.graphSource.invitation(
-            this.state.invitationId!,
-            this.state.invitationCode!,
+        await this.graphSource.declineInvitation(
+            this.state.invitation?.id!,
+            this.state.invitation?.code!,
         );
         this.onGoHomePageClick();
     };

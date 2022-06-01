@@ -14,14 +14,7 @@ import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { NeedAttentionSection } from './TaskListSections/NeedAttentionSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
 
-const upcomingColumnFilter = (needAttentionTaskId: number) =>
-    or<Task>(
-        filters.upcoming,
-        and(
-            filters.inProgress,
-            (task: Task) => task.id !== needAttentionTaskId,
-        ),
-    );
+const upcomingColumnFilter = or(filters.upcoming, filters.paused);
 const deliveredColumnFilter = filters.delivered;
 
 interface Props {
@@ -53,9 +46,8 @@ export class PersonalStatusUI extends Component<Props> {
         );
         const upcomingTasks = this.props.personalTasks
             .filter(
-                upcomingColumnFilter(this.props.needAttentionTask?.id || -1),
-            )
-            .map(withUpcomingActions);
+                upcomingColumnFilter,
+            );
         return (
             <div className={styles.PersonalStatus}>
                 <div
@@ -125,13 +117,4 @@ export class PersonalStatusUI extends Component<Props> {
             </div>
         );
     }
-}
-
-function withUpcomingActions(task: Task): Task {
-    if (task.status === 'UPCOMING') {
-        return task;
-    }
-    return Object.assign<any, Task, Partial<Task>>({}, task, {
-        availableActions: getActions('UPCOMING'),
-    });
 }

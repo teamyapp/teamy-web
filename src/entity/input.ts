@@ -1,5 +1,3 @@
-import { TaskStatus } from './taskStatus';
-
 export interface CreateUserInput {
     lastName: string;
     firstName: string;

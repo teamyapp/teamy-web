@@ -13,5 +13,6 @@ export interface TaskState {
     createdAt: Date;
     updatedAt?: Date;
     dueAt?: Date;
+    effort?: number;
     availableActions: TaskAction[];
 }

@@ -1,3 +1,4 @@
+import { UpdateTaskInput } from '@core/entity/input';
 import classNames from 'classnames';
 import React, {
     Component,
@@ -16,7 +17,6 @@ import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
-import { Message } from '@core/entity/message';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/graph/graphSource';
 import { FormatService } from '@core/service/format.service';
@@ -39,8 +39,8 @@ interface Props {
 
 interface State {
     task?: Task;
-    comments: Message[];
-    meUserId?: number;
+    updatedTask?: UpdateTaskInput
+    currentUserId?: number;
     heightWithMargin: number;
 }
 
@@ -55,18 +55,17 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         super(props);
         this.graphSource = props.deps.graphSource;
         this.state = {
-            comments: [],
             heightWithMargin: 0,
         };
     }
 
     public render(): ReactNode {
-        const dueAt = this.state.task?.dueAt
-            ? new Date(this.state.task.dueAt)
+        const dueAt = this.state.updatedTask?.dueAt
+            ? new Date(this.state.updatedTask.dueAt)
             : undefined;
         return (
             <ModalUI ref={this.modalRef} onClose={this.props.onClose}>
-                {this.state.task && (
+                {this.state.updatedTask && this.state.task && (
                     <div
                         className={styles.ModalContent}
                         style={{
@@ -76,7 +75,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         }}
                     >
                         <div className={styles.Header}>
-                            Task #{this.state.task?.id}
+                            Task #{this.state.task.id}
                             <div
                                 className={styles.CloseButton}
                                 onClick={this.onCloseButtonClick}
@@ -124,7 +123,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                             <div className={styles.TaskDetailTop}>
                                 <div className={styles.LeftSection}>
                                     <TextFieldUI
-                                        value={this.state.task.goal}
+                                        value={this.state.updatedTask.goal}
                                         label={'Goal'}
                                         showLengthCounter={true}
                                         maxLength={taskGoalLengthLimit}
@@ -159,22 +158,22 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                             <div className={styles.Context}>
                                 <MarkdownEditorUI
                                     label={'Context'}
-                                    content={this.state.task.context}
+                                    content={this.state.updatedTask.context}
                                     ref={this.markdownEditorRef}
                                 />
                             </div>
                         </div>
                         <div className={styles.CommentsSection}>
                             <div className={styles.Title}>
-                                Comments&nbsp;({this.state.comments.length})
+                                Comments&nbsp;({this.state.task.comments.messages.length})
                             </div>
                             <div
                                 ref={this.threadDivRef}
                                 className={styles.Thread}
                             >
                                 <ThreadUI
-                                    messages={this.state.comments}
-                                    editorUserId={this.state.meUserId || -1}
+                                    messages={this.state.task.comments.messages}
+                                    editorUserId={this.state.currentUserId!}
                                     postButtonLabel={'Comment'}
                                     onPostMessage={this.onPostComment}
                                     onDeleteMessage={this.onDeleteMessage}
@@ -197,17 +196,29 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     public async open(taskId: number) {
-        // await this.refreshWithTaskId(taskId, 'cache-first');
-        this.adjustSize();
-        this.modalRef.current?.open();
-        this.scrollToCommentsBottom();
+        const syncPromise = this.graphSource.syncTask(taskId);
+        this.setState({
+            task: undefined
+        }, async ()=>{
+            this.modalRef.current?.open();
+            await syncPromise;
+            const task = this.graphSource.task(taskId);
+            this.setState({
+                task,
+                updatedTask: {
+                    goal: task.goal,
+                    context: task.context,
+                    ownerUserId: task.owner?.id,
+                    owningTeamId: task.owningTeam.id,
+                    effort: task.effort,
+                    dueAt: task.dateAt
+                },
+                currentUserId: this.graphSource.currentUser()?.id
+            });
+            this.adjustSize();
+            this.scrollToCommentsBottom();
+        });
     }
-
-    // public async refresh(policy: FetchPolicy) {
-    //     if (this.state.task) {
-    //         await this.refreshWithTaskId(this.state.task.id, policy);
-    //     }
-    // }
 
     private onCloseButtonClick = () => {
         this.modalRef.current?.close();
@@ -226,9 +237,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private onSaveButtonClick = async () => {
         if (this.state.task) {
             const dueAt = this.dueAtDatePicker.current?.value || undefined;
-            const task = this.state.task;
-            await this.graphSource.updateTask(this.state.task.id, {
-                goal: task.goal,
+            const task =  this.state.task!;
+            await this.graphSource.updateTask(task.id, {
+                goal: this.state.updatedTask!.goal,
                 context: this.markdownEditorRef.current?.content,
                 ownerUserId: task.owner?.id,
                 owningTeamId: this.graphSource.currentTeam()!.id,
@@ -244,14 +255,13 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private onTextFieldChangeHandler(taskProp: string) {
         return (newValue: string) => {
             this.setState({
-                task: Object.assign({}, this.state.task, {
+                updatedTask: Object.assign({}, this.state.updatedTask, {
                     [taskProp]: newValue,
                 }),
             });
         };
     }
 
-    // todo: use mutation event
     private onPostComment = async (body: string) => {
         await this.graphSource.createMessage(this.state.task!.comments.id, {
             body,
@@ -273,29 +283,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         const threadDivEl = this.threadDivRef.current;
         threadDivEl?.scrollTo(0, threadDivEl?.scrollHeight);
     }
-
-    // private async refreshWithTaskId(
-    //     taskId: number,
-    //     policy: FetchPolicy,
-    // ) {
-    //     const mePromise = this.props.deps.userService.fetchMe(policy);
-    //     const taskPromise = this.props.deps.taskService.fetchTask(
-    //         taskId,
-    //         policy,
-    //     );
-    //     const commentsPromise =
-    //         this.props.deps.commentService.fetchTaskComments(taskId, policy);
-    //     const [me, task, comments] = await Promise.all([
-    //         mePromise,
-    //         taskPromise,
-    //         commentsPromise,
-    //     ]);
-    //     this.setState({
-    //         task: task,
-    //         meUserId: me.id,
-    //         comments: comments,
-    //     });
-    // }
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
         const element = event.currentTarget as HTMLDivElement;

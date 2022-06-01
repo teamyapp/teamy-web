@@ -5,7 +5,7 @@ export const absoluteRootPath = `${window.location.protocol}//${window.location.
 const teamIdParam = 'teamId';
 const tabIdParam = 'tabId';
 const taskIdParam = 'taskId';
-const invitationIdParam = 'ID';
+const invitationIdParam = 'id';
 const invitationCodeParam = 'code';
 
 export const getTeamId = (params?: Params) => params?.pathParams[teamIdParam];
@@ -39,4 +39,4 @@ export const executionTaskPath = (
 export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`;
 
 export const invitationLink = (invitationId: number, code: string) =>
-    `${absoluteRootPath}${invitationRoutePattern}?id=invitationId&code=${code}`;
+    `${absoluteRootPath}${invitationRoutePattern}?id=${invitationId}&code=${code}`;

@@ -1,3 +1,4 @@
+import { and, or } from '@lib/data/filter';
 import React, { Component, ReactNode } from 'react';
 
 import { BoundingBoxFinder } from '@lib/ui/position';
@@ -13,7 +14,7 @@ import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { InProgressSection } from './TaskListSections/InProgressSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
 
-const upcomingColumnFilter = filters.upcoming;
+const upcomingColumnFilter = or(filters.upcoming, filters.paused);
 const inProgressColumnFilter = filters.inProgress;
 const deliveredColumnFilter = filters.delivered;
 

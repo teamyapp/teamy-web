@@ -133,7 +133,7 @@ export class AppComponent extends Component<Props, State> {
                                 deps={this.props.deps}
                                 ref={this.headerRef}
                                 me={this.state.me}
-                                currentTeam={this.state.currentTeam!}
+                                currentTeam={this.state.currentTeam}
                                 isDrawerOpen={this.state.isDrawerOpen}
                                 taskFilters={this.state.taskFilters}
                                 onMenuToggle={this.onMenuToggle}
@@ -194,7 +194,7 @@ export class AppComponent extends Component<Props, State> {
 
     public async componentDidMount() {
         this.monitorStateChanges();
-        await this.monitorRouteChanges();
+        this.monitorRouteChanges();
         this.monitorUserActions();
         this.userActionChan =
             this.props.deps.shortcutMonitor.subscribeUserAction();
@@ -266,6 +266,8 @@ export class AppComponent extends Component<Props, State> {
                     const teamId = parseInt(teamIdParam);
                     if (this.state.activeTeamId !== teamId) {
                         this.onActiveTeamSelect(teamId);
+                    } else {
+                        await this.graphSource.syncCurrentTeam();
                     }
                 }
             }

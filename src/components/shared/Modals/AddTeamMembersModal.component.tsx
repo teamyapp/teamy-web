@@ -191,6 +191,10 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                 receiverLastName: lastName || '',
                 expireAt: expireAt.toDate(),
             });
+        if (!invitationId || !invitationCode) {
+            return
+        }
+
         this.setState({
             invitationLink: invitationLink(invitationId, invitationCode),
         });

@@ -1,3 +1,5 @@
+import { TaskAction } from '@core/statev2/taskAction';
+import { TaskStatus } from '@core/statev2/taskStatus';
 import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -182,7 +184,6 @@ export class ExecutionComponent extends Component<Props, State> {
 
     public componentDidMount() {
         window.addEventListener('resize', this.onWindowResize);
-
         this.stateChangeChan = this.graphSource.subscribeStateChange();
         (async () => {
             while (true) {
@@ -351,8 +352,8 @@ export class ExecutionComponent extends Component<Props, State> {
                         onCreateTask={this.onCreateTask}
                         onUpdateTask={this.onUpdateTask}
                         onDeleteTaskClick={this.onDeleteTaskClick}
-                        onStartTaskClick={this.onStartTaskClick}
-                        onCompleteTaskClick={this.onCompleteTaskClick}
+                        onStartTaskClick={this.moveTaskToInProgress}
+                        onCompleteTaskClick={this.moveTaskToDelivered}
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
@@ -373,8 +374,8 @@ export class ExecutionComponent extends Component<Props, State> {
                         onCreateTask={this.onCreateTask}
                         onUpdateTask={this.onUpdateTask}
                         onDeleteTaskClick={this.onDeleteTaskClick}
-                        onStartTaskClick={this.onStartTaskClick}
-                        onCompleteTaskClick={this.onCompleteTaskClick}
+                        onStartTaskClick={this.moveTaskToInProgress}
+                        onCompleteTaskClick={this.moveTaskToDelivered}
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
@@ -555,11 +556,11 @@ export class ExecutionComponent extends Component<Props, State> {
         this.graphSource.deleteTask(taskId);
     };
 
-    private onStartTaskClick = (taskId: number): void => {
+    private moveTaskToInProgress = (taskId: number): void => {
         this.graphSource.moveTaskToInProgress(taskId);
     };
 
-    private onCompleteTaskClick = (taskId: number): void => {
+    private moveTaskToDelivered = (taskId: number): void => {
         this.graphSource.moveTaskToDelivered(taskId);
     };
 
@@ -625,7 +626,7 @@ export class ExecutionComponent extends Component<Props, State> {
                 switch (destSectionId) {
                     case needAttentionSectionId:
                     case inProgressSectionId:
-                        this.onStartTaskClick(task.id);
+                        this.moveTaskToInProgress(task.id);
                         break;
                 }
                 break;
@@ -633,7 +634,7 @@ export class ExecutionComponent extends Component<Props, State> {
             case inProgressSectionId:
                 switch (destSectionId) {
                     case deliveredSectionId:
-                        this.onCompleteTaskClick(task.id);
+                        this.moveTaskToDelivered(task.id);
                         break;
                 }
                 break;
