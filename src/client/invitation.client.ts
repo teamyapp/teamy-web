@@ -44,6 +44,7 @@ export class InvitationClient {
                             }
                             joiningTeam {
                                 id
+                                name
                                 iconUrl
                             }
                         }
