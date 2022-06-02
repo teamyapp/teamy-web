@@ -8,7 +8,9 @@ import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 
 import {
-    debugRoutePattern, executionTabRoutePattern, executionTaskRoutePattern,
+    debugRoutePattern,
+    executionTabRoutePattern,
+    executionTaskRoutePattern,
     getTeamId,
     invitationRoutePattern,
     rootRoutePattern,
@@ -69,7 +71,7 @@ const acceptedRoutePatterns = [
     teamRoutePattern,
     invitationRoutePattern,
     executionTabRoutePattern,
-    executionTaskRoutePattern
+    executionTaskRoutePattern,
 ];
 
 export class AppComponent extends Component<Props, State> {
@@ -228,7 +230,7 @@ export class AppComponent extends Component<Props, State> {
 
     private monitorRouteChanges() {
         this.router.registerRoute(rootRoutePattern, false);
-        acceptedRoutePatterns.forEach((pattern: string)=>{
+        acceptedRoutePatterns.forEach((pattern: string) => {
             this.router.registerRoute(pattern, false);
         });
         this.routeChangeChan = this.router.subscribeRouteChange();
