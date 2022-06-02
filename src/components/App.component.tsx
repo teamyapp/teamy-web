@@ -257,7 +257,7 @@ export class AppComponent extends Component<Props, State> {
                             continue;
                         } else {
                             this.setState({
-                                showPrivatePage: true
+                                showPrivatePage: true,
                             });
                         }
                     }

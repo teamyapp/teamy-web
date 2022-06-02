@@ -30,6 +30,11 @@ export class UserClient {
                                 owner {
                                     id
                                 }
+                                members {
+                                    id
+                                    firstName
+                                    lastName
+                                }
                             }
                         }
                     }

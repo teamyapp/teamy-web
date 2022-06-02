@@ -56,8 +56,8 @@ export function contains(keyword: string): Filter<Task> {
     const lowerKeyword = keyword.toLocaleLowerCase();
     return (task: Task) =>
         task.goal.toLocaleLowerCase().includes(lowerKeyword) ||
-        (task.context !== undefined &&
-            task.context.toLocaleLowerCase().includes(lowerKeyword));
+        task.context?.toLocaleLowerCase().includes(lowerKeyword) ||
+        false;
 }
 
 // Given a sequence of tasks, split it to N sequences of tasks where N is the number of unique assignees.
