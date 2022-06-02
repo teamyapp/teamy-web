@@ -102,6 +102,9 @@ export class InvitationClient {
                             id
                             receiverFirstName
                             receiverLastName
+                            joiningTeam {
+                                id
+                            }
                             code
                             status
                             createdAt
