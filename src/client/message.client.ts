@@ -29,6 +29,9 @@ export class MessageClient {
                         createMessage(threadId: $threadId, message: $message) {
                             id
                             body
+                            author {
+                                id
+                            }
                             thread {
                                 id
                             }
