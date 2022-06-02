@@ -49,6 +49,7 @@ interface Props {
 }
 
 interface State {
+    showPrivatePage: boolean;
     me?: User;
     currentTeam?: Team;
     teams: Team[];
@@ -97,6 +98,7 @@ export class AppComponent extends Component<Props, State> {
         this.identityClient = props.deps.identityClient;
         this.graphSource = props.deps.graphSource;
         this.state = {
+            showPrivatePage: false,
             isDrawerOpen: false,
             teams: [],
             taskFilters: {},
@@ -116,7 +118,7 @@ export class AppComponent extends Component<Props, State> {
                 <Route router={this.router} pattern={signUpRoutePattern}>
                     <SignUpComponent deps={this.props.deps} />
                 </Route>
-                {this.state.me && (
+                {this.state.showPrivatePage && this.state.me && (
                     <Fragment>
                         <DrawerUI
                             activeTeamId={this.state.activeTeamId}
@@ -253,6 +255,10 @@ export class AppComponent extends Component<Props, State> {
                         if (!me) {
                             this.trySignUp(routeUpdate.routePattern);
                             continue;
+                        } else {
+                            this.setState({
+                                showPrivatePage: true
+                            });
                         }
                     }
                 }
