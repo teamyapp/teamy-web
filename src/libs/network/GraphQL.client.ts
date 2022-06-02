@@ -37,6 +37,7 @@ export class GraphQLClient {
     }
 
     async query(options: QueryOptions): Promise<any> {
+        options.fetchPolicy = 'network-only';
         options.errorPolicy = 'all';
         options.context = this.getAuthContext();
         const result = await this.client.query(options);
