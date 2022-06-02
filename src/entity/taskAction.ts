@@ -5,7 +5,7 @@ export type TaskAction =
     | 'DELETE'
     | 'ASSIGN_OWNER'
     | 'REPORT_BLOCKED'
-    | 'MARK_COMPLETED'
+    | 'MARK_COMPLETE'
     | 'VIEW_DETAIL';
 
 export function getActions(status: TaskStatus): TaskAction[] {
@@ -14,7 +14,7 @@ export function getActions(status: TaskStatus): TaskAction[] {
             return ['START', 'DELETE', 'ASSIGN_OWNER'];
         case 'IN_PROGRESS':
             return [
-                'MARK_COMPLETED',
+                'MARK_COMPLETE',
                 'REPORT_BLOCKED',
                 'ASSIGN_OWNER',
                 'DELETE',

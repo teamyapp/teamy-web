@@ -221,7 +221,7 @@ export class TaskPreviewUI extends Component<Props, State> {
         switch (action) {
             case 'START':
                 return this.renderStartTask(index);
-            case 'MARK_COMPLETED':
+            case 'MARK_COMPLETE':
                 return this.renderCompleteTask(index);
             case 'REPORT_BLOCKED':
                 return TaskPreviewUI.renderReportBlocked(index);
