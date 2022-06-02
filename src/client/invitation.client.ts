@@ -181,6 +181,18 @@ export class InvitationClient {
                         ) {
                             id
                             status
+                            joiningTeam {
+                                id
+                                members {
+                                    id
+                                }
+                            }
+                            receiver {
+                                id
+                                teams {
+                                    id
+                                }
+                            }
                         }
                     }
                 `,

@@ -103,6 +103,9 @@ export class TeamClient {
                             firstName
                             lastName
                             profileUrl
+                            teams {
+                                id
+                            }
                         }
                     }
                 `,
