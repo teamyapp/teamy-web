@@ -415,7 +415,7 @@ export class GraphSource {
         const teamId = deletedInvitation.joiningTeamId;
         const newInvitationIds = this.appState.teams[
             teamId
-        ].invitationIds.filter(
+        ]?.invitationIds.filter(
             (newInvitationId) => newInvitationId !== invitationId,
         );
         this.appState.teams[teamId].invitationIds = newInvitationIds;
