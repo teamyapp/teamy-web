@@ -49,7 +49,7 @@ interface Props {
 }
 
 interface State {
-    showContent: boolean;
+    showMainContent: boolean;
     showPrivatePage: boolean;
     me?: User;
     currentTeam?: Team;
@@ -99,7 +99,7 @@ export class AppComponent extends Component<Props, State> {
         this.identityClient = props.deps.identityClient;
         this.graphSource = props.deps.graphSource;
         this.state = {
-            showContent: false,
+            showMainContent: false,
             showPrivatePage: false,
             isDrawerOpen: false,
             teams: [],
@@ -148,7 +148,7 @@ export class AppComponent extends Component<Props, State> {
                                 onUserProfileClick={this.onUserProfileClick}
                                 onTaskFiltersChange={this.onTaskFiltersChange}
                             />
-                            {this.state.showContent &&
+                            {this.state.showMainContent &&
                                 (this.state.activeTeamId ? (
                                     <Route
                                         router={this.router}
@@ -297,7 +297,7 @@ export class AppComponent extends Component<Props, State> {
                         }
 
                         this.setState({
-                            showContent: true,
+                            showMainContent: true,
                         });
                     })().then();
                 }
