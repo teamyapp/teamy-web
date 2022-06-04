@@ -1,7 +1,7 @@
-import { AppState } from '@core/statev2/app.state';
-import { TaskState } from '@core/statev2/task.state';
-import { TaskAction } from '@core/statev2/taskAction';
-import { TaskStatus } from '@core/statev2/taskStatus';
+import { AppState } from '@core/state/app.state';
+import { TaskState } from '@core/state/task.state';
+import { TaskAction } from '@core/state/taskAction';
+import { TaskStatus } from '@core/state/taskStatus';
 
 import { Team } from './team';
 import { Thread } from './thread';

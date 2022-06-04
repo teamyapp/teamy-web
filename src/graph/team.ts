@@ -1,5 +1,5 @@
-import { AppState } from '@core/statev2/app.state';
-import { TeamState } from '@core/statev2/team.state';
+import { AppState } from '@core/state/app.state';
+import { TeamState } from '@core/state/team.state';
 
 import { Invitation } from './invitation';
 import { Task } from './task';

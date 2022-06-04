@@ -1,6 +1,6 @@
-import { AppState } from '@core/statev2/app.state';
-import { InvitationState } from '@core/statev2/invitation.state';
-import { InvitationStatus } from '@core/statev2/invitationStatus';
+import { AppState } from '@core/state/app.state';
+import { InvitationState } from '@core/state/invitation.state';
+import { InvitationStatus } from '@core/state/invitationStatus';
 
 import { Team } from './team';
 import { User } from './user';

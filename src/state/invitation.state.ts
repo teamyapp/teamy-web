@@ -1,4 +1,4 @@
-import { InvitationStatus } from '@core/statev2/invitationStatus';
+import { InvitationStatus } from '@core/state/invitationStatus';
 
 export interface InvitationState {
     id: number;
