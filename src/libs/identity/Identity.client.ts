@@ -38,7 +38,7 @@ export class IdentityClient {
 
     public trySignIn() {
         const currUrl = window.location.href;
-        this.saveSignInRedirectUrl(currUrl);
+        saveSignInRedirectUrl(currUrl);
         window.location.replace(this.config.signInLink);
     }
 
@@ -55,13 +55,13 @@ export class IdentityClient {
             domain: this.config.cookieDomain,
             secure: this.config.cookieSecure,
         });
+        this.redirectBack();
+    }
+
+    public redirectBack() {
         const redirectUrl = localStorage.getItem(signInRedirectKey);
         localStorage.removeItem(signInRedirectKey);
         window.location.replace(redirectUrl || this.homePageUrl);
-    }
-
-    private saveSignInRedirectUrl(redirectUrl: string): void {
-        localStorage.setItem(signInRedirectKey, redirectUrl);
     }
 
     private async verifyToken(accessToken: string): Promise<boolean> {
@@ -74,4 +74,8 @@ export class IdentityClient {
         );
         return result[1] === null;
     }
+}
+
+function saveSignInRedirectUrl(redirectUrl: string): void {
+    localStorage.setItem(signInRedirectKey, redirectUrl);
 }

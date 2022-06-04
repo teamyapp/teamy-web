@@ -15,7 +15,11 @@ interface Props {
     deps: Deps;
 }
 
-export class SignUpComponent extends Component<Props> {
+interface State {
+    showPageContent: boolean;
+}
+
+export class SignUpComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
     private readonly firstNameTextFieldRef = createRef<TextFieldUI>();
     private readonly lastNameTextFieldRef = createRef<TextFieldUI>();
@@ -23,38 +27,53 @@ export class SignUpComponent extends Component<Props> {
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
+        this.state = {
+            showPageContent: false,
+        };
     }
 
     public render(): ReactNode {
         return (
-            <div className={styles.SignUp}>
-                <div className={styles.Content}>
-                    <div className={styles.Title}>Sign Up</div>
-                    <div className={styles.UserName}>
-                        <div className={styles.Input}>
-                            <TextFieldUI
-                                ref={this.firstNameTextFieldRef}
-                                label={'First Name'}
-                            />
+            this.state.showPageContent && (
+                <div className={styles.SignUp}>
+                    <div className={styles.Content}>
+                        <div className={styles.Title}>Sign Up</div>
+                        <div className={styles.UserName}>
+                            <div className={styles.Input}>
+                                <TextFieldUI
+                                    ref={this.firstNameTextFieldRef}
+                                    label={'First Name'}
+                                />
+                            </div>
+                            <div className={styles.Input}>
+                                <TextFieldUI
+                                    ref={this.lastNameTextFieldRef}
+                                    label={'Last Name'}
+                                />
+                            </div>
                         </div>
-                        <div className={styles.Input}>
-                            <TextFieldUI
-                                ref={this.lastNameTextFieldRef}
-                                label={'Last Name'}
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.Actions}>
-                        <div className={styles.CreateAccount}>
-                            <ButtonUI
-                                label={'Create Account'}
-                                onClick={this.onCreateAccountClick}
-                            />
+                        <div className={styles.Actions}>
+                            <div className={styles.CreateAccount}>
+                                <ButtonUI
+                                    label={'Create Account'}
+                                    onClick={this.onCreateAccountClick}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            )
         );
+    }
+
+    public componentDidMount() {
+        if (this.graphSource.currentUser()) {
+            redirectBack();
+        } else {
+            this.setState({
+                showPageContent: true,
+            });
+        }
     }
 
     private onCreateAccountClick = async () => {
@@ -62,9 +81,12 @@ export class SignUpComponent extends Component<Props> {
             firstName: this.firstNameTextFieldRef.current?.value || 'New',
             lastName: this.lastNameTextFieldRef.current?.value || 'User',
         });
-
-        const redirectUrl = localStorage.getItem(signUpRedirectKey);
-        localStorage.removeItem(signUpRedirectKey);
-        window.location.replace(redirectUrl || absoluteRootPath);
+        redirectBack();
     };
+}
+
+function redirectBack() {
+    const redirectUrl = localStorage.getItem(signUpRedirectKey);
+    localStorage.removeItem(signUpRedirectKey);
+    window.location.replace(redirectUrl || absoluteRootPath);
 }
