@@ -24,15 +24,15 @@ import {
 } from '@core/entity/input';
 import { Invitation } from '@core/graph/invitation';
 import { Task } from '@core/graph/task';
-import { AppState } from '@core/statev2/app.state';
-import { InvitationState } from '@core/statev2/invitation.state';
-import { MessageState } from '@core/statev2/message.state';
-import { TaskState } from '@core/statev2/task.state';
-import { TaskAction } from '@core/statev2/taskAction';
-import { TaskStatus } from '@core/statev2/taskStatus';
-import { TeamState } from '@core/statev2/team.state';
-import { ThreadState } from '@core/statev2/thread.state';
-import { UserState } from '@core/statev2/user.state';
+import { AppState } from '@core/state/app.state';
+import { InvitationState } from '@core/state/invitation.state';
+import { MessageState } from '@core/state/message.state';
+import { TaskState } from '@core/state/task.state';
+import { TaskAction } from '@core/state/taskAction';
+import { TaskStatus } from '@core/state/taskStatus';
+import { TeamState } from '@core/state/team.state';
+import { ThreadState } from '@core/state/thread.state';
+import { UserState } from '@core/state/user.state';
 
 import { Team } from './team';
 import { User } from './user';

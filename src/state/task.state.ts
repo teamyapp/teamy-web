@@ -1,5 +1,5 @@
-import { TaskAction } from '@core/statev2/taskAction';
-import { TaskStatus } from '@core/statev2/taskStatus';
+import { TaskAction } from '@core/state/taskAction';
+import { TaskStatus } from '@core/state/taskStatus';
 
 export interface TaskState {
     id: number;

@@ -1,5 +1,5 @@
-import { AppState } from '@core/statev2/app.state';
-import { MessageState } from '@core/statev2/message.state';
+import { AppState } from '@core/state/app.state';
+import { MessageState } from '@core/state/message.state';
 
 import { Thread } from './thread';
 import { User } from './user';
