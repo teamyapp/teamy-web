@@ -50,6 +50,10 @@ export class SignInComponent extends Component<Props, State> {
         const isSignedIn = await this.props.identityClient.isSignedIn();
         if (isSignedIn) {
             this.props.identityClient.redirectBack();
+        } else {
+            this.setState({
+                showPageContent: true
+            });
         }
     }
 
