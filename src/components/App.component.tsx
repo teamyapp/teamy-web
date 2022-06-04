@@ -1,3 +1,12 @@
+import React, { Component, Fragment, createRef } from 'react';
+
+import * as csp from '@lib/csp/csp';
+import { IdentityClient } from '@lib/identity/Identity.client';
+import { Route } from '@lib/router/Route';
+import { RouteUpdate, Router } from '@lib/router/router';
+import { ButtonUI } from '@lib/ui/Button';
+import { DropDownList, Option } from '@lib/ui/DropDownList';
+
 import {
     debugRoutePattern,
     executionTabRoutePattern,
@@ -18,30 +27,22 @@ import { User } from '@core/entity/user';
 import { UserActionEvent } from '@core/event/userAction';
 import { GraphSource } from '@core/graph/graphSource';
 
-import * as csp from '@lib/csp/csp';
-import { IdentityClient } from '@lib/identity/Identity.client';
-import { Route } from '@lib/router/Route';
-import { Router, RouteUpdate } from '@lib/router/router';
-import { ButtonUI } from '@lib/ui/Button';
-import { DropDownList, Option } from '@lib/ui/DropDownList';
-import React, { Component, createRef, Fragment } from 'react';
-
 import { CloudComponent } from '../cloud/Cloud.component';
 import styles from './App.component.module.scss';
 import { DebugComponent } from './Debug.component';
 import { ExecutionComponent } from './Execution.component';
 import { InvitationComponent } from './Invitation.component';
+import { SignUpComponent, signUpRedirectKey } from './SignUp.component';
 import { DrawerUI } from './shared/Drawer';
-import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/InviationLinkCopiedFeedback.component';
-import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedback.component';
-import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
-import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
 import { HeaderComponent } from './shared/Header.component';
 import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
 import { CreateTeamModalComponent } from './shared/Modals/CreateTeamModal.component';
 import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
-import { SignUpComponent, signUpRedirectKey } from './SignUp.component';
+import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/InviationLinkCopiedFeedback.component';
+import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedback.component';
+import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
+import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
 
 interface Props {
     deps: Deps;
@@ -148,27 +149,28 @@ export class AppComponent extends Component<Props, State> {
                                 onTaskFiltersChange={this.onTaskFiltersChange}
                             />
                             {this.state.showContent &&
-                                (
-                                    this.state.activeTeamId ? (
-                                        <Route
-                                            router={this.router}
-                                            pattern={teamRoutePattern}
-                                        >
-                                            <div className={styles.Execution}>
-                                                {
-                                                    <ExecutionComponent
-                                                        deps={this.props.deps}
-                                                        teamId={this.state.activeTeamId}
-                                                        taskFilters={
-                                                            this.state.taskFilters
-                                                        }
-                                                    />
-                                                }
-                                            </div>
-                                        </Route>
-                                    ) : (
-                                        this.renderNoActiveTeam()
-                                    ))}
+                                (this.state.activeTeamId ? (
+                                    <Route
+                                        router={this.router}
+                                        pattern={teamRoutePattern}
+                                    >
+                                        <div className={styles.Execution}>
+                                            {
+                                                <ExecutionComponent
+                                                    deps={this.props.deps}
+                                                    teamId={
+                                                        this.state.activeTeamId
+                                                    }
+                                                    taskFilters={
+                                                        this.state.taskFilters
+                                                    }
+                                                />
+                                            }
+                                        </div>
+                                    </Route>
+                                ) : (
+                                    this.renderNoActiveTeam()
+                                ))}
                         </div>
                     </Fragment>
                 )}
@@ -297,7 +299,7 @@ export class AppComponent extends Component<Props, State> {
                         this.setState({
                             showContent: true,
                         });
-                    })().then()
+                    })().then();
                 }
             }
         })().then();
