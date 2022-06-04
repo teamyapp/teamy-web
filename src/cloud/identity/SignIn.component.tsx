@@ -52,7 +52,7 @@ export class SignInComponent extends Component<Props, State> {
             this.props.identityClient.redirectBack();
         } else {
             this.setState({
-                showPageContent: true
+                showPageContent: true,
             });
         }
     }

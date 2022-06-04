@@ -49,6 +49,7 @@ interface Props {
 }
 
 interface State {
+    showMainContent: boolean;
     showPrivatePage: boolean;
     me?: User;
     currentTeam?: Team;
@@ -98,6 +99,7 @@ export class AppComponent extends Component<Props, State> {
         this.identityClient = props.deps.identityClient;
         this.graphSource = props.deps.graphSource;
         this.state = {
+            showMainContent: false,
             showPrivatePage: false,
             isDrawerOpen: false,
             teams: [],
@@ -146,26 +148,29 @@ export class AppComponent extends Component<Props, State> {
                                 onUserProfileClick={this.onUserProfileClick}
                                 onTaskFiltersChange={this.onTaskFiltersChange}
                             />
-                            {this.state.activeTeamId ? (
-                                <Route
-                                    router={this.router}
-                                    pattern={teamRoutePattern}
-                                >
-                                    <div className={styles.Execution}>
-                                        {
-                                            <ExecutionComponent
-                                                deps={this.props.deps}
-                                                teamId={this.state.activeTeamId}
-                                                taskFilters={
-                                                    this.state.taskFilters
-                                                }
-                                            />
-                                        }
-                                    </div>
-                                </Route>
-                            ) : (
-                                this.renderNoActiveTeam()
-                            )}
+                            {this.state.showMainContent &&
+                                (this.state.activeTeamId ? (
+                                    <Route
+                                        router={this.router}
+                                        pattern={teamRoutePattern}
+                                    >
+                                        <div className={styles.Execution}>
+                                            {
+                                                <ExecutionComponent
+                                                    deps={this.props.deps}
+                                                    teamId={
+                                                        this.state.activeTeamId
+                                                    }
+                                                    taskFilters={
+                                                        this.state.taskFilters
+                                                    }
+                                                />
+                                            }
+                                        </div>
+                                    </Route>
+                                ) : (
+                                    this.renderNoActiveTeam()
+                                ))}
                         </div>
                     </Fragment>
                 )}
@@ -283,12 +288,18 @@ export class AppComponent extends Component<Props, State> {
 
                 const teamIdParam = getTeamId(routeUpdate.params);
                 if (teamIdParam) {
-                    const teamId = parseInt(teamIdParam);
-                    if (this.state.activeTeamId !== teamId) {
-                        this.onActiveTeamSelect(teamId);
-                    } else {
-                        await this.graphSource.syncCurrentTeam();
-                    }
+                    (async () => {
+                        const teamId = parseInt(teamIdParam);
+                        if (this.state.activeTeamId !== teamId) {
+                            await this.onActiveTeamSelect(teamId);
+                        } else {
+                            await this.graphSource.syncCurrentTeam();
+                        }
+
+                        this.setState({
+                            showMainContent: true,
+                        });
+                    })().then();
                 }
             }
         })().then();
@@ -391,8 +402,8 @@ export class AppComponent extends Component<Props, State> {
         this.createTeamModalRef.current?.open();
     };
 
-    private onActiveTeamSelect = (teamId: number): void => {
-        this.graphSource.setCurrentTeam(teamId);
+    private onActiveTeamSelect = async (teamId: number): Promise<void> => {
+        await this.graphSource.setCurrentTeam(teamId);
     };
 
     private onTeamMembersAdded = async (teamId: number) => {
