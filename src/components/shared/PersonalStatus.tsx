@@ -9,12 +9,14 @@ import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 
 import styles from './PersonalStatus.module.scss';
+import { AwaitingSection } from './TaskListSections/AwaitingSection';
 import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { NeedAttentionSection } from './TaskListSections/NeedAttentionSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
 
 const upcomingColumnFilter = or(filters.upcoming, filters.paused);
 const deliveredColumnFilter = filters.delivered;
+const awaitingColumnFilter = filters.awaiting;
 
 interface Props {
     deps: Deps;
@@ -45,6 +47,8 @@ export class PersonalStatusUI extends Component<Props> {
         );
         const upcomingTasks =
             this.props.personalTasks.filter(upcomingColumnFilter);
+        const awaitingTasks =
+            this.props.personalTasks.filter(awaitingColumnFilter);
         return (
             <div className={styles.PersonalStatus}>
                 <div
@@ -59,7 +63,6 @@ export class PersonalStatusUI extends Component<Props> {
                         onUpdateTask={this.props.onUpdateTask}
                         onViewTaskDetailClick={this.props.onViewTaskDetailClick}
                         onDeleteTaskClick={this.props.onDeleteTaskClick}
-                        onStartTaskClick={this.props.onStartTaskClick}
                         onCompleteTaskClick={this.props.onCompleteTaskClick}
                         onShowPotentialTaskOwners={
                             this.props.onShowPotentialTaskOwners
@@ -89,6 +92,24 @@ export class PersonalStatusUI extends Component<Props> {
                                 this.props.onShowPotentialTaskOwners
                             }
                             onSelectSortOrder={this.props.onSelectUpcomingOrder}
+                        />
+                    </div>
+                    <div className={`${styles.TaskListSection}`}>
+                        <AwaitingSection
+                            dragAndDropController={
+                                this.props.deps.dragAndDropController
+                            }
+                            tasks={awaitingTasks}
+                            taskSelectingOwner={this.props.taskSelectingOwner}
+                            onUpdateTask={this.props.onUpdateTask}
+                            onViewTaskDetailClick={
+                                this.props.onViewTaskDetailClick
+                            }
+                            onDeleteTaskClick={this.props.onDeleteTaskClick}
+                            onCompleteTaskClick={this.props.onCompleteTaskClick}
+                            onShowPotentialTaskOwners={
+                                this.props.onShowPotentialTaskOwners
+                            }
                         />
                     </div>
                     <div className={`${styles.TaskListSection}`}>

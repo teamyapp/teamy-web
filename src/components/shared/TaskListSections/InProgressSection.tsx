@@ -23,7 +23,6 @@ interface Props {
     onUpdateTask?: (task: Task) => void;
     onViewTaskDetailClick?: (taskId: number) => void;
     onDeleteTaskClick?: (taskId: number) => void;
-    onStartTaskClick?: (taskId: number) => void;
     onCompleteTaskClick?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         task: Task,
@@ -79,7 +78,6 @@ export class InProgressSection extends Component<Props> {
                         onTaskFinishEditing={this.props.onUpdateTask}
                         onViewTaskDetailClick={this.props.onViewTaskDetailClick}
                         onDeleteTaskClick={this.props.onDeleteTaskClick}
-                        onStartTaskClick={this.props.onStartTaskClick}
                         onCompleteTaskClick={this.props.onCompleteTaskClick}
                         onShowPotentialTaskOwners={
                             this.props.onShowPotentialTaskOwners

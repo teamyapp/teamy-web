@@ -546,7 +546,7 @@ export class ExecutionComponent extends Component<Props, State> {
         });
         await this.props.deps.feedbackPubSub.publish({
             type: 'TaskUpdated',
-            task: task,
+            taskId: task.id,
         });
     };
 

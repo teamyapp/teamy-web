@@ -5,7 +5,6 @@ import { FeedbackUI } from '@lib/ui/Feedback';
 
 import { Deps } from '@core/dep/deps';
 import { Feedback } from '@core/entity/feedback';
-import { Task } from '@core/entity/task';
 
 import styles from './feedback.module.scss';
 
@@ -14,7 +13,7 @@ export interface Props {
 }
 
 interface State {
-    task?: Task;
+    taskId?: number;
 }
 
 export class TaskUpdatedFeedbackComponent extends Component<Props, State> {
@@ -30,7 +29,7 @@ export class TaskUpdatedFeedbackComponent extends Component<Props, State> {
         return (
             <FeedbackUI ref={this.feedbackRef}>
                 Task
-                <span className={styles.Highlight}>#{this.state.task?.id}</span>
+                <span className={styles.Highlight}>#{this.state.taskId}</span>
                 is updated.
             </FeedbackUI>
         );
@@ -47,7 +46,7 @@ export class TaskUpdatedFeedbackComponent extends Component<Props, State> {
 
                 if (feedback.type === 'TaskUpdated') {
                     this.setState({
-                        task: feedback.task,
+                        taskId: feedback.taskId,
                     });
                     this.feedbackRef.current?.show();
                 } else {
