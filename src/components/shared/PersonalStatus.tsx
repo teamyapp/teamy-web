@@ -5,6 +5,7 @@ import { BoundingBoxFinder } from '@lib/ui/position';
 
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
+import { CreateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 
@@ -20,7 +21,6 @@ const awaitingColumnFilter = filters.awaiting;
 
 interface Props {
     deps: Deps;
-    taskAdding?: Task;
     needAttentionTask?: Task;
     personalTasks: Task[];
     taskSelectingOwner?: Task;
@@ -28,7 +28,7 @@ interface Props {
     onViewTaskDetailClick?: (taskId: number) => void;
     onAddClick?: () => void;
     onNewTaskChange?: (task: Task) => void;
-    onCreateTask?: (task: Task) => void;
+    onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
     onStartTaskClick?: (taskId: number) => void;
@@ -75,11 +75,10 @@ export class PersonalStatusUI extends Component<Props> {
                             dragAndDropController={
                                 this.props.deps.dragAndDropController
                             }
+                            createTaskDefaultOwner={this.props.deps.graphSource.currentUser()}
                             tasks={upcomingTasks}
-                            taskAdding={this.props.taskAdding}
                             taskSelectingOwner={this.props.taskSelectingOwner}
                             sortOrder={this.props.sortOrders.upcoming}
-                            onAddClick={this.props.onAddClick}
                             onCreateTask={this.props.onCreateTask}
                             onUpdateTask={this.props.onUpdateTask}
                             onViewTaskDetailClick={

@@ -5,6 +5,7 @@ import { BoundingBoxFinder } from '@lib/ui/position';
 
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
+import { CreateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
@@ -22,15 +23,12 @@ const awaitingColumnFilter = filters.awaiting;
 
 interface Props {
     deps: Deps;
-    taskAdding?: Task;
     tasks: Task[];
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     taskSelectingOwner?: Task;
     sortOrders: SortOrders;
     onViewTaskDetailClick?: (taskId: number) => void;
-    onAddClick?: () => void;
-    onNewTaskChange?: (task: Task) => void;
-    onCreateTask?: (task: Task) => void;
+    onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (task: Task) => void;
     onDeleteTaskClick?: (taskId: number) => void;
     onStartTaskClick?: (taskId: number) => void;
@@ -61,10 +59,8 @@ export class KanbanUI extends Component<Props> {
                             this.props.deps.dragAndDropController
                         }
                         tasks={upcomingTasks}
-                        taskAdding={this.props.taskAdding}
                         taskSelectingOwner={this.props.taskSelectingOwner}
                         sortOrder={this.props.sortOrders.upcoming}
-                        onAddClick={this.props.onAddClick}
                         onCreateTask={this.props.onCreateTask}
                         onUpdateTask={this.props.onUpdateTask}
                         onViewTaskDetailClick={this.props.onViewTaskDetailClick}

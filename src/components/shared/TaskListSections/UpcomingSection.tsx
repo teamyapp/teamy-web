@@ -26,19 +26,21 @@ import {
     orderByUrgency,
     orderByValue,
 } from '@core/data/task.order';
+import { CreateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
+import { User } from '@core/entity/user';
 
+import { InlineCreateTask } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
 
 interface Props {
     dragAndDropController: DragAndDropController;
     tasks: Task[];
-    taskAdding?: Task;
+    createTaskDefaultOwner?: User;
     taskSelectingOwner?: Task;
     sortOrder?: string;
-    onAddClick?: () => void;
-    onCreateTask?: (task: Task) => void;
+    onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (task: Task) => void;
     onViewTaskDetailClick?: (taskId: number) => void;
     onDeleteTaskClick?: (taskId: number) => void;
@@ -51,7 +53,18 @@ interface Props {
     onSelectSortOrder?: (order: string) => void;
 }
 
-export class UpcomingSection extends Component<Props> {
+interface State {
+    editingTask: boolean;
+}
+
+export class UpcomingSection extends Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            editingTask: false,
+        };
+    }
+
     public render() {
         const tasks = this.getSortedTasks();
         return (
@@ -81,7 +94,7 @@ export class UpcomingSection extends Component<Props> {
                                 <SpacerUI />
                                 <div
                                     className={styles.Actions}
-                                    onClick={this.props.onAddClick}
+                                    onClick={this.onAddClick}
                                 >
                                     <MaterialIconUI>add</MaterialIconUI>
                                 </div>
@@ -89,10 +102,15 @@ export class UpcomingSection extends Component<Props> {
                         }
                     >
                         <div className={styles.TaskList}>
-                            {this.props.taskAdding &&
-                                this.renderTaskListItemNewTask(
-                                    upcomingSectionId,
-                                )(this.props.taskAdding)}
+                            {this.state.editingTask && (
+                                <InlineCreateTask
+                                    owner={this.props.createTaskDefaultOwner}
+                                    onCreateTask={this.onCreateTask}
+                                    onDiscardCreatingTask={
+                                        this.onDiscardCreatingTask
+                                    }
+                                />
+                            )}
                             {tasks.map(
                                 this.renderTaskListItemExistingTask(
                                     upcomingSectionId,
@@ -104,12 +122,6 @@ export class UpcomingSection extends Component<Props> {
             </div>
         );
     }
-
-    private renderTaskListItemNewTask = (
-        sectionId: string,
-    ): ((task: Task) => ReactNode) => {
-        return this.renderTask(sectionId, true, false, this.props.onCreateTask);
-    };
 
     private renderTaskListItemExistingTask = (
         sectionId: string,
@@ -145,6 +157,25 @@ export class UpcomingSection extends Component<Props> {
                 </div>
             );
         };
+    };
+
+    private onAddClick = () => {
+        this.setState({
+            editingTask: true,
+        });
+    };
+
+    private onCreateTask = (task: CreateTaskInput) => {
+        this.props.onCreateTask?.call(null, task);
+        this.setState({
+            editingTask: false,
+        });
+    };
+
+    private onDiscardCreatingTask = () => {
+        this.setState({
+            editingTask: false,
+        });
     };
 
     private getSortedTasks(): Task[] {
