@@ -28,6 +28,7 @@ import { taskUrgencyOrder } from '@core/config/sortOrder';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
+import { CreateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
@@ -69,7 +70,6 @@ interface State {
     teamTasks: Task[];
     taskSelectingOwner?: Task;
     potentialTaskOwners: User[];
-    taskAdding?: Task;
     receivingSectionId?: string;
     sortOrders: SortOrders;
 }
@@ -341,12 +341,9 @@ export class ExecutionComponent extends Component<Props, State> {
                         personalTasks={this.state.teamTasks.filter(
                             personalTasksFilter,
                         )}
-                        taskAdding={this.state.taskAdding}
                         taskSelectingOwner={this.state.taskSelectingOwner}
                         sortOrders={this.state.sortOrders}
-                        onAddClick={this.onPersonalAddClick}
                         onViewTaskDetailClick={this.onViewTaskDetailClick}
-                        onNewTaskChange={this.onNewTaskChange}
                         onCreateTask={this.onCreateTask}
                         onUpdateTask={this.onUpdateTask}
                         onDeleteTaskClick={this.onDeleteTaskClick}
@@ -363,12 +360,9 @@ export class ExecutionComponent extends Component<Props, State> {
                     <KanbanUI
                         deps={this.props.deps}
                         tasks={this.state.teamTasks.filter(teamTasksFilter)}
-                        taskAdding={this.state.taskAdding}
                         taskSelectingOwner={this.state.taskSelectingOwner}
                         sortOrders={this.state.sortOrders}
-                        onAddClick={this.onTeamAddClick}
                         onViewTaskDetailClick={this.onViewTaskDetailClick}
-                        onNewTaskChange={this.onNewTaskChange}
                         onCreateTask={this.onCreateTask}
                         onUpdateTask={this.onUpdateTask}
                         onDeleteTaskClick={this.onDeleteTaskClick}
@@ -513,27 +507,14 @@ export class ExecutionComponent extends Component<Props, State> {
         this.showTaskDetail(taskId);
     };
 
-    private onNewTaskChange = (task: Task) => {
-        this.setState({
-            taskAdding: task,
-        });
-    };
-
-    private onCreateTask = (task: Task): void => {
+    private onCreateTask = (task: CreateTaskInput): void => {
         if (task.goal.length > 0) {
             console.log('creating task');
-            this.graphSource.createTask(this.graphSource.currentTeam()!.id, {
-                context: task.context,
-                dueAt: task.dueAt,
-                goal: task.goal,
-                ownerUserId: task.owner?.id,
-            });
+            this.graphSource.createTask(
+                this.graphSource.currentTeam()!.id,
+                task,
+            );
         }
-
-        // remove the adding task UI
-        this.setState({
-            taskAdding: undefined,
-        });
     };
 
     private onUpdateTask = async (task: Task) => {
@@ -560,37 +541,6 @@ export class ExecutionComponent extends Component<Props, State> {
 
     private moveTaskToDelivered = (taskId: number): void => {
         this.graphSource.moveTaskToDelivered(taskId);
-    };
-
-    private onPersonalAddClick = async (): Promise<void> => {
-        this.setState({
-            taskAdding: {
-                id: 0,
-                goal: '',
-                owner: this.graphSource.currentUser(),
-                availableActions: ['ASSIGN_OWNER', 'DELETE'],
-                comments: {
-                    id: 0,
-                    messages: [],
-                },
-                status: 'UPCOMING',
-            },
-        });
-    };
-
-    private onTeamAddClick = () => {
-        this.setState({
-            taskAdding: {
-                id: -1,
-                goal: '',
-                availableActions: ['ASSIGN_OWNER', 'DELETE'],
-                comments: {
-                    id: 0,
-                    messages: [],
-                },
-                status: 'UPCOMING',
-            },
-        });
     };
 
     private onCloseTaskOwnersListClick = () => {

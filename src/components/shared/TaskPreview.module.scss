@@ -1,34 +1,12 @@
 @use 'sass:math';
 @import '../../libs/ui/styleguide/divider';
 @import '../../libs/ui/styleguide/elevation';
+@import 'inlineTask';
 
 $numOfActionColumns: 3;
-$actionIconSize: 28px;
-$edgeSpace: 10px;
-
-@mixin goalText {
-    font-family: inherit;
-    font-size: 18px;
-    font-weight: 600;
-}
 
 .Task {
-    @include elevation(4);
-    display: flex;
-    min-height: 80px;
-    padding: $edgeSpace;
-    border: 4px solid transparent;
-    border-radius: 6px;
-    background-color: white;
-
-    &:hover {
-        cursor: pointer;
-    }
-
     .LeftSection {
-        flex: 1;
-        padding-right: $edgeSpace;
-
         .Goal {
             @include goalText;
 

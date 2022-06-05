@@ -1,0 +1,33 @@
+@import 'inlineTask';
+
+.Task {
+    .LeftSection {
+        .GoalTextField {
+            box-sizing: border-box;
+            width: 100%;
+            @include goalText;
+            height: 60px;
+            margin: 0;
+            padding: 0;
+            resize: none;
+            border: none;
+            outline: none;
+            background-color: #f5f5f5;
+        }
+    }
+
+    .Owner {
+        .Action {
+            width: $actionIconSize;
+            height: $actionIconSize;
+            padding: 4px;
+        }
+
+        .OwnerIcon {
+            --profile-width: #{$actionIconSize};
+            --profile-height: #{$actionIconSize};
+            --icon-size: #{$actionIconSize};
+            --icon-color: #1976d2;
+        }
+    }
+}
