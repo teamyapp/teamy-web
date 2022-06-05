@@ -1,4 +1,3 @@
-import { Team } from '@core/entity/team';
 import { Thread } from '@core/entity/thread';
 
 import { TaskAction } from './taskAction';
@@ -12,8 +11,6 @@ export interface Task {
     context?: string;
     owner?: User;
     comments: Thread;
-    owningTeam?: Team;
-    effort?: number;
     availableActions: TaskAction[];
     status: TaskStatus;
 }

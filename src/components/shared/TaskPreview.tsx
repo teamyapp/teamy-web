@@ -301,12 +301,11 @@ export class TaskPreviewUI extends Component<Props, State> {
     };
 
     private finishEditing() {
-        console.log('++++++++', this.state.editingTask);
-        this.props.onTaskFinishEditing?.call(this, this.state.editingTask!);
         this.setState({
             editingTask: undefined,
             isEditing: false,
         });
+        this.props.onTaskFinishEditing?.call(this, this.state.editingTask!);
     }
 
     private onTaskDetailClick = (): void => {
