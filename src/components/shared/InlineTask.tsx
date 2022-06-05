@@ -19,7 +19,7 @@ import { TaskAction } from '@core/entity/taskAction';
 import { FormatService } from '@core/service/format.service';
 
 import { UserProfileUI } from './UserProfile';
-import styles from './inlineTask.module.scss';
+import styles from './InlineTask.module.scss';
 
 interface Props {
     task: Task;
