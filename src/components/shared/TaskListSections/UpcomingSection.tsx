@@ -26,11 +26,11 @@ import {
     orderByUrgency,
     orderByValue,
 } from '@core/data/task.order';
-import { CreateTaskInput } from '@core/entity/input';
+import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
-import { InlineCreateTask } from '../InlineCreateTask';
+import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
 
@@ -38,30 +38,33 @@ interface Props {
     dragAndDropController: DragAndDropController;
     tasks: Task[];
     createTaskDefaultOwner?: User;
-    taskSelectingOwner?: Task;
     sortOrder?: string;
+    selectOwnerTaskId?: number;
     onCreateTask?: (task: CreateTaskInput) => void;
-    onUpdateTask?: (task: Task) => void;
-    onViewTaskDetailClick?: (taskId: number) => void;
-    onDeleteTaskClick?: (taskId: number) => void;
-    onStartTaskClick?: (taskId: number) => void;
-    onCompleteTaskClick?: (taskId: number) => void;
+    onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
+    onStartTask?: (taskId: number) => void;
+    onDeleteTask?: (taskId: number) => void;
+    onCompleteTask?: (taskId: number) => void;
+    onViewTaskDetail?: (taskId: number) => void;
+    onReportTaskBlocked?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
-        task: Task,
+        taskId: number,
+        updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
+        selectedOwnerId?: number,
     ) => void;
     onSelectSortOrder?: (order: string) => void;
 }
 
 interface State {
-    editingTask: boolean;
+    onEditingNewTask: boolean;
 }
 
 export class UpcomingSection extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            editingTask: false,
+            onEditingNewTask: false,
         };
     }
 
@@ -102,19 +105,15 @@ export class UpcomingSection extends Component<Props, State> {
                         }
                     >
                         <div className={styles.TaskList}>
-                            {this.state.editingTask && (
-                                <InlineCreateTask
+                            {this.state.onEditingNewTask && (
+                                <InlineCreateTaskUI
                                     owner={this.props.createTaskDefaultOwner}
                                     onCreateTask={this.onCreateTask}
-                                    onDiscardCreatingTask={
-                                        this.onDiscardCreatingTask
-                                    }
+                                    onDiscardNewTask={this.onDiscardNewTask}
                                 />
                             )}
                             {tasks.map(
-                                this.renderTaskListItemExistingTask(
-                                    upcomingSectionId,
-                                ),
+                                this.renderInlineTask(upcomingSectionId),
                             )}
                         </div>
                     </SectionUI>
@@ -123,33 +122,25 @@ export class UpcomingSection extends Component<Props, State> {
         );
     }
 
-    private renderTaskListItemExistingTask = (
+    private renderInlineTask = (
         sectionId: string,
-    ): ((task: Task) => ReactNode) => {
-        return this.renderTask(sectionId, false, true, this.props.onUpdateTask);
-    };
-
-    private renderTask = (
-        sectionId: string,
-        isEditing: boolean,
-        canViewDetail: boolean,
-        onTaskFinishEditing?: (task: Task) => void,
     ): ((task: Task) => ReactNode) => {
         return (task: Task) => {
             return (
                 <div key={task.id}>
                     <TaskListItem
                         dragAndDropController={this.props.dragAndDropController}
-                        task={task}
                         sectionId={sectionId}
-                        isEditing={isEditing}
-                        canViewDetail={canViewDetail}
-                        taskSelectingOwner={this.props.taskSelectingOwner}
-                        onTaskFinishEditing={onTaskFinishEditing}
-                        onViewTaskDetailClick={this.props.onViewTaskDetailClick}
-                        onDeleteTaskClick={this.props.onDeleteTaskClick}
-                        onStartTaskClick={this.props.onStartTaskClick}
-                        onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        task={task}
+                        isSelectingOwner={
+                            this.props.selectOwnerTaskId === task.id
+                        }
+                        onUpdateTask={this.props.onUpdateTask}
+                        onStartTask={this.props.onStartTask}
+                        onDeleteTask={this.props.onDeleteTask}
+                        onCompleteTask={this.props.onCompleteTask}
+                        onViewTaskDetail={this.props.onViewTaskDetail}
+                        onReportTaskBlocked={this.props.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
                             this.props.onShowPotentialTaskOwners
                         }
@@ -161,20 +152,20 @@ export class UpcomingSection extends Component<Props, State> {
 
     private onAddClick = () => {
         this.setState({
-            editingTask: true,
+            onEditingNewTask: true,
         });
     };
 
     private onCreateTask = (task: CreateTaskInput) => {
         this.props.onCreateTask?.call(null, task);
         this.setState({
-            editingTask: false,
+            onEditingNewTask: false,
         });
     };
 
-    private onDiscardCreatingTask = () => {
+    private onDiscardNewTask = () => {
         this.setState({
-            editingTask: false,
+            onEditingNewTask: false,
         });
     };
 

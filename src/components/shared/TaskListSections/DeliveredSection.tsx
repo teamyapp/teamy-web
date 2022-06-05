@@ -11,6 +11,7 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { deliveredSectionId } from '@core/config/sections';
+import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 
 import styles from './DeliveredSection.module.scss';
@@ -19,15 +20,18 @@ import { TaskListItem } from './TaskListItem';
 interface Props {
     dragAndDropController: DragAndDropController;
     tasks: Task[];
-    taskSelectingOwner?: Task;
-    onUpdateTask?: (task: Task) => void;
-    onViewTaskDetailClick?: (taskId: number) => void;
-    onDeleteTaskClick?: (taskId: number) => void;
-    onStartTaskClick?: (taskId: number) => void;
-    onCompleteTaskClick?: (taskId: number) => void;
+    selectOwnerTaskId?: number;
+    onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
+    onStartTask?: (taskId: number) => void;
+    onDeleteTask?: (taskId: number) => void;
+    onCompleteTask?: (taskId: number) => void;
+    onViewTaskDetail?: (taskId: number) => void;
+    onReportTaskBlocked?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
-        task: Task,
+        taskId: number,
+        updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
+        selectedOwnerId?: number,
     ) => void;
 }
 
@@ -54,7 +58,7 @@ export class DeliveredSection extends Component<Props> {
                     >
                         <div className={styles.TaskList}>
                             {this.props.tasks.map(
-                                this.renderTask(deliveredSectionId),
+                                this.renderInlineTask(deliveredSectionId),
                             )}
                         </div>
                     </SectionUI>
@@ -63,23 +67,25 @@ export class DeliveredSection extends Component<Props> {
         );
     }
 
-    private renderTask = (sectionId: string): ((task: Task) => ReactNode) => {
+    private renderInlineTask = (
+        sectionId: string,
+    ): ((task: Task) => ReactNode) => {
         return (task: Task) => {
             return (
                 <div key={task.id}>
                     <TaskListItem
                         dragAndDropController={this.props.dragAndDropController}
-                        task={task}
                         sectionId={sectionId}
-                        isEditing={false}
-                        showPastDue={false}
-                        canViewDetail={true}
-                        taskSelectingOwner={this.props.taskSelectingOwner}
-                        onTaskFinishEditing={this.props.onUpdateTask}
-                        onViewTaskDetailClick={this.props.onViewTaskDetailClick}
-                        onDeleteTaskClick={this.props.onDeleteTaskClick}
-                        onStartTaskClick={this.props.onStartTaskClick}
-                        onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        task={task}
+                        isSelectingOwner={
+                            this.props.selectOwnerTaskId === task.id
+                        }
+                        onUpdateTask={this.props.onUpdateTask}
+                        onStartTask={this.props.onStartTask}
+                        onDeleteTask={this.props.onDeleteTask}
+                        onCompleteTask={this.props.onCompleteTask}
+                        onViewTaskDetail={this.props.onViewTaskDetail}
+                        onReportTaskBlocked={this.props.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
                             this.props.onShowPotentialTaskOwners
                         }

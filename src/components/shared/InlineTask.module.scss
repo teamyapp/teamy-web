@@ -1,7 +1,7 @@
 @use 'sass:math';
 @import '../../libs/ui/styleguide/divider';
 @import '../../libs/ui/styleguide/elevation';
-@import 'inlineTask';
+@import 'inlineTask.shared';
 
 $numOfActionColumns: 3;
 
@@ -120,7 +120,7 @@ $numOfActionColumns: 3;
     --icon-size: #{$actionIconSize + 6px};
 }
 
-.TaskCompletedIcon {
+.CompleteTaskIcon {
     --icon-color: #008b00;
 }
 
@@ -128,12 +128,12 @@ $numOfActionColumns: 3;
     --icon-color: red;
 }
 
-.MarkTaskBlockIcon {
+.ReportTaskBlockedIcon {
     --icon-color: red;
     --icon-size: #{$actionIconSize + 3px};
 }
 
-.TaskDetailIcon {
+.ViewTaskDetailIcon {
     --icon-color: #616161;
 }
 

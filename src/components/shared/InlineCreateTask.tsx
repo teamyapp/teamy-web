@@ -12,14 +12,14 @@ import { UserProfileUI } from './UserProfile';
 interface Props {
     owner?: User;
     onCreateTask?: (task: CreateTaskInput) => void;
-    onDiscardCreatingTask?: () => void;
+    onDiscardNewTask?: () => void;
 }
 
 interface State {
     task: CreateTaskInput;
 }
 
-export class InlineCreateTask extends Component<Props, State> {
+export class InlineCreateTaskUI extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -68,7 +68,7 @@ export class InlineCreateTask extends Component<Props, State> {
         if (this.state.task.goal) {
             this.props.onCreateTask?.call(null, this.state.task);
         } else {
-            this.props.onDiscardCreatingTask?.call(null);
+            this.props.onDiscardNewTask?.call(null);
         }
     };
 }

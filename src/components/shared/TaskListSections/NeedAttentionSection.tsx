@@ -10,6 +10,7 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { needAttentionSectionId } from '@core/config/sections';
+import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 
 import styles from './NeedAttentionSection.module.scss';
@@ -18,14 +19,18 @@ import { TaskListItem } from './TaskListItem';
 interface Props {
     dragAndDropController: DragAndDropController;
     needAttentionTask?: Task;
-    taskSelectingOwner?: Task;
-    onUpdateTask?: (task: Task) => void;
-    onViewTaskDetailClick?: (taskId: number) => void;
-    onDeleteTaskClick?: (taskId: number) => void;
-    onCompleteTaskClick?: (taskId: number) => void;
+    selectOwnerTaskId?: number;
+    onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
+    onStartTask?: (taskId: number) => void;
+    onDeleteTask?: (taskId: number) => void;
+    onCompleteTask?: (taskId: number) => void;
+    onViewTaskDetail?: (taskId: number) => void;
+    onReportTaskBlocked?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
-        task: Task,
+        taskId: number,
+        updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
+        selectedOwnerId?: number,
     ) => void;
 }
 
@@ -41,7 +46,7 @@ export class NeedAttentionSection extends Component<Props> {
                 >
                     <SectionUI title={'Need Attention'}>
                         {this.props.needAttentionTask &&
-                            this.renderTask(needAttentionSectionId)(
+                            this.renderInlineTask(needAttentionSectionId)(
                                 this.props.needAttentionTask,
                             )}
                     </SectionUI>
@@ -50,21 +55,25 @@ export class NeedAttentionSection extends Component<Props> {
         );
     }
 
-    private renderTask = (sectionId: string): ((task: Task) => ReactNode) => {
+    private renderInlineTask = (
+        sectionId: string,
+    ): ((task: Task) => ReactNode) => {
         return (task: Task) => {
             return (
                 <div key={task.id}>
                     <TaskListItem
                         dragAndDropController={this.props.dragAndDropController}
-                        task={task}
                         sectionId={sectionId}
-                        isEditing={false}
-                        canViewDetail={true}
-                        taskSelectingOwner={this.props.taskSelectingOwner}
-                        onTaskFinishEditing={this.props.onUpdateTask}
-                        onViewTaskDetailClick={this.props.onViewTaskDetailClick}
-                        onDeleteTaskClick={this.props.onDeleteTaskClick}
-                        onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        task={task}
+                        isSelectingOwner={
+                            this.props.selectOwnerTaskId === task.id
+                        }
+                        onUpdateTask={this.props.onUpdateTask}
+                        onStartTask={this.props.onStartTask}
+                        onDeleteTask={this.props.onDeleteTask}
+                        onCompleteTask={this.props.onCompleteTask}
+                        onViewTaskDetail={this.props.onViewTaskDetail}
+                        onReportTaskBlocked={this.props.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
                             this.props.onShowPotentialTaskOwners
                         }

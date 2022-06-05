@@ -5,26 +5,27 @@ import { Draggable } from '@lib/dragAndDrop/Draggable';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { draggableTask } from '@core/config/draggable';
+import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 
-import { TaskPreviewUI } from '../TaskPreview';
+import { InlineTaskUI } from '../InlineTask';
 
 interface Props {
     dragAndDropController: DragAndDropController;
-    task: Task;
     sectionId: string;
-    isEditing: boolean;
-    showPastDue?: boolean;
-    canViewDetail: boolean;
-    taskSelectingOwner?: Task;
-    onTaskFinishEditing?: (task: Task) => void;
-    onViewTaskDetailClick?: (taskId: number) => void;
-    onDeleteTaskClick?: (taskId: number) => void;
-    onStartTaskClick?: (taskId: number) => void;
-    onCompleteTaskClick?: (taskId: number) => void;
+    task: Task;
+    isSelectingOwner: boolean;
+    onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
+    onStartTask?: (taskId: number) => void;
+    onDeleteTask?: (taskId: number) => void;
+    onCompleteTask?: (taskId: number) => void;
+    onViewTaskDetail?: (taskId: number) => void;
+    onReportTaskBlocked?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
-        task: Task,
+        taskId: number,
+        updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
+        selectedOwnerId?: number,
     ) => void;
 }
 
@@ -37,34 +38,30 @@ export class TaskListItem extends Component<Props> {
                 itemType={draggableTask}
                 data={this.props.task}
             >
-                <TaskPreviewUI
-                    canViewDetail={this.props.canViewDetail}
+                <InlineTaskUI
                     task={this.props.task}
-                    isEditing={this.props.isEditing}
-                    isOwnerSelected={
-                        this.props.taskSelectingOwner?.id === this.props.task.id
-                    }
-                    showPastDue={this.props.showPastDue === undefined}
-                    onTaskDetailClick={this.props.onViewTaskDetailClick}
-                    onTaskStartEditing={this.onTaskStartEditing}
-                    onTaskFinishEditing={this.taskFinishEditing}
-                    onDeleteTaskClick={this.props.onDeleteTaskClick}
-                    onStartTaskClick={this.props.onStartTaskClick}
-                    onCompleteTaskClick={this.props.onCompleteTaskClick}
+                    isSelectingOwner={this.props.isSelectingOwner}
+                    onUpdateTask={this.props.onUpdateTask}
+                    onStartTask={this.props.onStartTask}
+                    onDeleteTask={this.props.onDeleteTask}
+                    onCompleteTask={this.props.onCompleteTask}
+                    onViewTaskDetail={this.props.onViewTaskDetail}
+                    onReportTaskBlocked={this.props.onReportTaskBlocked}
                     onShowPotentialTaskOwners={
                         this.props.onShowPotentialTaskOwners
                     }
+                    onStartEditingTask={this.onStartEditingTask}
+                    onFinishEditingTask={this.onFinishEditingTask}
                 />
             </Draggable>
         );
     }
 
-    private onTaskStartEditing = () => {
+    private onStartEditingTask = () => {
         this.props.dragAndDropController.turnOffDragging(draggableTask);
     };
 
-    private taskFinishEditing = (task: Task) => {
+    private onFinishEditingTask = () => {
         this.props.dragAndDropController.turnOnDragging(draggableTask);
-        this.props.onTaskFinishEditing?.call(null, task);
     };
 }

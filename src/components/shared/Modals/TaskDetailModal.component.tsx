@@ -29,11 +29,13 @@ const verticalMargin = 40;
 
 interface Props {
     deps: Deps;
-    taskSelectingOwner?: number;
+    selectOwnerTaskId?: number;
     onClose?: () => void;
     onShowPotentialTaskOwners?: (
-        task: Task,
+        taskId: number,
+        updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
+        selectedOwnerId?: number,
     ) => void;
 }
 
@@ -89,7 +91,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                     styles.AssignOwner
                                 } ${classNames({
                                     [styles.Active]:
-                                        this.props.taskSelectingOwner ===
+                                        this.props.selectOwnerTaskId ===
                                         this.state.task.id,
                                 })}`}
                                 onClick={this.onAssignOwnerClick}
@@ -289,13 +291,16 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
+        const task = this.state.task!;
         const element = event.currentTarget as HTMLDivElement;
         this.props.onShowPotentialTaskOwners?.call(
             null,
-            this.state.task!,
+            task.id,
+            this.state.updatedTask!,
             (): Rect => {
                 return element.getBoundingClientRect();
             },
+            task.owner?.id,
         );
     };
 }
