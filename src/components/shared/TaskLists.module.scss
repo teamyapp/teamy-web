@@ -13,20 +13,23 @@ $borderRadius: 10px;
 }
 
 .TaskLists {
-    display: grid;
+    display: flex;
     overflow-y: hidden;
     box-sizing: border-box;
     height: 100%;
-    grid-auto-rows: min-content;
-    grid-template-rows: 1fr;
-    grid-column-gap: $sectionSpace - 4px;
 
     > .TaskListSection {
-        display: flex;
+        flex: 1;
+
+        &:not(:first-child) {
+            margin-left: $sectionSpace - 4px;
+        }
+
         overflow-y: hidden;
         flex-direction: column;
         box-sizing: border-box;
         height: 100%;
+        min-width: 500px;
     }
 }
 

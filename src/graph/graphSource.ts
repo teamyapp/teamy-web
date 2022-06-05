@@ -134,10 +134,6 @@ export class GraphSource {
     }
 
     async setCurrentTeam(currentTeamId: number): Promise<void> {
-        if (this.appState.currentTeamId === currentTeamId) {
-            return;
-        }
-
         const tasksPreview = await this.taskClient.getTasksPreview(
             `${currentTeamId}`,
         );

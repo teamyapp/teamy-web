@@ -1,3 +1,4 @@
+import { UpdateTaskInput } from '@core/entity/input';
 import { Invitation } from '@core/entity/invitation';
 import { Task } from '@core/entity/task';
 
@@ -9,7 +10,7 @@ export type Feedback =
 
 export interface TaskUpdatedFeedback {
     type: 'TaskUpdated';
-    task: Task;
+    taskId: number;
 }
 
 export interface UserProfileUpdatedFeedback {
