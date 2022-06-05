@@ -5,7 +5,7 @@ import { BoundingBoxFinder } from '@lib/ui/position';
 
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
-import { CreateTaskInput } from '@core/entity/input';
+import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
@@ -25,17 +25,20 @@ interface Props {
     deps: Deps;
     tasks: Task[];
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
-    taskSelectingOwner?: Task;
     sortOrders: SortOrders;
-    onViewTaskDetailClick?: (taskId: number) => void;
+    selectOwnerTaskId?: number;
     onCreateTask?: (task: CreateTaskInput) => void;
-    onUpdateTask?: (task: Task) => void;
-    onDeleteTaskClick?: (taskId: number) => void;
-    onStartTaskClick?: (taskId: number) => void;
-    onCompleteTaskClick?: (taskId: number) => void;
+    onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
+    onStartTask?: (taskId: number) => void;
+    onDeleteTask?: (taskId: number) => void;
+    onCompleteTask?: (taskId: number) => void;
+    onViewTaskDetail?: (taskId: number) => void;
+    onReportTaskBlocked?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
-        task: Task,
+        taskId: number,
+        updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
+        selectedOwnerId?: number,
     ) => void;
     onSelectUpcomingOrder?: (order: string) => void;
 }
@@ -59,14 +62,15 @@ export class KanbanUI extends Component<Props> {
                             this.props.deps.dragAndDropController
                         }
                         tasks={upcomingTasks}
-                        taskSelectingOwner={this.props.taskSelectingOwner}
+                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         sortOrder={this.props.sortOrders.upcoming}
                         onCreateTask={this.props.onCreateTask}
                         onUpdateTask={this.props.onUpdateTask}
-                        onViewTaskDetailClick={this.props.onViewTaskDetailClick}
-                        onDeleteTaskClick={this.props.onDeleteTaskClick}
-                        onStartTaskClick={this.props.onStartTaskClick}
-                        onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        onStartTask={this.props.onStartTask}
+                        onDeleteTask={this.props.onDeleteTask}
+                        onCompleteTask={this.props.onCompleteTask}
+                        onViewTaskDetail={this.props.onViewTaskDetail}
+                        onReportTaskBlocked={this.props.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
                             this.props.onShowPotentialTaskOwners
                         }
@@ -79,11 +83,13 @@ export class KanbanUI extends Component<Props> {
                             this.props.deps.dragAndDropController
                         }
                         tasks={inProgressTasks}
-                        taskSelectingOwner={this.props.taskSelectingOwner}
+                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
-                        onViewTaskDetailClick={this.props.onViewTaskDetailClick}
-                        onDeleteTaskClick={this.props.onDeleteTaskClick}
-                        onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        onStartTask={this.props.onStartTask}
+                        onDeleteTask={this.props.onDeleteTask}
+                        onCompleteTask={this.props.onCompleteTask}
+                        onViewTaskDetail={this.props.onViewTaskDetail}
+                        onReportTaskBlocked={this.props.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
                             this.props.onShowPotentialTaskOwners
                         }
@@ -95,11 +101,13 @@ export class KanbanUI extends Component<Props> {
                             this.props.deps.dragAndDropController
                         }
                         tasks={awaitingTasks}
-                        taskSelectingOwner={this.props.taskSelectingOwner}
+                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
-                        onViewTaskDetailClick={this.props.onViewTaskDetailClick}
-                        onDeleteTaskClick={this.props.onDeleteTaskClick}
-                        onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        onStartTask={this.props.onStartTask}
+                        onDeleteTask={this.props.onDeleteTask}
+                        onCompleteTask={this.props.onCompleteTask}
+                        onViewTaskDetail={this.props.onViewTaskDetail}
+                        onReportTaskBlocked={this.props.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
                             this.props.onShowPotentialTaskOwners
                         }
@@ -111,12 +119,13 @@ export class KanbanUI extends Component<Props> {
                             this.props.deps.dragAndDropController
                         }
                         tasks={deliveredTasks}
-                        taskSelectingOwner={this.props.taskSelectingOwner}
+                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
-                        onViewTaskDetailClick={this.props.onViewTaskDetailClick}
-                        onDeleteTaskClick={this.props.onDeleteTaskClick}
-                        onStartTaskClick={this.props.onStartTaskClick}
-                        onCompleteTaskClick={this.props.onCompleteTaskClick}
+                        onStartTask={this.props.onStartTask}
+                        onDeleteTask={this.props.onDeleteTask}
+                        onCompleteTask={this.props.onCompleteTask}
+                        onViewTaskDetail={this.props.onViewTaskDetail}
+                        onReportTaskBlocked={this.props.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
                             this.props.onShowPotentialTaskOwners
                         }

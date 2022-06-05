@@ -1,3 +1,4 @@
+import { Team } from '@core/entity/team';
 import { Thread } from '@core/entity/thread';
 
 import { TaskAction } from './taskAction';
@@ -10,6 +11,8 @@ export interface Task {
     dueAt?: Date; // RFC3339 string, todo: create a RFC3339 type
     context?: string;
     owner?: User;
+    owningTeam: Team;
+    effort?: number;
     comments: Thread;
     availableActions: TaskAction[];
     status: TaskStatus;

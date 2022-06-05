@@ -23,4 +23,15 @@ export class FormatService {
         }
         return momentDate.format(format);
     }
+
+    public static dueDate(date: Date): string {
+        return moment(date).calendar({
+            lastDay: '[Yesterday]',
+            sameDay: '[Today]',
+            nextDay: '[Tomorrow]',
+            lastWeek: '[Last] dddd',
+            nextWeek: 'dddd',
+            sameElse: 'L',
+        });
+    }
 }

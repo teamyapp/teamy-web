@@ -4,11 +4,11 @@ import { User } from '@core/entity/user';
 
 import styles from './UserProfile.module.scss';
 
-interface IProps {
+interface Props {
     user: User;
 }
 
-export class UserProfileUI extends Component<IProps> {
+export class UserProfileUI extends Component<Props> {
     public render(): ReactNode {
         const name = `${this.props.user.firstName} ${
             this.props.user.lastName

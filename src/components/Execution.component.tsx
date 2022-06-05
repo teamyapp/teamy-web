@@ -28,7 +28,7 @@ import { taskUrgencyOrder } from '@core/config/sortOrder';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
-import { CreateTaskInput } from '@core/entity/input';
+import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
@@ -68,7 +68,9 @@ interface State {
     currentUserId: number;
     needAttentionTask?: Task;
     teamTasks: Task[];
-    taskSelectingOwner?: Task;
+    selectOwnerTaskId?: number;
+    selectedOwnerId?: number;
+    selectOwnerUpdateTaskInput?: UpdateTaskInput;
     potentialTaskOwners: User[];
     receivingSectionId?: string;
     sortOrders: SortOrders;
@@ -139,7 +141,7 @@ export class ExecutionComponent extends Component<Props, State> {
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
-                    taskSelectingOwner={this.state.taskSelectingOwner?.id}
+                    selectOwnerTaskId={this.state.selectOwnerTaskId}
                     onClose={this.onTaskDetailModalClose}
                     onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
                 />
@@ -167,9 +169,7 @@ export class ExecutionComponent extends Component<Props, State> {
                         </div>
                         <SelectUserListUI
                             emptySelectionUserName={'Unassigned'}
-                            selectedUserId={
-                                this.state.taskSelectingOwner?.owner?.id
-                            }
+                            selectedUserId={this.state.selectedOwnerId}
                             users={this.state.potentialTaskOwners}
                             onSelectUser={this.onSelectTaskOwner}
                             onRemoveSelection={this.onRemoveTaskOwner}
@@ -341,14 +341,15 @@ export class ExecutionComponent extends Component<Props, State> {
                         personalTasks={this.state.teamTasks.filter(
                             personalTasksFilter,
                         )}
-                        taskSelectingOwner={this.state.taskSelectingOwner}
+                        selectOwnerTaskId={this.state.selectOwnerTaskId}
                         sortOrders={this.state.sortOrders}
-                        onViewTaskDetailClick={this.onViewTaskDetailClick}
                         onCreateTask={this.onCreateTask}
                         onUpdateTask={this.onUpdateTask}
-                        onDeleteTaskClick={this.onDeleteTaskClick}
-                        onStartTaskClick={this.moveTaskToInProgress}
-                        onCompleteTaskClick={this.moveTaskToDelivered}
+                        onStartTask={this.moveTaskToInProgress}
+                        onDeleteTask={this.onDeleteTask}
+                        onCompleteTask={this.moveTaskToDelivered}
+                        onViewTaskDetail={this.onViewTaskDetail}
+                        onReportTaskBlocked={this.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
@@ -360,14 +361,15 @@ export class ExecutionComponent extends Component<Props, State> {
                     <KanbanUI
                         deps={this.props.deps}
                         tasks={this.state.teamTasks.filter(teamTasksFilter)}
-                        taskSelectingOwner={this.state.taskSelectingOwner}
+                        selectOwnerTaskId={this.state.selectOwnerTaskId}
                         sortOrders={this.state.sortOrders}
-                        onViewTaskDetailClick={this.onViewTaskDetailClick}
                         onCreateTask={this.onCreateTask}
                         onUpdateTask={this.onUpdateTask}
-                        onDeleteTaskClick={this.onDeleteTaskClick}
-                        onStartTaskClick={this.moveTaskToInProgress}
-                        onCompleteTaskClick={this.moveTaskToDelivered}
+                        onStartTask={this.moveTaskToInProgress}
+                        onDeleteTask={this.onDeleteTask}
+                        onCompleteTask={this.moveTaskToDelivered}
+                        onViewTaskDetail={this.onViewTaskDetail}
+                        onReportTaskBlocked={this.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
                             this.onShowPotentialTaskOwners
                         }
@@ -416,14 +418,18 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onShowPotentialTaskOwners = async (
-        task: Task,
+        taskId: number,
+        updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
+        selectedOwnerId?: number,
     ) => {
         await this.graphSource.syncCurrentTeamMembers();
         const owners = this.graphSource.currentTeam()!.members;
         this.setState({
             potentialTaskOwners: owners,
-            taskSelectingOwner: task,
+            selectOwnerTaskId: taskId,
+            selectedOwnerId,
+            selectOwnerUpdateTaskInput: updateTaskInput,
             findTaskOwnersAlignTargetBoundBox: findAlignTargetBoundBox,
             showPotentialTaskOwnersList: true,
         });
@@ -439,35 +445,42 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onRemoveTaskOwner = () => {
-        const task = this.state.taskSelectingOwner!;
-        this.graphSource.updateTask(task.id, {
-            goal: task.goal,
-            context: task.context,
-            owningTeamId: this.graphSource.currentTeam()!.id,
-            dueAt: task.dueAt,
-        });
+        this.graphSource.updateTask(
+            this.state.selectOwnerTaskId!,
+            Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
+                {},
+                this.state.selectOwnerUpdateTaskInput!,
+                {
+                    ownerUserId: undefined,
+                },
+            ),
+        );
         this.setState({
             potentialTaskOwners: [],
             showPotentialTaskOwnersList: false,
             taskOwnersListVisible: false,
-            taskSelectingOwner: undefined,
+            selectedOwnerId: undefined,
+            selectOwnerTaskId: undefined,
         });
     };
 
     private onSelectTaskOwner = (userId: number) => {
-        const task = this.state.taskSelectingOwner!;
-        this.graphSource.updateTask(task.id, {
-            goal: task.goal,
-            context: task.context,
-            ownerUserId: userId,
-            owningTeamId: this.graphSource.currentTeam()!.id,
-            dueAt: task.dueAt,
-        });
+        this.graphSource.updateTask(
+            this.state.selectOwnerTaskId!,
+            Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
+                {},
+                this.state.selectOwnerUpdateTaskInput!,
+                {
+                    ownerUserId: userId,
+                },
+            ),
+        );
         this.setState({
             potentialTaskOwners: [],
             showPotentialTaskOwnersList: false,
             taskOwnersListVisible: false,
-            taskSelectingOwner: undefined,
+            selectedOwnerId: undefined,
+            selectOwnerTaskId: undefined,
         });
     };
 
@@ -503,7 +516,7 @@ export class ExecutionComponent extends Component<Props, State> {
         this.updateTaskOwnersListPosition();
     };
 
-    private onViewTaskDetailClick = async (taskId: number): Promise<void> => {
+    private onViewTaskDetail = async (taskId: number): Promise<void> => {
         this.showTaskDetail(taskId);
     };
 
@@ -517,22 +530,20 @@ export class ExecutionComponent extends Component<Props, State> {
         }
     };
 
-    private onUpdateTask = async (task: Task) => {
-        await this.graphSource.updateTask(task.id, {
-            goal: task.goal,
-            context: task.context,
-            ownerUserId: task.owner?.id,
-            owningTeamId: this.graphSource.currentTeam()!.id,
-            dueAt: task.dueAt,
-        });
+    private onUpdateTask = async (taskId: number, task: UpdateTaskInput) => {
+        await this.graphSource.updateTask(taskId, task);
         await this.props.deps.feedbackPubSub.publish({
             type: 'TaskUpdated',
-            taskId: task.id,
+            taskId: taskId,
         });
     };
 
-    private onDeleteTaskClick = (taskId: number): void => {
+    private onDeleteTask = (taskId: number): void => {
         this.graphSource.deleteTask(taskId);
+    };
+
+    private onReportTaskBlocked = (taskId: number): void => {
+        console.log('onReportTaskBlocked', taskId);
     };
 
     private moveTaskToInProgress = (taskId: number): void => {
@@ -546,7 +557,7 @@ export class ExecutionComponent extends Component<Props, State> {
     private onCloseTaskOwnersListClick = () => {
         this.setState({
             potentialTaskOwners: [],
-            taskSelectingOwner: undefined,
+            selectOwnerTaskId: undefined,
             taskOwnersListVisible: false,
             showPotentialTaskOwnersList: false,
         });
