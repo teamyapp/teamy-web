@@ -66,7 +66,7 @@ export class Task {
         return this.taskState.updatedAt;
     }
 
-    get dateAt(): Date | undefined {
+    get dueAt(): Date | undefined {
         return this.taskState.dueAt;
     }
 
