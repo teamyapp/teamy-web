@@ -504,7 +504,7 @@ export class GraphSource {
             goal: remoteTask.goal || localOldTask.goal,
             context:
                 remoteTask.context === undefined
-                    ? localOldTask.goal
+                    ? localOldTask.context
                     : remoteTask.context,
             creatorUserId:
                 id(remoteTask.creator?.id) || localOldTask.creatorUserId,
