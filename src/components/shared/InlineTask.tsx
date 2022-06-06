@@ -246,7 +246,7 @@ export class InlineTaskUI extends Component<Props, State> {
                         className={`${styles.Action} ${styles.ViewTaskDetailIcon}`}
                         onClick={this.onViewTaskDetailClick}
                     >
-                        <MaterialIconUI>more_vert</MaterialIconUI>
+                        <MaterialIconUI>settings</MaterialIconUI>
                     </div>
                 </TooltipUI>
             </div>
