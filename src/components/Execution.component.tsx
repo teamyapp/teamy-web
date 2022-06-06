@@ -398,7 +398,7 @@ export class ExecutionComponent extends Component<Props, State> {
     private updateState = () => {
         const currentUser = this.graphSource.currentUser();
         const currentTeam = this.graphSource.currentTeam();
-        const teamTasks = currentTeam?.tasks?.map((task) => task) || [];
+        const teamTasks = currentTeam?.tasks || [];
         const needAttention = teamTasks.filter(
             (task) => task.status === 'IN_PROGRESS',
         )[0];
