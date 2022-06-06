@@ -13,9 +13,9 @@ export interface RemoteTask {
     owningTeam?: RemoteTeam;
     status?: RemoteTaskStatus;
     comments?: RemoteThread;
-    createdAt?: Date;
-    updatedAt?: Date;
-    dueAt?: Date;
+    createdAt?: string;
+    updatedAt?: string;
+    dueAt?: string;
     effort?: number;
     availableActions?: RemoteTaskAction[];
 }

@@ -201,7 +201,12 @@ export class GraphSource {
         this.onUpdateState();
     }
 
-    public task(taskId: number): Task {
+    public task(taskId: number): Task | undefined {
+        const taskState = this.appState.tasks[taskId];
+        if (!taskState) {
+            return;
+        }
+
         return new Task(this.appState, this.appState.tasks[taskId]);
     }
 
@@ -243,7 +248,7 @@ export class GraphSource {
         await this.taskClient.deleteTask(`${taskId}`);
         const deletedTask = this.task(taskId);
         delete this.appState.tasks[taskId];
-        const owningTeamId = deletedTask.owningTeam.id;
+        const owningTeamId = deletedTask!.owningTeam.id;
         const newTaskIds = this.appState.teams[owningTeamId].taskIds.filter(
             (newTaskId) => newTaskId !== taskId,
         );
@@ -437,7 +442,7 @@ export class GraphSource {
                 remoteUser.profileUrl === undefined
                     ? localOldUser.profileUrl
                     : remoteUser.profileUrl,
-            createdAt: remoteUser.createdAt || localOldUser.createdAt,
+            createdAt: toDate(remoteUser.createdAt) || localOldUser.createdAt,
             teamIds:
                 remoteUser.teams?.map((team) => id(team.id)!) ||
                 localOldUser.teamIds,
@@ -512,15 +517,15 @@ export class GraphSource {
             status: remoteTask.status || localOldTask.status,
             commentsThreadId:
                 id(remoteTask.comments?.id) || localOldTask.commentsThreadId,
-            createdAt: remoteTask.createdAt || localOldTask.createdAt,
+            createdAt: toDate(remoteTask.createdAt) || localOldTask.createdAt,
             updatedAt:
                 remoteTask.updatedAt === undefined
                     ? localOldTask.updatedAt
-                    : remoteTask.updatedAt,
+                    : toDate(remoteTask.updatedAt),
             dueAt:
                 remoteTask.dueAt === undefined
                     ? localOldTask.dueAt
-                    : remoteTask.dueAt,
+                    : toDate(remoteTask.dueAt),
             effort:
                 remoteTask.effort === undefined
                     ? localOldTask.effort
@@ -649,6 +654,14 @@ export class GraphSource {
 
         this.appState.messages[remoteMessageId] = localNewMessage;
     }
+}
+
+function toDate(date: string | undefined): Date | undefined {
+    if (!date) {
+        return;
+    }
+
+    return new Date(date);
 }
 
 function id(idStr: string | undefined): number | undefined {

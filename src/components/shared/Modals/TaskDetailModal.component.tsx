@@ -7,6 +7,7 @@ import React, {
     createRef,
 } from 'react';
 
+import * as csp from '@lib/csp/csp';
 import { DatePickerUI } from '@lib/ui/DatePicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -52,6 +53,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
     private readonly dueAtDatePicker = createRef<DatePickerUI>();
+    private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
     constructor(props: Props) {
         super(props);
@@ -109,7 +111,12 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                         </div>
                                     </Fragment>
                                 ) : (
-                                    <MaterialIconUI>face</MaterialIconUI>
+                                    <Fragment>
+                                        <MaterialIconUI>face</MaterialIconUI>
+                                        <div className={styles.TaskOwnerName}>
+                                            Unassigned
+                                        </div>
+                                    </Fragment>
                                 )}
                             </div>
                             <div className={styles.SaveAction}>
@@ -192,10 +199,27 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     public componentDidMount() {
         window.addEventListener('resize', this.onBodyResize);
+        this.stateChangeChan = this.graphSource.subscribeStateChange();
+        (async () => {
+            while (true) {
+                console.log('waiting for localStore state changes');
+                const hasChanged = await this.stateChangeChan!.pop();
+                if (hasChanged === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+
+                if (this.state.task?.id) {
+                    this.updateState(this.state.task.id);
+                }
+            }
+        })().then();
     }
 
     public componentWillUnmount() {
         window.removeEventListener('resize', this.onBodyResize);
+        this.stateChangeChan?.close();
     }
 
     public async open(taskId: number) {
@@ -207,23 +231,35 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             async () => {
                 this.modalRef.current?.open();
                 await syncPromise;
-                const task = this.graphSource.task(taskId);
-                this.setState({
-                    task,
-                    updatedTask: {
-                        goal: task.goal,
-                        context: task.context,
-                        ownerUserId: task.owner?.id,
-                        owningTeamId: task.owningTeam.id,
-                        effort: task.effort,
-                        dueAt: task.dateAt,
-                    },
-                    currentUserId: this.graphSource.currentUser()?.id,
-                });
+                this.updateState(taskId);
                 this.adjustSize();
                 this.scrollToCommentsBottom();
             },
         );
+    }
+
+    private updateState(taskId: number) {
+        const task = this.graphSource.task(taskId);
+        if (!task) {
+            this.setState({
+                task: undefined,
+                updatedTask: undefined,
+            });
+            return;
+        }
+
+        this.setState({
+            task,
+            updatedTask: {
+                goal: task.goal,
+                context: task.context,
+                ownerUserId: task.owner?.id,
+                owningTeamId: task.owningTeam.id,
+                effort: task.effort,
+                dueAt: task.dueAt,
+            },
+            currentUserId: this.graphSource.currentUser()?.id,
+        });
     }
 
     private onCloseButtonClick = () => {

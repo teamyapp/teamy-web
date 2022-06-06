@@ -18,8 +18,8 @@ import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { FormatService } from '@core/service/format.service';
 
-import { UserProfileUI } from './UserProfile';
 import styles from './InlineTask.module.scss';
+import { UserProfileUI } from './UserProfile';
 
 interface Props {
     task: Task;
@@ -42,7 +42,7 @@ interface Props {
 
 interface State {
     isEditingGoal: boolean;
-    updateTaskInput: UpdateTaskInput;
+    updatedGoal?: string;
 }
 
 export class InlineTaskUI extends Component<Props, State> {
@@ -50,14 +50,6 @@ export class InlineTaskUI extends Component<Props, State> {
         super(props);
         this.state = {
             isEditingGoal: false,
-            updateTaskInput: {
-                goal: props.task.goal,
-                context: props.task.context,
-                ownerUserId: props.task.owner?.id,
-                owningTeamId: props.task.owningTeam.id,
-                effort: props.task.effort,
-                dueAt: props.task.dueAt,
-            },
         };
     }
 
@@ -84,20 +76,19 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     private renderGoal(): ReactNode {
-        const { goal } = this.state.updateTaskInput;
         return this.state.isEditingGoal ? (
             <textarea
                 autoFocus
                 maxLength={taskGoalLengthLimit}
                 className={styles.GoalTextField}
-                value={goal || ''}
+                value={this.state.updatedGoal || ''}
                 onChange={this.onGoalChange}
                 onKeyDown={this.onGoalKeyDown}
                 onBlur={this.onGoalBlur}
             />
         ) : (
             <div className={styles.Goal} onDoubleClick={this.onGoalDoubleClick}>
-                {goal || (
+                {this.props.task.goal || (
                     <span className={styles.Placeholder}>
                         Set a goal for me
                     </span>
@@ -107,7 +98,7 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     private renderDueAt = () => {
-        const { dueAt } = this.state.updateTaskInput;
+        const { dueAt } = this.props.task;
         const endOfDueAt = byTheEndOf(dueAt);
         const now = new Date();
         return (
@@ -128,7 +119,7 @@ export class InlineTaskUI extends Component<Props, State> {
     };
 
     private renderEffort = () => {
-        const { effort } = this.state.updateTaskInput;
+        const { effort } = this.props.task;
         return (
             effort && (
                 <span className={styles.EffortAttribute}>
@@ -287,7 +278,7 @@ export class InlineTaskUI extends Component<Props, State> {
         this.props.onShowPotentialTaskOwners?.call(
             null,
             this.props.task.id,
-            this.state.updateTaskInput,
+            this.getUpdatedTask(),
             (): Rect => {
                 return element.getBoundingClientRect();
             },
@@ -311,27 +302,38 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onGoalChange = (event: ChangeEvent<HTMLTextAreaElement>): void => {
         this.setState({
-            updateTaskInput: Object.assign({}, this.state.updateTaskInput, {
-                goal: event.target.value,
-            }),
+            updatedGoal: event.target.value,
         });
     };
 
     private onGoalDoubleClick = () => {
         this.setState({
             isEditingGoal: true,
+            updatedGoal: this.props.task.goal,
         });
     };
 
     private finishEditingGoal() {
-        this.setState({
-            isEditingGoal: false,
-        });
         this.props.onUpdateTask?.call(
             null,
             this.props.task.id,
-            this.state.updateTaskInput,
+            this.getUpdatedTask(),
         );
+        this.setState({
+            isEditingGoal: false,
+            updatedGoal: undefined,
+        });
+    }
+
+    private getUpdatedTask(): UpdateTaskInput {
+        return {
+            goal: this.state.updatedGoal || this.props.task.goal,
+            context: this.props.task.context,
+            ownerUserId: this.props.task.owner?.id,
+            owningTeamId: this.props.task.owningTeam.id,
+            effort: this.props.task.effort,
+            dueAt: this.props.task.dueAt,
+        };
     }
 }
 
