@@ -18,10 +18,10 @@ import { UpcomingSection } from './TaskListSections/UpcomingSection';
 const upcomingColumnFilter = or(filters.upcoming, filters.paused);
 const deliveredColumnFilter = filters.delivered;
 const awaitingColumnFilter = filters.awaiting;
+const inProgressColumnFilter = filters.inProgress;
 
 interface Props {
     deps: Deps;
-    needAttentionTask?: Task;
     personalTasks: Task[];
     sortOrders: SortOrders;
     selectOwnerTaskId?: number;
@@ -50,6 +50,8 @@ export class PersonalStatusUI extends Component<Props> {
             this.props.personalTasks.filter(upcomingColumnFilter);
         const awaitingTasks =
             this.props.personalTasks.filter(awaitingColumnFilter);
+        const needAttentionTask =
+            this.props.personalTasks.filter(inProgressColumnFilter)[0];
         return (
             <div className={styles.PersonalStatus}>
                 <div
@@ -59,7 +61,7 @@ export class PersonalStatusUI extends Component<Props> {
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
-                        needAttentionTask={this.props.needAttentionTask}
+                        needAttentionTask={needAttentionTask}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
