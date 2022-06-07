@@ -93,23 +93,21 @@ export class GraphSource {
 
     async syncCurrentUser(): Promise<void> {
         const remoteUser = await this.userClient.getMe();
-        if (!remoteUser) {
-            return;
+        if (remoteUser) {
+            this.mergeUser(remoteUser);
         }
 
-        this.mergeUser(remoteUser);
-        this.appState.currentUserId = id(remoteUser.id);
+        this.appState.currentUserId = id(remoteUser?.id);
         this.onUpdateState();
     }
 
     async syncCurrentUserWithTeams(): Promise<void> {
         const remoteUser = await this.userClient.getMeWithTeams();
-        if (!remoteUser) {
-            return;
+        if (remoteUser) {
+            this.mergeUser(remoteUser);
         }
 
-        this.mergeUser(remoteUser);
-        this.appState.currentUserId = id(remoteUser.id);
+        this.appState.currentUserId = id(remoteUser?.id);
         this.onUpdateState();
     }
 
