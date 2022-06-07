@@ -66,7 +66,6 @@ interface State {
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
     currentUserId: number;
-    needAttentionTask?: Task;
     teamTasks: Task[];
     selectOwnerTaskId?: number;
     selectedOwnerId?: number;
@@ -325,19 +324,11 @@ export class ExecutionComponent extends Component<Props, State> {
             );
         }
 
-        let needAttention = this.state.needAttentionTask;
-        if (needAttention) {
-            if (!personalTasksFilter(needAttention)) {
-                needAttention = undefined;
-            }
-        }
-
         switch (tabId) {
             case tabIds[0]:
                 return (
                     <PersonalStatusUI
                         deps={this.props.deps}
-                        needAttentionTask={needAttention}
                         personalTasks={this.state.teamTasks.filter(
                             personalTasksFilter,
                         )}
@@ -399,13 +390,9 @@ export class ExecutionComponent extends Component<Props, State> {
         const currentUser = this.graphSource.currentUser();
         const currentTeam = this.graphSource.currentTeam();
         const teamTasks = currentTeam?.tasks || [];
-        const needAttention = teamTasks.filter(
-            (task) => task.status === 'IN_PROGRESS',
-        )[0];
         if (currentUser) {
             this.setState({
                 currentUserId: currentUser.id,
-                needAttentionTask: needAttention,
                 teamTasks: teamTasks,
             });
         }
