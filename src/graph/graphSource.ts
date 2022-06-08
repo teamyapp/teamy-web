@@ -132,14 +132,20 @@ export class GraphSource {
     }
 
     async setCurrentTeam(currentTeamId: number): Promise<void> {
-        const tasksPreview = await this.taskClient.getTasksPreview(
-            `${currentTeamId}`,
-        );
-        this.appState.teams[currentTeamId].taskIds = tasksPreview?.map(
-            (task) => id(task.id)!,
-        );
-        tasksPreview?.forEach((taskPreview) => this.mergeTask(taskPreview));
-        this.appState.currentTeamId = currentTeamId;
+        const userTeams = this.currentUser()?.teams || [];
+        const teamId = userTeams.filter((team) => team.id === currentTeamId)[0]
+            ?.id;
+        if (teamId) {
+            const tasksPreview = await this.taskClient.getTasksPreview(
+                `${currentTeamId}`,
+            );
+            this.appState.teams[currentTeamId].taskIds = tasksPreview?.map(
+                (task) => id(task.id)!,
+            );
+            tasksPreview?.forEach((taskPreview) => this.mergeTask(taskPreview));
+        }
+
+        this.appState.currentTeamId = teamId;
         this.onUpdateState();
     }
 

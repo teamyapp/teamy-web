@@ -50,8 +50,9 @@ export class PersonalStatusUI extends Component<Props> {
             this.props.personalTasks.filter(upcomingColumnFilter);
         const awaitingTasks =
             this.props.personalTasks.filter(awaitingColumnFilter);
-        const needAttentionTask =
-            this.props.personalTasks.filter(inProgressColumnFilter)[0];
+        const needAttentionTask = this.props.personalTasks.filter(
+            inProgressColumnFilter,
+        )[0];
         return (
             <div className={styles.PersonalStatus}>
                 <div
