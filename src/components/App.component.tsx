@@ -254,6 +254,9 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 const isSignedIn = await this.identityClient.isSignedIn();
+                this.setState({
+                    showPrivatePage: isSignedIn,
+                });
                 if (!isSignedIn) {
                     this.identityClient.trySignIn();
                     continue;
@@ -284,11 +287,6 @@ export class AppComponent extends Component<Props, State> {
                     routeUpdate.suffix,
                     routeUpdate.params.pathParams,
                 );
-
-                this.setState({
-                    showPrivatePage: true,
-                });
-
                 const teamIdParam = getTeamId(routeUpdate.params);
                 if (!teamIdParam) {
                     this.tryRedirect(currTeamId);
@@ -432,10 +430,13 @@ export class AppComponent extends Component<Props, State> {
 
     private tryRedirect(activeTeamId?: number) {
         if (!activeTeamId) {
-            return;
+            this.router.navigateTo(rootRoutePattern);
+            this.setState({
+                showMainContent: true,
+            });
+        } else {
+            this.router.navigateTo(teamPath(activeTeamId));
         }
-
-        this.router.navigateTo(teamPath(activeTeamId));
     }
 
     private processUserAction(userAction: UserActionEvent) {

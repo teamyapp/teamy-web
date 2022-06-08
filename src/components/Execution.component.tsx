@@ -208,16 +208,13 @@ export class ExecutionComponent extends Component<Props, State> {
                     return;
                 }
 
-                if (
-                    !acceptedRoutePatterns.includes(routeUpdate.routePattern) ||
-                    routeUpdate.suffix
-                ) {
-                    console.log(
-                        '[ExecutionComponent][Discarded]',
-                        routeUpdate.routePattern,
-                        routeUpdate.suffix,
-                        routeUpdate.params.pathParams,
-                    );
+                if (!this.graphSource.currentTeam()) {
+                    continue;
+                }
+
+                const tabId = getTabId(routeUpdate.params);
+                const taskIdParam = getTaskId(routeUpdate.params);
+                if (!tabId || tabIds.indexOf(tabId) < 0) {
                     this.onTabClick(0);
                     continue;
                 }
@@ -228,14 +225,6 @@ export class ExecutionComponent extends Component<Props, State> {
                     routeUpdate.suffix,
                     routeUpdate.params.pathParams,
                 );
-
-                const tabId = getTabId(routeUpdate.params);
-                const taskIdParam = getTaskId(routeUpdate.params);
-                if (!tabId || tabIds.indexOf(tabId) < 0) {
-                    this.onTabClick(0);
-                    continue;
-                }
-
                 this.setState({
                     activeTabIndex: tabIds.indexOf(tabId),
                 });
