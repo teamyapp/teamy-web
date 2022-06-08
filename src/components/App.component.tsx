@@ -222,7 +222,7 @@ export class AppComponent extends Component<Props, State> {
         this.stateChangeChan = this.graphSource.subscribeStateChange();
         (async () => {
             while (true) {
-                console.log('waiting for localStore state changes');
+                console.log('waiting for state changes');
                 const hasChanged = await this.stateChangeChan!.pop();
                 if (hasChanged === undefined) {
                     // check undefined instead of falsy because
@@ -249,27 +249,26 @@ export class AppComponent extends Component<Props, State> {
                     return;
                 }
 
-                if (!publicRoutePatterns.includes(routeUpdate.routePattern)) {
-                    const isSignedIn = await this.identityClient.isSignedIn();
-                    if (!isSignedIn) {
-                        this.identityClient.trySignIn();
-                        continue;
-                    } else {
-                        await this.graphSource.syncCurrentUserWithTeams();
-                        const me = this.graphSource.currentUser()?.id;
-                        if (!me) {
-                            this.trySignUp(routeUpdate.routePattern);
-                            continue;
-                        } else {
-                            this.setState({
-                                showPrivatePage: true,
-                            });
-                        }
-                    }
+                if (publicRoutePatterns.includes(routeUpdate.routePattern)) {
+                    continue;
                 }
 
+                const isSignedIn = await this.identityClient.isSignedIn();
+                if (!isSignedIn) {
+                    this.identityClient.trySignIn();
+                    continue;
+                }
+
+                await this.graphSource.syncCurrentUserWithTeams();
+                const me = this.graphSource.currentUser()?.id;
+                if (!me) {
+                    this.trySignUp(routeUpdate.routePattern);
+                    continue;
+                }
+
+                const currTeamId = this.graphSource.currentTeam()?.id;
                 if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
-                    this.tryRedirect(this.state.activeTeamId);
+                    this.tryRedirect(currTeamId);
                     console.log(
                         '[AppComponent][Discarded]',
                         routeUpdate.routePattern,
@@ -286,21 +285,30 @@ export class AppComponent extends Component<Props, State> {
                     routeUpdate.params.pathParams,
                 );
 
-                const teamIdParam = getTeamId(routeUpdate.params);
-                if (teamIdParam) {
-                    (async () => {
-                        const teamId = parseInt(teamIdParam);
-                        if (this.state.activeTeamId !== teamId) {
-                            await this.onActiveTeamSelect(teamId);
-                        } else {
-                            await this.graphSource.syncCurrentTeam();
-                        }
+                this.setState({
+                    showPrivatePage: true,
+                });
 
-                        this.setState({
-                            showMainContent: true,
-                        });
-                    })().then();
+                const teamIdParam = getTeamId(routeUpdate.params);
+                if (!teamIdParam) {
+                    this.tryRedirect(currTeamId);
+                    continue;
                 }
+
+                const teamId = parseInt(teamIdParam);
+                if (teamId !== currTeamId) {
+                    await this.onActiveTeamSelect(teamId);
+                }
+
+                if (this.graphSource.currentTeam()) {
+                    this.graphSource.syncCurrentTeam();
+                } else {
+                    this.router.navigateTo(rootRoutePattern);
+                }
+
+                this.setState({
+                    showMainContent: true,
+                });
             }
         })().then();
         this.router.navigateToCurrUri();
@@ -403,6 +411,7 @@ export class AppComponent extends Component<Props, State> {
     };
 
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
+        this.tryRedirect(teamId);
         await this.graphSource.setCurrentTeam(teamId);
     };
 
@@ -419,8 +428,6 @@ export class AppComponent extends Component<Props, State> {
             teams: currentUser?.teams || [],
             activeTeamId: currTeam?.id,
         });
-
-        this.tryRedirect(currTeam?.id);
     }
 
     private tryRedirect(activeTeamId?: number) {
@@ -428,14 +435,7 @@ export class AppComponent extends Component<Props, State> {
             return;
         }
 
-        const isAcceptedPattern = acceptedRoutePatterns.includes(
-            this.router.currentRouteUpdate?.routePattern,
-        );
-
-        const teamId = getTeamId(this.router.currentRouteUpdate?.params);
-        if (!isAcceptedPattern && !teamId) {
-            this.router.navigateTo(teamPath(activeTeamId));
-        }
+        this.router.navigateTo(teamPath(activeTeamId));
     }
 
     private processUserAction(userAction: UserActionEvent) {

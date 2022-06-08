@@ -184,7 +184,7 @@ export class ExecutionComponent extends Component<Props, State> {
         this.stateChangeChan = this.graphSource.subscribeStateChange();
         (async () => {
             while (true) {
-                console.log('waiting for localStore state changes');
+                console.log('waiting for state changes');
                 const hasChanged = await this.stateChangeChan!.pop();
                 if (hasChanged === undefined) {
                     // check undefined instead of falsy because
