@@ -410,7 +410,9 @@ export class AppComponent extends Component<Props, State> {
 
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
         await this.graphSource.setCurrentTeam(teamId);
-        this.tryRedirect(teamId);
+        if (this.graphSource.currentTeam()) {
+            this.router.navigateTo(teamPath(teamId));
+        }
     };
 
     private onTeamMembersAdded = async (teamId: number) => {
@@ -429,13 +431,13 @@ export class AppComponent extends Component<Props, State> {
     }
 
     private tryRedirect(activeTeamId?: number) {
-        if (!activeTeamId) {
+        if (activeTeamId) {
+            this.router.navigateTo(teamPath(activeTeamId));
+        } else {
             this.router.navigateTo(rootRoutePattern);
             this.setState({
                 showMainContent: true,
             });
-        } else {
-            this.router.navigateTo(teamPath(activeTeamId));
         }
     }
 
