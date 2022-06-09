@@ -9,3 +9,17 @@ export interface TeamState {
     taskIds: number[];
     invitationIds: number[];
 }
+
+export function parseTeamState(teamStateJSON: any): TeamState {
+    return {
+        id: teamStateJSON.id,
+        name: teamStateJSON.name,
+        iconUrl: teamStateJSON.iconUrl,
+        createdAt: new Date(teamStateJSON.createdAt),
+        creatorUserId: teamStateJSON.creatorUserId,
+        ownerUserId: teamStateJSON.ownerUserId,
+        memberUserIds: teamStateJSON.memberUserIds,
+        taskIds: teamStateJSON.taskIds,
+        invitationIds: teamStateJSON.invitationIds,
+    };
+}
