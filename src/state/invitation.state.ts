@@ -14,3 +14,22 @@ export interface InvitationState {
     status: InvitationStatus;
     code: string;
 }
+
+export function parseInvitationState(invitationJSON: any): InvitationState {
+    return {
+        id: invitationJSON.id,
+        senderUserId: invitationJSON.senderUserId,
+        receiverFirstName: invitationJSON.receiverFirstName,
+        receiverLastName: invitationJSON.receiverLastName,
+        receiverEmail: invitationJSON.receiverEmail,
+        receiverUserId: invitationJSON.receiverUserId,
+        joiningTeamId: invitationJSON.joiningTeamId,
+        expireAt: new Date(invitationJSON.expireAt),
+        createdAt: new Date(invitationJSON.createdAt),
+        updatedAt: invitationJSON.updatedAt
+            ? new Date(invitationJSON.updatedAt)
+            : invitationJSON.updatedAt,
+        status: invitationJSON.status,
+        code: invitationJSON.code,
+    };
+}

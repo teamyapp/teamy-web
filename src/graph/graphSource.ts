@@ -24,7 +24,7 @@ import {
 } from '@core/entity/input';
 import { Invitation } from '@core/graph/invitation';
 import { Task } from '@core/graph/task';
-import { AppState } from '@core/state/app.state';
+import { AppState, parseAppState } from '@core/state/app.state';
 import { InvitationState } from '@core/state/invitation.state';
 import { MessageState } from '@core/state/message.state';
 import { TaskState } from '@core/state/task.state';
@@ -58,16 +58,7 @@ export class GraphSource {
         private messageClient: MessageClient,
     ) {
         const savedState = localStorage.getItem(appStateKey);
-        this.appState = savedState
-            ? JSON.parse(savedState)
-            : {
-                  users: {},
-                  teams: {},
-                  tasks: {},
-                  invitations: {},
-                  threads: {},
-                  messages: {},
-              };
+        this.appState = parseAppState(savedState);
     }
 
     subscribeStateChange(): PopChannel<boolean | undefined> {
@@ -343,7 +334,7 @@ export class GraphSource {
         this.onUpdateState();
     }
 
-    invitation(id: number): Invitation | undefined {
+    public invitation(id: number): Invitation | undefined {
         const invitation = this.appState.invitations[id];
         if (invitation) {
             return new Invitation(this.appState, invitation);
