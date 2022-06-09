@@ -409,8 +409,8 @@ export class AppComponent extends Component<Props, State> {
     };
 
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
-        this.tryRedirect(teamId);
         await this.graphSource.setCurrentTeam(teamId);
+        this.tryRedirect(teamId);
     };
 
     private onTeamMembersAdded = async (teamId: number) => {
