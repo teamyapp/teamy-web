@@ -409,9 +409,16 @@ export class AppComponent extends Component<Props, State> {
     };
 
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
+        const prevActiveTeamId = this.graphSource.currentTeam()?.id;
         await this.graphSource.setCurrentTeam(teamId);
         if (this.graphSource.currentTeam()) {
             this.router.navigateTo(teamPath(teamId));
+            return;
+        }
+
+        if (prevActiveTeamId) {
+            await this.graphSource.setCurrentTeam(prevActiveTeamId);
+            this.router.navigateTo(teamPath(prevActiveTeamId));
         }
     };
 
