@@ -4,6 +4,7 @@ import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { PubSub } from '@lib/pubSub/pubSub';
 import { Router, createBrowserRouter } from '@lib/router/router';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
+import { RealTimeCollectionClient } from '@lib/storage/RealTimeCollection.client';
 
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
@@ -17,8 +18,6 @@ import { Feedback } from '@core/entity/feedback';
 import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
 import { GraphSource } from '@core/graph/graphSource';
-
-import { RealTimeCollectionClient } from '../libs/storage/RealTimeCollection.client';
 
 export interface Deps {
     graphSource: GraphSource;
