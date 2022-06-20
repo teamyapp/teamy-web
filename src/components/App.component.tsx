@@ -269,7 +269,7 @@ export class AppComponent extends Component<Props, State> {
                     continue;
                 }
 
-                await this.props.deps.realTimeCollectionClient.connect();
+                // await this.props.deps.realTimeCollectionClient.connect();
                 const currTeamId = this.graphSource.currentTeam()?.id;
                 if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
                     this.tryRedirect(currTeamId);
