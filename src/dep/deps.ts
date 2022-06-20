@@ -18,9 +18,12 @@ import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
 import { GraphSource } from '@core/graph/graphSource';
 
+import { RealTimeCollectionClient } from '../libs/storage/RealTimeCollection.client';
+
 export interface Deps {
     graphSource: GraphSource;
     identityClient: IdentityClient;
+    realTimeCollectionClient: RealTimeCollectionClient;
     router: Router;
     shortcutMonitor: ShortcutMonitor<UserActionEvent>;
     dragAndDropController: DragAndDropController;
@@ -38,6 +41,10 @@ export function initDeps(): Deps {
     const teamyGraphQLClient = new GraphQLClient(
         identityClient,
         config.teamyGraphQLEndpoint,
+    );
+    const realTimeCollectionClient = new RealTimeCollectionClient(
+        config.servicesWeAPIEndpoint,
+        config.servicesWebSocketEndpoint,
     );
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);
@@ -58,6 +65,7 @@ export function initDeps(): Deps {
     return {
         graphSource,
         identityClient,
+        realTimeCollectionClient,
         router,
         shortcutMonitor,
         dragAndDropController,
