@@ -1,37 +1,21 @@
-import { PutChannel, chan, multi } from '@lib/csp/csp';
-import { Errors } from '@lib/error/errors';
+import { PopChannel, PutChannel, chan, multi } from '@lib/csp/csp';
+import { Connection, ConnectionError } from '@lib/network/Connection';
 
-import { IChannel } from './IChannel';
-
-export class WebSocketChannel implements IChannel {
+export class WebSocketConnection implements Connection {
     private readonly connectionUrl: string;
     private webSocket?: WebSocket;
 
     private messageReceivedChan = chan<string>();
     private messageReceivedMulti = multi<string>(this.messageReceivedChan);
-
-    private errorChan = chan<Errors>();
-    private errorMulti = multi<Errors>(this.errorChan);
+    private errorChan = chan<ConnectionError>();
+    private errorMulti = multi<ConnectionError>(this.errorChan);
+    private _isConnected = false;
 
     constructor(connectionUrl: string) {
         this.connectionUrl = connectionUrl;
     }
 
-    public close(): void {
-        this.webSocket?.close();
-        this.messageReceivedChan.close();
-        this.errorChan.close();
-    }
-
-    public onError(): PutChannel<Errors | undefined> {
-        return this.errorMulti.copy();
-    }
-
-    public onMessageReceived(): PutChannel<string | undefined> {
-        return this.messageReceivedMulti.copy();
-    }
-
-    public open(): Promise<void> {
+    public connect(): Promise<void> {
         const webSocket = new WebSocket(this.connectionUrl);
         return new Promise((resolve, reject) => {
             webSocket.onopen = (event: Event) => {
@@ -40,10 +24,13 @@ export class WebSocketChannel implements IChannel {
                         this.connectionUrl
                     } ${JSON.stringify(event)}`,
                 );
-                resolve();
                 this.webSocket = webSocket;
+                this._isConnected = true;
+                resolve();
             };
             webSocket.onerror = (event: Event) => {
+                this._isConnected = false;
+                console.error('WebSocket error:', event);
                 this.errorChan.put(getError(event));
             };
             webSocket.onmessage = (event: MessageEvent) => {
@@ -52,12 +39,29 @@ export class WebSocketChannel implements IChannel {
         });
     }
 
+    public get isConnected() {
+        return this._isConnected;
+    }
+
+    public close(): void {
+        this.webSocket?.close();
+        this.messageReceivedChan.close();
+        this.errorChan.close();
+    }
+
+    public onErrors(): PutChannel<ConnectionError | undefined> {
+        return this.errorMulti.copy();
+    }
+
+    public onMessageReceived(): PopChannel<string | undefined> {
+        return this.messageReceivedMulti.copy();
+    }
+
     public sendMessage(message: string): void {
         this.webSocket?.send(message);
     }
 }
 
-function getError(event: Event): Errors {
-    // TODO: extract the correct error from the event
-    return Errors.Unknown;
+function getError(event: Event): ConnectionError {
+    return 'Unknown';
 }
