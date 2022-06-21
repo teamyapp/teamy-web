@@ -399,7 +399,7 @@ export class ExecutionComponent extends Component<Props, State> {
         findAlignTargetBoundBox: BoundingBoxFinder,
         selectedOwnerId?: number,
     ) => {
-        await this.graphSource.syncCurrentTeamMembers();
+        await this.graphSource.pullCurrentTeamMembers();
         const owners = this.graphSource.currentTeam()!.members;
         this.setState({
             potentialTaskOwners: owners,

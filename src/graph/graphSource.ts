@@ -82,7 +82,7 @@ export class GraphSource {
         );
     }
 
-    async syncCurrentUser(): Promise<void> {
+    async pullCurrentUser(): Promise<void> {
         const remoteUser = await this.userClient.getMe();
         if (remoteUser) {
             this.mergeUser(remoteUser);
@@ -92,7 +92,7 @@ export class GraphSource {
         this.onUpdateState();
     }
 
-    async syncCurrentUserWithTeams(): Promise<void> {
+    async pullCurrentUserWithTeams(): Promise<void> {
         const remoteUser = await this.userClient.getMeWithTeams();
         if (remoteUser) {
             this.mergeUser(remoteUser);
@@ -114,7 +114,7 @@ export class GraphSource {
         return new Team(this.appState, this.appState.teams[teamId]);
     }
 
-    async syncCurrentTeam(): Promise<void> {
+    async pullCurrentTeam(): Promise<void> {
         const currentTeamId = this.currentTeam()?.id;
         if (!currentTeamId) {
             return;
@@ -164,15 +164,15 @@ export class GraphSource {
         this.onUpdateState();
     }
 
-    public async syncCurrentTeamMembers(): Promise<void> {
+    public async pullCurrentTeamMembers(): Promise<void> {
         if (!this.appState.currentTeamId) {
             return;
         }
 
-        await this.syncTeamMembers(this.appState.currentTeamId);
+        await this.pullTeamMembers(this.appState.currentTeamId);
     }
 
-    public async syncTeamMembers(teamId: number): Promise<void> {
+    public async pullTeamMembers(teamId: number): Promise<void> {
         const members =
             (await this.teamClient.getTeamMembers(`${teamId}`)) || [];
         members?.forEach(this.mergeUser.bind(this));
@@ -205,7 +205,7 @@ export class GraphSource {
         return new Task(this.appState, this.appState.tasks[taskId]);
     }
 
-    public async syncTask(taskId: number) {
+    public async pullTask(taskId: number) {
         const remoteTask = await this.taskClient.getTask(`${taskId}`);
         this.mergeTask(remoteTask);
         this.onUpdateState();
@@ -341,7 +341,7 @@ export class GraphSource {
         }
     }
 
-    public async syncInvitation(invitationId: number, invitationCode: string) {
+    public async pullInvitation(invitationId: number, invitationCode: string) {
         const invitation = await this.invitationClient.getInvitation(
             `${invitationId}`,
             invitationCode,
@@ -353,7 +353,7 @@ export class GraphSource {
         this.onUpdateState();
     }
 
-    public async syncInvitations(teamId: number) {
+    public async pullInvitations(teamId: number) {
         const invitations = await this.invitationClient.getInvitations(
             `${teamId}`,
         );

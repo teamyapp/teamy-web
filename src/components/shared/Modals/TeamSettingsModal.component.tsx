@@ -118,8 +118,8 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     public open = async (teamId: number, defaultTabIndex: number = 0) => {
-        await this.graphSource.syncTeamMembers(teamId);
-        await this.graphSource.syncInvitations(teamId);
+        await this.graphSource.pullTeamMembers(teamId);
+        await this.graphSource.pullInvitations(teamId);
         await this.updateState(teamId, defaultTabIndex);
         this.modalRef.current?.open();
     };

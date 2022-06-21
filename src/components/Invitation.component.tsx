@@ -52,7 +52,7 @@ export class InvitationComponent extends Component<Props, State> {
         }
 
         const invitationId = parseInt(id);
-        await this.graphSource.syncInvitation(invitationId, code);
+        await this.graphSource.pullInvitation(invitationId, code);
         const invitation = await this.graphSource.invitation(invitationId);
         if (!invitation) {
             this.setState({
@@ -68,7 +68,7 @@ export class InvitationComponent extends Component<Props, State> {
             return;
         }
 
-        await this.graphSource.syncCurrentUser();
+        await this.graphSource.pullCurrentUser();
         const currentUser = this.graphSource.currentUser();
         this.setState({
             me: currentUser,
