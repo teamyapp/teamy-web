@@ -223,7 +223,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     public async open(taskId: number) {
-        const syncPromise = this.graphSource.syncTask(taskId);
+        const syncPromise = this.graphSource.pullTask(taskId);
         this.setState(
             {
                 task: undefined,

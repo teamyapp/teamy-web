@@ -262,7 +262,7 @@ export class AppComponent extends Component<Props, State> {
                     continue;
                 }
 
-                await this.graphSource.syncCurrentUserWithTeams();
+                await this.graphSource.pullCurrentUserWithTeams();
                 const me = this.graphSource.currentUser()?.id;
                 if (!me) {
                     this.trySignUp(routeUpdate.routePattern);
@@ -300,7 +300,7 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 if (this.graphSource.currentTeam()) {
-                    this.graphSource.syncCurrentTeam();
+                    this.graphSource.pullCurrentTeam();
                 } else {
                     this.router.navigateTo(rootRoutePattern);
                 }

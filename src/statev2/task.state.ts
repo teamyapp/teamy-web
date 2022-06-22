@@ -3,7 +3,7 @@ import { Attributes } from '@lib/storage/mutation';
 import { toDate, toInt } from '@core/statev2/parser';
 import { TaskStatus } from '@core/statev2/taskStatus';
 
-export class Task {
+export class TaskState {
     constructor(
         public id: number,
         public goal: string,
@@ -19,8 +19,8 @@ export class Task {
         public updatedAt?: Date,
     ) {}
 
-    static fromAttributes(attributes: Attributes): Task {
-        return new Task(
+    public static fromAttributes(attributes: Attributes): TaskState {
+        return new TaskState(
             parseInt(attributes.ID),
             attributes.Goal,
             parseInt(attributes.CreatorUserID),
@@ -34,5 +34,21 @@ export class Task {
             toInt(attributes.effort),
             toDate(attributes.UpdatedAt),
         );
+    }
+
+    public static fromJson(json: any): TaskState {
+        return new TaskState(
+          json.id,
+          json.goal,
+          json.creatorUserId,
+          json.owningTeamId,
+          json.status,
+          json.commentThreadId,
+          toDate(json.createdAt)!,
+          toDate(json.dueAt),
+          json.context,
+          json.ownerUserId,
+          json.effort,
+          toDate(json.updatedAt))
     }
 }
