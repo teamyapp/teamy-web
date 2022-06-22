@@ -2,7 +2,7 @@ import { Attributes } from '@lib/storage/mutation';
 
 import { toDate } from './parser';
 
-export class Team {
+export class TeamState {
     constructor(
         public id: number,
         public name: string,
@@ -13,8 +13,8 @@ export class Team {
         public updatedAt?: Date,
     ) {}
 
-    static fromAttributes(attributes: Attributes): Team {
-        return new Team(
+    static fromAttributes(attributes: Attributes): TeamState {
+        return new TeamState(
             parseInt(attributes.ID),
             attributes.Name,
             parseInt(attributes.CreatorUserID),
@@ -23,5 +23,17 @@ export class Team {
             attributes.IconUrl,
             toDate(attributes.UpdatedAt),
         );
+    }
+
+    public static fromJson(json: any): TeamState {
+        return new TeamState(
+          json.id,
+          json.name,
+          json.creatorUserId,
+          json.ownerUserId,
+          toDate(json.createdAt)!,
+          json.iconUrl,
+          toDate(json.updatedAt)
+        )
     }
 }

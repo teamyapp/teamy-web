@@ -2,7 +2,7 @@ import { Attributes } from '@lib/storage/mutation';
 
 import { toDate } from '@core/statev2/parser';
 
-export class Message {
+export class MessageState {
     constructor(
         public id: number,
         public body: string,
@@ -12,8 +12,8 @@ export class Message {
         public updatedAt?: Date,
     ) {}
 
-    static fromAttributes(attributes: Attributes): Message {
-        return new Message(
+    public static fromAttributes(attributes: Attributes): MessageState {
+        return new MessageState(
             parseInt(attributes.ID),
             attributes.Body,
             parseInt(attributes.ThreadID),
@@ -21,5 +21,15 @@ export class Message {
             toDate(attributes.CreatedAt)!,
             toDate(attributes.UpdatedAt),
         );
+    }
+
+    public static fromJson(json: any): MessageState {
+        return new MessageState(
+          json.id,
+          json.body,
+          json.threadId,
+          json.authorUserId,
+          toDate(json.createdAt)!,
+          toDate(json.updatedAt))
     }
 }
