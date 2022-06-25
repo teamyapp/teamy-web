@@ -290,7 +290,6 @@ export class AppComponent extends Component<Props, State> {
                 );
                 const teamIdParam = getTeamId(routeUpdate.params);
                 if (!teamIdParam) {
-                    // this.tryRedirect(currTeamId);
                     continue;
                 }
 
