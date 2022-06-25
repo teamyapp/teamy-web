@@ -142,7 +142,6 @@ export class Router {
 
     public navigateTo(uri: string, options?: NavigateOptions): Errors | void {
         options = withDefaults(options);
-
         if (!uri || uri.length < 1) {
             return 'InvalidUri';
         }
