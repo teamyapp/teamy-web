@@ -409,17 +409,21 @@ export class AppComponent extends Component<Props, State> {
         this.createTeamModalRef.current?.open();
     };
 
-    private onActiveTeamSelect = async (teamId: number): Promise<void> => {
+    private onActiveTeamSelect = async (teamId: number) => {
         const prevActiveTeamId = this.graphSource.currentTeam()?.id;
         await this.graphSource.setCurrentTeam(teamId);
         if (this.graphSource.currentTeam()) {
-            this.router.navigateTo(teamPath(teamId));
+            this.router.navigateTo(teamPath(teamId), {
+                notifyRouteChange: false,
+            });
             return;
         }
 
         if (prevActiveTeamId) {
             await this.graphSource.setCurrentTeam(prevActiveTeamId);
-            this.router.navigateTo(teamPath(prevActiveTeamId));
+            this.router.navigateTo(teamPath(prevActiveTeamId), {
+                notifyRouteChange: false,
+            });
         }
     };
 

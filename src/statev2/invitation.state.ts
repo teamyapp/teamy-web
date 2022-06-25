@@ -38,18 +38,18 @@ export class InvitationState {
 
     public static fromJson(json: any): InvitationState {
         return new InvitationState(
-          json.id,
-          json.senderUserId,
-          json.teamId,
-          toDate(json.expireAt)!,
-          json.status,
-          json.code,
-          toDate(json.createdAt)!,
-          json.receiverFirstName,
-          json.receiverLastName,
-          json.receiverUserId,
-          json.receiverEmail,
-          toDate(json.updatedAt),
-        )
+            json.id,
+            json.senderUserId,
+            json.teamId,
+            toDate(json.expireAt)!,
+            json.status,
+            json.code,
+            toDate(json.createdAt)!,
+            json.receiverFirstName,
+            json.receiverLastName,
+            json.receiverUserId,
+            json.receiverEmail,
+            toDate(json.updatedAt),
+        );
     }
 }

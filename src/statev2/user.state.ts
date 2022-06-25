@@ -25,12 +25,12 @@ export class UserState {
 
     public static fromJson(json: any): UserState {
         return new UserState(
-          json.id,
-          json.firstName,
-          json.lastName,
-          toDate(json.createdAt)!,
-          json.profileUrl,
-          toDate(json.updatedAt)
-        )
+            json.id,
+            json.firstName,
+            json.lastName,
+            toDate(json.createdAt)!,
+            json.profileUrl,
+            toDate(json.updatedAt),
+        );
     }
 }

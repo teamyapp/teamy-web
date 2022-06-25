@@ -38,17 +38,18 @@ export class TaskState {
 
     public static fromJson(json: any): TaskState {
         return new TaskState(
-          json.id,
-          json.goal,
-          json.creatorUserId,
-          json.owningTeamId,
-          json.status,
-          json.commentThreadId,
-          toDate(json.createdAt)!,
-          toDate(json.dueAt),
-          json.context,
-          json.ownerUserId,
-          json.effort,
-          toDate(json.updatedAt))
+            json.id,
+            json.goal,
+            json.creatorUserId,
+            json.owningTeamId,
+            json.status,
+            json.commentThreadId,
+            toDate(json.createdAt)!,
+            toDate(json.dueAt),
+            json.context,
+            json.ownerUserId,
+            json.effort,
+            toDate(json.updatedAt),
+        );
     }
 }

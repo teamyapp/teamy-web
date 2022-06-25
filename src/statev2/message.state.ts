@@ -25,11 +25,12 @@ export class MessageState {
 
     public static fromJson(json: any): MessageState {
         return new MessageState(
-          json.id,
-          json.body,
-          json.threadId,
-          json.authorUserId,
-          toDate(json.createdAt)!,
-          toDate(json.updatedAt))
+            json.id,
+            json.body,
+            json.threadId,
+            json.authorUserId,
+            toDate(json.createdAt)!,
+            toDate(json.updatedAt),
+        );
     }
 }

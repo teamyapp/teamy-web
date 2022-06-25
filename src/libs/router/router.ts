@@ -32,6 +32,11 @@ const queryDelimiter = '?';
 export const pathDelimiter = '/';
 const paramDelimiter = '=';
 
+interface NavigateOptions {
+    skipDuplicate?: boolean;
+    notifyRouteChange?: boolean;
+}
+
 export class Router {
     private readonly routeChangeChan = chan<RouteUpdate>();
     private readonly routeChangeMultiCaster = multi<RouteUpdate>(
@@ -135,7 +140,9 @@ export class Router {
         return 'ShouldNotHappen';
     }
 
-    public navigateTo(uri: string, force: boolean = false): Errors | void {
+    public navigateTo(uri: string, options?: NavigateOptions): Errors | void {
+        options = withDefaults(options);
+
         if (!uri || uri.length < 1) {
             return 'InvalidUri';
         }
@@ -144,7 +151,7 @@ export class Router {
             return 'InvalidUri';
         }
 
-        if (!force && uri === this.currUri) {
+        if (options.skipDuplicate && uri === this.currUri) {
             return;
         }
 
@@ -207,7 +214,10 @@ export class Router {
             suffix,
             params: params,
         };
-        this.routeChangeChan.put(this.currRouteUpdate);
+
+        if (options.notifyRouteChange) {
+            this.routeChangeChan.put(this.currRouteUpdate);
+        }
     }
 
     public subscribeRouteChange(): PopChannel<RouteUpdate | undefined> {
@@ -224,7 +234,7 @@ export class Router {
 
     public navigateToCurrUri() {
         if (this.currUri) {
-            this.navigateTo(this.currUri, true);
+            this.navigateTo(this.currUri, { skipDuplicate: false });
         }
     }
 
@@ -279,4 +289,17 @@ export function createBrowserRouter(): Router {
     const router = new Router();
     router.initBrowserUri();
     return router;
+}
+
+function withDefaults(options?: NavigateOptions): NavigateOptions {
+    const newOptions: NavigateOptions = options || {};
+    if (newOptions.skipDuplicate === undefined) {
+        newOptions.skipDuplicate = true;
+    }
+
+    if (newOptions.notifyRouteChange === undefined) {
+        newOptions.notifyRouteChange = true;
+    }
+
+    return newOptions;
 }
