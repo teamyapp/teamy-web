@@ -27,13 +27,13 @@ export class TeamState {
 
     public static fromJson(json: any): TeamState {
         return new TeamState(
-          json.id,
-          json.name,
-          json.creatorUserId,
-          json.ownerUserId,
-          toDate(json.createdAt)!,
-          json.iconUrl,
-          toDate(json.updatedAt)
-        )
+            json.id,
+            json.name,
+            json.creatorUserId,
+            json.ownerUserId,
+            toDate(json.createdAt)!,
+            json.iconUrl,
+            toDate(json.updatedAt),
+        );
     }
 }

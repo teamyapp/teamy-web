@@ -413,13 +413,17 @@ export class AppComponent extends Component<Props, State> {
         const prevActiveTeamId = this.graphSource.currentTeam()?.id;
         await this.graphSource.setCurrentTeam(teamId);
         if (this.graphSource.currentTeam()) {
-            this.router.navigateTo(teamPath(teamId));
+            this.router.navigateTo(teamPath(teamId), {
+                notifyRouteChange: false,
+            });
             return;
         }
 
         if (prevActiveTeamId) {
             await this.graphSource.setCurrentTeam(prevActiveTeamId);
-            this.router.navigateTo(teamPath(prevActiveTeamId));
+            this.router.navigateTo(teamPath(prevActiveTeamId), {
+                notifyRouteChange: false,
+            });
         }
     };
 

@@ -1,8 +1,7 @@
 import { Attributes } from '@lib/storage/mutation';
 
 class CompositeKey {
-    constructor(public teamId: number, public userId: number) {
-    }
+    constructor(public teamId: number, public userId: number) {}
 
     public toString(): string {
         return [this.teamId, this.userId].join(',');
@@ -12,7 +11,7 @@ class CompositeKey {
         const fields = key.split(',');
         return {
             teamId: parseInt(fields[0]),
-            userId: parseInt(fields[1])
+            userId: parseInt(fields[1]),
         };
     }
 }
@@ -40,9 +39,6 @@ export class TeamMemberState {
     }
 
     public static fromJson(json: any): TeamMemberState {
-        return new TeamMemberState(
-          json.teamId,
-          json.userId
-        );
+        return new TeamMemberState(json.teamId, json.userId);
     }
 }
