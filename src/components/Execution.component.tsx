@@ -191,6 +191,11 @@ export class ExecutionComponent extends Component<Props, State> {
                     // a falsy data could be valid data per channel's concern.
                     return;
                 }
+                const tabId = getTabId(this.router.currentRouteUpdate.params);
+                if (!tabId || tabIds.indexOf(tabId) < 0) {
+                    this.onTabClick(this.state.activeTabIndex);
+                }
+
                 this.updateState();
             }
         })().then();
@@ -198,7 +203,6 @@ export class ExecutionComponent extends Component<Props, State> {
         for (const routePattern of acceptedRoutePatterns) {
             this.router.registerRoute(routePattern, false);
         }
-        this.router.navigateToCurrUri();
         this.routeChangeChan = this.router.subscribeRouteChange();
         console.log('[ExecutionComponent]subscribing');
         (async () => {
@@ -215,7 +219,7 @@ export class ExecutionComponent extends Component<Props, State> {
                 const tabId = getTabId(routeUpdate.params);
                 const taskIdParam = getTaskId(routeUpdate.params);
                 if (!tabId || tabIds.indexOf(tabId) < 0) {
-                    this.onTabClick(0);
+                    this.onTabClick(0, true);
                     continue;
                 }
 
@@ -235,6 +239,7 @@ export class ExecutionComponent extends Component<Props, State> {
                 }
             }
         })().then();
+        this.router.navigateToCurrUri();
 
         this.dragAndDropEventChan =
             this.props.deps.dragAndDropController.subscribeDragAndDropEvent();
@@ -258,18 +263,6 @@ export class ExecutionComponent extends Component<Props, State> {
                 }
             }
         })().then();
-    }
-
-    public componentDidUpdate(
-        prevProps: Readonly<Props>,
-        prevState: Readonly<State>,
-        snapshot?: any,
-    ) {
-        if (prevProps.teamId !== this.props.teamId) {
-            if (this.state.activeTabIndex >= 0) {
-                this.onTabClick(this.state.activeTabIndex);
-            }
-        }
     }
 
     public componentWillUnmount() {
@@ -387,10 +380,17 @@ export class ExecutionComponent extends Component<Props, State> {
         }
     };
 
-    private onTabClick = (index: number) => {
+    private onTabClick = (
+        index: number,
+        notifyRouteChange: boolean = false,
+    ) => {
         this.router.navigateTo(
             executionTabPath(this.props.teamId, tabIds[index]),
+            { notifyRouteChange: notifyRouteChange },
         );
+        this.setState({
+            activeTabIndex: tabIds.indexOf(tabIds[index]),
+        });
     };
 
     private onShowPotentialTaskOwners = async (
