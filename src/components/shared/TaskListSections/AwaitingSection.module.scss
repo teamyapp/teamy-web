@@ -3,12 +3,12 @@
 $awaitingPrimary: #e91e63;
 
 .TaskListSection {
-    display: flex;
-    width: 100%;
-    height: 100%;
-
-    --title-color: #{$awaitingPrimary};
     --background-color: #fff3f6;
+    --title-color: #{$awaitingPrimary};
+    display: flex;
+
+    height: 100%;
+    width: 100%;
 
     .SectionTopBar {
         .TaskCounter {

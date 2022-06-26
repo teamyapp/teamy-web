@@ -13,13 +13,13 @@ $teamIconRoundCorner: 10px;
 $teamIconSize: 40px;
 
 .Drawer {
-    display: flex;
-    overflow: hidden;
-    flex-direction: column;
-    width: 0;
-    height: 100%;
-    transition: width 400ms $easeOutExpo;
     background-color: $drawerBackgroundColor;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    transition: width 400ms $easeOutExpo;
+    width: 0;
 
     &.Show {
         width: 100px;
@@ -38,8 +38,8 @@ $teamIconSize: 40px;
     }
 
     .Teams {
-        display: flex;
         align-items: center;
+        display: flex;
         flex: 1;
         flex-direction: column;
         justify-content: center;
@@ -63,37 +63,37 @@ $teamIconSize: 40px;
             }
 
             .IconFrame {
-                display: flex;
                 align-items: center;
-                justify-content: center;
-                width: $teamIconSize;
-                height: $teamIconSize;
-                padding: 10px;
-                cursor: pointer;
+                background-color: white;
                 border: none;
                 border-radius: $teamIconRoundCorner;
-                background-color: white;
+                cursor: pointer;
+                display: flex;
+                height: $teamIconSize;
+                justify-content: center;
+                padding: 10px;
+                width: $teamIconSize;
 
                 .Icon {
-                    min-width: $teamIconSize - 10px;
+                    border-radius: 4px;
+                    max-height: $teamIconSize;
                     max-width: $teamIconSize;
                     min-height: $teamIconSize - 10px;
-                    max-height: $teamIconSize;
-                    border-radius: 4px;
+                    min-width: $teamIconSize - 10px;
                 }
 
                 .IconDefault {
+                    align-items: center;
+                    background-color: $defaultTeamIconBackground;
+                    border-radius: 4px;
+                    color: white;
+                    display: flex;
                     font-size: 30px;
                     font-weight: bold;
-                    line-height: 40px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 100%;
                     height: 100%;
-                    color: white;
-                    border-radius: 4px;
-                    background-color: $defaultTeamIconBackground;
+                    justify-content: center;
+                    line-height: 40px;
+                    width: 100%;
                 }
             }
         }
@@ -104,34 +104,34 @@ $teamIconSize: 40px;
             }
 
             .CreateTeamButton {
-                font-weight: bold;
-                display: flex;
                 align-items: center;
-                justify-content: center;
-                width: $teamIconSize;
-                height: $teamIconSize;
-                padding: 10px;
-                border-radius: $teamIconRoundCorner;
                 background-color: rgba(0, 0, 0, 0.05);
+                border-radius: $teamIconRoundCorner;
                 --icon-color: #828282;
+                display: flex;
+                font-weight: bold;
+                height: $teamIconSize;
+                justify-content: center;
+                padding: 10px;
                 --icon-size: 40px;
+                width: $teamIconSize;
 
                 &:hover {
-                    cursor: pointer;
                     background-color: #828282;
                     --icon-color: white;
+                    cursor: pointer;
                 }
             }
         }
     }
 
     .TeamContextMenu {
-        position: fixed;
-        z-index: 1000;
+        background-color: white;
+        list-style: none;
         margin: 0;
         padding: 0;
-        list-style: none;
-        background-color: white;
+        position: fixed;
+        z-index: 1000;
         @include elevation(5);
 
         &:focus {
@@ -144,9 +144,9 @@ $teamIconSize: 40px;
             padding: 6px $contextMenuSidePadding;
 
             &:hover {
-                cursor: pointer;
-                color: white;
                 background-color: #424242;
+                color: white;
+                cursor: pointer;
             }
 
             &:not(:first-child) {

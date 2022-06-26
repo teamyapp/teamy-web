@@ -23,6 +23,7 @@ export class UserClient {
                             lastName
                             profileUrl
                             createdAt
+                            updatedAt
                             teams {
                                 id
                                 name
@@ -54,6 +55,7 @@ export class UserClient {
                             lastName
                             profileUrl
                             createdAt
+                            updatedAt
                         }
                     }
                 `,
@@ -94,6 +96,7 @@ export class UserClient {
                             firstName
                             lastName
                             profileUrl
+                            updatedAt
                         }
                     }
                 `,

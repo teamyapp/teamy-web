@@ -7,30 +7,30 @@ $iconWidth: var(--icon-box-width, $iconBoxSize);
 $iconHeight: var(--icon-box-height, $iconBoxSize);
 
 .Icon {
-    font-family: 'Material Icons', sans-serif;
-    font-size: $iconSize;
-    font-style: normal;
-    display: flex;
-    overflow: hidden;
     align-items: center;
-    justify-content: center;
-    width: $iconWidth;
+    color: $iconColor;
+    direction: ltr;
+    display: flex;
+    font-family: 'Material Icons', sans-serif;
+    font-feature-settings: 'liga';
+    font-size: $iconSize;
+    -webkit-font-smoothing: antialiased;
+    font-style: normal;
     height: $iconHeight;
-    white-space: nowrap;
+    justify-content: center;
     letter-spacing: normal;
-    text-transform: none;
 
     /* Support for all WebKit browsers. */
-    word-wrap: normal;
+    -moz-osx-font-smoothing: grayscale;
     /* Support for Safari and Chrome. */
-    color: $iconColor;
+    overflow: hidden;
 
     /* Support for Firefox. */
-    direction: ltr;
+    text-rendering: optimizeLegibility;
 
     /* Support for IE. */
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-    -moz-osx-font-smoothing: grayscale;
-    font-feature-settings: 'liga';
+    text-transform: none;
+    white-space: nowrap;
+    width: $iconWidth;
+    word-wrap: normal;
 }

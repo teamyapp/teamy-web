@@ -4,33 +4,33 @@
 
 .Execution {
     display: flex;
-    overflow-y: hidden;
     flex-direction: column;
     height: 100%;
+    overflow-y: hidden;
 
     .Tabs {
         background-color: var(--tabs-background-color, $primaryColor);
         box-shadow: rgba(0, 0, 0, 0.15) 0 2px 4px;
 
         .Container {
-            max-width: 800px;
             margin: auto;
+            max-width: 800px;
         }
     }
 
     .Content {
-        overflow-y: hidden;
-        flex: 1;
         box-sizing: border-box;
+        flex: 1;
+        overflow-y: hidden;
         padding: $sectionSpace;
     }
 
     .SelectTaskOwnerList {
-        position: fixed;
-        z-index: 5000;
+        background-color: white;
         float: left;
         overflow: visible;
-        background-color: white;
+        position: fixed;
+        z-index: 5000;
         @include elevation(6);
 
         &:focus {
@@ -38,20 +38,20 @@
         }
 
         .SelectTaskOwnerListHeader {
+            background-color: #424242;
+            --icon-color: white;
             display: flex;
             justify-content: flex-end;
             padding: 4px;
-            background-color: #424242;
-            --icon-color: white;
             --icon-size: 22px;
 
             .CloseButton {
-                padding: 2px;
                 border-radius: 50%;
+                padding: 2px;
 
                 &:hover {
-                    cursor: pointer;
                     background-color: rgba(255, 255, 255, 0.1);
+                    cursor: pointer;
                 }
             }
         }

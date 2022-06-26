@@ -1,9 +1,7 @@
-import { Attributes } from '@lib/storage/mutation';
-
-import { toDate } from '@core/statev2/parser';
+import { toDate } from '@core/storage/states/parser';
 
 export class MessageState {
-    constructor(
+    public constructor(
         public id: number,
         public body: string,
         public threadId: number,
@@ -12,14 +10,14 @@ export class MessageState {
         public updatedAt?: Date,
     ) {}
 
-    public static fromAttributes(attributes: Attributes): MessageState {
+    public static fromMutationPayload(json: any): MessageState {
         return new MessageState(
-            parseInt(attributes.ID),
-            attributes.Body,
-            parseInt(attributes.ThreadID),
-            parseInt(attributes.AuthorUserID),
-            toDate(attributes.CreatedAt)!,
-            toDate(attributes.UpdatedAt),
+            json.ID,
+            json.Body,
+            json.ThreadID,
+            json.AuthorUserID,
+            toDate(json.CreatedAt)!,
+            toDate(json.UpdatedAt),
         );
     }
 

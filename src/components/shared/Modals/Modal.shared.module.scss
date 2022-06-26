@@ -1,18 +1,18 @@
 @import '../../../libs/ui/styleguide/color';
 
 .Header {
+    background-color: $primaryColor;
+    color: white;
     font-size: 24px;
     font-weight: 500;
     height: 24px;
     padding: 14px 20px;
-    color: white;
-    background-color: $primaryColor;
 
     .CloseButton {
+        --icon-color: white;
         float: right;
         margin-top: -4px;
         --icon-size: 32px;
-        --icon-color: white;
 
         &:hover {
             cursor: pointer;

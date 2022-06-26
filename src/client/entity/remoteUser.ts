@@ -6,5 +6,6 @@ export interface RemoteUser {
     lastName?: string;
     profileUrl?: string;
     createdAt?: string;
+    updatedAt?: string;
     teams?: RemoteTeam[];
 }

@@ -8,37 +8,37 @@ $width: var(--width, 100%);
 $height: var(--height, 100%);
 
 .TextArea {
-    font-size: $fontSize;
+    border: $border;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
-    width: $width;
+    font-size: $fontSize;
     height: $height;
     letter-spacing: 2px;
-    border: $border;
     outline: $outlineColor;
+    width: $width;
 
     .Label {
-        font-weight: bold;
-        display: flex;
         align-items: center;
+        background-color: $secondaryColor;
+        color: $onSecondaryColor;
+        display: flex;
+        font-weight: bold;
         height: 40px;
         padding: 0 10px;
-        color: $onSecondaryColor;
-        background-color: $secondaryColor;
     }
 
     .Input {
-        font-size: inherit;
+        background-color: $backgroundColor;
+        border: 0;
+        box-sizing: border-box;
         display: block;
         flex: 1;
-        box-sizing: border-box;
-        width: 100%;
+        font-size: inherit;
         margin: 0;
+        outline: none;
         padding: 10px;
         resize: none;
-        border: 0;
-        outline: none;
-        background-color: $backgroundColor;
+        width: 100%;
     }
 }

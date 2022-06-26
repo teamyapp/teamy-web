@@ -12,9 +12,9 @@ $divider: 2px solid #eeeeee;
         @include primaryFont;
 
         .TextArea {
-            height: 80px;
             --border: none;
             --background-color: rgba(0, 0, 0, 0.03);
+            height: 80px;
         }
 
         &:hover {
@@ -24,35 +24,35 @@ $divider: 2px solid #eeeeee;
         }
 
         .MessageActions {
+            background-color: rgba(0, 0, 0, 0.08);
+            border-radius: 3px;
             display: none;
             justify-content: flex-end;
             padding: 2px;
             user-select: none;
-            border-radius: 3px;
-            background-color: rgba(0, 0, 0, 0.08);
 
             .MessageAction {
-                font-size: 10px;
-                padding: 2px;
                 border-radius: 3px;
                 --icon-color: #424242;
+                font-size: 10px;
+                padding: 2px;
 
                 &:hover {
-                    cursor: pointer;
                     background-color: #424242;
                     --icon-color: white;
+                    cursor: pointer;
                 }
             }
         }
 
         .MessageCenter {
             display: flex;
-            width: 100%;
             padding: 20px 0;
+            width: 100%;
 
             .LeftSection {
-                --profile-width: 40px;
                 --profile-height: 40px;
+                --profile-width: 40px;
             }
 
             .RightSection {
@@ -60,8 +60,8 @@ $divider: 2px solid #eeeeee;
                 margin-left: 10px;
 
                 .RightTopRow {
-                    display: flex;
                     align-items: center;
+                    display: flex;
                     height: 32px;
 
                     .AuthorName {
@@ -69,10 +69,10 @@ $divider: 2px solid #eeeeee;
                     }
 
                     .MessagePostedAt {
+                        color: #616161;
                         font-size: 14px;
                         font-weight: bold;
                         margin-left: 10px;
-                        color: #616161;
                     }
                 }
 
@@ -93,8 +93,8 @@ $divider: 2px solid #eeeeee;
 
     .Input {
         .TextArea {
-            height: 120px;
             --border: #{3px solid #e0e0e0};
+            height: 120px;
         }
 
         .Actions {

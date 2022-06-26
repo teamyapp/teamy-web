@@ -11,11 +11,12 @@ interface AccessTokenGetter {
 }
 
 export class GraphQLClient {
-    private readonly tokenGetter: AccessTokenGetter;
     private readonly client: ApolloClient<NormalizedCacheObject>;
 
-    constructor(tokenGetter: AccessTokenGetter, graphQLEndpoint: string) {
-        this.tokenGetter = tokenGetter;
+    constructor(
+        graphQLEndpoint: string,
+        private accessTokenGetter?: AccessTokenGetter,
+    ) {
         this.client = new ApolloClient({
             uri: graphQLEndpoint,
             cache: new InMemoryCache(),
@@ -54,7 +55,9 @@ export class GraphQLClient {
     private getAuthContext() {
         return {
             headers: {
-                Authorization: `Bearer ${this.tokenGetter.getAccessToken()}`,
+                Authorization: `Bearer ${
+                    this.accessTokenGetter?.getAccessToken() || ''
+                }`,
             },
         };
     }

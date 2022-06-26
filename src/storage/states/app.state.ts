@@ -1,20 +1,20 @@
-import { InvitationState } from '@core/statev2/invitation.state';
-import { TaskState } from '@core/statev2/task.state';
-import { TaskAwaitForRelationState } from '@core/statev2/taskAwaitForRelation.state';
-import { TeamState } from '@core/statev2/team.state';
-import { TeamMemberState } from '@core/statev2/teamMember.state';
-import { UserState } from '@core/statev2/user.state';
+import { InvitationState } from '@core/storage/states/invitation.state';
+import { MessageState } from '@core/storage/states/message.state';
+import { TaskState } from '@core/storage/states/task.state';
+import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRelation.state';
+import { TeamState } from '@core/storage/states/team.state';
+import { TeamMemberState } from '@core/storage/states/teamMember.state';
+import { UserState } from '@core/storage/states/user.state';
 
 export class AppState {
-    constructor(
+    public constructor(
         public users: { [userId: number]: UserState },
         public teams: { [teamId: number]: TeamState },
         public tasks: { [taskId: number]: TaskState },
+        public messages: { [messageId: number]: MessageState },
         public invitations: { [invitationId: number]: InvitationState },
-        public teamMembers: { [key: string]: TeamMemberState },
-        public taskAwaitForRelations: {
-            [key: string]: TaskAwaitForRelationState;
-        },
+        public teamMembers: TeamMemberState[],
+        public taskAwaitForRelations: TaskAwaitForRelationState[],
         public currUserId?: number,
         public currTeamId?: number,
     ) {}
@@ -23,13 +23,15 @@ export class AppState {
         const users = getUsers(json);
         const teams = getTeams(json);
         const tasks = getTasks(json);
-        const invitations = getInvitations(json);
+        const messages = getMessages(json);
         const teamMembers = getTeamMembers(json);
+        const invitations = getInvitations(json);
         const taskAwaitForRelations = getTaskAwaitForRelations(json);
         return new AppState(
             users,
             teams,
             tasks,
+            messages,
             invitations,
             teamMembers,
             taskAwaitForRelations,
@@ -61,21 +63,31 @@ function getTeams(json: any) {
 
 function getTasks(json: any) {
     const tasks: { [taskId: number]: TaskState } = {};
-    const taskJson = (json.tasks as { [taskId: number]: any }) || {};
-    for (let taskId in taskJson) {
-        tasks[taskId] = TaskState.fromJson(taskJson[taskId]);
+    const tasksJson = (json.tasks as { [taskId: number]: any }) || {};
+    for (let taskId in tasksJson) {
+        tasks[taskId] = TaskState.fromJson(tasksJson[taskId]);
     }
 
     return tasks;
 }
 
+function getMessages(json: any) {
+    const messages: { [messageId: number]: MessageState } = {};
+    const messagesJson = (json.messages as { [messageId: number]: any }) || {};
+    for (let messageId in messagesJson) {
+        messages[messageId] = MessageState.fromJson(messagesJson[messageId]);
+    }
+
+    return messages;
+}
+
 function getInvitations(json: any) {
     const invitations: { [invitationId: number]: InvitationState } = {};
-    const invitationJson =
+    const invitationsJson =
         (json.invitations as { [invitationId: number]: any }) || {};
-    for (let invitationId in invitationJson) {
+    for (let invitationId in invitationsJson) {
         invitations[invitationId] = InvitationState.fromJson(
-            invitationJson[invitationId],
+            invitationsJson[invitationId],
         );
     }
 
@@ -83,25 +95,12 @@ function getInvitations(json: any) {
 }
 
 function getTeamMembers(json: any) {
-    const teamMembers: { [key: string]: TeamMemberState } = {};
-    const teamMembersJson = (json.teamMembers as { [key: string]: any }) || {};
-    for (let key in teamMembersJson) {
-        teamMembers[key] = TeamMemberState.fromJson(teamMembersJson[key]);
-    }
-
-    return teamMembers;
+    const teamMembersJson = (json.teamMembers as any[]) || [];
+    return teamMembersJson.map(TeamMemberState.fromJson);
 }
 
 function getTaskAwaitForRelations(json: any) {
-    const taskAwaitForRelations: { [key: string]: TaskAwaitForRelationState } =
-        {};
     const taskAwaitForRelationsJson =
-        (json.taskAwaitForRelations as { [key: string]: any }) || {};
-    for (let key in taskAwaitForRelationsJson) {
-        taskAwaitForRelations[key] = TaskAwaitForRelationState.fromJson(
-            taskAwaitForRelationsJson[key],
-        );
-    }
-
-    return taskAwaitForRelations;
+        (json.taskAwaitForRelations as any[]) || [];
+    return taskAwaitForRelationsJson.map(TaskAwaitForRelationState.fromJson);
 }

@@ -3,12 +3,12 @@
 $upcomingPrimary: #1e88e5;
 
 .TaskListSection {
-    display: flex;
-    width: 100%;
-    height: 100%;
-
-    --title-color: #{$upcomingPrimary};
     --background-color: #effcff;
+    --title-color: #{$upcomingPrimary};
+    display: flex;
+
+    height: 100%;
+    width: 100%;
 
     .SectionTopBar {
         .TaskCounter {
@@ -16,25 +16,25 @@ $upcomingPrimary: #1e88e5;
         }
 
         .SortOrder {
+            --drop-down-button-darkness: 0.1;
+            --drop-down-color: #{$upcomingPrimary};
+
+            --drop-down-font-size: 14px;
+            --drop-down-height: 24px;
+            --drop-down-width: 100px;
             height: 100%;
             margin-left: 10px;
-
-            --drop-down-width: 100px;
-            --drop-down-height: 24px;
-            --drop-down-font-size: 14px;
-            --drop-down-color: #{$upcomingPrimary};
-            --drop-down-button-darkness: 0.1;
         }
 
         .Actions {
-            user-select: none;
             border-radius: 4px;
             --icon-color: #{$upcomingPrimary};
+            user-select: none;
 
             &:hover {
-                cursor: pointer;
                 background-color: $upcomingPrimary;
                 --icon-color: white;
+                cursor: pointer;
             }
         }
     }

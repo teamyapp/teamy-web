@@ -1,9 +1,7 @@
-import { Attributes } from '@lib/storage/mutation';
-
 import { toDate } from './parser';
 
 export class UserState {
-    constructor(
+    public constructor(
         public id: number,
         public firstName: string,
         public lastName: string,
@@ -12,14 +10,14 @@ export class UserState {
         public updatedAt?: Date,
     ) {}
 
-    static fromAttributes(attributes: Attributes): UserState {
+    public static fromMutationPayload(json: any): UserState {
         return new UserState(
-            parseInt(attributes.ID),
-            attributes.FirstName,
-            attributes.LastName,
-            toDate(attributes.CreatedAt)!,
-            attributes.ProfileUrl,
-            toDate(attributes.UpdatedAt),
+            json.ID,
+            json.FirstName,
+            json.LastName,
+            toDate(json.CreatedAt)!,
+            json.ProfileURL,
+            toDate(json.UpdatedAt),
         );
     }
 

@@ -1,6 +1,4 @@
-import { UpdateTaskInput } from '@core/entity/input';
 import { Invitation } from '@core/entity/invitation';
-import { Task } from '@core/entity/task';
 
 export type Feedback =
     | TaskUpdatedFeedback
