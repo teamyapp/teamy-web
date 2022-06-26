@@ -11,7 +11,7 @@ export class GraphSource {
     public currentUser(): User | undefined {
         const appState = this.localStore.getState();
         if (!appState.currUserId) {
-            return undefined;
+            return;
         }
 
         return new User(appState, appState.users[appState.currUserId]);
@@ -20,7 +20,7 @@ export class GraphSource {
     public currentTeam(): Team | undefined {
         const appState = this.localStore.getState();
         if (!appState.currTeamId) {
-            return undefined;
+            return;
         }
 
         return this.team(appState.currTeamId);

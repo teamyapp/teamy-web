@@ -26,8 +26,8 @@ const testingConfig: Config = {
 
 const stagingConfig: Config = {
     apiBaseEndpoint: 'https://cloud.staging.teamyapp.com/identity',
-    cookieDomain: 'localhost',
-    cookieSecure: false,
+    cookieDomain: 'staging.teamyapp.com',
+    cookieSecure: true,
     signInLink: '/cloud/identity/sign-in',
     signInFinishLink: '/cloud/identity/sign-in-finish',
 };
@@ -43,7 +43,7 @@ const productionConfig: Config = {
 export function getConfig(env: Environment): Config {
     switch (env) {
         case Environment.Development:
-            return stagingConfig;
+            return developmentConfig;
         case Environment.Testing:
             return testingConfig;
         case Environment.Staging:
