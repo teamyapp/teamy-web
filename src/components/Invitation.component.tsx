@@ -11,9 +11,10 @@ import { Deps } from '@core/dep/deps';
 import { Invitation } from '@core/entity/invitation';
 import { InvitationStatus } from '@core/entity/invitationStatus';
 import { User } from '@core/entity/user';
-import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './Invitation.component.module.scss';
+import {GraphSource} from '@core/storage/graph/graphSource';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;
@@ -27,10 +28,12 @@ interface State {
 
 export class InvitationComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
 
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             hasError: false,
         };
@@ -52,7 +55,7 @@ export class InvitationComponent extends Component<Props, State> {
         }
 
         const invitationId = parseInt(id);
-        await this.graphSource.pullInvitation(invitationId, code);
+        await this.stateSyncer.pullInvitationWithCode(invitationId, code);
         const invitation = await this.graphSource.invitation(invitationId);
         if (!invitation) {
             this.setState({
@@ -68,7 +71,7 @@ export class InvitationComponent extends Component<Props, State> {
             return;
         }
 
-        await this.graphSource.pullCurrentUser();
+        await this.stateSyncer.pullCurrentUser();
         const currentUser = this.graphSource.currentUser();
         this.setState({
             me: currentUser,
@@ -183,17 +186,17 @@ export class InvitationComponent extends Component<Props, State> {
     }
 
     private onAcceptClick = async () => {
-        await this.graphSource.acceptInvitation(
+        await this.stateSyncer.acceptInvitation(
             this.state.invitation?.id!,
             this.state.invitation?.code!,
         );
         const teamId = this.state.invitation?.joiningTeam?.id!;
-        await this.graphSource.setCurrentTeam(teamId);
+        this.stateSyncer.trySetCurrentTeam(teamId);
         this.onGoHomePageClick();
     };
 
     private onDeclineClick = async () => {
-        await this.graphSource.declineInvitation(
+        await this.stateSyncer.declineInvitation(
             this.state.invitation?.id!,
             this.state.invitation?.code!,
         );

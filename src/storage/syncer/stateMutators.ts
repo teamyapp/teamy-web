@@ -154,9 +154,8 @@ export async function applyTeamMemberMutation(
                 mutation.payload,
             )!;
             currState.teamMembers = currState.teamMembers.concat(teamMember);
-
             const remoteUsers = await teamClient.getTeamMembers(
-                `${teamMember.teamId}`,
+              `${teamMember.teamId}`,
             );
             for (let user of remoteUsers) {
                 currState = mergeUser(currState, user);
@@ -169,10 +168,14 @@ export async function applyTeamMemberMutation(
                 mutation.payload,
             )!;
             currState.teamMembers = currState.teamMembers.filter(
-                (teamMember) =>
-                    teamMember.teamId !== deletedTeamMember.teamId &&
-                    teamMember.userId != deletedTeamMember.userId,
+              (teamMember) =>
+                !(teamMember.teamId === deletedTeamMember.teamId &&
+                  teamMember.userId === deletedTeamMember.userId),
             );
+            if (deletedTeamMember.userId === currState.currUserId) {
+                currState.currUserId = undefined;
+            }
+
             break;
         }
     }
@@ -258,7 +261,7 @@ export function mergeUser(
                 : remoteUser.profileUrl,
         createdAt: toDate(remoteUser.createdAt) || localOldUser.createdAt,
         updatedAt:
-            remoteUser.updatedAt == undefined
+            remoteUser.updatedAt === undefined
                 ? localOldUser.updatedAt
                 : toDate(remoteUser.updatedAt),
     };
@@ -500,7 +503,7 @@ export function replaceUserTeams(
     newTeamMembers: TeamMemberState[],
 ): AppState {
     let teamMembers = currAppState.teamMembers.filter(
-        (teamMember) => teamMember.userId != userId,
+        (teamMember) => teamMember.userId !== userId,
     );
     currAppState.teamMembers = teamMembers.concat(newTeamMembers);
     return currAppState;
@@ -512,7 +515,7 @@ export function replaceTeamMembers(
     newTeamMembers: TeamMemberState[],
 ): AppState {
     let teamMembers = currAppState.teamMembers.filter(
-        (teamMember) => teamMember.teamId != teamId,
+        (teamMember) => teamMember.teamId !== teamId,
     );
     currAppState.teamMembers = teamMembers.concat(newTeamMembers);
     return currAppState;
@@ -526,7 +529,7 @@ export function replaceAndMergeTeamTasks(
     const tasks: { [taskId: number]: TaskState } = {};
     for (const taskId in currAppState.tasks) {
         const task = currAppState.tasks[taskId];
-        if (task.owningTeamId == currTeamId) {
+        if (task.owningTeamId === currTeamId) {
             continue;
         }
 
@@ -575,7 +578,7 @@ export function deleteThread(appState: AppState, threadId: number): AppState {
     const newMessages: { [messageId: number]: MessageState } = {};
     for (let messageId in appState.messages) {
         const message = appState.messages[messageId];
-        if (message.threadId == threadId) {
+        if (message.threadId === threadId) {
             continue;
         }
 

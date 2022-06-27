@@ -32,13 +32,15 @@ import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
-import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './Execution.component.module.scss';
 import { KanbanUI } from './shared/Kanban';
 import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.component';
 import { PersonalStatusUI } from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
+import {GraphSource} from '@core/storage/graph/graphSource';
+import {LocalStore} from '@core/storage/syncer/localStore';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 const taskOwnersListVerticalOffset = 4;
 const taskOwnersListHorizontalOffset = 10;
@@ -82,7 +84,9 @@ const acceptedRoutePatterns = [
 
 export class ExecutionComponent extends Component<Props, State> {
     private readonly router: Router;
+    private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
 
     private readonly taskDetailModalRef = createRef<TaskDetailModalComponent>();
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
@@ -94,7 +98,9 @@ export class ExecutionComponent extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.router = props.deps.router;
+        this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             activeTabIndex: -1,
             showPotentialTaskOwnersList: false,
@@ -181,7 +187,7 @@ export class ExecutionComponent extends Component<Props, State> {
 
     public componentDidMount() {
         window.addEventListener('resize', this.onWindowResize);
-        this.stateChangeChan = this.graphSource.subscribeStateChange();
+        this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
                 console.log('waiting for state changes');
@@ -399,7 +405,7 @@ export class ExecutionComponent extends Component<Props, State> {
         findAlignTargetBoundBox: BoundingBoxFinder,
         selectedOwnerId?: number,
     ) => {
-        await this.graphSource.pullCurrentTeamMembers();
+        await this.stateSyncer.pullCurrentTeamMembers();
         const owners = this.graphSource.currentTeam()!.members;
         this.setState({
             potentialTaskOwners: owners,
@@ -421,7 +427,7 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onRemoveTaskOwner = () => {
-        this.graphSource.updateTask(
+        this.stateSyncer.updateTask(
             this.state.selectOwnerTaskId!,
             Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
                 {},
@@ -441,7 +447,7 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onSelectTaskOwner = (userId: number) => {
-        this.graphSource.updateTask(
+        this.stateSyncer.updateTask(
             this.state.selectOwnerTaskId!,
             Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
                 {},
@@ -499,7 +505,7 @@ export class ExecutionComponent extends Component<Props, State> {
     private onCreateTask = (task: CreateTaskInput): void => {
         if (task.goal.length > 0) {
             console.log('creating task');
-            this.graphSource.createTask(
+            this.stateSyncer.createTask(
                 this.graphSource.currentTeam()!.id,
                 task,
             );
@@ -507,7 +513,7 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onUpdateTask = async (taskId: number, task: UpdateTaskInput) => {
-        await this.graphSource.updateTask(taskId, task);
+        await this.stateSyncer.updateTask(taskId, task);
         await this.props.deps.feedbackPubSub.publish({
             type: 'TaskUpdated',
             taskId: taskId,
@@ -515,7 +521,7 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private onDeleteTask = (taskId: number): void => {
-        this.graphSource.deleteTask(taskId);
+        this.stateSyncer.deleteTask(taskId);
     };
 
     private onReportTaskBlocked = (taskId: number): void => {
@@ -523,11 +529,11 @@ export class ExecutionComponent extends Component<Props, State> {
     };
 
     private moveTaskToInProgress = (taskId: number): void => {
-        this.graphSource.moveTaskToInProgress(taskId);
+        this.stateSyncer.moveTaskToInProgress(taskId);
     };
 
     private moveTaskToDelivered = (taskId: number): void => {
-        this.graphSource.moveTaskToDelivered(taskId);
+        this.stateSyncer.moveTaskToDelivered(taskId);
     };
 
     private onCloseTaskOwnersListClick = () => {

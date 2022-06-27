@@ -23,19 +23,19 @@ marked.setOptions({
     },
 });
 
-interface IProps {
+interface Props {
     label?: string;
     content?: string;
 }
 
-interface IState {
+interface State {
     focus: boolean;
     content: string;
     inEditMode: boolean;
 }
 
-export class MarkdownEditorUI extends Component<IProps, IState> {
-    constructor(props: IProps) {
+export class MarkdownEditorUI extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             focus: false,

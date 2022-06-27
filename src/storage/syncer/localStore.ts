@@ -5,10 +5,11 @@ import { AppState } from '@core/storage/states/app.state';
 const appStateKey = 'appState';
 
 export class LocalStore {
+    private appState: AppState
     private readonly stateChangeChan = chan<boolean>();
     private readonly stateChangeMulti = multi<boolean>(this.stateChangeChan);
 
-    constructor(private appState: AppState) {
+    constructor() {
         const savedState = localStorage.getItem(appStateKey);
         this.appState = savedState
             ? AppState.fromJson(JSON.parse(savedState))
@@ -32,5 +33,6 @@ export class LocalStore {
     public updateState(newState: AppState) {
         this.appState = Object.assign({}, newState);
         this.stateChangeChan.put(true);
+        localStorage.setItem(appStateKey, JSON.stringify(this.appState));
     }
 }

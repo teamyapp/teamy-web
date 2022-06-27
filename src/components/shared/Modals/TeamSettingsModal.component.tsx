@@ -16,10 +16,12 @@ import { Invitation } from '@core/entity/invitation';
 import { InvitationStatus } from '@core/entity/invitationStatus';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
-import { GraphSource } from '@core/graph/graphSource';
 
 import { UserProfileUI } from '../UserProfile';
 import styles from './TeamSettingsModal.component.module.scss';
+import {LocalStore} from '@core/storage/syncer/localStore';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
+import {GraphSource} from '@core/storage/graph/graphSource';
 
 const invitationStatusOrder: Map<InvitationStatus, number> = new Map<
     InvitationStatus,
@@ -47,13 +49,18 @@ interface State {
 }
 
 export class TeamSettingsModalComponent extends Component<Props, State> {
+    private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
+
     private readonly modalRef = createRef<ModalUI>();
     private onStateChangeChan?: PopChannel<boolean | undefined>;
 
     constructor(props: any) {
         super(props);
+        this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             currentTabIndex: 0,
             invitations: [],
@@ -95,7 +102,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     public componentDidMount() {
-        this.onStateChangeChan = this.graphSource.subscribeStateChange();
+        this.onStateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
                 const hasChanged = await this.onStateChangeChan?.pop();
@@ -118,8 +125,8 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     public open = async (teamId: number, defaultTabIndex: number = 0) => {
-        await this.graphSource.pullTeamMembers(teamId);
-        await this.graphSource.pullInvitations(teamId);
+        await this.stateSyncer.pullTeamMembers(teamId);
+        await this.stateSyncer.pullTeamInvitations(teamId);
         await this.updateState(teamId, defaultTabIndex);
         this.modalRef.current?.open();
     };
@@ -386,7 +393,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private onSaveTeamProfileClick = async () => {
         const team = this.state.team!;
-        await this.graphSource.updateTeam(team.id, {
+        await this.stateSyncer.updateTeam(team.id, {
             name: this.state.newTeamName!,
             iconUrl: team.iconUrl,
             ownerUserId: team.owner.id,
@@ -421,7 +428,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     private onDeleteInvitationClick = (invitationId: number) => {
         return () => {
             // TODO: replace with mutation event
-            this.graphSource.deleteInvitation(invitationId);
+            this.stateSyncer.deleteInvitation(invitationId);
         };
     };
 }

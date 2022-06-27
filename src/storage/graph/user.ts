@@ -28,7 +28,7 @@ export class User {
 
     public get teams(): Team[] {
         return this.appState.teamMembers
-            .filter((teamMember) => teamMember.userId === this.userState.id)
+            .filter((teamMember) => teamMember.userId === this.userState.id && this.appState.teams[teamMember.teamId])
             .map(
                 (teamMember) =>
                     new Team(
