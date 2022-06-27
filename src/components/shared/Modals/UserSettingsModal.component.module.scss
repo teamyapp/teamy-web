@@ -5,51 +5,51 @@
     @include primaryFont;
     display: flex;
     flex-direction: column;
-    width: 800px;
     height: 700px;
+    width: 800px;
 
     .TabContent {
         flex: 1;
     }
 
     .UserProfileTab {
-        display: flex;
         align-items: center;
-        flex-direction: column;
-        justify-content: center;
-        box-sizing: border-box;
-        height: 100%;
-        padding: 20px;
         background-color: #cfd8dc;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: center;
+        padding: 20px;
 
         .UserProfileTabContent {
-            display: flex;
             align-items: center;
-            flex-direction: column;
-            padding: 40px;
+            background-color: white;
             border: 4px solid #b0bec5;
             border-radius: 6px;
-            background-color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
 
             .UserProfile {
-                position: relative;
-                display: flex;
-                overflow: hidden;
                 align-items: center;
-                justify-content: center;
-                width: 150px;
-                height: 150px;
+                background-color: #455a64;
                 border: 4px solid #e0e0e0;
                 border-radius: 50%;
-                background-color: #455a64;
+                display: flex;
+                height: 150px;
+                justify-content: center;
+                overflow: hidden;
+                position: relative;
+                width: 150px;
 
                 .UserProfileImg,
                 .DefaultUserProfile {
-                    justify-content: center;
-                    box-sizing: border-box;
-                    width: 100%;
-                    height: 100%;
                     border-radius: 50%;
+                    box-sizing: border-box;
+                    height: 100%;
+                    justify-content: center;
+                    width: 100%;
                 }
 
                 .UserProfileImg {
@@ -57,12 +57,12 @@
                 }
 
                 .DefaultUserProfile {
+                    align-items: center;
+                    color: white;
+                    display: flex;
                     font-size: 100px;
                     font-weight: bold;
                     line-height: 100px;
-                    display: flex;
-                    align-items: center;
-                    color: white;
                 }
 
                 &:hover {
@@ -72,23 +72,23 @@
                 }
 
                 .UploadUserProfileButton {
+                    align-items: center;
+                    background-color: #424242;
+                    box-sizing: border-box;
+                    color: white;
+                    display: flex;
                     font-size: 20px;
                     font-weight: bold;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    box-sizing: border-box;
-                    width: 100%;
                     height: 100%;
-                    padding: 0 10px;
-                    user-select: none;
-                    text-align: center;
+                    justify-content: center;
+                    left: 0;
                     opacity: 0;
-                    color: white;
-                    background-color: #424242;
+                    padding: 0 10px;
+                    position: absolute;
+                    text-align: center;
+                    top: 0;
+                    user-select: none;
+                    width: 100%;
 
                     &:hover {
                         cursor: pointer;
@@ -97,16 +97,16 @@
             }
 
             .UserIdSection {
+                align-items: center;
+                background-color: #eeeeee;
+                border-radius: 4px;
+                display: flex;
                 font-size: 24px;
                 font-weight: bold;
-                display: flex;
-                align-items: center;
                 justify-content: center;
-                width: 120px;
                 margin-top: 20px;
                 padding: 2px 0;
-                border-radius: 4px;
-                background-color: #eeeeee;
+                width: 120px;
 
                 .UserId {
                     margin-left: 10px;
@@ -114,8 +114,8 @@
             }
 
             .UserNameSection {
-                margin-top: 30px;
                 --border: 2px solid #757575;
+                margin-top: 30px;
 
                 .Row:not(:first-child) {
                     margin-top: 20px;
@@ -123,8 +123,8 @@
             }
 
             .ActionsSection {
-                margin-top: 30px;
                 --width: 160px;
+                margin-top: 30px;
 
                 .SaveAction {
                     --background-color: #388e3c;

@@ -13,19 +13,19 @@ $divider: 2px solid #eeeeee;
     }
 
     .TaskActionsSection {
+        background-color: #f1f1f1;
         display: flex;
         justify-content: flex-end;
         padding: 4px 10px;
-        background-color: #f1f1f1;
 
         .AssignOwner {
-            display: flex;
             align-items: center;
-            margin-right: 10px;
-            --profile-height: 26px;
-            --profile-width: 26px;
             --icon-color: #3d7bf6;
+            display: flex;
+            --profile-height: 26px;
+            margin-right: 10px;
             --icon-size: 26px;
+            --profile-width: 26px;
 
             .TaskOwnerName {
                 font-weight: bold;
@@ -34,18 +34,18 @@ $divider: 2px solid #eeeeee;
         }
 
         .SaveAction {
-            display: flex;
             align-items: center;
+            display: flex;
 
             .Button {
-                font-weight: bold;
-                display: flex;
                 align-items: center;
+                background-color: #455a64;
+                border-radius: 3px;
+                color: white;
+                display: flex;
+                font-weight: bold;
                 height: 26px;
                 padding: 0 10px;
-                color: white;
-                border-radius: 3px;
-                background-color: #455a64;
 
                 &:hover {
                     cursor: pointer;
@@ -55,12 +55,12 @@ $divider: 2px solid #eeeeee;
         }
 
         .Action {
-            padding: 4px;
             border-radius: 4px;
+            padding: 4px;
 
             &:hover {
-                cursor: pointer;
                 background-color: rgba(0, 0, 0, 0.1);
+                cursor: pointer;
             }
 
             &:hover,
@@ -71,11 +71,11 @@ $divider: 2px solid #eeeeee;
     }
 
     .TaskDetailSection {
-        width: 800px;
-        padding: 20px;
-        --outline-color: #1976d2;
         --border: 2px solid #{$secondaryColor};
+        --outline-color: #1976d2;
+        padding: 20px;
         --font-size: 18px;
+        width: 800px;
 
         .TaskDetailTop {
             display: flex;
@@ -86,12 +86,12 @@ $divider: 2px solid #eeeeee;
             }
 
             .RightSection {
-                width: 200px;
                 margin-left: 20px;
+                width: 200px;
 
                 .Attributes {
-                    display: flex;
                     align-items: flex-end;
+                    display: flex;
                     flex-direction: column;
 
                     .Row {
@@ -115,13 +115,13 @@ $divider: 2px solid #eeeeee;
     }
 
     .CommentsSection {
+        box-sizing: border-box;
         display: flex;
-        overflow-y: hidden;
         flex: 1;
         flex-direction: column;
-        box-sizing: border-box;
-        width: 100%;
+        overflow-y: hidden;
         padding: 0 4px 20px 4px;
+        width: 100%;
 
         .Title {
             margin-bottom: 10px;
@@ -129,8 +129,8 @@ $divider: 2px solid #eeeeee;
         }
 
         .Thread {
-            overflow-y: auto;
             flex: 1;
+            overflow-y: auto;
             padding: 0 16px;
         }
     }

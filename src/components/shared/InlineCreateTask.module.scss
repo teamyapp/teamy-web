@@ -3,31 +3,31 @@
 .Task {
     .LeftSection {
         .GoalTextField {
-            box-sizing: border-box;
-            width: 100%;
+            background-color: #f5f5f5;
+            border: none;
             @include goalText;
+            box-sizing: border-box;
             height: 60px;
             margin: 0;
+            outline: none;
             padding: 0;
             resize: none;
-            border: none;
-            outline: none;
-            background-color: #f5f5f5;
+            width: 100%;
         }
     }
 
     .Owner {
         .Action {
-            width: $actionIconSize;
             height: $actionIconSize;
             padding: 4px;
+            width: $actionIconSize;
         }
 
         .OwnerIcon {
-            --profile-width: #{$actionIconSize};
+            --icon-color: #1976d2;
             --profile-height: #{$actionIconSize};
             --icon-size: #{$actionIconSize};
-            --icon-color: #1976d2;
+            --profile-width: #{$actionIconSize};
         }
     }
 }

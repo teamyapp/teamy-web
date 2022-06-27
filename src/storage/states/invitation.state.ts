@@ -1,10 +1,8 @@
-import { Attributes } from '@lib/storage/mutation';
-
-import { InvitationStatus } from '@core/statev2/invitationStatus';
-import { toDate, toInt } from '@core/statev2/parser';
+import { InvitationStatus } from '@core/storage/states/invitationStatus';
+import { toDate } from '@core/storage/states/parser';
 
 export class InvitationState {
-    constructor(
+    public constructor(
         public id: number,
         public senderUserId: number,
         public teamId: number,
@@ -19,20 +17,20 @@ export class InvitationState {
         public updatedAt?: Date,
     ) {}
 
-    public static fromAttributes(attributes: Attributes): InvitationState {
+    public static fromMutationPayload(json: any): InvitationState {
         return new InvitationState(
-            parseInt(attributes.ID),
-            parseInt(attributes.SenderUserID),
-            parseInt(attributes.TeamID),
-            toDate(attributes.ExpireAt)!,
-            attributes.Status as InvitationStatus,
-            attributes.code,
-            toDate(attributes.CreatedAt)!,
-            attributes.ReceiverFirstName,
-            attributes.ReceiverLastName,
-            toInt(attributes.ReceiverUserID),
-            attributes.ReceiverEmail,
-            toDate(attributes.UpdatedAt),
+            json.ID,
+            json.SenderUserID,
+            json.TeamID,
+            toDate(json.ExpireAt)!,
+            json.Status as InvitationStatus,
+            json.Code,
+            toDate(json.CreatedAt)!,
+            json.ReceiverFirstName,
+            json.ReceiverLastName,
+            json.ReceiverUserID,
+            json.ReceiverEmail,
+            toDate(json.UpdatedAt),
         );
     }
 

@@ -6,14 +6,14 @@ $modalElevation: 1000;
 .Modal {
     .Content {
         @include elevation(24);
-        position: fixed;
-        z-index: $modalElevation + 1;
-        top: 50%;
-        left: 50%;
-        transition: all $easeOutExpo;
-        transform: translateX(-50%) translateY(-50%);
-        opacity: 0;
         background-color: white;
+        left: 50%;
+        opacity: 0;
+        position: fixed;
+        top: 50%;
+        transform: translateX(-50%) translateY(-50%);
+        transition: all $easeOutExpo;
+        z-index: $modalElevation + 1;
 
         &.Show {
             opacity: 1;
@@ -21,15 +21,15 @@ $modalElevation: 1000;
     }
 
     .Overlay {
-        position: fixed;
-        z-index: $modalElevation;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        transition: all 600ms $easeOutExpo;
-        opacity: 0;
         background-color: rgba(0, 0, 0, 0.3);
+        height: 100%;
+        left: 0;
+        opacity: 0;
+        position: fixed;
+        top: 0;
+        transition: all 600ms $easeOutExpo;
+        width: 100%;
+        z-index: $modalElevation;
 
         &.Show {
             opacity: 1;

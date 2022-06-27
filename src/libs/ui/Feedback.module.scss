@@ -1,22 +1,22 @@
 @import './styleguide/elevation';
 
 .Feedback {
-    font-size: 16px;
-    position: fixed;
-    z-index: 2000;
+    align-items: center;
+    background-color: #424242;
+    border-radius: 4px;
 
     @include elevation(5);
     bottom: 10px;
-    left: 50%;
     display: none;
-    align-items: center;
-    padding: 10px;
-    transition-timing-function: ease-in-out;
-    transition-property: opacity;
-    transform: translateX(-50%);
+    font-size: 16px;
+    left: 50%;
     opacity: 0;
-    border-radius: 4px;
-    background-color: #424242;
+    padding: 10px;
+    position: fixed;
+    transform: translateX(-50%);
+    transition-property: opacity;
+    transition-timing-function: ease-in-out;
+    z-index: 2000;
 
     &.Show {
         display: flex;
@@ -27,21 +27,21 @@
     }
 
     .Content {
+        color: white;
         flex: 1;
         padding: 10px;
-        color: white;
     }
 
     .Action {
+        border-radius: 2px;
+        color: #fff59d;
         font-weight: bold;
         padding: 4px 10px;
         text-transform: uppercase;
-        color: #fff59d;
-        border-radius: 2px;
 
         &:hover {
-            cursor: pointer;
             background-color: rgba(255, 255, 255, 0.07);
+            cursor: pointer;
         }
     }
 }

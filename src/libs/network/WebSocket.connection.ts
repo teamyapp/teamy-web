@@ -1,21 +1,35 @@
 import { PopChannel, PutChannel, chan, multi } from '@lib/csp/csp';
 import { Connection, ConnectionError } from '@lib/network/Connection';
 
+interface AccessTokenGetter {
+    getAccessToken(): string;
+}
+
 export class WebSocketConnection implements Connection {
-    private readonly connectionUrl: string;
     private webSocket?: WebSocket;
 
     private messageReceivedChan = chan<string>();
     private messageReceivedMulti = multi<string>(this.messageReceivedChan);
     private errorChan = chan<ConnectionError>();
     private errorMulti = multi<ConnectionError>(this.errorChan);
+
+    constructor(
+        private readonly connectionUrl: string,
+        private readonly accessTokenGetter?: AccessTokenGetter,
+    ) {}
+
     private _isConnected = false;
 
-    constructor(connectionUrl: string) {
-        this.connectionUrl = connectionUrl;
+    public get isConnected() {
+        return this._isConnected;
     }
 
     public connect(): Promise<void> {
+        const url = new URL(this.connectionUrl);
+        url.searchParams.set(
+            'accessToken',
+            this.accessTokenGetter?.getAccessToken() || '',
+        );
         const webSocket = new WebSocket(this.connectionUrl);
         return new Promise((resolve, reject) => {
             webSocket.onopen = (event: Event) => {
@@ -37,10 +51,6 @@ export class WebSocketConnection implements Connection {
                 this.messageReceivedChan.put(event.data);
             };
         });
-    }
-
-    public get isConnected() {
-        return this._isConnected;
     }
 
     public close(): void {

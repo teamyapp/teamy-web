@@ -4,16 +4,16 @@
 @include header;
 
 .Header {
+    color: $onPrimaryColor;
+    padding: 0 16px;
     position: relative;
     z-index: 100;
-    padding: 0 16px;
-    color: $onPrimaryColor;
     @include menuButton;
 
     .LeftSection,
     .RightSection {
-        display: flex;
         align-items: center;
+        display: flex;
         width: 280px;
     }
 
@@ -28,21 +28,21 @@
     .TeamName {
         font-size: 22px;
         font-weight: 500;
-        transition: left 400ms $easeOutExpo;
         letter-spacing: 1px;
+        transition: left 400ms $easeOutExpo;
     }
 
     .UserActionSection {
         .Action {
-            display: flex;
             align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            user-select: none;
             border-radius: 3px;
             --icon-color: white;
+            display: flex;
+            height: 28px;
+            justify-content: center;
             --icon-size: 24px;
+            user-select: none;
+            width: 28px;
 
             &.Active {
                 background-color: white;
@@ -60,21 +60,21 @@
     }
 
     .UserSection {
-        display: flex;
         align-items: center;
+        display: flex;
         height: 100%;
-        margin-right: 26px;
         margin-left: 23px;
+        margin-right: 26px;
 
         .UserProfile {
             border: 3px solid transparent;
             border-radius: 50%;
-            --profile-width: 28px;
             --profile-height: 28px;
+            --profile-width: 28px;
 
             &:hover {
-                cursor: pointer;
                 border: 3px solid white;
+                cursor: pointer;
             }
         }
 
@@ -86,49 +86,49 @@
     }
 
     .SearchBar {
-        width: 800px;
         height: 32px;
+        width: 800px;
 
         .Input {
-            display: flex;
-            overflow: hidden;
             align-items: center;
-            height: 100%;
-            border-radius: 4px;
             background-color: white;
+            border-radius: 4px;
+            display: flex;
+            height: 100%;
+            overflow: hidden;
 
             .TextField {
+                border: none;
+                box-sizing: border-box;
+                flex: 1;
                 font-size: 16px;
                 font-weight: bold;
-                line-height: 16px;
-                flex: 1;
-                box-sizing: border-box;
                 height: 100%;
-                padding: 2px 20px;
-                border: none;
+                line-height: 16px;
                 outline: none;
+                padding: 2px 20px;
             }
 
             .SearchIcon {
-                display: flex;
                 align-items: center;
-                justify-content: center;
-                width: 32px;
-                height: 32px;
-                user-select: none;
                 background-color: #f5f5f5;
-
                 --icon-color: #424242;
+                display: flex;
+                height: 32px;
+                justify-content: center;
                 --icon-size: 24px;
+
+                user-select: none;
+                width: 32px;
             }
         }
 
         .Filters {
-            width: 100%;
-            margin-top: 4px;
-            border-radius: 4px;
             background-color: white;
+            border-radius: 4px;
             box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+            margin-top: 4px;
+            width: 100%;
         }
     }
 }
