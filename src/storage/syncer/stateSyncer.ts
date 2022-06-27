@@ -81,7 +81,10 @@ export class StateSyncer {
                     return;
                 }
 
-                const mutation = Mutation.fromMutationPayload(message);
+                const json = JSON.parse(message);
+                console.log('JSON received: ', json);
+                const mutation = Mutation.fromMutationPayload(json);
+                console.log('Mutation received: ', mutation);
                 await this.mutateState(mutation);
                 this.onMutationReceivedCh.put(mutation);
             }
@@ -100,7 +103,7 @@ export class StateSyncer {
                 teamMember.userId === appState.currUserId &&
                 teamMember.teamId === currTeamId,
         );
-        if (match.length == 0) {
+        if (match.length === 0) {
             return false;
         }
 
@@ -131,7 +134,7 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async pullCurrentTeamTasks(): Promise<void> {
+    public async pullCurrentTeam(): Promise<void> {
         let appState = this.localStore.getState();
         const currTeamId = appState.currTeamId;
         if (!currTeamId) {
@@ -272,12 +275,12 @@ export class StateSyncer {
     }
 
     public async deleteTask(taskId: number) {
-        await this.taskClient.deleteTask(`${taskId}`);
         let appState = this.localStore.getState();
         const deletedThreadId = appState.tasks[taskId].commentsThreadId;
         appState = deleteThread(appState, deletedThreadId);
         delete appState.tasks[taskId];
         this.localStore.updateState(appState);
+        await this.taskClient.deleteTask(`${taskId}`);
     }
 
     public async moveTaskToInProgress(taskId: number) {
@@ -362,10 +365,10 @@ export class StateSyncer {
     }
 
     public async deleteMessage(messageId: number): Promise<void> {
-        await this.messageClient.deleteMessage(`${messageId}`);
         let appState = this.localStore.getState();
         delete appState.messages[messageId];
         this.localStore.updateState(appState);
+        await this.messageClient.deleteMessage(`${messageId}`);
     }
 
     public async createInvitation(
@@ -406,10 +409,10 @@ export class StateSyncer {
     }
 
     public async deleteInvitation(invitationId: number): Promise<void> {
-        await this.invitationClient.deleteInvitation(`${invitationId}`);
         let appState = this.localStore.getState();
         delete appState.invitations[invitationId];
         this.localStore.updateState(appState);
+        await this.invitationClient.deleteInvitation(`${invitationId}`);
     }
 
     private async mutateState(mutation: Mutation) {

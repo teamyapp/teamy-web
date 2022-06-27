@@ -6,22 +6,21 @@ import { ModalUI } from '@lib/ui/Modal';
 import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
-import { GraphSource } from '@core/graph/graphSource';
-
 import styles from './CreateTeamModal.component.module.scss';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;
 }
 
 export class CreateTeamModalComponent extends Component<Props> {
-    private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
     private readonly modalRef = createRef<ModalUI>();
     private readonly teamNameInputRef = createRef<TextFieldUI>();
 
     constructor(props: Props) {
         super(props);
-        this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
     }
 
     public render() {
@@ -72,7 +71,7 @@ export class CreateTeamModalComponent extends Component<Props> {
             return;
         }
 
-        await this.graphSource.createTeam({
+        await this.stateSyncer.createTeam({
             name: teamName,
         });
         this.modalRef.current?.close();

@@ -19,12 +19,14 @@ import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
-import { GraphSource } from '@core/graph/graphSource';
 import { FormatService } from '@core/service/format.service';
 
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
 import styles from './TaskDetailModal.component.module.scss';
+import {LocalStore} from '@core/storage/syncer/localStore';
+import {GraphSource} from '@core/storage/graph/graphSource';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 const verticalMargin = 40;
 
@@ -48,7 +50,9 @@ interface State {
 }
 
 export class TaskDetailModalComponent extends Component<Props, State> {
+    private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
     private readonly modalRef = createRef<ModalUI>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
@@ -57,7 +61,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
+        this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             heightWithMargin: 0,
         };
@@ -199,7 +205,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     public componentDidMount() {
         window.addEventListener('resize', this.onBodyResize);
-        this.stateChangeChan = this.graphSource.subscribeStateChange();
+        this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
                 console.log('waiting for state changes');
@@ -223,7 +229,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     public async open(taskId: number) {
-        const syncPromise = this.graphSource.pullTask(taskId);
+        const syncPromise = this.stateSyncer.pullTask(taskId);
         this.setState(
             {
                 task: undefined,
@@ -247,7 +253,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             });
             return;
         }
-
         this.setState({
             task,
             updatedTask: {
@@ -280,7 +285,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         if (this.state.task) {
             const dueAt = this.dueAtDatePicker.current?.value || undefined;
             const task = this.state.task!;
-            await this.graphSource.updateTask(task.id, {
+            await this.stateSyncer.updateTask(task.id, {
                 goal: this.state.updatedTask!.goal,
                 context: this.markdownEditorRef.current?.content,
                 ownerUserId: task.owner?.id,
@@ -305,18 +310,18 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     private onPostComment = async (body: string) => {
-        await this.graphSource.createMessage(this.state.task!.comments.id, {
+        await this.stateSyncer.createMessage(this.state.task!.comments.id, {
             body,
         });
         this.scrollToCommentsBottom();
     };
 
     private onDeleteMessage = async (messageId: number) => {
-        await this.props.deps.graphSource.deleteMessage(messageId);
+        await this.stateSyncer.deleteMessage(messageId);
     };
 
     private onUpdateMessage = async (messageId: number, body: string) => {
-        await this.props.deps.graphSource.updateMessage(messageId, {
+        await this.stateSyncer.updateMessage(messageId, {
             body,
         });
     };

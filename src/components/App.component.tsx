@@ -25,7 +25,6 @@ import { TaskFilters } from '@core/entity/filters';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { UserActionEvent } from '@core/event/userAction';
-import { GraphSource } from '@core/graph/graphSource';
 
 import { CloudComponent } from '../cloud/Cloud.component';
 import styles from './App.component.module.scss';
@@ -43,6 +42,9 @@ import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/Inviat
 import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
 import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
+import {GraphSource} from '@core/storage/graph/graphSource';
+import {LocalStore} from '@core/storage/syncer/localStore';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;
@@ -78,7 +80,9 @@ const acceptedRoutePatterns = [
 
 export class AppComponent extends Component<Props, State> {
     private readonly router: Router;
+    private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
     private readonly identityClient: IdentityClient;
 
     private readonly headerRef = createRef<HeaderComponent>();
@@ -97,7 +101,9 @@ export class AppComponent extends Component<Props, State> {
         super(props);
         this.router = props.deps.router;
         this.identityClient = props.deps.identityClient;
+        this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             showMainContent: false,
             showPrivatePage: false,
@@ -219,7 +225,7 @@ export class AppComponent extends Component<Props, State> {
     }
 
     private monitorStateChanges() {
-        this.stateChangeChan = this.graphSource.subscribeStateChange();
+        this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
                 console.log('waiting for state changes');
@@ -262,14 +268,14 @@ export class AppComponent extends Component<Props, State> {
                     continue;
                 }
 
-                await this.graphSource.pullCurrentUserWithTeams();
+                await this.stateSyncer.pullCurrentUserWithTeams();
                 const me = this.graphSource.currentUser()?.id;
                 if (!me) {
                     this.trySignUp(routeUpdate.routePattern);
                     continue;
                 }
 
-                // await this.props.deps.realTimeCollectionClient.connect();
+                await this.stateSyncer.ensureConnected();
                 const currTeamId = this.graphSource.currentTeam()?.id;
                 if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
                     this.tryRedirect(currTeamId);
@@ -299,7 +305,7 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 if (this.graphSource.currentTeam()) {
-                    this.graphSource.pullCurrentTeam();
+                    this.stateSyncer.pullCurrentTeam();
                 } else {
                     this.router.navigateTo(rootRoutePattern);
                 }
@@ -410,8 +416,8 @@ export class AppComponent extends Component<Props, State> {
 
     private onActiveTeamSelect = async (teamId: number): Promise<void> => {
         const prevActiveTeamId = this.graphSource.currentTeam()?.id;
-        await this.graphSource.setCurrentTeam(teamId);
-        if (this.graphSource.currentTeam()) {
+        if (this.stateSyncer.trySetCurrentTeam(teamId)) {
+            await this.stateSyncer.pullCurrentTeam();
             this.router.navigateTo(teamPath(teamId), {
                 notifyRouteChange: false,
             });
@@ -419,7 +425,7 @@ export class AppComponent extends Component<Props, State> {
         }
 
         if (prevActiveTeamId) {
-            await this.graphSource.setCurrentTeam(prevActiveTeamId);
+            this.stateSyncer.trySetCurrentTeam(prevActiveTeamId);
             this.router.navigateTo(teamPath(prevActiveTeamId), {
                 notifyRouteChange: false,
             });

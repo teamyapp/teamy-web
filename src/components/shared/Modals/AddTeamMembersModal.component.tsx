@@ -12,9 +12,10 @@ import { TextFieldUI } from '@lib/ui/TextField';
 import { invitationLink } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
-import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './AddTeamMembersModal.component.module.scss';
+import {GraphSource} from '@core/storage/graph/graphSource';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 const itemSeparator = ',';
 const expirationPeriodOptions: Option[] = [
@@ -41,6 +42,8 @@ interface State {
 
 export class AddTeamMembersModalComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
+
     private readonly modalRef = createRef<ModalUI>();
     private readonly userIDTextAreaRef = createRef<TextAreaUI>();
     private readonly firstNameTextFieldRef = createRef<TextFieldUI>();
@@ -50,6 +53,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             currentTabIndex: 0,
         };
@@ -171,7 +175,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
             .map((idString: string) => parseInt(idString));
         await Promise.all(
             userIds.map((userId: number) =>
-                this.graphSource.addTeamMember(teamId, userId),
+                this.stateSyncer.addTeamMember(teamId, userId),
             ),
         );
         this.modalRef.current?.close();
@@ -186,7 +190,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
             expirationPeriodOptions[0].key;
         const expireAt = moment().add(moment.duration(expirationPeriod));
         const [invitationId, invitationCode] =
-            await this.graphSource.createInvitation(this.state.team!.id, {
+            await this.stateSyncer.createInvitation(this.state.team!.id, {
                 receiverFirstName: firstName || '',
                 receiverLastName: lastName || '',
                 expireAt: expireAt.toDate(),

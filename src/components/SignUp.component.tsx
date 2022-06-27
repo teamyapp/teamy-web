@@ -5,9 +5,10 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { absoluteRootPath } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
-import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './SignUp.component.module.scss';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
+import {GraphSource} from '@core/storage/graph/graphSource';
 
 export const signUpRedirectKey = 'signUpRedirect';
 
@@ -21,12 +22,14 @@ interface State {
 
 export class SignUpComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
     private readonly firstNameTextFieldRef = createRef<TextFieldUI>();
     private readonly lastNameTextFieldRef = createRef<TextFieldUI>();
 
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             showPageContent: false,
         };
@@ -77,7 +80,7 @@ export class SignUpComponent extends Component<Props, State> {
     }
 
     private onCreateAccountClick = async () => {
-        await this.graphSource.createUser({
+        await this.stateSyncer.createUser({
             firstName: this.firstNameTextFieldRef.current?.value || 'New',
             lastName: this.lastNameTextFieldRef.current?.value || 'User',
         });

@@ -30,7 +30,7 @@ export class WebSocketConnection implements Connection {
             'accessToken',
             this.accessTokenGetter?.getAccessToken() || '',
         );
-        const webSocket = new WebSocket(this.connectionUrl);
+        const webSocket = new WebSocket(url);
         return new Promise((resolve, reject) => {
             webSocket.onopen = (event: Event) => {
                 console.log(

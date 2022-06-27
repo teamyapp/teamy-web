@@ -16,12 +16,16 @@ import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
 import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
-import { GraphSource } from '@core/graph/graphSource';
+import {GraphSource} from '@core/storage/graph/graphSource';
+import {LocalStore} from '@core/storage/syncer/localStore';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 export interface Deps {
-    graphSource: GraphSource;
     identityClient: IdentityClient;
     router: Router;
+    localStore: LocalStore;
+    graphSource: GraphSource;
+    stateSyncer: StateSyncer;
     shortcutMonitor: ShortcutMonitor<UserActionEvent>;
     dragAndDropController: DragAndDropController;
     feedbackPubSub: PubSub<Feedback>;
@@ -44,21 +48,27 @@ export function initDeps(): Deps {
     const teamClient = new TeamClient(teamyGraphQLClient);
     const invitationClient = new InvitationClient(teamyGraphQLClient);
     const messageClient = new MessageClient(teamyGraphQLClient);
-    const graphSource = new GraphSource(
-        userClient,
-        taskClient,
-        teamClient,
-        invitationClient,
-        messageClient,
-    );
+    const localStore = new LocalStore();
+    const graphSource = new GraphSource(localStore);
+    const stateSyncer = new StateSyncer(
+      config.servicesWebSocketEndpoint,
+      identityClient,
+      localStore,
+      taskClient,
+      messageClient,
+      teamClient,
+      userClient,
+      invitationClient);
     const router = createBrowserRouter();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
     const dragAndDropController = new DragAndDropController();
     const feedbackPubSub = new PubSub<Feedback>();
     return {
-        graphSource,
         identityClient,
         router,
+        localStore,
+        graphSource,
+        stateSyncer,
         shortcutMonitor,
         dragAndDropController,
         feedbackPubSub,

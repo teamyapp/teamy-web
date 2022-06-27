@@ -8,9 +8,9 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
 import { User } from '@core/entity/user';
-import { GraphSource } from '@core/graph/graphSource';
 
 import styles from './UserSettingsModal.component.module.scss';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;
@@ -26,12 +26,12 @@ interface State {
 }
 
 export class UserSettingsModalComponent extends Component<Props, State> {
-    private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
     private readonly modalRef = createRef<ModalUI>();
 
     constructor(props: Props) {
         super(props);
-        this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             defaultTabIndex: 0,
             currentTabIndex: 0,
@@ -163,7 +163,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
 
     private onSaveUserProfileClick = async () => {
         const user = this.state.user!;
-        await this.graphSource.updateUser(user.id, {
+        await this.stateSyncer.updateUser(user.id, {
             firstName: this.state.editingUserFirstName!,
             lastName: this.state.editingUserLastName!,
             profileUrl: user.profileUrl,
