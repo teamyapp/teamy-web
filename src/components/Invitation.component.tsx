@@ -11,10 +11,10 @@ import { Deps } from '@core/dep/deps';
 import { Invitation } from '@core/entity/invitation';
 import { InvitationStatus } from '@core/entity/invitationStatus';
 import { User } from '@core/entity/user';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './Invitation.component.module.scss';
-import {GraphSource} from '@core/storage/graph/graphSource';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;

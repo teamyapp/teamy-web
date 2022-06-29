@@ -6,8 +6,9 @@ import { ModalUI } from '@lib/ui/Modal';
 import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+
 import styles from './CreateTeamModal.component.module.scss';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;

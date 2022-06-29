@@ -12,10 +12,10 @@ import { TextFieldUI } from '@lib/ui/TextField';
 import { invitationLink } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './AddTeamMembersModal.component.module.scss';
-import {GraphSource} from '@core/storage/graph/graphSource';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 const itemSeparator = ',';
 const expirationPeriodOptions: Option[] = [

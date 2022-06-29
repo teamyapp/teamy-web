@@ -76,6 +76,9 @@ export class TaskClient {
                                     id
                                 }
                                 availableActions
+                                awaitForTasks {
+                                    id
+                                }
                             }
                         }
                     }

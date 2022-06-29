@@ -59,13 +59,17 @@ export class InlineTaskUI extends Component<Props, State> {
                 <div className={styles.LeftSection}>
                     <div className={styles.TopRow}>
                         <span className={`${styles.Attribute} ${styles.Id}`}>
-                            #{this.props.task.id}
+                            {this.props.task.id}
                         </span>
                     </div>
                     {this.renderGoal()}
                     <div className={styles.BottomRow}>{this.renderDueAt()}</div>
-                    <div className={styles.Attributes}>
-                        {this.renderEffort()}
+                    {/*<div className={styles.Attributes}>*/}
+                    {/*    {this.renderEffort()}*/}
+                    {/*</div>*/}
+                    <div className={styles.AwaitFor}>
+                        {this.props.task.awaitForTasks?.length > 0 &&
+                            this.renderAwaitForTasks()}
                     </div>
                 </div>
                 <div className={styles.ActionsSection}>
@@ -129,6 +133,25 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     };
 
+    private renderAwaitForTasks(): ReactNode {
+        return (
+            <div className={styles.AwaitForTasksSection}>
+                <div className={styles.AwaitForIcon}>
+                    <MaterialIconUI iconStyle={'round'}>
+                        hourglass_top
+                    </MaterialIconUI>
+                </div>
+                <div className={styles.AwaitForTasks}>
+                    {this.props.task.awaitForTasks.map(this.renderAwaitForTask)}
+                </div>
+            </div>
+        );
+    }
+
+    private renderAwaitForTask = (task: Task): ReactNode => {
+        return <div className={styles.AwaitForTask}>{task.id}</div>;
+    };
+
     private renderActions(): ReactNode[] {
         let actions = this.props.task.availableActions.concat('VIEW_DETAIL');
         return actions.map(this.renderAction);
@@ -142,6 +165,8 @@ export class InlineTaskUI extends Component<Props, State> {
                 return this.renderCompleteTask(index);
             case 'REPORT_BLOCKED':
                 return this.renderReportBlocked(index);
+            case 'ADD_AWAIT_FOR_TASK':
+                return this.renderAddAwaitForTask(index);
             case 'ASSIGN_OWNER':
                 return this.renderAssignOwner(index);
             case 'DELETE':
@@ -156,10 +181,12 @@ export class InlineTaskUI extends Component<Props, State> {
             <div key={index}>
                 <TooltipUI message={'Start'}>
                     <div
-                        className={`${styles.Action} ${styles.StartTaskIcon}`}
+                        className={`${styles.Action}`}
                         onClick={this.onStartTaskClick}
                     >
-                        <MaterialIconUI>play_arrow</MaterialIconUI>
+                        <div className={styles.StartTaskIcon}>
+                            <MaterialIconUI>play_arrow</MaterialIconUI>
+                        </div>
                     </div>
                 </TooltipUI>
             </div>
@@ -171,10 +198,31 @@ export class InlineTaskUI extends Component<Props, State> {
             <div key={index}>
                 <TooltipUI message={'Report Blocked'}>
                     <div
-                        className={`${styles.Action} ${styles.ReportTaskBlockedIcon}`}
+                        className={`${styles.Action}`}
                         onClick={this.onReportTaskBlockedClick}
                     >
-                        <MaterialIconUI>report</MaterialIconUI>
+                        <div className={styles.ReportTaskBlockedIcon}>
+                            <MaterialIconUI>priority_high</MaterialIconUI>
+                        </div>
+                    </div>
+                </TooltipUI>
+            </div>
+        );
+    }
+
+    private renderAddAwaitForTask(index: number) {
+        return (
+            <div key={index}>
+                <TooltipUI message={'Await'}>
+                    <div
+                        className={`${styles.Action}`}
+                        onClick={this.onAddAwaitForTaskClick}
+                    >
+                        <div className={`${styles.AddAwaitForTaskIcon}`}>
+                            <MaterialIconUI iconStyle={'round'}>
+                                move_up
+                            </MaterialIconUI>
+                        </div>
                     </div>
                 </TooltipUI>
             </div>
@@ -186,10 +234,12 @@ export class InlineTaskUI extends Component<Props, State> {
             <div key={index}>
                 <TooltipUI message={'Complete'}>
                     <div
-                        className={`${styles.Action} ${styles.CompleteTaskIcon}`}
+                        className={`${styles.Action}`}
                         onClick={this.onCompleteTaskClick}
                     >
-                        <MaterialIconUI>check_circle</MaterialIconUI>
+                        <div className={` ${styles.CompleteTaskIcon}`}>
+                            <MaterialIconUI>check</MaterialIconUI>
+                        </div>
                     </div>
                 </TooltipUI>
             </div>
@@ -201,10 +251,12 @@ export class InlineTaskUI extends Component<Props, State> {
             <div key={index}>
                 <TooltipUI message={'Delete'}>
                     <div
-                        className={`${styles.Action} ${styles.DeleteTaskIcon}`}
+                        className={`${styles.Action}`}
                         onClick={this.onDeleteTaskClick}
                     >
-                        <MaterialIconUI>remove_circle</MaterialIconUI>
+                        <div className={` ${styles.DeleteTaskIcon}`}>
+                            <MaterialIconUI>close</MaterialIconUI>
+                        </div>
                     </div>
                 </TooltipUI>
             </div>
@@ -220,18 +272,18 @@ export class InlineTaskUI extends Component<Props, State> {
             <div key={index} className={styles.AssignOwner}>
                 <TooltipUI message={name}>
                     <div
-                        className={`${styles.Action} ${
-                            styles.AssignOwnerIcon
-                        } ${classNames({
+                        className={`${styles.Action} ${classNames({
                             [styles.Active]: this.props.isSelectingOwner,
                         })}`}
                         onClick={this.onAssignOwnerClick}
                     >
-                        {owner ? (
-                            <UserProfileUI user={owner} />
-                        ) : (
-                            <MaterialIconUI>face</MaterialIconUI>
-                        )}
+                        <div className={` ${styles.AssignOwnerIcon}`}>
+                            {owner ? (
+                                <UserProfileUI user={owner} />
+                            ) : (
+                                <MaterialIconUI>face</MaterialIconUI>
+                            )}
+                        </div>
                     </div>
                 </TooltipUI>
             </div>
@@ -243,10 +295,12 @@ export class InlineTaskUI extends Component<Props, State> {
             <div key={index}>
                 <TooltipUI message={'Detail'}>
                     <div
-                        className={`${styles.Action} ${styles.ViewTaskDetailIcon}`}
+                        className={`${styles.Action}`}
                         onClick={this.onViewTaskDetailClick}
                     >
-                        <MaterialIconUI>settings</MaterialIconUI>
+                        <div className={styles.ViewTaskDetailIcon}>
+                            <MaterialIconUI>settings</MaterialIconUI>
+                        </div>
                     </div>
                 </TooltipUI>
             </div>
@@ -284,6 +338,10 @@ export class InlineTaskUI extends Component<Props, State> {
             },
             this.props.task.owner?.id,
         );
+    };
+
+    private onAddAwaitForTaskClick = (event: MouseEvent<HTMLDivElement>) => {
+        // TODO: allow user to pick awaiting task
     };
 
     private onGoalBlur = () => {

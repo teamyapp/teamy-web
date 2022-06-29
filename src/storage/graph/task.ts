@@ -15,12 +15,17 @@ availableActions.set('UPCOMING', ['START', 'DELETE', 'ASSIGN_OWNER']);
 availableActions.set('IN_PROGRESS', [
     'MARK_COMPLETE',
     'REPORT_BLOCKED',
-    'ASSIGN_OWNER',
+    'ADD_AWAIT_FOR_TASK',
     'DELETE',
+    'ASSIGN_OWNER',
 ]);
 availableActions.set('PAUSED', ['START', 'DELETE', 'ASSIGN_OWNER']);
 availableActions.set('BLOCKED', []);
-availableActions.set('AWAITING', ['DELETE', 'ASSIGN_OWNER']);
+availableActions.set('AWAITING', [
+    'ADD_AWAIT_FOR_TASK',
+    'DELETE',
+    'ASSIGN_OWNER',
+]);
 availableActions.set('DELIVERED', ['DELETE', 'ASSIGN_OWNER']);
 
 export class Task {
@@ -89,5 +94,17 @@ export class Task {
 
     public get availableActions(): TaskAction[] {
         return availableActions.get(this.taskState.status) || [];
+    }
+
+    public get awaitForTasks(): Task[] {
+        return this.appState.taskAwaitForRelations
+            .filter((relation) => relation.awaitingTaskId === this.taskState.id)
+            .map(
+                (relation) =>
+                    new Task(
+                        this.appState,
+                        this.appState.tasks[relation.awaitForTaskId],
+                    ),
+            );
     }
 }

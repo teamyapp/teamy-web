@@ -32,15 +32,15 @@ import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './Execution.component.module.scss';
 import { KanbanUI } from './shared/Kanban';
 import { TaskDetailModalComponent } from './shared/Modals/TaskDetailModal.component';
 import { PersonalStatusUI } from './shared/PersonalStatus';
 import { SelectUserListUI } from './shared/SelectUserList';
-import {GraphSource} from '@core/storage/graph/graphSource';
-import {LocalStore} from '@core/storage/syncer/localStore';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 const taskOwnersListVerticalOffset = 4;
 const taskOwnersListHorizontalOffset = 10;

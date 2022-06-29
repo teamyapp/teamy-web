@@ -155,7 +155,7 @@ export async function applyTeamMemberMutation(
             )!;
             currState.teamMembers = currState.teamMembers.concat(teamMember);
             const remoteUsers = await teamClient.getTeamMembers(
-              `${teamMember.teamId}`,
+                `${teamMember.teamId}`,
             );
             for (let user of remoteUsers) {
                 currState = mergeUser(currState, user);
@@ -168,9 +168,11 @@ export async function applyTeamMemberMutation(
                 mutation.payload,
             )!;
             currState.teamMembers = currState.teamMembers.filter(
-              (teamMember) =>
-                !(teamMember.teamId === deletedTeamMember.teamId &&
-                  teamMember.userId === deletedTeamMember.userId),
+                (teamMember) =>
+                    !(
+                        teamMember.teamId === deletedTeamMember.teamId &&
+                        teamMember.userId === deletedTeamMember.userId
+                    ),
             );
             if (deletedTeamMember.userId === currState.currUserId) {
                 currState.currUserId = undefined;
@@ -338,6 +340,14 @@ export function mergeTask(
 
     if (remoteTask.comments) {
         currAppState = mergeThread(currAppState, remoteTask.comments);
+    }
+
+    if (remoteTask.awaitForTasks) {
+        currAppState = replaceAndMergeAwaitFor(
+            currAppState,
+            remoteTaskId,
+            remoteTask.awaitForTasks,
+        );
     }
 
     currAppState.tasks[remoteTaskId] = localNewTask;
@@ -550,6 +560,23 @@ export function replaceAndMergeTeamTasks(
         mergeTask(currAppState, task);
     }
 
+    return currAppState;
+}
+
+function replaceAndMergeAwaitFor(
+    currAppState: AppState,
+    awaitingTaskId: number,
+    awaitForTasks: RemoteTask[],
+): AppState {
+    const remainingRelations = currAppState.taskAwaitForRelations.filter(
+        (relation) => relation.awaitingTaskId !== awaitingTaskId,
+    );
+    const newRelations = awaitForTasks.map(
+        (task) =>
+            new TaskAwaitForRelationState(awaitingTaskId, toInt(task.id)!),
+    );
+    currAppState.taskAwaitForRelations =
+        remainingRelations.concat(newRelations);
     return currAppState;
 }
 

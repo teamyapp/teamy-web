@@ -8,9 +8,9 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
 import { User } from '@core/entity/user';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './UserSettingsModal.component.module.scss';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;
