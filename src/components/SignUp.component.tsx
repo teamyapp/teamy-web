@@ -5,10 +5,10 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { absoluteRootPath } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './SignUp.component.module.scss';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
-import {GraphSource} from '@core/storage/graph/graphSource';
 
 export const signUpRedirectKey = 'signUpRedirect';
 

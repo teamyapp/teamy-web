@@ -16,9 +16,9 @@ import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
 import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
-import {GraphSource} from '@core/storage/graph/graphSource';
-import {LocalStore} from '@core/storage/syncer/localStore';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 export interface Deps {
     identityClient: IdentityClient;
@@ -51,14 +51,15 @@ export function initDeps(): Deps {
     const localStore = new LocalStore();
     const graphSource = new GraphSource(localStore);
     const stateSyncer = new StateSyncer(
-      config.servicesWebSocketEndpoint,
-      identityClient,
-      localStore,
-      taskClient,
-      messageClient,
-      teamClient,
-      userClient,
-      invitationClient);
+        config.servicesWebSocketEndpoint,
+        identityClient,
+        localStore,
+        taskClient,
+        messageClient,
+        teamClient,
+        userClient,
+        invitationClient,
+    );
     const router = createBrowserRouter();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
     const dragAndDropController = new DragAndDropController();

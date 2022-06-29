@@ -5,7 +5,7 @@ import { AppState } from '@core/storage/states/app.state';
 const appStateKey = 'appState';
 
 export class LocalStore {
-    private appState: AppState
+    private appState: AppState;
     private readonly stateChangeChan = chan<boolean>();
     private readonly stateChangeMulti = multi<boolean>(this.stateChangeChan);
 

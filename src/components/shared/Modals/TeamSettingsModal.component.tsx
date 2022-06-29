@@ -16,12 +16,12 @@ import { Invitation } from '@core/entity/invitation';
 import { InvitationStatus } from '@core/entity/invitationStatus';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { UserProfileUI } from '../UserProfile';
 import styles from './TeamSettingsModal.component.module.scss';
-import {LocalStore} from '@core/storage/syncer/localStore';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
-import {GraphSource} from '@core/storage/graph/graphSource';
 
 const invitationStatusOrder: Map<InvitationStatus, number> = new Map<
     InvitationStatus,

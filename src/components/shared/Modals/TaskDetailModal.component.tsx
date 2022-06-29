@@ -20,13 +20,13 @@ import { Deps } from '@core/dep/deps';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { FormatService } from '@core/service/format.service';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
 import styles from './TaskDetailModal.component.module.scss';
-import {LocalStore} from '@core/storage/syncer/localStore';
-import {GraphSource} from '@core/storage/graph/graphSource';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 const verticalMargin = 40;
 

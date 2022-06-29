@@ -25,6 +25,9 @@ import { TaskFilters } from '@core/entity/filters';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { UserActionEvent } from '@core/event/userAction';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { CloudComponent } from '../cloud/Cloud.component';
 import styles from './App.component.module.scss';
@@ -42,9 +45,6 @@ import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/Inviat
 import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
 import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
-import {GraphSource} from '@core/storage/graph/graphSource';
-import {LocalStore} from '@core/storage/syncer/localStore';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;

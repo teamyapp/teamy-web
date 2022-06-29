@@ -1,14 +1,16 @@
-import {TaskAction} from '@core/entity/taskAction';
-import {AppState} from '@core/storage/states/app.state';
-import {TaskState} from '@core/storage/states/task.state';
-import {TaskStatus} from '@core/storage/states/taskStatus';
+import { TaskAction } from '@core/entity/taskAction';
+import { AppState } from '@core/storage/states/app.state';
+import { TaskState } from '@core/storage/states/task.state';
+import { TaskStatus } from '@core/storage/states/taskStatus';
 
-import {Team} from './team';
-import {Thread} from './thread';
-import {User} from './user';
+import { Team } from './team';
+import { Thread } from './thread';
+import { User } from './user';
 
-const availableActions: Map<TaskStatus, TaskAction[]> = new Map<TaskStatus,
-    TaskAction[]>();
+const availableActions: Map<TaskStatus, TaskAction[]> = new Map<
+    TaskStatus,
+    TaskAction[]
+>();
 availableActions.set('UPCOMING', ['START', 'DELETE', 'ASSIGN_OWNER']);
 availableActions.set('IN_PROGRESS', [
     'MARK_COMPLETE',
@@ -19,12 +21,15 @@ availableActions.set('IN_PROGRESS', [
 ]);
 availableActions.set('PAUSED', ['START', 'DELETE', 'ASSIGN_OWNER']);
 availableActions.set('BLOCKED', []);
-availableActions.set('AWAITING', ['ADD_AWAIT_FOR_TASK', 'DELETE', 'ASSIGN_OWNER']);
+availableActions.set('AWAITING', [
+    'ADD_AWAIT_FOR_TASK',
+    'DELETE',
+    'ASSIGN_OWNER',
+]);
 availableActions.set('DELIVERED', ['DELETE', 'ASSIGN_OWNER']);
 
 export class Task {
-    constructor(private appState: AppState, private taskState: TaskState) {
-    }
+    constructor(private appState: AppState, private taskState: TaskState) {}
 
     public get id(): number {
         return this.taskState.id;
@@ -93,7 +98,13 @@ export class Task {
 
     public get awaitForTasks(): Task[] {
         return this.appState.taskAwaitForRelations
-            .filter(relation => relation.awaitingTaskId === this.taskState.id)
-            .map(relation => new Task(this.appState, this.appState.tasks[relation.awaitForTaskId]));
+            .filter((relation) => relation.awaitingTaskId === this.taskState.id)
+            .map(
+                (relation) =>
+                    new Task(
+                        this.appState,
+                        this.appState.tasks[relation.awaitForTaskId],
+                    ),
+            );
     }
 }

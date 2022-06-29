@@ -1,41 +1,38 @@
-import {RemoteInvitation} from '@core/client/entity/remoteInvitation';
-import {RemoteMessage} from '@core/client/entity/remoteMessage';
-import {RemoteTask} from '@core/client/entity/remoteTask';
-import {RemoteTeam} from '@core/client/entity/remoteTeam';
-import {RemoteThread} from '@core/client/entity/remoteThread';
-import {RemoteUser} from '@core/client/entity/remoteUser';
-import {TeamClient} from '@core/client/team.client';
-import {AppState} from '@core/storage/states/app.state';
-import {InvitationState} from '@core/storage/states/invitation.state';
-import {MessageState} from '@core/storage/states/message.state';
-import {toDate, toInt} from '@core/storage/states/parser';
-import {TaskState} from '@core/storage/states/task.state';
-import {
-    TaskAwaitForRelationState
-} from '@core/storage/states/taskAwaitForRelation.state';
-import {TeamState} from '@core/storage/states/team.state';
-import {TeamMemberState} from '@core/storage/states/teamMember.state';
-import {UserState} from '@core/storage/states/user.state';
+import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
+import { RemoteMessage } from '@core/client/entity/remoteMessage';
+import { RemoteTask } from '@core/client/entity/remoteTask';
+import { RemoteTeam } from '@core/client/entity/remoteTeam';
+import { RemoteThread } from '@core/client/entity/remoteThread';
+import { RemoteUser } from '@core/client/entity/remoteUser';
+import { TeamClient } from '@core/client/team.client';
+import { AppState } from '@core/storage/states/app.state';
+import { InvitationState } from '@core/storage/states/invitation.state';
+import { MessageState } from '@core/storage/states/message.state';
+import { toDate, toInt } from '@core/storage/states/parser';
+import { TaskState } from '@core/storage/states/task.state';
+import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRelation.state';
+import { TeamState } from '@core/storage/states/team.state';
+import { TeamMemberState } from '@core/storage/states/teamMember.state';
+import { UserState } from '@core/storage/states/user.state';
 
-import {Mutation} from './mutation';
+import { Mutation } from './mutation';
 
 class DeleteTaskAwaitForRelationPayload {
-    constructor(public awaitingTaskId: number, public awaitForTaskId: number) {
-    }
+    constructor(public awaitingTaskId: number, public awaitForTaskId: number) {}
 
     public static fromMutationPayload(
-      json: any,
+        json: any,
     ): DeleteTaskAwaitForRelationPayload {
         return new DeleteTaskAwaitForRelationPayload(
-          json.AwaitingTaskID,
-          json.AwaitForTaskID,
+            json.AwaitingTaskID,
+            json.AwaitForTaskID,
         );
     }
 }
 
 export function applyTaskMutation(
-  currState: AppState,
-  mutation: Mutation,
+    currState: AppState,
+    mutation: Mutation,
 ): AppState {
     switch (mutation.mutationType) {
         case 'Create':
@@ -55,14 +52,14 @@ export function applyTaskMutation(
 }
 
 export function applyInvitationMutation(
-  currState: AppState,
-  mutation: Mutation,
+    currState: AppState,
+    mutation: Mutation,
 ): AppState {
     switch (mutation.mutationType) {
         case 'Create':
         case 'Update': {
             const invitation = InvitationState.fromMutationPayload(
-              mutation.payload,
+                mutation.payload,
             );
             currState.invitations[invitation.id] = invitation;
             break;
@@ -78,8 +75,8 @@ export function applyInvitationMutation(
 }
 
 export function applyMessageMutation(
-  currState: AppState,
-  mutation: Mutation,
+    currState: AppState,
+    mutation: Mutation,
 ): AppState {
     switch (mutation.mutationType) {
         case 'Create':
@@ -99,8 +96,8 @@ export function applyMessageMutation(
 }
 
 export function applyTeamMutation(
-  currState: AppState,
-  mutation: Mutation,
+    currState: AppState,
+    mutation: Mutation,
 ): AppState {
     switch (mutation.mutationType) {
         case 'Update': {
@@ -111,7 +108,7 @@ export function applyTeamMutation(
         case 'Delete': {
             const teamId = mutation.payload;
             currState.teamMembers = currState.teamMembers.filter(
-              (teamMember) => teamMember.teamId !== teamId,
+                (teamMember) => teamMember.teamId !== teamId,
             );
             currState = deleteTeamTasks(currState, teamId);
             currState = deleteInvitations(currState, teamId);
@@ -124,8 +121,8 @@ export function applyTeamMutation(
 }
 
 export function applyUserMutation(
-  currState: AppState,
-  mutation: Mutation,
+    currState: AppState,
+    mutation: Mutation,
 ): AppState {
     switch (mutation.mutationType) {
         case 'Update': {
@@ -136,7 +133,7 @@ export function applyUserMutation(
         case 'Delete': {
             const userId = mutation.payload;
             currState.teamMembers = currState.teamMembers.filter(
-              (teamMember) => teamMember.userId !== userId,
+                (teamMember) => teamMember.userId !== userId,
             );
             delete currState.users[userId];
             break;
@@ -147,18 +144,18 @@ export function applyUserMutation(
 }
 
 export async function applyTeamMemberMutation(
-  currState: AppState,
-  mutation: Mutation,
-  teamClient: TeamClient,
+    currState: AppState,
+    mutation: Mutation,
+    teamClient: TeamClient,
 ): Promise<AppState> {
     switch (mutation.mutationType) {
         case 'Create': {
             const teamMember = TeamMemberState.fromMutationPayload(
-              mutation.payload,
+                mutation.payload,
             )!;
             currState.teamMembers = currState.teamMembers.concat(teamMember);
             const remoteUsers = await teamClient.getTeamMembers(
-              `${teamMember.teamId}`,
+                `${teamMember.teamId}`,
             );
             for (let user of remoteUsers) {
                 currState = mergeUser(currState, user);
@@ -168,12 +165,14 @@ export async function applyTeamMemberMutation(
         }
         case 'Delete': {
             const deletedTeamMember = TeamMemberState.fromMutationPayload(
-              mutation.payload,
+                mutation.payload,
             )!;
             currState.teamMembers = currState.teamMembers.filter(
-              (teamMember) =>
-                !(teamMember.teamId === deletedTeamMember.teamId &&
-                  teamMember.userId === deletedTeamMember.userId),
+                (teamMember) =>
+                    !(
+                        teamMember.teamId === deletedTeamMember.teamId &&
+                        teamMember.userId === deletedTeamMember.userId
+                    ),
             );
             if (deletedTeamMember.userId === currState.currUserId) {
                 currState.currUserId = undefined;
@@ -187,30 +186,30 @@ export async function applyTeamMemberMutation(
 }
 
 export function applyTaskAwaitingForRelationMutation(
-  currState: AppState,
-  mutation: Mutation,
+    currState: AppState,
+    mutation: Mutation,
 ): AppState {
     switch (mutation.mutationType) {
         case 'Create': {
             const relation = TaskAwaitForRelationState.fromMutationPayload(
-              mutation.payload,
+                mutation.payload,
             );
             currState.taskAwaitForRelations =
-              currState.taskAwaitForRelations.concat(relation);
+                currState.taskAwaitForRelations.concat(relation);
             break;
         }
         case 'Delete': {
             const deleteInput =
-              DeleteTaskAwaitForRelationPayload.fromMutationPayload(
-                mutation.payload,
-              );
+                DeleteTaskAwaitForRelationPayload.fromMutationPayload(
+                    mutation.payload,
+                );
             currState.taskAwaitForRelations =
-              currState.taskAwaitForRelations.filter(
-                (relation) =>
-                  relation.awaitingTaskId !==
-                  deleteInput.awaitingTaskId &&
-                  relation.awaitForTaskId !== deleteInput.awaitForTaskId,
-              );
+                currState.taskAwaitForRelations.filter(
+                    (relation) =>
+                        relation.awaitingTaskId !==
+                            deleteInput.awaitingTaskId &&
+                        relation.awaitForTaskId !== deleteInput.awaitForTaskId,
+                );
         }
     }
 
@@ -218,8 +217,8 @@ export function applyTaskAwaitingForRelationMutation(
 }
 
 export function deleteInvitations(
-  currState: AppState,
-  teamId: number,
+    currState: AppState,
+    teamId: number,
 ): AppState {
     const newInvitations: { [invitationId: number]: InvitationState } = {};
     for (let invitationId in currState.invitations) {
@@ -249,8 +248,8 @@ export function deleteTeamTasks(currState: AppState, teamId: number): AppState {
 }
 
 export function mergeUser(
-  currAppState: AppState,
-  remoteUser: RemoteUser,
+    currAppState: AppState,
+    remoteUser: RemoteUser,
 ): AppState {
     const remoteUserId = toInt(remoteUser.id)!;
     const localOldUser: UserState = currAppState.users[remoteUserId] || {};
@@ -259,24 +258,24 @@ export function mergeUser(
         firstName: remoteUser.firstName || localOldUser.firstName,
         lastName: remoteUser.lastName || localOldUser.lastName,
         profileUrl:
-          remoteUser.profileUrl === undefined
-            ? localOldUser.profileUrl
-            : remoteUser.profileUrl,
+            remoteUser.profileUrl === undefined
+                ? localOldUser.profileUrl
+                : remoteUser.profileUrl,
         createdAt: toDate(remoteUser.createdAt) || localOldUser.createdAt,
         updatedAt:
-          remoteUser.updatedAt === undefined
-            ? localOldUser.updatedAt
-            : toDate(remoteUser.updatedAt),
+            remoteUser.updatedAt === undefined
+                ? localOldUser.updatedAt
+                : toDate(remoteUser.updatedAt),
     };
 
     const userTeamMembers = remoteUser.teams?.map(
-      (team) => new TeamMemberState(toInt(team.id)!, remoteUserId),
+        (team) => new TeamMemberState(toInt(team.id)!, remoteUserId),
     );
     if (userTeamMembers) {
         currAppState = replaceUserTeams(
-          currAppState,
-          remoteUserId,
-          userTeamMembers,
+            currAppState,
+            remoteUserId,
+            userTeamMembers,
         );
     }
 
@@ -289,8 +288,8 @@ export function mergeUser(
 }
 
 export function mergeTask(
-  currAppState: AppState,
-  remoteTask: RemoteTask,
+    currAppState: AppState,
+    remoteTask: RemoteTask,
 ): AppState {
     const remoteTaskId = toInt(remoteTask.id)!;
     const localOldTask = currAppState.tasks[remoteTaskId] || {};
@@ -298,33 +297,33 @@ export function mergeTask(
         id: remoteTaskId,
         goal: remoteTask.goal || localOldTask.goal,
         context:
-          remoteTask.context === undefined
-            ? localOldTask.context
-            : remoteTask.context,
+            remoteTask.context === undefined
+                ? localOldTask.context
+                : remoteTask.context,
         creatorUserId:
-          toInt(remoteTask.creator?.id) || localOldTask.creatorUserId,
+            toInt(remoteTask.creator?.id) || localOldTask.creatorUserId,
         ownerUserId:
-          remoteTask.owner === undefined
-            ? localOldTask.ownerUserId
-            : toInt(remoteTask.owner?.id),
+            remoteTask.owner === undefined
+                ? localOldTask.ownerUserId
+                : toInt(remoteTask.owner?.id),
         owningTeamId:
-          toInt(remoteTask.owningTeam?.id) || localOldTask.owningTeamId,
+            toInt(remoteTask.owningTeam?.id) || localOldTask.owningTeamId,
         status: remoteTask.status || localOldTask?.status,
         commentsThreadId:
-          toInt(remoteTask.comments?.id) || localOldTask.commentsThreadId,
+            toInt(remoteTask.comments?.id) || localOldTask.commentsThreadId,
         createdAt: toDate(remoteTask.createdAt) || localOldTask.createdAt,
         updatedAt:
-          remoteTask.updatedAt === undefined
-            ? localOldTask.updatedAt
-            : toDate(remoteTask.updatedAt),
+            remoteTask.updatedAt === undefined
+                ? localOldTask.updatedAt
+                : toDate(remoteTask.updatedAt),
         dueAt:
-          remoteTask.dueAt === undefined
-            ? localOldTask.dueAt
-            : toDate(remoteTask.dueAt),
+            remoteTask.dueAt === undefined
+                ? localOldTask.dueAt
+                : toDate(remoteTask.dueAt),
         effort:
-          remoteTask.effort === undefined
-            ? localOldTask.effort
-            : remoteTask.effort,
+            remoteTask.effort === undefined
+                ? localOldTask.effort
+                : remoteTask.effort,
     };
 
     if (remoteTask.creator) {
@@ -344,7 +343,11 @@ export function mergeTask(
     }
 
     if (remoteTask.awaitForTasks) {
-        currAppState = replaceAndMergeAwaitFor(currAppState, remoteTaskId, remoteTask.awaitForTasks);
+        currAppState = replaceAndMergeAwaitFor(
+            currAppState,
+            remoteTaskId,
+            remoteTask.awaitForTasks,
+        );
     }
 
     currAppState.tasks[remoteTaskId] = localNewTask;
@@ -352,8 +355,8 @@ export function mergeTask(
 }
 
 export function mergeMessage(
-  currAppState: AppState,
-  remoteMessage: RemoteMessage,
+    currAppState: AppState,
+    remoteMessage: RemoteMessage,
 ): AppState {
     const remoteMessageId = toInt(remoteMessage.id)!;
     const localOldMessage = currAppState.messages[remoteMessageId] || {};
@@ -361,15 +364,15 @@ export function mergeMessage(
         id: remoteMessageId,
         body: remoteMessage.body || localOldMessage.body,
         authorUserId:
-          toInt(remoteMessage.author?.id) || localOldMessage.authorUserId,
+            toInt(remoteMessage.author?.id) || localOldMessage.authorUserId,
         threadId: toInt(remoteMessage.thread?.id) || localOldMessage.threadId,
         createdAt: remoteMessage.createdAt
-          ? new Date(remoteMessage.createdAt)
-          : localOldMessage.createdAt,
+            ? new Date(remoteMessage.createdAt)
+            : localOldMessage.createdAt,
         updatedAt:
-          remoteMessage.updatedAt === undefined
-            ? localOldMessage.updatedAt
-            : new Date(remoteMessage.updatedAt),
+            remoteMessage.updatedAt === undefined
+                ? localOldMessage.updatedAt
+                : new Date(remoteMessage.updatedAt),
     };
 
     if (remoteMessage.author) {
@@ -385,8 +388,8 @@ export function mergeMessage(
 }
 
 export function mergeTeam(
-  currAppState: AppState,
-  remoteTeam: RemoteTeam,
+    currAppState: AppState,
+    remoteTeam: RemoteTeam,
 ): AppState {
     const remoteTeamId = toInt(remoteTeam.id)!;
     const localOldTeam = currAppState.teams[remoteTeamId] || {};
@@ -394,14 +397,14 @@ export function mergeTeam(
         id: remoteTeamId,
         name: remoteTeam.name || localOldTeam.name,
         iconUrl:
-          remoteTeam.iconUrl === undefined
-            ? localOldTeam.iconUrl
-            : remoteTeam.iconUrl,
+            remoteTeam.iconUrl === undefined
+                ? localOldTeam.iconUrl
+                : remoteTeam.iconUrl,
         createdAt: remoteTeam.createdAt
-          ? new Date(remoteTeam.createdAt)
-          : localOldTeam.createdAt,
+            ? new Date(remoteTeam.createdAt)
+            : localOldTeam.createdAt,
         creatorUserId:
-          toInt(remoteTeam.creator?.id) || localOldTeam.creatorUserId,
+            toInt(remoteTeam.creator?.id) || localOldTeam.creatorUserId,
         ownerUserId: toInt(remoteTeam.owner?.id) || localOldTeam.ownerUserId,
     };
 
@@ -414,12 +417,12 @@ export function mergeTeam(
             currAppState = mergeUser(currAppState, member);
         });
         const teamMembers = remoteTeam.members.map(
-          (member) => new TeamMemberState(remoteTeamId, toInt(member.id)!),
+            (member) => new TeamMemberState(remoteTeamId, toInt(member.id)!),
         );
         currAppState = replaceTeamMembers(
-          currAppState,
-          remoteTeamId,
-          teamMembers,
+            currAppState,
+            remoteTeamId,
+            teamMembers,
         );
     }
 
@@ -434,46 +437,46 @@ export function mergeTeam(
 }
 
 export function mergeInvitation(
-  currAppState: AppState,
-  remoteInvitation: RemoteInvitation,
+    currAppState: AppState,
+    remoteInvitation: RemoteInvitation,
 ): AppState {
     const remoteInvitationId = toInt(remoteInvitation.id)!;
     const localOldInvitation =
-      currAppState.invitations[remoteInvitationId] || {};
+        currAppState.invitations[remoteInvitationId] || {};
     const localNewInvitation: InvitationState = {
         id: remoteInvitationId,
         senderUserId:
-          toInt(remoteInvitation.sender?.id) ||
-          localOldInvitation.senderUserId,
+            toInt(remoteInvitation.sender?.id) ||
+            localOldInvitation.senderUserId,
         receiverFirstName:
-          remoteInvitation.receiverFirstName === undefined
-            ? localOldInvitation.receiverFirstName
-            : remoteInvitation.receiverFirstName,
+            remoteInvitation.receiverFirstName === undefined
+                ? localOldInvitation.receiverFirstName
+                : remoteInvitation.receiverFirstName,
         receiverLastName:
-          remoteInvitation.receiverLastName === undefined
-            ? localOldInvitation.receiverLastName
-            : remoteInvitation.receiverLastName,
+            remoteInvitation.receiverLastName === undefined
+                ? localOldInvitation.receiverLastName
+                : remoteInvitation.receiverLastName,
         receiverEmail:
-          remoteInvitation.receiverEmail === undefined
-            ? localOldInvitation.receiverEmail
-            : remoteInvitation.receiverEmail,
+            remoteInvitation.receiverEmail === undefined
+                ? localOldInvitation.receiverEmail
+                : remoteInvitation.receiverEmail,
         receiverUserId:
-          remoteInvitation.receiver === undefined
-            ? localOldInvitation.receiverUserId
-            : toInt(remoteInvitation.receiver?.id),
+            remoteInvitation.receiver === undefined
+                ? localOldInvitation.receiverUserId
+                : toInt(remoteInvitation.receiver?.id),
         teamId:
-          toInt(remoteInvitation.joiningTeam?.id) ||
-          localOldInvitation.teamId,
+            toInt(remoteInvitation.joiningTeam?.id) ||
+            localOldInvitation.teamId,
         expireAt: remoteInvitation.expireAt
-          ? toDate(remoteInvitation.expireAt)!
-          : localOldInvitation.expireAt,
+            ? toDate(remoteInvitation.expireAt)!
+            : localOldInvitation.expireAt,
         createdAt: remoteInvitation.createdAt
-          ? toDate(remoteInvitation.createdAt)!
-          : localOldInvitation.createdAt,
+            ? toDate(remoteInvitation.createdAt)!
+            : localOldInvitation.createdAt,
         updatedAt:
-          remoteInvitation.updatedAt === undefined
-            ? localOldInvitation.updatedAt
-            : toDate(remoteInvitation.updatedAt),
+            remoteInvitation.updatedAt === undefined
+                ? localOldInvitation.updatedAt
+                : toDate(remoteInvitation.updatedAt),
         status: remoteInvitation.status || localOldInvitation.status,
         code: remoteInvitation.code || localOldInvitation.code,
     };
@@ -495,8 +498,8 @@ export function mergeInvitation(
 }
 
 export function mergeThread(
-  currAppState: AppState,
-  remoteThread: RemoteThread,
+    currAppState: AppState,
+    remoteThread: RemoteThread,
 ): AppState {
     remoteThread.messages?.forEach((message) => {
         currAppState = mergeMessage(currAppState, message);
@@ -505,33 +508,33 @@ export function mergeThread(
 }
 
 export function replaceUserTeams(
-  currAppState: AppState,
-  userId: number,
-  newTeamMembers: TeamMemberState[],
+    currAppState: AppState,
+    userId: number,
+    newTeamMembers: TeamMemberState[],
 ): AppState {
     let teamMembers = currAppState.teamMembers.filter(
-      (teamMember) => teamMember.userId !== userId,
+        (teamMember) => teamMember.userId !== userId,
     );
     currAppState.teamMembers = teamMembers.concat(newTeamMembers);
     return currAppState;
 }
 
 export function replaceTeamMembers(
-  currAppState: AppState,
-  teamId: number,
-  newTeamMembers: TeamMemberState[],
+    currAppState: AppState,
+    teamId: number,
+    newTeamMembers: TeamMemberState[],
 ): AppState {
     let teamMembers = currAppState.teamMembers.filter(
-      (teamMember) => teamMember.teamId !== teamId,
+        (teamMember) => teamMember.teamId !== teamId,
     );
     currAppState.teamMembers = teamMembers.concat(newTeamMembers);
     return currAppState;
 }
 
 export function replaceAndMergeTeamTasks(
-  currAppState: AppState,
-  currTeamId: number,
-  newTasks: RemoteTask[],
+    currAppState: AppState,
+    currTeamId: number,
+    newTasks: RemoteTask[],
 ): AppState {
     const tasks: { [taskId: number]: TaskState } = {};
     for (const taskId in currAppState.tasks) {
@@ -561,22 +564,26 @@ export function replaceAndMergeTeamTasks(
 }
 
 function replaceAndMergeAwaitFor(
-  currAppState: AppState,
-  awaitingTaskId: number,
-  awaitForTasks: RemoteTask[],
+    currAppState: AppState,
+    awaitingTaskId: number,
+    awaitForTasks: RemoteTask[],
 ): AppState {
-    const remainingRelations = currAppState.taskAwaitForRelations
-      .filter(relation => relation.awaitingTaskId !== awaitingTaskId);
-    const newRelations = awaitForTasks
-      .map(task => new TaskAwaitForRelationState(awaitingTaskId, toInt(task.id)!));
-    currAppState.taskAwaitForRelations = remainingRelations.concat(newRelations);
+    const remainingRelations = currAppState.taskAwaitForRelations.filter(
+        (relation) => relation.awaitingTaskId !== awaitingTaskId,
+    );
+    const newRelations = awaitForTasks.map(
+        (task) =>
+            new TaskAwaitForRelationState(awaitingTaskId, toInt(task.id)!),
+    );
+    currAppState.taskAwaitForRelations =
+        remainingRelations.concat(newRelations);
     return currAppState;
 }
 
 export function replaceTeamInvitations(
-  currAppState: AppState,
-  teamId: number,
-  newInvitations: RemoteInvitation[],
+    currAppState: AppState,
+    teamId: number,
+    newInvitations: RemoteInvitation[],
 ): AppState {
     const invitations: { [invitationId: number]: InvitationState } = {};
     for (let invitationId in currAppState.invitations) {
