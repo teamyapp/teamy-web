@@ -7,19 +7,19 @@ import React, {
     ReactNode,
 } from 'react';
 
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { NamedValueUI } from '@lib/ui/NamedValue';
-import { TooltipUI } from '@lib/ui/Tooltip';
-import { BoundingBoxFinder, Rect } from '@lib/ui/position';
+import {MaterialIconUI} from '@lib/ui/MaterialIcon';
+import {NamedValueUI} from '@lib/ui/NamedValue';
+import {TooltipUI} from '@lib/ui/Tooltip';
+import {BoundingBoxFinder, Rect} from '@lib/ui/position';
 
-import { taskGoalLengthLimit } from '@core/config/config';
-import { UpdateTaskInput } from '@core/entity/input';
-import { Task } from '@core/entity/task';
-import { TaskAction } from '@core/entity/taskAction';
-import { FormatService } from '@core/service/format.service';
+import {taskGoalLengthLimit} from '@core/config/config';
+import {UpdateTaskInput} from '@core/entity/input';
+import {Task} from '@core/entity/task';
+import {TaskAction} from '@core/entity/taskAction';
+import {FormatService} from '@core/service/format.service';
 
 import styles from './InlineTask.module.scss';
-import { UserProfileUI } from './UserProfile';
+import {UserProfileUI} from './UserProfile';
 
 interface Props {
     task: Task;
@@ -33,10 +33,10 @@ interface Props {
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
+      taskId: number,
+      updateTaskInput: UpdateTaskInput,
+      findAlignTargetBoundBox: BoundingBoxFinder,
+      selectedOwnerId?: number,
     ) => void;
 }
 
@@ -55,78 +55,102 @@ export class InlineTaskUI extends Component<Props, State> {
 
     public render() {
         return (
-            <div className={styles.Task}>
-                <div className={styles.LeftSection}>
-                    <div className={styles.TopRow}>
+          <div className={styles.Task}>
+              <div className={styles.LeftSection}>
+                  <div className={styles.TopRow}>
                         <span className={`${styles.Attribute} ${styles.Id}`}>
-                            #{this.props.task.id}
+                            {this.props.task.id}
                         </span>
-                    </div>
-                    {this.renderGoal()}
-                    <div className={styles.BottomRow}>{this.renderDueAt()}</div>
-                    <div className={styles.Attributes}>
-                        {this.renderEffort()}
-                    </div>
-                </div>
-                <div className={styles.ActionsSection}>
-                    {this.renderActions()}
-                </div>
-            </div>
+                  </div>
+                  {this.renderGoal()}
+                  <div className={styles.BottomRow}>{this.renderDueAt()}</div>
+                  {/*<div className={styles.Attributes}>*/}
+                  {/*    {this.renderEffort()}*/}
+                  {/*</div>*/}
+                  <div className={styles.AwaitFor}>
+                      {this.props.task.awaitForTasks?.length > 0 &&
+                        this.renderAwaitForTasks()}
+                  </div>
+              </div>
+              <div className={styles.ActionsSection}>
+                  {this.renderActions()}
+              </div>
+          </div>
         );
     }
 
     private renderGoal(): ReactNode {
         return this.state.isEditingGoal ? (
-            <textarea
-                autoFocus
-                maxLength={taskGoalLengthLimit}
-                className={styles.GoalTextField}
-                value={this.state.updatedGoal || ''}
-                onChange={this.onGoalChange}
-                onKeyDown={this.onGoalKeyDown}
-                onBlur={this.onGoalBlur}
-            />
+          <textarea
+            autoFocus
+            maxLength={taskGoalLengthLimit}
+            className={styles.GoalTextField}
+            value={this.state.updatedGoal || ''}
+            onChange={this.onGoalChange}
+            onKeyDown={this.onGoalKeyDown}
+            onBlur={this.onGoalBlur}
+          />
         ) : (
-            <div className={styles.Goal} onDoubleClick={this.onGoalDoubleClick}>
-                {this.props.task.goal || (
-                    <span className={styles.Placeholder}>
+          <div className={styles.Goal} onDoubleClick={this.onGoalDoubleClick}>
+              {this.props.task.goal || (
+                <span className={styles.Placeholder}>
                         Set a goal for me
                     </span>
-                )}
-            </div>
+              )}
+          </div>
         );
     }
 
     private renderDueAt = () => {
-        const { dueAt } = this.props.task;
+        const {dueAt} = this.props.task;
         const endOfDueAt = byTheEndOf(dueAt);
         const now = new Date();
         return (
-            dueAt &&
-            endOfDueAt && (
-                <div
-                    className={`${styles.DueAt} ${classNames({
-                        [styles.PastDue]: endOfDueAt.getTime() < now.getTime(),
-                    })}`}
-                >
-                    <MaterialIconUI>alarm</MaterialIconUI>
-                    <div className={styles.Time}>
-                        {FormatService.dueDate(dueAt)}
-                    </div>
+          dueAt &&
+          endOfDueAt && (
+            <div
+              className={`${styles.DueAt} ${classNames({
+                  [styles.PastDue]: endOfDueAt.getTime() < now.getTime(),
+              })}`}
+            >
+                <MaterialIconUI>alarm</MaterialIconUI>
+                <div className={styles.Time}>
+                    {FormatService.dueDate(dueAt)}
                 </div>
-            )
+            </div>
+          )
         );
     };
 
     private renderEffort = () => {
-        const { effort } = this.props.task;
+        const {effort} = this.props.task;
         return (
-            effort && (
-                <span className={styles.EffortAttribute}>
-                    <NamedValueUI name={'Effort'} value={`${effort}`} />
+          effort && (
+            <span className={styles.EffortAttribute}>
+                    <NamedValueUI name={'Effort'} value={`${effort}`}/>
                 </span>
-            )
+          )
         );
+    };
+
+    private renderAwaitForTasks(): ReactNode {
+        return (
+          <div className={styles.AwaitForTasksSection}>
+              <div className={styles.AwaitForIcon}>
+                  <MaterialIconUI iconStyle={'round'}>
+                      hourglass_top
+                  </MaterialIconUI>
+              </div>
+              <div className={styles.AwaitForTasks}>
+
+                  {this.props.task.awaitForTasks.map(this.renderAwaitForTask)}
+              </div>
+          </div>
+        );
+    }
+
+    private renderAwaitForTask = (task: Task): ReactNode => {
+        return <div className={styles.AwaitForTask}>{task.id}</div>;
     };
 
     private renderActions(): ReactNode[] {
@@ -142,6 +166,8 @@ export class InlineTaskUI extends Component<Props, State> {
                 return this.renderCompleteTask(index);
             case 'REPORT_BLOCKED':
                 return this.renderReportBlocked(index);
+            case 'ADD_AWAIT_FOR_TASK':
+                return this.renderAddAwaitForTask(index);
             case 'ASSIGN_OWNER':
                 return this.renderAssignOwner(index);
             case 'DELETE':
@@ -153,103 +179,132 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private renderStartTask(index: number): ReactNode {
         return (
-            <div key={index}>
-                <TooltipUI message={'Start'}>
-                    <div
-                        className={`${styles.Action} ${styles.StartTaskIcon}`}
-                        onClick={this.onStartTaskClick}
-                    >
-                        <MaterialIconUI>play_arrow</MaterialIconUI>
-                    </div>
-                </TooltipUI>
-            </div>
+          <div key={index}>
+              <TooltipUI message={'Start'}>
+                  <div
+                    className={`${styles.Action}`}
+                    onClick={this.onStartTaskClick}
+                  >
+                      <div className={styles.StartTaskIcon}>
+                          <MaterialIconUI>play_arrow</MaterialIconUI>
+                      </div>
+                  </div>
+              </TooltipUI>
+          </div>
         );
     }
 
     private renderReportBlocked(index: number): ReactNode {
         return (
-            <div key={index}>
-                <TooltipUI message={'Report Blocked'}>
-                    <div
-                        className={`${styles.Action} ${styles.ReportTaskBlockedIcon}`}
-                        onClick={this.onReportTaskBlockedClick}
-                    >
-                        <MaterialIconUI>report</MaterialIconUI>
-                    </div>
-                </TooltipUI>
-            </div>
+          <div key={index}>
+              <TooltipUI message={'Report Blocked'}>
+                  <div
+                    className={`${styles.Action}`}
+                    onClick={this.onReportTaskBlockedClick}
+                  >
+                      <div className={styles.ReportTaskBlockedIcon}>
+                          <MaterialIconUI>priority_high</MaterialIconUI>
+                      </div>
+                  </div>
+              </TooltipUI>
+          </div>
+        );
+    }
+
+    private renderAddAwaitForTask(index: number) {
+        return (
+          <div key={index}>
+              <TooltipUI message={'Await'}>
+                  <div
+                    className={`${styles.Action}`}
+                    onClick={this.onAddAwaitForTaskClick}
+                  >
+                      <div className={`${styles.AddAwaitForTaskIcon}`}>
+                          <MaterialIconUI iconStyle={'round'}>
+                              move_up
+                          </MaterialIconUI>
+                      </div>
+                  </div>
+              </TooltipUI>
+          </div>
         );
     }
 
     private renderCompleteTask(index: number): ReactNode {
         return (
-            <div key={index}>
-                <TooltipUI message={'Complete'}>
-                    <div
-                        className={`${styles.Action} ${styles.CompleteTaskIcon}`}
-                        onClick={this.onCompleteTaskClick}
-                    >
-                        <MaterialIconUI>check_circle</MaterialIconUI>
-                    </div>
-                </TooltipUI>
-            </div>
+          <div key={index}>
+              <TooltipUI message={'Complete'}>
+                  <div
+                    className={`${styles.Action}`}
+                    onClick={this.onCompleteTaskClick}
+                  >
+                      <div className={` ${styles.CompleteTaskIcon}`}>
+                          <MaterialIconUI>check</MaterialIconUI>
+                      </div>
+                  </div>
+              </TooltipUI>
+          </div>
         );
     }
 
     private renderDeleteTask(index: number): ReactNode {
         return (
-            <div key={index}>
-                <TooltipUI message={'Delete'}>
-                    <div
-                        className={`${styles.Action} ${styles.DeleteTaskIcon}`}
-                        onClick={this.onDeleteTaskClick}
-                    >
-                        <MaterialIconUI>remove_circle</MaterialIconUI>
-                    </div>
-                </TooltipUI>
-            </div>
+          <div key={index}>
+              <TooltipUI message={'Delete'}>
+                  <div
+                    className={`${styles.Action}`}
+                    onClick={this.onDeleteTaskClick}
+                  >
+                      <div className={` ${styles.DeleteTaskIcon}`}>
+                          <MaterialIconUI>close</MaterialIconUI>
+                      </div>
+                  </div>
+              </TooltipUI>
+          </div>
         );
     }
 
     private renderAssignOwner(index: number): ReactNode {
         const owner = this.props.task.owner;
         const name = owner
-            ? FormatService.getShortName(owner.firstName, owner.lastName)
-            : 'Unassigned';
+          ? FormatService.getShortName(owner.firstName, owner.lastName)
+          : 'Unassigned';
         return (
-            <div key={index} className={styles.AssignOwner}>
-                <TooltipUI message={name}>
-                    <div
-                        className={`${styles.Action} ${
-                            styles.AssignOwnerIcon
-                        } ${classNames({
-                            [styles.Active]: this.props.isSelectingOwner,
-                        })}`}
-                        onClick={this.onAssignOwnerClick}
-                    >
-                        {owner ? (
-                            <UserProfileUI user={owner} />
-                        ) : (
-                            <MaterialIconUI>face</MaterialIconUI>
-                        )}
-                    </div>
-                </TooltipUI>
-            </div>
+          <div key={index} className={styles.AssignOwner}>
+              <TooltipUI message={name}>
+                  <div
+                    className={`${styles.Action} ${classNames({
+                        [styles.Active]: this.props.isSelectingOwner,
+                    })}`}
+                    onClick={this.onAssignOwnerClick}
+                  >
+                      <div className={` ${styles.AssignOwnerIcon}`}>
+                      {owner ? (
+                        <UserProfileUI user={owner}/>
+                      ) : (
+                        <MaterialIconUI>face</MaterialIconUI>
+                      )}
+                      </div>
+                  </div>
+              </TooltipUI>
+          </div>
         );
     }
 
     private renderViewTaskDetail(index: number): ReactNode {
         return (
-            <div key={index}>
-                <TooltipUI message={'Detail'}>
-                    <div
-                        className={`${styles.Action} ${styles.ViewTaskDetailIcon}`}
-                        onClick={this.onViewTaskDetailClick}
-                    >
-                        <MaterialIconUI>settings</MaterialIconUI>
-                    </div>
-                </TooltipUI>
-            </div>
+          <div key={index}>
+              <TooltipUI message={'Detail'}>
+                  <div
+                    className={`${styles.Action}`}
+                    onClick={this.onViewTaskDetailClick}
+                  >
+                      <div className={styles.ViewTaskDetailIcon}>
+                          <MaterialIconUI>settings</MaterialIconUI>
+                      </div>
+                  </div>
+              </TooltipUI>
+          </div>
         );
     }
 
@@ -276,14 +331,18 @@ export class InlineTaskUI extends Component<Props, State> {
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
         this.props.onShowPotentialTaskOwners?.call(
-            null,
-            this.props.task.id,
-            this.getUpdatedTask(),
-            (): Rect => {
-                return element.getBoundingClientRect();
-            },
-            this.props.task.owner?.id,
+          null,
+          this.props.task.id,
+          this.getUpdatedTask(),
+          (): Rect => {
+              return element.getBoundingClientRect();
+          },
+          this.props.task.owner?.id,
         );
+    };
+
+    private onAddAwaitForTaskClick = (event: MouseEvent<HTMLDivElement>) => {
+        // TODO: allow user to pick awaiting task
     };
 
     private onGoalBlur = () => {
@@ -291,7 +350,7 @@ export class InlineTaskUI extends Component<Props, State> {
     };
 
     private onGoalKeyDown = (
-        event: KeyboardEvent<HTMLTextAreaElement>,
+      event: KeyboardEvent<HTMLTextAreaElement>,
     ): void => {
         switch (event.key) {
             case 'Escape':
@@ -315,9 +374,9 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private finishEditingGoal() {
         this.props.onUpdateTask?.call(
-            null,
-            this.props.task.id,
-            this.getUpdatedTask(),
+          null,
+          this.props.task.id,
+          this.getUpdatedTask(),
         );
         this.setState({
             isEditingGoal: false,

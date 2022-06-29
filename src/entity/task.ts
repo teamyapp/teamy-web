@@ -16,4 +16,5 @@ export interface Task {
     comments: Thread;
     availableActions: TaskAction[];
     status: TaskStatus;
+    awaitForTasks: Task[];
 }
