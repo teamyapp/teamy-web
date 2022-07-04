@@ -48,11 +48,11 @@ export class DebugComponent extends Component<IProps, IState> {
                 },
                 {
                     name: 'Teamy Web API',
-                    value: getConfig(env).servicesWebSocketEndpoint,
+                    value: getConfig(env).servicesWebAPIEndpoint,
                 },
                 {
                     name: 'Teamy WebSocket API',
-                    value: getConfig(env).servicesWebSocketEndpoint,
+                    value: getConfig(env).servicesWebSocketAPIEndpoint,
                 },
                 {
                     name: 'Identity web API',
