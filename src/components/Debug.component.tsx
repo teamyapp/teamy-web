@@ -47,8 +47,12 @@ export class DebugComponent extends Component<IProps, IState> {
                     }/commit/${getEnvVar('GIT_LONG_COMMIT_HASH')}`,
                 },
                 {
-                    name: 'Teamy GraphQL API',
-                    value: getConfig(env).teamyGraphQLEndpoint,
+                    name: 'Teamy Web API',
+                    value: getConfig(env).servicesWebAPIEndpoint,
+                },
+                {
+                    name: 'Teamy WebSocket API',
+                    value: getConfig(env).servicesWebSocketAPIEndpoint,
                 },
                 {
                     name: 'Identity web API',

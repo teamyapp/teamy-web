@@ -40,7 +40,7 @@ export function initDeps(): Deps {
     );
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
-        config.teamyGraphQLEndpoint,
+        `${config.servicesWebAPIEndpoint}/graphql`,
         identityClient,
     );
     const userClient = new UserClient(teamyGraphQLClient);
@@ -51,7 +51,7 @@ export function initDeps(): Deps {
     const localStore = new LocalStore();
     const graphSource = new GraphSource(localStore);
     const stateSyncer = new StateSyncer(
-        config.servicesWebSocketEndpoint,
+        config.servicesWebSocketAPIEndpoint,
         identityClient,
         localStore,
         taskClient,
