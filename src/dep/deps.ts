@@ -40,7 +40,7 @@ export function initDeps(): Deps {
     );
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
-        config.teamyGraphQLEndpoint,
+        `${config.servicesWebAPIEndpoint}/graphql`,
         identityClient,
     );
     const userClient = new UserClient(teamyGraphQLClient);
