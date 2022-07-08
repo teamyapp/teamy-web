@@ -1,5 +1,5 @@
 {
-    "name": "react-web",
+    "name": "teamy-web",
     "version": "0.0.1",
     "private": true,
     "scripts": {
@@ -14,6 +14,7 @@
         "build:testing": "dotenv -e .env.testing yarn build:base",
         "build:staging": "dotenv -e .env.staging yarn build:base",
         "test": "dotenv -e .env.testing -- craco test",
+        "test:e2e": "playwright test",
         "eject": "craco eject",
         "format": "yarn prettier --write .",
         "storybook": "start-storybook -p 6006",
@@ -35,6 +36,7 @@
     },
     "devDependencies": {
         "@craco/craco": "^6.4.3",
+        "@playwright/test": "^1.23.1",
         "@storybook/addon-actions": "^6.4.9",
         "@storybook/addon-essentials": "^6.4.9",
         "@storybook/addon-links": "^6.4.9",
