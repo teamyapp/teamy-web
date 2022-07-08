@@ -345,5 +345,5 @@ trigger:
     - main
   event:
     - cron
-    cron:
-      - e2e-tests
+  cron:
+    - e2e-tests
