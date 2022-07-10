@@ -23,6 +23,9 @@ import github from './accountProviders/github.svg';
 import microsoft from './accountProviders/microsoft.svg';
 import slack from './accountProviders/slack.svg';
 import wechat from './accountProviders/wechat.svg';
+import {LocalStore} from '@core/storage/syncer/localStore';
+import {GraphSource} from '@core/storage/graph/graphSource';
+import {PopChannel} from '@lib/csp/csp';
 
 interface Props {
     deps: Deps;
@@ -38,16 +41,40 @@ interface State {
 }
 
 export class UserSettingsModalComponent extends Component<Props, State> {
+    private readonly localStore: LocalStore;
+    private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
     private readonly modalRef = createRef<ModalUI>();
 
+    private onStateChangeChan?: PopChannel<boolean | undefined>;
+
     constructor(props: Props) {
         super(props);
+        this.localStore = props.deps.localStore;
+        this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             currentTabIndex: 0,
             linkedUsers: new Map<AuthProvider, LinkedUser>()
         };
+    }
+
+    public componentDidMount() {
+        this.onStateChangeChan = this.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                const hasChanged = await this.onStateChangeChan?.pop();
+                if (hasChanged === undefined) {
+                    return;
+                }
+
+                if (this.state.user) {
+                    const user = this.graphSource.user(this.state.user.id);
+                    await this.updateState(user!);
+                }
+            }
+        })();
     }
 
     public render(): ReactNode {
@@ -84,9 +111,13 @@ export class UserSettingsModalComponent extends Component<Props, State> {
     }
 
     public open = async (user: User) => {
-        const linkedUsers = this.state.linkedUsers;
-        linkedUsers.clear();
-        await this.stateSyncer.pullUserLinks();
+        this.updateState(user);
+        this.stateSyncer.pullUserLinks();
+        this.modalRef.current?.open();
+    };
+
+    private updateState(user: User) {
+        const linkedUsers = new Map<AuthProvider, LinkedUser>();
         user.linkedUsers.forEach(linkedUser => {
             linkedUsers.set(linkedUser.authProvider, linkedUser);
         });
@@ -96,9 +127,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
             editingUserLastName: user.lastName || '',
             linkedUsers: linkedUsers,
         });
-
-        this.modalRef.current?.open();
-    };
+    }
 
     private renderUserProfileTab = () => {
         return (

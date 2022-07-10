@@ -14,7 +14,7 @@ export class GraphSource {
             return;
         }
 
-        return new User(appState, appState.users[appState.currUserId]);
+        return this.user(appState.currUserId);
     }
 
     public currentTeam(): Team | undefined {
@@ -24,6 +24,16 @@ export class GraphSource {
         }
 
         return this.team(appState.currTeamId);
+    }
+
+    public user(userId: number): User | undefined {
+        const appState = this.localStore.getState();
+        const userState = appState.users[userId];
+        if (!userState) {
+            return;
+        }
+
+        return new User(appState, userState);
     }
 
     public team(teamId: number): Team | undefined {
