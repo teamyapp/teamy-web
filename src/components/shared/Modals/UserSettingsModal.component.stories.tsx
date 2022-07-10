@@ -30,6 +30,7 @@ class ModalStory extends Component<any, any> {
             lastName: 'Girl',
             profileUrl: '/profiles/girl1.png',
             teams: [],
+            linkedUsers: []
         });
     }
 }

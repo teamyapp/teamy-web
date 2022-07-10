@@ -1,10 +1,6 @@
 import { PopChannel, PutChannel, chan, multi } from '@lib/csp/csp';
 import { Connection, ConnectionError } from '@lib/network/Connection';
 
-interface AccessTokenGetter {
-    getAccessToken(): string;
-}
-
 export class WebSocketConnection implements Connection {
     private webSocket?: WebSocket;
 
@@ -15,7 +11,7 @@ export class WebSocketConnection implements Connection {
 
     constructor(
         private readonly connectionUrl: string,
-        private readonly accessTokenGetter?: AccessTokenGetter,
+        private readonly getAccessToken?: ()=>string,
     ) {}
 
     private _isConnected = false;
@@ -28,7 +24,7 @@ export class WebSocketConnection implements Connection {
         const url = new URL(this.connectionUrl);
         url.searchParams.set(
             'accessToken',
-            this.accessTokenGetter?.getAccessToken() || '',
+            this.getAccessToken?.call(null) || '',
         );
         const webSocket = new WebSocket(url);
         return new Promise((resolve, reject) => {

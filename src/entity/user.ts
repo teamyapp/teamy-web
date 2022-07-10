@@ -1,4 +1,5 @@
-import { Team } from './team';
+import {Team} from './team';
+import {LinkedUser} from '@core/entity/linkedUser';
 
 export interface User {
     id: number;
@@ -6,4 +7,5 @@ export interface User {
     lastName: string;
     profileUrl?: string;
     teams: Team[];
+    linkedUsers: LinkedUser[];
 }

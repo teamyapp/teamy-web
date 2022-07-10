@@ -10,6 +10,7 @@
 
     .TabContent {
         flex: 1;
+        overflow: hidden;
     }
 
     .UserProfileTab {
@@ -129,6 +130,81 @@
                 .SaveAction {
                     --background-color: #388e3c;
                     --border-color: #2e7d32;
+                }
+            }
+        }
+    }
+
+    .AccountsTab {
+        padding: 0 0 20px 0;
+        height: 100%;
+        box-sizing: border-box;
+
+        .Content {
+            padding: 20px 20px 0 20px;
+            height: 100%;
+            box-sizing: border-box;
+            overflow-y: auto;
+        }
+
+        .Title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .ExternalAccounts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-column-gap: 10px;
+            grid-row-gap: 10px;
+
+            .ExternalAccount {
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                background-color: #f8f8f8;
+                padding: 30px;
+                border-radius: 6px;
+                height: 190px;
+
+                .AccountProvider {
+                    .Logo{
+                        height: 50px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+
+                        img {
+                            width: 50px;
+                        }
+
+                        margin-bottom: 20px;
+                    }
+
+                    .Name {
+                        font-size: 20px;
+                        font-weight: bold;
+                    }
+
+                    margin-bottom: 10px;
+                }
+
+                .UserLabel {
+                    font-size: 14px;
+                    font-weight: bold;
+                    flex: 1;
+                }
+
+                .Action {
+                    display: flex;
+                    justify-content: center;
+                    --width: auto;
+
+                    .Connect {
+                        --background-color: #388e3c;
+                        --border-color: #2e7d32;
+                    }
                 }
             }
         }
