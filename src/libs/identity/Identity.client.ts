@@ -1,10 +1,11 @@
 import Cookies from 'js-cookie';
 
+import { UserLink } from '@lib/identity/userLink';
+import { HTTPClient } from '@lib/network/HTTP.client';
+
 import { Environment } from '@core/env/environment';
 
 import { Config, getConfig } from './config';
-import {UserLink} from '@lib/identity/userLink';
-import {HTTPClient} from '@lib/network/HTTP.client';
 
 const accessTokenKey = 'accessToken';
 const signInRedirectKey = 'signInRedirect';

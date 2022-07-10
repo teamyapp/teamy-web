@@ -1,14 +1,11 @@
-type AuthProvider =
-    | 'google'
-    | 'github'
-    | 'wechat';
+type AuthProvider = 'google' | 'github' | 'wechat';
 
 export class UserLinkState {
     public constructor(
         public internalUserId: number,
         public authProvider: AuthProvider,
         public externalUserId: number,
-        public externalUserLabel: string
+        public externalUserLabel: string,
     ) {}
 
     public static fromMutationPayload(json: any): UserLinkState {

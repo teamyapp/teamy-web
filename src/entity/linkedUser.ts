@@ -10,7 +10,7 @@ export const authProviders: AuthProvider[] = [
     'github',
     'slack',
     'microsoft',
-    'wechat'
+    'wechat',
 ];
 
 export const accountProviderNames = new Map<AuthProvider, string>();
@@ -21,7 +21,7 @@ accountProviderNames.set('microsoft', 'Microsoft');
 accountProviderNames.set('wechat', 'WeChat');
 
 export interface LinkedUser {
-    id: number,
-    label: string
-    authProvider: AuthProvider,
+    id: number;
+    label: string;
+    authProvider: AuthProvider;
 }

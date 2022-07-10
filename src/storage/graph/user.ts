@@ -1,8 +1,8 @@
+import { LinkedUser } from '@core/entity/linkedUser';
 import { AppState } from '@core/storage/states/app.state';
 import { UserState } from '@core/storage/states/user.state';
 
 import { Team } from './team';
-import {LinkedUser} from '@core/entity/linkedUser';
 
 export class User {
     constructor(private appState: AppState, private userState: UserState) {}
@@ -45,13 +45,11 @@ export class User {
 
     public get linkedUsers(): LinkedUser[] {
         return this.appState.userLinks
-            .filter(userLink => userLink.internalUserId === this.userState.id)
-            .map(userLink => (
-                {
-                    id: userLink.externalUserId,
-                    label: userLink.externalUserLabel,
-                    authProvider: userLink.authProvider
-                }
-            ));
+            .filter((userLink) => userLink.internalUserId === this.userState.id)
+            .map((userLink) => ({
+                id: userLink.externalUserId,
+                label: userLink.externalUserLabel,
+                authProvider: userLink.authProvider,
+            }));
     }
 }

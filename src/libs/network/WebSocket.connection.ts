@@ -11,7 +11,7 @@ export class WebSocketConnection implements Connection {
 
     constructor(
         private readonly connectionUrl: string,
-        private readonly getAccessToken?: ()=>string,
+        private readonly getAccessToken?: () => string,
     ) {}
 
     private _isConnected = false;

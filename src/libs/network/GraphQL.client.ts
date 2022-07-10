@@ -11,7 +11,7 @@ export class GraphQLClient {
 
     constructor(
         graphQLEndpoint: string,
-        private getAccessToken?: ()=> string,
+        private getAccessToken?: () => string,
     ) {
         this.client = new ApolloClient({
             uri: graphQLEndpoint,

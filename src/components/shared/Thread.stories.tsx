@@ -14,7 +14,7 @@ const initialMessages: Message[] = [
             lastName: 'Wang',
             profileUrl: 'profiles/boy1.png',
             teams: [],
-            linkedUsers: []
+            linkedUsers: [],
         },
         body: `Originally, we design task to be able to belong to multiple teams because at that time, we treat Kanban as a place and a task can be put to many places`,
         createdAt: new Date(2020, 11, 20, 9, 52, 0),
@@ -27,7 +27,7 @@ const initialMessages: Message[] = [
             lastName: 'Cool',
             profileUrl: 'profiles/girl1.png',
             teams: [],
-            linkedUsers: []
+            linkedUsers: [],
         },
         body: `We may want to try something else`,
         createdAt: new Date(2021, 11, 19, 0, 52, 0),
@@ -40,7 +40,7 @@ const initialMessages: Message[] = [
             lastName: 'Liu',
             profileUrl: 'profiles/boy2.png',
             teams: [],
-            linkedUsers: []
+            linkedUsers: [],
         },
         body: `Or even a person in the future`,
         createdAt: new Date(2021, 11, 20, 9, 52, 1),
@@ -53,7 +53,7 @@ const initialMessages: Message[] = [
             lastName: 'Wang',
             profileUrl: 'profiles/boy1.png',
             teams: [],
-            linkedUsers: []
+            linkedUsers: [],
         },
         body: `But now, this model of thinking is problematic`,
         createdAt: new Date(2021, 11, 25, 9, 53, 0),
@@ -66,7 +66,7 @@ const initialMessages: Message[] = [
             lastName: 'Cool',
             profileUrl: 'profiles/girl1.png',
             teams: [],
-            linkedUsers: []
+            linkedUsers: [],
         },
         body: `I agree`,
         createdAt: new Date(2021, 11, 28, 9, 52, 0),

@@ -1,31 +1,30 @@
-import React, {Component, createRef, ReactNode} from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
-import {ButtonUI} from '@lib/ui/Button';
-import {MaterialIconUI} from '@lib/ui/MaterialIcon';
-import {ModalUI} from '@lib/ui/Modal';
-import {TabsUI} from '@lib/ui/Tabs';
-import {TextFieldUI} from '@lib/ui/TextField';
+import { PopChannel } from '@lib/csp/csp';
+import { ButtonUI } from '@lib/ui/Button';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { ModalUI } from '@lib/ui/Modal';
+import { TabsUI } from '@lib/ui/Tabs';
+import { TextFieldUI } from '@lib/ui/TextField';
 
-import {Deps} from '@core/dep/deps';
-import {User} from '@core/entity/user';
-import {StateSyncer} from '@core/storage/syncer/stateSyncer';
+import { Deps } from '@core/dep/deps';
+import {
+    AuthProvider,
+    LinkedUser,
+    accountProviderNames,
+    authProviders,
+} from '@core/entity/linkedUser';
+import { User } from '@core/entity/user';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './UserSettingsModal.component.module.scss';
-import {
-    accountProviderNames,
-    AuthProvider,
-    authProviders,
-    LinkedUser
-} from '@core/entity/linkedUser';
-
-import google from './accountProviders/google.svg';
 import github from './accountProviders/github.svg';
+import google from './accountProviders/google.svg';
 import microsoft from './accountProviders/microsoft.svg';
 import slack from './accountProviders/slack.svg';
 import wechat from './accountProviders/wechat.svg';
-import {LocalStore} from '@core/storage/syncer/localStore';
-import {GraphSource} from '@core/storage/graph/graphSource';
-import {PopChannel} from '@lib/csp/csp';
 
 interface Props {
     deps: Deps;
@@ -56,7 +55,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             currentTabIndex: 0,
-            linkedUsers: new Map<AuthProvider, LinkedUser>()
+            linkedUsers: new Map<AuthProvider, LinkedUser>(),
         };
     }
 
@@ -118,7 +117,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
 
     private updateState(user: User) {
         const linkedUsers = new Map<AuthProvider, LinkedUser>();
-        user.linkedUsers.forEach(linkedUser => {
+        user.linkedUsers.forEach((linkedUser) => {
             linkedUsers.set(linkedUser.authProvider, linkedUser);
         });
         this.setState({
@@ -203,31 +202,37 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         );
     };
 
-    private renderExternalAccount = (authProvider: AuthProvider, index: number): ReactNode => {
+    private renderExternalAccount = (
+        authProvider: AuthProvider,
+        index: number,
+    ): ReactNode => {
         const linkedUser = this.state.linkedUsers.get(authProvider);
         return (
             <div className={styles.ExternalAccount} key={index}>
                 <div className={styles.AccountProvider}>
                     <div className={styles.Logo}>
-                        <img alt={accountProviderNames.get(authProvider)}
-                             src={renderAccountProviderLogoURL(authProvider)}/>
+                        <img
+                            alt={accountProviderNames.get(authProvider)}
+                            src={renderAccountProviderLogoURL(authProvider)}
+                        />
                     </div>
                     <div className={styles.Name}>
                         {accountProviderNames.get(authProvider)}
                     </div>
                 </div>
-                <div
-                    className={styles.UserLabel}>{linkedUser && linkedUser.label}</div>
+                <div className={styles.UserLabel}>
+                    {linkedUser && linkedUser.label}
+                </div>
                 <div className={styles.Action}>
-                    {
-                        linkedUser ?
-                            <div className={styles.Disconnect}>
-                                <ButtonUI label={'Disconnect'}/>
-                            </div> :
-                            <div className={styles.Connect}>
-                                <ButtonUI label={'Connect'}/>
-                            </div>
-                    }
+                    {linkedUser ? (
+                        <div className={styles.Disconnect}>
+                            <ButtonUI label={'Disconnect'} />
+                        </div>
+                    ) : (
+                        <div className={styles.Connect}>
+                            <ButtonUI label={'Connect'} />
+                        </div>
+                    )}
                 </div>
             </div>
         );

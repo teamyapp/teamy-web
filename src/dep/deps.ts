@@ -1,6 +1,8 @@
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
-import {getAccessToken, IdentityClient} from '@lib/identity/Identity.client';
+import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
+import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { WithIdentity } from '@lib/network/WithIdentity';
 import { PubSub } from '@lib/pubSub/pubSub';
 import { Router, createBrowserRouter } from '@lib/router/router';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
@@ -19,8 +21,6 @@ import { UserActionEvent } from '@core/event/userAction';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import {WithIdentity} from '@lib/network/WithIdentity';
-import {FetchHTTPClient} from '@lib/network/FetchHTTP.client';
 
 export interface Deps {
     identityClient: IdentityClient;

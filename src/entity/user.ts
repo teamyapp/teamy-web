@@ -1,5 +1,6 @@
-import {Team} from './team';
-import {LinkedUser} from '@core/entity/linkedUser';
+import { LinkedUser } from '@core/entity/linkedUser';
+
+import { Team } from './team';
 
 export interface User {
     id: number;

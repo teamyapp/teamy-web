@@ -1,7 +1,4 @@
-type AuthProvider =
-    | 'google'
-    | 'github'
-    | 'wechat';
+type AuthProvider = 'google' | 'github' | 'wechat';
 
 export interface UserLink {
     internalUserId: number;

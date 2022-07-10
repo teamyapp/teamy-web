@@ -1,5 +1,5 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
-import {getAccessToken, IdentityClient} from '@lib/identity/Identity.client';
+import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
@@ -23,6 +23,7 @@ import { AppState } from '@core/storage/states/app.state';
 import { toInt } from '@core/storage/states/parser';
 import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
+import { UserLinkState } from '@core/storage/states/userLink.state';
 
 import { LocalStore } from './localStore';
 import { Mutation } from './mutation';
@@ -44,7 +45,6 @@ import {
     replaceTeamInvitations,
     replaceTeamMembers,
 } from './stateMutators';
-import {UserLinkState} from '@core/storage/states/userLink.state';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -138,7 +138,9 @@ export class StateSyncer {
     public async pullUserLinks() {
         const userLinks = await this.identityClient.listUserLinks();
         let appState = this.localStore.getState();
-        appState.userLinks = userLinks.map(userLinkJson => UserLinkState.fromJson(userLinkJson));
+        appState.userLinks = userLinks.map((userLinkJson) =>
+            UserLinkState.fromJson(userLinkJson),
+        );
         this.localStore.updateState(appState);
     }
 

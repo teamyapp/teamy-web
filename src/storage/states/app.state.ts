@@ -5,7 +5,7 @@ import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRela
 import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
-import {UserLinkState} from '@core/storage/states/userLink.state';
+import { UserLinkState } from '@core/storage/states/userLink.state';
 
 export class AppState {
     public constructor(
@@ -110,8 +110,6 @@ function getTaskAwaitForRelations(json: any) {
 }
 
 function getUserLinks(json: any) {
-    const getUserLinksJson =
-        (json.userLinks as any[]) || [];
+    const getUserLinksJson = (json.userLinks as any[]) || [];
     return getUserLinksJson.map(UserLinkState.fromJson);
 }
-
