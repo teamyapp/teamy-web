@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test('redirect to sign in on start up', async ({ page }) => {
     await page.goto('http://localhost:3000');

@@ -6,16 +6,12 @@ import {
     QueryOptions,
 } from '@apollo/client';
 
-interface AccessTokenGetter {
-    getAccessToken(): string;
-}
-
 export class GraphQLClient {
     private readonly client: ApolloClient<NormalizedCacheObject>;
 
     constructor(
         graphQLEndpoint: string,
-        private accessTokenGetter?: AccessTokenGetter,
+        private getAccessToken?: () => string,
     ) {
         this.client = new ApolloClient({
             uri: graphQLEndpoint,
@@ -56,7 +52,7 @@ export class GraphQLClient {
         return {
             headers: {
                 Authorization: `Bearer ${
-                    this.accessTokenGetter?.getAccessToken() || ''
+                    this.getAccessToken?.call(null) || ''
                 }`,
             },
         };

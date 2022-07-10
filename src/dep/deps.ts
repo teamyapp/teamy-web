@@ -1,6 +1,8 @@
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
-import { IdentityClient } from '@lib/identity/Identity.client';
+import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
+import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { WithIdentity } from '@lib/network/WithIdentity';
 import { PubSub } from '@lib/pubSub/pubSub';
 import { Router, createBrowserRouter } from '@lib/router/router';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
@@ -33,15 +35,17 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
+    const httpClient = new WithIdentity(new FetchHTTPClient());
     const identityClient = new IdentityClient(
         env,
         signInFinishPath,
         absoluteRootPath,
+        httpClient,
     );
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,
-        identityClient,
+        getAccessToken,
     );
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);

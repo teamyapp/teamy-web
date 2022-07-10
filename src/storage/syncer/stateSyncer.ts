@@ -1,5 +1,5 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
-import { IdentityClient } from '@lib/identity/Identity.client';
+import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
@@ -23,6 +23,7 @@ import { AppState } from '@core/storage/states/app.state';
 import { toInt } from '@core/storage/states/parser';
 import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
+import { UserLinkState } from '@core/storage/states/userLink.state';
 
 import { LocalStore } from './localStore';
 import { Mutation } from './mutation';
@@ -61,7 +62,7 @@ export class StateSyncer {
         private invitationClient: InvitationClient,
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
-        this.connection = new WebSocketConnection(url, this.identityClient);
+        this.connection = new WebSocketConnection(url, getAccessToken);
     }
 
     public onMutationReceived(): PopChannel<Mutation | undefined> {
@@ -131,6 +132,15 @@ export class StateSyncer {
         }
 
         appState.currUserId = toInt(remoteUser?.id);
+        this.localStore.updateState(appState);
+    }
+
+    public async pullUserLinks() {
+        const userLinks = await this.identityClient.listUserLinks();
+        let appState = this.localStore.getState();
+        appState.userLinks = userLinks.map((userLinkJson) =>
+            UserLinkState.fromJson(userLinkJson),
+        );
         this.localStore.updateState(appState);
     }
 

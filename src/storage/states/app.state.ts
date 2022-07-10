@@ -5,6 +5,7 @@ import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRela
 import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
+import { UserLinkState } from '@core/storage/states/userLink.state';
 
 export class AppState {
     public constructor(
@@ -15,6 +16,7 @@ export class AppState {
         public invitations: { [invitationId: number]: InvitationState },
         public teamMembers: TeamMemberState[],
         public taskAwaitForRelations: TaskAwaitForRelationState[],
+        public userLinks: UserLinkState[],
         public currUserId?: number,
         public currTeamId?: number,
     ) {}
@@ -27,6 +29,7 @@ export class AppState {
         const teamMembers = getTeamMembers(json);
         const invitations = getInvitations(json);
         const taskAwaitForRelations = getTaskAwaitForRelations(json);
+        const userLinks = getUserLinks(json);
         return new AppState(
             users,
             teams,
@@ -35,6 +38,7 @@ export class AppState {
             invitations,
             teamMembers,
             taskAwaitForRelations,
+            userLinks,
             json.currUserId,
             json.currTeamId,
         );
@@ -103,4 +107,9 @@ function getTaskAwaitForRelations(json: any) {
     const taskAwaitForRelationsJson =
         (json.taskAwaitForRelations as any[]) || [];
     return taskAwaitForRelationsJson.map(TaskAwaitForRelationState.fromJson);
+}
+
+function getUserLinks(json: any) {
+    const getUserLinksJson = (json.userLinks as any[]) || [];
+    return getUserLinksJson.map(UserLinkState.fromJson);
 }

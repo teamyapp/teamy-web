@@ -149,7 +149,11 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     private renderAwaitForTask = (task: Task, index: number): ReactNode => {
-        return <div key={index} className={styles.AwaitForTask}>{task.id}</div>;
+        return (
+            <div key={index} className={styles.AwaitForTask}>
+                {task.id}
+            </div>
+        );
     };
 
     private renderActions(): ReactNode[] {
