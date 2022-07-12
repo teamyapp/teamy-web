@@ -1,7 +1,7 @@
 import { TaskAction } from '@core/entity/taskAction';
-import { AppState } from '@core/storage/states/app.state';
 import { TaskState } from '@core/storage/states/task.state';
 import { TaskStatus } from '@core/storage/states/taskStatus';
+import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { Team } from './team';
 import { Thread } from './thread';
@@ -29,7 +29,7 @@ availableActions.set('AWAITING', [
 availableActions.set('DELIVERED', ['DELETE', 'ASSIGN_OWNER']);
 
 export class Task {
-    constructor(private appState: AppState, private taskState: TaskState) {}
+    constructor(private localStore: LocalStore, private taskState: TaskState) {}
 
     public get id(): number {
         return this.taskState.id;
@@ -45,8 +45,8 @@ export class Task {
 
     public get creator(): User {
         return new User(
-            this.appState,
-            this.appState.users[this.taskState.creatorUserId],
+            this.localStore,
+            this.localStore.getState().users[this.taskState.creatorUserId],
         );
     }
 
@@ -56,15 +56,15 @@ export class Task {
         }
 
         return new User(
-            this.appState,
-            this.appState.users[this.taskState.ownerUserId],
+            this.localStore,
+            this.localStore.getState().users[this.taskState.ownerUserId],
         );
     }
 
     public get owningTeam(): Team {
         return new Team(
-            this.appState,
-            this.appState.teams[this.taskState.owningTeamId],
+            this.localStore,
+            this.localStore.getState().teams[this.taskState.owningTeamId],
         );
     }
 
@@ -73,7 +73,7 @@ export class Task {
     }
 
     public get comments(): Thread {
-        return new Thread(this.appState, this.taskState.commentsThreadId);
+        return new Thread(this.localStore, this.taskState.commentsThreadId);
     }
 
     public get createdAt(): Date {
@@ -97,13 +97,14 @@ export class Task {
     }
 
     public get awaitForTasks(): Task[] {
-        return this.appState.taskAwaitForRelations
+        const appState = this.localStore.getState();
+        return appState.taskAwaitForRelations
             .filter((relation) => relation.awaitingTaskId === this.taskState.id)
             .map(
                 (relation) =>
                     new Task(
-                        this.appState,
-                        this.appState.tasks[relation.awaitForTaskId],
+                        this.localStore,
+                        appState.tasks[relation.awaitForTaskId],
                     ),
             );
     }

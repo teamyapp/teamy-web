@@ -1,12 +1,12 @@
-import { AppState } from '@core/storage/states/app.state';
 import { TeamState } from '@core/storage/states/team.state';
+import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { Invitation } from './invitation';
 import { Task } from './task';
 import { User } from './user';
 
 export class Team {
-    constructor(private appState: AppState, private teamState: TeamState) {}
+    constructor(private localStore: LocalStore, private teamState: TeamState) {}
 
     public get id(): number {
         return this.teamState.id;
@@ -26,36 +26,38 @@ export class Team {
 
     public get creator(): User {
         return new User(
-            this.appState,
-            this.appState.users[this.teamState.creatorUserId],
+            this.localStore,
+            this.localStore.getState().users[this.teamState.creatorUserId],
         );
     }
 
     public get owner(): User {
         return new User(
-            this.appState,
-            this.appState.users[this.teamState.ownerUserId],
+            this.localStore,
+            this.localStore.getState().users[this.teamState.ownerUserId],
         );
     }
 
     public get members(): User[] {
-        return this.appState.teamMembers
+        const appState = this.localStore.getState();
+        return appState.teamMembers
             .filter((teamMember) => teamMember.teamId === this.teamState.id)
             .map(
                 (teamMember) =>
                     new User(
-                        this.appState,
-                        this.appState.users[teamMember.userId],
+                        this.localStore,
+                        appState.users[teamMember.userId],
                     ),
             );
     }
 
     public get tasks(): Task[] {
+        const appState = this.localStore.getState();
         const tasks: Task[] = [];
-        for (let taskId in this.appState.tasks) {
-            const taskState = this.appState.tasks[taskId];
+        for (let taskId in appState.tasks) {
+            const taskState = appState.tasks[taskId];
             if (taskState.owningTeamId === this.teamState.id) {
-                tasks.push(new Task(this.appState, taskState));
+                tasks.push(new Task(this.localStore, taskState));
             }
         }
 
@@ -63,12 +65,13 @@ export class Team {
     }
 
     public get invitations(): Invitation[] {
+        const appState = this.localStore.getState();
         const invitations: Invitation[] = [];
-        for (let invitationId in this.appState.invitations) {
-            const invitationState = this.appState.invitations[invitationId];
+        for (let invitationId in appState.invitations) {
+            const invitationState = appState.invitations[invitationId];
             if (invitationState.teamId === this.teamState.id) {
                 invitations.push(
-                    new Invitation(this.appState, invitationState),
+                    new Invitation(this.localStore, invitationState),
                 );
             }
         }

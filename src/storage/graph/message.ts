@@ -1,12 +1,12 @@
-import { AppState } from '@core/storage/states/app.state';
 import { MessageState } from '@core/storage/states/message.state';
+import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { Thread } from './thread';
 import { User } from './user';
 
 export class Message {
     constructor(
-        private appState: AppState,
+        private localStore: LocalStore,
         private messageState: MessageState,
     ) {}
 
@@ -20,13 +20,13 @@ export class Message {
 
     public get author(): User {
         return new User(
-            this.appState,
-            this.appState.users[this.messageState.authorUserId],
+            this.localStore,
+            this.localStore.getState().users[this.messageState.authorUserId],
         );
     }
 
     public get thread(): Thread {
-        return new Thread(this.appState, this.messageState.threadId);
+        return new Thread(this.localStore, this.messageState.threadId);
     }
 
     public get createdAt(): Date {

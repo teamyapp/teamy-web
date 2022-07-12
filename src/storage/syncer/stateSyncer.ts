@@ -288,6 +288,11 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         const deletedThreadId = appState.tasks[taskId].commentsThreadId;
         appState = deleteThread(appState, deletedThreadId);
+        appState.taskAwaitForRelations = appState.taskAwaitForRelations.filter(
+            (relation) =>
+                relation.awaitingTaskId !== taskId &&
+                relation.awaitForTaskId !== taskId,
+        );
         delete appState.tasks[taskId];
         this.localStore.updateState(appState);
         await this.taskClient.deleteTask(`${taskId}`);

@@ -1,13 +1,13 @@
-import { AppState } from '@core/storage/states/app.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { InvitationStatus } from '@core/storage/states/invitationStatus';
+import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { Team } from './team';
 import { User } from './user';
 
 export class Invitation {
     constructor(
-        private appState: AppState,
+        private localStore: LocalStore,
         private invitationState: InvitationState,
     ) {}
 
@@ -17,8 +17,8 @@ export class Invitation {
 
     public get sender(): User {
         return new User(
-            this.appState,
-            this.appState.users[this.invitationState.senderUserId],
+            this.localStore,
+            this.localStore.getState().users[this.invitationState.senderUserId],
         );
     }
 
@@ -40,15 +40,17 @@ export class Invitation {
         }
 
         return new User(
-            this.appState,
-            this.appState.users[this.invitationState.receiverUserId],
+            this.localStore,
+            this.localStore.getState().users[
+                this.invitationState.receiverUserId
+            ],
         );
     }
 
     public get joiningTeam(): Team {
         return new Team(
-            this.appState,
-            this.appState.teams[this.invitationState.teamId],
+            this.localStore,
+            this.localStore.getState().teams[this.invitationState.teamId],
         );
     }
 

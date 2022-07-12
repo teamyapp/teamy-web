@@ -1,11 +1,11 @@
 import { LinkedUser } from '@core/entity/linkedUser';
-import { AppState } from '@core/storage/states/app.state';
 import { UserState } from '@core/storage/states/user.state';
+import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { Team } from './team';
 
 export class User {
-    constructor(private appState: AppState, private userState: UserState) {}
+    constructor(private localStore: LocalStore, private userState: UserState) {}
 
     public get id(): number {
         return this.userState.id;
@@ -28,24 +28,28 @@ export class User {
     }
 
     public get teams(): Team[] {
-        return this.appState.teamMembers
+        const appState = this.localStore.getState();
+        return appState.teamMembers
             .filter(
                 (teamMember) =>
                     teamMember.userId === this.userState.id &&
-                    this.appState.teams[teamMember.teamId],
+                    appState.teams[teamMember.teamId],
             )
             .map(
                 (teamMember) =>
                     new Team(
-                        this.appState,
-                        this.appState.teams[teamMember.teamId],
+                        this.localStore,
+                        appState.teams[teamMember.teamId],
                     ),
             );
     }
 
     public get linkedUsers(): LinkedUser[] {
-        return this.appState.userLinks
-            .filter((userLink) => userLink.internalUserId === this.userState.id)
+        return this.localStore
+            .getState()
+            .userLinks.filter(
+                (userLink) => userLink.internalUserId === this.userState.id,
+            )
             .map((userLink) => ({
                 id: userLink.externalUserId,
                 label: userLink.externalUserLabel,
