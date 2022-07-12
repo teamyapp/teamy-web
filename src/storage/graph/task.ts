@@ -1,5 +1,4 @@
 import { TaskAction } from '@core/entity/taskAction';
-import { AppState } from '@core/storage/states/app.state';
 import { TaskState } from '@core/storage/states/task.state';
 import { TaskStatus } from '@core/storage/states/taskStatus';
 import { LocalStore } from '@core/storage/syncer/localStore';

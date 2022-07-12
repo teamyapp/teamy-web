@@ -1,5 +1,4 @@
 import { LinkedUser } from '@core/entity/linkedUser';
-import { AppState } from '@core/storage/states/app.state';
 import { UserState } from '@core/storage/states/user.state';
 import { LocalStore } from '@core/storage/syncer/localStore';
 

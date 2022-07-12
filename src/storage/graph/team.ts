@@ -1,4 +1,3 @@
-import { AppState } from '@core/storage/states/app.state';
 import { TeamState } from '@core/storage/states/team.state';
 import { LocalStore } from '@core/storage/syncer/localStore';
 

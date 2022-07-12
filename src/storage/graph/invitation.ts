@@ -1,4 +1,3 @@
-import { AppState } from '@core/storage/states/app.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { InvitationStatus } from '@core/storage/states/invitationStatus';
 import { LocalStore } from '@core/storage/syncer/localStore';
