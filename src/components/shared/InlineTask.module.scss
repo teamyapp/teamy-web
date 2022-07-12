@@ -195,6 +195,15 @@ $numOfActionColumns: 3;
         color: #313131;
         background-color: #eeeeee;
 
+        &.Delivered {
+            color: white;
+            background-color: #00897b;
+
+            &:hover {
+                background-color: #009688;
+            }
+        }
+
         &:hover {
             cursor: pointer;
             color: white;
