@@ -150,7 +150,12 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private renderAwaitForTask = (task: Task, index: number): ReactNode => {
         return (
-            <div key={index} className={styles.AwaitForTask}>
+            <div
+                key={index}
+                className={`${styles.AwaitForTask} ${classNames({
+                    [styles.Delivered]: task.status === 'DELIVERED',
+                })}`}
+            >
                 {task.id}
             </div>
         );
