@@ -33,7 +33,7 @@ export class GraphSource {
             return;
         }
 
-        return new User(appState, userState);
+        return new User(this.localStore, userState);
     }
 
     public team(teamId: number): Team | undefined {
@@ -43,7 +43,7 @@ export class GraphSource {
             return;
         }
 
-        return new Team(appState, appState.teams[teamId]);
+        return new Team(this.localStore, appState.teams[teamId]);
     }
 
     public task(taskId: number): Task | undefined {
@@ -53,14 +53,14 @@ export class GraphSource {
             return;
         }
 
-        return new Task(appState, appState.tasks[taskId]);
+        return new Task(this.localStore, appState.tasks[taskId]);
     }
 
     public invitation(id: number): Invitation | undefined {
         const appState = this.localStore.getState();
         const invitation = appState.invitations[id];
         if (invitation) {
-            return new Invitation(appState, invitation);
+            return new Invitation(this.localStore, invitation);
         }
     }
 }
