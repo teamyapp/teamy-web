@@ -593,11 +593,9 @@ export function replaceTeamInvitations(
         }
     }
 
-    newInvitations.map(InvitationState.fromJson).forEach((invitationState) => {
-        invitations[invitationState.id] = invitationState;
+    newInvitations.forEach((remoteInvitation) => {
+        currAppState = mergeInvitation(currAppState, remoteInvitation);
     });
-
-    currAppState.invitations = invitations;
     return currAppState;
 }
 
