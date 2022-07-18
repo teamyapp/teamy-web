@@ -66,7 +66,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         </div>
                     }
                 </div>
-                {/*</TooltipUI>*/}
                 {this.state.showDetail && (
                     <div className={styles.Detail}>
                         <div className={styles.AddButton}>
