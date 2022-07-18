@@ -501,6 +501,7 @@ export class AppComponent extends Component<Props, State> {
         if (!this.state.showBacklog) {
             this.backlogRef.current?.refresh();
         }
+        
         this.setState({
             showBacklog: !this.state.showBacklog,
         });
