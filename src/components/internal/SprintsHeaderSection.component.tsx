@@ -47,7 +47,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     render() {
         return (
             <div className={styles.SprintHeaderSection}>
-                {/*<TooltipUI message={'Sprint'} position={'Right'}>*/}
                 <div
                     className={`${styles.HeaderSection} ${classNames({
                         [styles.Active]: this.state.showDetail,
