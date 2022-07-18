@@ -94,7 +94,6 @@ export class InlineTaskUI extends Component<Props, State> {
                             this.renderAwaitForTasks()}
                     </div>
                 </div>
-                {/*grid-template-columns: repeat($numOfActionColumns, 1fr);*/}
                 <div
                     className={styles.ActionsSection}
                     style={{
