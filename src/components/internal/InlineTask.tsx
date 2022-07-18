@@ -443,8 +443,9 @@ function byTheEndOf(date?: Date): Date | undefined {
         return undefined;
     }
 
-    date?.setHours(23);
-    date?.setMinutes(59);
-    date?.setSeconds(59);
-    return date;
+    const newDate = new Date(date.getTime());
+    newDate.setHours(23);
+    newDate.setMinutes(59);
+    newDate.setSeconds(59);
+    return newDate;
 }
