@@ -1,0 +1,211 @@
+@import 'Modal.shared.module';
+@import '../../../libs/ui/styleguide/font';
+
+.UserSettingsModal {
+    @include primaryFont;
+    display: flex;
+    flex-direction: column;
+    height: 700px;
+    width: 800px;
+
+    .TabContent {
+        flex: 1;
+        overflow: hidden;
+    }
+
+    .UserProfileTab {
+        align-items: center;
+        background-color: #cfd8dc;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: center;
+        padding: 20px;
+
+        .UserProfileTabContent {
+            align-items: center;
+            background-color: white;
+            border: 4px solid #b0bec5;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+
+            .UserProfile {
+                align-items: center;
+                background-color: #455a64;
+                border: 4px solid #e0e0e0;
+                border-radius: 50%;
+                display: flex;
+                height: 150px;
+                justify-content: center;
+                overflow: hidden;
+                position: relative;
+                width: 150px;
+
+                .UserProfileImg,
+                .DefaultUserProfile {
+                    border-radius: 50%;
+                    box-sizing: border-box;
+                    height: 100%;
+                    justify-content: center;
+                    width: 100%;
+                }
+
+                .UserProfileImg {
+                    background-color: white;
+                }
+
+                .DefaultUserProfile {
+                    align-items: center;
+                    color: white;
+                    display: flex;
+                    font-size: 100px;
+                    font-weight: bold;
+                    line-height: 100px;
+                }
+
+                &:hover {
+                    .UploadUserProfileButton {
+                        opacity: 0.9;
+                    }
+                }
+
+                .UploadUserProfileButton {
+                    align-items: center;
+                    background-color: #424242;
+                    box-sizing: border-box;
+                    color: white;
+                    display: flex;
+                    font-size: 20px;
+                    font-weight: bold;
+                    height: 100%;
+                    justify-content: center;
+                    left: 0;
+                    opacity: 0;
+                    padding: 0 10px;
+                    position: absolute;
+                    text-align: center;
+                    top: 0;
+                    user-select: none;
+                    width: 100%;
+
+                    &:hover {
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            .UserIdSection {
+                align-items: center;
+                background-color: #eeeeee;
+                border-radius: 4px;
+                display: flex;
+                font-size: 24px;
+                font-weight: bold;
+                justify-content: center;
+                margin-top: 20px;
+                padding: 2px 0;
+                width: 120px;
+
+                .UserId {
+                    margin-left: 10px;
+                }
+            }
+
+            .UserNameSection {
+                --border: 2px solid #757575;
+                margin-top: 30px;
+
+                .Row:not(:first-child) {
+                    margin-top: 20px;
+                }
+            }
+
+            .ActionsSection {
+                --width: 160px;
+                margin-top: 30px;
+
+                .SaveAction {
+                    --background-color: #388e3c;
+                    --border-color: #2e7d32;
+                }
+            }
+        }
+    }
+
+    .AccountsTab {
+        box-sizing: border-box;
+        height: 100%;
+        padding: 0 0 20px 0;
+
+        .Content {
+            box-sizing: border-box;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px 20px 0 20px;
+        }
+
+        .Title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .ExternalAccounts {
+            display: grid;
+            grid-column-gap: 10px;
+            grid-row-gap: 10px;
+            grid-template-columns: repeat(3, 1fr);
+
+            .ExternalAccount {
+                background-color: #f8f8f8;
+                border-radius: 6px;
+                display: flex;
+                flex-direction: column;
+                height: 190px;
+                padding: 30px;
+                text-align: center;
+
+                .AccountProvider {
+                    margin-bottom: 10px;
+
+                    .Logo {
+                        align-items: center;
+                        display: flex;
+                        height: 50px;
+                        justify-content: center;
+                        margin-bottom: 20px;
+
+                        img {
+                            width: 50px;
+                        }
+                    }
+
+                    .Name {
+                        font-size: 20px;
+                        font-weight: bold;
+                    }
+                }
+
+                .UserLabel {
+                    flex: 1;
+                    font-size: 14px;
+                    font-weight: bold;
+                }
+
+                .Action {
+                    --width: auto;
+                    display: flex;
+                    justify-content: center;
+
+                    .Connect {
+                        --background-color: #388e3c;
+                        --border-color: #2e7d32;
+                    }
+                }
+            }
+        }
+    }
+}

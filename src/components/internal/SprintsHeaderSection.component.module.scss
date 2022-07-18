@@ -1,0 +1,94 @@
+@import '../../libs/ui/styleguide/color';
+@import '../../libs/ui/styleguide/easing';
+
+.SprintHeaderSection {
+    height: 30px;
+
+    .HeaderSection {
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+        color: white;
+        display: flex;
+        height: 30px;
+        padding: 0 14px;
+
+        .Icon {
+            --icon-color: white;
+            --icon-size: 20px;
+        }
+
+        .Name {
+            font-weight: 600;
+            margin: 0 4px 0 6px;
+            user-select: none;
+        }
+
+        &.Active,
+        &:hover {
+            background-color: white;
+            color: $primaryColor;
+            cursor: pointer;
+
+            .Icon {
+                --icon-color: $primaryColor;
+                --icon-size: 20px;
+            }
+        }
+    }
+
+    .Detail {
+        background-color: white;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+        margin: 4px 4px 0 4px;
+
+        .AddButton {
+            align-items: center;
+            --icon-color: #424242;
+            display: flex;
+            font-weight: bold;
+            height: 40px;
+            justify-content: center;
+            --icon-size: 28px;
+        }
+
+        .Divider {
+            border-top: 1px dashed #e0e0e0;
+            margin: 0 10px;
+        }
+
+        .Sprints {
+            color: #424242;
+            font-weight: 600;
+            text-align: center;
+
+            .Sprint {
+                align-items: center;
+                padding: 8px 0;
+                position: relative;
+
+                .Selected {
+                    background-color: #3d7bf6;
+                    border-radius: 50%;
+                    height: 6px;
+                    left: 12px;
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 6px;
+                }
+
+                &:hover {
+                    background-color: #3d7bf6;
+                    color: white;
+                    cursor: pointer;
+
+                    .Selected {
+                        background-color: white;
+                    }
+                }
+            }
+        }
+    }
+}

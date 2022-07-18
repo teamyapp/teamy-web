@@ -2,7 +2,7 @@
 @import '../libs/ui/styleguide/utility';
 @import '../libs/ui/styleguide/easing';
 @import '../libs/ui/styleguide/elevation';
-@import './shared/shared';
+@import './internal/shared';
 
 .App {
     @include menuButton;
@@ -25,10 +25,31 @@
             justify-content: center;
         }
 
-        .Execution {
-            box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px;
-            flex: 1;
+        .Team {
+            display: flex;
+            height: 100%;
             overflow-y: hidden;
+
+            .Sidebar {
+                width: 0;
+                overflow: hidden;
+                transition: width 500ms ease-in-out;
+
+                .Backlog {
+                    width: 400px;
+                    height: 100%;
+                }
+
+                &.Shown {
+                    width: 400px;
+                }
+            }
+
+            .Content {
+                box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px;
+                flex: 1;
+                overflow-y: hidden;
+            }
         }
 
         .NoTeamSelected {

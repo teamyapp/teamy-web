@@ -1,0 +1,41 @@
+@import '../TaskLists.module';
+
+$upcomingPrimary: #1e88e5;
+
+.TaskListSection {
+    --background-color: #effcff;
+    --title-color: #{$upcomingPrimary};
+    display: flex;
+
+    height: 100%;
+    width: 100%;
+
+    .SectionTopBar {
+        .TaskCounter {
+            background-color: $upcomingPrimary;
+        }
+
+        .SortOrder {
+            --drop-down-button-color: rgba(0, 0, 0, 0.2);
+            --drop-down-color: #{$upcomingPrimary};
+
+            --drop-down-font-size: 14px;
+            --drop-down-height: 24px;
+            --drop-down-width: 100px;
+            height: 100%;
+            margin-left: 10px;
+        }
+
+        .Actions {
+            border-radius: 4px;
+            --icon-color: #{$upcomingPrimary};
+            user-select: none;
+
+            &:hover {
+                background-color: $upcomingPrimary;
+                --icon-color: white;
+                cursor: pointer;
+            }
+        }
+    }
+}

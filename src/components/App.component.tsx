@@ -1,3 +1,5 @@
+import { CloudComponent } from '@cloud/Cloud.component';
+import classNames from 'classnames';
 import React, { Component, Fragment, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -9,16 +11,16 @@ import { DropDownList, Option } from '@lib/ui/DropDownList';
 
 import {
     debugRoutePattern,
-    executionTabRoutePattern,
-    executionTaskRoutePattern,
     getTeamId,
     invitationRoutePattern,
     rootRoutePattern,
     signInFinishRoutePattern,
     signInRoutePattern,
     signUpRoutePattern,
-    teamPath,
-    teamRoutePattern,
+    sprintTabRoutePattern,
+    sprintTaskRoutePattern,
+    sprintsPath,
+    sprintsRoutePattern,
 } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
@@ -29,22 +31,22 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
-import { CloudComponent } from '../cloud/Cloud.component';
 import styles from './App.component.module.scss';
-import { DebugComponent } from './Debug.component';
-import { ExecutionComponent } from './Execution.component';
-import { InvitationComponent } from './Invitation.component';
-import { SignUpComponent, signUpRedirectKey } from './SignUp.component';
-import { DrawerUI } from './shared/Drawer';
-import { HeaderComponent } from './shared/Header.component';
-import { AddTeamMembersModalComponent } from './shared/Modals/AddTeamMembersModal.component';
-import { CreateTeamModalComponent } from './shared/Modals/CreateTeamModal.component';
-import { TeamSettingsModalComponent } from './shared/Modals/TeamSettingsModal.component';
-import { UserSettingsModalComponent } from './shared/Modals/UserSettingsModal.component';
-import { InvitationLinkCopiedFeedbackComponent } from './shared/feedbacks/InviationLinkCopiedFeedback.component';
-import { TaskUpdatedFeedbackComponent } from './shared/feedbacks/TaskUpdatedFeedback.component';
-import { TeamProfileUpdatedFeedbackComponent } from './shared/feedbacks/TeamProfileUpdatedFeedback.component';
-import { UserProfileUpdatedFeedbackComponent } from './shared/feedbacks/UserProfileUpdatedFeedback.component';
+import { BacklogComponent } from './internal/Backlog.component';
+import { DrawerUI } from './internal/Drawer';
+import { HeaderComponent } from './internal/Header.component';
+import { AddTeamMembersModalComponent } from './internal/Modals/AddTeamMembersModal.component';
+import { CreateTeamModalComponent } from './internal/Modals/CreateTeamModal.component';
+import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
+import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
+import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/InviationLinkCopiedFeedback.component';
+import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
+import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
+import { UserProfileUpdatedFeedbackComponent } from './internal/feedbacks/UserProfileUpdatedFeedback.component';
+import { DebugComponent } from './pages/Debug.component';
+import { InvitationComponent } from './pages/Invitation.component';
+import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
+import { SprintsComponent } from './pages/Sprints.component';
 
 interface Props {
     deps: Deps;
@@ -58,6 +60,7 @@ interface State {
     teams: Team[];
     activeTeamId?: number;
     isDrawerOpen: boolean;
+    showBacklog: boolean;
     taskFilters: TaskFilters;
 }
 
@@ -72,10 +75,10 @@ const acceptedRoutePatterns = [
     signUpRoutePattern,
     signInRoutePattern,
     signInFinishRoutePattern,
-    teamRoutePattern,
+    sprintsRoutePattern,
     invitationRoutePattern,
-    executionTabRoutePattern,
-    executionTaskRoutePattern,
+    sprintTabRoutePattern,
+    sprintTaskRoutePattern,
 ];
 
 export class AppComponent extends Component<Props, State> {
@@ -92,6 +95,7 @@ export class AppComponent extends Component<Props, State> {
         createRef<AddTeamMembersModalComponent>();
     private readonly userModalRef = createRef<UserSettingsModalComponent>();
     private readonly createTeamModalRef = createRef<CreateTeamModalComponent>();
+    private readonly backlogRef = createRef<BacklogComponent>();
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
@@ -105,6 +109,7 @@ export class AppComponent extends Component<Props, State> {
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
+            showBacklog: false,
             showMainContent: false,
             showPrivatePage: false,
             isDrawerOpen: false,
@@ -153,27 +158,40 @@ export class AppComponent extends Component<Props, State> {
                                 onMenuToggle={this.onMenuToggle}
                                 onUserProfileClick={this.onUserProfileClick}
                                 onTaskFiltersChange={this.onTaskFiltersChange}
+                                onBacklogToggle={this.onBacklogToggle}
                             />
                             {this.state.showMainContent &&
                                 (this.state.activeTeamId ? (
-                                    <Route
-                                        router={this.router}
-                                        pattern={teamRoutePattern}
-                                    >
-                                        <div className={styles.Execution}>
-                                            {
-                                                <ExecutionComponent
+                                    <div className={styles.Team}>
+                                        <div
+                                            className={`${
+                                                styles.Sidebar
+                                            } ${classNames({
+                                                [styles.Shown]:
+                                                    this.state.showBacklog,
+                                            })}`}
+                                        >
+                                            <div className={styles.Backlog}>
+                                                <BacklogComponent
+                                                    ref={this.backlogRef}
                                                     deps={this.props.deps}
-                                                    teamId={
-                                                        this.state.activeTeamId
-                                                    }
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className={styles.Content}>
+                                            <Route
+                                                router={this.router}
+                                                pattern={sprintsRoutePattern}
+                                            >
+                                                <SprintsComponent
+                                                    deps={this.props.deps}
                                                     taskFilters={
                                                         this.state.taskFilters
                                                     }
                                                 />
-                                            }
+                                            </Route>
                                         </div>
-                                    </Route>
+                                    </div>
                                 ) : (
                                     this.renderNoActiveTeam()
                                 ))}
@@ -228,7 +246,7 @@ export class AppComponent extends Component<Props, State> {
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
-                console.log('waiting for state changes');
+                console.log('[AppComponent] waiting for state changes');
                 const hasChanged = await this.stateChangeChan!.pop();
                 if (hasChanged === undefined) {
                     // check undefined instead of falsy because
@@ -247,7 +265,7 @@ export class AppComponent extends Component<Props, State> {
             this.router.registerRoute(pattern, false);
         });
         this.routeChangeChan = this.router.subscribeRouteChange();
-        console.log('[AppComponent]subscribing');
+        console.log('[AppComponent] subscribing');
         (async () => {
             while (true) {
                 const routeUpdate = await this.routeChangeChan!.pop();
@@ -280,7 +298,7 @@ export class AppComponent extends Component<Props, State> {
                 if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
                     this.tryRedirect(currTeamId);
                     console.log(
-                        '[AppComponent][Discarded]',
+                        '[AppComponent] discarded',
                         routeUpdate.routePattern,
                         routeUpdate.suffix,
                         routeUpdate.params.pathParams,
@@ -289,7 +307,7 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 console.log(
-                    '[AppComponent][Accepted]',
+                    '[AppComponent] accepted',
                     routeUpdate.routePattern,
                     routeUpdate.suffix,
                     routeUpdate.params.pathParams,
@@ -305,7 +323,7 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 if (this.graphSource.currentTeam()) {
-                    this.stateSyncer.pullCurrentTeam();
+                    this.stateSyncer.pullCurrentTeam().then();
                 } else {
                     this.router.navigateTo(rootRoutePattern);
                 }
@@ -375,7 +393,7 @@ export class AppComponent extends Component<Props, State> {
     }
 
     private onActiveTeamOptionSelect = (teamId: string) => {
-        this.onActiveTeamSelect(parseInt(teamId));
+        this.onActiveTeamSelect(parseInt(teamId), true).then();
     };
 
     private onTaskFiltersChange = (taskFilters: TaskFilters) => {
@@ -414,19 +432,22 @@ export class AppComponent extends Component<Props, State> {
         this.createTeamModalRef.current?.open();
     };
 
-    private onActiveTeamSelect = async (teamId: number): Promise<void> => {
+    private onActiveTeamSelect = async (
+        teamId: number,
+        notifyRouteChange: boolean = false,
+    ): Promise<void> => {
         const prevActiveTeamId = this.graphSource.currentTeam()?.id;
         if (this.stateSyncer.trySetCurrentTeam(teamId)) {
             await this.stateSyncer.pullCurrentTeam();
-            this.router.navigateTo(teamPath(teamId), {
-                notifyRouteChange: false,
+            this.router.navigateTo(sprintsPath(teamId), {
+                notifyRouteChange: notifyRouteChange,
             });
             return;
         }
 
         if (prevActiveTeamId) {
             this.stateSyncer.trySetCurrentTeam(prevActiveTeamId);
-            this.router.navigateTo(teamPath(prevActiveTeamId), {
+            this.router.navigateTo(sprintsPath(prevActiveTeamId), {
                 notifyRouteChange: false,
             });
         }
@@ -449,7 +470,7 @@ export class AppComponent extends Component<Props, State> {
 
     private tryRedirect(activeTeamId?: number) {
         if (activeTeamId) {
-            this.router.navigateTo(teamPath(activeTeamId));
+            this.router.navigateTo(sprintsPath(activeTeamId));
         } else {
             this.router.navigateTo(rootRoutePattern);
             this.setState({
@@ -475,4 +496,14 @@ export class AppComponent extends Component<Props, State> {
         localStorage.setItem(signUpRedirectKey, currUrl);
         this.props.deps.router.navigateTo(signUpRoutePattern);
     }
+
+    private onBacklogToggle = () => {
+        if (!this.state.showBacklog) {
+            this.backlogRef.current?.refresh();
+        }
+        
+        this.setState({
+            showBacklog: !this.state.showBacklog,
+        });
+    };
 }

@@ -3,12 +3,15 @@ import { Params } from '@lib/router/router';
 export const absoluteRootPath = `${window.location.protocol}//${window.location.host}`;
 
 const teamIdParam = 'teamId';
+const sprintIdParam = 'sprintId';
 const tabIdParam = 'tabId';
 const taskIdParam = 'taskId';
 const invitationIdParam = 'id';
 const invitationCodeParam = 'code';
 
 export const getTeamId = (params?: Params) => params?.pathParams[teamIdParam];
+export const getSprintId = (params?: Params) =>
+    params?.pathParams[sprintIdParam];
 export const getTabId = (params?: Params) => params?.pathParams[tabIdParam];
 export const getTaskId = (params?: Params) => params?.pathParams[taskIdParam];
 export const getInvitationId = (params?: Params) =>
@@ -20,21 +23,28 @@ export const rootRoutePattern = '/';
 export const debugRoutePattern = `${rootRoutePattern}debug`;
 export const teamRoutePattern = `${rootRoutePattern}teams/{${teamIdParam}}`;
 export const invitationRoutePattern = `${rootRoutePattern}invitation`;
-export const executionTabRoutePattern = `${teamRoutePattern}/execution/{${tabIdParam}}`;
-export const executionTaskRoutePattern = `${executionTabRoutePattern}/tasks/{${taskIdParam}}`;
+export const sprintsRoutePattern = `${teamRoutePattern}/sprints`;
+export const sprintRoutePattern = `${sprintsRoutePattern}/{${sprintIdParam}}`;
+export const sprintTabRoutePattern = `${sprintRoutePattern}/{${tabIdParam}}`;
+export const sprintTaskRoutePattern = `${sprintTabRoutePattern}/tasks/{${taskIdParam}}`;
 export const cloudRoutePattern = `${rootRoutePattern}cloud`;
 export const signUpRoutePattern = `${rootRoutePattern}sign-up`;
 export const signInRoutePattern = `${cloudRoutePattern}/identity/sign-in`;
 export const signInFinishRoutePattern = `${cloudRoutePattern}/identity/sign-in-finish`;
 
 export const teamPath = (teamId: number) => `/teams/${teamId}`;
-export const executionTabPath = (teamId: number, tabId: string) =>
-    `${teamPath(teamId)}/execution/${tabId}`;
-export const executionTaskPath = (
+export const sprintsPath = (teamId: number) => `/teams/${teamId}/sprints`;
+export const sprintTabPath = (
     teamId: number,
+    sprintId: number,
+    tabId: string,
+) => `${teamPath(teamId)}/sprints/${sprintId}/${tabId}`;
+export const sprintTaskPath = (
+    teamId: number,
+    sprintId: number,
     tabId: string,
     taskId: string,
-) => `${executionTabPath(teamId, tabId)}/tasks/${taskId}`;
+) => `${sprintTabPath(teamId, sprintId, tabId)}/tasks/${taskId}`;
 
 export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`;
 

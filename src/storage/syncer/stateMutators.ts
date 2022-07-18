@@ -1,5 +1,6 @@
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
+import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteThread } from '@core/client/entity/remoteThread';
@@ -9,6 +10,8 @@ import { AppState } from '@core/storage/states/app.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
 import { toDate, toInt } from '@core/storage/states/parser';
+import { SprintState } from '@core/storage/states/sprint.state';
+import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation.state';
 import { TaskState } from '@core/storage/states/task.state';
 import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRelation.state';
 import { TeamState } from '@core/storage/states/team.state';
@@ -220,7 +223,7 @@ export function deleteInvitations(
     currState: AppState,
     teamId: number,
 ): AppState {
-    const newInvitations: { [invitationId: number]: InvitationState } = {};
+    const newInvitations: Record<number, InvitationState> = {};
     for (let invitationId in currState.invitations) {
         const invitation = currState.invitations[invitationId];
         if (invitation.teamId !== teamId) {
@@ -233,7 +236,7 @@ export function deleteInvitations(
 }
 
 export function deleteTeamTasks(currState: AppState, teamId: number): AppState {
-    const newTasks: { [taskId: number]: TaskState } = {};
+    const newTasks: Record<number, TaskState> = {};
     for (let taskId in currState.tasks) {
         const task = currState.tasks[taskId];
         if (task.owningTeamId === teamId) {
@@ -309,6 +312,7 @@ export function mergeTask(
         owningTeamId:
             toInt(remoteTask.owningTeam?.id) || localOldTask.owningTeamId,
         status: remoteTask.status || localOldTask?.status,
+        isPlanned: remoteTask.isPlanned || localOldTask?.isPlanned,
         commentsThreadId:
             toInt(remoteTask.comments?.id) || localOldTask.commentsThreadId,
         createdAt: toDate(remoteTask.createdAt) || localOldTask.createdAt,
@@ -366,9 +370,7 @@ export function mergeMessage(
         authorUserId:
             toInt(remoteMessage.author?.id) || localOldMessage.authorUserId,
         threadId: toInt(remoteMessage.thread?.id) || localOldMessage.threadId,
-        createdAt: remoteMessage.createdAt
-            ? new Date(remoteMessage.createdAt)
-            : localOldMessage.createdAt,
+        createdAt: toDate(remoteMessage.createdAt) || localOldMessage.createdAt,
         updatedAt:
             remoteMessage.updatedAt === undefined
                 ? localOldMessage.updatedAt
@@ -400,9 +402,7 @@ export function mergeTeam(
             remoteTeam.iconUrl === undefined
                 ? localOldTeam.iconUrl
                 : remoteTeam.iconUrl,
-        createdAt: remoteTeam.createdAt
-            ? new Date(remoteTeam.createdAt)
-            : localOldTeam.createdAt,
+        createdAt: toDate(remoteTeam.createdAt) || localOldTeam.createdAt,
         creatorUserId:
             toInt(remoteTeam.creator?.id) || localOldTeam.creatorUserId,
         ownerUserId: toInt(remoteTeam.owner?.id) || localOldTeam.ownerUserId,
@@ -432,7 +432,49 @@ export function mergeTeam(
     remoteTeam.invitations?.forEach((invitation) => {
         currAppState = mergeInvitation(currAppState, invitation);
     });
+    remoteTeam.sprints?.forEach((sprint) => {
+        currAppState = mergeSprint(currAppState, sprint);
+    });
     currAppState.teams[remoteTeamId] = localNewTeam;
+    return currAppState;
+}
+
+export function mergeSprint(
+    currAppState: AppState,
+    remoteSprint: RemoteSprint,
+): AppState {
+    const remoteSprintId = toInt(remoteSprint.id)!;
+    const localOldSprint = currAppState.sprints[remoteSprintId] || {};
+    const localNewSprint: SprintState = {
+        id: remoteSprintId,
+        startAt: toDate(remoteSprint.startAt) || localOldSprint.startAt,
+        endAt: toDate(remoteSprint.endAt) || localOldSprint.endAt,
+        createdAt: toDate(remoteSprint.createdAt) || localOldSprint.createdAt,
+        owningTeamId:
+            toInt(remoteSprint.owningTeam?.id) || localOldSprint.owningTeamId,
+    };
+
+    if (remoteSprint.owningTeam) {
+        currAppState = mergeTeam(currAppState, remoteSprint.owningTeam);
+    }
+
+    remoteSprint.tasks?.forEach((task) => {
+        currAppState = mergeTask(currAppState, task);
+    });
+    if (remoteSprint.tasks) {
+        const remainRelations = currAppState.sprintTaskRelations.filter(
+            (relation) => relation.sprintId !== remoteSprintId,
+        );
+
+        const addedRelations = remoteSprint.tasks.map(
+            (task) =>
+                new SprintTaskRelationState(remoteSprintId, toInt(task.id)!),
+        );
+        currAppState.sprintTaskRelations =
+            remainRelations.concat(addedRelations);
+    }
+
+    currAppState.sprints[remoteSprintId] = localNewSprint;
     return currAppState;
 }
 
@@ -470,9 +512,8 @@ export function mergeInvitation(
         expireAt: remoteInvitation.expireAt
             ? toDate(remoteInvitation.expireAt)!
             : localOldInvitation.expireAt,
-        createdAt: remoteInvitation.createdAt
-            ? toDate(remoteInvitation.createdAt)!
-            : localOldInvitation.createdAt,
+        createdAt:
+            toDate(remoteInvitation.createdAt) || localOldInvitation.createdAt,
         updatedAt:
             remoteInvitation.updatedAt === undefined
                 ? localOldInvitation.updatedAt
@@ -531,38 +572,6 @@ export function replaceTeamMembers(
     return currAppState;
 }
 
-export function replaceAndMergeTeamTasks(
-    currAppState: AppState,
-    currTeamId: number,
-    newTasks: RemoteTask[],
-): AppState {
-    const tasks: { [taskId: number]: TaskState } = {};
-    for (const taskId in currAppState.tasks) {
-        const task = currAppState.tasks[taskId];
-        if (task.owningTeamId === currTeamId) {
-            continue;
-        }
-
-        tasks[taskId] = task;
-    }
-
-    const oldTasks = currAppState.tasks;
-    currAppState.tasks = tasks;
-    for (const task of newTasks) {
-        const oldTaskId = toInt(task.id)!;
-        const oldTask = oldTasks[oldTaskId];
-        if (oldTask) {
-            currAppState.tasks[oldTaskId] = oldTask;
-        }
-    }
-
-    for (const task of newTasks) {
-        mergeTask(currAppState, task);
-    }
-
-    return currAppState;
-}
-
 function replaceAndMergeAwaitFor(
     currAppState: AppState,
     awaitingTaskId: number,
@@ -585,7 +594,7 @@ export function replaceTeamInvitations(
     teamId: number,
     newInvitations: RemoteInvitation[],
 ): AppState {
-    const invitations: { [invitationId: number]: InvitationState } = {};
+    const invitations: Record<number, InvitationState> = {};
     for (let invitationId in currAppState.invitations) {
         const invitation = currAppState.invitations[invitationId];
         if (invitation.teamId !== teamId) {
@@ -600,7 +609,7 @@ export function replaceTeamInvitations(
 }
 
 export function deleteThread(appState: AppState, threadId: number): AppState {
-    const newMessages: { [messageId: number]: MessageState } = {};
+    const newMessages: Record<number, MessageState> = {};
     for (let messageId in appState.messages) {
         const message = appState.messages[messageId];
         if (message.threadId === threadId) {

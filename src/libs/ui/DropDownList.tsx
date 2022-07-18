@@ -26,7 +26,7 @@ export class DropDownList extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        const options: { [key: string]: Option } = {};
+        const options: Record<string, Option> = {};
         for (const option of this.props.options) {
             options[option.key] = option;
         }

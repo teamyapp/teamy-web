@@ -13,12 +13,13 @@ export const authProviders: AuthProvider[] = [
     'wechat',
 ];
 
-export const accountProviderNames = new Map<AuthProvider, string>();
-accountProviderNames.set('google', 'Google');
-accountProviderNames.set('github', 'Github');
-accountProviderNames.set('slack', 'Slack');
-accountProviderNames.set('microsoft', 'Microsoft');
-accountProviderNames.set('wechat', 'WeChat');
+export const accountProviderNames: Record<AuthProvider, string> = {
+    google: 'Google',
+    github: 'Github',
+    slack: 'Slack',
+    microsoft: 'Microsoft',
+    wechat: 'WeChat',
+};
 
 export interface LinkedUser {
     id: number;

@@ -1,22 +1,33 @@
 $width: var(--drop-down-width, auto);
 $height: var(--drop-down-height, 24px);
 $fontSize: var(--drop-down-font-size, 14px);
+$fontWeight: var(--drop-down-font-weight, 600);
+$fontColor: var(--drop-down-font-color, white);
 $dropDownColor: var(--drop-down-color, #546e7a);
-$dropDownButtonDarkness: var(--drop-down-button-darkness, 0.2);
+$dropDownButtonColor: var(--drop-down-button-color, rgba(0, 0, 0, 0.2));
+$dropDownButtonHoverColor: var(
+    --drop-down-button-hover-color,
+    rgba(0, 0, 0, 0.25)
+);
+$availableOptionsMarginTop: var(--drop-down-options-margin-top, 3px);
+$availableOptionsMarginSide: var(--drop-down-options-margin-side, 4px);
+
 $optionPadding: 8px;
 
 .DropDownList {
-    background-color: $dropDownColor;
-    border-radius: 4px;
-    color: white;
+    color: $fontColor;
     font-size: $fontSize;
-    height: $height;
     user-select: none;
     width: $width;
+    height: $height;
 
     .SelectedOption {
+        background-color: $dropDownColor;
         display: flex;
-        height: 100%;
+        width: $width;
+        height: $height;
+        overflow: hidden;
+        border-radius: 4px;
 
         .Option {
             align-items: center;
@@ -27,6 +38,7 @@ $optionPadding: 8px;
             height: 100%;
             line-height: $fontSize;
             padding: 0 $optionPadding;
+            font-weight: $fontWeight;
 
             &:hover {
                 background-color: rgba(255, 255, 255, 0.08);
@@ -36,8 +48,7 @@ $optionPadding: 8px;
 
         .DropDownButton {
             align-items: center;
-            background-color: rgba(0, 0, 0, $dropDownButtonDarkness);
-            border-radius: 0 4px 4px 0;
+            background-color: $dropDownButtonColor;
             --icon-color: white;
             display: flex;
             height: $height;
@@ -46,12 +57,7 @@ $optionPadding: 8px;
             width: $height;
 
             &:hover {
-                background-color: rgba(
-                    0,
-                    0,
-                    0,
-                    calc(#{$dropDownButtonDarkness} + 0.05)
-                );
+                background-color: $dropDownButtonHoverColor;
                 cursor: pointer;
             }
         }
@@ -61,7 +67,9 @@ $optionPadding: 8px;
         background-color: white;
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
         color: black;
-        margin: 3px 4px 0 4px;
+        font-weight: $fontWeight;
+        margin: $availableOptionsMarginTop $availableOptionsMarginSide 0
+            $availableOptionsMarginSide;
         outline: none;
         position: relative;
         z-index: 1000;

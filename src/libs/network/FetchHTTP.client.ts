@@ -3,7 +3,7 @@ import { Result } from '@lib/error/result';
 
 import { HTTPClient } from './HTTP.client';
 
-const errors: { [httpError: number]: Errors } = {
+const errors: Record<number, Errors> = {
     400: Errors.BadRequest,
     401: Errors.Unauthenticated,
     404: Errors.NotFound,
@@ -22,7 +22,7 @@ export class FetchHTTPClient implements HTTPClient {
         url: string,
         options?: {
             method: string;
-            headers?: { [key: string]: string };
+            headers?: Record<string, string>;
             body?: string;
         },
     ): Promise<Result<string, Errors>> {
