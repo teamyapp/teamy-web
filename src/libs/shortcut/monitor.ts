@@ -12,7 +12,7 @@ export class ShortcutMonitor<UserActionEvent> {
     private readonly userActionMultiCaster = multi<UserActionEvent>(
         this.userActionChan,
     );
-    private readonly shortcutLookup: { [keys: string]: UserActionEvent } = {};
+    private readonly shortcutLookup: Record<string, UserActionEvent> = {};
 
     constructor(shortcuts: Shortcut<UserActionEvent>[]) {
         for (const shortcut of shortcuts) {

@@ -27,6 +27,8 @@ export function ownedBy(ownerUserId: number): Filter<Task> {
     return (task: Task) => task.owner?.id === ownerUserId;
 }
 
+export const unplanned: Filter<Task> = (task: Task): boolean => !task.isPlanned;
+
 export function between(
     begin: Date | null,
     end: Date | null,

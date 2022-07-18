@@ -1,3 +1,5 @@
+import { Sprint } from '@core/entity/sprint';
+
 import { User } from './user';
 
 export interface Team {
@@ -7,4 +9,5 @@ export interface Team {
     creator: User;
     owner: User;
     members?: User[];
+    sprints?: Sprint[];
 }

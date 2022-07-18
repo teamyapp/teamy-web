@@ -1,3 +1,5 @@
+import { RemoteSprint } from '@core/client/entity/remoteSprint';
+
 import { RemoteInvitation } from './remoteInvitation';
 import { RemoteTask } from './remoteTask';
 import { RemoteUser } from './remoteUser';
@@ -12,4 +14,5 @@ export interface RemoteTeam {
     members?: RemoteUser[];
     tasks?: RemoteTask[];
     invitations?: RemoteInvitation[];
+    sprints?: RemoteSprint[];
 }

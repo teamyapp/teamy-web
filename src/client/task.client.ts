@@ -28,6 +28,7 @@ export class TaskClient {
                                 lastName
                                 profileUrl
                             }
+                            isPlanned
                             createdAt
                             comments {
                                 id
@@ -52,42 +53,6 @@ export class TaskClient {
                 },
             })
             .then((payload: any) => payload?.tasks[0]);
-    }
-
-    getTasksPreview(teamId: string): Promise<RemoteTask[]> {
-        return this.graphQLClient
-            .query({
-                query: gql`
-                    query getTasksPreview($teamId: ID!) {
-                        teams(filter: { teamId: $teamId }) {
-                            id
-                            tasks {
-                                id
-                                goal
-                                dueAt
-                                status
-                                owner {
-                                    id
-                                    firstName
-                                    lastName
-                                    profileUrl
-                                }
-                                owningTeam {
-                                    id
-                                }
-                                availableActions
-                                awaitForTasks {
-                                    id
-                                }
-                            }
-                        }
-                    }
-                `,
-                variables: {
-                    teamId,
-                },
-            })
-            .then((payload: any) => payload?.teams[0]?.tasks);
     }
 
     createTask(teamId: string, task: CreateTaskInput): Promise<RemoteTask> {

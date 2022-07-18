@@ -10,7 +10,7 @@ export class WithIdentity implements HTTPClient {
         url: string,
         options?: {
             method: string;
-            headers?: { [header: string]: string };
+            headers?: Record<string, string>;
             body?: string;
         },
     ): Promise<Result<string, Errors>> {

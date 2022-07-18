@@ -55,3 +55,7 @@ export interface UpdateInvitationInput {
     receiverLastName?: string;
     expireAt: Date;
 }
+
+export interface CreateSprintInput {
+    startAt: Date;
+}

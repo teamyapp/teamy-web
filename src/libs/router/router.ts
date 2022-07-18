@@ -7,13 +7,13 @@ export interface RouteUpdate {
 }
 
 export interface Params {
-    pathParams: { [key: string]: string };
-    queryParams: { [key: string]: string };
+    pathParams: Record<string, string>;
+    queryParams: Record<string, string>;
 }
 
 interface Segment {
     isPath: boolean;
-    children: { [pattern: string]: Segment };
+    children: Record<string, Segment>;
     pathParam?: string;
 }
 

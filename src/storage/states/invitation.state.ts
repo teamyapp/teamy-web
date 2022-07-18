@@ -23,7 +23,7 @@ export class InvitationState {
             json.SenderUserID,
             json.TeamID,
             toDate(json.ExpireAt)!,
-            json.Status as InvitationStatus,
+            json.Status,
             json.Code,
             toDate(json.CreatedAt)!,
             json.ReceiverFirstName,

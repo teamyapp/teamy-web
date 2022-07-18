@@ -2,6 +2,7 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
+import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { CreateTeamInput, UpdateTeamInput } from '@core/client/entity/input';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteUser } from '@core/client/entity/remoteUser';
@@ -11,6 +12,72 @@ export class TeamClient {
 
     constructor(graphQLClient: GraphQLClient) {
         this.graphQLClient = graphQLClient;
+    }
+
+    public getTeamWithSprintPreviews(teamId: string): Promise<RemoteTeam> {
+        return this.graphQLClient
+            .query({
+                query: gql`
+                    query getTeam($teamId: ID!) {
+                        teams(filter: { teamId: $teamId }) {
+                            id
+                            sprints {
+                                id
+                                startAt
+                                endAt
+                                owningTeam {
+                                    id
+                                }
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                },
+            })
+            .then((payload: any) => payload?.teams[0]);
+    }
+
+    public getTeamWithTaskPreviews(
+        teamId: string,
+        taskFilter?: RemoteTaskFilter,
+    ): Promise<RemoteTeam> {
+        return this.graphQLClient
+            .query({
+                query: gql`
+                    query getTeam($teamId: ID!, $taskFilter: TaskFilter) {
+                        teams(filter: { teamId: $teamId }) {
+                            id
+                            tasks(filter: $taskFilter) {
+                                id
+                                goal
+                                dueAt
+                                status
+                                isPlanned
+                                owner {
+                                    id
+                                    firstName
+                                    lastName
+                                    profileUrl
+                                }
+                                owningTeam {
+                                    id
+                                }
+                                availableActions
+                                awaitForTasks {
+                                    id
+                                }
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                    taskFilter,
+                },
+            })
+            .then((payload: any) => payload?.teams[0]);
     }
 
     public createTeam(team: CreateTeamInput): Promise<RemoteTeam> {

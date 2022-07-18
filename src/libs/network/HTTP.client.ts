@@ -6,7 +6,7 @@ export interface HTTPClient {
         url: string,
         options?: {
             method: string;
-            headers?: { [key: string]: string };
+            headers?: Record<string, string>;
             body?: string;
         },
     ): Promise<Result<string, Errors>>;

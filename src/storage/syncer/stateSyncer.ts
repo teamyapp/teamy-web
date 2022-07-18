@@ -1,13 +1,18 @@
+import moment from 'moment';
+
 import { PopChannel, chan, multi } from '@lib/csp/csp';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
+import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
+import { SprintClient } from '@core/client/sprint.client';
 import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { UserClient } from '@core/client/user.client';
+import { TaskFilter } from '@core/entity/filters';
 import {
     CreateInvitationInput,
     CreateMessageInput,
@@ -38,10 +43,10 @@ import {
     deleteThread,
     mergeInvitation,
     mergeMessage,
+    mergeSprint,
     mergeTask,
     mergeTeam,
     mergeUser,
-    replaceAndMergeTeamTasks,
     replaceTeamInvitations,
     replaceTeamMembers,
 } from './stateMutators';
@@ -60,6 +65,7 @@ export class StateSyncer {
         private teamClient: TeamClient,
         private userClient: UserClient,
         private invitationClient: InvitationClient,
+        private sprintClient: SprintClient,
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
@@ -109,6 +115,22 @@ export class StateSyncer {
         }
 
         appState.currTeamId = currTeamId;
+        appState.currSprintId = appState.teamSelectedSprint[currTeamId];
+        this.localStore.updateState(appState);
+        return true;
+    }
+
+    public trySetCurrentSprint(currSprintId: number): boolean {
+        let appState = this.localStore.getState();
+        if (!appState.currTeamId) {
+            return false;
+        }
+
+        if (!appState.sprints[currSprintId]) {
+            return false;
+        }
+
+        appState.currSprintId = currSprintId;
         this.localStore.updateState(appState);
         return true;
     }
@@ -151,10 +173,76 @@ export class StateSyncer {
             return;
         }
 
-        const tasksPreview = await this.taskClient.getTasksPreview(
+        const remoteTeam = await this.teamClient.getTeamWithSprintPreviews(
             `${currTeamId}`,
         );
-        appState = replaceAndMergeTeamTasks(appState, currTeamId, tasksPreview);
+        appState = mergeTeam(appState, remoteTeam);
+        if (remoteTeam.sprints) {
+            const startOfDay = moment(Date.now()).startOf('day').utc().toDate();
+            const startOfDayMilli = startOfDay.getTime();
+            const activeSprint = remoteTeam.sprints.filter(
+                (sprint) =>
+                    new Date(sprint.startAt).getTime() <= startOfDayMilli &&
+                    startOfDayMilli <= new Date(sprint.endAt).getTime(),
+            )[0];
+            if (activeSprint) {
+                mergeSprint(appState, activeSprint);
+                if (!appState.teamSelectedSprint[currTeamId]) {
+                    appState.teamSelectedSprint[currTeamId] = parseInt(
+                        activeSprint.id,
+                    );
+                    appState.currSprintId =
+                        appState.teamSelectedSprint[currTeamId];
+                }
+            }
+        }
+
+        this.localStore.updateState(appState);
+        await this.pullCurrentSprint();
+    }
+
+    public async pullCurrentTeamTaskPreview(filter?: TaskFilter) {
+        let appState = this.localStore.getState();
+        const currTeamId = appState.currTeamId;
+        if (!currTeamId) {
+            return;
+        }
+
+        let remoteFilter: RemoteTaskFilter | undefined;
+        if (filter) {
+            remoteFilter = {
+                goalContains: filter.goalContains,
+                isPlanned: filter.isPlanned,
+                ownerId: filter.ownerId ? `${filter.ownerId}` : undefined,
+                status: filter.status,
+                taskId: filter.taskId ? `${filter.taskId}` : undefined,
+            };
+        }
+        const remoteTeam = await this.teamClient.getTeamWithTaskPreviews(
+            `${currTeamId}`,
+            remoteFilter,
+        );
+
+        appState = mergeTeam(appState, remoteTeam);
+        this.localStore.updateState(appState);
+    }
+
+    public async pullCurrentSprint() {
+        let appState = this.localStore.getState();
+        const currSprintId = appState.currSprintId;
+        if (!currSprintId) {
+            return;
+        }
+
+        const sprint = await this.sprintClient.getSprintWithTaskPreviews(
+            `${currSprintId}`,
+        );
+        if (sprint) {
+            appState = mergeSprint(appState, sprint);
+        } else {
+            delete appState.currSprintId;
+        }
+
         this.localStore.updateState(appState);
     }
 

@@ -13,20 +13,8 @@
             "@core/event/*": ["event/*"],
             "@core/data/*": ["data/*"],
             "@core/dep/*": ["dep/*"],
-            "@lib/csp/*": ["libs/csp/*"],
-            "@lib/error/*": ["libs/error/*"],
-            "@lib/ui/*": ["libs/ui/*"],
-            "@lib/network/*": ["libs/network/*"],
-            "@lib/identity/*": ["libs/identity/*"],
-            "@lib/event/*": ["libs/event/*"],
-            "@lib/store/*": ["libs/store/*"],
-            "@lib/storage/*": ["libs/storage/*"],
-            "@lib/data/*": ["libs/data/*"],
-            "@lib/pubSub/*": ["libs/pubSub/*"],
-            "@lib/router/*": ["libs/router/*"],
-            "@lib/shortcut/*": ["libs/shortcut/*"],
-            "@lib/dragAndDrop/*": ["libs/dragAndDrop/*"],
-            "@lib/testing/*": ["libs/testing/*"]
+            "@cloud/*": ["cloud/*"],
+            "@lib/*": ["libs/*"]
         }
     }
 }

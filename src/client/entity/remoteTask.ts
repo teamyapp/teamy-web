@@ -12,6 +12,7 @@ export interface RemoteTask {
     owner?: RemoteUser;
     owningTeam?: RemoteTeam;
     status?: RemoteTaskStatus;
+    isPlanned?: boolean;
     comments?: RemoteThread;
     createdAt?: string;
     updatedAt?: string;

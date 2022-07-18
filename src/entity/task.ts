@@ -16,5 +16,6 @@ export interface Task {
     comments: Thread;
     availableActions: TaskAction[];
     status: TaskStatus;
+    isPlanned: boolean;
     awaitForTasks: Task[];
 }

@@ -9,6 +9,7 @@ import { ShortcutMonitor } from '@lib/shortcut/monitor';
 
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
+import { SprintClient } from '@core/client/sprint.client';
 import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { UserClient } from '@core/client/user.client';
@@ -52,6 +53,7 @@ export function initDeps(): Deps {
     const teamClient = new TeamClient(teamyGraphQLClient);
     const invitationClient = new InvitationClient(teamyGraphQLClient);
     const messageClient = new MessageClient(teamyGraphQLClient);
+    const sprintClient = new SprintClient(teamyGraphQLClient);
     const localStore = new LocalStore();
     const graphSource = new GraphSource(localStore);
     const stateSyncer = new StateSyncer(
@@ -63,6 +65,7 @@ export function initDeps(): Deps {
         teamClient,
         userClient,
         invitationClient,
+        sprintClient,
     );
     const router = createBrowserRouter();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
