@@ -26,7 +26,7 @@ const testingConfig: Config = {
 
 const stagingConfig: Config = {
     apiBaseEndpoint: 'https://cloud.staging.teamyapp.com/identity',
-    cookieDomain: 'localhost',
+    cookieDomain: 'staging.teamyapp.com',
     cookieSecure: false,
     signInLink: '/cloud/identity/sign-in',
     signInFinishLink: '/cloud/identity/sign-in-finish',
