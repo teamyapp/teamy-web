@@ -424,7 +424,7 @@ export class SprintsComponent extends Component<Props, State> {
     private updateState = () => {
         const currentUser = this.graphSource.currentUser();
         const currentSprint = this.graphSource.currentSprint();
-        console.log('222222', currentSprint?.id);
+        console.log('TODO: Debug', currentSprint?.id);
         const teamTasks = currentSprint?.tasks || [];
         if (currentUser) {
             this.setState({
