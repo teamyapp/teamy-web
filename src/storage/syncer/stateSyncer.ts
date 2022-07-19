@@ -272,9 +272,11 @@ export class StateSyncer {
 
     public async pullTask(taskId: number): Promise<void> {
         const remoteTask = await this.taskClient.getTask(`${taskId}`);
-        let appState = this.localStore.getState();
-        appState = mergeTask(appState, remoteTask);
-        this.localStore.updateState(appState);
+        if (remoteTask) {
+            let appState = this.localStore.getState();
+            appState = mergeTask(appState, remoteTask);
+            this.localStore.updateState(appState);
+        }
     }
 
     public async pullInvitationWithCode(

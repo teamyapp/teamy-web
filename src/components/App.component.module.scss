@@ -9,6 +9,10 @@
     display: flex;
     height: 100vh;
 
+    &.ShowBackground {
+        background-image: url('../assets/backgrounds/sun-pattern.png');
+    }
+
     > .Content {
         --tabs-background-color: white;
         box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
@@ -31,13 +35,13 @@
             overflow-y: hidden;
 
             .Sidebar {
-                width: 0;
                 overflow: hidden;
                 transition: width 500ms ease-in-out;
+                width: 0;
 
                 .Backlog {
-                    width: 400px;
                     height: 100%;
+                    width: 400px;
                 }
 
                 &.Shown {

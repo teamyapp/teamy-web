@@ -246,6 +246,10 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         );
     }
 
+    public close() {
+        this.modalRef.current?.close();
+    }
+
     private updateState(taskId: number) {
         const task = this.graphSource.task(taskId);
         if (!task) {
