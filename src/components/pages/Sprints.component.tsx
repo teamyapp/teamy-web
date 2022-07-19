@@ -156,14 +156,6 @@ export class SprintsComponent extends Component<Props, State> {
                         continue;
                     }
 
-                    if (
-                        this.router.currentRouteUpdate.routePattern.startsWith(
-                            taskRoutePattern,
-                        )
-                    ) {
-                        debugger;
-                    }
-
                     const sprintId = this.graphSource.currentSprint()?.id;
                     if (sprintId) {
                         const tabId = getTabId(
@@ -237,11 +229,6 @@ export class SprintsComponent extends Component<Props, State> {
                 this.tabsRef.current?.setSelectedTabIndex(
                     tabIds.indexOf(tabId),
                 );
-
-                // if (taskIdParam) {
-                //     const taskId = parseInt(taskIdParam);
-                // this.taskDetailModalRef.current?.open(taskId);
-                // }
             }
         })().then();
 
