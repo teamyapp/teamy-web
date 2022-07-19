@@ -18,6 +18,7 @@ import { InlineTaskUI } from './InlineTask';
 
 interface Props {
     deps: Deps;
+    selectOwnerTaskId?: number,
     onViewTaskDetail?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         taskId: number,
@@ -112,6 +113,7 @@ export class BacklogComponent extends Component<Props, State> {
                     task={task}
                     numActionColumns={1}
                     showStatus={true}
+                    isSelectingOwner={task.id === this.props.selectOwnerTaskId}
                     filterTaskAction={filterTaskAction}
                     onUpdateTask={this.onUpdateTask}
                     onDeleteTask={this.onDeleteTask}

@@ -189,6 +189,7 @@ export class AppComponent extends Component<Props, State> {
                                                 <BacklogComponent
                                                     ref={this.backlogRef}
                                                     deps={this.props.deps}
+                                                    selectOwnerTaskId={this.state.selectOwnerTaskId}
                                                     onShowPotentialTaskOwners={
                                                         this
                                                             .onShowPotentialTaskOwners
@@ -206,6 +207,7 @@ export class AppComponent extends Component<Props, State> {
                                             >
                                                 <SprintsComponent
                                                     deps={this.props.deps}
+                                                    selectOwnerTaskId={this.state.selectOwnerTaskId}
                                                     taskFilters={
                                                         this.state.taskFilters
                                                     }
