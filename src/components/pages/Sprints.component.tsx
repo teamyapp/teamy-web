@@ -16,7 +16,6 @@ import {
     sprintTabRoutePattern,
     sprintsPath,
     sprintsRoutePattern,
-    taskRoutePattern,
 } from '@core/config/routing';
 import {
     deliveredSectionId,
