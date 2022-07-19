@@ -8,9 +8,11 @@ import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
+import { BoundingBoxFinder } from '@lib/ui/position';
 
 import {
     debugRoutePattern,
+    getTaskId,
     getTeamId,
     invitationRoutePattern,
     rootRoutePattern,
@@ -18,12 +20,14 @@ import {
     signInRoutePattern,
     signUpRoutePattern,
     sprintTabRoutePattern,
-    sprintTaskRoutePattern,
     sprintsPath,
     sprintsRoutePattern,
+    taskPath,
+    taskRoutePattern,
 } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
+import { UpdateTaskInput } from '@core/entity/input';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { UserActionEvent } from '@core/event/userAction';
@@ -37,8 +41,10 @@ import { DrawerUI } from './internal/Drawer';
 import { HeaderComponent } from './internal/Header.component';
 import { AddTeamMembersModalComponent } from './internal/Modals/AddTeamMembersModal.component';
 import { CreateTeamModalComponent } from './internal/Modals/CreateTeamModal.component';
+import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
 import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
+import { SelectTaskOwnersPopupComponent } from './internal/SelectTaskOwnersPopupComponent';
 import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/InviationLinkCopiedFeedback.component';
 import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
@@ -54,6 +60,7 @@ interface Props {
 
 interface State {
     showMainContent: boolean;
+    showBackground: boolean;
     showPrivatePage: boolean;
     me?: User;
     currentTeam?: Team;
@@ -62,6 +69,7 @@ interface State {
     isDrawerOpen: boolean;
     showBacklog: boolean;
     taskFilters: TaskFilters;
+    selectOwnerTaskId?: number;
 }
 
 const publicRoutePatterns = [
@@ -78,7 +86,7 @@ const acceptedRoutePatterns = [
     sprintsRoutePattern,
     invitationRoutePattern,
     sprintTabRoutePattern,
-    sprintTaskRoutePattern,
+    taskRoutePattern,
 ];
 
 export class AppComponent extends Component<Props, State> {
@@ -89,6 +97,9 @@ export class AppComponent extends Component<Props, State> {
     private readonly identityClient: IdentityClient;
 
     private readonly headerRef = createRef<HeaderComponent>();
+    private readonly selectTaskOwnersPopupRef =
+        createRef<SelectTaskOwnersPopupComponent>();
+    private readonly taskDetailModalRef = createRef<TaskDetailModalComponent>();
     private readonly teamSettingsModalRef =
         createRef<TeamSettingsModalComponent>();
     private readonly addTeamMembersModalRef =
@@ -111,6 +122,7 @@ export class AppComponent extends Component<Props, State> {
         this.state = {
             showBacklog: false,
             showMainContent: false,
+            showBackground: false,
             showPrivatePage: false,
             isDrawerOpen: false,
             teams: [],
@@ -120,7 +132,9 @@ export class AppComponent extends Component<Props, State> {
 
     public render() {
         return (
-            <div className={styles.App}>
+            <div className={`${styles.App} ${classNames({
+                [styles.ShowBackground]: this.state.showBackground
+            })}`}>
                 <Route router={this.router} pattern={debugRoutePattern}>
                     <DebugComponent
                         repoOwner={'teamyapp'}
@@ -175,6 +189,14 @@ export class AppComponent extends Component<Props, State> {
                                                 <BacklogComponent
                                                     ref={this.backlogRef}
                                                     deps={this.props.deps}
+                                                    selectOwnerTaskId={this.state.selectOwnerTaskId}
+                                                    onShowPotentialTaskOwners={
+                                                        this
+                                                            .onShowPotentialTaskOwners
+                                                    }
+                                                    onViewTaskDetail={
+                                                        this.onViewTaskDetail
+                                                    }
                                                 />
                                             </div>
                                         </div>
@@ -185,8 +207,16 @@ export class AppComponent extends Component<Props, State> {
                                             >
                                                 <SprintsComponent
                                                     deps={this.props.deps}
+                                                    selectOwnerTaskId={this.state.selectOwnerTaskId}
                                                     taskFilters={
                                                         this.state.taskFilters
+                                                    }
+                                                    onShowPotentialTaskOwners={
+                                                        this
+                                                            .onShowPotentialTaskOwners
+                                                    }
+                                                    onViewTaskDetail={
+                                                        this.onViewTaskDetail
                                                     }
                                                 />
                                             </Route>
@@ -201,6 +231,18 @@ export class AppComponent extends Component<Props, State> {
                 <Route router={this.router} pattern={invitationRoutePattern}>
                     <InvitationComponent deps={this.props.deps} />
                 </Route>
+                <TaskDetailModalComponent
+                    ref={this.taskDetailModalRef}
+                    deps={this.props.deps}
+                    selectOwnerTaskId={this.state.selectOwnerTaskId}
+                    onClose={this.onTaskDetailModalClose}
+                    onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
+                />
+                <SelectTaskOwnersPopupComponent
+                    ref={this.selectTaskOwnersPopupRef}
+                    deps={this.props.deps}
+                    onClose={this.onTaskOwnersPopupClose}
+                />
                 <TeamSettingsModalComponent
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
@@ -326,6 +368,21 @@ export class AppComponent extends Component<Props, State> {
                     this.stateSyncer.pullCurrentTeam().then();
                 } else {
                     this.router.navigateTo(rootRoutePattern);
+                }
+
+                const taskIdParam = getTaskId(routeUpdate.params);
+                if (taskIdParam) {
+                    const taskId = parseInt(taskIdParam);
+                    if (isNaN(taskId)) {
+                        this.tryRedirect(teamId);
+                        continue;
+                    }
+
+                    this.onViewTaskDetail(taskId);
+                    this.setState({
+                        showBackground: true
+                    })
+                    continue;
                 }
 
                 this.setState({
@@ -501,9 +558,50 @@ export class AppComponent extends Component<Props, State> {
         if (!this.state.showBacklog) {
             this.backlogRef.current?.refresh();
         }
-        
+
         this.setState({
             showBacklog: !this.state.showBacklog,
         });
+    };
+
+    private onShowPotentialTaskOwners = (
+        taskId: number,
+        updateTaskInput: UpdateTaskInput,
+        findAlignTargetBoundBox: BoundingBoxFinder,
+        selectedOwnerId?: number,
+    ) => {
+        this.selectTaskOwnersPopupRef.current?.show.call(
+            null,
+            taskId,
+            updateTaskInput,
+            findAlignTargetBoundBox,
+            selectedOwnerId,
+        );
+        this.setState({
+            selectOwnerTaskId: taskId,
+        });
+    };
+
+    private onTaskOwnersPopupClose = () => {
+        this.setState({
+            selectOwnerTaskId: undefined,
+        });
+    };
+
+    private onViewTaskDetail = (taskId: number) => {
+        this.taskDetailModalRef.current?.open(taskId);
+        if (this.state.activeTeamId) {
+            this.router.navigateTo(taskPath(this.state.activeTeamId, taskId), {
+                notifyRouteChange: false,
+            });
+        }
+    };
+
+    private onTaskDetailModalClose = () => {
+        const teamIdParam = getTeamId(this.router.currentRouteUpdate.params);
+        if (teamIdParam) {
+            const teamId = parseInt(teamIdParam);
+            this.router.navigateTo(sprintsPath(teamId));
+        }
     };
 }

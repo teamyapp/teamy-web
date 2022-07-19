@@ -18,8 +18,7 @@ import { InlineTaskUI } from './InlineTask';
 
 interface Props {
     deps: Deps;
-    onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
-    onDeleteTask?: (taskId: number) => void;
+    selectOwnerTaskId?: number,
     onViewTaskDetail?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         taskId: number,
@@ -73,14 +72,6 @@ export class BacklogComponent extends Component<Props, State> {
         })().then();
     }
 
-    private updateState() {
-        let tasks = this.graphSource.currentTeam()?.tasks || [];
-        tasks = tasks.filter(unplanned).sort(orderByStatusUrgencyAsc);
-        this.setState({
-            unplannedTasks: tasks,
-        });
-    }
-
     componentWillUnmount() {
         this.stateChangeChan?.close();
     }
@@ -107,6 +98,14 @@ export class BacklogComponent extends Component<Props, State> {
         });
     }
 
+    private updateState() {
+        let tasks = this.graphSource.currentTeam()?.tasks || [];
+        tasks = tasks.filter(unplanned).sort(orderByStatusUrgencyAsc);
+        this.setState({
+            unplannedTasks: tasks,
+        });
+    }
+
     private renderTask = (task: Task, index: number): ReactNode => {
         return (
             <div className={styles.ListItem} key={index}>
@@ -114,9 +113,10 @@ export class BacklogComponent extends Component<Props, State> {
                     task={task}
                     numActionColumns={1}
                     showStatus={true}
+                    isSelectingOwner={task.id === this.props.selectOwnerTaskId}
                     filterTaskAction={filterTaskAction}
-                    onUpdateTask={this.props.onUpdateTask}
-                    onDeleteTask={this.props.onDeleteTask}
+                    onUpdateTask={this.onUpdateTask}
+                    onDeleteTask={this.onDeleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}
                     onShowPotentialTaskOwners={
                         this.props.onShowPotentialTaskOwners
@@ -124,6 +124,18 @@ export class BacklogComponent extends Component<Props, State> {
                 />
             </div>
         );
+    };
+
+    private onUpdateTask = async (taskId: number, task: UpdateTaskInput) => {
+        await this.stateSyncer.updateTask(taskId, task);
+        await this.props.deps.feedbackPubSub.publish({
+            type: 'TaskUpdated',
+            taskId: taskId,
+        });
+    };
+
+    private onDeleteTask = (taskId: number): void => {
+        this.stateSyncer.deleteTask(taskId);
     };
 }
 

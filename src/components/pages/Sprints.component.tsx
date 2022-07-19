@@ -4,7 +4,6 @@ import * as csp from '@lib/csp/csp';
 import { and } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { RouteUpdate, Router } from '@lib/router/router';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
@@ -12,13 +11,11 @@ import { draggableTask } from '@core/config/draggable';
 import {
     getSprintId,
     getTabId,
-    getTaskId,
     getTeamId,
     sprintTabPath,
     sprintTabRoutePattern,
-    sprintTaskPath,
-    sprintTaskRoutePattern,
     sprintsPath,
+    sprintsRoutePattern,
 } from '@core/config/routing';
 import {
     deliveredSectionId,
@@ -33,19 +30,13 @@ import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
-import { User } from '@core/entity/user';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { KanbanUI } from '../internal/Kanban';
-import { TaskDetailModalComponent } from '../internal/Modals/TaskDetailModal.component';
 import { PersonalStatusUI } from '../internal/PersonalStatus';
-import { SelectUserListUI } from '../internal/SelectUserList';
 import styles from './Sprints.component.module.scss';
-
-const taskOwnersListVerticalOffset = 4;
-const taskOwnersListHorizontalOffset = 10;
 
 const tabIds = ['me', 'team'];
 
@@ -59,27 +50,26 @@ const sectionIds = [
 interface Props {
     deps: Deps;
     taskFilters: TaskFilters;
+    selectOwnerTaskId?: number;
+    onShowPotentialTaskOwners?: (
+        taskId: number,
+        updateTaskInput: UpdateTaskInput,
+        findAlignTargetBoundBox: BoundingBoxFinder,
+        selectedOwnerId?: number,
+    ) => void;
+    onViewTaskDetail?: (taskId: number) => void;
 }
 
 interface State {
     activeTabIndex: number;
-    showPotentialTaskOwnersList: boolean;
-    findTaskOwnersAlignTargetBoundBox?: BoundingBoxFinder;
-    taskOwnersListVisible: boolean;
-    taskOwnersListLeft: number;
-    taskOwnersListTop: number;
     currentUserId: number;
     selectedSprintId?: number;
     teamTasks: Task[];
-    selectOwnerTaskId?: number;
-    selectedOwnerId?: number;
-    selectOwnerUpdateTaskInput?: UpdateTaskInput;
-    potentialTaskOwners: User[];
     receivingSectionId?: string;
     sortOrders: SortOrders;
 }
 
-const acceptedRoutePatterns = [sprintTabRoutePattern, sprintTaskRoutePattern];
+const acceptedRoutePatterns = [sprintsRoutePattern, sprintTabRoutePattern];
 
 export class SprintsComponent extends Component<Props, State> {
     private readonly router: Router;
@@ -88,8 +78,6 @@ export class SprintsComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
 
     private readonly tabsRef = createRef<TabsUI>();
-    private readonly taskDetailModalRef = createRef<TaskDetailModalComponent>();
-    private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
@@ -103,13 +91,8 @@ export class SprintsComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             activeTabIndex: 0,
-            showPotentialTaskOwnersList: false,
-            taskOwnersListVisible: false,
-            taskOwnersListLeft: 0,
-            taskOwnersListTop: 0,
             currentUserId: -1, // when not logged in yet
             teamTasks: [],
-            potentialTaskOwners: [],
             sortOrders: {
                 upcoming: taskUrgencyOrder,
             },
@@ -133,44 +116,6 @@ export class SprintsComponent extends Component<Props, State> {
                 <div className={styles.Content}>
                     {this.renderTabContent(tabIds[this.state.activeTabIndex])}
                 </div>
-                <TaskDetailModalComponent
-                    ref={this.taskDetailModalRef}
-                    deps={this.props.deps}
-                    selectOwnerTaskId={this.state.selectOwnerTaskId}
-                    onClose={this.onTaskDetailModalClose}
-                    onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
-                />
-                {this.state.showPotentialTaskOwnersList && (
-                    <div
-                        ref={this.taskOwnersPopupRef}
-                        className={styles.SelectTaskOwnerList}
-                        style={{
-                            left: this.state.taskOwnersListLeft,
-                            top: this.state.taskOwnersListTop,
-                            visibility: this.state.taskOwnersListVisible
-                                ? 'visible'
-                                : 'hidden',
-                        }}
-                        tabIndex={-1}
-                        onBlur={this.onCloseTaskOwnersListClick}
-                    >
-                        <div className={styles.SelectTaskOwnerListHeader}>
-                            <div
-                                className={styles.CloseButton}
-                                onClick={this.onCloseTaskOwnersListClick}
-                            >
-                                <MaterialIconUI>close</MaterialIconUI>
-                            </div>
-                        </div>
-                        <SelectUserListUI
-                            emptySelectionUserName={'Unassigned'}
-                            selectedUserId={this.state.selectedOwnerId}
-                            users={this.state.potentialTaskOwners}
-                            onSelectUser={this.onSelectTaskOwner}
-                            onRemoveSelection={this.onRemoveTaskOwner}
-                        />
-                    </div>
-                )}
             </div>
         ) : (
             this.renderCreateSprint()
@@ -178,7 +123,6 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     public componentDidMount() {
-        window.addEventListener('resize', this.onWindowResize);
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -190,29 +134,35 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                const teamIDParam = getTeamId(
-                    this.router.currentRouteUpdate.params,
-                );
-                if (!teamIDParam) {
-                    continue;
-                }
-
-                const team = this.graphSource.currentTeam();
-                if (!team) {
-                    continue;
-                }
-
-                if (team.id !== parseInt(teamIDParam)) {
-                    continue;
-                }
-
-                const sprintId = this.graphSource.currentSprint()?.id;
-                if (sprintId) {
-                    const tabId = getTabId(
+                if (
+                    acceptedRoutePatterns.includes(
+                        this.router.currentRouteUpdate.routePattern,
+                    )
+                ) {
+                    const teamIDParam = getTeamId(
                         this.router.currentRouteUpdate.params,
                     );
-                    if (!tabId || tabIds.indexOf(tabId) < 0) {
-                        this.onTabClick(this.state.activeTabIndex);
+                    if (!teamIDParam) {
+                        continue;
+                    }
+
+                    const team = this.graphSource.currentTeam();
+                    if (!team) {
+                        continue;
+                    }
+
+                    if (team.id !== parseInt(teamIDParam)) {
+                        continue;
+                    }
+
+                    const sprintId = this.graphSource.currentSprint()?.id;
+                    if (sprintId) {
+                        const tabId = getTabId(
+                            this.router.currentRouteUpdate.params,
+                        );
+                        if (!tabId || tabIds.indexOf(tabId) < 0) {
+                            this.onTabClick(this.state.activeTabIndex);
+                        }
                     }
                 }
 
@@ -230,6 +180,10 @@ export class SprintsComponent extends Component<Props, State> {
                 const routeUpdate = await this.routeChangeChan!.pop();
                 if (routeUpdate === undefined) {
                     return;
+                }
+
+                if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
+                    continue;
                 }
 
                 const currTeam = this.graphSource.currentTeam();
@@ -258,7 +212,6 @@ export class SprintsComponent extends Component<Props, State> {
                 }
 
                 const tabId = getTabId(routeUpdate.params);
-                const taskIdParam = getTaskId(routeUpdate.params);
                 if (!tabId || tabIds.indexOf(tabId) < 0) {
                     continue;
                 }
@@ -275,11 +228,6 @@ export class SprintsComponent extends Component<Props, State> {
                 this.tabsRef.current?.setSelectedTabIndex(
                     tabIds.indexOf(tabId),
                 );
-
-                if (taskIdParam) {
-                    const taskId = parseInt(taskIdParam);
-                    this.taskDetailModalRef.current?.open(taskId);
-                }
             }
         })().then();
 
@@ -308,8 +256,6 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener('resize', this.onWindowResize);
-
         this.stateChangeChan?.close();
         this.routeChangeChan?.close();
         this.dragAndDropEventChan?.close();
@@ -361,17 +307,17 @@ export class SprintsComponent extends Component<Props, State> {
                         personalTasks={this.state.teamTasks.filter(
                             personalTasksFilter,
                         )}
-                        selectOwnerTaskId={this.state.selectOwnerTaskId}
+                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         sortOrders={this.state.sortOrders}
                         onCreateTask={this.onCreateTask}
                         onUpdateTask={this.onUpdateTask}
                         onStartTask={this.moveTaskToInProgress}
                         onDeleteTask={this.onDeleteTask}
                         onCompleteTask={this.moveTaskToDelivered}
-                        onViewTaskDetail={this.onViewTaskDetail}
+                        onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
-                            this.onShowPotentialTaskOwners
+                            this.props.onShowPotentialTaskOwners
                         }
                         onSelectUpcomingOrder={this.onSelectUpcomingOrder}
                     />
@@ -381,17 +327,17 @@ export class SprintsComponent extends Component<Props, State> {
                     <KanbanUI
                         deps={this.props.deps}
                         tasks={this.state.teamTasks.filter(teamTasksFilter)}
-                        selectOwnerTaskId={this.state.selectOwnerTaskId}
+                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         sortOrders={this.state.sortOrders}
                         onCreateTask={this.onCreateTask}
                         onUpdateTask={this.onUpdateTask}
                         onStartTask={this.moveTaskToInProgress}
                         onDeleteTask={this.onDeleteTask}
                         onCompleteTask={this.moveTaskToDelivered}
-                        onViewTaskDetail={this.onViewTaskDetail}
+                        onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.onReportTaskBlocked}
                         onShowPotentialTaskOwners={
-                            this.onShowPotentialTaskOwners
+                            this.props.onShowPotentialTaskOwners
                         }
                         onSelectUpcomingOrder={this.onSelectUpcomingOrder}
                     />
@@ -400,26 +346,6 @@ export class SprintsComponent extends Component<Props, State> {
                 return null;
         }
     }
-
-    private showTaskDetail(taskId: number) {
-        const team = this.graphSource.currentTeam();
-        if (!team) {
-            return;
-        }
-
-        this.router.navigateTo(
-            sprintTaskPath(
-                team.id,
-                this.state.selectedSprintId!,
-                tabIds[this.state.activeTabIndex!],
-                `${taskId}`,
-            ),
-        );
-    }
-
-    private onTaskDetailModalClose = () => {
-        this.onTabClick(this.state.activeTabIndex);
-    };
 
     private updateState = () => {
         const currentUser = this.graphSource.currentUser();
@@ -461,109 +387,6 @@ export class SprintsComponent extends Component<Props, State> {
         this.tabsRef.current?.setSelectedTabIndex(tabIndex);
     };
 
-    private onShowPotentialTaskOwners = async (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => {
-        await this.stateSyncer.pullCurrentTeamMembers();
-        const owners = this.graphSource.currentTeam()!.members;
-        this.setState({
-            potentialTaskOwners: owners,
-            selectOwnerTaskId: taskId,
-            selectedOwnerId,
-            selectOwnerUpdateTaskInput: updateTaskInput,
-            findTaskOwnersAlignTargetBoundBox: findAlignTargetBoundBox,
-            showPotentialTaskOwnersList: true,
-        });
-
-        setTimeout(() => {
-            this.setState({
-                taskOwnersListVisible: true,
-            });
-
-            this.taskOwnersPopupRef.current?.focus();
-            this.updateTaskOwnersListPosition();
-        });
-    };
-
-    private onRemoveTaskOwner = () => {
-        this.stateSyncer.updateTask(
-            this.state.selectOwnerTaskId!,
-            Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
-                {},
-                this.state.selectOwnerUpdateTaskInput!,
-                {
-                    ownerUserId: undefined,
-                },
-            ),
-        );
-        this.setState({
-            potentialTaskOwners: [],
-            showPotentialTaskOwnersList: false,
-            taskOwnersListVisible: false,
-            selectedOwnerId: undefined,
-            selectOwnerTaskId: undefined,
-        });
-    };
-
-    private onSelectTaskOwner = (userId: number) => {
-        this.stateSyncer.updateTask(
-            this.state.selectOwnerTaskId!,
-            Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
-                {},
-                this.state.selectOwnerUpdateTaskInput!,
-                {
-                    ownerUserId: userId,
-                },
-            ),
-        );
-        this.setState({
-            potentialTaskOwners: [],
-            showPotentialTaskOwnersList: false,
-            taskOwnersListVisible: false,
-            selectedOwnerId: undefined,
-            selectOwnerTaskId: undefined,
-        });
-    };
-
-    private updateTaskOwnersListPosition = () => {
-        if (!this.state.showPotentialTaskOwnersList) {
-            return;
-        }
-
-        if (!this.state.findTaskOwnersAlignTargetBoundBox) {
-            return;
-        }
-
-        const boundingBox = this.state.findTaskOwnersAlignTargetBoundBox();
-        const width = this.taskOwnersPopupRef.current?.offsetWidth || 0;
-        const height = this.taskOwnersPopupRef.current?.offsetHeight || 0;
-        const left = Math.min(
-            boundingBox.left,
-            document.body.clientWidth - width - taskOwnersListHorizontalOffset,
-        );
-        let top =
-            boundingBox.top + boundingBox.height + taskOwnersListVerticalOffset;
-        if (top + height > document.body.clientHeight) {
-            top = boundingBox.top - height - taskOwnersListVerticalOffset;
-        }
-
-        this.setState({
-            taskOwnersListLeft: left,
-            taskOwnersListTop: top,
-        });
-    };
-
-    private onWindowResize = () => {
-        this.updateTaskOwnersListPosition();
-    };
-
-    private onViewTaskDetail = async (taskId: number): Promise<void> => {
-        this.showTaskDetail(taskId);
-    };
-
     private onCreateTask = (task: CreateTaskInput): void => {
         if (task.goal.length > 0) {
             console.log('creating task');
@@ -596,15 +419,6 @@ export class SprintsComponent extends Component<Props, State> {
 
     private moveTaskToDelivered = (taskId: number): void => {
         this.stateSyncer.moveTaskToDelivered(taskId);
-    };
-
-    private onCloseTaskOwnersListClick = () => {
-        this.setState({
-            potentialTaskOwners: [],
-            selectOwnerTaskId: undefined,
-            taskOwnersListVisible: false,
-            showPotentialTaskOwnersList: false,
-        });
     };
 
     private onSelectUpcomingOrder = (order: string) => {
