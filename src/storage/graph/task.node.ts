@@ -84,12 +84,6 @@ export class TaskNode implements Task {
     }
 
     public get dueAt(): Date | undefined {
-        if (
-            this.taskState.id === 145 &&
-            this.taskState.dueAt?.getTime() === 1654498799000
-        ) {
-            debugger;
-        }
         return this.taskState.dueAt;
     }
 
