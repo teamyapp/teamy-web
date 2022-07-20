@@ -132,6 +132,7 @@ export class StateSyncer {
         }
 
         appState.currSprintId = currSprintId;
+        appState.teamSelectedSprint[appState.currTeamId] = currSprintId;
         this.localStore.updateState(appState);
         return true;
     }
