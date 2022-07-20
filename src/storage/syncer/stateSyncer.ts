@@ -191,8 +191,11 @@ export class StateSyncer {
                     appState.teamSelectedSprint[currTeamId] = parseInt(
                         activeSprint.id,
                     );
-                    appState.currSprintId =
-                        appState.teamSelectedSprint[currTeamId];
+
+                    if (!appState.currSprintId) {
+                        appState.currSprintId =
+                            appState.teamSelectedSprint[currTeamId];
+                    }
                 }
             }
         }
