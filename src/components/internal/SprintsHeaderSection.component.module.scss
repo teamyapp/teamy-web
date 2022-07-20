@@ -3,6 +3,7 @@
 
 .SprintHeaderSection {
     height: 30px;
+    position: relative;
 
     &:focus {
         outline: none;
@@ -42,10 +43,15 @@
     }
 
     .Detail {
+        border-radius: 4px;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 160px;
         background-color: white;
         box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
         box-sizing: border-box;
-        margin: 4px 4px 0 4px;
+        margin-top: 4px;
 
         .AddSection {
             padding: 4px;
@@ -86,11 +92,27 @@
                     background-color: #3d7bf6;
                     border-radius: 50%;
                     height: 6px;
-                    left: 12px;
+                    left: 16px;
                     position: absolute;
                     top: 50%;
                     transform: translateY(-50%);
                     width: 6px;
+                }
+
+                .Delete {
+                    display: none;
+                    position: absolute;
+                    right: 6px;
+                    top: 50%;
+                    font-weight: 600;
+                    --icon-size: 20px;
+                    --icon-color: white;
+                    transform: translateY(-50%);
+                    opacity: 0.5;
+
+                    &:hover {
+                        opacity: 1;
+                    }
                 }
 
                 &:hover {
@@ -100,6 +122,10 @@
 
                     .Selected {
                         background-color: white;
+                    }
+
+                    .Delete {
+                        display: block;
                     }
                 }
             }

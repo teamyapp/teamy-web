@@ -48,6 +48,7 @@ import {
     mergeTask,
     mergeTeam,
     mergeUser,
+    removeTaskFromSprint,
     replaceTeamInvitations,
     replaceTeamMembers,
 } from './stateMutators';
@@ -536,6 +537,26 @@ export class StateSyncer {
         appState = mergeSprint(appState, remoteSprint);
         this.localStore.updateState(appState);
         return parseInt(remoteSprint.id);
+    }
+
+    public async deleteSprint(sprintId: number): Promise<void> {
+        let appState = this.localStore.getState();
+        const sprint = appState.sprints[sprintId];
+        delete appState.teamSelectedSprint[sprint.owningTeamId];
+        const taskIds = appState.sprintTaskRelations
+            .filter((relation) => relation.sprintId === sprintId)
+            .map((relation) => relation.taskId);
+        for (let taskId of taskIds) {
+            appState = removeTaskFromSprint(appState, sprintId, taskId);
+        }
+
+        if (appState.currSprintId === sprintId) {
+            appState.currSprintId = undefined;
+        }
+
+        delete appState.sprints[sprintId];
+        this.localStore.updateState(appState);
+        await this.sprintClient.deleteSprint(`${sprintId}`);
     }
 
     private async mutateState(mutation: Mutation) {
