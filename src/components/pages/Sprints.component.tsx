@@ -14,7 +14,6 @@ import {
     getTabId,
     sprintTabPath,
     sprintTabRoutePattern,
-    sprintsPath,
     sprintsRoutePattern,
 } from '@core/config/routing';
 import {
