@@ -631,7 +631,7 @@ export function removeTaskFromSprint(
     const sprintIds = appState.sprintTaskRelations
         .filter((relation) => relation.taskId === taskId)
         .map((relation) => relation.sprintId);
-    if (sprintIds.length == 1) {
+    if (sprintIds.length === 1) {
         appState.tasks[taskId].isPlanned = false;
     }
 
