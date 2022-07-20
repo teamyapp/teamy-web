@@ -378,9 +378,11 @@ export class SprintsComponent extends Component<Props, State> {
     private onCreateTask = (task: CreateTaskInput): void => {
         if (task.goal.length > 0) {
             console.log('creating task');
+            const appState = this.localStore.getState();
             this.stateSyncer.createTask(
-                this.localStore.getState().currTeamId!,
+                appState.currTeamId!,
                 task,
+                appState.currSprintId,
             );
         }
     };

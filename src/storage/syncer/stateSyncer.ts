@@ -27,6 +27,7 @@ import {
 } from '@core/entity/input';
 import { AppState } from '@core/storage/states/app.state';
 import { toInt } from '@core/storage/states/parser';
+import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation.state';
 import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
@@ -352,16 +353,28 @@ export class StateSyncer {
     public async createTask(
         teamId: number,
         task: CreateTaskInput,
+        sprintId?: number,
     ): Promise<void> {
+        let isPlanned: boolean | undefined;
+        if (sprintId) {
+            isPlanned = true
+        }
+
         const remoteTask = await this.taskClient.createTask(`${teamId}`, {
             goal: task.goal,
             context: task.context,
             ownerUserId: task.ownerUserId ? `${task.ownerUserId}` : undefined,
             dueAt: task.dueAt,
+            isPlanned: isPlanned
         });
 
+        const remoteTaskId = parseInt(remoteTask.id);
         let appState = this.localStore.getState();
         appState = mergeTask(appState, remoteTask);
+        if (sprintId) {
+            appState = await this._addTaskToSprint(sprintId, remoteTaskId);
+        }
+
         this.localStore.updateState(appState);
     }
 
@@ -557,6 +570,22 @@ export class StateSyncer {
         delete appState.sprints[sprintId];
         this.localStore.updateState(appState);
         await this.sprintClient.deleteSprint(`${sprintId}`);
+    }
+
+    private async _addTaskToSprint(
+        sprintId: number,
+        taskId: number,
+    ): Promise<AppState> {
+        const remoteTask = await this.sprintClient.addTaskToSprint(
+            `${sprintId}`,
+            `${taskId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeTask(appState, remoteTask);
+        const relation: SprintTaskRelationState = { sprintId, taskId };
+        appState.sprintTaskRelations =
+            appState.sprintTaskRelations.concat(relation);
+        return appState;
     }
 
     private async mutateState(mutation: Mutation) {
