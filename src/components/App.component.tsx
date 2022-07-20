@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import React, { Component, Fragment, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
@@ -132,9 +133,11 @@ export class AppComponent extends Component<Props, State> {
 
     public render() {
         return (
-            <div className={`${styles.App} ${classNames({
-                [styles.ShowBackground]: this.state.showBackground
-            })}`}>
+            <div
+                className={`${styles.App} ${classNames({
+                    [styles.ShowBackground]: this.state.showBackground,
+                })}`}
+            >
                 <Route router={this.router} pattern={debugRoutePattern}>
                     <DebugComponent
                         repoOwner={'teamyapp'}
@@ -189,7 +192,10 @@ export class AppComponent extends Component<Props, State> {
                                                 <BacklogComponent
                                                     ref={this.backlogRef}
                                                     deps={this.props.deps}
-                                                    selectOwnerTaskId={this.state.selectOwnerTaskId}
+                                                    selectOwnerTaskId={
+                                                        this.state
+                                                            .selectOwnerTaskId
+                                                    }
                                                     onShowPotentialTaskOwners={
                                                         this
                                                             .onShowPotentialTaskOwners
@@ -207,7 +213,10 @@ export class AppComponent extends Component<Props, State> {
                                             >
                                                 <SprintsComponent
                                                     deps={this.props.deps}
-                                                    selectOwnerTaskId={this.state.selectOwnerTaskId}
+                                                    selectOwnerTaskId={
+                                                        this.state
+                                                            .selectOwnerTaskId
+                                                    }
                                                     taskFilters={
                                                         this.state.taskFilters
                                                     }
@@ -278,9 +287,9 @@ export class AppComponent extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        this.stateChangeChan?.close();
-        this.routeChangeChan?.close();
-        this.userActionChan?.close();
+        closeIfNot(this.stateChangeChan);
+        closeIfNot(this.routeChangeChan);
+        closeIfNot(this.userActionChan);
         this.props.deps.shortcutMonitor.dispose();
     }
 
@@ -329,14 +338,14 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 await this.stateSyncer.pullCurrentUserWithTeams();
-                const me = this.graphSource.currentUser()?.id;
-                if (!me) {
+                let appState = this.localStore.getState();
+                if (!appState.currUserId) {
                     this.trySignUp(routeUpdate.routePattern);
                     continue;
                 }
 
                 await this.stateSyncer.ensureConnected();
-                const currTeamId = this.graphSource.currentTeam()?.id;
+                const currTeamId = appState.currTeamId;
                 if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
                     this.tryRedirect(currTeamId);
                     console.log(
@@ -364,8 +373,9 @@ export class AppComponent extends Component<Props, State> {
                     await this.onActiveTeamSelect(teamId);
                 }
 
-                if (this.graphSource.currentTeam()) {
-                    this.stateSyncer.pullCurrentTeam().then();
+                appState = this.localStore.getState();
+                if (appState.currTeamId) {
+                    await this.stateSyncer.pullCurrentTeam();
                 } else {
                     this.router.navigateTo(rootRoutePattern);
                 }
@@ -380,8 +390,8 @@ export class AppComponent extends Component<Props, State> {
 
                     this.onViewTaskDetail(taskId);
                     this.setState({
-                        showBackground: true
-                    })
+                        showBackground: true,
+                    });
                     continue;
                 }
 
@@ -493,12 +503,20 @@ export class AppComponent extends Component<Props, State> {
         teamId: number,
         notifyRouteChange: boolean = false,
     ): Promise<void> => {
-        const prevActiveTeamId = this.graphSource.currentTeam()?.id;
+        const appState = this.localStore.getState();
+        const prevActiveTeamId = appState.currTeamId;
         if (this.stateSyncer.trySetCurrentTeam(teamId)) {
             await this.stateSyncer.pullCurrentTeam();
-            this.router.navigateTo(sprintsPath(teamId), {
-                notifyRouteChange: notifyRouteChange,
-            });
+
+            const teamIdParam = getTeamId(
+                this.router.currentRouteUpdate.params,
+            );
+            if (!teamIdParam || parseInt(teamIdParam) !== teamId) {
+                this.router.navigateTo(sprintsPath(teamId), {
+                    notifyRouteChange: notifyRouteChange,
+                });
+            }
+
             return;
         }
 

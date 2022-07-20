@@ -1,6 +1,7 @@
 import React, { Component, Fragment, ReactNode } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import {
     IdentityClient,
     accessTokenParam,
@@ -52,7 +53,7 @@ export class CloudComponent extends Component<Props> {
     }
 
     public componentWillUnmount() {
-        this.routeChangeCh?.close();
+        closeIfNot(this.routeChangeCh);
     }
 
     public render(): ReactNode {

@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 
 import * as csp from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { DatePickerUI } from '@lib/ui/DatePicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -227,7 +228,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     public componentWillUnmount() {
         window.removeEventListener('resize', this.onBodyResize);
-        this.stateChangeChan?.close();
+        closeIfNot(this.stateChangeChan);
     }
 
     public async open(taskId: number) {

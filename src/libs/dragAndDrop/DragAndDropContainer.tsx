@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import React, { Component, createRef } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { Point, Rect } from '@lib/ui/position';
 
 import styles from './DragAndDropContainer.module.scss';
@@ -120,7 +121,7 @@ export class DragAndDropContainer extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        this.dragAndDropEventChan?.close();
+        closeIfNot(this.dragAndDropEventChan);
     }
 
     private onMouseEnter = () => {

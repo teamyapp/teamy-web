@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { unplanned } from '@core/data/task.filter';
@@ -18,7 +19,7 @@ import { InlineTaskUI } from './InlineTask';
 
 interface Props {
     deps: Deps;
-    selectOwnerTaskId?: number,
+    selectOwnerTaskId?: number;
     onViewTaskDetail?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         taskId: number,
@@ -73,7 +74,7 @@ export class BacklogComponent extends Component<Props, State> {
     }
 
     componentWillUnmount() {
-        this.stateChangeChan?.close();
+        closeIfNot(this.stateChangeChan);
     }
 
     render() {

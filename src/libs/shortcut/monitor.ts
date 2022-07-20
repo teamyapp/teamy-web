@@ -1,4 +1,5 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 
 export type Key = 'ControlKey' | 'MetaKey' | 'FKey';
 
@@ -26,7 +27,7 @@ export class ShortcutMonitor<UserActionEvent> {
 
     public dispose() {
         window.removeEventListener('keydown', this.onKeydown);
-        this.userActionChan.close();
+        closeIfNot(this.userActionChan);
     }
 
     public subscribeUserAction(): PopChannel<UserActionEvent | undefined> {

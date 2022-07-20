@@ -2,7 +2,7 @@ import React, { Component, FormEvent, createRef } from 'react';
 
 import styles from './TextArea.module.scss';
 
-interface IProps {
+interface Props {
     label?: string;
     content?: string;
     placeholder?: string;
@@ -11,14 +11,14 @@ interface IProps {
     onBlur?: () => void;
 }
 
-interface IState {
+interface State {
     content: string;
 }
 
-export class TextAreaUI extends Component<IProps, IState> {
+export class TextAreaUI extends Component<Props, State> {
     private readonly textAreaRef = createRef<HTMLTextAreaElement>();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             content: props.content || '',

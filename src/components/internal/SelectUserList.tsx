@@ -47,7 +47,6 @@ export class SelectUserListUI extends Component<Props> {
     };
 
     private renderEmptySelection() {
-        console.log('renderEmptySelection', this.props.selectedUserId);
         return (
             <div
                 className={styles.UserRow}
