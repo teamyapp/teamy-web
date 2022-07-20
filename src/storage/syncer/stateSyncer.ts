@@ -535,7 +535,6 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         appState = mergeSprint(appState, remoteSprint);
         this.localStore.updateState(appState);
-
         return parseInt(remoteSprint.id);
     }
 
