@@ -357,7 +357,7 @@ export class StateSyncer {
     ): Promise<void> {
         let isPlanned: boolean | undefined;
         if (sprintId) {
-            isPlanned = true
+            isPlanned = true;
         }
 
         const remoteTask = await this.taskClient.createTask(`${teamId}`, {
@@ -365,7 +365,7 @@ export class StateSyncer {
             context: task.context,
             ownerUserId: task.ownerUserId ? `${task.ownerUserId}` : undefined,
             dueAt: task.dueAt,
-            isPlanned: isPlanned
+            isPlanned: isPlanned,
         });
 
         const remoteTaskId = parseInt(remoteTask.id);
