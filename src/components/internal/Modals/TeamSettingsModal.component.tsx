@@ -2,6 +2,7 @@ import moment from 'moment';
 import React, { Component, createRef } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
@@ -111,7 +112,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        this.onStateChangeChan?.close();
+        closeIfNot(this.onStateChangeChan);
     }
 
     public open = async (teamId: number, defaultTabIndex: number = 0) => {

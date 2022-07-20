@@ -1,4 +1,5 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 
 export interface RouteUpdate {
     routePattern: string;
@@ -228,7 +229,7 @@ export class Router {
     }
 
     public dispose() {
-        this.routeChangeChan.close();
+        closeIfNot(this.routeChangeChan);
     }
 
     public navigateToCurrUri() {

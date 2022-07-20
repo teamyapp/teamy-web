@@ -1,6 +1,7 @@
 import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { and } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { RouteUpdate, Router } from '@lib/router/router';
@@ -11,10 +12,8 @@ import { draggableTask } from '@core/config/draggable';
 import {
     getSprintId,
     getTabId,
-    getTeamId,
     sprintTabPath,
     sprintTabRoutePattern,
-    sprintsPath,
     sprintsRoutePattern,
 } from '@core/config/routing';
 import {
@@ -139,30 +138,11 @@ export class SprintsComponent extends Component<Props, State> {
                         this.router.currentRouteUpdate.routePattern,
                     )
                 ) {
-                    const teamIDParam = getTeamId(
+                    const sprintIdParam = getSprintId(
                         this.router.currentRouteUpdate.params,
                     );
-                    if (!teamIDParam) {
-                        continue;
-                    }
-
-                    const team = this.graphSource.currentTeam();
-                    if (!team) {
-                        continue;
-                    }
-
-                    if (team.id !== parseInt(teamIDParam)) {
-                        continue;
-                    }
-
-                    const sprintId = this.graphSource.currentSprint()?.id;
-                    if (sprintId) {
-                        const tabId = getTabId(
-                            this.router.currentRouteUpdate.params,
-                        );
-                        if (!tabId || tabIds.indexOf(tabId) < 0) {
-                            this.onTabClick(this.state.activeTabIndex);
-                        }
+                    if (!sprintIdParam) {
+                        this.onTabClick(this.state.activeTabIndex);
                     }
                 }
 
@@ -186,44 +166,41 @@ export class SprintsComponent extends Component<Props, State> {
                     continue;
                 }
 
-                const currTeam = this.graphSource.currentTeam();
-                if (!currTeam) {
-                    continue;
-                }
-
-                const currSprint = this.graphSource.currentSprint();
-                if (!currSprint) {
-                    this.router.navigateTo(sprintsPath(currTeam.id));
-                    continue;
-                }
-
-                const sprintIdParam = getSprintId(routeUpdate.params);
-                if (!sprintIdParam) {
-                    this.onTabClick(this.state.activeTabIndex);
-                    continue;
-                }
-
-                const newSprintId = parseInt(sprintIdParam);
-                if (newSprintId !== currSprint?.id) {
-                    if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
-                        this.onTabClick(this.state.activeTabIndex);
-                    }
-                    continue;
-                }
-
-                const tabId = getTabId(routeUpdate.params);
-                if (!tabId || tabIds.indexOf(tabId) < 0) {
-                    continue;
-                }
-
                 console.log(
                     '[SprintComponent] accepted',
                     routeUpdate.routePattern,
                     routeUpdate.suffix,
                     routeUpdate.params.pathParams,
                 );
+
+                const appState = this.localStore.getState();
+                const currTeamId = appState.currTeamId;
+                if (!currTeamId) {
+                    continue;
+                }
+
+                const sprintIdParam = getSprintId(routeUpdate.params);
+                if (!sprintIdParam) {
+                    this.onTabClick(this.state.activeTabIndex, true);
+                    continue;
+                }
+
+                const tabId = getTabId(routeUpdate.params);
+                if (!tabId || tabIds.indexOf(tabId) < 0) {
+                    this.onTabClick(this.state.activeTabIndex, true);
+                    continue;
+                }
+
+                const tabIndex = tabIds.indexOf(tabId);
+                const newSprintId = parseInt(sprintIdParam);
+                if (newSprintId !== appState.currSprintId) {
+                    if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
+                        this.onTabClick(tabIndex);
+                    }
+                }
+
                 this.setState({
-                    activeTabIndex: tabIds.indexOf(tabId),
+                    activeTabIndex: tabIndex,
                 });
                 this.tabsRef.current?.setSelectedTabIndex(
                     tabIds.indexOf(tabId),
@@ -256,9 +233,9 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        this.stateChangeChan?.close();
-        this.routeChangeChan?.close();
-        this.dragAndDropEventChan?.close();
+        closeIfNot(this.stateChangeChan);
+        closeIfNot(this.routeChangeChan);
+        closeIfNot(this.dragAndDropEventChan);
     }
 
     private renderCreateSprint(): ReactNode {
@@ -348,14 +325,20 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     private updateState = () => {
-        const currentUser = this.graphSource.currentUser();
+        const appState = this.localStore.getState();
         const currentSprint = this.graphSource.currentSprint();
-        console.log('TODO: Debug', currentSprint?.id);
         const teamTasks = currentSprint?.tasks || [];
-        if (currentUser) {
+        if (
+            this.state.selectedSprintId &&
+            this.state.selectedSprintId !== appState.currSprintId
+        ) {
+            this.onTabClick(this.state.activeTabIndex, false);
+        }
+
+        if (appState.currUserId) {
             this.setState({
-                currentUserId: currentUser.id,
-                selectedSprintId: currentSprint?.id,
+                currentUserId: appState.currUserId!,
+                selectedSprintId: appState.currSprintId,
                 teamTasks: teamTasks,
             });
         }
@@ -365,18 +348,19 @@ export class SprintsComponent extends Component<Props, State> {
         index: number,
         notifyRouteChange: boolean = false,
     ) => {
-        const currTeam = this.graphSource.currentTeam();
-        if (!currTeam) {
+        const appState = this.localStore.getState();
+        const currTeamId = appState.currTeamId;
+        if (!currTeamId) {
             return;
         }
 
-        const sprint = this.graphSource.currentSprint();
-        if (!sprint) {
+        const currSprintId = appState.currSprintId;
+        if (!currSprintId) {
             return;
         }
 
         this.router.navigateTo(
-            sprintTabPath(currTeam.id, sprint.id, tabIds[index]),
+            sprintTabPath(currTeamId, currSprintId, tabIds[index]),
             { notifyRouteChange: notifyRouteChange },
         );
 
@@ -391,7 +375,7 @@ export class SprintsComponent extends Component<Props, State> {
         if (task.goal.length > 0) {
             console.log('creating task');
             this.stateSyncer.createTask(
-                this.graphSource.currentTeam()!.id,
+                this.localStore.getState().currTeamId!,
                 task,
             );
         }

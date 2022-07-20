@@ -3,6 +3,7 @@ import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
@@ -46,7 +47,11 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     render() {
         return (
-            <div className={styles.SprintHeaderSection}>
+            <div
+                className={styles.SprintHeaderSection}
+                tabIndex={-1}
+                onBlur={this.onBlur}
+            >
                 <div
                     className={`${styles.HeaderSection} ${classNames({
                         [styles.Active]: this.state.showDetail,
@@ -118,7 +123,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     }
 
     componentWillUnmount() {
-        this.stateChangeChan?.close();
+        closeIfNot(this.stateChangeChan);
     }
 
     private updateState = () => {
@@ -144,6 +149,12 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 showDetail: false,
             });
         };
+    };
+
+    private onBlur = () => {
+        this.setState({
+            showDetail: false,
+        });
     };
 }
 

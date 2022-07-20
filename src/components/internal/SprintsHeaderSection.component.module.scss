@@ -4,6 +4,10 @@
 .SprintHeaderSection {
     height: 30px;
 
+    &:focus {
+        outline: none;
+    }
+
     .HeaderSection {
         align-items: center;
         background-color: rgba(0, 0, 0, 0.2);

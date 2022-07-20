@@ -137,6 +137,10 @@
         height: 32px;
         width: 500px;
 
+        &:focus {
+            outline: none;
+        }
+
         .Input {
             align-items: center;
             background-color: white;

@@ -21,6 +21,10 @@ $optionPadding: 8px;
     user-select: none;
     width: $width;
 
+    &:focus {
+        outline: none;
+    }
+
     .SelectedOption {
         background-color: $dropDownColor;
         border-radius: 4px;

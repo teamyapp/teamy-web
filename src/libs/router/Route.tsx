@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 
 import {
     Errors,
@@ -87,7 +88,7 @@ export class Route extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        this.routeChangeChan?.close();
+        closeIfNot(this.routeChangeChan);
     }
 }
 

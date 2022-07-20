@@ -1,6 +1,7 @@
 import React, { Component, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { FeedbackUI } from '@lib/ui/Feedback';
 
 import { Deps } from '@core/dep/deps';
@@ -41,6 +42,6 @@ export class UserProfileUpdatedFeedbackComponent extends Component<Props> {
     }
 
     public componentWillUnmount() {
-        this.feedbackChan?.close();
+        closeIfNot(this.feedbackChan);
     }
 }

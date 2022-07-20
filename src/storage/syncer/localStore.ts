@@ -1,4 +1,5 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 
 import { AppState } from '@core/storage/states/app.state';
 
@@ -27,7 +28,7 @@ export class LocalStore {
     }
 
     public close() {
-        this.stateChangeChan.close();
+        closeIfNot(this.stateChangeChan);
     }
 
     public updateState(newState: AppState) {

@@ -1,4 +1,5 @@
 import { PopChannel, PutChannel, chan, multi } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { Connection, ConnectionError } from '@lib/network/Connection';
 
 export class WebSocketConnection implements Connection {
@@ -51,8 +52,8 @@ export class WebSocketConnection implements Connection {
 
     public close(): void {
         this.webSocket?.close();
-        this.messageReceivedChan.close();
-        this.errorChan.close();
+        closeIfNot(this.messageReceivedChan);
+        closeIfNot(this.errorChan);
     }
 
     public onErrors(): PutChannel<ConnectionError | undefined> {
