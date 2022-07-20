@@ -74,12 +74,6 @@ export class SprintClient {
                             owningTeam {
                                 id
                             }
-                            tasks {
-                                id
-                                goal
-                                status
-                                isPlanned
-                            }
                             createdAt
                         }
                     }

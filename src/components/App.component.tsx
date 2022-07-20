@@ -41,6 +41,7 @@ import { BacklogComponent } from './internal/Backlog.component';
 import { DrawerUI } from './internal/Drawer';
 import { HeaderComponent } from './internal/Header.component';
 import { AddTeamMembersModalComponent } from './internal/Modals/AddTeamMembersModal.component';
+import { CreateSprintModalComponent } from './internal/Modals/CreateSprintModal.component';
 import { CreateTeamModalComponent } from './internal/Modals/CreateTeamModal.component';
 import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
 import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
@@ -107,6 +108,8 @@ export class AppComponent extends Component<Props, State> {
         createRef<AddTeamMembersModalComponent>();
     private readonly userModalRef = createRef<UserSettingsModalComponent>();
     private readonly createTeamModalRef = createRef<CreateTeamModalComponent>();
+    private readonly createSprintModalRef =
+        createRef<CreateSprintModalComponent>();
     private readonly backlogRef = createRef<BacklogComponent>();
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
@@ -176,6 +179,7 @@ export class AppComponent extends Component<Props, State> {
                                 onUserProfileClick={this.onUserProfileClick}
                                 onTaskFiltersChange={this.onTaskFiltersChange}
                                 onBacklogToggle={this.onBacklogToggle}
+                                onCreateSprintClick={this.onCreateSprintClick}
                             />
                             {this.state.showMainContent &&
                                 (this.state.activeTeamId ? (
@@ -252,11 +256,16 @@ export class AppComponent extends Component<Props, State> {
                     deps={this.props.deps}
                     onClose={this.onTaskOwnersPopupClose}
                 />
+                <CreateTeamModalComponent
+                    ref={this.createTeamModalRef}
+                    deps={this.props.deps}
+                />
                 <TeamSettingsModalComponent
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
                     onAddTeamMemberClick={this.onAddTeamMembersClick}
                 />
+                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <AddTeamMembersModalComponent
                     deps={this.props.deps}
                     ref={this.addTeamMembersModalRef}
@@ -266,13 +275,12 @@ export class AppComponent extends Component<Props, State> {
                     ref={this.userModalRef}
                     deps={this.props.deps}
                 />
-                <CreateTeamModalComponent
-                    ref={this.createTeamModalRef}
+                <CreateSprintModalComponent
+                    ref={this.createSprintModalRef}
                     deps={this.props.deps}
                 />
-                <TaskUpdatedFeedbackComponent deps={this.props.deps} />
                 <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
-                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps} />
+                <TaskUpdatedFeedbackComponent deps={this.props.deps} />
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
             </div>
         );
@@ -621,5 +629,9 @@ export class AppComponent extends Component<Props, State> {
             const teamId = parseInt(teamIdParam);
             this.router.navigateTo(sprintsPath(teamId));
         }
+    };
+
+    private onCreateSprintClick = () => {
+        this.createSprintModalRef.current?.open();
     };
 }

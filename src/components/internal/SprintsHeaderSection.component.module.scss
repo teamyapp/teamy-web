@@ -47,14 +47,24 @@
         box-sizing: border-box;
         margin: 4px 4px 0 4px;
 
-        .AddButton {
-            align-items: center;
-            --icon-color: #424242;
-            display: flex;
-            font-weight: bold;
-            height: 40px;
-            justify-content: center;
-            --icon-size: 28px;
+        .AddSection {
+            padding: 4px;
+
+            .Button {
+                align-items: center;
+                display: flex;
+                font-weight: bold;
+                height: 30px;
+                justify-content: center;
+                --icon-color: #424242;
+                --icon-size: 28px;
+
+                &:hover {
+                    cursor: pointer;
+                    color: white;
+                    background-color: rgba(0, 0, 0, 0.08);
+                }
+            }
         }
 
         .Divider {

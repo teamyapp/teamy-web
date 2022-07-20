@@ -18,6 +18,7 @@ import styles from './SprintsHeaderSection.component.module.scss';
 
 interface Props {
     deps: Deps;
+    onCreateSprintClick?: () => void;
 }
 
 interface State {
@@ -67,14 +68,19 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                                 ? getSprintName(
                                       this.state.currentSprint.startAt,
                                   )
-                                : 'Select Sprint'}
+                                : 'No Sprint'}
                         </div>
                     }
                 </div>
                 {this.state.showDetail && (
                     <div className={styles.Detail}>
-                        <div className={styles.AddButton}>
-                            <MaterialIconUI>add</MaterialIconUI>
+                        <div className={styles.AddSection}>
+                            <div
+                                className={styles.Button}
+                                onClick={this.props.onCreateSprintClick}
+                            >
+                                <MaterialIconUI>add</MaterialIconUI>
+                            </div>
                         </div>
                         {this.state.sprints.length > 0 && (
                             <div className={styles.Divider} />

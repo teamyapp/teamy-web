@@ -16,6 +16,7 @@ import { TaskFilter } from '@core/entity/filters';
 import {
     CreateInvitationInput,
     CreateMessageInput,
+    CreateSprintInput,
     CreateTaskInput,
     CreateTeamInput,
     CreateUserInput,
@@ -131,6 +132,7 @@ export class StateSyncer {
         }
 
         appState.currSprintId = currSprintId;
+        appState.teamSelectedSprint[appState.currTeamId] = currSprintId;
         this.localStore.updateState(appState);
         return true;
     }
@@ -521,6 +523,19 @@ export class StateSyncer {
         delete appState.invitations[invitationId];
         this.localStore.updateState(appState);
         await this.invitationClient.deleteInvitation(`${invitationId}`);
+    }
+
+    public async createSprint(
+        teamId: number,
+        sprint: CreateSprintInput,
+    ): Promise<number> {
+        const remoteSprint = await this.sprintClient.createSprint(`${teamId}`, {
+            startAt: sprint.startAt,
+        });
+        let appState = this.localStore.getState();
+        appState = mergeSprint(appState, remoteSprint);
+        this.localStore.updateState(appState);
+        return parseInt(remoteSprint.id);
     }
 
     private async mutateState(mutation: Mutation) {

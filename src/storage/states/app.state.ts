@@ -39,7 +39,7 @@ export class AppState {
             [],
             [],
             [],
-            {},
+            json.teamSelectedSprint,
             json.currUserId,
             json.currTeamId,
             json.currSprintId,

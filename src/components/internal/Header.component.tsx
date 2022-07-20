@@ -30,6 +30,7 @@ interface Props {
     onBacklogToggle?: () => void;
     onUserProfileClick?: () => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
+    onCreateSprintClick?: () => void;
 }
 
 interface State {
@@ -85,7 +86,6 @@ export class HeaderComponent extends Component<Props, State> {
                     </div>
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.BacklogSection}>
-                            {/*<TooltipUI message={'Backlog'}  position={'Right'}>*/}
                             <div
                                 className={`${styles.Button} ${classNames({
                                     [styles.Active]: this.state.showBacklog,
@@ -94,13 +94,15 @@ export class HeaderComponent extends Component<Props, State> {
                             >
                                 <MaterialIconUI>work_history</MaterialIconUI>
                             </div>
-                            {/*</TooltipUI>*/}
                         </div>
                     </Route>
                     <Route router={this.router} pattern={sprintsRoutePattern}>
                         <div className={styles.SprintSection}>
                             <SprintsHeaderSectionComponent
                                 deps={this.props.deps}
+                                onCreateSprintClick={
+                                    this.props.onCreateSprintClick
+                                }
                             />
                         </div>
                     </Route>
