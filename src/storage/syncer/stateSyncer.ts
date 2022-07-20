@@ -532,7 +532,6 @@ export class StateSyncer {
         const remoteSprint = await this.sprintClient.createSprint(`${teamId}`, {
             startAt: sprint.startAt,
         });
-
         let appState = this.localStore.getState();
         appState = mergeSprint(appState, remoteSprint);
         this.localStore.updateState(appState);
