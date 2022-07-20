@@ -622,3 +622,22 @@ export function deleteThread(appState: AppState, threadId: number): AppState {
     appState.messages = newMessages;
     return appState;
 }
+
+export function removeTaskFromSprint(
+    appState: AppState,
+    sprintId: number,
+    taskId: number,
+): AppState {
+    const sprintIds = appState.sprintTaskRelations
+        .filter((relation) => relation.taskId === taskId)
+        .map((relation) => relation.sprintId);
+    if (sprintIds.length == 1) {
+        appState.tasks[taskId].isPlanned = false;
+    }
+
+    appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
+        (relation) =>
+            !(relation.sprintId === sprintId && relation.taskId === taskId),
+    );
+    return appState;
+}

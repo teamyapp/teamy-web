@@ -118,7 +118,7 @@ export class SprintsComponent extends Component<Props, State> {
                 </div>
             </div>
         ) : (
-            this.renderCreateSprint()
+            this.renderSelectSprint()
         );
     }
 
@@ -239,9 +239,12 @@ export class SprintsComponent extends Component<Props, State> {
         closeIfNot(this.dragAndDropEventChan);
     }
 
-    private renderCreateSprint(): ReactNode {
+    private renderSelectSprint(): ReactNode {
         // TODD: Allow user to create a sprint
-        return <div>No Sprint</div>;
+        const sprints =
+            this.graphSource.team(this.localStore.getState().currTeamId!)
+                ?.sprints || [];
+        return sprints.length > 0 ? 'Select sprint' : 'No sprint';
     }
 
     private renderTabContent(tabId: string): ReactNode | null {

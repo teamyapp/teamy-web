@@ -64,11 +64,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                     </div>
                     {
                         <div className={styles.Name}>
-                            {this.state.currentSprint
-                                ? getSprintName(
-                                      this.state.currentSprint.startAt,
-                                  )
-                                : 'No Sprint'}
+                            {this.renderSprintName()}
                         </div>
                     }
                 </div>
@@ -105,9 +101,23 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                     <div className={styles.Selected} />
                 )}
                 <div>{getSprintName(sprint.startAt)}</div>
+                <div
+                    className={styles.Delete}
+                    onClick={this.onDeleteSprintClick(sprint.id)}
+                >
+                    <MaterialIconUI>close</MaterialIconUI>
+                </div>
             </div>
         );
     };
+
+    renderSprintName() {
+        if (this.state.currentSprint) {
+            return getSprintName(this.state.currentSprint.startAt);
+        }
+
+        return this.state.sprints.length > 0 ? 'Select sprint' : 'No sprint';
+    }
 
     componentDidMount() {
         this.stateChangeChan = this.localStore.subscribeStateChange();
@@ -149,11 +159,20 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     };
 
     private onSprintClick = (sprintId: number) => {
-        return () => {
-            this.stateSyncer.trySetCurrentSprint(sprintId);
+        return async () => {
+            if (this.stateSyncer.trySetCurrentSprint(sprintId)) {
+                this.stateSyncer.pullCurrentSprint();
+            }
+
             this.setState({
                 showDetail: false,
             });
+        };
+    };
+
+    private onDeleteSprintClick = (sprintId: number) => {
+        return () => {
+            this.stateSyncer.deleteSprint(sprintId);
         };
     };
 
