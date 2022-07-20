@@ -68,6 +68,10 @@ export class DatePickerUI extends Component<Props, State> {
         return value ? new Date(value) : null;
     }
 
+    public focus() {
+        this.textFieldRef.current?.focus();
+    }
+
     private static getMonthDays(date: Date): (null | number)[] {
         const year = date.getFullYear();
         const month = date.getMonth();
