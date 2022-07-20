@@ -14,6 +14,7 @@ import {
     getTabId,
     sprintTabPath,
     sprintTabRoutePattern,
+    sprintsPath,
     sprintsRoutePattern,
 } from '@core/config/routing';
 import {
@@ -195,7 +196,7 @@ export class SprintsComponent extends Component<Props, State> {
                 const newSprintId = parseInt(sprintIdParam);
                 if (newSprintId !== appState.currSprintId) {
                     if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
-                        this.onTabClick(tabIndex);
+                        this.router.navigateTo(sprintsPath(currTeamId));
                     }
                 }
 
