@@ -143,12 +143,7 @@ export class SprintsComponent extends Component<Props, State> {
                         this.router.currentRouteUpdate.params,
                     );
                     if (!sprintIdParam) {
-                        const tabId = getTabId(
-                            this.router.currentRouteUpdate.params,
-                        );
-                        if (!tabId || tabIds.indexOf(tabId) < 0) {
-                            this.onTabClick(this.state.activeTabIndex);
-                        }
+                        this.onTabClick(this.state.activeTabIndex);
                     }
                 }
 
@@ -191,27 +186,22 @@ export class SprintsComponent extends Component<Props, State> {
                     continue;
                 }
 
-                if (!appState.currSprintId) {
-                    this.router.navigateTo(sprintsPath(currTeamId));
-                    continue;
-                }
-
-                // TODO: fix load sprint based on path param
-                const newSprintId = parseInt(sprintIdParam);
-                if (newSprintId !== appState.currSprintId) {
-                    if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
-                        this.onTabClick(this.state.activeTabIndex);
-                    }
-                }
-
                 const tabId = getTabId(routeUpdate.params);
                 if (!tabId || tabIds.indexOf(tabId) < 0) {
                     this.onTabClick(this.state.activeTabIndex, true);
                     continue;
                 }
 
+                const tabIndex = tabIds.indexOf(tabId);
+                const newSprintId = parseInt(sprintIdParam);
+                if (newSprintId !== appState.currSprintId) {
+                    if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
+                        this.onTabClick(tabIndex);
+                    }
+                }
+
                 this.setState({
-                    activeTabIndex: tabIds.indexOf(tabId),
+                    activeTabIndex: tabIndex,
                 });
                 this.tabsRef.current?.setSelectedTabIndex(
                     tabIds.indexOf(tabId),
