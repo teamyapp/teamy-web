@@ -56,115 +56,62 @@
             }
         }
 
-        .NoTeamSelected {
-            align-items: center;
+        .SelectActiveTeam {
             display: flex;
-            flex: 1;
+            align-items: center;
             justify-content: center;
-            text-align: center;
+            height: 100%;
 
-            .Center {
-                background-color: #f5f5f5;
+            .Content {
                 border-radius: 10px;
+                background-color: #f5f5f5;
                 padding: 40px;
 
-                .SelectActiveTeam {
-                    .Description {
-                        font-size: 22px;
-                        font-weight: bold;
-                        margin-bottom: 20px;
-                    }
-
-                    .DropDown {
-                        --drop-down-color: #{$primaryColor};
-                        margin: 0 auto;
-                        width: 160px;
-                    }
-                }
-
-                .OrDivider {
-                    color: #616161;
-                    font-size: 30px;
-                    font-weight: bold;
-                    margin: 40px 0;
+                .Title {
                     text-align: center;
+                    font-size: 26px;
+                    font-weight: 600;
+                    margin-bottom: 20px;
                 }
 
-                .Actions {
+                .AddTeam {
                     display: flex;
                     justify-content: center;
+                    margin-bottom: 20px;
 
-                    .Action {
+                    .Button {
+                        padding: 10px;
+                        --icon-size: 50px;
+                        --icon-color: #424242;
+                        font-weight: 600;
+                        border-radius: 50%;
+
+                        &:hover {
+                            cursor: pointer;
+                            background-color: rgba(0, 0, 0, 0.05);
+                        }
+                    }
+                }
+
+                .Teams {
+                    @include elevation(4);
+
+                    .TeamRow {
+                        text-align: center;
+                        font-size: 20px;
+                        font-weight: 600;
+                        background-color: white;
+                        padding: 10px 40px;
+
                         &:not(:first-child) {
-                            margin-top: 10px;
+                            border-top: 1px dashed #e0e0e0;
                         }
 
-                        &.CreateTeam {
-                            --background-color: #388e3c;
-                            --border-color: #2e7d32;
-                            width: 240px;
+                        &:hover {
+                            background-color: #3d7bf6;
+                            color: white;
+                            cursor: pointer;
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    .SelectActiveTeam {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
-
-        .Content {
-            border-radius: 10px;
-            background-color: #f5f5f5;
-            padding: 40px;
-
-            .Title {
-                text-align: center;
-                font-size: 26px;
-                font-weight: 600;
-                margin-bottom: 20px;
-            }
-
-            .AddTeam {
-                display: flex;
-                justify-content: center;
-                margin-bottom: 20px;
-
-                .Button {
-                    padding: 10px;
-                    --icon-size: 50px;
-                    --icon-color: #424242;
-                    font-weight: 600;
-                    border-radius: 50%;
-
-                    &:hover {
-                        cursor: pointer;
-                        background-color: rgba(0, 0, 0, 0.05);
-                    }
-                }
-            }
-
-            .Teams {
-                @include elevation(4);
-
-                .TeamRow {
-                    text-align: center;
-                    font-size: 20px;
-                    font-weight: 600;
-                    background-color: white;
-                    padding: 10px 40px;
-
-                    &:not(:first-child) {
-                        border-top: 1px dashed #e0e0e0;
-                    }
-
-                    &:hover {
-                        background-color: #3d7bf6;
-                        color: white;
-                        cursor: pointer;
                     }
                 }
             }
