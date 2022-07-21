@@ -2,12 +2,14 @@ import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { SpacerUI } from '@lib/ui/Spacer';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { unplanned } from '@core/data/task.filter';
 import { orderByStatusUrgencyAsc } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
-import { UpdateTaskInput } from '@core/entity/input';
+import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { GraphSource } from '@core/storage/graph/graphSource';
@@ -15,6 +17,7 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './Backlog.component.module.scss';
+import { InlineCreateTaskUI } from './InlineCreateTask';
 import { InlineTaskUI } from './InlineTask';
 
 interface Props {
@@ -31,6 +34,7 @@ interface Props {
 
 interface State {
     unplannedTasks: Task[];
+    onEditingNewTask: boolean;
 }
 
 const shownTaskActions: TaskAction[] = [
@@ -53,6 +57,7 @@ export class BacklogComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             unplannedTasks: [],
+            onEditingNewTask: false,
         };
     }
 
@@ -80,13 +85,26 @@ export class BacklogComponent extends Component<Props, State> {
     render() {
         return (
             <div className={styles.Backlog}>
-                <div className={styles.Title}>
-                    Backlog
+                <div className={styles.Header}>
+                    <div className={styles.Title}>Backlog</div>
                     <div className={styles.Counter}>
                         {this.state.unplannedTasks.length}
                     </div>
+                    <SpacerUI />
+                    <div
+                        className={styles.CreateTask}
+                        onClick={this.onAddClick}
+                    >
+                        <MaterialIconUI>add</MaterialIconUI>
+                    </div>
                 </div>
                 <div className={styles.TaskList}>
+                    {this.state.onEditingNewTask && (
+                        <InlineCreateTaskUI
+                            onCreateTask={this.onCreateTask}
+                            onDiscardNewTask={this.onDiscardNewTask}
+                        />
+                    )}
                     {this.state.unplannedTasks.map(this.renderTask)}
                 </div>
             </div>
@@ -137,6 +155,28 @@ export class BacklogComponent extends Component<Props, State> {
 
     private onDeleteTask = (taskId: number): void => {
         this.stateSyncer.deleteTask(taskId);
+    };
+
+    private onAddClick = () => {
+        this.setState({
+            onEditingNewTask: true,
+        });
+    };
+
+    private onCreateTask = (task: CreateTaskInput) => {
+        this.stateSyncer.createTask(
+            this.localStore.getState().currTeamId!,
+            task,
+        );
+        this.setState({
+            onEditingNewTask: false,
+        });
+    };
+
+    private onDiscardNewTask = () => {
+        this.setState({
+            onEditingNewTask: false,
+        });
     };
 }
 

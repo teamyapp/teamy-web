@@ -6,31 +6,51 @@
     overflow: hidden;
     width: 100%;
 
-    .Title {
+    .Header {
+        display: flex;
         background-color: #424242;
         border-radius: 4px;
         color: white;
-        font-size: 20px;
         font-weight: 500;
         margin: 10px 10px 0 10px;
-        padding: 8px 0;
-        position: relative;
-        text-align: center;
+        padding: 8px 18px;
+        height: 26px;
+        align-items: center;
+
+        .Title {
+            font-size: 20px;
+            line-height: 20px;
+        }
 
         .Counter {
+            height: 26px;
             align-items: center;
             background-color: rgba(0, 0, 0, 0.4);
             border-radius: 4px;
             display: flex;
             font-size: 18px;
-            height: 26px;
             justify-content: center;
             min-width: 14px;
             padding: 0 6px;
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
+            margin-left: 12px;
+        }
+
+        .CreateTask {
+            overflow: hidden;
+            --icon-color: white;
+            --icon-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 26px;
+            width: 26px;
+            border-radius: 4px;
+
+            &:hover {
+                cursor: pointer;
+                background-color: rgba(255, 255, 255, 0.1);
+            }
         }
     }
 
