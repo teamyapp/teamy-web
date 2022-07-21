@@ -2,10 +2,16 @@ import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
+import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
+import {
+    draggableTask,
+    sectionItemSizeTransformer,
+} from '@core/config/draggable';
+import { backlogSectionId } from '@core/config/sections';
 import { unplanned } from '@core/data/task.filter';
 import { orderByStatusUrgencyAsc } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
@@ -18,7 +24,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './Backlog.component.module.scss';
 import { InlineCreateTaskUI } from './InlineCreateTask';
-import { InlineTaskUI } from './InlineTask';
+import { TaskListItem } from './TaskListSections/TaskListItem';
 
 interface Props {
     deps: Deps;
@@ -85,28 +91,39 @@ export class BacklogComponent extends Component<Props, State> {
     render() {
         return (
             <div className={styles.Backlog}>
-                <div className={styles.Header}>
-                    <div className={styles.Title}>Backlog</div>
-                    <div className={styles.Counter}>
-                        {this.state.unplannedTasks.length}
+                <DragAndDropContainer
+                    dragAndDropController={
+                        this.props.deps.dragAndDropController
+                    }
+                    containerId={backlogSectionId}
+                    itemType={draggableTask}
+                    itemSizeTransformer={sectionItemSizeTransformer}
+                >
+                    <div className={styles.Content}>
+                        <div className={styles.Header}>
+                            <div className={styles.Title}>Backlog</div>
+                            <div className={styles.Counter}>
+                                {this.state.unplannedTasks.length}
+                            </div>
+                            <SpacerUI />
+                            <div
+                                className={styles.CreateTask}
+                                onClick={this.onAddClick}
+                            >
+                                <MaterialIconUI>add</MaterialIconUI>
+                            </div>
+                        </div>
+                        <div className={styles.TaskList}>
+                            {this.state.onEditingNewTask && (
+                                <InlineCreateTaskUI
+                                    onCreateTask={this.onCreateTask}
+                                    onDiscardNewTask={this.onDiscardNewTask}
+                                />
+                            )}
+                            {this.state.unplannedTasks.map(this.renderTask)}
+                        </div>
                     </div>
-                    <SpacerUI />
-                    <div
-                        className={styles.CreateTask}
-                        onClick={this.onAddClick}
-                    >
-                        <MaterialIconUI>add</MaterialIconUI>
-                    </div>
-                </div>
-                <div className={styles.TaskList}>
-                    {this.state.onEditingNewTask && (
-                        <InlineCreateTaskUI
-                            onCreateTask={this.onCreateTask}
-                            onDiscardNewTask={this.onDiscardNewTask}
-                        />
-                    )}
-                    {this.state.unplannedTasks.map(this.renderTask)}
-                </div>
+                </DragAndDropContainer>
             </div>
         );
     }
@@ -128,7 +145,11 @@ export class BacklogComponent extends Component<Props, State> {
     private renderTask = (task: Task, index: number): ReactNode => {
         return (
             <div className={styles.ListItem} key={index}>
-                <InlineTaskUI
+                <TaskListItem
+                    sectionId={backlogSectionId}
+                    dragAndDropController={
+                        this.props.deps.dragAndDropController
+                    }
                     task={task}
                     numActionColumns={1}
                     showStatus={true}

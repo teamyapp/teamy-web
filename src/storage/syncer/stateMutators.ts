@@ -312,7 +312,10 @@ export function mergeTask(
         owningTeamId:
             toInt(remoteTask.owningTeam?.id) || localOldTask.owningTeamId,
         status: remoteTask.status || localOldTask?.status,
-        isPlanned: remoteTask.isPlanned || localOldTask?.isPlanned,
+        isPlanned:
+            remoteTask.isPlanned === undefined
+                ? localOldTask?.isPlanned
+                : remoteTask.isPlanned,
         commentsThreadId:
             toInt(remoteTask.comments?.id) || localOldTask.commentsThreadId,
         createdAt: toDate(remoteTask.createdAt) || localOldTask.createdAt,
@@ -620,24 +623,5 @@ export function deleteThread(appState: AppState, threadId: number): AppState {
     }
 
     appState.messages = newMessages;
-    return appState;
-}
-
-export function removeTaskFromSprint(
-    appState: AppState,
-    sprintId: number,
-    taskId: number,
-): AppState {
-    const sprintIds = appState.sprintTaskRelations
-        .filter((relation) => relation.taskId === taskId)
-        .map((relation) => relation.sprintId);
-    if (sprintIds.length === 1) {
-        appState.tasks[taskId].isPlanned = false;
-    }
-
-    appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
-        (relation) =>
-            !(relation.sprintId === sprintId && relation.taskId === taskId),
-    );
     return appState;
 }

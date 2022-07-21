@@ -49,7 +49,6 @@ import {
     mergeTask,
     mergeTeam,
     mergeUser,
-    removeTaskFromSprint,
     replaceTeamInvitations,
     replaceTeamMembers,
 } from './stateMutators';
@@ -402,6 +401,9 @@ export class StateSyncer {
                 relation.awaitingTaskId !== taskId &&
                 relation.awaitForTaskId !== taskId,
         );
+        appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
+            (relation) => relation.taskId !== taskId,
+        );
         delete appState.tasks[taskId];
         this.localStore.updateState(appState);
         await this.taskClient.deleteTask(`${taskId}`);
@@ -441,6 +443,29 @@ export class StateSyncer {
         this.localStore.updateState(appState);
 
         const remoteTask = await this.taskClient.moveTaskToDelivered(
+            `${taskId}`,
+        );
+        appState = mergeTask(appState, remoteTask);
+        this.localStore.updateState(appState);
+    }
+
+    public async moveTaskToUpcoming(taskId: number) {
+        let appState = this.localStore.getState();
+        const task = appState.tasks[taskId];
+
+        switch (task.status) {
+            case 'IN_PROGRESS':
+            case 'PAUSED':
+                task.status = 'PAUSED';
+                break;
+            default:
+                task.status = 'UPCOMING';
+        }
+
+        // Responsive UI for drag & drop
+        this.localStore.updateState(appState);
+
+        const remoteTask = await this.taskClient.moveTaskToUpcoming(
             `${taskId}`,
         );
         appState = mergeTask(appState, remoteTask);
@@ -560,7 +585,11 @@ export class StateSyncer {
             .filter((relation) => relation.sprintId === sprintId)
             .map((relation) => relation.taskId);
         for (let taskId of taskIds) {
-            appState = removeTaskFromSprint(appState, sprintId, taskId);
+            appState = await this._removeTaskFromSprint(
+                appState,
+                sprintId,
+                taskId,
+            );
         }
 
         if (appState.currSprintId === sprintId) {
@@ -570,6 +599,34 @@ export class StateSyncer {
         delete appState.sprints[sprintId];
         this.localStore.updateState(appState);
         await this.sprintClient.deleteSprint(`${sprintId}`);
+    }
+
+    public async addTaskToSprint(sprintId: number, taskId: number) {
+        const appState = await this._addTaskToSprint(sprintId, taskId);
+        this.localStore.updateState(appState);
+    }
+
+    public async removeTaskFromSprint(sprintId: number, taskId: number) {
+        let appState = this.localStore.getState();
+        appState = await this._removeTaskFromSprint(appState, sprintId, taskId);
+        this.localStore.updateState(appState);
+    }
+
+    private async _removeTaskFromSprint(
+        appState: AppState,
+        sprintId: number,
+        taskId: number,
+    ): Promise<AppState> {
+        const remoteTask = await this.sprintClient.removeTaskFromSprint(
+            `${sprintId}`,
+            `${taskId}`,
+        );
+        appState = mergeTask(appState, remoteTask);
+        appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
+            (relation) =>
+                !(relation.sprintId === sprintId && relation.taskId === taskId),
+        );
+        return appState;
     }
 
     private async _addTaskToSprint(

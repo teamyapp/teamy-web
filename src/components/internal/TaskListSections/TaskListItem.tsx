@@ -7,6 +7,7 @@ import { BoundingBoxFinder } from '@lib/ui/position';
 import { draggableTask } from '@core/config/draggable';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
+import { TaskAction } from '@core/entity/taskAction';
 
 import { InlineTaskUI } from '../InlineTask';
 
@@ -15,6 +16,9 @@ interface Props {
     sectionId: string;
     task: Task;
     isSelectingOwner: boolean;
+    filterTaskAction?: (action: TaskAction) => boolean;
+    numActionColumns?: number;
+    showStatus?: boolean;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
     onDeleteTask?: (taskId: number) => void;
@@ -41,6 +45,9 @@ export class TaskListItem extends Component<Props> {
                 <InlineTaskUI
                     task={this.props.task}
                     isSelectingOwner={this.props.isSelectingOwner}
+                    filterTaskAction={this.props.filterTaskAction}
+                    numActionColumns={this.props.numActionColumns}
+                    showStatus={this.props.showStatus}
                     onUpdateTask={this.props.onUpdateTask}
                     onStartTask={this.props.onStartTask}
                     onDeleteTask={this.props.onDeleteTask}
