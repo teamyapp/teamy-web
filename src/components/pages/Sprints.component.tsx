@@ -440,6 +440,9 @@ export class SprintsComponent extends Component<Props, State> {
             case needAttentionSectionId:
             case inProgressSectionId:
                 switch (destSectionId) {
+                    case upcomingSectionId:
+                        this.stateSyncer.moveTaskToUpcoming(task.id)
+                        break;
                     case deliveredSectionId:
                         this.moveTaskToDelivered(task.id);
                         break;
