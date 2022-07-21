@@ -8,8 +8,7 @@ import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
-import { ButtonUI } from '@lib/ui/Button';
-import { DropDownList, Option } from '@lib/ui/DropDownList';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { draggableTask } from '@core/config/draggable';
@@ -38,6 +37,7 @@ import {
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { UpdateTaskInput } from '@core/entity/input';
+import { Sprint } from '@core/entity/sprint';
 import { Task } from '@core/entity/task';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
@@ -61,6 +61,7 @@ import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/Invi
 import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
 import { UserProfileUpdatedFeedbackComponent } from './internal/feedbacks/UserProfileUpdatedFeedback.component';
+import { getSprintName } from './internal/format';
 import { DebugComponent } from './pages/Debug.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
@@ -258,7 +259,7 @@ export class AppComponent extends Component<Props, State> {
                                         </div>
                                     </div>
                                 ) : (
-                                    this.renderNoActiveTeam()
+                                    this.renderSelectActiveTeam()
                                 ))}
                         </div>
                     </Fragment>
@@ -471,49 +472,46 @@ export class AppComponent extends Component<Props, State> {
         })().then();
     }
 
-    private renderNoActiveTeam() {
-        const teamOptions: Option[] = this.state.teams.map((team) => ({
-            key: `${team.id}`,
-            description: team.name,
-        }));
+    private renderSelectActiveTeam() {
+        const teams = this.state.teams;
         return (
-            <div className={styles.NoTeamSelected}>
-                <div className={styles.Center}>
-                    {teamOptions.length > 0 && (
-                        <Fragment>
-                            <div className={styles.SelectActiveTeam}>
-                                <div className={styles.Description}>
-                                    Please select active team
-                                </div>
-                                <div className={styles.DropDown}>
-                                    <DropDownList
-                                        options={teamOptions}
-                                        onSelectOption={
-                                            this.onActiveTeamOptionSelect
-                                        }
-                                    />
-                                </div>
-                            </div>
-                            <div className={styles.OrDivider}>Or</div>
-                        </Fragment>
-                    )}
-                    <div className={styles.Actions}>
+            <div className={styles.SelectActiveTeam}>
+                <div className={styles.Content}>
+                    <div className={styles.Title}>Select Active Team</div>
+                    <div className={styles.AddTeam}>
                         <div
-                            className={`${styles.Action} ${styles.CreateTeam}`}
+                            className={styles.Button}
+                            onClick={this.onCreateTeamClick}
                         >
-                            <ButtonUI
-                                label={'Create a New Team'}
-                                onClick={this.onCreateTeamClick}
-                            />
+                            <MaterialIconUI>add</MaterialIconUI>
                         </div>
                     </div>
+                    {teams.length > 0 && (
+                        <div className={styles.Teams}>
+                            {teams.map(this.renderTeamRow)}
+                        </div>
+                    )}
                 </div>
             </div>
         );
     }
 
-    private onActiveTeamOptionSelect = (teamId: string) => {
-        this.onActiveTeamSelect(parseInt(teamId), true).then();
+    private renderTeamRow = (team: Team, index: number) => {
+        return (
+            <div
+                key={index}
+                className={styles.TeamRow}
+                onClick={this.onActiveTeamClick(team.id)}
+            >
+                {team.name}
+            </div>
+        );
+    };
+
+    private onActiveTeamClick = (teamId: number) => {
+        return () => {
+            this.onActiveTeamSelect(teamId, true).then();
+        };
     };
 
     private onTaskFiltersChange = (taskFilters: TaskFilters) => {
