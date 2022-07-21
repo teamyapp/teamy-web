@@ -6,10 +6,10 @@ import { SpacerUI } from '@lib/ui/Spacer';
 import { TextAreaUI } from '@lib/ui/TextArea';
 
 import { Message } from '@core/entity/message';
-import { FormatService } from '@core/service/format.service';
 
 import styles from './Thread.module.scss';
 import { UserProfileUI } from './UserProfile';
+import { getShortName, timeFromNow } from './format';
 
 interface Props {
     messages: Message[];
@@ -75,13 +75,13 @@ export class ThreadUI extends Component<Props, State> {
                     <div className={styles.RightSection}>
                         <div className={styles.RightTopRow}>
                             <div className={styles.AuthorName}>
-                                {FormatService.getShortName(
+                                {getShortName(
                                     author.firstName,
                                     author.lastName,
                                 )}
                             </div>
                             <div className={styles.MessagePostedAt}>
-                                {FormatService.timeFromNow(message.createdAt)}
+                                {timeFromNow(message.createdAt)}
                             </div>
                             <SpacerUI />
                             <div className={styles.MessageActions}>

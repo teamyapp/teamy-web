@@ -5,6 +5,7 @@ import { closeIfNot } from '@lib/csp/lib';
 import { and } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { RouteUpdate, Router } from '@lib/router/router';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
@@ -24,11 +25,13 @@ import {
     upcomingSectionId,
 } from '@core/config/sections';
 import { taskUrgencyOrder } from '@core/config/sortOrder';
+import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
+import { Sprint } from '@core/entity/sprint';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
@@ -36,6 +39,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { KanbanUI } from '../internal/Kanban';
 import { PersonalStatusUI } from '../internal/PersonalStatus';
+import { getSprintName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
 
 const tabIds = ['me', 'team'];
@@ -58,6 +62,7 @@ interface Props {
         selectedOwnerId?: number,
     ) => void;
     onViewTaskDetail?: (taskId: number) => void;
+    onCreateSprintClick?: () => void;
 }
 
 interface State {
@@ -240,12 +245,49 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     private renderSelectSprint(): ReactNode {
-        // TODD: Allow user to create a sprint
-        const sprints =
+        let sprints =
             this.graphSource.team(this.localStore.getState().currTeamId!)
                 ?.sprints || [];
-        return sprints.length > 0 ? 'Select sprint' : 'No sprint';
+        sprints = orderByStartTimeDesc(sprints);
+        return (
+            <div className={styles.SelectSprint}>
+                <div className={styles.Content}>
+                    <div className={styles.Title}>Select Sprint</div>
+                    <div className={styles.AddSprint}>
+                        <div
+                            className={styles.Button}
+                            onClick={this.props.onCreateSprintClick}
+                        >
+                            <MaterialIconUI>add</MaterialIconUI>
+                        </div>
+                    </div>
+                    {sprints.length > 0 && (
+                        <div className={styles.Sprints}>
+                            {sprints.map(this.renderSprintRow)}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
     }
+
+    private renderSprintRow = (sprint: Sprint, index: number) => {
+        return (
+            <div
+                key={index}
+                className={styles.SprintRow}
+                onClick={this.onSprintRowClick(sprint.id)}
+            >
+                {getSprintName(sprint.startAt)}
+            </div>
+        );
+    };
+
+    private onSprintRowClick = (sprintId: number) => {
+        return () => {
+            this.stateSyncer.trySetCurrentSprint(sprintId);
+        };
+    };
 
     private renderTabContent(tabId: string): ReactNode | null {
         let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
@@ -436,17 +478,19 @@ export class SprintsComponent extends Component<Props, State> {
                         this.moveTaskToInProgress(task.id);
                         break;
                 }
+
                 break;
             case needAttentionSectionId:
             case inProgressSectionId:
                 switch (destSectionId) {
                     case upcomingSectionId:
-                        this.stateSyncer.moveTaskToUpcoming(task.id)
+                        this.stateSyncer.moveTaskToUpcoming(task.id);
                         break;
                     case deliveredSectionId:
                         this.moveTaskToDelivered(task.id);
                         break;
                 }
+
                 break;
         }
     }

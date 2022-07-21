@@ -250,6 +250,9 @@ export class AppComponent extends Component<Props, State> {
                                                     onViewTaskDetail={
                                                         this.onViewTaskDetail
                                                     }
+                                                    onCreateSprintClick={
+                                                        this.onCreateSprintClick
+                                                    }
                                                 />
                                             </Route>
                                         </div>

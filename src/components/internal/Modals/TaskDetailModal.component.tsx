@@ -20,13 +20,13 @@ import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
-import { FormatService } from '@core/service/format.service';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
+import { getShortName } from '../format';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 40;
@@ -111,7 +111,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             user={this.state.task.owner}
                                         />
                                         <div className={styles.TaskOwnerName}>
-                                            {`${FormatService.getShortName(
+                                            {`${getShortName(
                                                 this.state.task.owner.firstName,
                                                 this.state.task.owner.lastName,
                                             )}`}
