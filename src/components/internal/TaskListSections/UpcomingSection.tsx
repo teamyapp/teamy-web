@@ -132,6 +132,7 @@ export class UpcomingSection extends Component<Props, State> {
                         dragAndDropController={this.props.dragAndDropController}
                         sectionId={sectionId}
                         task={task}
+                        showStatus={true}
                         isSelectingOwner={
                             this.props.selectOwnerTaskId === task.id
                         }
