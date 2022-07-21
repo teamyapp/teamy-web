@@ -4,6 +4,7 @@ import React, { Component, Fragment, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
+import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
@@ -11,6 +12,7 @@ import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
+import { draggableTask } from '@core/config/draggable';
 import {
     debugRoutePattern,
     getTaskId,
@@ -26,9 +28,17 @@ import {
     taskPath,
     taskRoutePattern,
 } from '@core/config/routing';
+import {
+    backlogSectionId,
+    deliveredSectionId,
+    inProgressSectionId,
+    needAttentionSectionId,
+    upcomingSectionId,
+} from '@core/config/sections';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { UpdateTaskInput } from '@core/entity/input';
+import { Task } from '@core/entity/task';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { UserActionEvent } from '@core/event/userAction';
@@ -55,6 +65,14 @@ import { DebugComponent } from './pages/Debug.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
+
+const sectionIds = [
+    backlogSectionId,
+    upcomingSectionId,
+    inProgressSectionId,
+    deliveredSectionId,
+    needAttentionSectionId,
+];
 
 interface Props {
     deps: Deps;
@@ -115,6 +133,7 @@ export class AppComponent extends Component<Props, State> {
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
+    private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent | undefined>;
 
     constructor(props: Props) {
         super(props);
@@ -292,12 +311,35 @@ export class AppComponent extends Component<Props, State> {
         this.monitorUserActions();
         this.userActionChan =
             this.props.deps.shortcutMonitor.subscribeUserAction();
+        this.dragAndDropEventChan =
+            this.props.deps.dragAndDropController.subscribeDragAndDropEvent();
+        (async () => {
+            while (true) {
+                const event = await this.dragAndDropEventChan?.pop();
+                if (event === undefined) {
+                    return;
+                }
+                if (
+                    event.type === 'Drop' &&
+                    sectionIds.includes(event.srcContainId) &&
+                    sectionIds.includes(event.destContainerId) &&
+                    event.target.type === draggableTask
+                ) {
+                    this.processTaskDrop(
+                        event.srcContainId,
+                        event.destContainerId,
+                        event.target.data,
+                    );
+                }
+            }
+        })().then();
     }
 
     public componentWillUnmount() {
         closeIfNot(this.stateChangeChan);
         closeIfNot(this.routeChangeChan);
         closeIfNot(this.userActionChan);
+        closeIfNot(this.dragAndDropEventChan);
         this.props.deps.shortcutMonitor.dispose();
     }
 
@@ -634,4 +676,81 @@ export class AppComponent extends Component<Props, State> {
     private onCreateSprintClick = () => {
         this.createSprintModalRef.current?.open();
     };
+
+    private processTaskDrop(
+        srcSectionId: string,
+        destSectionId: string,
+        task: Task,
+    ) {
+        switch (srcSectionId) {
+            case backlogSectionId:
+                this.processFromBacklog(destSectionId, task);
+                break;
+            case needAttentionSectionId:
+            case inProgressSectionId:
+                switch (destSectionId) {
+                    case backlogSectionId:
+                        this.stateSyncer.moveTaskToUpcoming(task.id);
+                        this.removeTaskFromSprint(task.id);
+                        break;
+                }
+
+                break;
+            case upcomingSectionId:
+            case deliveredSectionId:
+                switch (destSectionId) {
+                    case backlogSectionId:
+                        this.removeTaskFromSprint(task.id);
+                        break;
+                }
+
+                break;
+        }
+    }
+
+    private processFromBacklog(destSectionId: string, task: Task) {
+        switch (destSectionId) {
+            case upcomingSectionId:
+                switch (task.status) {
+                    case 'UPCOMING':
+                    case 'PAUSED':
+                        this.addTaskToSprint(task.id);
+                        break;
+                }
+
+                break;
+
+            case needAttentionSectionId:
+            case inProgressSectionId:
+                switch (task.status) {
+                    case 'IN_PROGRESS':
+                        this.addTaskToSprint(task.id);
+                        break;
+                }
+
+                break;
+            case deliveredSectionId:
+                switch (task.status) {
+                    case 'DELIVERED':
+                        this.addTaskToSprint(task.id);
+                        break;
+                }
+
+                break;
+        }
+    }
+
+    private addTaskToSprint(taskId: number) {
+        const sprintId = this.localStore.getState().currSprintId;
+        if (sprintId) {
+            this.stateSyncer.addTaskToSprint(sprintId, taskId);
+        }
+    }
+
+    private removeTaskFromSprint(taskId: number) {
+        const sprints = this.graphSource.task(taskId)?.sprints || [];
+        for (const sprint of sprints) {
+            this.stateSyncer.removeTaskFromSprint(sprint.id, taskId);
+        }
+    }
 }

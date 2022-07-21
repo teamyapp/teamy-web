@@ -1,5 +1,6 @@
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
+import { SprintNode } from '@core/storage/graph/sprint.node';
 import { TaskState } from '@core/storage/states/task.state';
 import { TaskStatus } from '@core/storage/states/taskStatus';
 import { LocalStore } from '@core/storage/syncer/localStore';
@@ -104,6 +105,19 @@ export class TaskNode implements Task {
                     new TaskNode(
                         this.localStore,
                         appState.tasks[relation.awaitForTaskId],
+                    ),
+            );
+    }
+
+    public get sprints(): SprintNode[] {
+        const appState = this.localStore.getState();
+        return appState.sprintTaskRelations
+            .filter((relation) => relation.taskId === this.taskState.id)
+            .map(
+                (relation) =>
+                    new SprintNode(
+                        this.localStore,
+                        appState.sprints[relation.sprintId],
                     ),
             );
     }
