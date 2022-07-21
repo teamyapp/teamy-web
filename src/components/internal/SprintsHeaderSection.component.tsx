@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -15,6 +14,7 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './SprintsHeaderSection.component.module.scss';
+import { getSprintName } from './format';
 
 interface Props {
     deps: Deps;
@@ -116,7 +116,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             return getSprintName(this.state.currentSprint.startAt);
         }
 
-        return this.state.sprints.length > 0 ? 'Select sprint' : 'No sprint';
+        return 'Select Sprint';
     }
 
     componentDidMount() {
@@ -181,8 +181,4 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             showDetail: false,
         });
     };
-}
-
-function getSprintName(startAt: Date): string {
-    return moment(startAt).format('YYYY-MM-DD');
 }

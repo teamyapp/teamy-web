@@ -10,9 +10,9 @@ import { Deps } from '@core/dep/deps';
 import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
-import { FormatService } from '@core/service/format.service';
 
 import styles from './FilterList.component.module.scss';
+import { getShortName } from './format';
 
 interface Props {
     deps: Deps;
@@ -134,7 +134,7 @@ export class FilterListComponent extends Component<Props, State> {
                 onChange={this.onTaskOwnersCheckBoxChange}
             />
             <div className={styles.Label}>
-                {FormatService.getShortName(user.firstName, user.lastName)}
+                {getShortName(user.firstName, user.lastName)}
             </div>
         </div>
     );

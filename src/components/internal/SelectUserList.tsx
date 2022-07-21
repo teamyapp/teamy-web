@@ -3,10 +3,10 @@ import React, { Component, ReactNode } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { User } from '@core/entity/user';
-import { FormatService } from '@core/service/format.service';
 
 import styles from './SelectUserList.module.scss';
 import { UserProfileUI } from './UserProfile';
+import { getShortName } from './format';
 
 interface Props {
     emptySelectionUserName: string;
@@ -40,7 +40,7 @@ export class SelectUserListUI extends Component<Props> {
                 </div>
                 <UserProfileUI user={user} />
                 <div className={styles.Name}>
-                    {FormatService.getShortName(user.firstName, user.lastName)}
+                    {getShortName(user.firstName, user.lastName)}
                 </div>
             </div>
         );

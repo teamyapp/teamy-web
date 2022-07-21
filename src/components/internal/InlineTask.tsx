@@ -17,10 +17,10 @@ import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
-import { FormatService } from '@core/service/format.service';
 
 import styles from './InlineTask.module.scss';
 import { UserProfileUI } from './UserProfile';
+import { dueDate, getShortName } from './format';
 
 const statusNames: Record<TaskStatus, string> = {
     UPCOMING: 'Upcoming',
@@ -143,9 +143,7 @@ export class InlineTaskUI extends Component<Props, State> {
                     })}`}
                 >
                     <MaterialIconUI>alarm</MaterialIconUI>
-                    <div className={styles.Time}>
-                        {FormatService.dueDate(dueAt)}
-                    </div>
+                    <div className={styles.Time}>{dueDate(dueAt)}</div>
                 </div>
             )
         );
@@ -308,7 +306,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderAssignOwner(index: number): ReactNode {
         const owner = this.props.task.owner;
         const name = owner
-            ? FormatService.getShortName(owner.firstName, owner.lastName)
+            ? getShortName(owner.firstName, owner.lastName)
             : 'Unassigned';
         return (
             <div key={index} className={styles.AssignOwner}>
