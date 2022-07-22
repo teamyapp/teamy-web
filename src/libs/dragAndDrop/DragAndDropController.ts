@@ -180,7 +180,6 @@ export class DragAndDropController {
     public isInside(containerRect: Rect, mousePosition: Point): boolean {
         const containerBottom = containerRect.top + containerRect.height;
         const containerRight = containerRect.left + containerRect.width;
-
         const horizontal =
             mousePosition.left >= containerRect.left &&
             mousePosition.left <= containerRight;
