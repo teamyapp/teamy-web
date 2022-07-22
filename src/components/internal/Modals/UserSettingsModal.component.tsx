@@ -26,6 +26,12 @@ import microsoft from './accountProviders/microsoft.svg';
 import slack from './accountProviders/slack.svg';
 import wechat from './accountProviders/wechat.svg';
 
+const accountProvidersComingSoon: AuthProvider[] = [
+    'wechat',
+    'microsoft',
+    'slack',
+];
+
 interface Props {
     deps: Deps;
     onUserUpdated?: () => void;
@@ -223,6 +229,9 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                 <div className={styles.UserLabel}>
                     {linkedUser && linkedUser.label}
                 </div>
+                {accountProvidersComingSoon.includes(authProvider) && (
+                    <div className={styles.ComingSoon}>(Coming Soon)</div>
+                )}
                 <div className={styles.Action}>
                     {linkedUser ? (
                         <div className={styles.Disconnect}>

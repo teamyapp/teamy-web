@@ -45,12 +45,12 @@ export class FilterListComponent extends Component<Props, State> {
                     <div className={styles.Title}>Task Filters</div>
                     <SpacerUI />
                     <div className={styles.Actions}>
-                        <div
-                            className={styles.Action}
-                            onClick={this.onSaveFiltersClick}
-                        >
-                            Save
-                        </div>
+                        {/*<div*/}
+                        {/*    className={styles.Action}*/}
+                        {/*    onClick={this.onSaveFiltersClick}*/}
+                        {/*>*/}
+                        {/*    Save*/}
+                        {/*</div>*/}
                     </div>
                 </div>
                 <div className={styles.Content}>
