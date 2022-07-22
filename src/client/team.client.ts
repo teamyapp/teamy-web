@@ -67,6 +67,11 @@ export class TeamClient {
                                 availableActions
                                 awaitForTasks {
                                     id
+                                    status
+                                    isPlanned
+                                    owningTeam {
+                                        id
+                                    }
                                 }
                             }
                         }
