@@ -1,6 +1,6 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
 import { Event } from '@lib/event/event';
-import { Point } from '@lib/ui/position';
+import { Point, Rect } from '@lib/ui/position';
 
 import { Size, SizeTransformer } from './size';
 
@@ -64,6 +64,7 @@ export class DragAndDropController {
 
     private sourceContainerId?: string;
     private draggedTarget?: DragTarget;
+    private receivingLayer: number = 0;
     private receivingContainerId?: string;
     private itemLeftOffset = 0;
     private itemTopOffset = 0;
@@ -87,12 +88,12 @@ export class DragAndDropController {
     public onContainerMouseEnter(
         containerId: string,
         transformItemSize: SizeTransformer,
+        receiverLayer: number,
     ): void {
         if (!this.draggedTarget) {
             return;
         }
 
-        this.adjustPreviewSize(transformItemSize);
         if (
             containerId === this.sourceContainerId ||
             containerId === this.receivingContainerId
@@ -100,9 +101,17 @@ export class DragAndDropController {
             return;
         }
 
+        if (receiverLayer < this.receivingLayer) {
+            return;
+        }
+
         if (this.receivingContainerId) {
             this.onContainerMouseLeave(this.receivingContainerId);
         }
+
+        this.receivingLayer = receiverLayer;
+        this.adjustPreviewSize(transformItemSize);
+
         this.receivingContainerId = containerId;
         this.dragAndDropEventChan.put({
             type: 'DragEnter',
@@ -117,6 +126,7 @@ export class DragAndDropController {
         }
 
         if (containerId === this.receivingContainerId) {
+            this.receivingLayer = 0;
             this.receivingContainerId = undefined;
             this.dragAndDropEventChan.put({
                 type: 'DragLeave',
@@ -166,6 +176,19 @@ export class DragAndDropController {
 
     public turnOffDragging(itemType: string) {
         this.dragAndDropEventChan.put({ type: 'TurnOffDragging', itemType });
+    }
+
+    public isInside(containerRect: Rect, mousePosition: Point): boolean {
+        const containerBottom = containerRect.top + containerRect.height;
+        const containerRight = containerRect.left + containerRect.width;
+
+        const horizontal =
+            mousePosition.left >= containerRect.left &&
+            mousePosition.left <= containerRight;
+        const vertical =
+            mousePosition.top >= containerRect.top &&
+            mousePosition.top <= containerBottom;
+        return horizontal && vertical;
     }
 
     private adjustPreviewSize(transformItemSize: SizeTransformer) {
