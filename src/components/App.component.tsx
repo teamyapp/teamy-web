@@ -327,6 +327,7 @@ export class AppComponent extends Component<Props, State> {
                 if (event === undefined) {
                     return;
                 }
+
                 if (
                     event.type === 'Drop' &&
                     sectionIds.includes(event.srcContainId) &&
