@@ -87,6 +87,7 @@ interface State {
     activeTeamId?: number;
     isDrawerOpen: boolean;
     showBacklog: boolean;
+    backlogDropReceiverLayer: number;
     taskFilters: TaskFilters;
     selectOwnerTaskId?: number;
 }
@@ -149,6 +150,7 @@ export class AppComponent extends Component<Props, State> {
             isDrawerOpen: false,
             teams: [],
             taskFilters: {},
+            backlogDropReceiverLayer: -1,
         };
     }
 
@@ -214,6 +216,10 @@ export class AppComponent extends Component<Props, State> {
                                                 <BacklogComponent
                                                     ref={this.backlogRef}
                                                     deps={this.props.deps}
+                                                    dropReceiverLayer={
+                                                        this.state
+                                                            .backlogDropReceiverLayer
+                                                    }
                                                     selectOwnerTaskId={
                                                         this.state
                                                             .selectOwnerTaskId
@@ -624,6 +630,13 @@ export class AppComponent extends Component<Props, State> {
     private onBacklogToggle = () => {
         if (!this.state.showBacklog) {
             this.backlogRef.current?.refresh();
+            this.setState({
+                backlogDropReceiverLayer: 1,
+            });
+        } else {
+            this.setState({
+                backlogDropReceiverLayer: -1,
+            });
         }
 
         this.setState({

@@ -28,6 +28,7 @@ import { TaskListItem } from './TaskListSections/TaskListItem';
 
 interface Props {
     deps: Deps;
+    dropReceiverLayer?: number;
     selectOwnerTaskId?: number;
     onViewTaskDetail?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
@@ -98,6 +99,7 @@ export class BacklogComponent extends Component<Props, State> {
                     containerId={backlogSectionId}
                     itemType={draggableTask}
                     itemSizeTransformer={sectionItemSizeTransformer}
+                    receiverLayer={this.props.dropReceiverLayer}
                 >
                     <div className={styles.Content}>
                         <div className={styles.Header}>
