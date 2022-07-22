@@ -14,17 +14,17 @@ interface ConfigRow {
     link?: string;
 }
 
-interface IProps {
+interface Props {
     repoOwner: string;
     repoName: string;
 }
 
-interface IState {
+interface State {
     configRows: ConfigRow[];
 }
 
-export class DebugComponent extends Component<IProps, IState> {
-    constructor(props: IProps) {
+export class DebugComponent extends Component<Props, State> {
+    constructor(props: Props) {
         super(props);
         this.state = {
             configRows: [],
@@ -68,16 +68,21 @@ export class DebugComponent extends Component<IProps, IState> {
                 <div className={`${styles.Card} ${styles.InfoCard}`}>
                     <div className={styles.Title}>Debug</div>
                     <table>
-                        {this.state.configRows.map(this.renderConfigRow)}
+                        <tbody>
+                            {this.state.configRows.map(this.renderConfigRow)}
+                        </tbody>
                     </table>
                 </div>
             </div>
         );
     }
 
-    private renderConfigRow = (configRow: ConfigRow): ReactNode => {
+    private renderConfigRow = (
+        configRow: ConfigRow,
+        index: number,
+    ): ReactNode => {
         return (
-            <tr>
+            <tr key={index}>
                 <td className={styles.RowName}>{configRow.name}</td>
                 <td>
                     {configRow.link ? (
