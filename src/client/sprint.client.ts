@@ -43,6 +43,11 @@ export class SprintClient {
                                 availableActions
                                 awaitForTasks {
                                     id
+                                    status
+                                    isPlanned
+                                    owningTeam {
+                                        id
+                                    }
                                 }
                             }
                             createdAt

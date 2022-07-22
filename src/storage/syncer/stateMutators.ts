@@ -6,6 +6,7 @@ import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteThread } from '@core/client/entity/remoteThread';
 import { RemoteUser } from '@core/client/entity/remoteUser';
 import { TeamClient } from '@core/client/team.client';
+import { Team } from '@core/entity/team';
 import { AppState } from '@core/storage/states/app.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
@@ -270,21 +271,13 @@ export function mergeUser(
                 ? localOldUser.updatedAt
                 : toDate(remoteUser.updatedAt),
     };
-
-    const userTeamMembers = remoteUser.teams?.map(
-        (team) => new TeamMemberState(toInt(team.id)!, remoteUserId),
-    );
-    if (userTeamMembers) {
+    if (remoteUser.teams) {
         currAppState = replaceUserTeams(
             currAppState,
             remoteUserId,
-            userTeamMembers,
+            remoteUser.teams,
         );
     }
-
-    remoteUser.teams?.forEach((remoteTeam) => {
-        currAppState = mergeTeam(currAppState, remoteTeam);
-    });
 
     currAppState.users[remoteUserId] = localNewUser;
     return currAppState;
@@ -416,28 +409,31 @@ export function mergeTeam(
     }
 
     if (remoteTeam.members) {
-        remoteTeam.members.forEach((member) => {
-            currAppState = mergeUser(currAppState, member);
-        });
-        const teamMembers = remoteTeam.members.map(
-            (member) => new TeamMemberState(remoteTeamId, toInt(member.id)!),
-        );
         currAppState = replaceTeamMembers(
             currAppState,
             remoteTeamId,
-            teamMembers,
+            remoteTeam.members,
         );
     }
-
     remoteTeam.tasks?.forEach((task) => {
         currAppState = mergeTask(currAppState, task);
     });
-    remoteTeam.invitations?.forEach((invitation) => {
-        currAppState = mergeInvitation(currAppState, invitation);
-    });
-    remoteTeam.sprints?.forEach((sprint) => {
-        currAppState = mergeSprint(currAppState, sprint);
-    });
+
+    if (remoteTeam.invitations) {
+        currAppState = replaceTeamInvitations(
+            currAppState,
+            remoteTeamId,
+            remoteTeam.invitations,
+        );
+    }
+
+    if (remoteTeam.sprints) {
+        currAppState = replaceTeamSprints(
+            currAppState,
+            remoteTeamId,
+            remoteTeam.sprints,
+        );
+    }
     currAppState.teams[remoteTeamId] = localNewTeam;
     return currAppState;
 }
@@ -554,24 +550,57 @@ export function mergeThread(
 export function replaceUserTeams(
     currAppState: AppState,
     userId: number,
-    newTeamMembers: TeamMemberState[],
+    userTeams: RemoteTeam[],
 ): AppState {
+    const newTeamMembers = userTeams.map(
+        (team) => new TeamMemberState(toInt(team.id)!, userId),
+    );
     let teamMembers = currAppState.teamMembers.filter(
         (teamMember) => teamMember.userId !== userId,
     );
     currAppState.teamMembers = teamMembers.concat(newTeamMembers);
+
+    userTeams.forEach((remoteTeam) => {
+        currAppState = mergeTeam(currAppState, remoteTeam);
+    });
     return currAppState;
 }
 
 export function replaceTeamMembers(
     currAppState: AppState,
     teamId: number,
-    newTeamMembers: TeamMemberState[],
+    teamMembers: RemoteUser[],
 ): AppState {
-    let teamMembers = currAppState.teamMembers.filter(
+    const newTeamMembers = teamMembers.map(
+        (member) => new TeamMemberState(teamId, toInt(member.id)!),
+    );
+
+    let remainTeamMembers = currAppState.teamMembers.filter(
         (teamMember) => teamMember.teamId !== teamId,
     );
-    currAppState.teamMembers = teamMembers.concat(newTeamMembers);
+    currAppState.teamMembers = remainTeamMembers.concat(newTeamMembers);
+    teamMembers.forEach((member) => {
+        currAppState = mergeUser(currAppState, member);
+    });
+    return currAppState;
+}
+
+export function replaceTeamSprints(
+    currAppState: AppState,
+    teamId: number,
+    sprints: RemoteSprint[],
+): AppState {
+    const newSprints: Record<number, SprintState> = {};
+    for (let sprintId in currAppState.sprints) {
+        const sprint = currAppState.sprints[sprintId];
+        if (sprint.owningTeamId !== teamId) {
+            newSprints[sprintId] = sprint;
+        }
+    }
+
+    sprints.forEach((remoteSprint) => {
+        currAppState = mergeSprint(currAppState, remoteSprint);
+    });
     return currAppState;
 }
 
@@ -589,6 +618,9 @@ function replaceAndMergeAwaitFor(
     );
     currAppState.taskAwaitForRelations =
         remainingRelations.concat(newRelations);
+    awaitForTasks.forEach((task) => {
+        currAppState = mergeTask(currAppState, task);
+    });
     return currAppState;
 }
 

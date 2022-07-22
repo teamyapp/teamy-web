@@ -176,6 +176,12 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     private renderAwaitForTask = (task: Task, index: number): ReactNode => {
+        try {
+            const t = this;
+            const s = task.status;
+        } catch (e) {
+            debugger;
+        }
         return (
             <div
                 key={index}

@@ -264,11 +264,7 @@ export class StateSyncer {
     public async pullTeamMembers(teamId: number): Promise<void> {
         const members = await this.teamClient.getTeamMembers(`${teamId}`);
         let appState = this.localStore.getState();
-
-        const teamMembers = members.map(
-            (user) => new TeamMemberState(teamId, toInt(user.id)!),
-        );
-        appState = replaceTeamMembers(appState, teamId, teamMembers);
+        appState = replaceTeamMembers(appState, teamId, members);
         members.forEach((member) => {
             appState = mergeUser(appState, member);
         });
