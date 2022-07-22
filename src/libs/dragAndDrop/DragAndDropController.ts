@@ -140,6 +140,7 @@ export class DragAndDropController {
             this.draggedTarget &&
             this.sourceContainerId !== containerId
         ) {
+            this.receivingLayer = 0;
             this.dragAndDropEventChan.put({
                 type: 'Drop',
                 srcContainId: this.sourceContainerId,
