@@ -111,7 +111,6 @@ export class DragAndDropController {
 
         this.receivingLayer = receiverLayer;
         this.adjustPreviewSize(transformItemSize);
-
         this.receivingContainerId = containerId;
         this.dragAndDropEventChan.put({
             type: 'DragEnter',
