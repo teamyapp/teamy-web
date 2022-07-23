@@ -406,6 +406,7 @@ export class InlineTaskUI extends Component<Props, State> {
     };
 
     private onGoalDoubleClick = () => {
+        this.props.onStartEditingTask?.call(null);
         this.setState({
             isEditingGoal: true,
             updatedGoal: this.props.task.goal,
@@ -422,6 +423,7 @@ export class InlineTaskUI extends Component<Props, State> {
             isEditingGoal: false,
             updatedGoal: undefined,
         });
+        this.props.onFinishEditingTask?.call(null);
     }
 
     private getUpdatedTask(): UpdateTaskInput {
