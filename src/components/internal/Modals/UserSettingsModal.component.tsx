@@ -1,12 +1,14 @@
 import React, { Component, ReactNode, createRef } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
+import { Router } from '@lib/router/router';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TextFieldUI } from '@lib/ui/TextField';
 
+import { absoluteUri } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import {
     AuthProvider,
@@ -49,6 +51,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
+    private readonly router: Router;
     private readonly modalRef = createRef<ModalUI>();
 
     private onStateChangeChan?: PopChannel<boolean | undefined>;
@@ -59,6 +62,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
         this.stateSyncer = props.deps.stateSyncer;
+        this.router = props.deps.router;
         this.state = {
             currentTabIndex: 0,
             linkedUsers: new Map<AuthProvider, LinkedUser>(),
@@ -235,11 +239,21 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                 <div className={styles.Action}>
                     {linkedUser ? (
                         <div className={styles.Disconnect}>
-                            <ButtonUI label={'Disconnect'} />
+                            <ButtonUI
+                                label={'Disconnect'}
+                                onClick={this.onDisconnectExternalAccountClick(
+                                    authProvider,
+                                )}
+                            />
                         </div>
                     ) : (
                         <div className={styles.Connect}>
-                            <ButtonUI label={'Connect'} />
+                            <ButtonUI
+                                label={'Connect'}
+                                onClick={this.onConnectExternalAccountClick(
+                                    authProvider,
+                                )}
+                            />
                         </div>
                     )}
                 </div>
@@ -280,6 +294,22 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         await this.props.deps.feedbackPubSub.publish({
             type: 'UserProfileUpdated',
         });
+    };
+
+    private onConnectExternalAccountClick = (authProvider: AuthProvider) => {
+        return () => {
+            this.props.deps.identityClient.createUserLink(
+                authProvider,
+                absoluteUri(this.router.currentUri!),
+            );
+        };
+    };
+
+    private onDisconnectExternalAccountClick = (authProvider: AuthProvider) => {
+        return async () => {
+            await this.props.deps.identityClient.deleteUserLink(authProvider);
+            this.stateSyncer.pullUserLinks();
+        };
     };
 }
 

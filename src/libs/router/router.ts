@@ -58,7 +58,7 @@ export class Router {
         return this.currRouteUpdate;
     }
 
-    public get CurrentUri(): string | undefined {
+    public get currentUri(): string | undefined {
         return this.currUri;
     }
 
