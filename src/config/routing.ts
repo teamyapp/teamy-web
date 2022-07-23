@@ -46,3 +46,6 @@ export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`
 
 export const invitationLink = (invitationId: number, code: string) =>
     `${absoluteRootPath}${invitationRoutePattern}?id=${invitationId}&code=${code}`;
+
+export const absoluteUri = (relativePath: string) =>
+    `${absoluteRootPath}${relativePath}`;

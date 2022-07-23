@@ -61,6 +61,20 @@ export class IdentityClient {
         window.location.replace(redirectUrl || this.homePageUrl);
     }
 
+    public async createUserLink(authProvider: string, redirectUrl: string) {
+        const createUserLinkApi = new URL(
+            `${this.config.apiBaseEndpoint}/user-links/${authProvider}/create`,
+        );
+        createUserLinkApi.searchParams.set(redirectUrlParam, redirectUrl);
+        const result = await this.httpClient.request(
+            createUserLinkApi.toString(),
+            {
+                method: 'GET',
+            },
+        );
+        window.location.replace(result[0]!);
+    }
+
     public async listUserLinks(): Promise<UserLink[]> {
         const result = await this.httpClient.request(
             `${this.config.apiBaseEndpoint}/user-links`,
@@ -68,8 +82,16 @@ export class IdentityClient {
                 method: 'GET',
             },
         );
-
         return result[0] ? JSON.parse(result[0]) : [];
+    }
+
+    public async deleteUserLink(authProvider: string): Promise<void> {
+        await this.httpClient.request(
+            `${this.config.apiBaseEndpoint}/user-links/${authProvider}/delete`,
+            {
+                method: 'DELETE',
+            },
+        );
     }
 
     private async verifyToken(accessToken: string): Promise<boolean> {
