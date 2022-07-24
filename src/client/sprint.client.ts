@@ -40,7 +40,6 @@ export class SprintClient {
                                 owningTeam {
                                     id
                                 }
-                                availableActions
                                 awaitForTasks {
                                     id
                                     status
