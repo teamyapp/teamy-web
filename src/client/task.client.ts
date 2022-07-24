@@ -48,6 +48,7 @@ export class TaskClient {
                                     updatedAt
                                 }
                             }
+                            status
                         }
                     }
                 `,
@@ -83,7 +84,6 @@ export class TaskClient {
                             }
                             status
                             createdAt
-                            availableActions
                         }
                     }
                 `,
@@ -174,7 +174,6 @@ export class TaskClient {
                                 id
                             }
                             updatedAt
-                            availableActions
                         }
                     }
                 `,
@@ -194,7 +193,6 @@ export class TaskClient {
                             id
                             status
                             updatedAt
-                            availableActions
                         }
                     }
                 `,

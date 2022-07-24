@@ -64,7 +64,6 @@ export class TeamClient {
                                 owningTeam {
                                     id
                                 }
-                                availableActions
                                 awaitForTasks {
                                     id
                                     status
