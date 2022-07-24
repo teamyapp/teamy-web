@@ -28,6 +28,9 @@ export class TaskClient {
                                 lastName
                                 profileUrl
                             }
+                            owningTeam {
+                                id
+                            }
                             isPlanned
                             createdAt
                             comments {
