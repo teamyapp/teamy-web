@@ -152,8 +152,8 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                                 />
                             ) : (
                                 <div className={styles.DefaultUserProfile}>
-                                    {this.state.editingUserLastName &&
-                                        this.state.editingUserLastName[0].toUpperCase()}
+                                    {this.state.editingUserFirstName &&
+                                        this.state.editingUserFirstName[0].toUpperCase()}
                                 </div>
                             )}
 
