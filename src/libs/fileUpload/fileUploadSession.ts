@@ -73,7 +73,6 @@ export class FileUploadSession {
                 totalPercentage:
                     (uploadSession.uploadedSizeInBytes / file.size) * 100,
             });
-
             currChunkIndex = uploadSession.nextChunkIndexToUpload;
             console.log(
                 `finish uploading chunk: currChunkIndex=${currChunkIndex}`,
