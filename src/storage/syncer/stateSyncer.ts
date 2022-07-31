@@ -179,6 +179,10 @@ export class StateSyncer {
         const remoteTeam = await this.teamClient.getTeamWithSprintPreviews(
             `${currTeamId}`,
         );
+        if (!remoteTeam) {
+            return;
+        }
+
         appState = mergeTeam(appState, remoteTeam);
         if (remoteTeam.sprints) {
             const startOfDay = moment(Date.now()).startOf('day').utc().toDate();
