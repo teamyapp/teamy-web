@@ -468,6 +468,10 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async createUser(user: CreateUserInput): Promise<void> {
+        await this.userClient.createUser(user);
+    }
+
     public async updateUser(
         userId: number,
         input: UpdateUserInput,
@@ -478,8 +482,20 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async createUser(user: CreateUserInput): Promise<void> {
-        await this.userClient.createUser(user);
+    public async createUserProfileUpdateSession(): Promise<number> {
+        const remoteSessionID =
+            await this.userClient.createUserProfileUploadSession();
+        return parseInt(remoteSessionID);
+    }
+
+    public async finishUserProfileUpdateSession(
+        fileUploadSessionId: number,
+    ): Promise<number> {
+        const remoteSessionID =
+            await this.userClient.finishUserProfileUploadSession(
+                `${fileUploadSessionId}`,
+            );
+        return parseInt(remoteSessionID);
     }
 
     public async createMessage(

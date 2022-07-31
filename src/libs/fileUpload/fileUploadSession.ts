@@ -102,6 +102,14 @@ function getChunkSizeInBytes(fileSizeInBytes: number): number {
     }
 }
 
+export class FileUploadSessionFactory {
+    constructor(private cloudAPIBaseUrl: string) {}
+
+    public createFileUploadSession(uploadSessionId: number): FileUploadSession {
+        return new FileUploadSession(this.cloudAPIBaseUrl, uploadSessionId);
+    }
+}
+
 function readFileData(file: File): Promise<ArrayBuffer> {
     const fileReader = new FileReader();
     return new Promise((resolve, reject) => {

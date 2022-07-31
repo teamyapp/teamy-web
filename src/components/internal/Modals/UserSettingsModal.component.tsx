@@ -1,6 +1,14 @@
-import React, { Component, ReactNode, createRef } from 'react';
+import React, {
+    ChangeEvent,
+    Component,
+    Fragment,
+    ReactNode,
+    createRef,
+} from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
+import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
+import { Progress } from '@lib/fileUpload/progress';
 import { Router } from '@lib/router/router';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -45,6 +53,9 @@ interface State {
     currentTabIndex: number;
     editingUserFirstName?: string;
     editingUserLastName?: string;
+    isPreviewingProfileImage: boolean;
+    previewProfileImageUrl?: string;
+    profileUploadProgress: Progress;
 }
 
 export class UserSettingsModalComponent extends Component<Props, State> {
@@ -52,6 +63,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
     private readonly router: Router;
+    private readonly fileUploadSessionFactory: FileUploadSessionFactory;
     private readonly modalRef = createRef<ModalUI>();
 
     private onStateChangeChan?: PopChannel<boolean | undefined>;
@@ -63,9 +75,15 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.stateSyncer = props.deps.stateSyncer;
         this.router = props.deps.router;
+        this.fileUploadSessionFactory = props.deps.fileUploadSessionFactory;
         this.state = {
             currentTabIndex: 0,
             linkedUsers: new Map<AuthProvider, LinkedUser>(),
+            isPreviewingProfileImage: false,
+            profileUploadProgress: {
+                newBytesUploaded: 0,
+                totalPercentage: 0,
+            },
         };
     }
 
@@ -143,24 +161,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
             this.state.currentTabIndex === 0 && (
                 <div className={styles.UserProfileTab}>
                     <div className={styles.UserProfileTabContent}>
-                        <div className={styles.UserProfile}>
-                            {this.state.user?.profileUrl ? (
-                                <img
-                                    alt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
-                                    className={styles.UserProfileImg}
-                                    src={this.state.user?.profileUrl}
-                                />
-                            ) : (
-                                <div className={styles.DefaultUserProfile}>
-                                    {this.state.editingUserFirstName &&
-                                        this.state.editingUserFirstName[0].toUpperCase()}
-                                </div>
-                            )}
-
-                            <div className={styles.UploadUserProfileButton}>
-                                Upload profile
-                            </div>
-                        </div>
+                        {this.renderUserProfile()}
                         <div className={styles.UserIdSection}>
                             <div>ID:</div>
                             <div className={styles.UserId}>
@@ -196,6 +197,53 @@ export class UserSettingsModalComponent extends Component<Props, State> {
             )
         );
     };
+
+    private renderUserProfile(): ReactNode {
+        return (
+            <div className={styles.UserProfile}>
+                {this.state.isPreviewingProfileImage ? (
+                    <Fragment>
+                        <img
+                            alt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
+                            className={styles.UserProfileImg}
+                            src={this.state.previewProfileImageUrl}
+                        />
+                        <div
+                            className={styles.UploadProgress}
+                            style={{
+                                top: `${this.state.profileUploadProgress.totalPercentage}%`,
+                            }}
+                        />
+                    </Fragment>
+                ) : (
+                    <Fragment>
+                        {this.state.user?.profileUrl ? (
+                            <img
+                                alt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
+                                className={styles.UserProfileImg}
+                                src={this.state.user?.profileUrl}
+                            />
+                        ) : (
+                            <div className={styles.DefaultUserProfile}>
+                                {this.state.editingUserFirstName &&
+                                    this.state.editingUserFirstName[0].toUpperCase()}
+                            </div>
+                        )}
+                        <div className={styles.UploadUserProfileButton}>
+                            <input
+                                type={'file'}
+                                className={styles.FileInput}
+                                title=''
+                                accept='image/png,image/jpeg,image/bmp,image/svg+xml'
+                                onChange={this.onProfileImageChange}
+                            />
+                            <div className={styles.Label}>Upload profile</div>
+                        </div>
+                    </Fragment>
+                )}
+            </div>
+        );
+    }
 
     private renderAccountsTab = () => {
         return (
@@ -311,6 +359,88 @@ export class UserSettingsModalComponent extends Component<Props, State> {
             this.stateSyncer.pullUserLinks();
         };
     };
+
+    private onProfileImageChange = async (
+        event: ChangeEvent<HTMLInputElement>,
+    ) => {
+        const files = event.target.files;
+        if (!files || files.length < 1) {
+            return;
+        }
+
+        const file = files[0];
+        const previewImageUrl = URL.createObjectURL(file);
+        const image = await loadImage(previewImageUrl);
+
+        const ratio = image.width / image.height;
+        if (ratio !== 1) {
+            alert('Profile image need to be a square');
+            return;
+        }
+
+        if (image.width > 800) {
+            alert(
+                'Profile image need to be smaller than or equal to 800 x 800',
+            );
+            return;
+        }
+
+        this.setState({
+            isPreviewingProfileImage: true,
+            previewProfileImageUrl: previewImageUrl,
+            profileUploadProgress: {
+                newBytesUploaded: 0,
+                totalPercentage: 0,
+            },
+        });
+
+        const fileUploadSessionId =
+            await this.stateSyncer.createUserProfileUpdateSession();
+        const uploadSession =
+            this.fileUploadSessionFactory.createFileUploadSession(
+                fileUploadSessionId,
+            );
+        const onNewProgressCh = uploadSession.subscribeNewProgress();
+        (async () => {
+            while (true) {
+                const progress = await onNewProgressCh.pop();
+                if (progress === undefined) {
+                    return;
+                }
+
+                this.setState({
+                    profileUploadProgress: progress,
+                });
+            }
+        })().then();
+        const error = await uploadSession.uploadFile(file);
+        if (error) {
+            alert('Fail to upload profile image');
+        } else {
+            await this.stateSyncer.finishUserProfileUpdateSession(
+                fileUploadSessionId,
+            );
+            await this.stateSyncer.pullCurrentUser();
+            const user = this.graphSource.currentUser();
+            this.setState({
+                user,
+            });
+        }
+
+        this.setState({
+            isPreviewingProfileImage: false,
+        });
+    };
+}
+
+function loadImage(url: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => {
+            resolve(image);
+        };
+        image.src = url;
+    });
 }
 
 function renderAccountProviderLogoURL(authProvider: AuthProvider): any {
