@@ -284,8 +284,9 @@ export class SprintsComponent extends Component<Props, State> {
     };
 
     private onSprintRowClick = (sprintId: number) => {
-        return () => {
+        return async () => {
             this.stateSyncer.trySetCurrentSprint(sprintId);
+            await this.stateSyncer.pullCurrentSprint();
         };
     };
 
