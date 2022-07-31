@@ -5,6 +5,7 @@ import React, {
 } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 
 import {
     DragAndDropController,
@@ -93,7 +94,7 @@ export class Draggable extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        this.dragAndDropEventChan?.close();
+        closeIfNot(this.dragAndDropEventChan);
     }
 
     private onMouseDown = (event: ReactMouseEvent) => {

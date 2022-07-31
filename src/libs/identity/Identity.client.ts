@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie';
 
-import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
+import { UserLink } from '@lib/identity/userLink';
+import { HTTPClient } from '@lib/network/HTTP.client';
 
 import { Environment } from '@core/env/environment';
 
@@ -12,27 +13,19 @@ const redirectUrlParam = 'redirectUrl';
 export const accessTokenParam = 'accessToken';
 
 export class IdentityClient {
-    private readonly httpClient = new FetchHTTPClient();
     private readonly config: Config;
 
     constructor(
         env: Environment,
         private signInFinishLink: string,
         private homePageUrl: string,
+        private httpClient: HTTPClient,
     ) {
         this.config = getConfig(env);
     }
 
-    public getAccessToken(): string {
-        return Cookies.get(accessTokenKey) || '';
-    }
-
-    private saveSignInRedirectUrl(redirectUrl: string): void {
-        localStorage.setItem(signInRedirectKey, redirectUrl);
-    }
-
     public async isSignedIn(): Promise<boolean> {
-        const token = this.getAccessToken();
+        const token = getAccessToken();
         if (!token || token.length === 0) {
             return false;
         }
@@ -42,7 +35,7 @@ export class IdentityClient {
 
     public trySignIn() {
         const currUrl = window.location.href;
-        this.saveSignInRedirectUrl(currUrl);
+        saveSignInRedirectUrl(currUrl);
         window.location.replace(this.config.signInLink);
     }
 
@@ -59,9 +52,46 @@ export class IdentityClient {
             domain: this.config.cookieDomain,
             secure: this.config.cookieSecure,
         });
+        this.redirectBack();
+    }
+
+    public redirectBack() {
         const redirectUrl = localStorage.getItem(signInRedirectKey);
         localStorage.removeItem(signInRedirectKey);
         window.location.replace(redirectUrl || this.homePageUrl);
+    }
+
+    public async createUserLink(authProvider: string, redirectUrl: string) {
+        const createUserLinkApi = new URL(
+            `${this.config.apiBaseEndpoint}/user-links/${authProvider}/create`,
+        );
+        createUserLinkApi.searchParams.set(redirectUrlParam, redirectUrl);
+        const result = await this.httpClient.request(
+            createUserLinkApi.toString(),
+            {
+                method: 'GET',
+            },
+        );
+        window.location.replace(result[0]!);
+    }
+
+    public async listUserLinks(): Promise<UserLink[]> {
+        const result = await this.httpClient.request(
+            `${this.config.apiBaseEndpoint}/user-links`,
+            {
+                method: 'GET',
+            },
+        );
+        return result[0] ? JSON.parse(result[0]) : [];
+    }
+
+    public async deleteUserLink(authProvider: string): Promise<void> {
+        await this.httpClient.request(
+            `${this.config.apiBaseEndpoint}/user-links/${authProvider}/delete`,
+            {
+                method: 'DELETE',
+            },
+        );
     }
 
     private async verifyToken(accessToken: string): Promise<boolean> {
@@ -74,4 +104,12 @@ export class IdentityClient {
         );
         return result[1] === null;
     }
+}
+
+export function getAccessToken(): string {
+    return Cookies.get(accessTokenKey) || '';
+}
+
+function saveSignInRedirectUrl(redirectUrl: string): void {
+    localStorage.setItem(signInRedirectKey, redirectUrl);
 }

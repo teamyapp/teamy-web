@@ -10,34 +10,39 @@ import { Filter, groupBy } from '@lib/data/filter';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
-export const allTasks: Filter<Task> = (task: Task) => true;
+export const allTasks: Filter<Task> = (task: Task): boolean => true;
 
-export const upcoming: Filter<Task> = (task: Task) =>
+export const upcoming: Filter<Task> = (task: Task): boolean =>
     task.status === 'UPCOMING';
-export const inProgress: Filter<Task> = (task: Task) =>
+export const paused: Filter<Task> = (task: Task): boolean =>
+    task.status === 'PAUSED';
+export const inProgress: Filter<Task> = (task: Task): boolean =>
     task.status === 'IN_PROGRESS';
-export const delivered: Filter<Task> = (task: Task) =>
+export const delivered: Filter<Task> = (task: Task): boolean =>
     task.status === 'DELIVERED';
+export const awaiting: Filter<Task> = (task: Task): boolean =>
+    task.status === 'AWAITING';
 
 export function ownedBy(ownerUserId: number): Filter<Task> {
     return (task: Task) => task.owner?.id === ownerUserId;
 }
 
+export const unplanned: Filter<Task> = (task: Task): boolean => !task.isPlanned;
+
 export function between(
     begin: Date | null,
     end: Date | null,
-    selectDate: (task: Task) => string | undefined,
+    selectDate: (task: Task) => Date | undefined,
 ): Filter<Task> {
     return (task: Task) => {
         if (!begin && !end) {
             return true;
         }
 
-        const dateString = selectDate(task);
-        if (!dateString) {
+        const date = selectDate(task);
+        if (!date) {
             return false;
         }
-        const date = new Date(dateString);
         if (!begin) {
             return date.getTime() <= end!.getTime();
         } else if (!end) {
@@ -55,8 +60,8 @@ export function contains(keyword: string): Filter<Task> {
     const lowerKeyword = keyword.toLocaleLowerCase();
     return (task: Task) =>
         task.goal.toLocaleLowerCase().includes(lowerKeyword) ||
-        (task.context !== undefined &&
-            task.context.toLocaleLowerCase().includes(lowerKeyword));
+        task.context?.toLocaleLowerCase().includes(lowerKeyword) ||
+        false;
 }
 
 // Given a sequence of tasks, split it to N sequences of tasks where N is the number of unique assignees.

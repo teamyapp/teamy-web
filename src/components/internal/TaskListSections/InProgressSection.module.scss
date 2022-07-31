@@ -1,0 +1,18 @@
+@import '../TaskLists.module';
+
+$inProgressPrimary: #ff612d;
+
+.TaskListSection {
+    --background-color: #fff8e1;
+    --title-color: #{$inProgressPrimary};
+    display: flex;
+
+    height: 100%;
+    width: 100%;
+
+    .SectionTopBar {
+        .TaskCounter {
+            background-color: $inProgressPrimary;
+        }
+    }
+}

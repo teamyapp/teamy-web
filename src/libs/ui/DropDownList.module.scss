@@ -1,80 +1,92 @@
 $width: var(--drop-down-width, auto);
 $height: var(--drop-down-height, 24px);
 $fontSize: var(--drop-down-font-size, 14px);
+$fontWeight: var(--drop-down-font-weight, 600);
+$fontColor: var(--drop-down-font-color, white);
 $dropDownColor: var(--drop-down-color, #546e7a);
-$dropDownButtonDarkness: var(--drop-down-button-darkness, 0.2);
+$dropDownButtonColor: var(--drop-down-button-color, rgba(0, 0, 0, 0.2));
+$dropDownButtonHoverColor: var(
+    --drop-down-button-hover-color,
+    rgba(0, 0, 0, 0.25)
+);
+$availableOptionsMarginTop: var(--drop-down-options-margin-top, 3px);
+$availableOptionsMarginSide: var(--drop-down-options-margin-side, 4px);
+
 $optionPadding: 8px;
 
 .DropDownList {
+    color: $fontColor;
     font-size: $fontSize;
-    width: $width;
     height: $height;
     user-select: none;
-    color: white;
-    border-radius: 4px;
-    background-color: $dropDownColor;
+    width: $width;
+
+    &:focus {
+        outline: none;
+    }
 
     .SelectedOption {
+        background-color: $dropDownColor;
+        border-radius: 4px;
         display: flex;
-        height: 100%;
+        height: $height;
+        overflow: hidden;
+        width: $width;
 
         .Option {
-            line-height: $fontSize;
-            display: flex;
             align-items: center;
-            flex: 1;
-            box-sizing: border-box;
-            height: 100%;
-            padding: 0 $optionPadding;
             border-radius: 4px 0 0 4px;
+            box-sizing: border-box;
+            display: flex;
+            flex: 1;
+            font-weight: $fontWeight;
+            height: 100%;
+            line-height: $fontSize;
+            padding: 0 $optionPadding;
 
             &:hover {
-                cursor: pointer;
                 background-color: rgba(255, 255, 255, 0.08);
+                cursor: pointer;
             }
         }
 
         .DropDownButton {
-            display: flex;
             align-items: center;
-            justify-content: center;
-            width: $height;
-            height: $height;
-            border-radius: 0 4px 4px 0;
-            background-color: rgba(0, 0, 0, $dropDownButtonDarkness);
-            --icon-size: #{$height - 6px};
+            background-color: $dropDownButtonColor;
             --icon-color: white;
+            display: flex;
+            height: $height;
+            justify-content: center;
+            --icon-size: #{$height - 6px};
+            width: $height;
 
             &:hover {
+                background-color: $dropDownButtonHoverColor;
                 cursor: pointer;
-                background-color: rgba(
-                    0,
-                    0,
-                    0,
-                    calc(#{$dropDownButtonDarkness} + 0.05)
-                );
             }
         }
     }
 
     .AvailableOptions {
-        position: relative;
-        z-index: 1000;
-        margin: 3px 4px 0 4px;
-        color: black;
-        outline: none;
         background-color: white;
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+        color: black;
+        font-weight: $fontWeight;
+        margin: $availableOptionsMarginTop $availableOptionsMarginSide 0
+            $availableOptionsMarginSide;
+        outline: none;
+        position: relative;
+        z-index: 1000;
 
         .Option {
-            display: flex;
             align-items: center;
+            display: flex;
             height: $height;
             padding: 0 $optionPadding;
 
             &:hover {
-                cursor: pointer;
                 background-color: rgba(0, 0, 0, 0.05);
+                cursor: pointer;
             }
         }
     }

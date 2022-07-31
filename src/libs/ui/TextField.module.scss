@@ -13,15 +13,15 @@ $hintColor: var(--hint-color, #757575);
 $backgroundColor: var(--background-color, white);
 
 .TextField {
-    font-size: $fontSize;
-    position: relative;
-    display: flex;
     align-items: center;
-    min-height: calc(#{$iconSize} + #{$iconPadding * 2});
-    padding: 6px $paddingSide;
+    background-color: $backgroundColor;
     border: $border;
     border-radius: 4px;
-    background-color: $backgroundColor;
+    display: flex;
+    font-size: $fontSize;
+    min-height: calc(#{$iconSize} + #{$iconPadding * 2});
+    padding: 6px $paddingSide;
+    position: relative;
 
     &.Focus {
         outline: 2px solid $outlineColor;
@@ -29,30 +29,30 @@ $backgroundColor: var(--background-color, white);
     }
 
     .Input {
-        font-size: $fontSize;
-        position: relative;
-        z-index: 1;
+        background-color: transparent;
+        border: none;
+        color: $fontColor;
         display: block;
         flex: 1;
-        width: 100%;
+        font-size: $fontSize;
         height: $fontSize;
         letter-spacing: 1px;
-        color: $fontColor;
-        border: none;
         outline: none;
-        background-color: transparent;
+        position: relative;
+        width: 100%;
+        z-index: 1;
 
         &::placeholder {
-            opacity: 0;
             color: $hintColor;
+            opacity: 0;
         }
 
         &:focus,
         &:not(:placeholder-shown) {
             & + .Label {
-                z-index: 2;
                 top: 0;
                 transform: translateY(-50%) scale(0.9);
+                z-index: 2;
             }
         }
 
@@ -68,17 +68,17 @@ $backgroundColor: var(--background-color, white);
     }
 
     .Label {
+        background-color: $backgroundColor;
+        color: $hintColor;
         font-size: $fontSize;
         font-weight: bold;
-        position: absolute;
-        z-index: 0;
-        top: 50%;
         left: math.div($paddingSide, 2);
         padding: 0 math.div($paddingSide, 2);
-        transition: all 200ms $easeOutExpo;
+        position: absolute;
+        top: 50%;
         transform: translateY(-50%);
-        color: $hintColor;
-        background-color: $backgroundColor;
+        transition: all 200ms $easeOutExpo;
+        z-index: 0;
     }
 
     .Icon {
@@ -86,16 +86,16 @@ $backgroundColor: var(--background-color, white);
         --icon-size: #{$iconSize};
 
         &:hover {
-            cursor: pointer;
             background-color: rgba(0, 0, 0, 0.1);
+            cursor: pointer;
         }
     }
 }
 
 .LengthHint {
+    color: $hintColor;
     font-size: 14px;
     font-weight: bold;
     margin-top: 4px;
     text-align: right;
-    color: $hintColor;
 }

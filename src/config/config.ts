@@ -1,28 +1,35 @@
 import { Environment } from '@core/env/environment';
 
+export const taskGoalLengthLimit = 100;
+
 export interface Config {
-    teamyGraphQLEndpoint: string;
-    teamyGraphQLV2Endpoint: string;
+    servicesWebAPIEndpoint: string;
+    servicesWebSocketAPIEndpoint: string;
+    cloudWebAPIEndpoint: string;
 }
 
 const developmentConfig: Config = {
-    teamyGraphQLEndpoint: 'http://localhost:9000/graphql',
-    teamyGraphQLV2Endpoint: 'http://localhost:9001/graphql',
+    servicesWebAPIEndpoint: 'http://localhost:9000',
+    servicesWebSocketAPIEndpoint: 'ws://localhost:9000',
+    cloudWebAPIEndpoint: 'http://localhost:9011',
 };
 
 const testingConfig: Config = {
-    teamyGraphQLEndpoint: 'https://backend.testing.teamyapp.com/graphql',
-    teamyGraphQLV2Endpoint: 'https://backend-v2.testing.teamyapp.com/graphql',
+    servicesWebAPIEndpoint: 'https://web-backend.testing.teamyapp.com',
+    servicesWebSocketAPIEndpoint: 'wss://web-backend.testing.teamyapp.com',
+    cloudWebAPIEndpoint: 'https://cloud.testing.teamyapp.com',
 };
 
 const stagingConfig: Config = {
-    teamyGraphQLEndpoint: 'https://backend.staging.teamyapp.com/graphql',
-    teamyGraphQLV2Endpoint: 'https://backend-v2.staging.teamyapp.com/graphql',
+    servicesWebAPIEndpoint: 'https://web-backend.staging.teamyapp.com',
+    servicesWebSocketAPIEndpoint: 'wss://web-backend.staging.teamyapp.com',
+    cloudWebAPIEndpoint: 'https://cloud.staging.teamyapp.com',
 };
 
 const productionConfig: Config = {
-    teamyGraphQLEndpoint: 'https://backend.teamyapp.com/graphql',
-    teamyGraphQLV2Endpoint: 'https://backend-v2.teamyapp.com/graphql',
+    servicesWebAPIEndpoint: 'https://web-backend.teamyapp.com',
+    servicesWebSocketAPIEndpoint: 'wss://web-backend.teamyapp.com',
+    cloudWebAPIEndpoint: 'https://cloud.teamyapp.com',
 };
 
 export function getConfig(env: Environment): Config {

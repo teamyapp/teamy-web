@@ -3,4 +3,4 @@ export type RemoteTaskAction =
     | 'DELETE'
     | 'ASSIGN_OWNER'
     | 'REPORT_BLOCKED'
-    | 'MARK_COMPLETED';
+    | 'MARK_COMPLETE';

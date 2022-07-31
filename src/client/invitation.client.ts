@@ -2,19 +2,11 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
+import {
+    CreateInvitationInput,
+    UpdateInvitationInput,
+} from '@core/client/entity/input';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
-
-export interface CreateInvitationInput {
-    receiverFirstName: string;
-    receiverLastName: string;
-    expireAt: Date;
-}
-
-export interface UpdateInvitationInput {
-    receiverFirstName?: string;
-    receiverLastName?: string;
-    expireAt: Date;
-}
 
 export class InvitationClient {
     private readonly graphQLClient: GraphQLClient;
@@ -23,81 +15,8 @@ export class InvitationClient {
         this.graphQLClient = graphQLClient;
     }
 
-    public getInvitations(teamId: number): Promise<RemoteInvitation[]> {
-        // TODO: implement me
-        return Promise.resolve([]);
-    }
-
-    public createInvitation(
-        teamId: number,
-        input: CreateInvitationInput,
-    ): Promise<RemoteInvitation> {
-        return this.graphQLClient
-            .mutate({
-                mutation: gql`
-                    mutation createInvitation(
-                        $teamId: ID!
-                        $input: CreateInvitationInput!
-                    ) {
-                        createInvitation(teamId: $teamId, invitation: $input) {
-                            id
-                        }
-                    }
-                `,
-                variables: {
-                    teamId,
-                    input,
-                },
-            })
-            .then((payload: any) => payload?.createInvitation);
-    }
-
-    public updateInvitation(
-        invitationId: number,
-        input: UpdateInvitationInput,
-    ): Promise<RemoteInvitation> {
-        return this.graphQLClient
-            .mutate({
-                mutation: gql`
-                    mutation updateInvitation(
-                        $invitationId: ID!
-                        $input: UpdateInvitationInput!
-                    ) {
-                        updateInvitation(
-                            invitationId: $invitationId
-                            input: $input
-                        ) {
-                            id
-                        }
-                    }
-                `,
-                variables: {
-                    invitationId,
-                    input,
-                },
-            })
-            .then((payload: any) => payload?.updateInvitation);
-    }
-
-    public deleteInvitation(invitationId: number): Promise<RemoteInvitation> {
-        return this.graphQLClient
-            .mutate({
-                mutation: gql`
-                    mutation deleteInvitation($invitationId: ID!) {
-                        deleteInvitation(invitationId: $invitationId) {
-                            id
-                        }
-                    }
-                `,
-                variables: {
-                    invitationId,
-                },
-            })
-            .then((payload: any) => payload.deleteInvitation);
-    }
-
     public getInvitation(
-        invitationId: number,
+        invitationId: string,
         invitationCode: string,
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
@@ -114,8 +33,20 @@ export class InvitationClient {
                             }
                         ) {
                             id
+                            createdAt
                             expireAt
                             code
+                            status
+                            sender {
+                                id
+                                lastName
+                                firstName
+                            }
+                            joiningTeam {
+                                id
+                                name
+                                iconUrl
+                            }
                         }
                     }
                 `,
@@ -127,8 +58,118 @@ export class InvitationClient {
             .then((payload: any) => payload?.invitations[0]);
     }
 
+    public getInvitations(teamId: string): Promise<RemoteInvitation[]> {
+        return this.graphQLClient
+            .query({
+                query: gql`
+                    query getInvitations($teamId: ID!) {
+                        teams(filter: { teamId: $teamId }) {
+                            invitations {
+                                id
+                                receiverFirstName
+                                receiverLastName
+                                createdAt
+                                joiningTeam {
+                                    id
+                                }
+                                expireAt
+                                code
+                                status
+                                code
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                },
+            })
+            .then((payload: any) => payload?.teams[0]?.invitations);
+    }
+
+    public createInvitation(
+        teamId: string,
+        input: CreateInvitationInput,
+    ): Promise<RemoteInvitation> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation createInvitation(
+                        $teamId: ID!
+                        $input: CreateInvitationInput!
+                    ) {
+                        createInvitation(teamId: $teamId, invitation: $input) {
+                            id
+                            receiverFirstName
+                            receiverLastName
+                            joiningTeam {
+                                id
+                            }
+                            code
+                            status
+                            createdAt
+                            expireAt
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                    input,
+                },
+            })
+            .then((payload: any) => payload?.createInvitation);
+    }
+
+    public updateInvitation(
+        invitationId: string,
+        input: UpdateInvitationInput,
+    ): Promise<RemoteInvitation> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation updateInvitation(
+                        $invitationId: ID!
+                        $input: UpdateInvitationInput!
+                    ) {
+                        updateInvitation(
+                            invitationId: $invitationId
+                            input: $input
+                        ) {
+                            id
+                            receiverFirstName
+                            receiverFirstName
+                            createdAt
+                            expireAt
+                        }
+                    }
+                `,
+                variables: {
+                    invitationId,
+                    input,
+                },
+            })
+            .then((payload: any) => payload?.updateInvitation);
+    }
+
+    public deleteInvitation(invitationId: string): Promise<RemoteInvitation> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation deleteInvitation($invitationId: ID!) {
+                        deleteInvitation(invitationId: $invitationId) {
+                            id
+                        }
+                    }
+                `,
+                variables: {
+                    invitationId,
+                },
+            })
+            .then((payload: any) => payload.deleteInvitation);
+    }
+
     public acceptInvitation(
-        invitationId: number,
+        invitationId: string,
         invitationCode: string,
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
@@ -143,6 +184,19 @@ export class InvitationClient {
                             invitationCode: $invitationCode
                         ) {
                             id
+                            status
+                            joiningTeam {
+                                id
+                                members {
+                                    id
+                                }
+                            }
+                            receiver {
+                                id
+                                teams {
+                                    id
+                                }
+                            }
                         }
                     }
                 `,
@@ -155,7 +209,7 @@ export class InvitationClient {
     }
 
     public declineInvitation(
-        invitationId: number,
+        invitationId: string,
         invitationCode: string,
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
@@ -170,6 +224,7 @@ export class InvitationClient {
                             invitationCode: $invitationCode
                         ) {
                             id
+                            status
                         }
                     }
                 `,

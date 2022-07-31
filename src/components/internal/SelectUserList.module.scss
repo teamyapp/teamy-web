@@ -1,0 +1,43 @@
+.SelectUserList {
+    background-color: white;
+    max-height: 184px;
+    min-width: 140px;
+    overflow-y: auto;
+
+    .UserRow {
+        display: flex;
+        --profile-height: 34px;
+        padding: 6px 16px;
+
+        user-select: none;
+
+        --profile-width: 34px;
+
+        &:hover {
+            background-color: #f5f5f5;
+        }
+
+        .EmptySelectionFace {
+            --icon-color: #3d7bf6;
+            --icon-size: 36px;
+        }
+
+        .SelectionIndicator {
+            align-items: center;
+            --icon-color: #00897b;
+            display: flex;
+            font-weight: bold;
+            --icon-size: 26px;
+            width: 36px;
+        }
+
+        .Name {
+            align-items: center;
+            display: flex;
+            flex: 1;
+            font-weight: bold;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+    }
+}

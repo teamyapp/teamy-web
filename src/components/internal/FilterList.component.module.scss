@@ -1,0 +1,102 @@
+.Section {
+    color: black;
+    padding: 20px;
+
+    .TopBar {
+        align-items: center;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 4px 4px 0 0;
+        display: flex;
+
+        .Title {
+            font-size: 24px;
+            font-weight: bolder;
+        }
+
+        .Actions {
+            margin-left: 20px;
+
+            .Action {
+                background-color: rgba(0, 0, 0, 0.15);
+                border-radius: 4px;
+                --icon-color: white;
+                cursor: pointer;
+                font-weight: bold;
+                padding: 4px 10px;
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.25);
+                }
+            }
+        }
+    }
+
+    .Content {
+        border-top: 2px solid #f5f5f5;
+        box-sizing: border-box;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+
+    .Group {
+        display: flex;
+
+        &:not(:first-child) {
+            margin-top: 14px;
+        }
+
+        .GroupName {
+            align-items: center;
+            display: flex;
+            font-size: 20px;
+            font-weight: 500;
+            vertical-align: top;
+            width: 120px;
+        }
+
+        .GroupContent {
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-left: 10px;
+        }
+    }
+
+    .Input {
+        --border: 2px solid #616161;
+        --background-color: white;
+        --font-color: #424242;
+        --hint-color: #424242;
+        --icon-color: #424242;
+        --outline-color: #424242;
+        display: block;
+    }
+
+    .TextField {
+        width: 250px;
+    }
+
+    .Option {
+        align-items: center;
+        border-radius: 4px;
+        display: flex;
+        height: 26px;
+        padding: 0 10px;
+
+        .Checkbox {
+            border: none;
+            outline: none;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+
+        .Label {
+            font-weight: bold;
+            margin-left: 4px;
+            white-space: nowrap;
+        }
+    }
+}

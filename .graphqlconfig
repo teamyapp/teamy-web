@@ -4,7 +4,7 @@
   "extensions": {
     "endpoints": {
       "Default GraphQL Endpoint": {
-        "url": "https://backend-v2.staging.teamyapp.com/graphql",
+        "url": "https://web-backend.staging.teamyapp.com/graphql",
         "headers": {
           "user-agent": "JS GraphQL"
         },

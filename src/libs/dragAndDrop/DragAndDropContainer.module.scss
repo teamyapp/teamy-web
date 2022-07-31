@@ -1,11 +1,11 @@
 $borderRadius: var(--border-radius, 0);
 
 .Container {
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
     border: 4px solid transparent;
     border-radius: $borderRadius;
+    box-sizing: border-box;
+    height: 100%;
+    width: 100%;
 
     &.Receiving {
         border-color: #1976d2;

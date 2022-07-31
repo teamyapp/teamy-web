@@ -1,0 +1,77 @@
+@import 'Modal.shared.module';
+
+$sectionBackground: #f7f7f7;
+
+.Content {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 460px;
+    width: 500px;
+
+    .Section {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        padding: 30px;
+    }
+
+    .UserIds {
+        height: 100px;
+        margin-bottom: 20px;
+        width: 100%;
+    }
+
+    .AddAction {
+        --background-color: #388e3c;
+        --border-color: #2e7d32;
+        margin: 0 auto;
+        width: 120px;
+    }
+
+    .OptionDivider {
+        display: flex;
+        font-size: 30px;
+        font-weight: bold;
+        justify-content: center;
+        margin: 40px 0;
+    }
+
+    .FirstName,
+    .LastName {
+        margin-bottom: 20px;
+        width: 280px;
+    }
+
+    .ExpirationPeriod {
+        display: flex;
+
+        .Label {
+            font-size: 18px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .DropDown {
+            --drop-down-color: #616161;
+            width: 120px;
+        }
+    }
+
+    .GenerateLinkAction {
+        --background-color: #388e3c;
+        --border-color: #2e7d32;
+        margin: 20px auto 0 auto;
+        width: 220px;
+    }
+
+    .InvitationLink {
+        border-top: 2px solid #e5e5e5;
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 30px;
+        padding-top: 30px;
+        text-align: center;
+    }
+}

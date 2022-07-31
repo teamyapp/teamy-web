@@ -2,82 +2,115 @@
 @import '../libs/ui/styleguide/utility';
 @import '../libs/ui/styleguide/easing';
 @import '../libs/ui/styleguide/elevation';
-@import './shared/shared';
+@import './internal/shared';
 
 .App {
     @include menuButton;
     display: flex;
     height: 100vh;
 
+    &.ShowBackground {
+        background-image: url('../assets/backgrounds/sun-pattern.png');
+    }
+
     > .Content {
+        --tabs-background-color: white;
+        box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
         display: flex;
-        overflow-x: hidden;
         flex: 1;
         flex-direction: column;
-        box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
-        --tabs-background-color: white;
-        --tab-text-color: #{$secondaryColor};
         --tab-hover-opacity: 0.03;
+        overflow-x: hidden;
+        --tab-text-color: #{$secondaryColor};
 
         .PageOptionsSection {
+            background-color: #37474f;
             display: flex;
             justify-content: center;
-            background-color: #37474f;
         }
 
-        .Execution {
+        .Team {
+            display: flex;
+            height: 100%;
             overflow-y: hidden;
-            flex: 1;
-            box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px;
+
+            .Sidebar {
+                overflow: hidden;
+                transition: width 500ms ease-in-out;
+                width: 0;
+
+                .Backlog {
+                    height: 100%;
+                    width: 400px;
+                }
+
+                &.Shown {
+                    width: 400px;
+                }
+            }
+
+            .Content {
+                box-shadow: rgba(0, 0, 0, 0.1) 0 0 4px;
+                flex: 1;
+                overflow-y: hidden;
+            }
         }
 
-        .NoTeamSelected {
+        .SelectActiveTeam {
             display: flex;
             align-items: center;
-            flex: 1;
             justify-content: center;
-            text-align: center;
+            height: 100%;
 
-            .Center {
-                padding: 40px;
+            .Content {
                 border-radius: 10px;
                 background-color: #f5f5f5;
+                padding: 40px;
 
-                .SelectActiveTeam {
-                    .Description {
-                        font-size: 22px;
-                        font-weight: bold;
-                        margin-bottom: 20px;
-                    }
-
-                    .DropDown {
-                        width: 160px;
-                        margin: 0 auto;
-                        --drop-down-color: #{$primaryColor};
-                    }
-                }
-
-                .OrDivider {
-                    font-size: 30px;
-                    font-weight: bold;
-                    margin: 40px 0;
+                .Title {
                     text-align: center;
-                    color: #616161;
+                    font-size: 26px;
+                    font-weight: 600;
+                    margin-bottom: 20px;
                 }
 
-                .Actions {
+                .AddTeam {
                     display: flex;
                     justify-content: center;
+                    margin-bottom: 20px;
 
-                    .Action {
+                    .Button {
+                        padding: 10px;
+                        --icon-size: 50px;
+                        --icon-color: #424242;
+                        font-weight: 600;
+                        border-radius: 50%;
+
+                        &:hover {
+                            cursor: pointer;
+                            background-color: rgba(0, 0, 0, 0.05);
+                        }
+                    }
+                }
+
+                .Teams {
+                    @include elevation(4);
+
+                    .TeamRow {
+                        text-align: center;
+                        font-size: 20px;
+                        font-weight: 600;
+                        background-color: white;
+                        padding: 10px 40px;
+
                         &:not(:first-child) {
-                            margin-top: 10px;
+                            border-top: 1px dashed #e0e0e0;
                         }
 
-                        &.CreateTeam {
-                            width: 240px;
-                            --background-color: #388e3c;
-                            --border-color: #2e7d32;
+                        &:hover {
+                            background-color: #3d7bf6;
+                            color: white;
+                            cursor: pointer;
                         }
                     }
                 }

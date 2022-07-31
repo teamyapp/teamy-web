@@ -1,0 +1,26 @@
+@import '../../../libs/ui/styleguide/color';
+
+.Header {
+    position: relative;
+    background-color: $primaryColor;
+    color: white;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    padding: 10px 20px;
+
+    .CloseButton {
+        position: absolute;
+        --icon-color: white;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        --icon-size: 26px;
+
+        &:hover {
+            cursor: pointer;
+            opacity: 0.8;
+        }
+    }
+}

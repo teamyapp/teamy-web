@@ -9,7 +9,7 @@ export interface Config {
 }
 
 const developmentConfig: Config = {
-    apiBaseEndpoint: 'http://localhost:9500/identity',
+    apiBaseEndpoint: 'http://localhost:9011/identity',
     cookieDomain: 'localhost',
     cookieSecure: false,
     signInLink: '/cloud/identity/sign-in',

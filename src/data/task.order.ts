@@ -1,30 +1,58 @@
 import { Task } from '@core/entity/task';
+import { TaskStatus } from '@core/entity/taskStatus';
 
-export const orderByPriority = (tasks: Task[]): Task[] => {
+export const orderByPriority = (task1: Task, task2: Task): number => {
     // TODO: implement me
-    return tasks;
+    return 0;
 };
-export const orderByUrgency = (tasks: Task[]): Task[] => {
-    return tasks.sort((task1: Task, task2: Task): number => {
-        if (!task1.dueAt && !task2.dueAt) {
-            return 0;
-        } else if (!task1.dueAt) {
-            return 1;
-        } else if (!task2.dueAt) {
-            return -1;
-        } else {
-            return (
-                new Date(task1.dueAt).getTime() -
-                new Date(task2.dueAt).getTime()
-            );
-        }
-    });
+
+export const orderByUrgency = (task1: Task, task2: Task): number => {
+    if (!task1.dueAt && !task2.dueAt) {
+        return 0;
+    }
+
+    if (!task1.dueAt) {
+        return 1;
+    }
+
+    if (!task2.dueAt) {
+        return -1;
+    }
+
+    const compare = task1.dueAt.getTime() - task2.dueAt.getTime();
+    if (compare !== 0) {
+        return compare;
+    }
+
+    return task1.id - task2.id;
 };
-export const orderByValue = (tasks: Task[]): Task[] => {
+
+export const orderByValue = (task1: Task, task2: Task): number => {
     // TODO: implement me
-    return tasks;
+    return 0;
 };
-export const orderByEffort = (tasks: Task[]): Task[] => {
+
+export const orderByEffort = (task1: Task, task2: Task): number => {
     // TODO: implement me
-    return tasks;
+    return 0;
+};
+
+const taskStatusProgressOrder: Record<TaskStatus, number> = {
+    PAUSED: 1,
+    UPCOMING: 2,
+    BLOCKED: 3,
+    AWAITING: 4,
+    IN_PROGRESS: 5,
+    DELIVERED: 6,
+};
+
+export const orderByStatusUrgencyAsc = (task1: Task, task2: Task): number => {
+    const compare =
+        taskStatusProgressOrder[task1.status] -
+        taskStatusProgressOrder[task2.status];
+    if (compare !== 0) {
+        return compare;
+    }
+
+    return orderByUrgency(task1, task2);
 };

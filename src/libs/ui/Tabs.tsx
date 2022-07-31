@@ -73,6 +73,12 @@ export class TabsUI extends Component<IProps, IState> {
         );
     }
 
+    public setSelectedTabIndex(selectedTabIndex: number) {
+        this.setState({
+            selectedTabIndex,
+        });
+    }
+
     private updateActiveTabIndicatorWidth = () => {
         const width =
             this.containerRef.current == null

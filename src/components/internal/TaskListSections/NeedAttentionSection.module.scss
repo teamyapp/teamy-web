@@ -1,0 +1,12 @@
+@import '../TaskLists.module';
+
+$needAttentionPrimary: #cc18ae;
+
+.TaskListSection {
+    --background-color: #fff6ff;
+    --title-color: #{$needAttentionPrimary};
+    display: flex;
+
+    height: 100%;
+    width: 100%;
+}

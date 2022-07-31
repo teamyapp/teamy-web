@@ -1,0 +1,39 @@
+@import 'Modal.shared.module';
+
+.Content {
+    box-sizing: border-box;
+    padding: 30px 0;
+    width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    .StartDate {
+        width: 300px;
+    }
+
+    .SprintLength {
+        display: flex;
+        align-items: center;
+
+        .Label {
+            font-size: 20px;
+            font-weight: 600;
+            margin-right: 14px;
+        }
+
+        margin-top: 20px;
+        --drop-down-width: 140px;
+        --drop-down-height: 30px;
+        --drop-down-font-size: 16px;
+        --drop-down-color: #{$primaryColor};
+    }
+
+    .AddAction {
+        --background-color: #388e3c;
+        --border-color: #2e7d32;
+        margin: 30px auto 0 auto;
+        width: 120px;
+    }
+}

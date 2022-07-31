@@ -28,12 +28,6 @@ const defaultMaxYear = 2100;
 
 const dateFormat = 'MM/DD/YYYY';
 
-const today = new Date();
-today.setHours(0);
-today.setUTCMinutes(0);
-today.setSeconds(0);
-today.setMilliseconds(0);
-
 interface Props {
     label?: string;
     value?: Date;
@@ -56,7 +50,8 @@ export class DatePickerUI extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        const date = this.props.value || today;
+
+        const date = this.props.value || today();
         this.state = {
             value: this.props.value
                 ? moment(this.props.value).format(dateFormat)
@@ -71,6 +66,10 @@ export class DatePickerUI extends Component<Props, State> {
     public get value(): Date | null {
         const value = this.textFieldRef.current?.value;
         return value ? new Date(value) : null;
+    }
+
+    public focus() {
+        this.textFieldRef.current?.focus();
     }
 
     private static getMonthDays(date: Date): (null | number)[] {
@@ -286,7 +285,7 @@ export class DatePickerUI extends Component<Props, State> {
     }
 
     private showingToday(shownMonthDay: number): boolean {
-        return this.showingGivenDate(today, shownMonthDay);
+        return this.showingGivenDate(today(), shownMonthDay);
     }
 
     private showingGivenDate(givenDate: Date, shownMonthDay: number): boolean {
@@ -347,4 +346,13 @@ export class DatePickerUI extends Component<Props, State> {
             shownDate: newDate,
         });
     };
+}
+
+function today(): Date {
+    const date = new Date();
+    date.setHours(0);
+    date.setUTCMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
 }

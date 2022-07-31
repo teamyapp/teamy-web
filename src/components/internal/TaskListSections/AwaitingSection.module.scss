@@ -1,0 +1,18 @@
+@import '../TaskLists.module';
+
+$awaitingPrimary: #e91e63;
+
+.TaskListSection {
+    --background-color: #fff3f6;
+    --title-color: #{$awaitingPrimary};
+    display: flex;
+
+    height: 100%;
+    width: 100%;
+
+    .SectionTopBar {
+        .TaskCounter {
+            background-color: $awaitingPrimary;
+        }
+    }
+}

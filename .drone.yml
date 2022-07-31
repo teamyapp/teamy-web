@@ -283,3 +283,67 @@ trigger:
     - production
   event:
     - push
+---
+kind: pipeline
+type: kubernetes
+name: nightly
+
+steps:
+  - name: restore cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      restore: true
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: build frontend
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git g++ make python3
+      - yarn install --frozen-lockfile
+      - yarn build:staging
+  - name: run e2e tests
+    image: node:16.13.0-alpine3.13
+    commands:
+      - apk add --no-cache git
+      - yarn test:e2e
+  - name: rebuild cache
+    image: meltwater/drone-cache
+    environment:
+      AWS_ACCESS_KEY_ID:
+        from_secret: SPACE_ACCESS_KEY
+      AWS_SECRET_ACCESS_KEY:
+        from_secret: SPACE_SECRET
+    settings:
+      endpoint: https://sfo3.digitaloceanspaces.com
+      bucket: teamyapp
+      region: sfo3
+      rebuild: true
+      override: false
+      cache_key: '{{ checksum "yarn.lock" }}'
+      mount:
+        - node_modules
+  - name: slack
+    image: plugins/slack
+    settings:
+      webhook:
+        from_secret: SLACK_WEBHOOK
+      channel: code
+    when:
+      status: [ success, failure ]
+trigger:
+  branch:
+    - master
+    - main
+  event:
+    - cron
+  cron:
+    - e2e-tests

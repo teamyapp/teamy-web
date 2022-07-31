@@ -1,4 +1,5 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 
 export class PubSub<Data> {
     private readonly channel = chan<Data>();
@@ -17,8 +18,6 @@ export class PubSub<Data> {
     }
 
     public dispose() {
-        if (!this.channel.closed()) {
-            this.channel.close();
-        }
+        closeIfNot(this.channel);
     }
 }

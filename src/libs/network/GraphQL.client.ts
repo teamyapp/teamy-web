@@ -6,16 +6,13 @@ import {
     QueryOptions,
 } from '@apollo/client';
 
-interface AccessTokenGetter {
-    getAccessToken(): string;
-}
-
 export class GraphQLClient {
-    private readonly tokenGetter: AccessTokenGetter;
     private readonly client: ApolloClient<NormalizedCacheObject>;
 
-    constructor(tokenGetter: AccessTokenGetter, graphQLEndpoint: string) {
-        this.tokenGetter = tokenGetter;
+    constructor(
+        graphQLEndpoint: string,
+        private getAccessToken?: () => string,
+    ) {
         this.client = new ApolloClient({
             uri: graphQLEndpoint,
             cache: new InMemoryCache(),
@@ -37,6 +34,7 @@ export class GraphQLClient {
     }
 
     async query(options: QueryOptions): Promise<any> {
+        options.fetchPolicy = 'network-only';
         options.errorPolicy = 'all';
         options.context = this.getAuthContext();
         const result = await this.client.query(options);
@@ -53,7 +51,9 @@ export class GraphQLClient {
     private getAuthContext() {
         return {
             headers: {
-                Authorization: `Bearer ${this.tokenGetter.getAccessToken()}`,
+                Authorization: `Bearer ${
+                    this.getAccessToken?.call(null) || ''
+                }`,
             },
         };
     }

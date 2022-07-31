@@ -3,30 +3,18 @@
         "baseUrl": "./src",
         "paths": {
             "@core/entity/*": ["entity/*"],
-            "@core/entityv2/*": ["entityv2/*"],
             "@core/env/*": ["env/*"],
             "@core/client/*": ["client/*"],
             "@core/config/*": ["config/*"],
             "@core/service/*": ["service/*"],
             "@core/state/*": ["state/*"],
-            "@core/statev2/*": ["statev2/*"],
             "@core/graph/*": ["graph/*"],
+            "@core/storage/*": ["storage/*"],
             "@core/event/*": ["event/*"],
             "@core/data/*": ["data/*"],
             "@core/dep/*": ["dep/*"],
-            "@lib/csp/*": ["libs/csp/*"],
-            "@lib/error/*": ["libs/error/*"],
-            "@lib/ui/*": ["libs/ui/*"],
-            "@lib/network/*": ["libs/network/*"],
-            "@lib/identity/*": ["libs/identity/*"],
-            "@lib/event/*": ["libs/event/*"],
-            "@lib/store/*": ["libs/store/*"],
-            "@lib/data/*": ["libs/data/*"],
-            "@lib/pubSub/*": ["libs/pubSub/*"],
-            "@lib/router/*": ["libs/router/*"],
-            "@lib/shortcut/*": ["libs/shortcut/*"],
-            "@lib/dragAndDrop/*": ["libs/dragAndDrop/*"],
-            "@lib/testing/*": ["libs/testing/*"]
+            "@cloud/*": ["cloud/*"],
+            "@lib/*": ["libs/*"]
         }
     }
 }

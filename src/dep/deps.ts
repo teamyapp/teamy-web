@@ -1,106 +1,90 @@
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
-import { IdentityClient } from '@lib/identity/Identity.client';
+import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
+import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
+import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { WithIdentity } from '@lib/network/WithIdentity';
 import { PubSub } from '@lib/pubSub/pubSub';
 import { Router, createBrowserRouter } from '@lib/router/router';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
-import { LocalStore } from '@lib/store/localStore';
 
+import { InvitationClient } from '@core/client/invitation.client';
+import { MessageClient } from '@core/client/message.client';
+import { SprintClient } from '@core/client/sprint.client';
+import { TaskClient } from '@core/client/task.client';
+import { TeamClient } from '@core/client/team.client';
+import { UserClient } from '@core/client/user.client';
 import { getConfig } from '@core/config/config';
 import { absoluteRootPath, signInFinishPath } from '@core/config/routing';
 import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
 import { getEnvironment } from '@core/env/environment';
-import * as mutationEvents from '@core/event/mutation';
 import { UserActionEvent } from '@core/event/userAction';
-import { CommentService } from '@core/service/comment.service';
-import { InvitationService } from '@core/service/invitation.service';
-import { NetworkStateSynchronizer } from '@core/service/networkStateSyncer';
-import { PageService } from '@core/service/page.service';
-import { TaskService } from '@core/service/task.service';
-import { TeamService } from '@core/service/team.service';
-import { UserService } from '@core/service/user.service';
-import { IAppState } from '@core/state/state';
-import { createStore } from '@core/state/store';
-
-// import { InvitationClient } from '../client/invitation.client';
-// import { MessageClient } from '../client/message.client';
-import { TaskClient } from '../client/task.client';
-// import { TeamClient } from '../client/team.client';
-import { UserClient } from '../client/user.client';
-import { GraphSource } from '../graph/graphSource';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 export interface Deps {
-    taskService: TaskService;
-    teamService: TeamService;
-    userService: UserService;
-    commentService: CommentService;
-    pageService: PageService;
-    invitationService: InvitationService;
-    graphSource: GraphSource;
     identityClient: IdentityClient;
-    localStore: LocalStore<IAppState, mutationEvents.MutationEvent>;
-    networkStateSyncer: NetworkStateSynchronizer;
     router: Router;
+    localStore: LocalStore;
+    graphSource: GraphSource;
+    stateSyncer: StateSyncer;
     shortcutMonitor: ShortcutMonitor<UserActionEvent>;
     dragAndDropController: DragAndDropController;
     feedbackPubSub: PubSub<Feedback>;
+    fileUploadSessionFactory: FileUploadSessionFactory;
 }
 
 export function initDeps(): Deps {
     const env = getEnvironment();
+    const httpClient = new WithIdentity(new FetchHTTPClient());
     const identityClient = new IdentityClient(
         env,
         signInFinishPath,
         absoluteRootPath,
+        httpClient,
     );
     const config = getConfig(env);
-    const teamyGraphQLV1Client = new GraphQLClient(
-        identityClient,
-        config.teamyGraphQLEndpoint,
+    const teamyGraphQLClient = new GraphQLClient(
+        `${config.servicesWebAPIEndpoint}/graphql`,
+        getAccessToken,
     );
-    const taskService = new TaskService(teamyGraphQLV1Client);
-    const teamService = new TeamService(teamyGraphQLV1Client);
-    const userService = new UserService(teamyGraphQLV1Client);
-    const commentService = new CommentService(teamyGraphQLV1Client);
-    const pageService = new PageService(teamyGraphQLV1Client);
-    const invitationService = new InvitationService(teamyGraphQLV1Client);
-
-    const teamyGraphQLV2Client = new GraphQLClient(
+    const userClient = new UserClient(teamyGraphQLClient);
+    const taskClient = new TaskClient(teamyGraphQLClient);
+    const teamClient = new TeamClient(teamyGraphQLClient);
+    const invitationClient = new InvitationClient(teamyGraphQLClient);
+    const messageClient = new MessageClient(teamyGraphQLClient);
+    const sprintClient = new SprintClient(teamyGraphQLClient);
+    const localStore = new LocalStore();
+    const graphSource = new GraphSource(localStore);
+    const stateSyncer = new StateSyncer(
+        config.servicesWebSocketAPIEndpoint,
         identityClient,
-        config.teamyGraphQLV2Endpoint,
-    );
-    const userClient = new UserClient(teamyGraphQLV2Client);
-    // const teamClient = new TeamClient(teamyGraphQLV2Client);
-    const taskClient = new TaskClient(teamyGraphQLV2Client);
-    // const messageClient = new MessageClient(teamyGraphQLV2Client);
-    // const invitationClient = new InvitationClient(teamyGraphQLV2Client);
-    const graphSource = new GraphSource(userClient, taskClient);
-    const localStore = createStore();
-    const networkStateSyncer = new NetworkStateSynchronizer(
         localStore,
-        taskService,
-        teamService,
-        pageService,
+        taskClient,
+        messageClient,
+        teamClient,
+        userClient,
+        invitationClient,
+        sprintClient,
     );
     const router = createBrowserRouter();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
     const dragAndDropController = new DragAndDropController();
     const feedbackPubSub = new PubSub<Feedback>();
+    const fileUploadSessionFactory = new FileUploadSessionFactory(
+        config.cloudWebAPIEndpoint,
+    );
     return {
-        taskService,
-        teamService,
-        userService,
-        commentService,
-        pageService,
-        invitationService,
-        graphSource,
         identityClient,
-        localStore,
-        networkStateSyncer,
         router,
+        localStore,
+        graphSource,
+        stateSyncer,
         shortcutMonitor,
         dragAndDropController,
         feedbackPubSub,
+        fileUploadSessionFactory,
     };
 }

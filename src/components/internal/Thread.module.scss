@@ -1,0 +1,111 @@
+@import '../../libs/ui/styleguide/font';
+@import '../../libs/ui/styleguide/elevation';
+
+$divider: 2px solid #eeeeee;
+
+.Thread {
+    .TextArea {
+        --font-size: 16px;
+    }
+
+    .Message {
+        @include primaryFont;
+
+        .TextArea {
+            --border: none;
+            --background-color: rgba(0, 0, 0, 0.03);
+            height: 80px;
+        }
+
+        &:hover {
+            .MessageActions {
+                display: flex;
+            }
+        }
+
+        .MessageActions {
+            background-color: rgba(0, 0, 0, 0.08);
+            border-radius: 3px;
+            display: none;
+            justify-content: flex-end;
+            padding: 2px;
+            user-select: none;
+
+            .MessageAction {
+                border-radius: 3px;
+                --icon-color: #424242;
+                font-size: 10px;
+                padding: 2px;
+
+                &:hover {
+                    background-color: #424242;
+                    --icon-color: white;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .MessageCenter {
+            display: flex;
+            padding: 20px 0;
+            width: 100%;
+
+            .LeftSection {
+                --profile-height: 40px;
+                --profile-width: 40px;
+            }
+
+            .RightSection {
+                flex: 1;
+                margin-left: 10px;
+
+                .RightTopRow {
+                    align-items: center;
+                    display: flex;
+                    height: 32px;
+
+                    .AuthorName {
+                        font-weight: bold;
+                    }
+
+                    .MessagePostedAt {
+                        color: #616161;
+                        font-size: 14px;
+                        font-weight: bold;
+                        margin-left: 10px;
+                    }
+                }
+
+                .MessageContent {
+                    font-size: 16px;
+                    line-height: 20px;
+                    white-space: pre-wrap;
+                }
+            }
+        }
+
+        &:not(:first-child) {
+            .MessageCenter {
+                border-top: $divider;
+            }
+        }
+    }
+
+    .Input {
+        .TextArea {
+            --border: #{3px solid #e0e0e0};
+            height: 120px;
+        }
+
+        .Actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 14px;
+
+            .PostMessage {
+                --background-color: #388e3c;
+                --border-color: #2e7d32;
+            }
+        }
+    }
+}

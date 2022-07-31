@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { Component, createRef } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
-import { Point, Rect } from '@lib/ui/position';
+import { closeIfNot } from '@lib/csp/lib';
 
 import styles from './DragAndDropContainer.module.scss';
 import {
@@ -14,6 +14,7 @@ import { Size, SizeTransformer, sizeUnchanged } from './size';
 interface Props {
     dragAndDropController: DragAndDropController;
     itemSizeTransformer?: (containerSize: Size) => SizeTransformer;
+    receiverLayer?: number;
     containerId: string;
     itemType: string;
 }
@@ -67,7 +68,13 @@ export class DragAndDropContainer extends Component<Props, State> {
                             width: domRect.width,
                             height: domRect.height,
                         };
-                        if (isInside(rect, event.mousePosition)) {
+
+                        if (
+                            this.props.dragAndDropController.isInside(
+                                rect,
+                                event.mousePosition,
+                            )
+                        ) {
                             this.onMouseEnter();
                         } else {
                             this.onMouseLeave();
@@ -120,7 +127,7 @@ export class DragAndDropContainer extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
-        this.dragAndDropEventChan?.close();
+        closeIfNot(this.dragAndDropEventChan);
     }
 
     private onMouseEnter = () => {
@@ -138,6 +145,7 @@ export class DragAndDropContainer extends Component<Props, State> {
             this.props.dragAndDropController.onContainerMouseEnter(
                 this.props.containerId,
                 itemSizeTransformer,
+                this.props.receiverLayer || 0,
             );
         }
     };
@@ -149,17 +157,4 @@ export class DragAndDropContainer extends Component<Props, State> {
             );
         }
     };
-}
-
-function isInside(containerRect: Rect, mousePosition: Point): boolean {
-    const containerBottom = containerRect.top + containerRect.height;
-    const containerRight = containerRect.left + containerRect.width;
-
-    const horizontal =
-        mousePosition.left >= containerRect.left &&
-        mousePosition.left <= containerRight;
-    const vertical =
-        mousePosition.top >= containerRect.top &&
-        mousePosition.top <= containerBottom;
-    return horizontal && vertical;
 }

@@ -1,0 +1,17 @@
+@import '../TaskLists.module';
+
+$deliveredPrimary: #43a047;
+
+.TaskListSection {
+    --background-color: #efffec;
+    --title-color: #{$deliveredPrimary};
+    display: flex;
+    height: 100%;
+    width: 100%;
+
+    .SectionTopBar {
+        .TaskCounter {
+            background-color: $deliveredPrimary;
+        }
+    }
+}

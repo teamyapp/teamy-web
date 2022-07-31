@@ -1,0 +1,236 @@
+@use 'sass:math';
+@import '../../libs/ui/styleguide/divider';
+@import '../../libs/ui/styleguide/elevation';
+@import 'inlineTask.shared';
+
+.Task {
+    .LeftSection {
+        .Goal {
+            @include goalText;
+
+            .Placeholder {
+                color: #757575;
+            }
+        }
+
+        .GoalTextField {
+            background-color: #f5f5f5;
+            border: none;
+            @include goalText;
+            box-sizing: border-box;
+            height: 60px;
+            margin: 0;
+            outline: none;
+            padding: 0;
+            resize: none;
+            width: 100%;
+        }
+
+        .DueAt {
+            align-items: center;
+            background-color: #546e7a;
+            border-radius: 4px;
+            --icon-color: white;
+            color: white;
+            display: flex;
+            font-weight: 500;
+            padding: 3px 8px;
+            --icon-size: 18px;
+
+            .Time {
+                font-size: 16px;
+                margin-left: 4px;
+            }
+
+            &.PastDue {
+                background-color: #c62828;
+            }
+        }
+
+        .Attributes {
+            display: flex;
+            margin-top: 10px;
+
+            .EffortAttribute {
+                --color: #1976d2;
+            }
+        }
+    }
+
+    .ActionsSection,
+    .ViewDetailSection {
+        border-left: 2px solid $dividerColor;
+    }
+
+    .ActionsSection {
+        display: grid;
+        gap: 2px;
+        grid-auto-rows: min-content;
+        padding-left: $edgeSpace;
+
+        .Action {
+            align-items: center;
+            border-radius: 4px;
+            --icon-box-size: #{$actionIconSize};
+            display: flex;
+            height: $actionIconSize;
+            justify-content: center;
+            padding: 4px;
+            --icon-size: #{$actionIconSize};
+            user-select: none;
+            width: $actionIconSize;
+
+            &.Active,
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.07);
+            }
+        }
+
+        .AssignOwner {
+            --profile-height: #{$actionIconSize};
+            --profile-width: #{$actionIconSize};
+        }
+    }
+
+    .TopRow {
+        margin-bottom: 10px;
+
+        .Attribute {
+            border-radius: 4px;
+            font-weight: 500;
+            padding: 2px 6px;
+
+            &:not(:first-child) {
+                margin-left: 10px;
+            }
+        }
+
+        .Id {
+            background-color: #1976d2;
+            color: white;
+        }
+
+        .Status {
+            color: white;
+            font-size: 14px;
+
+            &.UPCOMING {
+                background-color: #1e88e5;
+            }
+
+            &.PAUSED {
+                background-color: #7b1fa2;
+            }
+
+            &.IN_PROGRESS {
+                background-color: #ff551b;
+            }
+
+            &.AWAITING {
+                background-color: #e91e63;
+            }
+
+            &.DELIVERED {
+                background-color: #26882b;
+            }
+        }
+    }
+
+    .BottomRow {
+        display: flex;
+        margin-top: 10px;
+    }
+}
+
+@mixin actionIcon {
+    border-radius: 50%;
+    align-items: center;
+    display: flex;
+    --icon-color: white;
+}
+
+.StartTaskIcon {
+    background-color: #00897b;
+    @include actionIcon;
+    --icon-size: #{$actionIconSize - 6px};
+}
+
+.CompleteTaskIcon {
+    background-color: #008b00;
+    @include actionIcon;
+    --icon-size: #{$actionIconSize - 6px};
+}
+
+.DeleteTaskIcon {
+    background-color: #e53935;
+    @include actionIcon;
+    --icon-size: #{$actionIconSize - 6px};
+}
+
+.ReportTaskBlockedIcon {
+    background-color: #e53935;
+    @include actionIcon;
+    --icon-size: #{$actionIconSize - 6px};
+}
+
+.AddAwaitForTaskIcon {
+    background-color: #8e24aa;
+    @include actionIcon;
+    --icon-size: #{$actionIconSize - 12px};
+}
+
+.ViewTaskDetailIcon {
+    background-color: #6d4c41;
+    @include actionIcon;
+    --icon-size: #{$actionIconSize - 12px};
+}
+
+.AssignOwnerIcon {
+    align-items: center;
+    border-radius: 50%;
+    --icon-color: #3d7bf6;
+    display: flex;
+    --icon-size: #{$actionIconSize + 4px};
+}
+
+.AwaitForTasksSection {
+    display: flex;
+
+    .AwaitForIcon {
+        --icon-color: #626262;
+    }
+
+    .AwaitForTasks {
+        display: flex;
+        margin-left: 10px;
+    }
+
+    .AwaitForTask {
+        background-color: #eeeeee;
+
+        border-radius: 4px;
+        color: #313131;
+        display: flex;
+        font-weight: 600;
+        padding: 2px 8px;
+
+        &:not(:first-child) {
+            margin-left: 6px;
+        }
+
+        &.Delivered {
+            background-color: #00897b;
+            color: white;
+
+            &:hover {
+                background-color: #009688;
+            }
+        }
+
+        &:hover {
+            background-color: #616161;
+            color: white;
+            cursor: pointer;
+        }
+    }
+}

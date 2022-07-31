@@ -1,4 +1,5 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 
 export interface RouteUpdate {
     routePattern: string;
@@ -7,13 +8,13 @@ export interface RouteUpdate {
 }
 
 export interface Params {
-    pathParams: { [key: string]: string };
-    queryParams: { [key: string]: string };
+    pathParams: Record<string, string>;
+    queryParams: Record<string, string>;
 }
 
 interface Segment {
     isPath: boolean;
-    children: { [pattern: string]: Segment };
+    children: Record<string, Segment>;
     pathParam?: string;
 }
 
@@ -31,6 +32,11 @@ const wildcard = '{*}';
 const queryDelimiter = '?';
 export const pathDelimiter = '/';
 const paramDelimiter = '=';
+
+interface NavigateOptions {
+    skipDuplicate?: boolean;
+    notifyRouteChange?: boolean;
+}
 
 export class Router {
     private readonly routeChangeChan = chan<RouteUpdate>();
@@ -52,7 +58,7 @@ export class Router {
         return this.currRouteUpdate;
     }
 
-    public get CurrentUri(): string | undefined {
+    public get currentUri(): string | undefined {
         return this.currUri;
     }
 
@@ -135,7 +141,8 @@ export class Router {
         return 'ShouldNotHappen';
     }
 
-    public navigateTo(uri: string, force: boolean = false): Errors | void {
+    public navigateTo(uri: string, options?: NavigateOptions): Errors | void {
+        options = withDefaults(options);
         if (!uri || uri.length < 1) {
             return 'InvalidUri';
         }
@@ -144,7 +151,7 @@ export class Router {
             return 'InvalidUri';
         }
 
-        if (!force && uri === this.currUri) {
+        if (options.skipDuplicate && uri === this.currUri) {
             return;
         }
 
@@ -207,7 +214,10 @@ export class Router {
             suffix,
             params: params,
         };
-        this.routeChangeChan.put(this.currRouteUpdate);
+
+        if (options.notifyRouteChange) {
+            this.routeChangeChan.put(this.currRouteUpdate);
+        }
     }
 
     public subscribeRouteChange(): PopChannel<RouteUpdate | undefined> {
@@ -219,12 +229,12 @@ export class Router {
     }
 
     public dispose() {
-        this.routeChangeChan.close();
+        closeIfNot(this.routeChangeChan);
     }
 
     public navigateToCurrUri() {
         if (this.currUri) {
-            this.navigateTo(this.currUri, true);
+            this.navigateTo(this.currUri, { skipDuplicate: false });
         }
     }
 
@@ -279,4 +289,17 @@ export function createBrowserRouter(): Router {
     const router = new Router();
     router.initBrowserUri();
     return router;
+}
+
+function withDefaults(options?: NavigateOptions): NavigateOptions {
+    const newOptions: NavigateOptions = options || {};
+    if (newOptions.skipDuplicate === undefined) {
+        newOptions.skipDuplicate = true;
+    }
+
+    if (newOptions.notifyRouteChange === undefined) {
+        newOptions.notifyRouteChange = true;
+    }
+
+    return newOptions;
 }
