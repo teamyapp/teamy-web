@@ -1,4 +1,5 @@
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
+import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
@@ -32,6 +33,7 @@ export interface Deps {
     shortcutMonitor: ShortcutMonitor<UserActionEvent>;
     dragAndDropController: DragAndDropController;
     feedbackPubSub: PubSub<Feedback>;
+    fileUploadSessionFactory: FileUploadSessionFactory;
 }
 
 export function initDeps(): Deps {
@@ -71,6 +73,9 @@ export function initDeps(): Deps {
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
     const dragAndDropController = new DragAndDropController();
     const feedbackPubSub = new PubSub<Feedback>();
+    const fileUploadSessionFactory = new FileUploadSessionFactory(
+        config.cloudWebAPIEndpoint,
+    );
     return {
         identityClient,
         router,
@@ -80,5 +85,6 @@ export function initDeps(): Deps {
         shortcutMonitor,
         dragAndDropController,
         feedbackPubSub,
+        fileUploadSessionFactory,
     };
 }

@@ -107,4 +107,37 @@ export class UserClient {
             })
             .then((payload: any) => payload?.updateUser);
     }
+
+    public createUserProfileUploadSession(): Promise<string> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation createUserProfileUploadSession {
+                        createUserProfileUploadSession
+                    }
+                `,
+            })
+            .then((payload: any) => payload?.createUserProfileUploadSession);
+    }
+
+    public finishUserProfileUploadSession(
+        fileUploadSessionId: string,
+    ): Promise<string> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation finishUserProfileUploadSession(
+                        $fileUploadSessionId: ID!
+                    ) {
+                        finishUserProfileUploadSession(
+                            fileUploadSessionId: $fileUploadSessionId
+                        )
+                    }
+                `,
+                variables: {
+                    fileUploadSessionId,
+                },
+            })
+            .then((payload: any) => payload?.finishUserProfileUploadSession);
+    }
 }

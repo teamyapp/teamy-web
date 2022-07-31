@@ -3,10 +3,7 @@ import { closeIfNot } from '@lib/csp/lib';
 import { UploadSessionError } from '@lib/fileUpload/error';
 import { Progress } from '@lib/fileUpload/progress';
 import { UploadSession } from '@lib/fileUpload/uploadSession';
-
-const bytesPerKB = 1024;
-const bytesPerMB = 1024 * bytesPerKB;
-const bytesPerGB = 1024 * bytesPerMB;
+import {bytesPerKB, bytesPerMB} from '@lib/fileUpload/size';
 
 export class FileUploadSession {
     private readonly onNewProgressCh = chan<Progress>();
@@ -99,6 +96,14 @@ function getChunkSizeInBytes(fileSizeInBytes: number): number {
         return 2 * bytesPerMB;
     } else {
         return 4 * bytesPerMB;
+    }
+}
+
+export class FileUploadSessionFactory {
+    constructor(private cloudAPIBaseUrl: string) {}
+
+    public createFileUploadSession(uploadSessionId: number): FileUploadSession {
+        return new FileUploadSession(this.cloudAPIBaseUrl, uploadSessionId);
     }
 }
 
