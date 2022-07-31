@@ -13,7 +13,7 @@
     .RightSection {
         align-items: center;
         display: flex;
-        width: 540px;
+        width: 550px;
     }
 
     .RightSection {
@@ -29,6 +29,11 @@
         font-size: 22px;
         font-weight: 500;
         letter-spacing: 1px;
+        width: 140px;
+        height: 30px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         transition: left 400ms $easeOutExpo;
     }
 
