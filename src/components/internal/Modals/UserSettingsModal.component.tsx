@@ -383,7 +383,6 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         const file = files[0];
         const previewImageUrl = URL.createObjectURL(file);
         const image = await loadImage(previewImageUrl);
-
         const ratio = image.width / image.height;
         if (ratio !== 1) {
             alert('Profile image need to be a square');
