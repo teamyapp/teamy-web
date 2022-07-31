@@ -1,33 +1,33 @@
 import React, {
     ChangeEvent,
     Component,
+    createRef,
     Fragment,
     ReactNode,
-    createRef,
 } from 'react';
 
-import { PopChannel } from '@lib/csp/csp';
-import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
-import { Progress } from '@lib/fileUpload/progress';
-import { Router } from '@lib/router/router';
-import { ButtonUI } from '@lib/ui/Button';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { ModalUI } from '@lib/ui/Modal';
-import { TabsUI } from '@lib/ui/Tabs';
-import { TextFieldUI } from '@lib/ui/TextField';
+import {PopChannel} from '@lib/csp/csp';
+import {FileUploadSessionFactory} from '@lib/fileUpload/fileUploadSession';
+import {Progress} from '@lib/fileUpload/progress';
+import {Router} from '@lib/router/router';
+import {ButtonUI} from '@lib/ui/Button';
+import {MaterialIconUI} from '@lib/ui/MaterialIcon';
+import {ModalUI} from '@lib/ui/Modal';
+import {TabsUI} from '@lib/ui/Tabs';
+import {TextFieldUI} from '@lib/ui/TextField';
 
-import { absoluteUri } from '@core/config/routing';
-import { Deps } from '@core/dep/deps';
+import {absoluteUri} from '@core/config/routing';
+import {Deps} from '@core/dep/deps';
 import {
-    AuthProvider,
-    LinkedUser,
     accountProviderNames,
+    AuthProvider,
     authProviders,
+    LinkedUser,
 } from '@core/entity/linkedUser';
-import { User } from '@core/entity/user';
-import { GraphSource } from '@core/storage/graph/graphSource';
-import { LocalStore } from '@core/storage/syncer/localStore';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import {User} from '@core/entity/user';
+import {GraphSource} from '@core/storage/graph/graphSource';
+import {LocalStore} from '@core/storage/syncer/localStore';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 import styles from './UserSettingsModal.component.module.scss';
 import github from './accountProviders/github.svg';
@@ -201,47 +201,59 @@ export class UserSettingsModalComponent extends Component<Props, State> {
     private renderUserProfile(): ReactNode {
         return (
             <div className={styles.UserProfile}>
-                {this.state.isPreviewingProfileImage ? (
-                    <Fragment>
-                        <img
-                            alt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
-                            className={styles.UserProfileImg}
-                            src={this.state.previewProfileImageUrl}
-                        />
-                        <div
-                            className={styles.UploadProgress}
-                            style={{
-                                top: `${this.state.profileUploadProgress.totalPercentage}%`,
-                            }}
-                        />
-                    </Fragment>
-                ) : (
-                    <Fragment>
-                        {this.state.user?.profileUrl ? (
-                            <img
-                                alt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
-                                className={styles.UserProfileImg}
-                                src={this.state.user?.profileUrl}
-                            />
-                        ) : (
-                            <div className={styles.DefaultUserProfile}>
-                                {this.state.editingUserFirstName &&
-                                    this.state.editingUserFirstName[0].toUpperCase()}
-                            </div>
-                        )}
-                        <div className={styles.UploadUserProfileButton}>
-                            <input
-                                type={'file'}
-                                className={styles.FileInput}
-                                title=''
-                                accept='image/png,image/jpeg,image/bmp,image/svg+xml'
-                                onChange={this.onProfileImageChange}
-                            />
-                            <div className={styles.Label}>Upload profile</div>
-                        </div>
-                    </Fragment>
-                )}
+                {
+                    this.state.isPreviewingProfileImage ?
+                        this.renderUserProfilePreview() :
+                        this.renderActiveUserProfile()
+                }
             </div>
+        );
+    }
+
+    private renderUserProfilePreview() {
+        return (
+            <Fragment>
+                <img
+                    alt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
+                    className={styles.UserProfileImg}
+                    src={this.state.previewProfileImageUrl}
+                />
+                <div
+                    className={styles.UploadProgress}
+                    style={{
+                        top: `${this.state.profileUploadProgress.totalPercentage}%`,
+                    }}
+                />
+            </Fragment>
+        );
+    }
+
+    private renderActiveUserProfile() {
+        return (
+            <Fragment>
+                {this.state.user?.profileUrl ? (
+                    <img
+                        alt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
+                        className={styles.UserProfileImg}
+                        src={this.state.user?.profileUrl}
+                    />
+                ) : (
+                    <div className={styles.DefaultUserProfile}>
+                        {this.state.editingUserFirstName &&
+                            this.state.editingUserFirstName[0].toUpperCase()}
+                    </div>
+                )}
+                <div className={styles.UploadUserProfileButton}>
+                    <input
+                        type={'file'}
+                        className={styles.FileInput}
+                        title=""
+                        accept="image/png,image/jpeg,image/bmp,image/svg+xml"
+                        onChange={this.onProfileImageChange}
+                    />
+                    <div className={styles.Label}>Upload profile</div>
+                </div>
+            </Fragment>
         );
     }
 
