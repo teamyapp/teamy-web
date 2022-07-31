@@ -3,10 +3,7 @@ import { closeIfNot } from '@lib/csp/lib';
 import { UploadSessionError } from '@lib/fileUpload/error';
 import { Progress } from '@lib/fileUpload/progress';
 import { UploadSession } from '@lib/fileUpload/uploadSession';
-
-const bytesPerKB = 1024;
-const bytesPerMB = 1024 * bytesPerKB;
-const bytesPerGB = 1024 * bytesPerMB;
+import {bytesPerKB, bytesPerMB} from '@lib/fileUpload/size';
 
 export class FileUploadSession {
     private readonly onNewProgressCh = chan<Progress>();
