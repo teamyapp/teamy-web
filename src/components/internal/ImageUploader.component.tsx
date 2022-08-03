@@ -15,7 +15,7 @@ interface Props {
 }
 
 interface State {
-    isPreviewingImage: boolean;
+    showPreview: boolean;
     previewImageUrl?: string;
     uploadProgress: Progress;
 }
