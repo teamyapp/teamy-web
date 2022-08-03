@@ -6,12 +6,12 @@ import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 interface Props {
     fileUploadSessionFactory: FileUploadSessionFactory;
     uploadButtonLabel: string;
-    createRemoteFileUploadSession: () => Promise<number>;
-    onFileUploadFinished?: (fileUploadSessionId: number) => Promise<void>;
-    validateNewImage?: (image: HTMLImageElement) => boolean;
     imageAlt?: string;
     activeImageUrl?: string;
     emptyImagePlaceholder?: string;
+    createRemoteFileUploadSession: () => Promise<number>;
+    onFileUploadFinished?: (fileUploadSessionId: number) => Promise<void>;
+    validateNewImage?: (image: HTMLImageElement) => boolean;
 }
 
 interface State {
@@ -33,6 +33,18 @@ export class ImageUploaderComponent extends Component<Props, State> {
                 totalPercentage: 0,
             },
         };
+    }
+
+    public render(): React.ReactNode {
+        return (
+            <div className={styles.ImageUploader}>
+                {
+                    this.state.showPreview ?
+                        this.renderPreview() :
+                        this.renderActiveImage()
+                }
+            </div>
+        )
     }
 
     private renderPreview() {
@@ -135,18 +147,6 @@ export class ImageUploaderComponent extends Component<Props, State> {
             showPreview: false,
         });
     };
-
-    public render(): React.ReactNode {
-        return (
-            <div className={styles.ImageUploader}>
-                {
-                    this.state.showPreview ?
-                        this.renderPreview() :
-                        this.renderActiveImage()
-                }
-            </div>
-        )
-    }
 
 }
 
