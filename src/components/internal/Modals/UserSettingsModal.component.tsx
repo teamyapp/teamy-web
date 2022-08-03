@@ -150,7 +150,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                                     this.state.editingUserFirstName &&
                                     this.state.editingUserFirstName[0].toUpperCase()
                                 }
-                                deps={this.props.deps}
+                                fileUploadSessionFactory={this.props.deps.fileUploadSessionFactory}
                                 uploadLabel='Upload profile'
                                 onFileUploadInit={this.stateSyncer.createUserProfileUpdateSession.bind(
                                     this.stateSyncer,

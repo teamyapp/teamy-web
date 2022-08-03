@@ -1,11 +1,10 @@
 import React, { ChangeEvent, Component, Fragment } from 'react';
 import styles from './ImageUploader.component.module.scss';
 import {Progress} from '@lib/fileUpload/progress';
-import { Deps } from '@core/dep/deps';
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 
 interface Props {
-    deps: Deps;
+    fileUploadSessionFactory: FileUploadSessionFactory;
     uploadLabel: string;
     onFileUploadInit: () => Promise<number>;
     onFileUploadFinished: (fileUploadSessionId: number) => Promise<void>;
@@ -25,7 +24,7 @@ export class ImageUploaderComponent extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.fileUploadSessionFactory = props.deps.fileUploadSessionFactory;
+        this.fileUploadSessionFactory = props.fileUploadSessionFactory;
         this.state = {
             isPreviewingProfileImage: false,
             profileUploadProgress: {
