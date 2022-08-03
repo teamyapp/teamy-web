@@ -156,7 +156,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
 
     private renderUserProfileTab = () => {
         const fullName = `${this.state.editingUserFirstName} ${this.state.editingUserLastName}`;
-        const emptyImagePlaceholder =
+        const profileImagePlaceholder =
             this.state.editingUserFirstName &&
             this.state.editingUserFirstName[0].toUpperCase();
 
@@ -167,7 +167,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                         <div className={styles.UserProfileUploader}>
                             <ImageUploaderComponent
                                 imageAlt={fullName}
-                                emptyImagePlaceholder={emptyImagePlaceholder}
+                                emptyImagePlaceholder={profileImagePlaceholder}
                                 fileUploadSessionFactory={
                                     this.props.deps.fileUploadSessionFactory
                                 }
