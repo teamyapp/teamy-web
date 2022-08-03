@@ -329,7 +329,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         };
     };
 
-    private async handleFileUploadFinished(fileUploadSessionId: number) {
+    private async handleFileUploadFinished = (fileUploadSessionId: number) => {
         await this.stateSyncer.finishUserProfileUpdateSession(
             fileUploadSessionId,
         );
