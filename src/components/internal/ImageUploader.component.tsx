@@ -11,7 +11,7 @@ interface Props {
     validateNewImage?: (image: HTMLImageElement) => boolean;
     imageAlt?: string;
     activeImageUrl?: string;
-    placeholder?: string;
+    emptyImagePlaceholder?: string;
 }
 
 interface State {
