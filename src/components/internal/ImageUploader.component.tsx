@@ -5,7 +5,7 @@ import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 
 interface Props {
     fileUploadSessionFactory: FileUploadSessionFactory;
-    uploadLabel: string;
+    uploadButtonLabel: string;
     onFileUploadInit: () => Promise<number>;
     onFileUploadFinished: (fileUploadSessionId: number) => Promise<void>;
     imageValidator?: (image: HTMLImageElement) => boolean;
