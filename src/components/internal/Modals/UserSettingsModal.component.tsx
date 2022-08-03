@@ -159,7 +159,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
             this.state.currentTabIndex === 0 && (
                 <div className={styles.UserProfileTab}>
                     <div className={styles.UserProfileTabContent}>
-                        <div className={styles.ImageUploaderComponentWrapper}>
+                        <div className={styles.UserProfileUploader}>
                             <ImageUploaderComponent
                                 imageAlt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
                                 placeholder={
