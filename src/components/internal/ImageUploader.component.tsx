@@ -7,7 +7,7 @@ interface Props {
     fileUploadSessionFactory: FileUploadSessionFactory;
     uploadButtonLabel: string;
     createRemoteFileUploadSession: () => Promise<number>;
-    onFileUploadFinished: (fileUploadSessionId: number) => Promise<void>;
+    onFileUploadFinished?: (fileUploadSessionId: number) => Promise<void>;
     imageValidator?: (image: HTMLImageElement) => boolean;
     imageAlt?: string;
     imageUrl?: string;
