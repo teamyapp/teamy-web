@@ -27,7 +27,7 @@ export class ImageUploaderComponent extends Component<Props, State> {
         super(props);
         this.fileUploadSessionFactory = props.fileUploadSessionFactory;
         this.state = {
-            isPreviewingImage: false,
+            showPreview: false,
             uploadProgress: {
                 newBytesUploaded: 0,
                 totalPercentage: 0,
@@ -56,15 +56,15 @@ export class ImageUploaderComponent extends Component<Props, State> {
     private renderActiveImage() {
         return (
             <Fragment>
-                {this.props.imageUrl ? (
+                {this.props.activeImageUrl ? (
                     <img
                         alt={this.props.imageAlt}
                         className={styles.ActiveImg}
-                        src={this.props.imageUrl}
+                        src={this.props.activeImageUrl}
                     />
                 ) : (
                     <div className={styles.Placeholder}>
-                        {this.props.placeholder || ""}
+                        {this.props.emptyImagePlaceholder || ""}
                     </div>
                 )}
                 <div className={styles.UploadButton}>
@@ -75,7 +75,7 @@ export class ImageUploaderComponent extends Component<Props, State> {
                         accept="image/png,image/jpeg,image/bmp,image/svg+xml"
                         onChange={this.onProfileImageChange}
                     />
-                    <div className={styles.Label}>{this.props.uploadLabel}</div>
+                    <div className={styles.Label}>{this.props.uploadButtonLabel}</div>
                 </div>
             </Fragment>
         );
@@ -93,13 +93,13 @@ export class ImageUploaderComponent extends Component<Props, State> {
         const previewImageUrl = URL.createObjectURL(file);
         const image = await loadImage(previewImageUrl);
 
-        if (this.props.imageValidator && !this.props.imageValidator.call(null, image)) {
+        if (this.props.validateNewImage && !this.props.validateNewImage.call(null, image)) {
             return
         }
 
-        const fileUploadSessionId = await this.props.onFileUploadInit()
+        const fileUploadSessionId = await this.props.createRemoteFileUploadSession()
         this.setState({
-            isPreviewingImage: true,
+            showPreview: true,
             previewImageUrl: previewImageUrl,
             uploadProgress: {
                 newBytesUploaded: 0,
@@ -128,11 +128,11 @@ export class ImageUploaderComponent extends Component<Props, State> {
         if (error) {
             alert('Fail to upload image');
         } else {
-            await this.props.onFileUploadFinished(fileUploadSessionId)
+            await this.props.onFileUploadFinished?.call(null, fileUploadSessionId)
         }
 
         this.setState({
-            isPreviewingImage: false,
+            showPreview: false,
         });
     };
 
@@ -140,7 +140,7 @@ export class ImageUploaderComponent extends Component<Props, State> {
         return (
             <div className={styles.ImageUploader}>
                 {
-                    this.state.isPreviewingImage ?
+                    this.state.showPreview ?
                         this.renderPreview() :
                         this.renderActiveImage()
                 }

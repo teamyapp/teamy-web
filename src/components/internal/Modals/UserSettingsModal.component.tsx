@@ -151,31 +151,36 @@ export class UserSettingsModalComponent extends Component<Props, State> {
             );
             return false;
         }
-        return true
+        return true;
     }
 
     private renderUserProfileTab = () => {
+        const fullName = `${this.state.editingUserFirstName} ${this.state.editingUserLastName}`;
+        const emptyImagePlaceholder =
+            this.state.editingUserFirstName &&
+            this.state.editingUserFirstName[0].toUpperCase();
+
         return (
             this.state.currentTabIndex === 0 && (
                 <div className={styles.UserProfileTab}>
                     <div className={styles.UserProfileTabContent}>
                         <div className={styles.UserProfileUploader}>
                             <ImageUploaderComponent
-                                imageAlt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
-                                placeholder={
-                                    this.state.editingUserFirstName &&
-                                    this.state.editingUserFirstName[0].toUpperCase()
+                                imageAlt={fullName}
+                                emptyImagePlaceholder={emptyImagePlaceholder}
+                                fileUploadSessionFactory={
+                                    this.props.deps.fileUploadSessionFactory
                                 }
-                                fileUploadSessionFactory={this.props.deps.fileUploadSessionFactory}
-                                uploadLabel='Upload profile'
-                                onFileUploadInit={this.stateSyncer.createUserProfileUpdateSession.bind(
-                                    this.stateSyncer,
-                                )}
-                                imageUrl={this.state.user?.profileUrl}
+                                uploadButtonLabel='Upload profile'
+                                createRemoteFileUploadSession={
+                                    this.stateSyncer
+                                        .createUserProfileUpdateSession
+                                }
+                                activeImageUrl={this.state.user?.profileUrl}
                                 onFileUploadFinished={this.handleFileUploadFinished.bind(
                                     this,
                                 )}
-                                imageValidator={this.userProfileImageValidator}
+                                validateNewImage={this.validateUserProfileImage}
                             />
                         </div>
                         <div className={styles.UserIdSection}>
@@ -329,7 +334,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         };
     };
 
-    private async handleFileUploadFinished = (fileUploadSessionId: number) => {
+    private handleFileUploadFinished = async (fileUploadSessionId: number) => {
         await this.stateSyncer.finishUserProfileUpdateSession(
             fileUploadSessionId,
         );
@@ -338,7 +343,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         this.setState({
             user,
         });
-    }
+    };
 }
 
 function renderAccountProviderLogoURL(authProvider: AuthProvider): any {
