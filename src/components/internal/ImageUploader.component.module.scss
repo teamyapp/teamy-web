@@ -1,4 +1,4 @@
-.imageUploader {
+.ImageUploader {
     align-items: center;
     background-color: #455a64;
     border: 4px solid #e0e0e0;
@@ -10,8 +10,8 @@
     position: relative;
     width: var(--image-uploader-width, 150px);
 
-    .ProfileImg,
-    .DefaultProfile {
+    .ActiveImg,
+    .Placeholder {
         border-radius: 50%;
         box-sizing: border-box;
         height: 100%;
@@ -19,7 +19,7 @@
         width: 100%;
     }
 
-    .DefaultProfile {
+    .Placeholder {
         align-items: center;
         color: white;
         display: flex;
@@ -39,12 +39,12 @@
     }
 
     &:hover {
-        .UploadProfileButton {
+        .UploadButton {
             opacity: 0.9;
         }
     }
 
-    .UploadProfileButton {
+    .UploadButton {
         align-items: center;
         background-color: #424242;
         box-sizing: border-box;

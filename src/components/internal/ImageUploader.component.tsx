@@ -8,15 +8,16 @@ interface Props {
     uploadLabel: string;
     onFileUploadInit: () => Promise<number>;
     onFileUploadFinished: (fileUploadSessionId: number) => Promise<void>;
+    imageValidator?: (image: HTMLImageElement) => boolean;
     imageAlt?: string;
-    profileUrl?: string;
-    defaultProfileName?: string;
+    imageUrl?: string;
+    placeholder?: string;
 }
 
 interface State {
-    isPreviewingProfileImage: boolean;
-    previewProfileImageUrl?: string;
-    profileUploadProgress: Progress;
+    isPreviewingImage: boolean;
+    previewImageUrl?: string;
+    uploadProgress: Progress;
 }
 
 export class ImageUploaderComponent extends Component<Props, State> {
@@ -26,47 +27,47 @@ export class ImageUploaderComponent extends Component<Props, State> {
         super(props);
         this.fileUploadSessionFactory = props.fileUploadSessionFactory;
         this.state = {
-            isPreviewingProfileImage: false,
-            profileUploadProgress: {
+            isPreviewingImage: false,
+            uploadProgress: {
                 newBytesUploaded: 0,
                 totalPercentage: 0,
             },
         };
     }
 
-    private renderProfilePreview() {
+    private renderPreview() {
         return (
             <Fragment>
                 <img
                     alt={this.props.imageAlt}
-                    className={styles.UserProfileImg}
-                    src={this.state.previewProfileImageUrl}
+                    className={styles.ActiveImg}
+                    src={this.state.previewImageUrl}
                 />
                 <div
                     className={styles.UploadProgress}
                     style={{
-                        top: `${this.state.profileUploadProgress.totalPercentage}%`,
+                        top: `${this.state.uploadProgress.totalPercentage}%`,
                     }}
                 />
             </Fragment>
         );
     }
 
-    private renderActiveProfile() {
+    private renderActiveImage() {
         return (
             <Fragment>
-                {this.props.profileUrl ? (
+                {this.props.imageUrl ? (
                     <img
                         alt={this.props.imageAlt}
-                        className={styles.ProfileImg}
-                        src={this.props.profileUrl}
+                        className={styles.ActiveImg}
+                        src={this.props.imageUrl}
                     />
                 ) : (
-                    <div className={styles.DefaultProfile}>
-                        {this.props.defaultProfileName || ""}
+                    <div className={styles.Placeholder}>
+                        {this.props.placeholder || ""}
                     </div>
                 )}
-                <div className={styles.UploadProfileButton}>
+                <div className={styles.UploadButton}>
                     <input
                         type={'file'}
                         className={styles.FileInput}
@@ -91,25 +92,17 @@ export class ImageUploaderComponent extends Component<Props, State> {
         const file = files[0];
         const previewImageUrl = URL.createObjectURL(file);
         const image = await loadImage(previewImageUrl);
-        const ratio = image.width / image.height;
-        if (ratio !== 1) {
-            alert('Profile image need to be a square');
-            return;
-        }
 
-        if (image.width > 800) {
-            alert(
-                'Profile image need to be smaller than or equal to 800 x 800',
-            );
-            return;
+        if (this.props.imageValidator && !this.props.imageValidator.call(this, image)) {
+            return
         }
 
         const fileUploadSessionId = await this.props.onFileUploadInit()
 
         this.setState({
-            isPreviewingProfileImage: true,
-            previewProfileImageUrl: previewImageUrl,
-            profileUploadProgress: {
+            isPreviewingImage: true,
+            previewImageUrl: previewImageUrl,
+            uploadProgress: {
                 newBytesUploaded: 0,
                 totalPercentage: 0,
             },
@@ -128,29 +121,29 @@ export class ImageUploaderComponent extends Component<Props, State> {
                 }
 
                 this.setState({
-                    profileUploadProgress: progress,
+                    uploadProgress: progress,
                 });
             }
         })().then();
         const error = await uploadSession.uploadFile(file);
         if (error) {
-            alert('Fail to upload profile image');
+            alert('Fail to upload image');
         } else {
             await this.props.onFileUploadFinished(fileUploadSessionId)
         }
 
         this.setState({
-            isPreviewingProfileImage: false,
+            isPreviewingImage: false,
         });
     };
 
     public render(): React.ReactNode {
         return (
-            <div className={styles.imageUploader}>
+            <div className={styles.ImageUploader}>
                 {
-                    this.state.isPreviewingProfileImage ?
-                        this.renderProfilePreview() :
-                        this.renderActiveProfile()
+                    this.state.isPreviewingImage ?
+                        this.renderPreview() :
+                        this.renderActiveImage()
                 }
             </div>
         )

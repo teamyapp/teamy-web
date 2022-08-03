@@ -138,6 +138,22 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         });
     }
 
+    private userProfileImageValidator(image: HTMLImageElement) {
+        const ratio = image.width / image.height;
+        if (ratio !== 1) {
+            alert('Profile image need to be a square');
+            return false;
+        }
+
+        if (image.width > 800) {
+            alert(
+                'Profile image need to be smaller than or equal to 800 x 800',
+            );
+            return false;
+        }
+        return true
+    }
+
     private renderUserProfileTab = () => {
         return (
             this.state.currentTabIndex === 0 && (
@@ -146,7 +162,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                         <div className={styles.ImageUploaderComponentWrapper}>
                             <ImageUploaderComponent
                                 imageAlt={`${this.state.editingUserFirstName} ${this.state.editingUserLastName}`}
-                                defaultProfileName={
+                                placeholder={
                                     this.state.editingUserFirstName &&
                                     this.state.editingUserFirstName[0].toUpperCase()
                                 }
@@ -155,10 +171,11 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                                 onFileUploadInit={this.stateSyncer.createUserProfileUpdateSession.bind(
                                     this.stateSyncer,
                                 )}
-                                profileUrl={this.state.user?.profileUrl}
+                                imageUrl={this.state.user?.profileUrl}
                                 onFileUploadFinished={this.handleFileUploadFinished.bind(
                                     this,
                                 )}
+                                imageValidator={this.userProfileImageValidator}
                             />
                         </div>
                         <div className={styles.UserIdSection}>
