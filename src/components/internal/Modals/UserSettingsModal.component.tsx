@@ -138,7 +138,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         });
     }
 
-    private userProfileImageValidator(image: HTMLImageElement) {
+    private validateUserProfileImage(image: HTMLImageElement) {
         const ratio = image.width / image.height;
         if (ratio !== 1) {
             alert('Profile image need to be a square');
