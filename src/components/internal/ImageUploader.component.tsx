@@ -8,7 +8,7 @@ interface Props {
     uploadButtonLabel: string;
     createRemoteFileUploadSession: () => Promise<number>;
     onFileUploadFinished?: (fileUploadSessionId: number) => Promise<void>;
-    imageValidator?: (image: HTMLImageElement) => boolean;
+    validateNewImage?: (image: HTMLImageElement) => boolean;
     imageAlt?: string;
     imageUrl?: string;
     placeholder?: string;
