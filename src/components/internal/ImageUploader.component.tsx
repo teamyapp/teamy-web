@@ -10,7 +10,7 @@ interface Props {
     onFileUploadFinished?: (fileUploadSessionId: number) => Promise<void>;
     validateNewImage?: (image: HTMLImageElement) => boolean;
     imageAlt?: string;
-    imageUrl?: string;
+    activeImageUrl?: string;
     placeholder?: string;
 }
 
