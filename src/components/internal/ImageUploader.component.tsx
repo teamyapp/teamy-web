@@ -98,7 +98,6 @@ export class ImageUploaderComponent extends Component<Props, State> {
         }
 
         const fileUploadSessionId = await this.props.onFileUploadInit()
-
         this.setState({
             isPreviewingImage: true,
             previewImageUrl: previewImageUrl,
