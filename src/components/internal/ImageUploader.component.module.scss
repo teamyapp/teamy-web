@@ -1,0 +1,84 @@
+$imageUploaderHeight: var(--image-uploader-height, 150px);
+$imageUploaderWidth: var(--image-uploader-width, 150px);
+
+.ImageUploader {
+    align-items: center;
+    background-color: #455a64;
+    border: 4px solid #e0e0e0;
+    border-radius: 50%;
+    display: flex;
+    height: $imageUploaderHeight;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: $imageUploaderWidth;
+
+    .ActiveImg,
+    .Placeholder {
+        border-radius: 50%;
+        box-sizing: border-box;
+        height: 100%;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .Placeholder {
+        align-items: center;
+        color: white;
+        display: flex;
+        font-size: 100px;
+        font-weight: bold;
+        line-height: 100px;
+    }
+
+    .UploadProgress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        transition: top 100ms ease-in-out;
+    }
+
+    &:hover {
+        .UploadButton {
+            opacity: 0.9;
+        }
+    }
+
+    .UploadButton {
+        align-items: center;
+        background-color: #424242;
+        box-sizing: border-box;
+        color: white;
+        display: flex;
+        font-size: 20px;
+        font-weight: bold;
+        height: 100%;
+        justify-content: center;
+        left: 0;
+        opacity: 0;
+        padding: 0 10px;
+        position: absolute;
+        text-align: center;
+        top: 0;
+        user-select: none;
+        width: 100%;
+
+        .FileInput {
+            position: absolute;
+            background-color: #3d7bf6;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            opacity: 0;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
+    }
+}

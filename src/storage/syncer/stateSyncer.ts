@@ -486,7 +486,7 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async createUserProfileUpdateSession(): Promise<number> {
+    public createUserProfileUpdateSession = async (): Promise<number> => {
         const remoteSessionID =
             await this.userClient.createUserProfileUploadSession();
         return parseInt(remoteSessionID);
