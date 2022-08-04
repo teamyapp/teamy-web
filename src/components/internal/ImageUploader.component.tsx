@@ -104,7 +104,6 @@ export class ImageUploaderComponent extends Component<Props, State> {
         const file = files[0];
         const previewImageUrl = URL.createObjectURL(file);
         const image = await loadImage(previewImageUrl);
-
         if (this.props.validateNewImage && !this.props.validateNewImage.call(null, image)) {
             return
         }
