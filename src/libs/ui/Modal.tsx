@@ -9,6 +9,7 @@ const transitionDurationMilliseconds = 400;
 const baseElevation = 1000;
 
 interface Props {
+    children: React.ReactNode;
     level?: number;
     onClose?: () => void;
 }

@@ -21,8 +21,8 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
-import { UserProfileUI } from '../UserProfile';
 import { ImageUploaderComponent } from '../ImageUploader.component';
+import { UserProfileUI } from '../UserProfile';
 import styles from './TeamSettingsModal.component.module.scss';
 
 interface Props {
@@ -162,7 +162,9 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     this.createRemoteFileUploadSession
                                 }
                                 activeImageUrl={this.state.team?.iconUrl}
-                                onFileUploadFinished={this.handleFileUploadFinished}
+                                onFileUploadFinished={
+                                    this.handleFileUploadFinished
+                                }
                                 validateNewImage={this.validateTeamIconImage}
                             />
                         </div>
@@ -445,6 +447,8 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     private createRemoteFileUploadSession = () => {
-        return this.stateSyncer.createTeamIconUpdateSession(this.state.team!.id)
-    }
+        return this.stateSyncer.createTeamIconUpdateSession(
+            this.state.team!.id,
+        );
+    };
 }

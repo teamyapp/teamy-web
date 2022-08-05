@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
 import { initDeps } from '@core/dep/deps';
 
@@ -9,11 +9,11 @@ import reportWebVitals from './reportWebVitals';
 
 const deps = initDeps();
 
-ReactDOM.render(
+const root = createRoot(document.getElementById('root')!);
+root.render(
     <React.StrictMode>
         <AppComponent deps={deps} />
     </React.StrictMode>,
-    document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function

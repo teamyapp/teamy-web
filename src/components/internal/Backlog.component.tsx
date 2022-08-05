@@ -27,6 +27,7 @@ import { InlineCreateTaskUI } from './InlineCreateTask';
 import { TaskListItem } from './TaskListSections/TaskListItem';
 
 interface Props {
+    children?: React.ReactNode;
     deps: Deps;
     dropReceiverLayer?: number;
     selectOwnerTaskId?: number;

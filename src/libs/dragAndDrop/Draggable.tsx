@@ -1,6 +1,7 @@
 import React, {
     Component,
     MouseEvent as ReactMouseEvent,
+    ReactNode,
     createRef,
 } from 'react';
 
@@ -16,6 +17,7 @@ const dragMinMouseMove = 5;
 const mainButton = 0;
 
 interface Props {
+    children: ReactNode;
     dragAndDropController: DragAndDropController;
     containerId: string;
     itemType: string;
