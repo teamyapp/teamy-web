@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Component, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
@@ -12,6 +12,7 @@ import {
 import { Size, SizeTransformer, sizeUnchanged } from './size';
 
 interface Props {
+    children: ReactNode;
     dragAndDropController: DragAndDropController;
     itemSizeTransformer?: (containerSize: Size) => SizeTransformer;
     receiverLayer?: number;

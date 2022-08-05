@@ -2,8 +2,8 @@ import { PopChannel, chan, multi } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { UploadSessionError } from '@lib/fileUpload/error';
 import { Progress } from '@lib/fileUpload/progress';
+import { bytesPerKB, bytesPerMB } from '@lib/fileUpload/size';
 import { UploadSession } from '@lib/fileUpload/uploadSession';
-import {bytesPerKB, bytesPerMB} from '@lib/fileUpload/size';
 
 export class FileUploadSession {
     private readonly onNewProgressCh = chan<Progress>();

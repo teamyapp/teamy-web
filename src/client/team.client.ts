@@ -221,38 +221,41 @@ export class TeamClient {
 
     public createTeamIconUploadSession(teamId: string): Promise<string> {
         return this.graphQLClient
-        .mutate({
-            mutation: gql`
-                mutation createTeamIconUploadSession($teamId: ID!) {
-                    createTeamIconUploadSession(teamId: $teamId)
-                }
-            `,
-            variables: {
-                teamId
-            }
-        })
-        .then((payload: any) => payload?.createTeamIconUploadSession);
-    } 
- 
-    public finishTeamIconUploadSession(teamId: string, fileUploadSessionId: string): Promise<string> {
+            .mutate({
+                mutation: gql`
+                    mutation createTeamIconUploadSession($teamId: ID!) {
+                        createTeamIconUploadSession(teamId: $teamId)
+                    }
+                `,
+                variables: {
+                    teamId,
+                },
+            })
+            .then((payload: any) => payload?.createTeamIconUploadSession);
+    }
+
+    public finishTeamIconUploadSession(
+        teamId: string,
+        fileUploadSessionId: string,
+    ): Promise<string> {
         return this.graphQLClient
-        .mutate({
-            mutation: gql`
-                mutation finishTeamIconUploadSession(
-                    $teamId: ID!
-                    $fileUploadSessionId: ID!
-                ) {
-                    finishTeamIconUploadSession(
-                        teamId: $teamId,
-                        fileUploadSessionId: $fileUploadSessionId
-                    )
-                }
-            `,
-            variables: {
-                teamId,
-                fileUploadSessionId,
-            },
-        })
-        .then((payload: any) => payload?.finishUserProfileUploadSession);
+            .mutate({
+                mutation: gql`
+                    mutation finishTeamIconUploadSession(
+                        $teamId: ID!
+                        $fileUploadSessionId: ID!
+                    ) {
+                        finishTeamIconUploadSession(
+                            teamId: $teamId
+                            fileUploadSessionId: $fileUploadSessionId
+                        )
+                    }
+                `,
+                variables: {
+                    teamId,
+                    fileUploadSessionId,
+                },
+            })
+            .then((payload: any) => payload?.finishUserProfileUploadSession);
     }
 }

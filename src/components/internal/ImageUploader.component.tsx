@@ -1,7 +1,9 @@
 import React, { ChangeEvent, Component, Fragment } from 'react';
-import styles from './ImageUploader.component.module.scss';
-import {Progress} from '@lib/fileUpload/progress';
+
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
+import { Progress } from '@lib/fileUpload/progress';
+
+import styles from './ImageUploader.component.module.scss';
 
 interface Props {
     fileUploadSessionFactory: FileUploadSessionFactory;
@@ -38,13 +40,11 @@ export class ImageUploaderComponent extends Component<Props, State> {
     public render(): React.ReactNode {
         return (
             <div className={styles.ImageUploader}>
-                {
-                    this.state.showPreview ?
-                        this.renderPreview() :
-                        this.renderActiveImage()
-                }
+                {this.state.showPreview
+                    ? this.renderPreview()
+                    : this.renderActiveImage()}
             </div>
-        )
+        );
     }
 
     private renderPreview() {
@@ -76,18 +76,20 @@ export class ImageUploaderComponent extends Component<Props, State> {
                     />
                 ) : (
                     <div className={styles.Placeholder}>
-                        {this.props.emptyImagePlaceholder || ""}
+                        {this.props.emptyImagePlaceholder || ''}
                     </div>
                 )}
                 <div className={styles.UploadButton}>
                     <input
                         type={'file'}
                         className={styles.FileInput}
-                        title=""
-                        accept="image/png,image/jpeg,image/bmp,image/svg+xml"
+                        title=''
+                        accept='image/png,image/jpeg,image/bmp,image/svg+xml'
                         onChange={this.onProfileImageChange}
                     />
-                    <div className={styles.Label}>{this.props.uploadButtonLabel}</div>
+                    <div className={styles.Label}>
+                        {this.props.uploadButtonLabel}
+                    </div>
                 </div>
             </Fragment>
         );
@@ -104,11 +106,15 @@ export class ImageUploaderComponent extends Component<Props, State> {
         const file = files[0];
         const previewImageUrl = URL.createObjectURL(file);
         const image = await loadImage(previewImageUrl);
-        if (this.props.validateNewImage && !this.props.validateNewImage.call(null, image)) {
-            return
+        if (
+            this.props.validateNewImage &&
+            !this.props.validateNewImage.call(null, image)
+        ) {
+            return;
         }
 
-        const fileUploadSessionId = await this.props.createRemoteFileUploadSession()
+        const fileUploadSessionId =
+            await this.props.createRemoteFileUploadSession();
         this.setState({
             showPreview: true,
             previewImageUrl: previewImageUrl,
@@ -139,16 +145,17 @@ export class ImageUploaderComponent extends Component<Props, State> {
         if (error) {
             alert('Fail to upload image');
         } else {
-            await this.props.onFileUploadFinished?.call(null, fileUploadSessionId)
+            await this.props.onFileUploadFinished?.call(
+                null,
+                fileUploadSessionId,
+            );
         }
 
         this.setState({
             showPreview: false,
         });
     };
-
 }
-
 
 function loadImage(url: string): Promise<HTMLImageElement> {
     return new Promise((resolve, reject) => {

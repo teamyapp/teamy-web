@@ -10,6 +10,7 @@ const minHoverMilliseconds = 500;
 type Position = 'Top' | 'Bottom' | 'Left' | 'Right';
 
 interface Props {
+    children: ReactNode;
     message: string;
     position?: Position;
     parentOffset?: Point;

@@ -13,6 +13,7 @@ import {
 } from './router';
 
 interface Props {
+    children: ReactNode;
     router: Router;
     pattern: string;
     renderChild?: (params: Params) => ReactNode | null;

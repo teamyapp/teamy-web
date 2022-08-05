@@ -177,7 +177,9 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                                         .createUserProfileUpdateSession
                                 }
                                 activeImageUrl={this.state.user?.profileUrl}
-                                onFileUploadFinished={this.handleFileUploadFinished}
+                                onFileUploadFinished={
+                                    this.handleFileUploadFinished
+                                }
                                 validateNewImage={this.validateUserProfileImage}
                             />
                         </div>

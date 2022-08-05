@@ -2,12 +2,13 @@ import React, { Component, ReactNode } from 'react';
 
 import styles from './Section.module.scss';
 
-interface IProps {
+interface Props {
+    children: ReactNode;
     title: string;
     actions?: ReactNode;
 }
 
-export class SectionUI extends Component<IProps> {
+export class SectionUI extends Component<Props> {
     public render(): ReactNode {
         return (
             <section className={styles.Section}>

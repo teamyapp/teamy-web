@@ -5,6 +5,7 @@ import styles from './MaterialIcon.module.scss';
 type IconStyle = undefined | 'outline' | 'round' | 'sharp';
 
 interface Props {
+    children: React.ReactNode;
     iconStyle?: IconStyle;
 }
 

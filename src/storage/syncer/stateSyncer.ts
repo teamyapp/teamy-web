@@ -490,7 +490,7 @@ export class StateSyncer {
         const remoteSessionID =
             await this.userClient.createUserProfileUploadSession();
         return parseInt(remoteSessionID);
-    }
+    };
 
     public async finishUserProfileUpdateSession(
         fileUploadSessionId: number,
@@ -502,11 +502,13 @@ export class StateSyncer {
         return parseInt(remoteSessionID);
     }
 
-    public createTeamIconUpdateSession = async (teamId: number): Promise<number> => {
+    public createTeamIconUpdateSession = async (
+        teamId: number,
+    ): Promise<number> => {
         const remoteSessionID =
             await this.teamClient.createTeamIconUploadSession(`${teamId}`);
         return parseInt(remoteSessionID);
-    }
+    };
 
     public async finishTeamIconUpdateSession(
         teamId: number,
