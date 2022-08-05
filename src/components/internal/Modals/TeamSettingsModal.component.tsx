@@ -25,7 +25,6 @@ import { UserProfileUI } from '../UserProfile';
 import { ImageUploaderComponent } from '../ImageUploader.component';
 import styles from './TeamSettingsModal.component.module.scss';
 
-
 interface Props {
     deps: Deps;
     onAddTeamMemberClick?: (teamId: number) => void;
