@@ -219,7 +219,6 @@ export class TeamClient {
             .then((payload: any) => payload?.removeMemberFromTeam);
     }
 
-
     public createTeamIconUploadSession(teamId: string): Promise<string> {
         debugger
         return this.graphQLClient
