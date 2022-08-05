@@ -347,7 +347,6 @@ export class AppComponent extends Component<Props, State> {
     public componentWillUnmount() {
         closeIfNot(this.stateChangeChan);
         closeIfNot(this.routeChangeChan);
-        closeIfNot(this.userActionChan);
         closeIfNot(this.dragAndDropEventChan);
         this.props.deps.shortcutMonitor.dispose();
     }
