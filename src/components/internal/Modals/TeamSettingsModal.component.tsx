@@ -22,7 +22,9 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { UserProfileUI } from '../UserProfile';
+import { ImageUploaderComponent } from '../ImageUploader.component';
 import styles from './TeamSettingsModal.component.module.scss';
+
 
 interface Props {
     deps: Deps;
@@ -149,22 +151,21 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             this.state.currentTabIndex === 0 && (
                 <div className={styles.TeamProfileTab}>
                     <div className={styles.TeamProfileTabContent}>
-                        <div className={styles.TeamIcon}>
-                            {this.state.team?.iconUrl ? (
-                                <img
-                                    alt={this.state.team?.name}
-                                    className={styles.TeamIconImg}
-                                    src={this.state.team?.iconUrl}
-                                />
-                            ) : (
-                                <div className={styles.TeamIconDefault}>
-                                    {this.state.team?.name[0]?.toUpperCase()}
-                                </div>
-                            )}
-
-                            <div className={styles.UploadTeamIconButton}>
-                                Upload profile
-                            </div>
+                        <div className={styles.TeamIconUploader}>
+                            <ImageUploaderComponent
+                                imageAlt={this.state.team?.name}
+                                emptyImagePlaceholder={this.state.team?.name[0]?.toUpperCase()}
+                                fileUploadSessionFactory={
+                                    this.props.deps.fileUploadSessionFactory
+                                }
+                                uploadButtonLabel='Upload icon'
+                                createRemoteFileUploadSession={
+                                    this.createRemoteFileUploadSession
+                                }
+                                activeImageUrl={this.state.team?.iconUrl}
+                                onFileUploadFinished={this.handleFileUploadFinished}
+                                validateNewImage={this.validateTeamIconImage}
+                            />
                         </div>
                         <div className={styles.TeamNameSection}>
                             <TextFieldUI
@@ -415,4 +416,36 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             this.stateSyncer.deleteInvitation(invitationId);
         };
     };
+
+    private handleFileUploadFinished = async (fileUploadSessionId: number) => {
+        await this.stateSyncer.finishTeamIconUpdateSession(
+            this.state.team!.id,
+            fileUploadSessionId,
+        );
+        await this.stateSyncer.pullCurrentTeam();
+        const team = this.graphSource.currentTeam();
+        this.setState({
+            team,
+        });
+    };
+
+    private validateTeamIconImage(image: HTMLImageElement) {
+        const ratio = image.width / image.height;
+        if (ratio !== 1) {
+            alert('Team icon image need to be a square');
+            return false;
+        }
+
+        if (image.width > 800) {
+            alert(
+                'Team icon image need to be smaller than or equal to 800 x 800',
+            );
+            return false;
+        }
+        return true;
+    }
+
+    private createRemoteFileUploadSession = () => {
+        return this.stateSyncer.createTeamIconUpdateSession(this.state.team!.id)
+    }
 }

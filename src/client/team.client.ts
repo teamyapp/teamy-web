@@ -21,6 +21,7 @@ export class TeamClient {
                     query getTeam($teamId: ID!) {
                         teams(filter: { teamId: $teamId }) {
                             id
+                            iconUrl
                             sprints {
                                 id
                                 startAt
@@ -216,5 +217,44 @@ export class TeamClient {
                 },
             })
             .then((payload: any) => payload?.removeMemberFromTeam);
+    }
+
+
+    public createTeamIconUploadSession(teamId: string): Promise<string> {
+        debugger
+        return this.graphQLClient
+        .mutate({
+            mutation: gql`
+                mutation createTeamIconUploadSession($teamId: ID!) {
+                    createTeamIconUploadSession(teamId: $teamId)
+                }
+            `,
+            variables: {
+                teamId
+            }
+        })
+        .then((payload: any) => payload?.createTeamIconUploadSession);
+    } 
+ 
+    public finishTeamIconUploadSession(teamId: string, fileUploadSessionId: string): Promise<string> {
+        return this.graphQLClient
+        .mutate({
+            mutation: gql`
+                mutation finishTeamIconUploadSession(
+                    $teamId: ID!
+                    $fileUploadSessionId: ID!
+                ) {
+                    finishTeamIconUploadSession(
+                        teamId: $teamId,
+                        fileUploadSessionId: $fileUploadSessionId
+                    )
+                }
+            `,
+            variables: {
+                teamId,
+                fileUploadSessionId,
+            },
+        })
+        .then((payload: any) => payload?.finishUserProfileUploadSession);
     }
 }

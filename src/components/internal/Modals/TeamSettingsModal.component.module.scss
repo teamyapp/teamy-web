@@ -40,67 +40,9 @@ $tableRowGap: 12px;
             flex-direction: column;
             padding: 40px;
 
-            .TeamIcon {
-                align-items: center;
-                background-color: white;
-                border: 4px solid #e0e0e0;
-                border-radius: 50%;
-                display: flex;
-                height: 150px;
-                justify-content: center;
-                overflow: hidden;
-                position: relative;
-                width: 150px;
-
-                .TeamIconImg {
-                    box-sizing: border-box;
-                    height: 100%;
-                    padding: 20px;
-                    width: 100%;
-                }
-
-                .TeamIconDefault {
-                    align-items: center;
-                    background-color: $defaultTeamIconBackground;
-                    color: white;
-                    display: flex;
-                    font-size: 90px;
-                    font-weight: bold;
-                    height: 100%;
-                    justify-content: center;
-                    line-height: 90px;
-                    width: 100%;
-                }
-
-                &:hover {
-                    .UploadTeamIconButton {
-                        opacity: 0.9;
-                    }
-                }
-
-                .UploadTeamIconButton {
-                    align-items: center;
-                    background-color: #424242;
-                    box-sizing: border-box;
-                    color: white;
-                    display: flex;
-                    font-size: 20px;
-                    font-weight: bold;
-                    height: 100%;
-                    justify-content: center;
-                    left: 0;
-                    opacity: 0;
-                    padding: 0 10px;
-                    position: absolute;
-                    text-align: center;
-                    top: 0;
-                    user-select: none;
-                    width: 100%;
-
-                    &:hover {
-                        cursor: pointer;
-                    }
-                }
+            .TeamIconUploader {
+                --image-uploader-width: 150px;
+                --image-uploader-height: 150px;
             }
 
             .TeamNameSection {

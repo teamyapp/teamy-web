@@ -502,6 +502,24 @@ export class StateSyncer {
         return parseInt(remoteSessionID);
     }
 
+    public createTeamIconUpdateSession = async (teamId: number): Promise<number> => {
+        const remoteSessionID =
+            await this.teamClient.createTeamIconUploadSession(`${teamId}`);
+        return parseInt(remoteSessionID);
+    }
+
+    public async finishTeamIconUpdateSession(
+        teamId: number,
+        fileUploadSessionId: number,
+    ): Promise<number> {
+        const remoteSessionID =
+            await this.teamClient.finishTeamIconUploadSession(
+                `${teamId}`,
+                `${fileUploadSessionId}`,
+            );
+        return parseInt(remoteSessionID);
+    }
+
     public async createMessage(
         threadId: number,
         input: CreateMessageInput,
