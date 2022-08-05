@@ -220,7 +220,6 @@ export class TeamClient {
     }
 
     public createTeamIconUploadSession(teamId: string): Promise<string> {
-        debugger
         return this.graphQLClient
         .mutate({
             mutation: gql`
