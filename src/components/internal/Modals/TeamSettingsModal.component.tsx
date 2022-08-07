@@ -423,7 +423,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             this.state.team!.id,
             fileUploadSessionId,
         );
-        await this.stateSyncer.pullCurrentTeam();
         const team = this.graphSource.currentTeam();
         this.setState({
             team,

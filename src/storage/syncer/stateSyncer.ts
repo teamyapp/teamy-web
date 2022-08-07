@@ -494,12 +494,14 @@ export class StateSyncer {
 
     public async finishUserProfileUpdateSession(
         fileUploadSessionId: number,
-    ): Promise<number> {
-        const remoteSessionID =
+    ): Promise<void> {
+        const remoteUser =
             await this.userClient.finishUserProfileUploadSession(
                 `${fileUploadSessionId}`,
             );
-        return parseInt(remoteSessionID);
+        let appState = this.localStore.getState();
+        appState = mergeUser(appState, remoteUser);
+        this.localStore.updateState(appState);
     }
 
     public createTeamIconUpdateSession = async (
@@ -513,13 +515,15 @@ export class StateSyncer {
     public async finishTeamIconUpdateSession(
         teamId: number,
         fileUploadSessionId: number,
-    ): Promise<number> {
-        const remoteSessionID =
+    ): Promise<void> {
+        const remoteTeam =
             await this.teamClient.finishTeamIconUploadSession(
                 `${teamId}`,
                 `${fileUploadSessionId}`,
             );
-        return parseInt(remoteSessionID);
+        let appState = this.localStore.getState();
+        appState = mergeTeam(appState, remoteTeam);
+        this.localStore.updateState(appState);
     }
 
     public async createMessage(

@@ -237,7 +237,7 @@ export class TeamClient {
     public finishTeamIconUploadSession(
         teamId: string,
         fileUploadSessionId: string,
-    ): Promise<string> {
+    ): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
@@ -248,7 +248,10 @@ export class TeamClient {
                         finishTeamIconUploadSession(
                             teamId: $teamId
                             fileUploadSessionId: $fileUploadSessionId
-                        )
+                        ) {
+                            id
+                            iconUrl
+                        }
                     }
                 `,
                 variables: {
@@ -256,6 +259,6 @@ export class TeamClient {
                     fileUploadSessionId,
                 },
             })
-            .then((payload: any) => payload?.finishUserProfileUploadSession);
+            .then((payload: any) => payload?.finishTeamIconUploadSession);
     }
 }

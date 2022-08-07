@@ -338,7 +338,6 @@ export class UserSettingsModalComponent extends Component<Props, State> {
         await this.stateSyncer.finishUserProfileUpdateSession(
             fileUploadSessionId,
         );
-        await this.stateSyncer.pullCurrentUser();
         const user = this.graphSource.currentUser();
         this.setState({
             user,
