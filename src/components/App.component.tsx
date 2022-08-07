@@ -1,11 +1,12 @@
 import { CloudComponent } from '@cloud/Cloud.component';
+import { UiExtension } from '@teamyapp/libs';
 import classNames from 'classnames';
 import React, { Component, Fragment, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
-import { IdentityClient } from '@lib/identity/Identity.client';
+import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -52,6 +53,10 @@ import { HeaderComponent } from './internal/Header.component';
 import { AddTeamMembersModalComponent } from './internal/Modals/AddTeamMembersModal.component';
 import { CreateSprintModalComponent } from './internal/Modals/CreateSprintModal.component';
 import { CreateTeamModalComponent } from './internal/Modals/CreateTeamModal.component';
+import {
+    RequiredAction,
+    RequiredActionsModalComponent,
+} from './internal/Modals/RequiredActionsModal.component';
 import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
 import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
@@ -128,6 +133,8 @@ export class AppComponent extends Component<Props, State> {
     private readonly createTeamModalRef = createRef<CreateTeamModalComponent>();
     private readonly createSprintModalRef =
         createRef<CreateSprintModalComponent>();
+    private readonly requiredActionsModalRef =
+        createRef<RequiredActionsModalComponent>();
     private readonly backlogRef = createRef<BacklogComponent>();
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
@@ -309,6 +316,9 @@ export class AppComponent extends Component<Props, State> {
                 <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <TaskUpdatedFeedbackComponent deps={this.props.deps} />
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
+                <RequiredActionsModalComponent
+                    ref={this.requiredActionsModalRef}
+                />
             </div>
         );
     }
@@ -317,8 +327,6 @@ export class AppComponent extends Component<Props, State> {
         this.monitorStateChanges();
         this.monitorRouteChanges();
         this.monitorUserActions();
-        this.userActionChan =
-            this.props.deps.shortcutMonitor.subscribeUserAction();
         this.dragAndDropEventChan =
             this.props.deps.dragAndDropController.subscribeDragAndDropEvent();
         (async () => {
@@ -342,6 +350,9 @@ export class AppComponent extends Component<Props, State> {
                 }
             }
         })().then();
+
+        // TODO: uncomment when Github extension is completed
+        // this.showRequiredActionsIfAny();
     }
 
     public componentWillUnmount() {
@@ -452,7 +463,6 @@ export class AppComponent extends Component<Props, State> {
                     });
                     continue;
                 }
-
                 this.setState({
                     showMainContent: true,
                 });
@@ -764,5 +774,58 @@ export class AppComponent extends Component<Props, State> {
         for (const sprint of sprints) {
             this.stateSyncer.removeTaskFromSprint(sprint.id, taskId);
         }
+    }
+
+    private async showRequiredActionsIfAny() {
+        const extensions = await this.loadExtensions();
+        const requiredActions: RequiredAction[] = [];
+        extensions
+            .filter((extension) => extension.requireUserAction())
+            .forEach((extension, index: number) => {
+                const requiredAction = extension.requiredAction!();
+                const viewRef = createRef<HTMLDivElement>();
+                const view = (
+                    <div
+                        key={index}
+                        ref={viewRef}
+                        style={{
+                            height: '100%',
+                        }}
+                    />
+                );
+                requiredActions.push({
+                    actionName: requiredAction.name(),
+                    view,
+                    renderView: () => {
+                        requiredAction.renderView({
+                            container: viewRef.current!,
+                            onActionComplete: this.onRequireActionComplete,
+                        });
+                    },
+                });
+            });
+        this.requiredActionsModalRef.current?.open(requiredActions);
+    }
+
+    private onRequireActionComplete = () => {
+        this.requiredActionsModalRef.current?.completeCurrentStep();
+    };
+
+    private loadExtensions(): Promise<UiExtension[]> {
+        // TODO: load extension from backend
+        // TODO: error handling when failed to load script
+        return Promise.all(
+            [
+                'http://localhost:8082/index.js',
+                'http://localhost:8082/index.js',
+            ].map(async (extensionEntryPoint, index) => {
+                let { App } = await importModule(extensionEntryPoint);
+                const app: UiExtension = new App(index);
+                app.init({
+                    getAccessToken,
+                });
+                return app;
+            }),
+        );
     }
 }
