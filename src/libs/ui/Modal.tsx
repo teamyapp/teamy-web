@@ -9,8 +9,9 @@ const transitionDurationMilliseconds = 400;
 const baseElevation = 1000;
 
 interface Props {
-    children: React.ReactNode;
+    children?: React.ReactNode;
     level?: number;
+    disableClose?: boolean;
     onClose?: () => void;
 }
 
@@ -122,6 +123,10 @@ export class ModalUI extends Component<Props, State> {
     }
 
     private onOverlayClick = () => {
+        if (this.props.disableClose) {
+            return;
+        }
+
         this.close();
     };
 }
