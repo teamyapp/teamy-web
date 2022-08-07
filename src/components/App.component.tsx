@@ -820,7 +820,6 @@ export class AppComponent extends Component<Props, State> {
                 'http://localhost:8082/index.js',
             ].map(async (extensionEntryPoint, index) => {
                 let { App } = await importModule(extensionEntryPoint);
-                console.log('============', App);
                 const app: UiExtension = new App(index);
                 app.init({
                     getAccessToken,
