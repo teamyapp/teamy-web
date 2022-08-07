@@ -250,7 +250,6 @@ export class TeamClient {
                             fileUploadSessionId: $fileUploadSessionId
                         ) {
                             id
-                            name
                             iconUrl
                         }
                     }

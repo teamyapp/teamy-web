@@ -133,8 +133,6 @@ export class UserClient {
                             fileUploadSessionId: $fileUploadSessionId
                         ) {
                             id
-                            firstName
-                            lastName
                             profileUrl
                         }
                     }
