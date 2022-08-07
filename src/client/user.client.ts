@@ -122,7 +122,7 @@ export class UserClient {
 
     public finishUserProfileUploadSession(
         fileUploadSessionId: string,
-    ): Promise<string> {
+    ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
@@ -131,7 +131,12 @@ export class UserClient {
                     ) {
                         finishUserProfileUploadSession(
                             fileUploadSessionId: $fileUploadSessionId
-                        )
+                        ) {
+                            id
+                            firstName
+                            lastName
+                            profileUrl
+                        }
                     }
                 `,
                 variables: {
