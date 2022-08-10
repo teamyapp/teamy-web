@@ -4,7 +4,6 @@ import React, { Component, ReactNode } from 'react';
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { Router } from '@lib/router/router';
-import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
@@ -50,12 +49,12 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     render() {
         return (
-            <div>
-                <div
-                    className={styles.SprintHeaderSection}
-                    tabIndex={-1}
-                    onBlur={this.onBlur}
-                >
+            <div
+                className={styles.SprintHeaderSection}
+                tabIndex={-1}
+                onBlur={this.onBlur}
+            >
+                <div className={styles.SectionContainer}>
                     <div
                         className={`${styles.HeaderSection} ${classNames({
                             [styles.Active]: this.state.showDetail,
@@ -90,11 +89,13 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         </div>
                     )}
                 </div>
-                <ButtonUI
-                    label='move'
-                    disabled={!this.canMoveTasksToNextSprint()}
+
+                <div
+                    className={styles.HeaderSection}
                     onClick={this.onMoveTasksToNextSprint}
-                />
+                >
+                    move
+                </div>
             </div>
         );
     }
@@ -192,6 +193,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     private onMoveTasksToNextSprint = () => {
         if (!this.canMoveTasksToNextSprint()) {
+            alert('can not move to next sprint');
             return;
         }
 
