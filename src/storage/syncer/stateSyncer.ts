@@ -682,10 +682,10 @@ export class StateSyncer {
         toSprintId: number,
     ): AppState {
         const taskId = toInt(remoteTask.id);
-
         if (taskId === undefined) {
             return appState;
         }
+        
         appState = mergeTask(appState, remoteTask);
         appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
             (relation) =>
@@ -701,7 +701,6 @@ export class StateSyncer {
         };
         appState.sprintTaskRelations =
             appState.sprintTaskRelations.concat(relation);
-
         return appState;
     }
 

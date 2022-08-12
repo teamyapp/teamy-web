@@ -177,16 +177,15 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     private canMoveTasksToNextSprint = () => {
         const currentSprint = this.graphSource.currentSprint();
-
         if (!currentSprint) {
             return false;
         }
 
-        const nonDelivereTasks = (currentSprint.tasks || []).filter(
+        const unfinishedTasks = (currentSprint.tasks || []).filter(
             unfinished,
         );
 
-        if (!nonDelivereTasks.length) {
+        if (!unfinishedTasks.length) {
             return false;
         }
 
@@ -200,27 +199,26 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     private onMoveTasksToNextSprint = () => {
         if (!this.canMoveTasksToNextSprint()) {
-            alert('can not move to next sprint');
+            alert('can not move tasks to next sprint');
             return;
         }
 
         const currentSprint = this.graphSource.currentSprint()!;
         const nextSprint = this.getNextSprint(currentSprint)!;
-        const nonDelivereTasks = (currentSprint.tasks || []).filter(
+        const unfinishedTasks = (currentSprint.tasks || []).filter(
             unfinished,
         );
-        const nonDelivereTaskIds = nonDelivereTasks.map((task) => task.id);
+        const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
         this.stateSyncer.moveTasksToSprint(
             currentSprint.id,
             nextSprint.id,
-            nonDelivereTaskIds,
+            unfinishedTaskIds,
         );
     };
 
     private getNextSprint(currentSprint: Sprint) {
         let sprints = [...this.state.sprints]
         sprints = orderByStartTimeDesc(sprints)
-
         const currentIndex = sprints.findIndex(
             (sprint) => sprint.id === currentSprint.id,
         );
