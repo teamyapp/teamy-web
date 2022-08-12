@@ -5,8 +5,10 @@ import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
+import { unfinished } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { Sprint } from '@core/entity/sprint';
 import { GraphSource } from '@core/storage/graph/graphSource';
@@ -48,44 +50,59 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     render() {
         return (
-            <div
-                className={styles.SprintHeaderSection}
-                tabIndex={-1}
-                onBlur={this.onBlur}
-            >
+            <div className={styles.SprintHeaderSectionContainer}>
+                <TooltipUI message={'Move Unfinished Tasks To Next Sprint'} position={'Bottom'}>
+                    <div className={styles.MoveSection}>
+                        <div
+                            className={styles.Button}
+                            onClick={this.onMoveTasksToNextSprint}
+                        >
+                            <MaterialIconUI>outbound</MaterialIconUI>
+                        </div>
+                    </div>
+                </TooltipUI>
+
                 <div
-                    className={`${styles.HeaderSection} ${classNames({
-                        [styles.Active]: this.state.showDetail,
-                    })}`}
-                    onClick={this.onHeaderSectionClick}
+                    className={styles.SprintHeaderSection}
+                    tabIndex={-1}
+                    onBlur={this.onBlur}
                 >
-                    <div className={styles.Icon}>
-                        <MaterialIconUI>directions_run</MaterialIconUI>
-                    </div>
-                    {
-                        <div className={styles.Name}>
-                            {this.renderSprintName()}
-                        </div>
-                    }
-                </div>
-                {this.state.showDetail && (
-                    <div className={styles.Detail}>
-                        <div className={styles.AddSection}>
-                            <div
-                                className={styles.Button}
-                                onClick={this.props.onCreateSprintClick}
-                            >
-                                <MaterialIconUI>add</MaterialIconUI>
+                    <div className={styles.SectionContainer}>
+                        <div
+                            className={`${styles.HeaderSection} ${classNames({
+                                [styles.Active]: this.state.showDetail,
+                            })}`}
+                            onClick={this.onHeaderSectionClick}
+                        >
+                            <div className={styles.Icon}>
+                                <MaterialIconUI>directions_run</MaterialIconUI>
                             </div>
+                            {
+                                <div className={styles.Name}>
+                                    {this.renderSprintName()}
+                                </div>
+                            }
                         </div>
-                        {this.state.sprints.length > 0 && (
-                            <div className={styles.Divider} />
+                        {this.state.showDetail && (
+                            <div className={styles.Detail}>
+                                <div className={styles.AddSection}>
+                                    <div
+                                        className={styles.Button}
+                                        onClick={this.props.onCreateSprintClick}
+                                    >
+                                        <MaterialIconUI>add</MaterialIconUI>
+                                    </div>
+                                </div>
+                                {this.state.sprints.length > 0 && (
+                                    <div className={styles.Divider} />
+                                )}
+                                <div className={styles.Sprints}>
+                                    {this.state.sprints.map(this.renderSprint)}
+                                </div>
+                            </div>
                         )}
-                        <div className={styles.Sprints}>
-                            {this.state.sprints.map(this.renderSprint)}
-                        </div>
                     </div>
-                )}
+                </div>
             </div>
         );
     }
@@ -157,6 +174,61 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             showDetail: !this.state.showDetail,
         });
     };
+
+    private canMoveTasksToNextSprint = () => {
+        const currentSprint = this.graphSource.currentSprint();
+        if (!currentSprint) {
+            return false;
+        }
+
+        const unfinishedTasks = (currentSprint.tasks || []).filter(
+            unfinished,
+        );
+
+        if (!unfinishedTasks.length) {
+            return false;
+        }
+
+        const nextSprint = this.getNextSprint(currentSprint);
+        if (!nextSprint) {
+            return false;
+        }
+
+        return true;
+    };
+
+    private onMoveTasksToNextSprint = () => {
+        if (!this.canMoveTasksToNextSprint()) {
+            alert('can not move tasks to next sprint');
+            return;
+        }
+
+        const currentSprint = this.graphSource.currentSprint()!;
+        const nextSprint = this.getNextSprint(currentSprint)!;
+        const unfinishedTasks = (currentSprint.tasks || []).filter(
+            unfinished,
+        );
+        const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
+        this.stateSyncer.moveTasksToSprint(
+            currentSprint.id,
+            nextSprint.id,
+            unfinishedTaskIds,
+        );
+    };
+
+    private getNextSprint(currentSprint: Sprint) {
+        let sprints = [...this.state.sprints]
+        sprints = orderByStartTimeDesc(sprints)
+        const currentIndex = sprints.findIndex(
+            (sprint) => sprint.id === currentSprint.id,
+        );
+
+        if (currentIndex === 0) {
+            return null;
+        }
+
+        return sprints[currentIndex - 1];
+    }
 
     private onSprintClick = (sprintId: number) => {
         return async () => {

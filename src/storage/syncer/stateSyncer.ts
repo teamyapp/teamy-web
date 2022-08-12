@@ -6,6 +6,7 @@ import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
+import { RemoteTask } from '@core/client/entity/remoteTask';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
 import { SprintClient } from '@core/client/sprint.client';
@@ -495,10 +496,9 @@ export class StateSyncer {
     public async finishUserProfileUpdateSession(
         fileUploadSessionId: number,
     ): Promise<void> {
-        const remoteUser =
-            await this.userClient.finishUserProfileUploadSession(
-                `${fileUploadSessionId}`,
-            );
+        const remoteUser = await this.userClient.finishUserProfileUploadSession(
+            `${fileUploadSessionId}`,
+        );
         let appState = this.localStore.getState();
         appState = mergeUser(appState, remoteUser);
         this.localStore.updateState(appState);
@@ -516,11 +516,10 @@ export class StateSyncer {
         teamId: number,
         fileUploadSessionId: number,
     ): Promise<void> {
-        const remoteTeam =
-            await this.teamClient.finishTeamIconUploadSession(
-                `${teamId}`,
-                `${fileUploadSessionId}`,
-            );
+        const remoteTeam = await this.teamClient.finishTeamIconUploadSession(
+            `${teamId}`,
+            `${fileUploadSessionId}`,
+        );
         let appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
         this.localStore.updateState(appState);
@@ -650,6 +649,59 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         appState = await this._removeTaskFromSprint(appState, sprintId, taskId);
         this.localStore.updateState(appState);
+    }
+
+    public async moveTasksToSprint(
+        fromSprintId: number,
+        toSprintId: number,
+        taskIds: number[],
+    ) {
+        const remoteTasks = await this.sprintClient.moveTasksToSprint(
+            `${fromSprintId}`,
+            `${toSprintId}`,
+            taskIds.map(String),
+        );
+
+        const appState = remoteTasks.reduce(
+            (appState, remoteTask) =>
+                this._updateTaskSprint(
+                    appState,
+                    remoteTask,
+                    fromSprintId,
+                    toSprintId,
+                ),
+            this.localStore.getState(),
+        );
+        this.localStore.updateState(appState);
+    }
+
+    private _updateTaskSprint(
+        appState: AppState,
+        remoteTask: RemoteTask,
+        fromSprintId: number,
+        toSprintId: number,
+    ): AppState {
+        const taskId = toInt(remoteTask.id);
+        if (taskId === undefined) {
+            return appState;
+        }
+        
+        appState = mergeTask(appState, remoteTask);
+        appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
+            (relation) =>
+                !(
+                    relation.sprintId === fromSprintId &&
+                    relation.taskId === taskId
+                ),
+        );
+
+        const relation: SprintTaskRelationState = {
+            sprintId: toSprintId,
+            taskId,
+        };
+        appState.sprintTaskRelations =
+            appState.sprintTaskRelations.concat(relation);
+        return appState;
     }
 
     private async _removeTaskFromSprint(
