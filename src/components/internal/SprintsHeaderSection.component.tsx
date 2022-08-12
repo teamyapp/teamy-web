@@ -5,9 +5,10 @@ import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
-import { nonDelivered } from '@core/data/task.filter';
+import { unfinished } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { Sprint } from '@core/entity/sprint';
 import { GraphSource } from '@core/storage/graph/graphSource';
@@ -49,52 +50,58 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     render() {
         return (
-            <div
-                className={styles.SprintHeaderSection}
-                tabIndex={-1}
-                onBlur={this.onBlur}
-            >
-                <div className={styles.SectionContainer}>
-                    <div
-                        className={`${styles.HeaderSection} ${classNames({
-                            [styles.Active]: this.state.showDetail,
-                        })}`}
-                        onClick={this.onHeaderSectionClick}
-                    >
-                        <div className={styles.Icon}>
-                            <MaterialIconUI>directions_run</MaterialIconUI>
+            <div className={styles.SprintHeaderSectionContainer}>
+                <TooltipUI message={'Move Unfinished Tasks To Next Sprint'} position={'Bottom'}>
+                    <div className={styles.MoveSection}>
+                        <div
+                            className={styles.Button}
+                            onClick={this.onMoveTasksToNextSprint}
+                        >
+                            <MaterialIconUI>outbound</MaterialIconUI>
                         </div>
-                        {
-                            <div className={styles.Name}>
-                                {this.renderSprintName()}
-                            </div>
-                        }
                     </div>
-                    {this.state.showDetail && (
-                        <div className={styles.Detail}>
-                            <div className={styles.AddSection}>
-                                <div
-                                    className={styles.Button}
-                                    onClick={this.props.onCreateSprintClick}
-                                >
-                                    <MaterialIconUI>add</MaterialIconUI>
-                                </div>
-                            </div>
-                            {this.state.sprints.length > 0 && (
-                                <div className={styles.Divider} />
-                            )}
-                            <div className={styles.Sprints}>
-                                {this.state.sprints.map(this.renderSprint)}
-                            </div>
-                        </div>
-                    )}
-                </div>
+                </TooltipUI>
 
                 <div
-                    className={styles.HeaderSection}
-                    onClick={this.onMoveTasksToNextSprint}
+                    className={styles.SprintHeaderSection}
+                    tabIndex={-1}
+                    onBlur={this.onBlur}
                 >
-                    move
+                    <div className={styles.SectionContainer}>
+                        <div
+                            className={`${styles.HeaderSection} ${classNames({
+                                [styles.Active]: this.state.showDetail,
+                            })}`}
+                            onClick={this.onHeaderSectionClick}
+                        >
+                            <div className={styles.Icon}>
+                                <MaterialIconUI>directions_run</MaterialIconUI>
+                            </div>
+                            {
+                                <div className={styles.Name}>
+                                    {this.renderSprintName()}
+                                </div>
+                            }
+                        </div>
+                        {this.state.showDetail && (
+                            <div className={styles.Detail}>
+                                <div className={styles.AddSection}>
+                                    <div
+                                        className={styles.Button}
+                                        onClick={this.props.onCreateSprintClick}
+                                    >
+                                        <MaterialIconUI>add</MaterialIconUI>
+                                    </div>
+                                </div>
+                                {this.state.sprints.length > 0 && (
+                                    <div className={styles.Divider} />
+                                )}
+                                <div className={styles.Sprints}>
+                                    {this.state.sprints.map(this.renderSprint)}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         );
@@ -176,7 +183,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         }
 
         const nonDelivereTasks = (currentSprint.tasks || []).filter(
-            nonDelivered,
+            unfinished,
         );
 
         if (!nonDelivereTasks.length) {
@@ -200,7 +207,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         const currentSprint = this.graphSource.currentSprint()!;
         const nextSprint = this.getNextSprint(currentSprint)!;
         const nonDelivereTasks = (currentSprint.tasks || []).filter(
-            nonDelivered,
+            unfinished,
         );
         const nonDelivereTaskIds = nonDelivereTasks.map((task) => task.id);
         this.stateSyncer.moveTasksToSprint(
@@ -211,7 +218,10 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     };
 
     private getNextSprint(currentSprint: Sprint) {
-        const currentIndex = this.state.sprints.findIndex(
+        let sprints = [...this.state.sprints]
+        sprints = orderByStartTimeDesc(sprints)
+
+        const currentIndex = sprints.findIndex(
             (sprint) => sprint.id === currentSprint.id,
         );
 
@@ -219,7 +229,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             return null;
         }
 
-        return this.state.sprints[currentIndex - 1];
+        return sprints[currentIndex - 1];
     }
 
     private onSprintClick = (sprintId: number) => {

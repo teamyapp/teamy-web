@@ -20,7 +20,7 @@ export const inProgress: Filter<Task> = (task: Task): boolean =>
     task.status === 'IN_PROGRESS';
 export const delivered: Filter<Task> = (task: Task): boolean =>
     task.status === 'DELIVERED';
-export const nonDelivered: Filter<Task> = (task: Task): boolean =>
+export const unfinished: Filter<Task> = (task: Task): boolean =>
     task.status !== 'DELIVERED';
 export const awaiting: Filter<Task> = (task: Task): boolean =>
     task.status === 'AWAITING';

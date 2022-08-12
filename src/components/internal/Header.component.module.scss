@@ -57,25 +57,7 @@
     .BacklogSection {
         margin-left: 20px;
 
-        .Button {
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.2);
-            border-radius: 4px;
-            --icon-color: white;
-            display: flex;
-            height: 30px;
-            justify-content: center;
-            --icon-size: 20px;
-            user-select: none;
-            width: 30px;
-
-            &.Active,
-            &:hover {
-                background-color: white;
-                --icon-color: #{$primaryColor};
-                cursor: pointer;
-            }
-        }
+        @include headerIconButton;
     }
 
     .SprintSection {

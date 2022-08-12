@@ -1,55 +1,57 @@
 @import '../../libs/ui/styleguide/color';
 @import '../../libs/ui/styleguide/easing';
+@import 'shared';
 
-.SprintHeaderSection {
-    height: 30px;
-
+.SprintHeaderSectionContainer {
     display: flex;
-    align-items: center;
 
-    .HeaderSection {
-        align-items: center;
-        background-color: rgba(0, 0, 0, 0.2);
-        border-radius: 4px;
-        color: white;
-        display: flex;
-        height: 30px;
-        padding: 0 14px;
-        margin-right: 8px;
+    .MoveSection {
+        margin-right: 6px;
 
-        .Icon {
-            --icon-color: white;
-            --icon-size: 20px;
-        }
-
-        .Name {
-            font-weight: 600;
-            margin: 0 4px 0 6px;
-            user-select: none;
-            white-space: pre;
-        }
-
-        &.Active,
-        &:hover {
-            background-color: white;
-            color: $primaryColor;
-            cursor: pointer;
-
-            .Icon {
-                --icon-color: $primaryColor;
-                --icon-size: 20px;
-            }
-        }
+        @include headerIconButton;
     }
 
-    .SectionContainer {
+    .SprintHeaderSection {
+        height: 30px;
         position: relative;
 
         &:focus {
             outline: none;
         }
 
+        .HeaderSection {
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 4px;
+            color: white;
+            display: flex;
+            height: 30px;
+            padding: 0 14px;
 
+            .Icon {
+                --icon-color: white;
+                --icon-size: 20px;
+            }
+
+            .Name {
+                font-weight: 600;
+                margin: 0 4px 0 6px;
+                user-select: none;
+                white-space: pre;
+            }
+
+            &.Active,
+            &:hover {
+                background-color: white;
+                color: $primaryColor;
+                cursor: pointer;
+
+                .Icon {
+                    --icon-color: $primaryColor;
+                    --icon-size: 20px;
+                }
+            }
+        }
 
         .Detail {
             border-radius: 4px;

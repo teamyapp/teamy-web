@@ -118,7 +118,6 @@ export class SprintClient {
                     mutation moveTasksToSprint($fromSprintId: ID!, $toSprintId: ID!, $taskIds: [ID!]!) {
                         moveTasksToSprint(fromSprintId: $fromSprintId, toSprintId: $toSprintId, taskIds: $taskIds) {
                             id
-                            isPlanned
                         }
                     }
                 `,

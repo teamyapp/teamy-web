@@ -6,6 +6,7 @@ import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
+import { RemoteTask } from '@core/client/entity/remoteTask';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
 import { SprintClient } from '@core/client/sprint.client';
@@ -655,12 +656,53 @@ export class StateSyncer {
         toSprintId: number,
         taskIds: number[],
     ) {
-        const appState = await this._moveTasksToSprint(
-            fromSprintId,
-            toSprintId,
-            taskIds,
+        const remoteTasks = await this.sprintClient.moveTasksToSprint(
+            `${fromSprintId}`,
+            `${toSprintId}`,
+            taskIds.map(String),
+        );
+
+        const appState = remoteTasks.reduce(
+            (appState, remoteTask) =>
+                this._updateTaskSprint(
+                    appState,
+                    remoteTask,
+                    fromSprintId,
+                    toSprintId,
+                ),
+            this.localStore.getState(),
         );
         this.localStore.updateState(appState);
+    }
+
+    private _updateTaskSprint(
+        appState: AppState,
+        remoteTask: RemoteTask,
+        fromSprintId: number,
+        toSprintId: number,
+    ): AppState {
+        const taskId = toInt(remoteTask.id);
+
+        if (taskId === undefined) {
+            return appState;
+        }
+        appState = mergeTask(appState, remoteTask);
+        appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
+            (relation) =>
+                !(
+                    relation.sprintId === fromSprintId &&
+                    relation.taskId === taskId
+                ),
+        );
+
+        const relation: SprintTaskRelationState = {
+            sprintId: toSprintId,
+            taskId,
+        };
+        appState.sprintTaskRelations =
+            appState.sprintTaskRelations.concat(relation);
+
+        return appState;
     }
 
     private async _removeTaskFromSprint(
@@ -678,44 +720,6 @@ export class StateSyncer {
                 !(relation.sprintId === sprintId && relation.taskId === taskId),
         );
         return appState;
-    }
-
-    private async _moveTasksToSprint(
-        fromSprintId: number,
-        toSprintId: number,
-        taskIds: number[],
-    ): Promise<AppState> {
-        const remoteTasks = await this.sprintClient.moveTasksToSprint(
-            `${fromSprintId}`,
-            `${toSprintId}`,
-            taskIds.map(String),
-        );
-
-        return remoteTasks.reduce((appState, remoteTask) => {
-            const taskId = toInt(remoteTask.id);
-
-            if (taskId === undefined) {
-                return appState;
-            }
-
-            appState = mergeTask(appState, remoteTask);
-            appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
-                (relation) =>
-                    !(
-                        relation.sprintId === fromSprintId &&
-                        relation.taskId === taskId
-                    ),
-            );
-
-            const relation: SprintTaskRelationState = {
-                sprintId: toSprintId,
-                taskId,
-            };
-            appState.sprintTaskRelations =
-                appState.sprintTaskRelations.concat(relation);
-
-            return appState;
-        }, this.localStore.getState());
     }
 
     private async _addTaskToSprint(
