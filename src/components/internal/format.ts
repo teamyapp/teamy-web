@@ -5,7 +5,7 @@ export enum DURATION {
     '2weeks' = '2weeks',
 }
 
-export const DURATION_TO_DESCRIPTION: Record<DURATION, string> = {
+export const DURATION_DESCRIPTIONS: Record<Duration, string> = {
     [DURATION['1weeks']]: '1 week',
     [DURATION['2weeks']]: '2 weeks',
 };
