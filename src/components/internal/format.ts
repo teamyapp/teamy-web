@@ -1,15 +1,30 @@
 import moment, { DurationInputArg2 } from 'moment';
 
-export type Duration = 
-| '1weeks'
+type DurationUnit = DurationInputArg2
+
+export type DurationKey = 
+| '1week'
 | '2weeks';
 
-export const DURATION_DESCRIPTIONS: Record<Duration, string> = {
-    '1weeks': '1 week',
-    '2weeks': '2 weeks',
-};
 
-export const DURATION_REGEX = /^(\d)+(weeks|days)$/;
+export type Duration = {
+    value: number,
+    unit: DurationUnit,
+    description: string
+}
+
+export const DURATION_KEY_OBJECT: Record<DurationKey, Duration> = {
+    '1week': {
+        value: 1,
+        unit: 'w',
+        description: '1 week'
+    },
+    '2weeks': {
+        value: 2,
+        unit: 'w',
+        description: '2 weeks'
+    }
+}
 
 export function getShortName(firstName?: string, lastName?: string): string {
     if (!firstName) {
@@ -49,16 +64,8 @@ export function getSprintName(startAt: Date): string {
     return moment(startAt).format('YYYY-MM-DD');
 }
 
-export function getEndAt(startAt: Date, duration: Duration): Date {
-    try {
-        const results = duration.match(DURATION_REGEX);
-        if (results?.length !== 3) {
-            throw Error(`invalid duration format: duration=${duration}`);
-        }
+export function getEndAt(startAt: Date, duration: DurationKey): Date {
+    const {value = 1, unit = "w"} = DURATION_KEY_OBJECT[duration] || {}
 
-        return moment(startAt).add(moment.duration(+results[1], results[2] as DurationInputArg2)).toDate();
-    } catch (e) {
-        console.error(e)
-        return moment(startAt).add(moment.duration(1, "weeks")).toDate();
-    }
+    return moment(startAt).add(moment.duration(value, unit)).toDate();
 }

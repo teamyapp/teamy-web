@@ -12,7 +12,7 @@ import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
 import styles from './FilterList.component.module.scss';
-import { getShortName } from './duration.format';
+import { getShortName } from './format';
 
 interface Props {
     deps: Deps;

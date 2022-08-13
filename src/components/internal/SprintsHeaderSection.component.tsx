@@ -16,7 +16,7 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './SprintsHeaderSection.component.module.scss';
-import { getSprintName } from './duration.format';
+import { getSprintName } from './format';
 
 interface Props {
     deps: Deps;

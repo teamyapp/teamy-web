@@ -6,7 +6,7 @@ import { User } from '@core/entity/user';
 
 import styles from './SelectUserList.module.scss';
 import { UserProfileUI } from './UserProfile';
-import { getShortName } from './duration.format';
+import { getShortName } from './format';
 
 interface Props {
     emptySelectionUserName: string;
