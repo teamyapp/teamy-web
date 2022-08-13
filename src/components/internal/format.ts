@@ -1,6 +1,6 @@
 import moment, { DurationInputArg2 } from 'moment';
 
-export enum DURATION {
+export enum Duration {
     '1weeks' = '1weeks',
     '2weeks' = '2weeks',
 }
