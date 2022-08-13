@@ -14,7 +14,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import styles from './CreateSprintModal.component.module.scss';
 import { DurationKey, DURATION_KEY_OBJECT, getEndAt } from '../format';
 
-const SPRINT_DURATIONS: DurationKey[] = [
+const SPRINT_LENGTHS: DurationKey[] = [
     '1week',
     '2weeks'
 ];
