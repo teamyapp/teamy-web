@@ -2795,20 +2795,10 @@
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
 
-"@teamyapp/libs@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@teamyapp/libs/-/libs-0.0.4.tgz#316dd830f777663814fbc77433f82ba419c268ad"
-  integrity sha512-mBXfq1jDVW1HL+AtS2GGd52aIR7iqTz949VbwOoNgD9val9FNqkyU4fK4pBO4LCAgK3X20IYAGy+5teiFsn9Mg==
-  dependencies:
-    "@apollo/client" "^3.5.6"
-    classnames "^2.3.1"
-    graphql "^16.5.0"
-    js-cookie "^3.0.1"
-    lodash "^4.17.21"
-    moment "^2.29.4"
-    prismjs "^1.28.0"
-    react "^18.2.0"
-    react-dom "^18.2.0"
+"@teamyapp/ext@0.0.2":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@teamyapp/ext/-/ext-0.0.2.tgz#798480df2f367d687aab8df6d43a4e8cbe3f5de6"
+  integrity sha512-N7cDt3u39yiF8nbb8OhUXKKGnCfeWbZ9vx+CYHlHFMzf4kvsrU1RfvV1mwbDiQ22YbF7t8BFQGUn3zY2We1VUA==
 
 "@testing-library/dom@^7.28.1":
   version "7.31.2"
@@ -7617,11 +7607,6 @@ graphql@^16.1.0:
   resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.2.0.tgz#de3150e80f1fc009590b92a9d16ab1b46e12b656"
   integrity sha512-MuQd7XXrdOcmfwuLwC2jNvx0n3rxIuNYOxUtiee5XOmfrWo613ar2U8pE7aHAKh8VwfpifubpD9IP+EdEAEOsA==
 
-graphql@^16.5.0:
-  version "16.5.0"
-  resolved "https://registry.yarnpkg.com/graphql/-/graphql-16.5.0.tgz#41b5c1182eaac7f3d47164fb247f61e4dfb69c85"
-  integrity sha512-qbHgh8Ix+j/qY+a/ZcJnFQ+j8ezakqPiHwPiZhV/3PgGlgf96QMBB5/f2rkiC9sgLoy/xvT6TSiaf2nTHJh5iA==
-
 growly@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/growly/-/growly-1.3.0.tgz#f10748cbe76af964b7c96c93c6bcc28af120c081"
@@ -10047,11 +10032,6 @@ moment@^2.29.1:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"
   integrity sha512-kHmoybcPV8Sqy59DwNDY3Jefr64lK/by/da0ViFcuA4DH0vQg5Q6Ze5VimxkfQNSC+Mls/Kx53s7TjP1RhFEDQ==
 
-moment@^2.29.4:
-  version "2.29.4"
-  resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
-  integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
-
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -11694,11 +11674,6 @@ prismjs@^1.21.0, prismjs@^1.25.0:
   version "1.26.0"
   resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.26.0.tgz#16881b594828bb6b45296083a8cbab46b0accd47"
   integrity sha512-HUoH9C5Z3jKkl3UunCyiD5jwk0+Hz0fIgQ2nbwU2Oo/ceuTAQAg+pPVnfdt2TJWRVLcxKh9iuoYDUSc8clb5UQ==
-
-prismjs@^1.28.0:
-  version "1.28.0"
-  resolved "https://registry.yarnpkg.com/prismjs/-/prismjs-1.28.0.tgz#0d8f561fa0f7cf6ebca901747828b149147044b6"
-  integrity sha512-8aaXdYvl1F7iC7Xm1spqSaY/OJBpYW3v+KJ+F17iYxvdc8sfjW194COK5wVhMZX45tGteiBQgdvD/nhxcRwylw==
 
 prismjs@~1.25.0:
   version "1.25.0"

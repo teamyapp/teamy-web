@@ -1,15 +1,17 @@
 @import 'Modal.shared.module';
+@import '../../../libs/ui/styleguide/elevation';
 
 .Content {
-    width: 900px;
-    height: 500px;
+    width: 800px;
+    height: 450px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
 
     .Stepper {
-        margin: 30px 0;
+        padding: 24px;
         display: flex;
+        background-color: #f1f1f1;
 
         .Step {
             flex: 1;
@@ -58,7 +60,8 @@
 
             .ActionName {
                 width: 200px;
-                margin-top: 14px;
+                margin-top: 10px;
+                font-size: 16px;
                 font-weight: bold;
                 word-break: break-word;
             }
