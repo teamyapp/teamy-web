@@ -100,7 +100,6 @@ export class CreateSprintModalComponent extends Component<Props> {
         }
 
         const duration = this.sprintLengthInputRef.current?.value;
-
         if (!duration) {
             return;
         }
