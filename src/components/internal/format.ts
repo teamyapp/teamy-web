@@ -50,7 +50,7 @@ export function getSprintName(startAt: Date): string {
     return moment(startAt).format('YYYY-MM-DD');
 }
 
-export function getEndAt(startAt: Date, duration: string): Date {
+export function getEndAt(startAt: Date, duration: Duration): Date {
     try {
         const results = duration.match(DURATION_REGEX);
         if (results?.length !== 3) {
