@@ -17,7 +17,7 @@ import { DurationKey, DURATION_KEY_OBJECT, getEndAt } from '../format';
 const SPRINT_DURATIONS: DurationKey[] = [
     '1week',
     '2weeks'
-]
+];
 
 interface Props {
     deps: Deps;
