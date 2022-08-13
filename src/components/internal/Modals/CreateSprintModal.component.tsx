@@ -61,7 +61,7 @@ export class CreateSprintModalComponent extends Component<Props> {
                         <DropDownList
                             selectOptionKey={'1week'}
                             ref={this.sprintLengthInputRef}
-                            options={SPRINT_DURATIONS.map(
+                            options={SPRINT_LENGTHS.map(
                                 (duration) => ({
                                     key: duration,
                                     description:
