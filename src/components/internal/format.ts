@@ -13,7 +13,7 @@ export type Duration = {
     description: string
 }
 
-export const DURATION_KEY_OBJECT: Record<DurationKey, Duration> = {
+export const DURATIONS: Record<DurationKey, Duration> = {
     '1week': {
         value: 1,
         unit: 'w',
@@ -65,7 +65,7 @@ export function getSprintName(startAt: Date): string {
 }
 
 export function getEndAt(startAt: Date, duration: DurationKey): Date {
-    const {value = 1, unit = "w"} = DURATION_KEY_OBJECT[duration] || {}
+    const {value = 1, unit = "w"} = DURATIONS[duration] || {}
 
     return moment(startAt).add(moment.duration(value, unit)).toDate();
 }
