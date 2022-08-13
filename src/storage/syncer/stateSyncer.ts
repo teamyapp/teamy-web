@@ -607,8 +607,12 @@ export class StateSyncer {
         teamId: number,
         sprint: CreateSprintInput,
     ): Promise<number> {
+        // TODO(duanxianbo): remove hard coded sprint length when merging PR(#322)
+        const oneWeek = moment.duration(1, 'weeks');
+        const endDate = moment(sprint.startAt).add(oneWeek).toDate();
         const remoteSprint = await this.sprintClient.createSprint(`${teamId}`, {
             startAt: sprint.startAt,
+            endAt: endDate
         });
         let appState = this.localStore.getState();
         appState = mergeSprint(appState, remoteSprint);
