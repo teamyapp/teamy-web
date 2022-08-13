@@ -23,7 +23,7 @@
     },
     "dependencies": {
         "@apollo/client": "^3.5.6",
-        "@teamyapp/libs": "^0.0.4",
+        "@teamyapp/ext": "0.0.2",
         "classnames": "^2.3.1",
         "graphql": "^16.1.0",
         "js-cookie": "^3.0.1",

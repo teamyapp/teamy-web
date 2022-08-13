@@ -13,6 +13,15 @@
         background-image: url('../assets/backgrounds/sun-pattern.png');
     }
 
+    .Tools {
+        background-color: #eeeeee;
+        width: 40px;
+    }
+
+    .Drawer {
+        box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+    }
+
     > .Content {
         --tabs-background-color: white;
         box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);

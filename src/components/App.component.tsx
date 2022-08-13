@@ -1,14 +1,14 @@
 import { CloudComponent } from '@cloud/Cloud.component';
-import { UiExtension } from '@teamyapp/libs';
+import { UiExtension } from '@teamyapp/ext';
 import classNames from 'classnames';
-import React, { Component, Fragment, createRef } from 'react';
+import React, { Component, createRef, Fragment } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
-import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
+import { getAccessToken, IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
-import { RouteUpdate, Router } from '@lib/router/router';
+import { Router, RouteUpdate } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
@@ -22,9 +22,9 @@ import {
     signInFinishRoutePattern,
     signInRoutePattern,
     signUpRoutePattern,
-    sprintTabRoutePattern,
     sprintsPath,
     sprintsRoutePattern,
+    sprintTabRoutePattern,
     taskPath,
     taskRoutePattern,
 } from '@core/config/routing';
@@ -50,25 +50,48 @@ import styles from './App.component.module.scss';
 import { BacklogComponent } from './internal/Backlog.component';
 import { DrawerUI } from './internal/Drawer';
 import { HeaderComponent } from './internal/Header.component';
-import { AddTeamMembersModalComponent } from './internal/Modals/AddTeamMembersModal.component';
-import { CreateSprintModalComponent } from './internal/Modals/CreateSprintModal.component';
-import { CreateTeamModalComponent } from './internal/Modals/CreateTeamModal.component';
+import {
+    AddTeamMembersModalComponent
+} from './internal/Modals/AddTeamMembersModal.component';
+import {
+    CreateSprintModalComponent
+} from './internal/Modals/CreateSprintModal.component';
+import {
+    CreateTeamModalComponent
+} from './internal/Modals/CreateTeamModal.component';
 import {
     RequiredAction,
     RequiredActionsModalComponent,
 } from './internal/Modals/RequiredActionsModal.component';
-import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
-import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
-import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
-import { SelectTaskOwnersPopupComponent } from './internal/SelectTaskOwnersPopupComponent';
-import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/InviationLinkCopiedFeedback.component';
-import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
-import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
-import { UserProfileUpdatedFeedbackComponent } from './internal/feedbacks/UserProfileUpdatedFeedback.component';
+import {
+    TaskDetailModalComponent
+} from './internal/Modals/TaskDetailModal.component';
+import {
+    TeamSettingsModalComponent
+} from './internal/Modals/TeamSettingsModal.component';
+import {
+    UserSettingsModalComponent
+} from './internal/Modals/UserSettingsModal.component';
+import {
+    SelectTaskOwnersPopupComponent
+} from './internal/SelectTaskOwnersPopupComponent';
+import {
+    InvitationLinkCopiedFeedbackComponent
+} from './internal/feedbacks/InviationLinkCopiedFeedback.component';
+import {
+    TaskUpdatedFeedbackComponent
+} from './internal/feedbacks/TaskUpdatedFeedback.component';
+import {
+    TeamProfileUpdatedFeedbackComponent
+} from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
+import {
+    UserProfileUpdatedFeedbackComponent
+} from './internal/feedbacks/UserProfileUpdatedFeedback.component';
 import { DebugComponent } from './pages/Debug.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
+import { filter } from 'lodash-es';
 
 const sectionIds = [
     backlogSectionId,
@@ -142,6 +165,8 @@ export class AppComponent extends Component<Props, State> {
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent | undefined>;
 
+    private extensions: UiExtension[] = [];
+
     constructor(props: Props) {
         super(props);
         this.router = props.deps.router;
@@ -174,26 +199,28 @@ export class AppComponent extends Component<Props, State> {
                         repoName={'teamy-web'}
                     />
                 </Route>
-                <CloudComponent deps={this.props.deps} />
+                <CloudComponent deps={this.props.deps}/>
                 <Route router={this.router} pattern={signUpRoutePattern}>
-                    <SignUpComponent deps={this.props.deps} />
+                    <SignUpComponent deps={this.props.deps}/>
                 </Route>
                 {this.state.showPrivatePage && this.state.me && (
                     <Fragment>
-                        <DrawerUI
-                            activeTeamId={this.state.activeTeamId}
-                            teams={this.state.teams}
-                            isDrawerOpen={this.state.isDrawerOpen}
-                            onMenuClose={this.onMenuToggle}
-                            onActiveTeamSelect={this.onActiveTeamSelect}
-                            onAddTeamMembersClick={this.onAddTeamMembersClick}
-                            onShowTeamMembersClick={this.onShowTeamMembersClick}
-                            onShowInvitationsClick={this.onShowInvitationsClick}
-                            onViewTeamSettingsClick={
-                                this.onViewTeamSettingsClick
-                            }
-                            onCreateTeamClick={this.onCreateTeamClick}
-                        />
+                        <div className={styles.Drawer}>
+                            <DrawerUI
+                                activeTeamId={this.state.activeTeamId}
+                                teams={this.state.teams}
+                                isDrawerOpen={this.state.isDrawerOpen}
+                                onMenuClose={this.onMenuToggle}
+                                onActiveTeamSelect={this.onActiveTeamSelect}
+                                onAddTeamMembersClick={this.onAddTeamMembersClick}
+                                onShowTeamMembersClick={this.onShowTeamMembersClick}
+                                onShowInvitationsClick={this.onShowInvitationsClick}
+                                onViewTeamSettingsClick={
+                                    this.onViewTeamSettingsClick
+                                }
+                                onCreateTeamClick={this.onCreateTeamClick}
+                            />
+                        </div>
                         <div className={styles.Content}>
                             <HeaderComponent
                                 deps={this.props.deps}
@@ -216,7 +243,7 @@ export class AppComponent extends Component<Props, State> {
                                                 styles.Sidebar
                                             } ${classNames({
                                                 [styles.Shown]:
-                                                    this.state.showBacklog,
+                                                this.state.showBacklog,
                                             })}`}
                                         >
                                             <div className={styles.Backlog}>
@@ -276,7 +303,7 @@ export class AppComponent extends Component<Props, State> {
                     </Fragment>
                 )}
                 <Route router={this.router} pattern={invitationRoutePattern}>
-                    <InvitationComponent deps={this.props.deps} />
+                    <InvitationComponent deps={this.props.deps}/>
                 </Route>
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
@@ -299,7 +326,7 @@ export class AppComponent extends Component<Props, State> {
                     ref={this.teamSettingsModalRef}
                     onAddTeamMemberClick={this.onAddTeamMembersClick}
                 />
-                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps} />
+                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps}/>
                 <AddTeamMembersModalComponent
                     deps={this.props.deps}
                     ref={this.addTeamMembersModalRef}
@@ -313,9 +340,9 @@ export class AppComponent extends Component<Props, State> {
                     ref={this.createSprintModalRef}
                     deps={this.props.deps}
                 />
-                <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
-                <TaskUpdatedFeedbackComponent deps={this.props.deps} />
-                <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
+                <UserProfileUpdatedFeedbackComponent deps={this.props.deps}/>
+                <TaskUpdatedFeedbackComponent deps={this.props.deps}/>
+                <InvitationLinkCopiedFeedbackComponent deps={this.props.deps}/>
                 <RequiredActionsModalComponent
                     ref={this.requiredActionsModalRef}
                 />
@@ -350,9 +377,6 @@ export class AppComponent extends Component<Props, State> {
                 }
             }
         })().then();
-
-        // TODO: uncomment when Github extension is completed
-        // this.showRequiredActionsIfAny();
     }
 
     public componentWillUnmount() {
@@ -440,6 +464,8 @@ export class AppComponent extends Component<Props, State> {
                 const teamId = parseInt(teamIdParam);
                 if (teamId !== currTeamId) {
                     await this.onActiveTeamSelect(teamId);
+                } else {
+                    this.onTeamInit();
                 }
 
                 appState = this.localStore.getState();
@@ -582,6 +608,7 @@ export class AppComponent extends Component<Props, State> {
                 });
             }
 
+            this.onTeamInit();
             return;
         }
 
@@ -590,6 +617,7 @@ export class AppComponent extends Component<Props, State> {
             this.router.navigateTo(sprintsPath(prevActiveTeamId), {
                 notifyRouteChange: false,
             });
+            this.onTeamInit();
         }
     };
 
@@ -777,13 +805,16 @@ export class AppComponent extends Component<Props, State> {
     }
 
     private async showRequiredActionsIfAny() {
-        const extensions = await this.loadExtensions();
         const requiredActions: RequiredAction[] = [];
-        extensions
-            .filter((extension) => extension.requireUserAction())
-            .forEach((extension, index: number) => {
-                const requiredAction = extension.requiredAction!();
-                const viewRef = createRef<HTMLDivElement>();
+        for (let index = 0; index < this.extensions.length; index++) {
+            const extension = this.extensions[index];
+            const extRequiredActions = await extension.requiredActions(this.state.activeTeamId!);
+            if (extRequiredActions.length < 1) {
+                continue;
+            }
+
+            const viewRef = createRef<HTMLDivElement>();
+            extRequiredActions.forEach((requiredAction) => {
                 const view = (
                     <div
                         key={index}
@@ -804,28 +835,38 @@ export class AppComponent extends Component<Props, State> {
                     },
                 });
             });
-        this.requiredActionsModalRef.current?.open(requiredActions);
+        }
+
+        if (requiredActions.length > 0) {
+            this.requiredActionsModalRef.current?.open(requiredActions);
+        }
     }
 
     private onRequireActionComplete = () => {
         this.requiredActionsModalRef.current?.completeCurrentStep();
     };
 
+    private async onTeamInit() {
+        // TODO: uncomment when extension backend is ready
+        this.extensions = await this.loadExtensions();
+        await this.showRequiredActionsIfAny();
+    }
+
     private loadExtensions(): Promise<UiExtension[]> {
         // TODO: load extension from backend
         // TODO: error handling when failed to load script
         return Promise.all(
-            [
-                'http://localhost:8082/index.js',
-                'http://localhost:8082/index.js',
-            ].map(async (extensionEntryPoint, index) => {
-                let { App } = await importModule(extensionEntryPoint);
-                const app: UiExtension = new App(index);
-                app.init({
-                    getAccessToken,
-                });
-                return app;
-            }),
+            ['http://localhost:8082/assets/app.js'].map(
+                async (extensionEntryPoint) => {
+                    let {App} = await importModule(extensionEntryPoint);
+                    const app: UiExtension = new App();
+                    app.init({
+                        getAccessToken,
+                    });
+                    console.log(`[Extension][${app.name()}] Loaded`);
+                    return app;
+                },
+            ),
         );
     }
 }

@@ -39,7 +39,6 @@ export class RequiredActionsModalComponent extends Component<any, State> {
                     {this.state.requiredActions.length >
                         this.state.currentStepIndex && (
                         <div className={styles.View}>
-                            {this.state.currentStepIndex}
                             {
                                 this.state.requiredActions[
                                     this.state.currentStepIndex
