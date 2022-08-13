@@ -12,6 +12,12 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './CreateSprintModal.component.module.scss';
+import { DURATION, DURATION_TO_DESCRIPTION, getEndAt } from '../format';
+
+const SPRINT_DURATIONS = [
+    DURATION['1weeks'],
+    DURATION['2weeks']
+]
 
 interface Props {
     deps: Deps;
@@ -22,6 +28,7 @@ export class CreateSprintModalComponent extends Component<Props> {
     private readonly stateSyncer: StateSyncer;
     private readonly modalRef = createRef<ModalUI>();
     private readonly startDateInputRef = createRef<DatePickerUI>();
+    private readonly sprintLengthInputRef = createRef<DropDownList>();
 
     constructor(props: Props) {
         super(props);
@@ -52,13 +59,15 @@ export class CreateSprintModalComponent extends Component<Props> {
                     <div className={styles.SprintLength}>
                         <div className={styles.Label}>Sprint length: </div>
                         <DropDownList
-                            selectOptionKey={'1w'}
-                            options={[
-                                {
-                                    key: '1w',
-                                    description: '1 week',
-                                },
-                            ]}
+                            selectOptionKey={DURATION['1weeks']}
+                            ref={this.sprintLengthInputRef}
+                            options={SPRINT_DURATIONS.map(
+                                (duration) => ({
+                                    key: duration,
+                                    description:
+                                        DURATION_TO_DESCRIPTION[duration],
+                                }),
+                            )}
                         />
                     </div>
                     <div className={styles.AddAction}>
@@ -90,9 +99,16 @@ export class CreateSprintModalComponent extends Component<Props> {
             return;
         }
 
+        const duration = this.sprintLengthInputRef.current?.value;
+
+        if (!duration) {
+            return;
+        }
+
         const teamId = this.localStore.getState().currTeamId;
         const sprintInput: CreateSprintInput = {
             startAt: startAt,
+            endAt: getEndAt(startAt, duration),
         };
 
         const sprintId = await this.stateSyncer.createSprint(
