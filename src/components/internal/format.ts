@@ -54,7 +54,7 @@ export function getEndAt(startAt: Date, duration: string): Date {
     try {
         const results = duration.match(DURATION_REGEX);
         if (results?.length !== 3) {
-            throw Error(`duration not correct, ${duration}`);
+            throw Error(`invalid duration format: duration=${duration}`);
         }
 
         return new Date(startAt.getTime() + moment.duration(+results[1], results[2] as DurationInputArg2).asMilliseconds());
