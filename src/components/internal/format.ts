@@ -53,7 +53,6 @@ export function getSprintName(startAt: Date): string {
 export function getEndAt(startAt: Date, duration: string): Date {
     try {
         const results = duration.match(DURATION_REGEX);
-
         if (results?.length !== 3) {
             throw Error(`duration not correct, ${duration}`);
         }
