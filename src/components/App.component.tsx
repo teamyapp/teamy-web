@@ -91,7 +91,6 @@ import { DebugComponent } from './pages/Debug.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
-import { filter } from 'lodash-es';
 
 const sectionIds = [
     backlogSectionId,
