@@ -847,7 +847,6 @@ export class AppComponent extends Component<Props, State> {
     };
 
     private async onTeamInit() {
-        // TODO: uncomment when extension backend is ready
         this.extensions = await this.loadExtensions();
         await this.showRequiredActionsIfAny();
     }
