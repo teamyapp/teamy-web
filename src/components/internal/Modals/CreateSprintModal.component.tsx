@@ -12,11 +12,11 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './CreateSprintModal.component.module.scss';
-import { DURATION, DURATION_TO_DESCRIPTION, getEndAt } from '../format';
+import { Duration, DURATION_DESCRIPTIONS, getEndAt } from '../duration.format';
 
-const SPRINT_DURATIONS = [
-    DURATION['1weeks'],
-    DURATION['2weeks']
+const SPRINT_DURATIONS: Duration[] = [
+    '1weeks',
+    '2weeks'
 ]
 
 interface Props {
@@ -59,13 +59,13 @@ export class CreateSprintModalComponent extends Component<Props> {
                     <div className={styles.SprintLength}>
                         <div className={styles.Label}>Sprint length: </div>
                         <DropDownList
-                            selectOptionKey={DURATION['1weeks']}
+                            selectOptionKey={'1weeks'}
                             ref={this.sprintLengthInputRef}
                             options={SPRINT_DURATIONS.map(
                                 (duration) => ({
                                     key: duration,
                                     description:
-                                        DURATION_TO_DESCRIPTION[duration],
+                                    DURATION_DESCRIPTIONS[duration],
                                 }),
                             )}
                         />
@@ -107,7 +107,7 @@ export class CreateSprintModalComponent extends Component<Props> {
         const teamId = this.localStore.getState().currTeamId;
         const sprintInput: CreateSprintInput = {
             startAt: startAt,
-            endAt: getEndAt(startAt, duration),
+            endAt: getEndAt(startAt, duration as Duration),
         };
 
         const sprintId = await this.stateSyncer.createSprint(

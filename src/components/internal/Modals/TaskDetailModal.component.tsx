@@ -26,7 +26,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
-import { getShortName } from '../format';
+import { getShortName } from '../duration.format';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 40;

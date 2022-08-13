@@ -9,7 +9,7 @@ import { Message } from '@core/entity/message';
 
 import styles from './Thread.module.scss';
 import { UserProfileUI } from './UserProfile';
-import { getShortName, timeFromNow } from './format';
+import { getShortName, timeFromNow } from './duration.format';
 
 interface Props {
     messages: Message[];

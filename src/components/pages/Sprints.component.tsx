@@ -39,7 +39,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { KanbanUI } from '../internal/Kanban';
 import { PersonalStatusUI } from '../internal/PersonalStatus';
-import { getSprintName } from '../internal/format';
+import { getSprintName } from '../internal/duration.format';
 import styles from './Sprints.component.module.scss';
 
 const tabIds = ['me', 'team'];

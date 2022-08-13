@@ -1,13 +1,12 @@
 import moment, { DurationInputArg2 } from 'moment';
 
-export enum Duration {
-    '1weeks' = '1weeks',
-    '2weeks' = '2weeks',
-}
+export type Duration = 
+| '1weeks'
+| '2weeks';
 
 export const DURATION_DESCRIPTIONS: Record<Duration, string> = {
-    [DURATION['1weeks']]: '1 week',
-    [DURATION['2weeks']]: '2 weeks',
+    '1weeks': '1 week',
+    '2weeks': '2 weeks',
 };
 
 export const DURATION_REGEX = /^(\d)+(weeks|days)$/;
@@ -57,9 +56,9 @@ export function getEndAt(startAt: Date, duration: Duration): Date {
             throw Error(`invalid duration format: duration=${duration}`);
         }
 
-        return new Date(startAt.getTime() + moment.duration(+results[1], results[2] as DurationInputArg2).asMilliseconds());
+        return moment(startAt).add(moment.duration(+results[1], results[2] as DurationInputArg2)).toDate();
     } catch (e) {
         console.error(e)
-        return new Date(startAt.getTime() + moment.duration(1, "weeks").asMilliseconds());
+        return moment(startAt).add(moment.duration(1, "weeks")).toDate();
     }
 }

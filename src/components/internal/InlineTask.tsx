@@ -20,7 +20,7 @@ import { TaskStatus } from '@core/entity/taskStatus';
 
 import styles from './InlineTask.module.scss';
 import { UserProfileUI } from './UserProfile';
-import { dueDate, getShortName } from './format';
+import { dueDate, getShortName } from './duration.format';
 
 const statusNames: Record<TaskStatus, string> = {
     UPCOMING: 'Upcoming',
