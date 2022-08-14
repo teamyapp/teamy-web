@@ -852,8 +852,8 @@ export class AppComponent extends Component<Props, State> {
     }
 
     private loadExtensions(): Promise<Extension[]> {
-        // TODO: load extension from backend
-        // TODO: error handling when failed to load script
+        // TODO(magicoder10): load extension from backend
+        // TODO(magicoder10): error handling when failed to load script
         return Promise.all(
             ['http://localhost:8082/app/app.js'].map(
                 async (extensionEntryPoint) => {

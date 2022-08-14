@@ -11,7 +11,7 @@ export class TeamyExtensionRuntime implements ExtensionRuntime {
     }
 
     public getAssetUrl(relativePath: string): string {
-        // TODO: use production url based on env
+        // TODO(magicoder10): use production url based on env
         return `http://localhost:8082/app/${relativePath}`;
     }
 
