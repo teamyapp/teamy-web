@@ -1,12 +1,12 @@
 import { CloudComponent } from '@cloud/Cloud.component';
-import { UiExtension } from '@teamyapp/ext';
+import { Extension, ExtensionRuntime } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, { Component, createRef, Fragment } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
-import { getAccessToken, IdentityClient } from '@lib/identity/Identity.client';
+import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { Router, RouteUpdate } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -91,6 +91,7 @@ import { DebugComponent } from './pages/Debug.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
+import { TeamyExtensionRuntime } from '@lib/ext/runtime';
 
 const sectionIds = [
     backlogSectionId,
@@ -164,7 +165,7 @@ export class AppComponent extends Component<Props, State> {
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent | undefined>;
 
-    private extensions: UiExtension[] = [];
+    private extensions: Extension[] = [];
 
     constructor(props: Props) {
         super(props);
@@ -850,21 +851,24 @@ export class AppComponent extends Component<Props, State> {
         await this.showRequiredActionsIfAny();
     }
 
-    private loadExtensions(): Promise<UiExtension[]> {
+    private loadExtensions(): Promise<Extension[]> {
         // TODO: load extension from backend
         // TODO: error handling when failed to load script
         return Promise.all(
-            ['http://localhost:8082/assets/app.js'].map(
+            ['http://localhost:8082/app/app.js'].map(
                 async (extensionEntryPoint) => {
                     let {App} = await importModule(extensionEntryPoint);
-                    const app: UiExtension = new App();
-                    app.init({
-                        getAccessToken,
-                    });
+                    const app: Extension = new App();
+                    const runtime = this.getExtensionRuntime(0);
+                    app.init(runtime);
                     console.log(`[Extension][${app.name()}] Loaded`);
                     return app;
                 },
             ),
         );
+    }
+
+    private getExtensionRuntime(extensionVersion: number): ExtensionRuntime {
+        return new TeamyExtensionRuntime(extensionVersion, this.router, this.identityClient);
     }
 }
