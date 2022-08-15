@@ -1,4 +1,4 @@
-import { today } from 'components/internal/format';
+import { today } from '../../components/internal/format';
 import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 

@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React, { Component, ReactNode, createRef } from 'react';
 import { MaterialIconUI } from './MaterialIcon';
 import styles from './Calendar.module.scss';
-import { today } from 'components/internal/format';
+import { today } from '../../components/internal/format';
 
 const weekDayTitles = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const monthNames = [
