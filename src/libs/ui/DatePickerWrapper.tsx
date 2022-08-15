@@ -3,7 +3,6 @@ import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 
 import { CalendarUI } from './Calendar';
-import styles from './DatePickerWrapper.module.scss';
 
 const dateFormat = 'MM/DD/YYYY';
 
@@ -40,7 +39,7 @@ export class DatePickerWrapperUI extends Component<Props, State> {
 
     render(): ReactNode {
         return (
-            <div className={styles.DatePicker}>
+            <div>
                 {this.props.target({onChange: this.handleCalendarChanged, onToggle: this.onToggle})}
                 {this.state.showCalendar && (
                     <CalendarUI
