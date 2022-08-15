@@ -1,4 +1,4 @@
-.DueAt {
+.DateLabelPicker {
     align-items: center;
     background-color: #546e7a;
     border-radius: 4px;
@@ -14,7 +14,7 @@
         margin-left: 4px;
     }
 
-    &.PastDue {
+    &.Warn {
         background-color: #c62828;
     }
 }

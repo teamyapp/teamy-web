@@ -3,6 +3,7 @@ import classNames from 'classnames';
 import React, { Component, ReactNode, createRef } from 'react';
 import { MaterialIconUI } from './MaterialIcon';
 import styles from './Calendar.module.scss';
+import { today } from 'components/internal/format';
 
 const weekDayTitles = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const monthNames = [
@@ -261,14 +262,4 @@ function getMonthDays(date: Date): (null | number)[] {
     const startDay = monthStart.getDate();
     const endDay = monthEnd.getDate();
     return days.concat(_.range(startDay, endDay + 1));
-}
-
-
-function today(): Date {
-    const date = new Date();
-    date.setHours(0);
-    date.setUTCMinutes(0);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
-    return date;
 }

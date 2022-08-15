@@ -1,3 +1,4 @@
+import { today } from 'components/internal/format';
 import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 
@@ -82,13 +83,4 @@ export class DatePickerWrapperUI extends Component<Props, State> {
             showCalendar: showCalendar,
         });
     };
-}
-
-function today(): Date {
-    const date = new Date();
-    date.setHours(0);
-    date.setUTCMinutes(0);
-    date.setSeconds(0);
-    date.setMilliseconds(0);
-    return date;
 }

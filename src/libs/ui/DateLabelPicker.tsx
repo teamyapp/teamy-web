@@ -54,8 +54,8 @@ export class DateLabelPickerUI extends Component<Props, State> {
                 target={({ onToggle }) => (
                     <div
                         onClick={onToggle}
-                        className={`${styles.DueAt} ${classNames({
-                            [styles.PastDue]: this.props.isWarn,
+                        className={`${styles.DateLabelPicker} ${classNames({
+                            [styles.Warn]: this.props.isWarn,
                         })}`}
                     >
                         <MaterialIconUI>alarm</MaterialIconUI>
