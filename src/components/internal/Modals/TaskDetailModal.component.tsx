@@ -9,7 +9,7 @@ import React, {
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { DatePickerUI } from '@lib/ui/DatePicker';
+import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
@@ -57,7 +57,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly modalRef = createRef<ModalUI>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
-    private readonly dueAtDatePicker = createRef<DatePickerUI>();
+    private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
     constructor(props: Props) {
@@ -151,7 +151,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                 <div className={styles.RightSection}>
                                     <div className={styles.Attributes}>
                                         <div className={styles.Row}>
-                                            <DatePickerUI
+                                            <DateTextPickerUI
                                                 ref={this.dueAtDatePicker}
                                                 label={'Due at'}
                                                 value={dueAt}

@@ -7,6 +7,7 @@ import React, {
     ReactNode,
 } from 'react';
 
+import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { NamedValueUI } from '@lib/ui/NamedValue';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -133,21 +134,29 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderDueAt = () => {
         const { dueAt } = this.props.task;
         const endOfDueAt = byTheEndOf(dueAt);
+
+        if (!dueAt || !endOfDueAt) {
+            return null;
+        }
+
         const now = new Date();
+
         return (
-            dueAt &&
-            endOfDueAt && (
-                <div
-                    className={`${styles.DueAt} ${classNames({
-                        [styles.PastDue]: endOfDueAt.getTime() < now.getTime(),
-                    })}`}
-                >
-                    <MaterialIconUI>alarm</MaterialIconUI>
-                    <div className={styles.Time}>{dueDate(dueAt)}</div>
-                </div>
-            )
+            <DateLabelPickerUI
+                value={dueAt}
+                isWarn={endOfDueAt.getTime() < now.getTime()}
+                shownValue={dueDate(dueAt)}
+                onChange={this.handleEndDateChanged}
+            />
         );
     };
+
+    private handleEndDateChanged = (date?: Date) => {
+        if (!date) {
+            return
+        }
+        this.props.onUpdateTask?.call(this, this.props.task.id, {...this.getUpdatedTask(), dueAt: date})
+    }
 
     private renderEffort = () => {
         const { effort } = this.props.task;
@@ -448,4 +457,13 @@ function byTheEndOf(date?: Date): Date | undefined {
     newDate.setMinutes(59);
     newDate.setSeconds(59);
     return newDate;
+}
+
+function today(): Date {
+    const date = new Date();
+    date.setHours(0);
+    date.setUTCMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
 }

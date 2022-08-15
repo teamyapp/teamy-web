@@ -1,0 +1,123 @@
+@import 'styleguide/elevation';
+@import 'styleguide/color';
+@import 'styleguide/easing';
+.Calendar {
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    color: #424242;
+    left: 50%;
+    margin-top: 4px;
+    outline: none;
+    padding: 0 0 20px 0;
+    position: absolute;
+    transform: translateX(-50%);
+    width: 320px;
+    z-index: 10;
+
+    .Controls {
+        align-items: center;
+        display: flex;
+        font-weight: bold;
+        padding: 20px;
+
+        .Button {
+            align-items: center;
+
+            border-radius: 2px;
+            --icon-color: #757575;
+            display: flex;
+            font-weight: normal;
+            height: 24px;
+
+            --icon-size: 24px;
+
+            width: 24px;
+
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+                cursor: pointer;
+            }
+        }
+
+        .ShowYears {
+            margin-left: 4px;
+        }
+    }
+
+    .Spacer {
+        flex: 1;
+    }
+
+    .SelectYear {
+        align-items: center;
+        display: grid;
+        grid-auto-rows: 30px;
+        grid-template-columns: repeat(4, 1fr);
+        height: 400px;
+        justify-items: center;
+        overflow-y: auto;
+        padding: 0 20px;
+
+        .Year {
+            padding: 4px 8px;
+
+            &:hover {
+                cursor: pointer;
+
+                &:not(.Selected) {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+            }
+
+            &.Selected {
+                background-color: $primaryColor;
+                color: $onPrimaryColor;
+            }
+        }
+    }
+
+    .Month {
+        align-items: center;
+        display: grid;
+        grid-auto-rows: 40px;
+        grid-template-columns: repeat(7, 40px);
+        justify-items: center;
+        padding: 0 20px;
+
+        .Cell {
+            align-items: center;
+            display: flex;
+            height: 30px;
+            justify-content: center;
+            width: 30px;
+        }
+
+        .WeekDayTitle {
+            color: #757575;
+            font-weight: bold;
+        }
+
+        .Day {
+            border-radius: 50%;
+
+            &:hover {
+                cursor: pointer;
+
+                &:not(.Selected) {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
+            }
+
+            &.Selected {
+                background-color: $primaryColor;
+                color: $onPrimaryColor;
+            }
+        }
+
+        .Today:not(.SelectedDate) {
+            background-color: #1976d2;
+            color: white;
+        }
+    }
+}
