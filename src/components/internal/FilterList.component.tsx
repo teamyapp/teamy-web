@@ -1,7 +1,7 @@
 import React, { ChangeEvent, Component, createRef } from 'react';
 
 import { Filter, or } from '@lib/data/filter';
-import { DatePickerUI } from '@lib/ui/DatePicker';
+import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { SpacerUI } from '@lib/ui/Spacer';
 
 import { userAll, userPrefix, userUnassigned } from '@core/config/filter';
@@ -28,8 +28,8 @@ interface State {
 }
 
 export class FilterListComponent extends Component<Props, State> {
-    private startDataPickerRef = createRef<DatePickerUI>();
-    private endDataPickerRef = createRef<DatePickerUI>();
+    private startDataPickerRef = createRef<DateTextPickerUI>();
+    private endDataPickerRef = createRef<DateTextPickerUI>();
 
     constructor(props: Props) {
         super(props);
@@ -69,7 +69,7 @@ export class FilterListComponent extends Component<Props, State> {
                 <div className={styles.GroupName}>Time Range:</div>
                 <div className={styles.GroupContent}>
                     <div className={`${styles.Input} ${styles.TextField}`}>
-                        <DatePickerUI
+                        <DateTextPickerUI
                             ref={this.startDataPickerRef}
                             value={this.props.taskFiltersData.startDate}
                             label={'Start'}
@@ -77,7 +77,7 @@ export class FilterListComponent extends Component<Props, State> {
                         />
                     </div>
                     <div className={`${styles.Input} ${styles.TextField}`}>
-                        <DatePickerUI
+                        <DateTextPickerUI
                             ref={this.endDataPickerRef}
                             value={this.props.taskFiltersData.endDate}
                             label={'End'}

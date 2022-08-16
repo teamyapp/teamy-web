@@ -1,0 +1,20 @@
+.DateLabelPicker {
+    align-items: center;
+    background-color: #546e7a;
+    border-radius: 4px;
+    --icon-color: white;
+    color: white;
+    display: flex;
+    font-weight: 500;
+    padding: 3px 8px;
+    --icon-size: 18px;
+
+    .Time {
+        font-size: 16px;
+        margin-left: 4px;
+    }
+
+    &.Warn {
+        background-color: #c62828;
+    }
+}

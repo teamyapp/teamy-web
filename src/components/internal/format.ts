@@ -69,3 +69,12 @@ export function getEndAt(startAt: Date, duration: DurationKey): Date {
 
     return moment(startAt).add(moment.duration(value, unit)).toDate();
 }
+
+export function today(): Date {
+    const date = new Date();
+    date.setHours(0);
+    date.setUTCMinutes(0);
+    date.setSeconds(0);
+    date.setMilliseconds(0);
+    return date;
+}

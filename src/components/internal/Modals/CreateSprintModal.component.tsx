@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
-import { DatePickerUI } from '@lib/ui/DatePicker';
+import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { DropDownList } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
@@ -27,7 +27,7 @@ export class CreateSprintModalComponent extends Component<Props> {
     private readonly localStore: LocalStore;
     private readonly stateSyncer: StateSyncer;
     private readonly modalRef = createRef<ModalUI>();
-    private readonly startDateInputRef = createRef<DatePickerUI>();
+    private readonly startDateInputRef = createRef<DateTextPickerUI>();
     private readonly sprintLengthInputRef = createRef<DropDownList>();
 
     constructor(props: Props) {
@@ -50,7 +50,7 @@ export class CreateSprintModalComponent extends Component<Props> {
                 </div>
                 <div className={styles.Content}>
                     <div className={styles.StartDate}>
-                        <DatePickerUI
+                        <DateTextPickerUI
                             label={'Start Date'}
                             ref={this.startDateInputRef}
                             value={new Date()}
