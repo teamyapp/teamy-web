@@ -51,8 +51,7 @@ export class CalendarUI extends Component<Props, State> {
     }
 
     componentDidMount() {
-        if (this.calendarRef) {
-            this.calendarRef.current?.focus()
+            this.calendarRef?.current?.focus()
         }
     }
 
