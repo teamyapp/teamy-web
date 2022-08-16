@@ -72,8 +72,6 @@ export class DateTextPickerUI extends Component<Props, State> {
         if (this.textFieldRef.current) {
             this.textFieldRef.current.value =
                 moment(date).format(dateFormat);
-
-           
         }
     }
 
