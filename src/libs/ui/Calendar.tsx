@@ -243,7 +243,6 @@ export class CalendarUI extends Component<Props, State> {
 
 }
 
-
 function getMonthDays(date: Date): (null | number)[] {
     const year = date.getFullYear();
     const month = date.getMonth();
