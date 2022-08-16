@@ -22,7 +22,7 @@ interface State {
     shownDate: Date;
 }
 
-export class DatePickerWrapperUI extends Component<Props, State> {
+export class DatePickerContainerUI extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
