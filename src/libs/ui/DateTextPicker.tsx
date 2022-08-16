@@ -66,7 +66,6 @@ export class DateTextPickerUI extends Component<Props, State> {
         if (this.textFieldRef) {
          this.textFieldRef.current?.focus();
         }
-
     }
 
     private handleTargetChanged = (date: Date) => {
