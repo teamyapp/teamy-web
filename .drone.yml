@@ -15,7 +15,7 @@ steps:
       bucket: teamyapp
       region: sfo3
       restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: build frontend
@@ -42,7 +42,7 @@ steps:
       region: sfo3
       rebuild: true
       override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: slack
@@ -77,7 +77,7 @@ steps:
       bucket: teamyapp
       region: sfo3
       restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: build frontend
@@ -117,7 +117,7 @@ steps:
       region: sfo3
       rebuild: true
       override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: slack
@@ -151,7 +151,7 @@ steps:
       bucket: teamyapp
       region: sfo3
       restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: build frontend
@@ -192,7 +192,7 @@ steps:
       region: sfo3
       rebuild: true
       override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: slack
@@ -227,7 +227,7 @@ steps:
       bucket: teamyapp
       region: sfo3
       restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: build frontend
@@ -267,7 +267,7 @@ steps:
       region: sfo3
       rebuild: true
       override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: slack
@@ -301,7 +301,7 @@ steps:
       bucket: teamyapp
       region: sfo3
       restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: build frontend
@@ -328,7 +328,7 @@ steps:
       region: sfo3
       rebuild: true
       override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
+      cache_key: 'cache/{{ .Repo.Name }}/{{ checksum "yarn.lock" }}'
       mount:
         - node_modules
   - name: slack
