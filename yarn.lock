@@ -2795,10 +2795,10 @@
     "@svgr/plugin-svgo" "^5.5.0"
     loader-utils "^2.0.0"
 
-"@teamyapp/ext@0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@teamyapp/ext/-/ext-0.0.2.tgz#798480df2f367d687aab8df6d43a4e8cbe3f5de6"
-  integrity sha512-N7cDt3u39yiF8nbb8OhUXKKGnCfeWbZ9vx+CYHlHFMzf4kvsrU1RfvV1mwbDiQ22YbF7t8BFQGUn3zY2We1VUA==
+"@teamyapp/ext@0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@teamyapp/ext/-/ext-0.0.3.tgz#cc8658e710b0f85141c211b3680f4cdea9161d89"
+  integrity sha512-GjKtQAjKRgAAq4cFL5IU+EOJW2XAV0y9/tM0cYDYU2FwlkwWI/Qigv2UmKFoRl4tiwldPMm47/JRX+JfEFljzw==
 
 "@testing-library/dom@^7.28.1":
   version "7.31.2"
