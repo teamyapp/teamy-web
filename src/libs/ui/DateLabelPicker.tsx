@@ -23,7 +23,7 @@ interface State {
 }
 
 export class DateLabelPickerUI extends Component<Props, State> {
-    private textFieldRef = createRef<TextFieldUI>();
+    private readonly textFieldRef = createRef<TextFieldUI>();
 
     constructor(props: Props) {
         super(props);
