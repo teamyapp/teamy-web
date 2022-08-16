@@ -27,7 +27,6 @@ export class DateLabelPickerUI extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-
         this.state = {
             value: this.props.value
                 ? moment(this.props.value).format(dateFormat)
