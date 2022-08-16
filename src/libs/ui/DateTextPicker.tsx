@@ -1,6 +1,6 @@
 import moment from 'moment';
 import React, { Component, ReactNode, createRef } from 'react';
-import { DatePickerWrapperUI } from './DatePickerWrapper';
+import { DatePickerContainerUI } from './DatePickerContainer';
 import { TextFieldUI } from './TextField';
 
 const dateFormat = 'MM/DD/YYYY';
@@ -41,7 +41,7 @@ export class DateTextPickerUI extends Component<Props, State> {
 
     render(): ReactNode {
         return (
-            <DatePickerWrapperUI
+            <DatePickerContainerUI
                 onTargetChanged={this.handleTargetChanged}
                 onTargetFocus={this.handleTargetFocus}
                 value={this.props.value}

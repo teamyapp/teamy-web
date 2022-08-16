@@ -3,7 +3,7 @@ import moment from 'moment';
 import React, { Component, ReactNode, createRef } from 'react';
 
 import styles from './DateLabelPicker.module.scss';
-import { DatePickerWrapperUI } from './DatePickerWrapper';
+import { DatePickerContainerUI } from './DatePickerContainer';
 import { MaterialIconUI } from './MaterialIcon';
 import { TextFieldUI } from './TextField';
 
@@ -45,7 +45,7 @@ export class DateLabelPickerUI extends Component<Props, State> {
 
     render(): ReactNode {
         return (
-            <DatePickerWrapperUI
+            <DatePickerContainerUI
                 onTargetChanged={this.props.onChange}
                 value={this.props.value}
                 minYear={this.props.minYear}
