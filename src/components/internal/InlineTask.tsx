@@ -155,6 +155,7 @@ export class InlineTaskUI extends Component<Props, State> {
         if (!date) {
             return
         }
+        
         this.props.onUpdateTask?.call(this, this.props.task.id, {...this.getUpdatedTask(), dueAt: date})
     }
 
