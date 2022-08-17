@@ -5,7 +5,6 @@ import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
-import { TabsUI } from '@lib/ui/Tabs';
 import { TextAreaUI } from '@lib/ui/TextArea';
 import { TextFieldUI } from '@lib/ui/TextField';
 
@@ -72,12 +71,8 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <div className={styles.Content}>
-                    <div key={0} className={styles.Tabs}>
-                        <TabsUI
-                            defaultSelectedIndex={this.state.currentTabIndex}
-                            tabNames={['Invitation']}
-                            onTabClick={this.onTabClick}
-                        />
+                    <div className={styles.Title}>
+                        Invitation
                     </div>
                     {this.renderInvitationTab()}
                 </div>
