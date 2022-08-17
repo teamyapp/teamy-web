@@ -72,14 +72,9 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <div className={styles.Content}>
-                    <div key={0} className={styles.Tabs}>
-                        <TabsUI
-                            defaultSelectedIndex={this.state.currentTabIndex}
-                            tabNames={['User IDs', 'Invitation']}
-                            onTabClick={this.onTabClick}
-                        />
+                    <div className={styles.Title}>
+                        Invitation
                     </div>
-                    {this.renderUserIdsTab()}
                     {this.renderInvitationTab()}
                 </div>
             </ModalUI>
@@ -127,7 +122,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
 
     private renderInvitationTab = () => {
         return (
-            this.state.currentTabIndex === 1 && (
+            this.state.currentTabIndex === 0 && (
                 <div className={styles.Section}>
                     <div className={styles.FirstName}>
                         <TextFieldUI
