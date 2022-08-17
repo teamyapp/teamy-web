@@ -62,7 +62,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
         return (
             <ModalUI ref={this.modalRef} level={1}>
                 <div className={styles.Header}>
-                    Add Members to {this.state.team?.name}
+                    Invite New Member to {this.state.team?.name}
                     <div
                         className={styles.CloseButton}
                         onClick={this.onCloseButtonClick}
@@ -71,9 +71,6 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <div className={styles.Content}>
-                    <div className={styles.Title}>
-                        Invitation
-                    </div>
                     {this.renderInvitationTab()}
                 </div>
             </ModalUI>
