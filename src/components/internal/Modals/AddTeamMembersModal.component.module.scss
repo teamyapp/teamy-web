@@ -6,15 +6,15 @@ $sectionBackground: #f7f7f7;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    height: 460px;
+    height: 400px;
     width: 500px;
 
     .Section {
-        align-items: center;
         display: flex;
+        align-items: center;
+        justify-content: center;
         flex: 1;
         flex-direction: column;
-        padding: 30px;
     }
 
     .UserIds {
@@ -74,12 +74,4 @@ $sectionBackground: #f7f7f7;
         padding-top: 30px;
         text-align: center;
     }
-
-    .Title {
-            font-size: 30px;
-            font-weight: bold;
-            margin-top: 20px;
-            padding-top: 10px;
-            text-align: center;
-        }
 }
