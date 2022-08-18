@@ -250,7 +250,6 @@ export class StateSyncer {
         );
         if (sprint) {
             appState = mergeSprint(appState, sprint);
-            debugger
         } else {
             delete appState.currSprintId;
         }
