@@ -12,7 +12,7 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { backlogSectionId } from '@core/config/sections';
-import { unplanned } from '@core/data/task.filter';
+import {allTasks, unplanned} from '@core/data/task.filter';
 import { orderByStatusUrgencyAsc } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
@@ -25,12 +25,15 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import styles from './Backlog.component.module.scss';
 import { InlineCreateTaskUI } from './InlineCreateTask';
 import { TaskListItem } from './TaskListSections/TaskListItem';
+import {TaskFilters} from "@core/entity/filters";
+import {and} from "@lib/data/filter";
 
 interface Props {
     children?: React.ReactNode;
     deps: Deps;
     dropReceiverLayer?: number;
     selectOwnerTaskId?: number;
+    taskFilters: TaskFilters;
     onViewTaskDetail?: (taskId: number) => void;
     onShowPotentialTaskOwners?: (
         taskId: number,
@@ -91,6 +94,21 @@ export class BacklogComponent extends Component<Props, State> {
     }
 
     render() {
+        const {taskOwnerFilter, keywordFilter, timeRangeFilter} = this.props.taskFilters;
+        let backlogFilter = allTasks;
+        if (taskOwnerFilter) {
+            backlogFilter = taskOwnerFilter;
+        }
+
+        if (keywordFilter) {
+            backlogFilter = and(backlogFilter, keywordFilter);
+        }
+
+        if (timeRangeFilter) {
+            backlogFilter = and(backlogFilter, timeRangeFilter);
+        }
+
+        const filteredTasks = this.state.unplannedTasks.filter(backlogFilter);
         return (
             <div className={styles.Backlog}>
                 <DragAndDropContainer
@@ -106,7 +124,7 @@ export class BacklogComponent extends Component<Props, State> {
                         <div className={styles.Header}>
                             <div className={styles.Title}>Backlog</div>
                             <div className={styles.Counter}>
-                                {this.state.unplannedTasks.length}
+                                {filteredTasks.length}
                             </div>
                             <SpacerUI />
                             <div
@@ -123,7 +141,7 @@ export class BacklogComponent extends Component<Props, State> {
                                     onDiscardNewTask={this.onDiscardNewTask}
                                 />
                             )}
-                            {this.state.unplannedTasks.map(this.renderTask)}
+                            {filteredTasks.map(this.renderTask)}
                         </div>
                     </div>
                 </DragAndDropContainer>
