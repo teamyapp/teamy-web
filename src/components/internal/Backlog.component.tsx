@@ -174,7 +174,7 @@ export class BacklogComponent extends Component<Props, State> {
                     task={task}
                     numActionColumns={1}
                     showStatus={true}
-                    isSelectingOwner={this.props.selectOwnerTaskId === task.id}
+                    isSelectingOwner={task.id === this.props.selectOwnerTaskId}
                     filterTaskAction={filterTaskAction}
                     onUpdateTask={this.onUpdateTask}
                     onDeleteTask={this.onDeleteTask}
