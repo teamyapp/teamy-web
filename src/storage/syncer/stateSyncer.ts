@@ -249,7 +249,6 @@ export class StateSyncer {
             `${currSprintId}`,
         );
         if (sprint) {
-            console.log("hello")
             appState = mergeSprint(appState, sprint);
             debugger
         } else {
