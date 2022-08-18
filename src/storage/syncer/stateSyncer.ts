@@ -249,7 +249,9 @@ export class StateSyncer {
             `${currSprintId}`,
         );
         if (sprint) {
+            console.log("hello")
             appState = mergeSprint(appState, sprint);
+            debugger
         } else {
             delete appState.currSprintId;
         }
@@ -460,7 +462,7 @@ export class StateSyncer {
                 task.status = 'PAUSED';
                 break;
             default:
-                task.status = 'UPCOMING';
+                task.status = 'TODO';
         }
 
         // Responsive UI for drag & drop

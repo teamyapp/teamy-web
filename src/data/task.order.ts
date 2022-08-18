@@ -39,6 +39,7 @@ export const orderByEffort = (task1: Task, task2: Task): number => {
 
 const taskStatusProgressOrder: Record<TaskStatus, number> = {
     PAUSED: 1,
+    TODO: 2,
     UPCOMING: 2,
     BLOCKED: 3,
     AWAITING: 4,

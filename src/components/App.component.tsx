@@ -762,6 +762,7 @@ export class AppComponent extends Component<Props, State> {
         switch (destSectionId) {
             case upcomingSectionId:
                 switch (task.status) {
+                    case 'TODO':
                     case 'UPCOMING':
                     case 'PAUSED':
                         this.addTaskToSprint(task.id);
