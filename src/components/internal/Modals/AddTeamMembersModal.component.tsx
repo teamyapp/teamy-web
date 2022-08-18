@@ -16,7 +16,6 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './AddTeamMembersModal.component.module.scss';
 
-const itemSeparator = ',';
 const expirationPeriodOptions: Option[] = [
     {
         key: 'P7D',
@@ -123,12 +122,6 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
 
     private onCloseButtonClick = () => {
         this.modalRef.current?.close();
-    };
-
-    private onTabClick = (tabIndex: number) => {
-        this.setState({
-            currentTabIndex: tabIndex,
-        });
     };
 
     private onGenerateLinkClick = async () => {
