@@ -12,8 +12,8 @@ import { User } from '@core/entity/user';
 
 export const allTasks: Filter<Task> = (task: Task): boolean => true;
 
-export const upcoming: Filter<Task> = (task: Task): boolean =>
-    task.status === 'UPCOMING';
+export const todo: Filter<Task> = (task: Task): boolean =>
+    task.status === 'TODO' || task.status === 'UPCOMING';
 export const paused: Filter<Task> = (task: Task): boolean =>
     task.status === 'PAUSED';
 export const inProgress: Filter<Task> = (task: Task): boolean =>

@@ -10,6 +10,7 @@ import { ThreadNode } from './thread.node';
 import { UserNode } from './user.node';
 
 const availableActions: Record<TaskStatus, TaskAction[]> = {
+    TODO: ['START', 'DELETE', 'ASSIGN_OWNER'],
     UPCOMING: ['START', 'DELETE', 'ASSIGN_OWNER'],
     IN_PROGRESS: [
         'MARK_COMPLETE',

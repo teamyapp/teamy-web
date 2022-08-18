@@ -16,7 +16,7 @@ import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { InProgressSection } from './TaskListSections/InProgressSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
 
-const upcomingColumnFilter = or(filters.upcoming, filters.paused);
+const upcomingColumnFilter = or(filters.todo, filters.paused);
 const inProgressColumnFilter = filters.inProgress;
 const deliveredColumnFilter = filters.delivered;
 const awaitingColumnFilter = filters.awaiting;
