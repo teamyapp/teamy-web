@@ -258,6 +258,7 @@ export class AppComponent extends Component<Props, State> {
                                                         this.state
                                                             .selectOwnerTaskId
                                                     }
+                                                    taskFilters={this.state.taskFilters}
                                                     onShowPotentialTaskOwners={
                                                         this
                                                             .onShowPotentialTaskOwners
