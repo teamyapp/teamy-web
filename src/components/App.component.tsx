@@ -189,6 +189,9 @@ export class AppComponent extends Component<Props, State> {
     public render() {
         return (
             <div
+                style={{
+                    backgroundColor: ''
+                }}
                 className={`${styles.App} ${classNames({
                     [styles.ShowBackground]: this.state.showBackground,
                 })}`}
