@@ -25,7 +25,6 @@ import { dueDate, getShortName } from './format';
 
 const statusNames: Record<TaskStatus, string> = {
     TODO: 'Todo',
-    UPCOMING: 'Upcoming',
     PAUSED: 'Paused',
     IN_PROGRESS: 'In Progress',
     BLOCKED: 'Blocked',
