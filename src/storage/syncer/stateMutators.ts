@@ -54,6 +54,35 @@ export function applyTaskMutation(
     return currState;
 }
 
+export function applySprintTaskMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create': {
+            const sprintTaskRelation =
+                SprintTaskRelationState.fromMutationPayload(mutation.payload);
+
+            if (
+                currState.sprintTaskRelations.find(
+                    (sprintTaskRelationItem) =>
+                        sprintTaskRelationItem.taskId ===
+                            sprintTaskRelation.taskId &&
+                        sprintTaskRelationItem.sprintId ===
+                            sprintTaskRelation.sprintId,
+                )
+            ) {
+                break;
+            }
+
+            currState.sprintTaskRelations.push(sprintTaskRelation);
+            break;
+        }
+    }
+
+    return currState;
+}
+
 export function applyInvitationMutation(
     currState: AppState,
     mutation: Mutation,
