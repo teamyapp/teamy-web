@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { ChangeEvent, Component, FocusEvent, createRef } from 'react';
+import React, {ChangeEvent, Component, FocusEvent, createRef, MouseEvent, RefObject} from 'react';
 
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
@@ -31,18 +31,26 @@ interface Props {
     onUserProfileClick?: () => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
     onCreateSprintClick?: () => void;
+    onAddTeamMembersClick?: (teamId: number) => void;
+    onShowTeamMembersClick?: (teamId: number) => void;
+    onShowInvitationsClick?: (teamId: number) => void;
+    onViewTeamSettingsClick?: (teamId: number) => void;
 }
 
 interface State {
     isSearchBarFocused: boolean;
     showBacklog: boolean;
     taskFiltersData: TaskFiltersData;
+    showTeamContextMenu: boolean;
+    teamContextMenuLeft: number;
+    teamContextMenuTop: number;
 }
 
 export class HeaderComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly searchBarRef = createRef<HTMLDivElement>();
     private readonly searchInputRef = createRef<HTMLInputElement>();
+    private teamContextMenuRef: RefObject<any> = createRef();
 
     constructor(props: Props) {
         super(props);
@@ -53,6 +61,9 @@ export class HeaderComponent extends Component<Props, State> {
             taskFiltersData: {
                 selectedTaskOwners: new Set<string>([userAll]),
             },
+            showTeamContextMenu: false,
+            teamContextMenuLeft: 0,
+            teamContextMenuTop: 0,
         };
     }
 
@@ -70,8 +81,12 @@ export class HeaderComponent extends Component<Props, State> {
                             </div>
                         )}
                     </div>
-                    <div className={styles.TeamName}>
+                    <div className={styles.TeamName}
+                         onContextMenu={this.onTeamContextMenu()}>
                         {this.props.currentTeam?.name}
+                    </div>
+                    <div>
+                        {this.renderTeamContextMenuItem()}
                     </div>
                     <div className={styles.Tools}>
                         <DropDownList
@@ -217,5 +232,114 @@ export class HeaderComponent extends Component<Props, State> {
         });
 
         this.props.onBacklogToggle?.call(null);
+    };
+
+    private onTeamContextMenu = (): (event: React.MouseEvent<HTMLElement>) => void => {
+        return (event: MouseEvent<HTMLElement>) => {
+            event.preventDefault();
+            this.setState({
+                showTeamContextMenu: true,
+                teamContextMenuLeft: event.clientX,
+                teamContextMenuTop: event.clientY,
+            });
+            setTimeout(() => {
+                this.teamContextMenuRef.current?.focus();
+            });
+
+        };
+    };
+
+    private renderTeamContextMenuItem = () => {
+        if (this.state.showTeamContextMenu) {
+            return (
+                <ul
+                    ref={this.teamContextMenuRef}
+                    className={styles.TeamContextMenu}
+                    tabIndex={-1}
+                    style={{
+                        left: this.state.teamContextMenuLeft,
+                        top: this.state.teamContextMenuTop,
+                    }}
+                    onBlur={this.onTeamContextMenuBlur}
+                >
+                    <li
+                        className={styles.ContextMenuItem}
+                        onClick={this.onAddMembersClick}
+                    >
+                        Add members
+                    </li>
+                    <li
+                        className={styles.ContextMenuItem}
+                        onClick={this.onShowMembersClick}
+                    >
+                        Show members
+                    </li>
+                    <li
+                        className={styles.ContextMenuItem}
+                        onClick={this.onShowInvitationsClick}
+                    >
+                        Show invitations
+                    </li>
+                    <li
+                        className={styles.ContextMenuItem}
+                        onClick={this.onViewTeamSettingsClick}
+                    >
+                        Settings
+                    </li>
+                </ul>
+            )
+        }
+    }
+
+    private onTeamContextMenuBlur = () => {
+        this.closeTeamContextMenu();
+    };
+
+    private closeTeamContextMenu() {
+        this.setState({
+            showTeamContextMenu: false,
+            teamContextMenuLeft: 0,
+            teamContextMenuTop: 0,
+        });
+    }
+
+    private onAddMembersClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onAddTeamMembersClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+        this.closeTeamContextMenu();
+    };
+
+    private onShowMembersClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onShowTeamMembersClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+        this.closeTeamContextMenu();
+    };
+
+    private onShowInvitationsClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onShowInvitationsClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+        this.closeTeamContextMenu();
+    };
+
+    private onViewTeamSettingsClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onViewTeamSettingsClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+        this.closeTeamContextMenu();
     };
 }

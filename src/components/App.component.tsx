@@ -224,6 +224,12 @@ export class AppComponent extends Component<Props, State> {
                                 onTaskFiltersChange={this.onTaskFiltersChange}
                                 onBacklogToggle={this.onBacklogToggle}
                                 onCreateSprintClick={this.onCreateSprintClick}
+                                onAddTeamMembersClick={this.onAddTeamMembersClick}
+                                onShowTeamMembersClick={this.onShowTeamMembersClick}
+                                onShowInvitationsClick={this.onShowInvitationsClick}
+                                onViewTeamSettingsClick={
+                                    this.onViewTeamSettingsClick
+                                }
                             />
                             {this.state.showMainContent &&
                                 (this.state.activeTeamId ? (

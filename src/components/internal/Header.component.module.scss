@@ -1,7 +1,9 @@
 @import '../../libs/ui/styleguide/easing';
+@import '../../libs/ui/styleguide/elevation';
 @import 'shared';
 
 @include header;
+$contextMenuSidePadding: 20px;
 
 .Header {
     padding: 0 16px;
@@ -170,6 +172,36 @@
             margin-top: 4px;
             transform: translateX(-50%);
             width: 700px;
+        }
+    }
+
+    .TeamContextMenu {
+        background-color: white;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        position: fixed;
+        z-index: 1000;
+        @include elevation(5);
+
+        &:focus {
+            outline: none;
+        }
+
+        .ContextMenuItem {
+            font-size: 16px;
+            font-weight: bold;
+            padding: 6px $contextMenuSidePadding;
+
+            &:hover {
+                background-color: #424242;
+                color: white;
+                cursor: pointer;
+            }
+
+            &:not(:first-child) {
+                border-top: 1px solid #eeeeee;
+            }
         }
     }
 }
