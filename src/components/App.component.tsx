@@ -1,14 +1,18 @@
 import { CloudComponent } from '@cloud/Cloud.component';
 import { Extension, ExtensionRuntime } from '@teamyapp/ext';
 import classNames from 'classnames';
-import React, { Component, createRef, Fragment } from 'react';
+import React, { Component, Fragment, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
+import {
+    DragAndDropContext,
+    DragAndDropEvent,
+} from '@lib/dragAndDrop/DragAndDropController';
+import { TeamyExtensionRuntime } from '@lib/ext/runtime';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
-import { Router, RouteUpdate } from '@lib/router/router';
+import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
@@ -22,9 +26,9 @@ import {
     signInFinishRoutePattern,
     signInRoutePattern,
     signUpRoutePattern,
+    sprintTabRoutePattern,
     sprintsPath,
     sprintsRoutePattern,
-    sprintTabRoutePattern,
     taskPath,
     taskRoutePattern,
 } from '@core/config/routing';
@@ -50,48 +54,25 @@ import styles from './App.component.module.scss';
 import { BacklogComponent } from './internal/Backlog.component';
 import { DrawerUI } from './internal/Drawer';
 import { HeaderComponent } from './internal/Header.component';
-import {
-    AddTeamMembersModalComponent
-} from './internal/Modals/AddTeamMembersModal.component';
-import {
-    CreateSprintModalComponent
-} from './internal/Modals/CreateSprintModal.component';
-import {
-    CreateTeamModalComponent
-} from './internal/Modals/CreateTeamModal.component';
+import { AddTeamMembersModalComponent } from './internal/Modals/AddTeamMembersModal.component';
+import { CreateSprintModalComponent } from './internal/Modals/CreateSprintModal.component';
+import { CreateTeamModalComponent } from './internal/Modals/CreateTeamModal.component';
 import {
     RequiredAction,
     RequiredActionsModalComponent,
 } from './internal/Modals/RequiredActionsModal.component';
-import {
-    TaskDetailModalComponent
-} from './internal/Modals/TaskDetailModal.component';
-import {
-    TeamSettingsModalComponent
-} from './internal/Modals/TeamSettingsModal.component';
-import {
-    UserSettingsModalComponent
-} from './internal/Modals/UserSettingsModal.component';
-import {
-    SelectTaskOwnersPopupComponent
-} from './internal/SelectTaskOwnersPopupComponent';
-import {
-    InvitationLinkCopiedFeedbackComponent
-} from './internal/feedbacks/InviationLinkCopiedFeedback.component';
-import {
-    TaskUpdatedFeedbackComponent
-} from './internal/feedbacks/TaskUpdatedFeedback.component';
-import {
-    TeamProfileUpdatedFeedbackComponent
-} from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
-import {
-    UserProfileUpdatedFeedbackComponent
-} from './internal/feedbacks/UserProfileUpdatedFeedback.component';
+import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
+import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
+import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
+import { SelectTaskOwnersPopupComponent } from './internal/SelectTaskOwnersPopupComponent';
+import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/InviationLinkCopiedFeedback.component';
+import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
+import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
+import { UserProfileUpdatedFeedbackComponent } from './internal/feedbacks/UserProfileUpdatedFeedback.component';
 import { DebugComponent } from './pages/Debug.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
-import { TeamyExtensionRuntime } from '@lib/ext/runtime';
 
 const sectionIds = [
     backlogSectionId,
@@ -190,7 +171,7 @@ export class AppComponent extends Component<Props, State> {
         return (
             <div
                 style={{
-                    backgroundColor: ''
+                    backgroundColor: '',
                 }}
                 className={`${styles.App} ${classNames({
                     [styles.ShowBackground]: this.state.showBackground,
@@ -202,9 +183,9 @@ export class AppComponent extends Component<Props, State> {
                         repoName={'teamy-web'}
                     />
                 </Route>
-                <CloudComponent deps={this.props.deps}/>
+                <CloudComponent deps={this.props.deps} />
                 <Route router={this.router} pattern={signUpRoutePattern}>
-                    <SignUpComponent deps={this.props.deps}/>
+                    <SignUpComponent deps={this.props.deps} />
                 </Route>
                 {this.state.showPrivatePage && this.state.me && (
                     <Fragment>
@@ -215,9 +196,15 @@ export class AppComponent extends Component<Props, State> {
                                 isDrawerOpen={this.state.isDrawerOpen}
                                 onMenuClose={this.onMenuToggle}
                                 onActiveTeamSelect={this.onActiveTeamSelect}
-                                onAddTeamMembersClick={this.onAddTeamMembersClick}
-                                onShowTeamMembersClick={this.onShowTeamMembersClick}
-                                onShowInvitationsClick={this.onShowInvitationsClick}
+                                onAddTeamMembersClick={
+                                    this.onAddTeamMembersClick
+                                }
+                                onShowTeamMembersClick={
+                                    this.onShowTeamMembersClick
+                                }
+                                onShowInvitationsClick={
+                                    this.onShowInvitationsClick
+                                }
                                 onViewTeamSettingsClick={
                                     this.onViewTeamSettingsClick
                                 }
@@ -246,7 +233,7 @@ export class AppComponent extends Component<Props, State> {
                                                 styles.Sidebar
                                             } ${classNames({
                                                 [styles.Shown]:
-                                                this.state.showBacklog,
+                                                    this.state.showBacklog,
                                             })}`}
                                         >
                                             <div className={styles.Backlog}>
@@ -261,7 +248,9 @@ export class AppComponent extends Component<Props, State> {
                                                         this.state
                                                             .selectOwnerTaskId
                                                     }
-                                                    taskFilters={this.state.taskFilters}
+                                                    taskFilters={
+                                                        this.state.taskFilters
+                                                    }
                                                     onShowPotentialTaskOwners={
                                                         this
                                                             .onShowPotentialTaskOwners
@@ -307,7 +296,7 @@ export class AppComponent extends Component<Props, State> {
                     </Fragment>
                 )}
                 <Route router={this.router} pattern={invitationRoutePattern}>
-                    <InvitationComponent deps={this.props.deps}/>
+                    <InvitationComponent deps={this.props.deps} />
                 </Route>
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
@@ -330,7 +319,7 @@ export class AppComponent extends Component<Props, State> {
                     ref={this.teamSettingsModalRef}
                     onAddTeamMemberClick={this.onAddTeamMembersClick}
                 />
-                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps}/>
+                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <AddTeamMembersModalComponent
                     deps={this.props.deps}
                     ref={this.addTeamMembersModalRef}
@@ -344,9 +333,9 @@ export class AppComponent extends Component<Props, State> {
                     ref={this.createSprintModalRef}
                     deps={this.props.deps}
                 />
-                <UserProfileUpdatedFeedbackComponent deps={this.props.deps}/>
-                <TaskUpdatedFeedbackComponent deps={this.props.deps}/>
-                <InvitationLinkCopiedFeedbackComponent deps={this.props.deps}/>
+                <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
+                <TaskUpdatedFeedbackComponent deps={this.props.deps} />
+                <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
                 <RequiredActionsModalComponent
                     ref={this.requiredActionsModalRef}
                 />
@@ -377,6 +366,7 @@ export class AppComponent extends Component<Props, State> {
                         event.srcContainId,
                         event.destContainerId,
                         event.target.data,
+                        event.context,
                     );
                 }
             }
@@ -735,10 +725,11 @@ export class AppComponent extends Component<Props, State> {
         srcSectionId: string,
         destSectionId: string,
         task: Task,
+        context?: DragAndDropContext,
     ) {
         switch (srcSectionId) {
             case backlogSectionId:
-                this.processFromBacklog(destSectionId, task);
+                this.processFromBacklog(destSectionId, task, context);
                 break;
             case needAttentionSectionId:
             case inProgressSectionId:
@@ -762,14 +753,18 @@ export class AppComponent extends Component<Props, State> {
         }
     }
 
-    private processFromBacklog(destSectionId: string, task: Task) {
+    private processFromBacklog(
+        destSectionId: string,
+        task: Task,
+        context?: DragAndDropContext,
+    ) {
         switch (destSectionId) {
             case upcomingSectionId:
                 switch (task.status) {
                     case 'TODO':
                     case 'UPCOMING':
                     case 'PAUSED':
-                        this.addTaskToSprint(task.id);
+                        this.processTask(task, context);
                         break;
                 }
 
@@ -779,7 +774,7 @@ export class AppComponent extends Component<Props, State> {
             case inProgressSectionId:
                 switch (task.status) {
                     case 'IN_PROGRESS':
-                        this.addTaskToSprint(task.id);
+                        this.processTask(task, context);
                         break;
                 }
 
@@ -787,7 +782,7 @@ export class AppComponent extends Component<Props, State> {
             case deliveredSectionId:
                 switch (task.status) {
                     case 'DELIVERED':
-                        this.addTaskToSprint(task.id);
+                        this.processTask(task, context);
                         break;
                 }
 
@@ -795,10 +790,18 @@ export class AppComponent extends Component<Props, State> {
         }
     }
 
-    private addTaskToSprint(taskId: number) {
+    private processTask(task: Task, context?: DragAndDropContext) {
         const sprintId = this.localStore.getState().currSprintId;
+
         if (sprintId) {
-            this.stateSyncer.addTaskToSprint(sprintId, taskId);
+            this.stateSyncer.addTaskToSprint(sprintId, task.id);
+            if (context?.isPersonal) {
+                this.stateSyncer.updateTask(task.id, {
+                    ownerUserId: this.state.me?.id,
+                    owningTeamId: task.owningTeam.id,
+                    goal: task.goal,
+                });
+            }
         }
     }
 
@@ -813,7 +816,9 @@ export class AppComponent extends Component<Props, State> {
         const requiredActions: RequiredAction[] = [];
         for (let index = 0; index < this.extensions.length; index++) {
             const extension = this.extensions[index];
-            const extRequiredActions = await extension.requiredActions(this.state.activeTeamId!);
+            const extRequiredActions = await extension.requiredActions(
+                this.state.activeTeamId!,
+            );
             if (extRequiredActions.length < 1) {
                 continue;
             }
@@ -862,7 +867,7 @@ export class AppComponent extends Component<Props, State> {
         return Promise.all(
             ['http://localhost:8082/app/app.js'].map(
                 async (extensionEntryPoint) => {
-                    let {App} = await importModule(extensionEntryPoint);
+                    let { App } = await importModule(extensionEntryPoint);
                     const app: Extension = new App();
                     const runtime = this.getExtensionRuntime(0);
                     app.init(runtime);
@@ -874,6 +879,10 @@ export class AppComponent extends Component<Props, State> {
     }
 
     private getExtensionRuntime(extensionVersion: number): ExtensionRuntime {
-        return new TeamyExtensionRuntime(extensionVersion, this.router, this.identityClient);
+        return new TeamyExtensionRuntime(
+            extensionVersion,
+            this.router,
+            this.identityClient,
+        );
     }
 }

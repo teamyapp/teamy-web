@@ -19,6 +19,10 @@ export interface DragTarget {
     data: any;
 }
 
+export interface DragAndDropContext {
+    isPersonal?: boolean
+}
+
 interface DragEnter extends Event {
     type: 'DragEnter';
     containerId: string;
@@ -35,6 +39,7 @@ interface Drop extends Event {
     srcContainId: string;
     destContainerId: string;
     target: DragTarget;
+    context?: DragAndDropContext;
 }
 
 interface Drag extends Event {
@@ -69,6 +74,7 @@ export class DragAndDropController {
     private itemLeftOffset = 0;
     private itemTopOffset = 0;
     private preview?: HTMLElement;
+    private context?: DragAndDropContext;
 
     public onDragStart(
         sourceContainerId: string,
@@ -89,6 +95,7 @@ export class DragAndDropController {
         containerId: string,
         transformItemSize: SizeTransformer,
         receiverLayer: number,
+        context?: DragAndDropContext
     ): void {
         if (!this.draggedTarget) {
             return;
@@ -112,6 +119,7 @@ export class DragAndDropController {
         this.receivingLayer = receiverLayer;
         this.adjustPreviewSize(transformItemSize);
         this.receivingContainerId = containerId;
+        this.context = context;
         this.dragAndDropEventChan.put({
             type: 'DragEnter',
             containerId: containerId,
@@ -127,6 +135,7 @@ export class DragAndDropController {
         if (containerId === this.receivingContainerId) {
             this.receivingLayer = 0;
             this.receivingContainerId = undefined;
+            this.context = undefined;
             this.dragAndDropEventChan.put({
                 type: 'DragLeave',
                 containerId: containerId,
@@ -146,6 +155,7 @@ export class DragAndDropController {
                 srcContainId: this.sourceContainerId,
                 destContainerId: containerId,
                 target: this.draggedTarget,
+                context: this.context
             });
         }
 

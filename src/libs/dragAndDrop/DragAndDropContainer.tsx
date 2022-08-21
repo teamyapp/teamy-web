@@ -6,6 +6,7 @@ import { closeIfNot } from '@lib/csp/lib';
 
 import styles from './DragAndDropContainer.module.scss';
 import {
+    DragAndDropContext,
     DragAndDropController,
     DragAndDropEvent,
 } from './DragAndDropController';
@@ -18,6 +19,7 @@ interface Props {
     receiverLayer?: number;
     containerId: string;
     itemType: string;
+    context?: DragAndDropContext
 }
 
 interface State {
@@ -147,6 +149,7 @@ export class DragAndDropContainer extends Component<Props, State> {
                 this.props.containerId,
                 itemSizeTransformer,
                 this.props.receiverLayer || 0,
+                this.props.context
             );
         }
     };

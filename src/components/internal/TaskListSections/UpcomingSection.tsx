@@ -40,6 +40,7 @@ interface Props {
     createTaskDefaultOwner?: User;
     sortOrder?: string;
     selectOwnerTaskId?: number;
+    isPersonal?: boolean;
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -77,6 +78,7 @@ export class UpcomingSection extends Component<Props, State> {
                     containerId={upcomingSectionId}
                     itemType={draggableTask}
                     itemSizeTransformer={sectionItemSizeTransformer}
+                    context={{isPersonal: this.props.isPersonal}}
                 >
                     <SectionUI
                         title={'Upcoming'}
