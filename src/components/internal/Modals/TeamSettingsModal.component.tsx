@@ -254,24 +254,35 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     };
 
     private renderTeamMember = (user: User, index: number) => {
+        const currUserId = this.graphSource.currentUser()!.id;
         return (
-            <div key={index} className={styles.Cell}>
-                <UserProfileUI user={user} />
-                <div className={styles.MemberName}>
-                    <span>{user.firstName}</span>
-                    &nbsp;
-                    <span>{user.lastName}</span>
-                </div>
-                <div className={styles.Actions}>
-                    <div className={styles.DeleteAction}>
-                        <MaterialIconUI iconStyle={'outline'}>
-                            remove_circle
-                        </MaterialIconUI>
+                <div key={index} className={styles.Cell}>
+                    <UserProfileUI user={user} />
+                    <div className={styles.MemberName}>
+                        <span>{user.firstName}</span>
+                        &nbsp;
+                        <span>{user.lastName}</span>
+                    </div>
+                    <div className={styles.Actions}>
+                        {
+                            currUserId !== user.id &&
+                            this.renderDeleteTeamMember(user.id)
+                        }
                     </div>
                 </div>
-            </div>
-        );
+            );
     };
+
+    private renderDeleteTeamMember(userId: number) {
+        return (
+            <div className={styles.DeleteAction}
+                     onClick={this.onDeleteTeamMemberClick(userId)}>
+                    <MaterialIconUI iconStyle={'outline'}>
+                        remove_circle
+                    </MaterialIconUI>
+                </div>
+        );
+    }
 
     private renderInvitedUser = (invitation: Invitation, index: number) => {
         const modalPosition = this.modalRef.current?.Position() || {
@@ -408,6 +419,12 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     invitation: invitation,
                 });
             }
+        };
+    };
+
+    private onDeleteTeamMemberClick = (userId: number) => {
+        return () => {
+            this.stateSyncer.removeMemberFromTeam(this.state.team!.id, userId);
         };
     };
 

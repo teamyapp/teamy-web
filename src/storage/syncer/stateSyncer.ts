@@ -604,6 +604,13 @@ export class StateSyncer {
         await this.invitationClient.deleteInvitation(`${invitationId}`);
     }
 
+    public async removeMemberFromTeam(teamId: number, userId: number): Promise<void> {
+        let appState = this.localStore.getState();
+        delete appState.teamMembers[userId];
+        this.localStore.updateState(appState);
+        await this.teamClient.removeMemberFromTeam(`${teamId}`, `${userId}`);
+    }
+
     public async createSprint(
         teamId: number,
         sprint: CreateSprintInput,
