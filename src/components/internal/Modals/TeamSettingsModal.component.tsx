@@ -254,8 +254,8 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     };
 
     private renderTeamMember = (user: User, index: number) => {
-        if (this.state.team) {
-            return (
+        const currUserId = this.graphSource.currentUser()!.id;
+        return (
                 <div key={index} className={styles.Cell}>
                     <UserProfileUI user={user} />
                     <div className={styles.MemberName}>
@@ -264,30 +264,24 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         <span>{user.lastName}</span>
                     </div>
                     <div className={styles.Actions}>
-                        {this.renderDeleteTeamMember(
-                            this.state.team,
-                            user.id,
-                        )}
+                        {
+                            currUserId !== user.id &&
+                            this.renderDeleteTeamMember(user.id)
+                        }
                     </div>
                 </div>
             );
-        }
     };
 
-    private renderDeleteTeamMember(
-        team: Team,
-        userId: number,
-    ) {
-        if (team.owner.id !== userId) {
-            return (
-                <div className={styles.DeleteAction}
-                     onClick={this.onDeleteTeamMemberClick(team.id, userId)}>
+    private renderDeleteTeamMember(userId: number) {
+        return (
+            <div className={styles.DeleteAction}
+                     onClick={this.onDeleteTeamMemberClick(userId)}>
                     <MaterialIconUI iconStyle={'outline'}>
                         remove_circle
                     </MaterialIconUI>
                 </div>
-            );
-        }
+        );
     }
 
     private renderInvitedUser = (invitation: Invitation, index: number) => {
@@ -428,9 +422,9 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         };
     };
 
-    private onDeleteTeamMemberClick = (teamId: number, userId: number) => {
+    private onDeleteTeamMemberClick = (userId: number) => {
         return () => {
-            this.stateSyncer.removeMemberFromTeam(teamId, userId);
+            this.stateSyncer.removeMemberFromTeam(this.state.team!.id, userId);
         };
     };
 
