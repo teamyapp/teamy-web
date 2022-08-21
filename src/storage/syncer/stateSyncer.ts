@@ -38,6 +38,7 @@ import { Mutation } from './mutation';
 import {
     applyInvitationMutation,
     applyMessageMutation,
+    applySprintTaskMutation,
     applyTaskAwaitingForRelationMutation,
     applyTaskMutation,
     applyTeamMemberMutation,
@@ -609,7 +610,7 @@ export class StateSyncer {
     ): Promise<number> {
         const remoteSprint = await this.sprintClient.createSprint(`${teamId}`, {
             startAt: sprint.startAt,
-            endAt: sprint.endAt
+            endAt: sprint.endAt,
         });
         let appState = this.localStore.getState();
         appState = mergeSprint(appState, remoteSprint);
@@ -686,7 +687,7 @@ export class StateSyncer {
         if (taskId === undefined) {
             return appState;
         }
-        
+
         appState = mergeTask(appState, remoteTask);
         appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
             (relation) =>
@@ -732,6 +733,17 @@ export class StateSyncer {
         );
         let appState = this.localStore.getState();
         appState = mergeTask(appState, remoteTask);
+
+        if (
+            appState.sprintTaskRelations.find(
+                (sprintTaskRelationItem) =>
+                    sprintTaskRelationItem.taskId === taskId &&
+                    sprintTaskRelationItem.sprintId === sprintId,
+            )
+        ) {
+            return appState;
+        }
+
         const relation: SprintTaskRelationState = { sprintId, taskId };
         appState.sprintTaskRelations =
             appState.sprintTaskRelations.concat(relation);
@@ -743,6 +755,10 @@ export class StateSyncer {
         switch (mutation.collectionType) {
             case 'Task': {
                 appState = applyTaskMutation(appState, mutation);
+                break;
+            }
+            case 'SprintTaskRelation': {
+                appState = applySprintTaskMutation(appState, mutation);
                 break;
             }
             case 'Invitation': {

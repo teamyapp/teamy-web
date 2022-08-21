@@ -762,7 +762,6 @@ export class AppComponent extends Component<Props, State> {
             case upcomingSectionId:
                 switch (task.status) {
                     case 'TODO':
-                    case 'UPCOMING':
                     case 'PAUSED':
                         this.processTask(task, context);
                         break;

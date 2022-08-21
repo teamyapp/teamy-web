@@ -6,7 +6,8 @@ export type CollectionType =
     | 'User'
     | 'Thread'
     | 'TeamMember'
-    | 'TaskAwaitForRelation';
+    | 'TaskAwaitForRelation'
+    | 'SprintTaskRelation';
 
 export type MutationType = 'Create' | 'Update' | 'Delete';
 
