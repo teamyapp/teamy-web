@@ -6,7 +6,6 @@ import React, { Component, Fragment, createRef } from 'react';
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import {
-    DragAndDropContext,
     DragAndDropEvent,
 } from '@lib/dragAndDrop/DragAndDropController';
 import { TeamyExtensionRuntime } from '@lib/ext/runtime';
@@ -73,6 +72,7 @@ import { DebugComponent } from './pages/Debug.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 const sectionIds = [
     backlogSectionId,
@@ -144,7 +144,7 @@ export class AppComponent extends Component<Props, State> {
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
-    private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent | undefined>;
+    private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent<DragAndDropContext> | undefined>;
 
     private extensions: Extension[] = [];
 

@@ -15,9 +15,10 @@ import { Task } from '@core/entity/task';
 
 import styles from './NeedAttentionSection.module.scss';
 import { TaskListItem } from './TaskListItem';
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 interface Props {
-    dragAndDropController: DragAndDropController;
+    dragAndDropController: DragAndDropController<DragAndDropContext>;
     needAttentionTask?: Task;
     selectOwnerTaskId?: number;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;

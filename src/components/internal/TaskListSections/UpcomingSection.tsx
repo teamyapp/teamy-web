@@ -33,9 +33,10 @@ import { User } from '@core/entity/user';
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 interface Props {
-    dragAndDropController: DragAndDropController;
+    dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
     createTaskDefaultOwner?: User;
     sortOrder?: string;

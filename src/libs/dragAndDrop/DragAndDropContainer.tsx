@@ -6,32 +6,31 @@ import { closeIfNot } from '@lib/csp/lib';
 
 import styles from './DragAndDropContainer.module.scss';
 import {
-    DragAndDropContext,
     DragAndDropController,
     DragAndDropEvent,
 } from './DragAndDropController';
 import { Size, SizeTransformer, sizeUnchanged } from './size';
 
-interface Props {
+interface Props<Context> {
     children: ReactNode;
-    dragAndDropController: DragAndDropController;
+    dragAndDropController: DragAndDropController<Context>;
     itemSizeTransformer?: (containerSize: Size) => SizeTransformer;
     receiverLayer?: number;
     containerId: string;
     itemType: string;
-    context?: DragAndDropContext
+    context?: Context
 }
 
 interface State {
     isReceiving: boolean;
 }
 
-export class DragAndDropContainer extends Component<Props, State> {
+export class DragAndDropContainer<Context> extends Component<Props<Context>, State> {
     private readonly ref = createRef<HTMLDivElement>();
-    private dragAndDropEventChan?: PopChannel<DragAndDropEvent | undefined>;
+    private dragAndDropEventChan?: PopChannel<DragAndDropEvent<Context> | undefined>;
     private isDraggingEnabled = true;
 
-    constructor(props: Props) {
+    constructor(props: Props<Context>) {
         super(props);
         this.state = {
             isReceiving: false,

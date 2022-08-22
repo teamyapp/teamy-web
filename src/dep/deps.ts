@@ -23,6 +23,7 @@ import { UserActionEvent } from '@core/event/userAction';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 export interface Deps {
     identityClient: IdentityClient;
@@ -31,7 +32,7 @@ export interface Deps {
     graphSource: GraphSource;
     stateSyncer: StateSyncer;
     shortcutMonitor: ShortcutMonitor<UserActionEvent>;
-    dragAndDropController: DragAndDropController;
+    dragAndDropController: DragAndDropController<DragAndDropContext>;
     feedbackPubSub: PubSub<Feedback>;
     fileUploadSessionFactory: FileUploadSessionFactory;
 }
@@ -71,7 +72,7 @@ export function initDeps(): Deps {
     );
     const router = createBrowserRouter();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
-    const dragAndDropController = new DragAndDropController();
+    const dragAndDropController = new DragAndDropController<DragAndDropContext>();
     const feedbackPubSub = new PubSub<Feedback>();
     const fileUploadSessionFactory = new FileUploadSessionFactory(
         config.cloudWebAPIEndpoint,

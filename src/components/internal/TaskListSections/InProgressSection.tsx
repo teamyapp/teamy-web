@@ -16,9 +16,10 @@ import { Task } from '@core/entity/task';
 
 import styles from './InProgressSection.module.scss';
 import { TaskListItem } from './TaskListItem';
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 interface Props {
-    dragAndDropController: DragAndDropController;
+    dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
     selectOwnerTaskId?: number;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;

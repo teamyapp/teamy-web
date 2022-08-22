@@ -4,12 +4,12 @@ import { Point, Rect } from '@lib/ui/position';
 
 import { Size, SizeTransformer } from './size';
 
-export type DragAndDropEvent =
+export type DragAndDropEvent<Context> =
     | DragEnter
     | DragLeave
     | DragEnd
     | Drag
-    | Drop
+    | Drop<Context>
     | TurnOnDragging
     | TurnOffDragging;
 
@@ -17,10 +17,6 @@ export interface DragTarget {
     type: string;
     element: HTMLElement;
     data: any;
-}
-
-export interface DragAndDropContext {
-    isPersonal?: boolean
 }
 
 interface DragEnter extends Event {
@@ -34,12 +30,12 @@ interface DragLeave extends Event {
     containerId: string;
 }
 
-interface Drop extends Event {
+interface Drop<Context> extends Event {
     type: 'Drop';
     srcContainId: string;
     destContainerId: string;
     target: DragTarget;
-    context?: DragAndDropContext;
+    context?: Context;
 }
 
 interface Drag extends Event {
@@ -61,9 +57,9 @@ interface TurnOffDragging extends Event {
     itemType: string;
 }
 
-export class DragAndDropController {
-    private readonly dragAndDropEventChan = chan<DragAndDropEvent>();
-    private readonly dragAndDropMultiCaster = multi<DragAndDropEvent>(
+export class DragAndDropController<Context> {
+    private readonly dragAndDropEventChan = chan<DragAndDropEvent<Context>>();
+    private readonly dragAndDropMultiCaster = multi<DragAndDropEvent<Context>>(
         this.dragAndDropEventChan,
     );
 
@@ -74,7 +70,7 @@ export class DragAndDropController {
     private itemLeftOffset = 0;
     private itemTopOffset = 0;
     private preview?: HTMLElement;
-    private context?: DragAndDropContext;
+    private context?: Context;
 
     public onDragStart(
         sourceContainerId: string,
@@ -95,7 +91,7 @@ export class DragAndDropController {
         containerId: string,
         transformItemSize: SizeTransformer,
         receiverLayer: number,
-        context?: DragAndDropContext
+        context?: Context
     ): void {
         if (!this.draggedTarget) {
             return;
@@ -175,7 +171,7 @@ export class DragAndDropController {
     }
 
     public subscribeDragAndDropEvent(): PopChannel<
-        DragAndDropEvent | undefined
+        DragAndDropEvent<Context> | undefined
     > {
         return this.dragAndDropMultiCaster.copy();
     }

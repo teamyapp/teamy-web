@@ -16,9 +16,9 @@ import {
 const dragMinMouseMove = 5;
 const mainButton = 0;
 
-interface Props {
+interface Props<Context> {
     children: ReactNode;
-    dragAndDropController: DragAndDropController;
+    dragAndDropController: DragAndDropController<Context>;
     containerId: string;
     itemType: string;
     data: any;
@@ -28,8 +28,8 @@ interface State {
     hide: boolean;
 }
 
-export class Draggable extends Component<Props, State> {
-    private dragAndDropEventChan?: PopChannel<DragAndDropEvent | undefined>;
+export class Draggable<Context> extends Component<Props<Context>, State> {
+    private dragAndDropEventChan?: PopChannel<DragAndDropEvent<Context> | undefined>;
     private readonly ref = createRef<HTMLDivElement>();
 
     private isDraggingEnabled = true;
@@ -39,7 +39,7 @@ export class Draggable extends Component<Props, State> {
     private topOffset = 0;
     private isDragging = false;
 
-    constructor(props: Props) {
+    constructor(props: Props<Context>) {
         super(props);
         this.state = {
             hide: false,
