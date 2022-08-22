@@ -29,7 +29,7 @@
         "js-cookie": "^3.0.1",
         "lodash-es": "^4.17.21",
         "marked": "^3.0.7",
-        "material-icons": "^1.11.3",
+        "material-symbols": "^0.2.8",
         "moment": "^2.29.1",
         "prismjs": "^1.25.0",
         "react": "^18.2.0",

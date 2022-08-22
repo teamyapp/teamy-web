@@ -277,7 +277,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         return (
             <div className={styles.DeleteAction}
                      onClick={this.onDeleteTeamMemberClick(userId)}>
-                    <MaterialIconUI iconStyle={'outline'}>
+                    <MaterialIconUI iconStyle={'outlined'}>
                         remove_circle
                     </MaterialIconUI>
                 </div>
@@ -340,7 +340,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                             className={`${styles.Action} ${styles.CopyLinkAction}`}
                             onClick={this.onCopyInvitationLinkClick(invitation)}
                         >
-                            <MaterialIconUI iconStyle={'outline'}>
+                            <MaterialIconUI iconStyle={'outlined'}>
                                 link
                             </MaterialIconUI>
                         </div>
@@ -364,7 +364,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     className={`${styles.Action} ${styles.DeleteAction}`}
                     onClick={this.onDeleteInvitationClick(invitation.id)}
                 >
-                    <MaterialIconUI iconStyle={'outline'}>
+                    <MaterialIconUI iconStyle={'outlined'}>
                         remove_circle
                     </MaterialIconUI>
                 </div>
