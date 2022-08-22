@@ -10,9 +10,10 @@ import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 
 import { InlineTaskUI } from '../InlineTask';
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 interface Props {
-    dragAndDropController: DragAndDropController;
+    dragAndDropController: DragAndDropController<DragAndDropContext>;
     sectionId: string;
     task: Task;
     isSelectingOwner: boolean;

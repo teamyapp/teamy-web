@@ -33,13 +33,15 @@ import { User } from '@core/entity/user';
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 interface Props {
-    dragAndDropController: DragAndDropController;
+    dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
     createTaskDefaultOwner?: User;
     sortOrder?: string;
     selectOwnerTaskId?: number;
+    isPersonal?: boolean;
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -77,6 +79,7 @@ export class UpcomingSection extends Component<Props, State> {
                     containerId={upcomingSectionId}
                     itemType={draggableTask}
                     itemSizeTransformer={sectionItemSizeTransformer}
+                    context={{isPersonal: this.props.isPersonal}}
                 >
                     <SectionUI
                         title={'Upcoming'}
