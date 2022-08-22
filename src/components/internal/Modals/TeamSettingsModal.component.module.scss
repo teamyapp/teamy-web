@@ -53,6 +53,7 @@ $tableRowGap: 12px;
             .ActionsSection {
                 --width: 160px;
                 margin-top: 30px;
+                user-select: none;
 
                 .SaveAction {
                     --background-color: #388e3c;
