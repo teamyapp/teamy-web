@@ -26,3 +26,6 @@ yarn-error.log*
 
 # GraphQL plugin
 .schema.graphql
+
+# Identity config
+src/libs/identity/config.ts

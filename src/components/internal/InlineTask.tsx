@@ -9,7 +9,6 @@ import React, {
 
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { NamedValueUI } from '@lib/ui/NamedValue';
 import { TooltipUI } from '@lib/ui/Tooltip';
 import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
@@ -86,10 +85,10 @@ export class InlineTaskUI extends Component<Props, State> {
                         )}
                     </div>
                     {this.renderGoal()}
-                    <div className={styles.BottomRow}>{this.renderDueAt()}</div>
-                    {/*<div className={styles.Attributes}>*/}
-                    {/*    {this.renderEffort()}*/}
-                    {/*</div>*/}
+                    <div className={styles.BottomRow}>
+                        {this.renderDueAt()}
+                        {/*{this.renderEffort()}*/}
+                    </div>
                     <div className={styles.AwaitFor}>
                         {this.props.task.awaitForTasks?.length > 0 &&
                             this.renderAwaitForTasks()}
@@ -135,17 +134,13 @@ export class InlineTaskUI extends Component<Props, State> {
         const { dueAt } = this.props.task;
         const endOfDueAt = byTheEndOf(dueAt);
 
-        if (!dueAt || !endOfDueAt) {
-            return null;
-        }
-
         const now = new Date();
 
         return (
             <DateLabelPickerUI
                 value={dueAt}
-                isWarn={endOfDueAt.getTime() < now.getTime()}
-                shownValue={dueDate(dueAt)}
+                isWarn={endOfDueAt && endOfDueAt.getTime() < now.getTime()}
+                shownValue={dueAt && dueDate(dueAt)}
                 onChange={this.handleEndDateChanged}
             />
         );
@@ -163,9 +158,10 @@ export class InlineTaskUI extends Component<Props, State> {
         const { effort } = this.props.task;
         return (
             effort && (
-                <span className={styles.EffortAttribute}>
-                    <NamedValueUI name={'Effort'} value={`${effort}`} />
-                </span>
+                <div className={styles.EffortSection}>
+                    <MaterialIconUI iconStyle={'outlined'}>weight</MaterialIconUI>
+                    <div>{effort}</div>
+                </div>
             )
         );
     };
@@ -174,7 +170,7 @@ export class InlineTaskUI extends Component<Props, State> {
         return (
             <div className={styles.AwaitForTasksSection}>
                 <div className={styles.AwaitForIcon}>
-                    <MaterialIconUI iconStyle={'round'}>
+                    <MaterialIconUI iconStyle={'rounded'}>
                         hourglass_top
                     </MaterialIconUI>
                 </div>
@@ -269,7 +265,7 @@ export class InlineTaskUI extends Component<Props, State> {
                         onClick={this.onAddAwaitForTaskClick}
                     >
                         <div className={`${styles.AddAwaitForTaskIcon}`}>
-                            <MaterialIconUI iconStyle={'round'}>
+                            <MaterialIconUI iconStyle={'rounded'}>
                                 move_up
                             </MaterialIconUI>
                         </div>

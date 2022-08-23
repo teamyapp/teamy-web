@@ -96,6 +96,7 @@ export class PersonalStatusUI extends Component<Props> {
                                 this.props.onShowPotentialTaskOwners
                             }
                             onSelectSortOrder={this.props.onSelectUpcomingOrder}
+                            isPersonal
                         />
                     </div>
                     <div className={`${styles.TaskListSection}`}>

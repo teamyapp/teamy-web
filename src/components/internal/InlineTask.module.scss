@@ -25,17 +25,14 @@
             resize: none;
             width: 100%;
         }
+    }
 
+    .EffortSection {
+        display: flex;
+        background-color: #00695c;
+        font-weight: bold;
 
-
-        .Attributes {
-            display: flex;
-            margin-top: 10px;
-
-            .EffortAttribute {
-                --color: #1976d2;
-            }
-        }
+        --icon-color: white;
     }
 
     .ActionsSection,
