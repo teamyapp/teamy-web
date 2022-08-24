@@ -256,31 +256,31 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     private renderTeamMember = (user: User, index: number) => {
         const currUserId = this.graphSource.currentUser()!.id;
         return (
-                <div key={index} className={styles.Cell}>
-                    <UserProfileUI user={user} />
-                    <div className={styles.MemberName}>
-                        <span>{user.firstName}</span>
-                        &nbsp;
-                        <span>{user.lastName}</span>
-                    </div>
-                    <div className={styles.Actions}>
-                        {
-                            currUserId !== user.id &&
-                            this.renderDeleteTeamMember(user.id)
-                        }
-                    </div>
+            <div key={index} className={styles.Cell}>
+                <UserProfileUI user={user} />
+                <div className={styles.MemberName}>
+                    <span>{user.firstName}</span>
+                    &nbsp;
+                    <span>{user.lastName}</span>
                 </div>
-            );
+                <div className={styles.Actions}>
+                    {currUserId !== user.id &&
+                        this.renderDeleteTeamMember(user.id)}
+                </div>
+            </div>
+        );
     };
 
     private renderDeleteTeamMember(userId: number) {
         return (
-            <div className={styles.DeleteAction}
-                     onClick={this.onDeleteTeamMemberClick(userId)}>
-                    <MaterialIconUI iconStyle={'outlined'}>
-                        remove_circle
-                    </MaterialIconUI>
-                </div>
+            <div
+                className={styles.DeleteAction}
+                onClick={this.onDeleteTeamMemberClick(userId)}
+            >
+                <MaterialIconUI iconStyle={'outlined'}>
+                    remove_circle
+                </MaterialIconUI>
+            </div>
         );
     }
 

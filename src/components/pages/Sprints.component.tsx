@@ -9,6 +9,7 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
 import {
     getSprintId,
@@ -41,7 +42,6 @@ import { KanbanUI } from '../internal/Kanban';
 import { PersonalStatusUI } from '../internal/PersonalStatus';
 import { getSprintName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
-import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 const tabIds = ['me', 'team'];
 
@@ -87,7 +87,9 @@ export class SprintsComponent extends Component<Props, State> {
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
-    private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent<DragAndDropContext> | undefined>;
+    private dragAndDropEventChan?: csp.PopChannel<
+        DragAndDropEvent<DragAndDropContext> | undefined
+    >;
 
     constructor(props: Props) {
         super(props);

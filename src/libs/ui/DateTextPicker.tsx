@@ -1,5 +1,6 @@
 import moment from 'moment';
 import React, { Component, ReactNode, createRef } from 'react';
+
 import { DatePickerContainerUI } from './DatePickerContainer';
 import { TextFieldUI } from './TextField';
 
@@ -64,16 +65,15 @@ export class DateTextPickerUI extends Component<Props, State> {
 
     private handleTargetFocus = () => {
         if (this.textFieldRef) {
-         this.textFieldRef.current?.focus();
+            this.textFieldRef.current?.focus();
         }
-    }
+    };
 
     private handleTargetChanged = (date: Date) => {
         if (this.textFieldRef.current) {
-            this.textFieldRef.current.value =
-                moment(date).format(dateFormat);
+            this.textFieldRef.current.value = moment(date).format(dateFormat);
         }
-    }
+    };
 
     private onTextFieldBlur = (onChange: (date: Date) => void) => {
         return () => {

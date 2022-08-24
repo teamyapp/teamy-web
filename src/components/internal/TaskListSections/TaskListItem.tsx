@@ -4,13 +4,13 @@ import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { Draggable } from '@lib/dragAndDrop/Draggable';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 
 import { InlineTaskUI } from '../InlineTask';
-import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;

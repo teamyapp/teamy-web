@@ -16,6 +16,7 @@ $contextMenuSidePadding: 20px;
         align-items: center;
         display: flex;
         width: 550px;
+        height: 100%;
     }
 
     .RightSection {
@@ -27,16 +28,24 @@ $contextMenuSidePadding: 20px;
     }
 
     .TeamName {
+        display: flex;
+        align-items: center;
+        line-height: 22px;
         color: $onPrimaryColor;
         font-size: 22px;
         font-weight: 500;
         letter-spacing: 1px;
-        width: 140px;
-        height: 30px;
+        height: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         transition: left 400ms $easeOutExpo;
+        padding: 0 20px;
+
+        &:hover {
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
     }
 
     .Tools {
@@ -172,36 +181,6 @@ $contextMenuSidePadding: 20px;
             margin-top: 4px;
             transform: translateX(-50%);
             width: 700px;
-        }
-    }
-
-    .TeamContextMenu {
-        background-color: white;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        position: fixed;
-        z-index: 1000;
-        @include elevation(5);
-
-        &:focus {
-            outline: none;
-        }
-
-        .ContextMenuItem {
-            font-size: 16px;
-            font-weight: bold;
-            padding: 6px $contextMenuSidePadding;
-
-            &:hover {
-                background-color: #424242;
-                color: white;
-                cursor: pointer;
-            }
-
-            &:not(:first-child) {
-                border-top: 1px solid #eeeeee;
-            }
         }
     }
 }

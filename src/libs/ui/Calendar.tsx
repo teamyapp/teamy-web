@@ -1,9 +1,10 @@
-import _ from 'lodash';
 import classNames from 'classnames';
+import _ from 'lodash';
 import React, { Component, ReactNode, createRef } from 'react';
-import { MaterialIconUI } from './MaterialIcon';
-import styles from './Calendar.module.scss';
+
 import { today } from '../../components/internal/format';
+import styles from './Calendar.module.scss';
+import { MaterialIconUI } from './MaterialIcon';
 
 const weekDayTitles = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const monthNames = [
@@ -25,8 +26,8 @@ const defaultMinYear = 1970;
 const defaultMaxYear = 2100;
 
 interface Props {
-    selectedDate: Date,
-    shownDate: Date,
+    selectedDate: Date;
+    shownDate: Date;
     minYear?: number;
     maxYear?: number;
     onClose?: () => void;
@@ -36,7 +37,6 @@ interface Props {
 
 interface State {
     showSelectYear: boolean;
-
 }
 
 export class CalendarUI extends Component<Props, State> {
@@ -51,7 +51,7 @@ export class CalendarUI extends Component<Props, State> {
     }
 
     componentDidMount() {
-        this.calendarRef?.current?.focus()
+        this.calendarRef?.current?.focus();
     }
 
     public render(): ReactNode {
@@ -102,16 +102,10 @@ export class CalendarUI extends Component<Props, State> {
                     </MaterialIconUI>
                 </div>
                 <div className={styles.Spacer} />
-                <div
-                    className={styles.Button}
-                    onClick={this.onPrevMonthClick}
-                >
+                <div className={styles.Button} onClick={this.onPrevMonthClick}>
                     <MaterialIconUI>navigate_before</MaterialIconUI>
                 </div>
-                <div
-                    className={styles.Button}
-                    onClick={this.onNextMonthClick}
-                >
+                <div className={styles.Button} onClick={this.onNextMonthClick}>
                     <MaterialIconUI>navigate_next</MaterialIconUI>
                 </div>
             </div>
@@ -142,9 +136,7 @@ export class CalendarUI extends Component<Props, State> {
     }
 
     private renderMonthDays(): ReactNode[] {
-        return getMonthDays(this.props.shownDate).map(
-            this.renderMonthDay,
-        );
+        return getMonthDays(this.props.shownDate).map(this.renderMonthDay);
     }
 
     private renderMonthDay = (
@@ -177,8 +169,8 @@ export class CalendarUI extends Component<Props, State> {
         return () => {
             const newDate = new Date(this.props.shownDate);
             newDate.setDate(monthDay);
-            this.props.onClose?.call(null)
-            this.props.onChange?.call(null, newDate)
+            this.props.onClose?.call(null);
+            this.props.onChange?.call(null, newDate);
         };
     };
 
@@ -186,7 +178,7 @@ export class CalendarUI extends Component<Props, State> {
         return () => {
             const newDate = new Date(this.props.shownDate);
             newDate.setFullYear(year);
-            this.props.onChange?.call(null, newDate)
+            this.props.onChange?.call(null, newDate);
         };
     };
 
@@ -201,7 +193,6 @@ export class CalendarUI extends Component<Props, State> {
     private showingToday(shownMonthDay: number): boolean {
         return this.showingGivenDate(today(), shownMonthDay);
     }
-
 
     private showingGivenDate(givenDate: Date, shownMonthDay: number): boolean {
         const shownDate = this.props.shownDate;
@@ -238,9 +229,8 @@ export class CalendarUI extends Component<Props, State> {
         const newDate = new Date(this.props.shownDate);
         newDate.setDate(1);
         newDate.setMonth(nextMonth(newDate.getMonth()));
-        this.props.onShownDateChange?.call(null, newDate)
+        this.props.onShownDateChange?.call(null, newDate);
     };
-
 }
 
 function getMonthDays(date: Date): (null | number)[] {

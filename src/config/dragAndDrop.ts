@@ -1,3 +1,3 @@
 export interface DragAndDropContext {
-    isPersonal?: boolean
+    isPersonal?: boolean;
 }

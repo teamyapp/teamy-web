@@ -8,6 +8,7 @@ import { SectionUI } from '@lib/ui/Section';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 import {
     draggableTask,
     sectionItemSizeTransformer,
@@ -33,7 +34,6 @@ import { User } from '@core/entity/user';
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
-import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
@@ -79,7 +79,7 @@ export class UpcomingSection extends Component<Props, State> {
                     containerId={upcomingSectionId}
                     itemType={draggableTask}
                     itemSizeTransformer={sectionItemSizeTransformer}
-                    context={{isPersonal: this.props.isPersonal}}
+                    context={{ isPersonal: this.props.isPersonal }}
                 >
                     <SectionUI
                         title={'Upcoming'}

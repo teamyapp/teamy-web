@@ -58,9 +58,11 @@ export class DateLabelPickerUI extends Component<Props, State> {
                         })}`}
                     >
                         <MaterialIconUI>alarm</MaterialIconUI>
-                        {this.props.shownValue && <div className={styles.Time}>
-                            {this.props.shownValue}
-                        </div>}
+                        {this.props.shownValue && (
+                            <div className={styles.Time}>
+                                {this.props.shownValue}
+                            </div>
+                        )}
                     </div>
                 )}
             />

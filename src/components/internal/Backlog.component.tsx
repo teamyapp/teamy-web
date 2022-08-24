@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
+import { and } from '@lib/data/filter';
 import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
@@ -12,9 +13,10 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { backlogSectionId } from '@core/config/sections';
-import {allTasks, unplanned} from '@core/data/task.filter';
+import { allTasks, unplanned } from '@core/data/task.filter';
 import { orderByStatusUrgencyAsc } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
+import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
@@ -25,8 +27,6 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import styles from './Backlog.component.module.scss';
 import { InlineCreateTaskUI } from './InlineCreateTask';
 import { TaskListItem } from './TaskListSections/TaskListItem';
-import {TaskFilters} from "@core/entity/filters";
-import {and} from "@lib/data/filter";
 
 interface Props {
     children?: React.ReactNode;
@@ -94,7 +94,8 @@ export class BacklogComponent extends Component<Props, State> {
     }
 
     render() {
-        const {taskOwnerFilter, keywordFilter, timeRangeFilter} = this.props.taskFilters;
+        const { taskOwnerFilter, keywordFilter, timeRangeFilter } =
+            this.props.taskFilters;
         let backlogFilter = allTasks;
         if (taskOwnerFilter) {
             backlogFilter = taskOwnerFilter;

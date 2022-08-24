@@ -110,13 +110,21 @@ export class SprintClient {
     public moveTasksToSprint(
         fromSprintId: string,
         toSprintId: string,
-        taskIds: string[]
+        taskIds: string[],
     ): Promise<RemoteTask[]> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
-                    mutation moveTasksToSprint($fromSprintId: ID!, $toSprintId: ID!, $taskIds: [ID!]!) {
-                        moveTasksToSprint(fromSprintId: $fromSprintId, toSprintId: $toSprintId, taskIds: $taskIds) {
+                    mutation moveTasksToSprint(
+                        $fromSprintId: ID!
+                        $toSprintId: ID!
+                        $taskIds: [ID!]!
+                    ) {
+                        moveTasksToSprint(
+                            fromSprintId: $fromSprintId
+                            toSprintId: $toSprintId
+                            taskIds: $taskIds
+                        ) {
                             id
                         }
                     }

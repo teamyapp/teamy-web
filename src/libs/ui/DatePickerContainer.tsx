@@ -1,13 +1,19 @@
-import { today } from '../../components/internal/format';
 import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 
+import { today } from '../../components/internal/format';
 import { CalendarUI } from './Calendar';
 
 const dateFormat = 'MM/DD/YYYY';
 
 interface Props {
-    target: ({onChange, onToggle}: {onChange: (date: Date) => void, onToggle: () => void }) => ReactNode;
+    target: ({
+        onChange,
+        onToggle,
+    }: {
+        onChange: (date: Date) => void;
+        onToggle: () => void;
+    }) => ReactNode;
     onTargetChanged?: (date: Date) => void;
     onTargetFocus?: () => void;
     value?: Date;
@@ -40,7 +46,10 @@ export class DatePickerContainerUI extends Component<Props, State> {
     render(): ReactNode {
         return (
             <div>
-                {this.props.target({onChange: this.handleCalendarChanged, onToggle: this.onToggle})}
+                {this.props.target({
+                    onChange: this.handleCalendarChanged,
+                    onToggle: this.onToggle,
+                })}
                 {this.state.showCalendar && (
                     <CalendarUI
                         onClose={this.handleCalendarClosed}
@@ -64,7 +73,7 @@ export class DatePickerContainerUI extends Component<Props, State> {
             shownDate: date,
         });
 
-        this.props.onTargetChanged?.call(null, date)
+        this.props.onTargetChanged?.call(null, date);
     };
 
     private handleCalendarClosed = () => {
@@ -72,8 +81,7 @@ export class DatePickerContainerUI extends Component<Props, State> {
             showCalendar: false,
         });
 
-
-        this.props.onTargetFocus?.call(null)
+        this.props.onTargetFocus?.call(null);
     };
 
     private onToggle = () => {

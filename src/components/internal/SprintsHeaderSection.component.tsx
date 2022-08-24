@@ -51,7 +51,10 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     render() {
         return (
             <div className={styles.SprintHeaderSectionContainer}>
-                <TooltipUI message={'Move Unfinished Tasks To Next Sprint'} position={'Bottom'}>
+                <TooltipUI
+                    message={'Move Unfinished Tasks To Next Sprint'}
+                    position={'Bottom'}
+                >
                     <div className={styles.MoveSection}>
                         <div
                             className={styles.Button}
@@ -181,9 +184,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             return false;
         }
 
-        const unfinishedTasks = (currentSprint.tasks || []).filter(
-            unfinished,
-        );
+        const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
 
         if (!unfinishedTasks.length) {
             return false;
@@ -205,9 +206,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
         const currentSprint = this.graphSource.currentSprint()!;
         const nextSprint = this.getNextSprint(currentSprint)!;
-        const unfinishedTasks = (currentSprint.tasks || []).filter(
-            unfinished,
-        );
+        const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
         const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
         this.stateSyncer.moveTasksToSprint(
             currentSprint.id,
@@ -217,8 +216,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     };
 
     private getNextSprint(currentSprint: Sprint) {
-        let sprints = [...this.state.sprints]
-        sprints = orderByStartTimeDesc(sprints)
+        let sprints = [...this.state.sprints];
+        sprints = orderByStartTimeDesc(sprints);
         const currentIndex = sprints.findIndex(
             (sprint) => sprint.id === currentSprint.id,
         );

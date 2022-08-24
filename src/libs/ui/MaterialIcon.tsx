@@ -14,7 +14,9 @@ export class MaterialIconUI extends Component<Props> {
         const iconStyle = this.props.iconStyle || 'outlined';
         return (
             <i
-                className={`${styles.Icon} ${styles[`material-symbols-${iconStyle}`]}`}
+                className={`${styles.Icon} ${
+                    styles[`material-symbols-${iconStyle}`]
+                }`}
             >
                 <span className={styles.Content}>{this.props.children}</span>
             </i>

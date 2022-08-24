@@ -15,6 +15,7 @@ import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { UserClient } from '@core/client/user.client';
 import { getConfig } from '@core/config/config';
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { absoluteRootPath, signInFinishPath } from '@core/config/routing';
 import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
@@ -23,7 +24,6 @@ import { UserActionEvent } from '@core/event/userAction';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 export interface Deps {
     identityClient: IdentityClient;
@@ -72,7 +72,8 @@ export function initDeps(): Deps {
     );
     const router = createBrowserRouter();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
-    const dragAndDropController = new DragAndDropController<DragAndDropContext>();
+    const dragAndDropController =
+        new DragAndDropController<DragAndDropContext>();
     const feedbackPubSub = new PubSub<Feedback>();
     const fileUploadSessionFactory = new FileUploadSessionFactory(
         config.cloudWebAPIEndpoint,
