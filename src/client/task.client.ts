@@ -28,6 +28,7 @@ export class TaskClient {
                                 lastName
                                 profileUrl
                             }
+                            effort
                             owningTeam {
                                 id
                             }
@@ -73,6 +74,7 @@ export class TaskClient {
                                 firstName
                                 profileUrl
                             }
+                            effort
                             owner {
                                 id
                                 firstName
@@ -110,6 +112,7 @@ export class TaskClient {
                             owner {
                                 id
                             }
+                            effort
                             owningTeam {
                                 id
                             }

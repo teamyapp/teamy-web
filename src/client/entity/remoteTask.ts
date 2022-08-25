@@ -17,6 +17,6 @@ export interface RemoteTask {
     createdAt?: string;
     updatedAt?: string;
     dueAt?: string;
-    effort?: number;
+    effort?: string;
     awaitForTasks: RemoteTask[];
 }

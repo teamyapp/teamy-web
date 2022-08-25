@@ -33,7 +33,7 @@ export interface UpdateTaskInput {
     context?: string;
     ownerUserId?: string;
     owningTeamId: string;
-    effort?: number;
+    effort?: string;
     dueAt?: Date;
 }
 

@@ -1,3 +1,4 @@
+import { Duration } from '@core/entity/duration';
 import { Team } from '@core/entity/team';
 import { Thread } from '@core/entity/thread';
 
@@ -12,7 +13,7 @@ export interface Task {
     context?: string;
     owner?: User;
     owningTeam: Team;
-    effort?: number;
+    effort?: Duration;
     comments: Thread;
     availableActions: TaskAction[];
     status: TaskStatus;

@@ -18,18 +18,20 @@ import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
+import { Duration } from '@core/entity/duration';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { DurationInputUI } from '../DurationInput.ui';
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
 import { getShortName } from '../format';
 import styles from './TaskDetailModal.component.module.scss';
 
-const verticalMargin = 40;
+const verticalMargin = 30;
 
 interface Props {
     deps: Deps;
@@ -136,8 +138,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                             </div>
                         </div>
                         <div className={styles.TaskDetailSection}>
-                            <div className={styles.TaskDetailTop}>
-                                <div className={styles.LeftSection}>
+                            <div className={styles.LeftSection}>
+                                <div>
                                     <TextFieldUI
                                         value={this.state.updatedTask.goal}
                                         label={'Goal'}
@@ -148,54 +150,76 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                         )}
                                     />
                                 </div>
-                                <div className={styles.RightSection}>
-                                    <div className={styles.Attributes}>
-                                        <div className={styles.Row}>
-                                            <DateTextPickerUI
-                                                ref={this.dueAtDatePicker}
-                                                label={'Due at'}
-                                                value={dueAt}
-                                            />
-                                        </div>
-                                        {/*<div*/}
-                                        {/*    className={`${styles.Row} ${styles.Effort}`}*/}
-                                        {/*>*/}
-                                        {/*<NamedValueUI*/}
-                                        {/*    name={'Effort'}*/}
-                                        {/*    value={`${*/}
-                                        {/*        this.state.task.effort ||*/}
-                                        {/*        'Unknown'*/}
-                                        {/*    }`}*/}
-                                        {/*/>*/}
-                                        {/*</div>*/}
+                                <div className={styles.Context}>
+                                    <MarkdownEditorUI
+                                        label={'Context'}
+                                        content={this.state.updatedTask.context}
+                                        ref={this.markdownEditorRef}
+                                    />
+                                </div>
+                                <div className={styles.CommentsSection}>
+                                    <div className={styles.Title}>
+                                        Comments&nbsp;(
+                                        {
+                                            this.state.task.comments.messages
+                                                .length
+                                        }
+                                        )
+                                    </div>
+                                    <div
+                                        ref={this.threadDivRef}
+                                        className={styles.Thread}
+                                    >
+                                        <ThreadUI
+                                            messages={
+                                                this.state.task.comments
+                                                    .messages
+                                            }
+                                            editorUserId={
+                                                this.state.currentUserId!
+                                            }
+                                            postButtonLabel={'Comment'}
+                                            onPostMessage={this.onPostComment}
+                                            onDeleteMessage={
+                                                this.onDeleteMessage
+                                            }
+                                            onUpdateMessage={
+                                                this.onUpdateMessage
+                                            }
+                                        />
                                     </div>
                                 </div>
                             </div>
-                            <div className={styles.Context}>
-                                <MarkdownEditorUI
-                                    label={'Context'}
-                                    content={this.state.updatedTask.context}
-                                    ref={this.markdownEditorRef}
-                                />
-                            </div>
-                        </div>
-                        <div className={styles.CommentsSection}>
-                            <div className={styles.Title}>
-                                Comments&nbsp;(
-                                {this.state.task.comments.messages.length})
-                            </div>
-                            <div
-                                ref={this.threadDivRef}
-                                className={styles.Thread}
-                            >
-                                <ThreadUI
-                                    messages={this.state.task.comments.messages}
-                                    editorUserId={this.state.currentUserId!}
-                                    postButtonLabel={'Comment'}
-                                    onPostMessage={this.onPostComment}
-                                    onDeleteMessage={this.onDeleteMessage}
-                                    onUpdateMessage={this.onUpdateMessage}
-                                />
+                            <div className={styles.RightSection}>
+                                <div className={styles.Attributes}>
+                                    <div className={styles.Row}>
+                                        <DateTextPickerUI
+                                            ref={this.dueAtDatePicker}
+                                            label={'Due at'}
+                                            value={dueAt}
+                                        />
+                                    </div>
+
+                                    <div
+                                        className={`${styles.Row} ${styles.Effort}`}
+                                    >
+                                        <DurationInputUI
+                                            duration={
+                                                this.state.updatedTask.effort
+                                            }
+                                            icon={
+                                                <MaterialIconUI
+                                                    iconStyle={'outlined'}
+                                                >
+                                                    weight
+                                                </MaterialIconUI>
+                                            }
+                                            onDurationChange={
+                                                this.onEffortChange
+                                            }
+                                        />
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -290,15 +314,10 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
-            const dueAt = this.dueAtDatePicker.current?.value || undefined;
-            const task = this.state.task!;
-            await this.stateSyncer.updateTask(task.id, {
-                goal: this.state.updatedTask!.goal,
-                context: this.markdownEditorRef.current?.content,
-                ownerUserId: task.owner?.id,
-                owningTeamId: this.graphSource.currentTeam()!.id,
-                dueAt: dueAt,
-            });
+            await this.stateSyncer.updateTask(
+                this.state.task.id,
+                this.getUpdatedTaskInput(),
+            );
             await this.props.deps.feedbackPubSub.publish({
                 type: 'TaskUpdated',
                 taskId: this.state.task.id,
@@ -351,4 +370,28 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             task.owner?.id,
         );
     };
+
+    private onEffortChange = async (effort?: Duration) => {
+        await this.stateSyncer.updateTask(this.state.task!.id, {
+            ...this.getUpdatedTaskInput(),
+            effort: effort,
+        });
+        await this.props.deps.feedbackPubSub.publish({
+            type: 'TaskUpdated',
+            taskId: this.state.task!.id,
+        });
+    };
+
+    private getUpdatedTaskInput(): UpdateTaskInput {
+        const dueAt = this.dueAtDatePicker.current?.value || undefined;
+        const task = this.state.task!;
+        return {
+            goal: this.state.updatedTask!.goal,
+            context: this.markdownEditorRef.current?.content,
+            ownerUserId: task.owner?.id,
+            owningTeamId: task.owningTeam.id,
+            dueAt: dueAt,
+            effort: task.effort,
+        };
+    }
 }
