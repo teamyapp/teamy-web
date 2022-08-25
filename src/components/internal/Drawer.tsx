@@ -161,7 +161,6 @@ export class DrawerUI extends Component<Props, State> {
     };
 
     private onViewTeamSettingsClick = () => {
-        debugger;
         if (this.selectedTeamId) {
             this.props.onViewTeamSettingsClick?.call(
                 null,
