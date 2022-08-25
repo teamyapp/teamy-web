@@ -30,6 +30,7 @@ export class SprintClient {
                                 goal
                                 dueAt
                                 status
+                                effort
                                 isPlanned
                                 owner {
                                     id

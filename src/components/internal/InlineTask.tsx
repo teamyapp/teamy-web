@@ -13,11 +13,13 @@ import { TooltipUI } from '@lib/ui/Tooltip';
 import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
+import { Duration } from '@core/entity/duration';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
 
+import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
 import { UserProfileUI } from './UserProfile';
 import { dueDate, getShortName } from './format';
@@ -86,8 +88,12 @@ export class InlineTaskUI extends Component<Props, State> {
                     </div>
                     {this.renderGoal()}
                     <div className={styles.BottomRow}>
-                        {this.renderDueAt()}
-                        {/*{this.renderEffort()}*/}
+                        <div className={styles.Attribute}>
+                            {this.renderDueAt()}
+                        </div>
+                        <div className={styles.Attribute}>
+                            {this.renderEffort()}
+                        </div>
                     </div>
                     <div className={styles.AwaitFor}>
                         {this.props.task.awaitForTasks?.length > 0 &&
@@ -133,9 +139,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderDueAt = () => {
         const { dueAt } = this.props.task;
         const endOfDueAt = byTheEndOf(dueAt);
-
         const now = new Date();
-
         return (
             <DateLabelPickerUI
                 value={dueAt}
@@ -160,14 +164,17 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderEffort = () => {
         const { effort } = this.props.task;
         return (
-            effort && (
-                <div className={styles.EffortSection}>
+            <DurationInputUI
+                duration={effort}
+                icon={
                     <MaterialIconUI iconStyle={'outlined'}>
                         weight
                     </MaterialIconUI>
-                    <div>{effort}</div>
-                </div>
-            )
+                }
+                onPopupOpen={this.onEffortPopupOpen}
+                onPopupClose={this.onEffortPopupClose}
+                onDurationChange={this.onEffortChange}
+            />
         );
     };
 
@@ -447,6 +454,21 @@ export class InlineTaskUI extends Component<Props, State> {
             dueAt: this.props.task.dueAt,
         };
     }
+
+    private onEffortPopupOpen = () => {
+        this.props.onStartEditingTask?.call(null);
+    };
+
+    private onEffortPopupClose = () => {
+        this.props.onFinishEditingTask?.call(null);
+    };
+
+    private onEffortChange = (effort?: Duration) => {
+        this.props.onUpdateTask?.call(this, this.props.task.id, {
+            ...this.getUpdatedTask(),
+            effort: effort,
+        });
+    };
 }
 
 function byTheEndOf(date?: Date): Date | undefined {

@@ -1,3 +1,4 @@
+import { Duration } from '@core/entity/duration';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { SprintNode } from '@core/storage/graph/sprint.node';
@@ -88,7 +89,7 @@ export class TaskNode implements Task {
         return this.taskState.dueAt;
     }
 
-    public get effort(): number | undefined {
+    public get effort(): Duration | undefined {
         return this.taskState.effort;
     }
 

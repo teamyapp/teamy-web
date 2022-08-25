@@ -27,14 +27,6 @@
         }
     }
 
-    .EffortSection {
-        display: flex;
-        background-color: #00695c;
-        font-weight: bold;
-
-        --icon-color: white;
-    }
-
     .ActionsSection,
     .ViewDetailSection {
         border-left: 2px solid $dividerColor;
@@ -74,7 +66,6 @@
         margin-bottom: 10px;
 
         .Attribute {
-            border-radius: 4px;
             font-weight: 500;
             padding: 2px 6px;
 
@@ -117,6 +108,12 @@
     .BottomRow {
         display: flex;
         margin-top: 10px;
+
+        .Attribute {
+            &:not(:first-child) {
+                margin-left: 6px;
+            }
+        }
     }
 }
 

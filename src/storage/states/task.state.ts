@@ -1,5 +1,8 @@
+import { Duration } from '@core/entity/duration';
 import { toDate } from '@core/storage/states/parser';
 import { TaskStatus } from '@core/storage/states/taskStatus';
+
+const MILLIS_TO_NANOS = 1_000_000;
 
 export class TaskState {
     public constructor(
@@ -14,7 +17,7 @@ export class TaskState {
         public dueAt?: Date,
         public context?: string,
         public ownerUserId?: number,
-        public effort?: number,
+        public effort?: Duration,
         public updatedAt?: Date,
     ) {}
 
@@ -31,7 +34,9 @@ export class TaskState {
             toDate(json.DueAt),
             json.Context,
             json.OwnerUserID,
-            json.Effort,
+            json.Effort
+                ? new Duration(json.Effort / MILLIS_TO_NANOS)
+                : undefined,
             toDate(json.UpdatedAt),
         );
     }

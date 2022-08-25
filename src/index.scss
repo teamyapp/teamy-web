@@ -3,4 +3,23 @@ body {
         'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
         'Helvetica Neue', sans-serif;
     margin: 0;
+
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.4);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
 }

@@ -55,7 +55,7 @@ export class KanbanUI extends Component<Props> {
         const deliveredTasks = this.props.tasks.filter(deliveredColumnFilter);
         const awaitingTasks = this.props.tasks.filter(awaitingColumnFilter);
         return (
-            <div className={`${styles.TeamStatus} ${styles.TaskLists}`}>
+            <div className={styles.TaskLists}>
                 <div className={`${styles.TaskListSection}`}>
                     <UpcomingSection
                         dragAndDropController={
