@@ -121,7 +121,7 @@ $divider: 2px solid #eeeeee;
                 .Row {
                     display: flex;
                     width: 100%;
-                    align-items: start;
+                    align-items: flex-start;
 
                     &:not(:first-child) {
                         margin-top: 20px;
