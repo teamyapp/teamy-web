@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Component, MouseEvent, RefObject, createRef } from 'react';
+import React, { Component, MouseEvent, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -22,24 +22,11 @@ interface Props {
     onCreateTeamClick?: () => void;
 }
 
-interface State {
-    showTeamContextMenu: boolean;
-    teamContextMenuLeft: number;
-    teamContextMenuTop: number;
-}
 
-export class DrawerUI extends Component<Props, State> {
+export class DrawerUI extends Component<Props> {
+
+    private readonly teamContextMenuRef = createRef<TeamContextMenuComponent>();
     private selectedTeamId?: number;
-    private teamContextMenuRef: RefObject<any> = createRef();
-
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            showTeamContextMenu: false,
-            teamContextMenuLeft: 0,
-            teamContextMenuTop: 0,
-        };
-    }
 
     render = () => {
         return (
