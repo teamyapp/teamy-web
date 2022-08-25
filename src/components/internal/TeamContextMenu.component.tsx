@@ -16,7 +16,7 @@ interface State {
 }
 
 export class TeamContextMenuComponent extends Component<Props, State> {
-    private contextMenuRef: RefObject<any> = createRef();
+    private contextMenuRef = createRef<HTMLUListElement>();
 
     constructor(props: Props) {
         super(props);

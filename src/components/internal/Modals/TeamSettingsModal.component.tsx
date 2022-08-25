@@ -440,7 +440,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             this.state.team!.id,
             fileUploadSessionId,
         );
-        const team = this.graphSource.currentTeam();
+        const team = this.graphSource.team(this.state.team!.id);
         this.setState({
             team,
         });
