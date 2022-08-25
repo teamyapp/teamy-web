@@ -1,4 +1,4 @@
-import React, { Component, RefObject, createRef } from 'react';
+import React, { Component, createRef } from 'react';
 
 import styles from './TeamContextMenu.component.module.scss';
 
