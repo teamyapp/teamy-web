@@ -88,7 +88,9 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                             <div className={styles.DropDown}>
                                 <DropDownList
                                     ref={this.dropDownListRef}
-                                    selectOptionKey={expirationPeriodOptions[0].key}
+                                    selectOptionKey={
+                                        expirationPeriodOptions[0].key
+                                    }
                                     options={expirationPeriodOptions}
                                 />
                             </div>

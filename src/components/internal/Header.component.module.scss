@@ -1,4 +1,5 @@
 @import '../../libs/ui/styleguide/easing';
+@import '../../libs/ui/styleguide/elevation';
 @import 'shared';
 
 @include header;
@@ -14,6 +15,7 @@
         align-items: center;
         display: flex;
         width: 550px;
+        height: 100%;
     }
 
     .RightSection {
@@ -25,16 +27,24 @@
     }
 
     .TeamName {
+        display: flex;
+        align-items: center;
+        line-height: 22px;
         color: $onPrimaryColor;
         font-size: 22px;
         font-weight: 500;
         letter-spacing: 1px;
-        width: 140px;
-        height: 30px;
+        height: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
         transition: left 400ms $easeOutExpo;
+        padding: 0 20px;
+
+        &:hover {
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
     }
 
     .Tools {

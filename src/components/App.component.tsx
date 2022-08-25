@@ -5,9 +5,7 @@ import React, { Component, Fragment, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import {
-    DragAndDropEvent,
-} from '@lib/dragAndDrop/DragAndDropController';
+import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { TeamyExtensionRuntime } from '@lib/ext/runtime';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
@@ -15,6 +13,7 @@ import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
 import {
     debugRoutePattern,
@@ -72,7 +71,6 @@ import { DebugComponent } from './pages/Debug.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
-import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 const sectionIds = [
     backlogSectionId,
@@ -144,7 +142,9 @@ export class AppComponent extends Component<Props, State> {
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
-    private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent<DragAndDropContext> | undefined>;
+    private dragAndDropEventChan?: csp.PopChannel<
+        DragAndDropEvent<DragAndDropContext> | undefined
+    >;
 
     private extensions: Extension[] = [];
 
@@ -224,6 +224,18 @@ export class AppComponent extends Component<Props, State> {
                                 onTaskFiltersChange={this.onTaskFiltersChange}
                                 onBacklogToggle={this.onBacklogToggle}
                                 onCreateSprintClick={this.onCreateSprintClick}
+                                onAddTeamMembersClick={
+                                    this.onAddTeamMembersClick
+                                }
+                                onShowTeamMembersClick={
+                                    this.onShowTeamMembersClick
+                                }
+                                onShowInvitationsClick={
+                                    this.onShowInvitationsClick
+                                }
+                                onViewTeamSettingsClick={
+                                    this.onViewTeamSettingsClick
+                                }
                             />
                             {this.state.showMainContent &&
                                 (this.state.activeTeamId ? (

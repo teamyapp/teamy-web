@@ -91,7 +91,7 @@ export class DragAndDropController<Context> {
         containerId: string,
         transformItemSize: SizeTransformer,
         receiverLayer: number,
-        context?: Context
+        context?: Context,
     ): void {
         if (!this.draggedTarget) {
             return;
@@ -151,7 +151,7 @@ export class DragAndDropController<Context> {
                 srcContainId: this.sourceContainerId,
                 destContainerId: containerId,
                 target: this.draggedTarget,
-                context: this.context
+                context: this.context,
             });
         }
 

@@ -6,6 +6,7 @@ import { SectionUI } from '@lib/ui/Section';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 import {
     draggableTask,
     sectionItemSizeTransformer,
@@ -16,7 +17,6 @@ import { Task } from '@core/entity/task';
 
 import styles from './DeliveredSection.module.scss';
 import { TaskListItem } from './TaskListItem';
-import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;

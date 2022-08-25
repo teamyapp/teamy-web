@@ -148,18 +148,23 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private handleEndDateChanged = (date?: Date) => {
         if (!date) {
-            return
+            return;
         }
-        
-        this.props.onUpdateTask?.call(this, this.props.task.id, {...this.getUpdatedTask(), dueAt: date})
-    }
+
+        this.props.onUpdateTask?.call(this, this.props.task.id, {
+            ...this.getUpdatedTask(),
+            dueAt: date,
+        });
+    };
 
     private renderEffort = () => {
         const { effort } = this.props.task;
         return (
             effort && (
                 <div className={styles.EffortSection}>
-                    <MaterialIconUI iconStyle={'outlined'}>weight</MaterialIconUI>
+                    <MaterialIconUI iconStyle={'outlined'}>
+                        weight
+                    </MaterialIconUI>
                     <div>{effort}</div>
                 </div>
             )

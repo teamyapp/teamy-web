@@ -29,7 +29,9 @@ interface State {
 }
 
 export class Draggable<Context> extends Component<Props<Context>, State> {
-    private dragAndDropEventChan?: PopChannel<DragAndDropEvent<Context> | undefined>;
+    private dragAndDropEventChan?: PopChannel<
+        DragAndDropEvent<Context> | undefined
+    >;
     private readonly ref = createRef<HTMLDivElement>();
 
     private isDraggingEnabled = true;

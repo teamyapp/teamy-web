@@ -1,5 +1,10 @@
 import classNames from 'classnames';
-import React, { ChangeEvent, Component, FocusEvent, createRef } from 'react';
+import React, {
+    ChangeEvent,
+    Component,
+    FocusEvent,
+    createRef,
+} from 'react';
 
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
@@ -18,6 +23,7 @@ import { User } from '@core/entity/user';
 import { FilterListComponent } from './FilterList.component';
 import styles from './Header.component.module.scss';
 import { SprintsHeaderSectionComponent } from './SprintsHeaderSection.component';
+import { TeamContextMenuComponent } from './TeamContextMenu.component';
 import { UserProfileUI } from './UserProfile';
 
 interface Props {
@@ -31,6 +37,10 @@ interface Props {
     onUserProfileClick?: () => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
     onCreateSprintClick?: () => void;
+    onAddTeamMembersClick?: (teamId: number) => void;
+    onShowTeamMembersClick?: (teamId: number) => void;
+    onShowInvitationsClick?: (teamId: number) => void;
+    onViewTeamSettingsClick?: (teamId: number) => void;
 }
 
 interface State {
@@ -43,6 +53,7 @@ export class HeaderComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly searchBarRef = createRef<HTMLDivElement>();
     private readonly searchInputRef = createRef<HTMLInputElement>();
+    private readonly teamContextMenuRef = createRef<TeamContextMenuComponent>();
 
     constructor(props: Props) {
         super(props);
@@ -70,9 +81,19 @@ export class HeaderComponent extends Component<Props, State> {
                             </div>
                         )}
                     </div>
-                    <div className={styles.TeamName}>
+                    <div
+                        className={styles.TeamName}
+                        onContextMenu={this.onTeamContextMenu}
+                    >
                         {this.props.currentTeam?.name}
                     </div>
+                    <TeamContextMenuComponent
+                        ref={this.teamContextMenuRef}
+                        onAddMembersClick={this.onAddMembersClick}
+                        onShowMembersClick={this.onShowMembersClick}
+                        onShowInvitationsClick={this.onShowInvitationsClick}
+                        onViewTeamSettingsClick={this.onViewTeamSettingsClick}
+                    />
                     <div className={styles.Tools}>
                         <DropDownList
                             selectOptionKey={'sprint'}
@@ -217,5 +238,46 @@ export class HeaderComponent extends Component<Props, State> {
         });
 
         this.props.onBacklogToggle?.call(null);
+    };
+
+    private onTeamContextMenu = (event: React.MouseEvent<HTMLElement>) => {
+        event.preventDefault();
+        this.teamContextMenuRef.current?.open(event.clientY, event.clientX);
+    };
+
+    private onAddMembersClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onAddTeamMembersClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+    };
+
+    private onShowMembersClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onShowTeamMembersClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+    };
+
+    private onShowInvitationsClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onShowInvitationsClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+    };
+
+    private onViewTeamSettingsClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onViewTeamSettingsClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
     };
 }

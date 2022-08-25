@@ -58,5 +58,5 @@ export interface UpdateInvitationInput {
 
 export interface CreateSprintInput {
     startAt: Date;
-    endAt: Date
+    endAt: Date;
 }

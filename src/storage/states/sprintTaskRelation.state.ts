@@ -6,9 +6,6 @@ export class SprintTaskRelationState {
     }
 
     public static fromMutationPayload(json: any): SprintTaskRelationState {
-        return new SprintTaskRelationState(
-            json.SprintID,
-            json.TaskID,
-        );
+        return new SprintTaskRelationState(json.SprintID, json.TaskID);
     }
 }

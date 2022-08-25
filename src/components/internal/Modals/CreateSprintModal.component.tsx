@@ -11,13 +11,10 @@ import { CreateSprintInput } from '@core/entity/input';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { DURATIONS, DurationKey, getEndAt } from '../format';
 import styles from './CreateSprintModal.component.module.scss';
-import { DurationKey, DURATIONS, getEndAt } from '../format';
 
-const SPRINT_LENGTHS: DurationKey[] = [
-    '1week',
-    '2weeks'
-];
+const SPRINT_LENGTHS: DurationKey[] = ['1week', '2weeks'];
 
 interface Props {
     deps: Deps;
@@ -61,13 +58,10 @@ export class CreateSprintModalComponent extends Component<Props> {
                         <DropDownList
                             selectOptionKey={'1week'}
                             ref={this.sprintLengthInputRef}
-                            options={SPRINT_LENGTHS.map(
-                                (duration) => ({
-                                    key: duration,
-                                    description:
-                                    DURATIONS[duration].description,
-                                }),
-                            )}
+                            options={SPRINT_LENGTHS.map((duration) => ({
+                                key: duration,
+                                description: DURATIONS[duration].description,
+                            }))}
                         />
                     </div>
                     <div className={styles.AddAction}>

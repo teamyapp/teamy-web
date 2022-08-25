@@ -18,16 +18,21 @@ interface Props<Context> {
     receiverLayer?: number;
     containerId: string;
     itemType: string;
-    context?: Context
+    context?: Context;
 }
 
 interface State {
     isReceiving: boolean;
 }
 
-export class DragAndDropContainer<Context> extends Component<Props<Context>, State> {
+export class DragAndDropContainer<Context> extends Component<
+    Props<Context>,
+    State
+> {
     private readonly ref = createRef<HTMLDivElement>();
-    private dragAndDropEventChan?: PopChannel<DragAndDropEvent<Context> | undefined>;
+    private dragAndDropEventChan?: PopChannel<
+        DragAndDropEvent<Context> | undefined
+    >;
     private isDraggingEnabled = true;
 
     constructor(props: Props<Context>) {
@@ -148,7 +153,7 @@ export class DragAndDropContainer<Context> extends Component<Props<Context>, Sta
                 this.props.containerId,
                 itemSizeTransformer,
                 this.props.receiverLayer || 0,
-                this.props.context
+                this.props.context,
             );
         }
     };

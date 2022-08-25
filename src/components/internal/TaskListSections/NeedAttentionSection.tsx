@@ -5,6 +5,7 @@ import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { SectionUI } from '@lib/ui/Section';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 import {
     draggableTask,
     sectionItemSizeTransformer,
@@ -15,7 +16,6 @@ import { Task } from '@core/entity/task';
 
 import styles from './NeedAttentionSection.module.scss';
 import { TaskListItem } from './TaskListItem';
-import { DragAndDropContext } from '@core/config/dragAndDrop';
 
 interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
