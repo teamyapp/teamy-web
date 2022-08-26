@@ -153,7 +153,7 @@ export class DurationInputPopup extends Component<PopupProps, PopupState> {
         };
     }
 
-    render(): any {
+    render() {
         const { duration } = this.props;
         return createPortal(
             this.state.showPopup && (
