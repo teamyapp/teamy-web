@@ -4,6 +4,7 @@ import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { and } from '@lib/data/filter';
 import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { BoundingBoxFinder } from '@lib/ui/position';
@@ -58,6 +59,7 @@ export class BacklogComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
+    private readonly relativeLayout: RelativeLayout;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
@@ -66,6 +68,7 @@ export class BacklogComponent extends Component<Props, State> {
         this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
+        this.relativeLayout = props.deps.relativeLayout;
         this.state = {
             unplannedTasks: [],
             onEditingNewTask: false,
@@ -168,6 +171,7 @@ export class BacklogComponent extends Component<Props, State> {
         return (
             <div className={styles.ListItem} key={index}>
                 <TaskListItem
+                    relativeLayout={this.relativeLayout}
                     sectionId={backlogSectionId}
                     dragAndDropController={
                         this.props.deps.dragAndDropController

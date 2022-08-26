@@ -383,9 +383,11 @@ export class AppComponent extends Component<Props, State> {
                 }
             }
         })().then();
+        this.props.deps.eventDetectionScheduler.start();
     }
 
     public componentWillUnmount() {
+        this.props.deps.eventDetectionScheduler.stop();
         closeIfNot(this.stateChangeChan);
         closeIfNot(this.routeChangeChan);
         closeIfNot(this.dragAndDropEventChan);

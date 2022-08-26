@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { Draggable } from '@lib/dragAndDrop/Draggable';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
@@ -13,6 +14,7 @@ import { TaskAction } from '@core/entity/taskAction';
 import { InlineTaskUI } from '../InlineTask';
 
 interface Props {
+    relativeLayout: RelativeLayout;
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     sectionId: string;
     task: Task;
@@ -44,6 +46,7 @@ export class TaskListItem extends Component<Props> {
                 data={this.props.task}
             >
                 <InlineTaskUI
+                    relativeLayout={this.props.relativeLayout}
                     task={this.props.task}
                     isSelectingOwner={this.props.isSelectingOwner}
                     filterTaskAction={this.props.filterTaskAction}

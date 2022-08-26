@@ -1,10 +1,5 @@
 import classNames from 'classnames';
-import React, {
-    ChangeEvent,
-    Component,
-    FocusEvent,
-    createRef,
-} from 'react';
+import React, { ChangeEvent, Component, FocusEvent, createRef } from 'react';
 
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
