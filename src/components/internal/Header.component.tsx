@@ -83,6 +83,7 @@ export class HeaderComponent extends Component<Props, State> {
                     </div>
                     <div
                         className={styles.TeamName}
+                        onClick={this.onViewTeamSettingsClick}
                         onContextMenu={this.onTeamContextMenu}
                     >
                         {this.props.currentTeam?.name}
