@@ -59,6 +59,7 @@ export class PersonalStatusUI extends Component<Props> {
                     className={`${styles.TaskListSection} ${styles.NeedAttentionSection}`}
                 >
                     <NeedAttentionSection
+                        relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
@@ -78,6 +79,7 @@ export class PersonalStatusUI extends Component<Props> {
                 <div className={`${styles.TaskLists}`}>
                     <div className={`${styles.TaskListSection}`}>
                         <UpcomingSection
+                            relativeLayout={this.props.deps.relativeLayout}
                             dragAndDropController={
                                 this.props.deps.dragAndDropController
                             }
@@ -101,6 +103,7 @@ export class PersonalStatusUI extends Component<Props> {
                     </div>
                     <div className={`${styles.TaskListSection}`}>
                         <AwaitingSection
+                            relativeLayout={this.props.deps.relativeLayout}
                             dragAndDropController={
                                 this.props.deps.dragAndDropController
                             }
@@ -119,6 +122,7 @@ export class PersonalStatusUI extends Component<Props> {
                     </div>
                     <div className={`${styles.TaskListSection}`}>
                         <DeliveredSection
+                            relativeLayout={this.props.deps.relativeLayout}
                             dragAndDropController={
                                 this.props.deps.dragAndDropController
                             }

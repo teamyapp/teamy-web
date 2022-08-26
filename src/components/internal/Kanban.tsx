@@ -58,6 +58,7 @@ export class KanbanUI extends Component<Props> {
             <div className={styles.TaskLists}>
                 <div className={`${styles.TaskListSection}`}>
                     <UpcomingSection
+                        relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
@@ -79,6 +80,7 @@ export class KanbanUI extends Component<Props> {
                 </div>
                 <div className={`${styles.TaskListSection}`}>
                     <InProgressSection
+                        relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
@@ -97,6 +99,7 @@ export class KanbanUI extends Component<Props> {
                 </div>
                 <div className={`${styles.TaskListSection}`}>
                     <AwaitingSection
+                        relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
@@ -115,6 +118,7 @@ export class KanbanUI extends Component<Props> {
                 </div>
                 <div className={`${styles.TaskListSection}`}>
                     <DeliveredSection
+                        relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }

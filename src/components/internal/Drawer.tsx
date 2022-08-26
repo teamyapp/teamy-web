@@ -7,7 +7,7 @@ import { TooltipUI } from '@lib/ui/Tooltip';
 import { Team } from '@core/entity/team';
 
 import styles from './Drawer.module.scss';
-import {TeamContextMenuComponent} from "./TeamContextMenu.component";
+import { TeamContextMenuComponent } from './TeamContextMenu.component';
 
 interface Props {
     teams: Team[];
@@ -22,9 +22,7 @@ interface Props {
     onCreateTeamClick?: () => void;
 }
 
-
 export class DrawerUI extends Component<Props> {
-
     private readonly teamContextMenuRef = createRef<TeamContextMenuComponent>();
     private selectedTeamId?: number;
 
@@ -112,47 +110,37 @@ export class DrawerUI extends Component<Props> {
         };
     };
 
-    private onTeamContextMenu = (teamId: number): ((event: React.MouseEvent<HTMLElement>) => void) => {
+    private onTeamContextMenu = (
+        teamId: number,
+    ): ((event: React.MouseEvent<HTMLElement>) => void) => {
         return (event: MouseEvent<HTMLElement>) => {
             event.preventDefault();
             this.selectedTeamId = teamId;
             this.teamContextMenuRef.current?.open(event.clientY, event.clientX);
-        }
+        };
     };
 
     private onAddMembersClick = () => {
         if (this.selectedTeamId) {
-            this.props.onAddTeamMembersClick?.call(
-                null,
-                this.selectedTeamId,
-            );
+            this.props.onAddTeamMembersClick?.call(null, this.selectedTeamId);
         }
     };
 
     private onShowMembersClick = () => {
         if (this.selectedTeamId) {
-            this.props.onShowTeamMembersClick?.call(
-                null,
-                this.selectedTeamId,
-            );
+            this.props.onShowTeamMembersClick?.call(null, this.selectedTeamId);
         }
     };
 
     private onShowInvitationsClick = () => {
         if (this.selectedTeamId) {
-            this.props.onShowInvitationsClick?.call(
-                null,
-                this.selectedTeamId,
-            );
+            this.props.onShowInvitationsClick?.call(null, this.selectedTeamId);
         }
     };
 
     private onViewTeamSettingsClick = () => {
         if (this.selectedTeamId) {
-            this.props.onViewTeamSettingsClick?.call(
-                null,
-                this.selectedTeamId,
-            );
+            this.props.onViewTeamSettingsClick?.call(null, this.selectedTeamId);
         }
     };
 }

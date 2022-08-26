@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from 'react';
 
 import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { SectionUI } from '@lib/ui/Section';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
@@ -18,6 +19,7 @@ import styles from './NeedAttentionSection.module.scss';
 import { TaskListItem } from './TaskListItem';
 
 interface Props {
+    relativeLayout: RelativeLayout;
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     needAttentionTask?: Task;
     selectOwnerTaskId?: number;
@@ -63,6 +65,7 @@ export class NeedAttentionSection extends Component<Props> {
             return (
                 <div key={task.id}>
                     <TaskListItem
+                        relativeLayout={this.props.relativeLayout}
                         dragAndDropController={this.props.dragAndDropController}
                         sectionId={sectionId}
                         task={task}
