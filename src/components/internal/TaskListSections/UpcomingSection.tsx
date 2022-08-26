@@ -34,6 +34,7 @@ import { User } from '@core/entity/user';
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
+import {groupByOwners} from "@core/data/task.group";
 
 interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
@@ -71,7 +72,7 @@ export class UpcomingSection extends Component<Props, State> {
     }
 
     public render() {
-        const tasks = this.getSortedTasks();
+        const groupedTasks = this.getGroupedTasks();
         return (
             <div className={styles.TaskListSection}>
                 <DragAndDropContainer
@@ -86,7 +87,7 @@ export class UpcomingSection extends Component<Props, State> {
                         actions={
                             <div className={`${styles.SectionTopBar}`}>
                                 <div className={styles.TaskCounter}>
-                                    {tasks.length}
+                                    {groupedTasks.length}
                                 </div>
                                 <div className={styles.SortOrder}>
                                     <DropDownList
@@ -115,7 +116,7 @@ export class UpcomingSection extends Component<Props, State> {
                                     onDiscardNewTask={this.onDiscardNewTask}
                                 />
                             )}
-                            {tasks.map(
+                            {groupedTasks.map(
                                 this.renderInlineTask(upcomingSectionId),
                             )}
                         </div>
@@ -127,7 +128,7 @@ export class UpcomingSection extends Component<Props, State> {
 
     private renderInlineTask = (
         sectionId: string,
-    ): ((task: Task) => ReactNode) => {
+    ): ((task: Task ) => ReactNode) => {
         return (task: Task) => {
             return (
                 <div key={task.id}>
@@ -173,18 +174,28 @@ export class UpcomingSection extends Component<Props, State> {
         });
     };
 
-    private getSortedTasks(): Task[] {
-        switch (this.props.sortOrder) {
-            case taskPriorityOrder:
-                return this.props.tasks.sort(orderByPriority);
-            case taskUrgencyOrder:
-                return this.props.tasks.sort(orderByUrgency);
-            case taskValueOrder:
-                return this.props.tasks.sort(orderByValue);
-            case taskEffortOrder:
-                return this.props.tasks.sort(orderByEffort);
-            default:
-                return this.props.tasks;
+    private getGroupedTasks(): Task[] {
+        const groupedTasksMap = groupByOwners(this.props.tasks);
+        groupedTasksMap.forEach((value) => {
+            this.getSortedTasks(value);
+        });
+        return Array.from(groupedTasksMap.values()).flat();
+    }
+
+    private getSortedTasks(tasks:Task[] | undefined): Task[] | undefined {
+        if (tasks) {
+            switch (this.props.sortOrder) {
+                case taskPriorityOrder:
+                    return tasks.sort(orderByPriority);
+                case taskUrgencyOrder:
+                    return tasks.sort(orderByUrgency);
+                case taskValueOrder:
+                    return tasks.sort(orderByValue)
+                case taskEffortOrder:
+                    return tasks.sort(orderByEffort);
+                default:
+                    return tasks;
+            }
         }
     }
 }

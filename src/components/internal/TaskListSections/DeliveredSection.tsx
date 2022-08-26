@@ -17,6 +17,7 @@ import { Task } from '@core/entity/task';
 
 import styles from './DeliveredSection.module.scss';
 import { TaskListItem } from './TaskListItem';
+import {groupByOwners} from "@core/data/task.group";
 
 interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
@@ -38,6 +39,7 @@ interface Props {
 
 export class DeliveredSection extends Component<Props> {
     public render() {
+        const groupedTasks = this.getGroupedTasks();
         return (
             <div className={`${styles.TaskListSection}`}>
                 <DragAndDropContainer
@@ -51,14 +53,14 @@ export class DeliveredSection extends Component<Props> {
                         actions={
                             <div className={`${styles.SectionTopBar}`}>
                                 <div className={styles.TaskCounter}>
-                                    {this.props.tasks.length}
+                                    {groupedTasks.length}
                                 </div>
                                 <SpacerUI />
                             </div>
                         }
                     >
                         <div className={styles.TaskList}>
-                            {this.props.tasks.map(
+                            {groupedTasks.map(
                                 this.renderInlineTask(deliveredSectionId),
                             )}
                         </div>
@@ -95,4 +97,9 @@ export class DeliveredSection extends Component<Props> {
             );
         };
     };
+
+    private getGroupedTasks(): Task[] {
+        const groupedTasksMap = groupByOwners(this.props.tasks);
+        return Array.from(groupedTasksMap.values()).flat();
+    }
 }
