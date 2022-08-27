@@ -743,7 +743,7 @@ export class AppComponent extends Component<Props, State> {
     ) {
         switch (srcSectionId) {
             case backlogSectionId:
-                this.processFromBacklog(destSectionId, task, context);
+                this.processTask(task, context);
                 break;
             case needAttentionSectionId:
             case inProgressSectionId:
@@ -760,42 +760,6 @@ export class AppComponent extends Component<Props, State> {
                 switch (destSectionId) {
                     case backlogSectionId:
                         this.removeTaskFromSprint(task.id);
-                        break;
-                }
-
-                break;
-        }
-    }
-
-    private processFromBacklog(
-        destSectionId: string,
-        task: Task,
-        context?: DragAndDropContext,
-    ) {
-        switch (destSectionId) {
-            case upcomingSectionId:
-                switch (task.status) {
-                    case 'TODO':
-                    case 'PAUSED':
-                        this.processTask(task, context);
-                        break;
-                }
-
-                break;
-
-            case needAttentionSectionId:
-            case inProgressSectionId:
-                switch (task.status) {
-                    case 'IN_PROGRESS':
-                        this.processTask(task, context);
-                        break;
-                }
-
-                break;
-            case deliveredSectionId:
-                switch (task.status) {
-                    case 'DELIVERED':
-                        this.processTask(task, context);
                         break;
                 }
 
