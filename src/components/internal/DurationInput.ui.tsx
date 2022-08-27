@@ -257,6 +257,7 @@ export class DurationInputPopup extends Component<PopupProps, PopupState> {
                 }
             },
         );
+        this.props.onOpen?.call(null);
     }
 
     private onSaveClick = () => {
