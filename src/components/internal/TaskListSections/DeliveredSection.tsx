@@ -1,21 +1,24 @@
-import React, {Component, ReactNode} from 'react';
+import React, { Component, ReactNode } from 'react';
 
-import {DragAndDropContainer} from '@lib/dragAndDrop/DragAndDropContainer';
-import {DragAndDropController} from '@lib/dragAndDrop/DragAndDropController';
-import {RelativeLayout} from '@lib/layout/relativeLayout';
-import {SectionUI} from '@lib/ui/Section';
-import {SpacerUI} from '@lib/ui/Spacer';
-import {BoundingBoxFinder} from '@lib/ui/position';
+import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
+import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { SectionUI } from '@lib/ui/Section';
+import { SpacerUI } from '@lib/ui/Spacer';
+import { BoundingBoxFinder } from '@lib/ui/position';
 
-import {DragAndDropContext} from '@core/config/dragAndDrop';
-import {draggableTask, sectionItemSizeTransformer,} from '@core/config/draggable';
-import {deliveredSectionId} from '@core/config/sections';
-import {UpdateTaskInput} from '@core/entity/input';
-import {Task} from '@core/entity/task';
+import { DragAndDropContext } from '@core/config/dragAndDrop';
+import {
+    draggableTask,
+    sectionItemSizeTransformer,
+} from '@core/config/draggable';
+import { deliveredSectionId } from '@core/config/sections';
+import { groupByOwners } from '@core/data/task.group';
+import { UpdateTaskInput } from '@core/entity/input';
+import { Task } from '@core/entity/task';
 
 import styles from './DeliveredSection.module.scss';
-import {TaskListItem} from './TaskListItem';
-import {groupByOwners} from "@core/data/task.group";
+import { TaskListItem } from './TaskListItem';
 
 interface Props {
     relativeLayout: RelativeLayout;
@@ -39,6 +42,7 @@ interface Props {
 export class DeliveredSection extends Component<Props> {
     public render() {
         const groupedTasks = groupByOwners(this.props.tasks);
+        const flattenTasks = Array.from(groupedTasks.values()).flat();
         return (
             <div className={`${styles.TaskListSection}`}>
                 <DragAndDropContainer
@@ -52,14 +56,14 @@ export class DeliveredSection extends Component<Props> {
                         actions={
                             <div className={`${styles.SectionTopBar}`}>
                                 <div className={styles.TaskCounter}>
-                                    {Array.from(groupedTasks.values()).flat().length}
+                                    {flattenTasks.length}
                                 </div>
-                                <SpacerUI/>
+                                <SpacerUI />
                             </div>
                         }
                     >
                         <div className={styles.TaskList}>
-                            {Array.from(groupedTasks.values()).flat().map(
+                            {flattenTasks.map(
                                 this.renderInlineTask(deliveredSectionId),
                             )}
                         </div>
