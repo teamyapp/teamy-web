@@ -64,3 +64,7 @@ export const orderByStatusUrgencyAsc: SortOrder = (
 
     return orderByUrgency(task1, task2);
 };
+
+export const orderById: SortOrder = (task1: Task, task2: Task): number => {
+    return task1.id - task2.id
+}

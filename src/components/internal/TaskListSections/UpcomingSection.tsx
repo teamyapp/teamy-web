@@ -25,7 +25,7 @@ import {
 } from '@core/config/sortOrder';
 import { groupByOwners } from '@core/data/task.group';
 import {
-    orderByEffort,
+    orderByEffort, orderById,
     orderByPriority,
     orderByUrgency,
     orderByValue,
@@ -200,7 +200,7 @@ export class UpcomingSection extends Component<Props, State> {
             case taskEffortOrder:
                 return orderByEffort;
             default:
-                return orderByUrgency;
+                return orderById;
         }
     }
 }
