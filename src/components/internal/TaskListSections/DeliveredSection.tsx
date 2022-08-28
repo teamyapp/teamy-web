@@ -39,7 +39,7 @@ interface Props {
 
 export class DeliveredSection extends Component<Props> {
     public render() {
-        const groupedTasks = this.getGroupedTasks();
+        const groupedTasks = groupByOwners(this.props.tasks);
         return (
             <div className={`${styles.TaskListSection}`}>
                 <DragAndDropContainer
@@ -53,14 +53,14 @@ export class DeliveredSection extends Component<Props> {
                         actions={
                             <div className={`${styles.SectionTopBar}`}>
                                 <div className={styles.TaskCounter}>
-                                    {groupedTasks.length}
+                                    {Array.from(groupedTasks.values()).flat().length}
                                 </div>
                                 <SpacerUI />
                             </div>
                         }
                     >
                         <div className={styles.TaskList}>
-                            {groupedTasks.map(
+                            {Array.from(groupedTasks.values()).flat().map(
                                 this.renderInlineTask(deliveredSectionId),
                             )}
                         </div>
@@ -97,9 +97,4 @@ export class DeliveredSection extends Component<Props> {
             );
         };
     };
-
-    private getGroupedTasks(): Task[] {
-        const groupedTasksMap = groupByOwners(this.props.tasks);
-        return Array.from(groupedTasksMap.values()).flat();
-    }
 }

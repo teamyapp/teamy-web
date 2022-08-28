@@ -1,19 +1,16 @@
-import React, { Component, ReactNode } from 'react';
+import React, {Component, ReactNode} from 'react';
 
-import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
-import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
-import { DropDownList } from '@lib/ui/DropDownList';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { SectionUI } from '@lib/ui/Section';
-import { SpacerUI } from '@lib/ui/Spacer';
-import { BoundingBoxFinder } from '@lib/ui/position';
+import {DragAndDropContainer} from '@lib/dragAndDrop/DragAndDropContainer';
+import {DragAndDropController} from '@lib/dragAndDrop/DragAndDropController';
+import {DropDownList} from '@lib/ui/DropDownList';
+import {MaterialIconUI} from '@lib/ui/MaterialIcon';
+import {SectionUI} from '@lib/ui/Section';
+import {SpacerUI} from '@lib/ui/Spacer';
+import {BoundingBoxFinder} from '@lib/ui/position';
 
-import { DragAndDropContext } from '@core/config/dragAndDrop';
-import {
-    draggableTask,
-    sectionItemSizeTransformer,
-} from '@core/config/draggable';
-import { upcomingSectionId } from '@core/config/sections';
+import {DragAndDropContext} from '@core/config/dragAndDrop';
+import {draggableTask, sectionItemSizeTransformer,} from '@core/config/draggable';
+import {upcomingSectionId} from '@core/config/sections';
 import {
     taskEffortOrder,
     taskPriorityOrder,
@@ -21,18 +18,13 @@ import {
     taskValueOrder,
     upcomingSortOrders,
 } from '@core/config/sortOrder';
-import {
-    orderByEffort,
-    orderByPriority,
-    orderByUrgency,
-    orderByValue,
-} from '@core/data/task.order';
-import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
-import { Task } from '@core/entity/task';
-import { User } from '@core/entity/user';
+import {orderByEffort, orderByPriority, orderByUrgency, orderByValue,} from '@core/data/task.order';
+import {CreateTaskInput, UpdateTaskInput} from '@core/entity/input';
+import {Task} from '@core/entity/task';
+import {User} from '@core/entity/user';
 
-import { InlineCreateTaskUI } from '../InlineCreateTask';
-import { TaskListItem } from './TaskListItem';
+import {InlineCreateTaskUI} from '../InlineCreateTask';
+import {TaskListItem} from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
 import {groupByOwners} from "@core/data/task.group";
 
@@ -80,14 +72,14 @@ export class UpcomingSection extends Component<Props, State> {
                     containerId={upcomingSectionId}
                     itemType={draggableTask}
                     itemSizeTransformer={sectionItemSizeTransformer}
-                    context={{ isPersonal: this.props.isPersonal }}
+                    context={{isPersonal: this.props.isPersonal}}
                 >
                     <SectionUI
                         title={'Upcoming'}
                         actions={
                             <div className={`${styles.SectionTopBar}`}>
                                 <div className={styles.TaskCounter}>
-                                    {groupedTasks.length}
+                                    {Array.from(groupedTasks.values()).flat().length}
                                 </div>
                                 <div className={styles.SortOrder}>
                                     <DropDownList
@@ -98,7 +90,7 @@ export class UpcomingSection extends Component<Props, State> {
                                         }
                                     />
                                 </div>
-                                <SpacerUI />
+                                <SpacerUI/>
                                 <div
                                     className={styles.Actions}
                                     onClick={this.onAddClick}
@@ -116,7 +108,7 @@ export class UpcomingSection extends Component<Props, State> {
                                     onDiscardNewTask={this.onDiscardNewTask}
                                 />
                             )}
-                            {groupedTasks.map(
+                            {Array.from(groupedTasks.values()).flat().map(
                                 this.renderInlineTask(upcomingSectionId),
                             )}
                         </div>
@@ -128,7 +120,7 @@ export class UpcomingSection extends Component<Props, State> {
 
     private renderInlineTask = (
         sectionId: string,
-    ): ((task: Task ) => ReactNode) => {
+    ): ((task: Task) => ReactNode) => {
         return (task: Task) => {
             return (
                 <div key={task.id}>
@@ -174,28 +166,32 @@ export class UpcomingSection extends Component<Props, State> {
         });
     };
 
-    private getGroupedTasks(): Task[] {
-        const groupedTasksMap = groupByOwners(this.props.tasks);
-        groupedTasksMap.forEach((value) => {
-            this.getSortedTasks(value);
-        });
-        return Array.from(groupedTasksMap.values()).flat();
+    private getGroupedTasks(): Map<number | undefined, Task[]> {
+        const groupedTasks = groupByOwners(this.props.tasks);
+        this.sortGroupedTasks(groupedTasks)
+        return groupedTasks;
     }
 
-    private getSortedTasks(tasks:Task[] | undefined): Task[] | undefined {
-        if (tasks) {
-            switch (this.props.sortOrder) {
-                case taskPriorityOrder:
-                    return tasks.sort(orderByPriority);
-                case taskUrgencyOrder:
-                    return tasks.sort(orderByUrgency);
-                case taskValueOrder:
-                    return tasks.sort(orderByValue)
-                case taskEffortOrder:
-                    return tasks.sort(orderByEffort);
-                default:
-                    return tasks;
-            }
+    private sortGroupedTasks(groupedTasks: Map<number | undefined, Task[]>) {
+        switch (this.props.sortOrder) {
+            case taskPriorityOrder:
+                return groupedTasks.forEach((value) => {
+                    value.sort(orderByPriority);
+                });
+            case taskUrgencyOrder:
+                return groupedTasks.forEach((value) => {
+                    value.sort(orderByUrgency);
+                });
+            case taskValueOrder:
+                return groupedTasks.forEach((value) => {
+                    value.sort(orderByValue);
+                });
+            case taskEffortOrder:
+                return groupedTasks.forEach((value) => {
+                    value.sort(orderByEffort);
+                });
+            default:
+                return groupedTasks;
         }
     }
 }
