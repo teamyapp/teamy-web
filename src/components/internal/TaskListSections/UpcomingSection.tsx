@@ -1,13 +1,13 @@
 import React, {Component, ReactNode} from 'react';
 
-import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
-import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
-import { RelativeLayout } from '@lib/layout/relativeLayout';
-import { DropDownList } from '@lib/ui/DropDownList';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { SectionUI } from '@lib/ui/Section';
-import { SpacerUI } from '@lib/ui/Spacer';
-import { BoundingBoxFinder } from '@lib/ui/position';
+import {DragAndDropContainer} from '@lib/dragAndDrop/DragAndDropContainer';
+import {DragAndDropController} from '@lib/dragAndDrop/DragAndDropController';
+import {RelativeLayout} from '@lib/layout/relativeLayout';
+import {DropDownList} from '@lib/ui/DropDownList';
+import {MaterialIconUI} from '@lib/ui/MaterialIcon';
+import {SectionUI} from '@lib/ui/Section';
+import {SpacerUI} from '@lib/ui/Spacer';
+import {BoundingBoxFinder} from '@lib/ui/position';
 import {DragAndDropContext} from '@core/config/dragAndDrop';
 import {draggableTask, sectionItemSizeTransformer,} from '@core/config/draggable';
 import {upcomingSectionId} from '@core/config/sections';

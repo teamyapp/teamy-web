@@ -1,23 +1,20 @@
-import React, { Component, ReactNode } from 'react';
+import React, {Component, ReactNode} from 'react';
 
-import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
-import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
-import { RelativeLayout } from '@lib/layout/relativeLayout';
-import { SectionUI } from '@lib/ui/Section';
-import { SpacerUI } from '@lib/ui/Spacer';
-import { BoundingBoxFinder } from '@lib/ui/position';
+import {DragAndDropContainer} from '@lib/dragAndDrop/DragAndDropContainer';
+import {DragAndDropController} from '@lib/dragAndDrop/DragAndDropController';
+import {RelativeLayout} from '@lib/layout/relativeLayout';
+import {SectionUI} from '@lib/ui/Section';
+import {SpacerUI} from '@lib/ui/Spacer';
+import {BoundingBoxFinder} from '@lib/ui/position';
 
-import { DragAndDropContext } from '@core/config/dragAndDrop';
-import {
-    draggableTask,
-    sectionItemSizeTransformer,
-} from '@core/config/draggable';
-import { deliveredSectionId } from '@core/config/sections';
-import { UpdateTaskInput } from '@core/entity/input';
-import { Task } from '@core/entity/task';
+import {DragAndDropContext} from '@core/config/dragAndDrop';
+import {draggableTask, sectionItemSizeTransformer,} from '@core/config/draggable';
+import {deliveredSectionId} from '@core/config/sections';
+import {UpdateTaskInput} from '@core/entity/input';
+import {Task} from '@core/entity/task';
 
 import styles from './DeliveredSection.module.scss';
-import { TaskListItem } from './TaskListItem';
+import {TaskListItem} from './TaskListItem';
 import {groupByOwners} from "@core/data/task.group";
 
 interface Props {
@@ -57,7 +54,7 @@ export class DeliveredSection extends Component<Props> {
                                 <div className={styles.TaskCounter}>
                                     {Array.from(groupedTasks.values()).flat().length}
                                 </div>
-                                <SpacerUI />
+                                <SpacerUI/>
                             </div>
                         }
                     >
