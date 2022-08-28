@@ -82,7 +82,6 @@ export function applySprintTaskMutation(
         case 'Delete': {
             const sprintTaskRelation =
             SprintTaskRelationState.fromMutationPayload(mutation.payload);
-
             currState.sprintTaskRelations = currState.sprintTaskRelations.filter(
                 (sprintTaskRelationItem) =>
                     !(sprintTaskRelationItem.taskId ===
