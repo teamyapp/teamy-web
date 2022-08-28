@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from 'react';
 
 import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { SectionUI } from '@lib/ui/Section';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { BoundingBoxFinder } from '@lib/ui/position';
@@ -20,6 +21,7 @@ import { TaskListItem } from './TaskListItem';
 import {groupByOwners} from "@core/data/task.group";
 
 interface Props {
+    relativeLayout: RelativeLayout;
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
     selectOwnerTaskId?: number;
@@ -77,6 +79,7 @@ export class DeliveredSection extends Component<Props> {
             return (
                 <div key={task.id}>
                     <TaskListItem
+                        relativeLayout={this.props.relativeLayout}
                         dragAndDropController={this.props.dragAndDropController}
                         sectionId={sectionId}
                         task={task}

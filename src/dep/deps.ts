@@ -1,6 +1,9 @@
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
+import { BoundingBoxChangeEventMonitor } from '@lib/event/boundingBoxEvent';
+import { EventDetectionScheduler } from '@lib/event/scheduler';
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { WithIdentity } from '@lib/network/WithIdentity';
@@ -26,6 +29,8 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 export interface Deps {
+    eventDetectionScheduler: EventDetectionScheduler;
+    relativeLayout: RelativeLayout;
     identityClient: IdentityClient;
     router: Router;
     localStore: LocalStore;
@@ -78,7 +83,16 @@ export function initDeps(): Deps {
     const fileUploadSessionFactory = new FileUploadSessionFactory(
         config.cloudWebAPIEndpoint,
     );
+    const eventDetectionScheduler = new EventDetectionScheduler();
+    const boundingBoxChangeEventMonitor = new BoundingBoxChangeEventMonitor();
+    eventDetectionScheduler.addEventMonitor(
+        'boundingBoxChange',
+        boundingBoxChangeEventMonitor,
+    );
+    const relativeLayout = new RelativeLayout(boundingBoxChangeEventMonitor);
     return {
+        eventDetectionScheduler,
+        relativeLayout,
         identityClient,
         router,
         localStore,

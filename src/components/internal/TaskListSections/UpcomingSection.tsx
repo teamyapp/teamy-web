@@ -1,13 +1,13 @@
 import React, {Component, ReactNode} from 'react';
 
-import {DragAndDropContainer} from '@lib/dragAndDrop/DragAndDropContainer';
-import {DragAndDropController} from '@lib/dragAndDrop/DragAndDropController';
-import {DropDownList} from '@lib/ui/DropDownList';
-import {MaterialIconUI} from '@lib/ui/MaterialIcon';
-import {SectionUI} from '@lib/ui/Section';
-import {SpacerUI} from '@lib/ui/Spacer';
-import {BoundingBoxFinder} from '@lib/ui/position';
-
+import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
+import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { DropDownList } from '@lib/ui/DropDownList';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { SectionUI } from '@lib/ui/Section';
+import { SpacerUI } from '@lib/ui/Spacer';
+import { BoundingBoxFinder } from '@lib/ui/position';
 import {DragAndDropContext} from '@core/config/dragAndDrop';
 import {draggableTask, sectionItemSizeTransformer,} from '@core/config/draggable';
 import {upcomingSectionId} from '@core/config/sections';
@@ -29,6 +29,7 @@ import styles from './UpcomingSection.module.scss';
 import {groupByOwners} from "@core/data/task.group";
 
 interface Props {
+    relativeLayout: RelativeLayout;
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
     createTaskDefaultOwner?: User;
@@ -125,6 +126,7 @@ export class UpcomingSection extends Component<Props, State> {
             return (
                 <div key={task.id}>
                     <TaskListItem
+                        relativeLayout={this.props.relativeLayout}
                         dragAndDropController={this.props.dragAndDropController}
                         sectionId={sectionId}
                         task={task}

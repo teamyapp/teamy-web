@@ -9,6 +9,7 @@ import React, {
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -56,6 +57,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
+    private readonly relativeLayout: RelativeLayout;
     private readonly modalRef = createRef<ModalUI>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
@@ -67,6 +69,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
+        this.relativeLayout = props.deps.relativeLayout;
         this.state = {
             heightWithMargin: 0,
         };
@@ -204,9 +207,11 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                         className={`${styles.Row} ${styles.Effort}`}
                                     >
                                         <DurationInputUI
+                                            relativeLayout={this.relativeLayout}
                                             duration={
                                                 this.state.updatedTask.effort
                                             }
+                                            zOffset={1000}
                                             icon={
                                                 <MaterialIconUI
                                                     iconStyle={'outlined'}

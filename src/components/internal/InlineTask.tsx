@@ -7,6 +7,7 @@ import React, {
     ReactNode,
 } from 'react';
 
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -34,6 +35,7 @@ const statusNames: Record<TaskStatus, string> = {
 };
 
 interface Props {
+    relativeLayout: RelativeLayout;
     task: Task;
     filterTaskAction?: (action: TaskAction) => boolean;
     showStatus?: boolean;
@@ -165,6 +167,7 @@ export class InlineTaskUI extends Component<Props, State> {
         const { effort } = this.props.task;
         return (
             <DurationInputUI
+                relativeLayout={this.props.relativeLayout}
                 duration={effort}
                 icon={
                     <MaterialIconUI iconStyle={'outlined'}>
