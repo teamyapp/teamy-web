@@ -25,7 +25,8 @@ import {
 } from '@core/config/sortOrder';
 import { groupByOwners } from '@core/data/task.group';
 import {
-    orderByEffort, orderById,
+    orderByEffort,
+    orderById,
     orderByPriority,
     orderByUrgency,
     orderByValue,
