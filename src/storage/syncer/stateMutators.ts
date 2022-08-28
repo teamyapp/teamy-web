@@ -79,6 +79,18 @@ export function applySprintTaskMutation(
             currState.sprintTaskRelations.push(sprintTaskRelation);
             break;
         }
+        case 'Delete': {
+            const sprintTaskRelation =
+            SprintTaskRelationState.fromMutationPayload(mutation.payload);
+
+            currState.sprintTaskRelations = currState.sprintTaskRelations.filter(
+                (sprintTaskRelationItem) =>
+                    !(sprintTaskRelationItem.taskId ===
+                        sprintTaskRelation.taskId &&
+                    sprintTaskRelationItem.sprintId ===
+                        sprintTaskRelation.sprintId),
+            )
+        }
     }
 
     return currState;
