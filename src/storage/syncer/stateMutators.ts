@@ -81,14 +81,17 @@ export function applySprintTaskMutation(
         }
         case 'Delete': {
             const sprintTaskRelation =
-            SprintTaskRelationState.fromMutationPayload(mutation.payload);
-            currState.sprintTaskRelations = currState.sprintTaskRelations.filter(
-                (sprintTaskRelationItem) =>
-                    !(sprintTaskRelationItem.taskId ===
-                        sprintTaskRelation.taskId &&
-                    sprintTaskRelationItem.sprintId ===
-                        sprintTaskRelation.sprintId),
-            )
+                SprintTaskRelationState.fromMutationPayload(mutation.payload);
+            currState.sprintTaskRelations =
+                currState.sprintTaskRelations.filter(
+                    (sprintTaskRelationItem) =>
+                        !(
+                            sprintTaskRelationItem.taskId ===
+                                sprintTaskRelation.taskId &&
+                            sprintTaskRelationItem.sprintId ===
+                                sprintTaskRelation.sprintId
+                        ),
+                );
         }
     }
 
