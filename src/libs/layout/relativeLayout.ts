@@ -4,7 +4,7 @@ export type HorizontalAlignment = 'left' | 'right' | 'center';
 
 export type VerticalAlignment = 'top' | 'bottom' | 'center';
 
-export type OverSpaceAction = 'overlap' | 'horizontalShift' | 'verticalShift';
+export type OverSpaceAction = 'overlap' | 'shiftHorizontal' | 'shiftVertical';
 
 export interface LayoutAttachment {
     detach(): void;
@@ -81,11 +81,12 @@ function calcLeft(
                 (referenceRect.width - followerRect.width) / 2;
                 break
     }
-    const windowRight =
-        window.innerWidth || document.documentElement.clientWidth;
+    
+    const rightBound =
+        (window.innerWidth || document.documentElement.clientWidth) - offset;
     const right = left + followerRect.width;
 
-    if (left >= 0 && right <= windowRight) {
+    if (left >= offset && right <= rightBound) {
         return left;
     }
 
