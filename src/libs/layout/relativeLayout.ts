@@ -4,7 +4,7 @@ export type HorizontalAlignment = 'left' | 'right' | 'center';
 
 export type VerticalAlignment = 'top' | 'bottom' | 'center';
 
-export type OverSpaceAction = 'overlap' | 'shiftHorizontal' | 'shiftVertical';
+export type OverSpaceAction = 'overlap' | 'jumpHorizontally' | 'jumpVertically';
 
 export interface LayoutAttachment {
     detach(): void;
@@ -20,7 +20,7 @@ export class RelativeLayout {
         followerEl: HTMLElement,
         horizontalAlignment: HorizontalAlignment = 'center',
         verticalAlignment: VerticalAlignment = 'bottom',
-        overSpaceAction: OverSpaceAction = 'overlap',
+        overSpaceAction: OverSpaceAction = 'jumpHorizontally',
         offset: number = 10,
     ): LayoutAttachment {
         const updateFollowerPosition = () => {
@@ -66,14 +66,13 @@ function calcLeft(
     offset: number,
 ) {
     let left = 0;
-
     switch (alignment) {
         case 'left':
-            left = referenceRect.left;
+            left = referenceRect.left - followerRect.width;
             break;
         case 'right':
             left =
-                referenceRect.left + referenceRect.width - followerRect.width;
+                referenceRect.left + referenceRect.width
             break;
         case 'center':
             left =
@@ -85,20 +84,18 @@ function calcLeft(
     const rightBound =
         (window.innerWidth || document.documentElement.clientWidth) - offset;
     const right = left + followerRect.width;
-
     if (left >= offset && right <= rightBound) {
         return left;
     }
 
-
     if (left < offset) {
         switch (overSpaceAction) {
             case 'overlap':
-            case 'shiftVertical':
+            case 'jumpVertically':
                 left = offset;
                 break;
-            case 'shiftHorizontal':
-                left = referenceRect.left
+            case 'jumpHorizontally':
+                left = referenceRect.left + referenceRect.width
                 break
         }
     }
@@ -106,11 +103,11 @@ function calcLeft(
     if (right > rightBound) {
         switch (overSpaceAction) {
             case 'overlap':
-            case 'shiftVertical':
+            case 'jumpVertically':
                 left = rightBound - followerRect.width
                 break
-            case 'shiftHorizontal':
-                left = referenceRect.left + referenceRect.width - followerRect.width;
+            case 'jumpHorizontally':
+                left = referenceRect.left - followerRect.width;
                 break
         }
     }
@@ -126,7 +123,6 @@ function calcTop(
     offset: number,
 ) {
     let top = 0;
-
     switch (alignment) {
         case 'top':
             top = referenceRect.top - followerRect.height;
@@ -144,9 +140,7 @@ function calcTop(
 
     const bottomBound =
         window.innerHeight || document.documentElement.clientHeight - offset;
-
     const bottom = top + followerRect.height;
-
     if (top >= offset && bottom <= bottomBound) {
         return top;
     }
@@ -154,10 +148,10 @@ function calcTop(
     if (top < offset) {
         switch (overSpaceAction) {
             case 'overlap':
-            case 'shiftHorizontal':
+            case 'jumpHorizontally':
                 top = offset
                 break
-            case 'shiftVertical':
+            case 'jumpVertically':
                 top = referenceRect.top + referenceRect.height;
                 break
         }
@@ -166,10 +160,10 @@ function calcTop(
     if (bottom > bottomBound) {
         switch (overSpaceAction) {
             case 'overlap':
-            case 'shiftHorizontal':
+            case 'jumpHorizontally':
                 top = bottomBound - followerRect.height;
                 break
-            case 'shiftVertical':
+            case 'jumpVertically':
                 top = referenceRect.top - followerRect.height
                 break
         }  
