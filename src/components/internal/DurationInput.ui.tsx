@@ -253,6 +253,7 @@ export class DurationInputPopup extends Component<PopupProps, PopupState> {
                             this.popupRef.current,
                             'center',
                             'bottom',
+                            'jumpVertically'
                         );
                 }
             },
