@@ -45,6 +45,9 @@ export class TaskClient {
                                         lastName
                                         profileUrl
                                     }
+                                    thread {
+                                        id
+                                    }
                                     createdAt
                                     updatedAt
                                 }
