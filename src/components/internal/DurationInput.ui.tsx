@@ -31,7 +31,7 @@ export class DurationInputUI extends Component<Props> {
                     onClose={this.props.onPopupClose}
                     relativeLayout={this.props.relativeLayout}
                     zOffset={this.props.zOffset}
-                    trigger={({ onToggle }) => (
+                    renderReferenceElement={({ onToggle }) => (
                         <div
                             className={styles.ValueRow}
                             onClick={onToggle}
@@ -44,7 +44,7 @@ export class DurationInputUI extends Component<Props> {
                             )}
                         </div>
                     )}
-                    target={({ onClose }) => (
+                    renderPopup={({ onClose }) => (
                         <DurationInputPopup
                             duration={duration}
                             onDurationChange={this.props.onDurationChange}
