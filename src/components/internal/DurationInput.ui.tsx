@@ -26,6 +26,7 @@ export class DurationInputUI extends Component<Props> {
         return (
             <div className={styles.Duration}>
                 <PopupContainerUI
+                    overSpaceAction="jumpVertically"
                     onOpen={this.props.onPopupOpen}
                     onClose={this.props.onPopupClose}
                     relativeLayout={this.props.relativeLayout}

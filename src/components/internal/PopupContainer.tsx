@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import {
     HorizontalAlignment,
     LayoutAttachment,
+    OverSpaceAction,
     RelativeLayout,
     VerticalAlignment,
 } from '@lib/layout/relativeLayout';
@@ -24,6 +25,8 @@ type Props = {
     relativeLayout: RelativeLayout;
     horizontalAlignment?: HorizontalAlignment;
     verticalAlignment?: VerticalAlignment;
+    overSpaceAction?: OverSpaceAction
+    offset?: number,
 };
 
 interface States {
@@ -74,6 +77,8 @@ export class PopupContainerUI extends Component<Props, States> {
                             this.popupRef.current,
                             this.props.horizontalAlignment,
                             this.props.verticalAlignment,
+                            this.props.overSpaceAction,
+                            this.props.offset 
                         );
                 }
             },
