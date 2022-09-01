@@ -33,7 +33,8 @@ import { getShortName } from '../format';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 30;
-
+const DATE_PICKER_ZINDEX = 1002
+const DURATION_INPUT_ZINDEX = 1000
 interface Props {
     deps: Deps;
     selectOwnerTaskId?: number;
@@ -201,7 +202,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             ref={this.dueAtDatePicker}
                                             label={'Due at'}
                                             value={dueAt}
-                                            zOffset={1002}
+                                            zOffset={DATE_PICKER_ZINDEX}
                                         />
                                     </div>
 
@@ -213,7 +214,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             duration={
                                                 this.state.updatedTask.effort
                                             }
-                                            zOffset={1000}
+                                            zOffset={DURATION_INPUT_ZINDEX}
                                             icon={
                                                 <MaterialIconUI
                                                     iconStyle={'outlined'}

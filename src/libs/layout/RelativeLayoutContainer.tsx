@@ -14,8 +14,8 @@ type Props = {
     onClose?: () => void;
     onMouseLeave?: () => void;
     zOffset?: number;
-    trigger: ({ onToggle }: { onToggle: () => void }) => ReactNode;
-    target: ({
+    renderReferenceElement: ({ onToggle }: { onToggle: () => void }) => ReactNode;
+    renderPopup: ({
         onClose,
         onOpen,
     }: {
@@ -33,7 +33,7 @@ interface States {
     showPopup: boolean;
 }
 
-export class PopupContainerUI extends Component<Props, States> {
+export class RelativeLayoutContainerUI extends Component<Props, States> {
     private readonly popupContainer = document.createElement('div');
     private readonly popupRef = createRef<HTMLDivElement>();
     private readonly triggerRef = createRef<HTMLDivElement>();
@@ -98,7 +98,7 @@ export class PopupContainerUI extends Component<Props, States> {
         return (
             <Fragment>
                 <span ref={this.triggerRef}>
-                    {this.props.trigger({ onToggle: this.handleToggle })}
+                    {this.props.renderReferenceElement({ onToggle: this.handleToggle })}
                 </span>
                 {this.state.showPopup && this.popupRef && createPortal(
                     (
@@ -109,7 +109,7 @@ export class PopupContainerUI extends Component<Props, States> {
                                 zIndex: (this.props.zOffset || 0) + 1,
                             }}
                         >
-                            {this.props.target({
+                            {this.props.renderPopup({
                                 onClose: this.onClose,
                                 onOpen: this.onOpen,
                             })}

@@ -1,5 +1,5 @@
 import React, { Component, ReactNode, createRef } from 'react';
-import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
 import { ButtonUI } from '@lib/ui/Button';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { TextFieldUI } from '@lib/ui/TextField';
@@ -7,7 +7,7 @@ import { TextFieldUI } from '@lib/ui/TextField';
 import { Duration } from '@core/entity/duration';
 
 import styles from './DurationInput.ui.module.scss';
-import { PopupContainerUI } from './PopupContainer';
+
 
 interface Props {
     relativeLayout: RelativeLayout;
@@ -25,7 +25,7 @@ export class DurationInputUI extends Component<Props> {
         const { duration } = this.props;
         return (
             <div className={styles.Duration}>
-                <PopupContainerUI
+                <RelativeLayoutContainerUI
                     overSpaceAction="jumpVertically"
                     onOpen={this.props.onPopupOpen}
                     onClose={this.props.onPopupClose}

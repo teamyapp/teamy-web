@@ -2,13 +2,11 @@
 import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 
-import { RelativeLayout } from '@lib/layout/relativeLayout';
-
+import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
 import { today } from '../../components/internal/format';
-import {
-    PopupContainerUI,
-} from '../../components/internal/PopupContainer';
+
 import { CalendarUI } from './Calendar';
+
 
 const dateFormat = 'MM/DD/YYYY';
 
@@ -51,16 +49,16 @@ export class DatePickerContainerUI extends Component<Props, State> {
 
     render(): ReactNode {
         return (
-            <PopupContainerUI
+            <RelativeLayoutContainerUI
                 zOffset={this.props.zOffset}
                 relativeLayout={this.props.relativeLayout}
-                trigger={({ onToggle }) =>
+                renderReferenceElement={({ onToggle }) =>
                     this.props.target({
                         onToggle,
                         onChange: this.handleCalendarChanged,
                     })
                 }
-                target={({ onClose }) => (
+                renderPopup={({ onClose }) => (
                     <CalendarUI
                         onClose={this.handleCalendarClosed(onClose)}
                         onChange={this.handleCalendarChanged}

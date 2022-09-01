@@ -14,6 +14,8 @@ import { User } from '@core/entity/user';
 import styles from './FilterList.component.module.scss';
 import { getShortName } from './format';
 
+const DATE_PICKER_ZINDEX = 101;
+
 interface Props {
     deps: Deps;
     teamMembers: User[];
@@ -75,7 +77,7 @@ export class FilterListComponent extends Component<Props, State> {
                             value={this.props.taskFiltersData.startDate}
                             label={'Start'}
                             onChange={this.onStartDateChange}
-                            zOffset={101}
+                            zOffset={DATE_PICKER_ZINDEX}
                         />
                     </div>
                     <div className={`${styles.Input} ${styles.TextField}`}>
@@ -85,7 +87,7 @@ export class FilterListComponent extends Component<Props, State> {
                             value={this.props.taskFiltersData.endDate}
                             label={'End'}
                             onChange={this.onEndDateChange}
-                            zOffset={101}
+                            zOffset={DATE_PICKER_ZINDEX}
                         />
                     </div>
                 </div>

@@ -15,6 +15,7 @@ import { DURATIONS, DurationKey, getEndAt } from '../format';
 import styles from './CreateSprintModal.component.module.scss';
 
 const SPRINT_LENGTHS: DurationKey[] = ['1week', '2weeks'];
+const DATE_PICKER_ZINDEX = 1002
 
 interface Props {
     deps: Deps;
@@ -52,7 +53,7 @@ export class CreateSprintModalComponent extends Component<Props> {
                             label={'Start Date'}
                             ref={this.startDateInputRef}
                             value={new Date()}
-                            zOffset={1002}
+                            zOffset={DATE_PICKER_ZINDEX}
                         />
                     </div>
                     <div className={styles.SprintLength}>
