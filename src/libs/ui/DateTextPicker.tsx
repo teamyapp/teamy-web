@@ -51,7 +51,6 @@ export class DateTextPickerUI extends Component<Props, State> {
                 onTargetChanged={this.handleTargetChanged}
                 onTargetFocus={this.handleTargetFocus}
                 value={this.props.value}
-                
                 minYear={this.props.minYear}
                 maxYear={this.props.maxYear}
                 target={({ onChange, onToggle }) => (
