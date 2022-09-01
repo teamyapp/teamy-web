@@ -90,17 +90,6 @@ export class HeaderComponent extends Component<Props, State> {
                         onShowInvitationsClick={this.onShowInvitationsClick}
                         onViewTeamSettingsClick={this.onViewTeamSettingsClick}
                     />
-                    <div className={styles.Tools}>
-                        <DropDownList
-                            selectOptionKey={'sprint'}
-                            options={[
-                                {
-                                    key: 'sprint',
-                                    description: 'Sprint',
-                                },
-                            ]}
-                        />
-                    </div>
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.BacklogSection}>
                             <div
