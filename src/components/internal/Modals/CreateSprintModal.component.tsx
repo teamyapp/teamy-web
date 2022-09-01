@@ -48,9 +48,11 @@ export class CreateSprintModalComponent extends Component<Props> {
                 <div className={styles.Content}>
                     <div className={styles.StartDate}>
                         <DateTextPickerUI
+                            relativeLayout={this.props.deps.relativeLayout}
                             label={'Start Date'}
                             ref={this.startDateInputRef}
                             value={new Date()}
+                            zOffset={1002}
                         />
                     </div>
                     <div className={styles.SprintLength}>

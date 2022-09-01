@@ -197,9 +197,11 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                 <div className={styles.Attributes}>
                                     <div className={styles.Row}>
                                         <DateTextPickerUI
+                                            relativeLayout={this.props.deps.relativeLayout}
                                             ref={this.dueAtDatePicker}
                                             label={'Due at'}
                                             value={dueAt}
+                                            zOffset={1002}
                                         />
                                     </div>
 

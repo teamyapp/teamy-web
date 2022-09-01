@@ -71,17 +71,21 @@ export class FilterListComponent extends Component<Props, State> {
                     <div className={`${styles.Input} ${styles.TextField}`}>
                         <DateTextPickerUI
                             ref={this.startDataPickerRef}
+                            relativeLayout={this.props.deps.relativeLayout}
                             value={this.props.taskFiltersData.startDate}
                             label={'Start'}
                             onChange={this.onStartDateChange}
+                            zOffset={101}
                         />
                     </div>
                     <div className={`${styles.Input} ${styles.TextField}`}>
                         <DateTextPickerUI
                             ref={this.endDataPickerRef}
+                            relativeLayout={this.props.deps.relativeLayout}
                             value={this.props.taskFiltersData.endDate}
                             label={'End'}
                             onChange={this.onEndDateChange}
+                            zOffset={101}
                         />
                     </div>
                 </div>
