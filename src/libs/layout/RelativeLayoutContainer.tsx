@@ -30,7 +30,7 @@ type Props = {
 };
 
 interface States {
-    showPopup: boolean;
+    showFollower: boolean;
 }
 
 export class RelativeLayoutContainerUI extends Component<Props, States> {
@@ -42,7 +42,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            showPopup: false,
+            showFollower: false,
         };
     }
 
@@ -57,7 +57,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
     private onClose = () => {
         this.layoutAttachment?.detach();
         this.setState({
-            showPopup: false,
+            showFollower: false,
         });
 
         this.props.onClose?.call(null);
@@ -67,7 +67,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
     private onOpen = () => {
         this.setState(
             {
-                showPopup: true,
+                showFollower: true,
             },
             () => {
                 if (this.followerRef.current && this.referenceElementRef.current) {
@@ -87,7 +87,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
     };
 
     private handleToggle = () => {
-        if (this.state.showPopup) {
+        if (this.state.showFollower) {
             this.onClose();
         } else {
             this.onOpen();
@@ -100,7 +100,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                 <span ref={this.referenceElementRef}>
                     {this.props.renderReferenceElement({ onToggle: this.handleToggle })}
                 </span>
-                {this.state.showPopup && this.followerRef && createPortal(
+                {this.state.showFollower && this.followerRef && createPortal(
                     (
                         <div
                             ref={this.followerRef}
