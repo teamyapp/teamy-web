@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import _ from 'lodash';
 import React, { Component, ReactNode, createRef } from 'react';
 
-import { today } from '../../components/internal/format';
+import { today } from '../data/format';
 import styles from './Calendar.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
 

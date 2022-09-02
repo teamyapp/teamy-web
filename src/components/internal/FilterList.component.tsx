@@ -14,6 +14,8 @@ import { User } from '@core/entity/user';
 import styles from './FilterList.component.module.scss';
 import { getShortName } from './format';
 
+const DATE_PICKER_Z_INDEX = 101;
+
 interface Props {
     deps: Deps;
     teamMembers: User[];
@@ -71,17 +73,21 @@ export class FilterListComponent extends Component<Props, State> {
                     <div className={`${styles.Input} ${styles.TextField}`}>
                         <DateTextPickerUI
                             ref={this.startDataPickerRef}
+                            relativeLayout={this.props.deps.relativeLayout}
                             value={this.props.taskFiltersData.startDate}
                             label={'Start'}
                             onChange={this.onStartDateChange}
+                            zOffset={DATE_PICKER_Z_INDEX}
                         />
                     </div>
                     <div className={`${styles.Input} ${styles.TextField}`}>
                         <DateTextPickerUI
                             ref={this.endDataPickerRef}
+                            relativeLayout={this.props.deps.relativeLayout}
                             value={this.props.taskFiltersData.endDate}
                             label={'End'}
                             onChange={this.onEndDateChange}
+                            zOffset={DATE_PICKER_Z_INDEX}
                         />
                     </div>
                 </div>

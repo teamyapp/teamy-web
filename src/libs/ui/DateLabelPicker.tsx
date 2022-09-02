@@ -1,3 +1,4 @@
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 import classNames from 'classnames';
 import moment from 'moment';
 import React, { Component, ReactNode, createRef } from 'react';
@@ -16,6 +17,7 @@ interface Props {
     minYear?: number;
     maxYear?: number;
     onChange?: (date?: Date) => void;
+    relativeLayout: RelativeLayout;
 }
 
 interface State {
@@ -46,6 +48,7 @@ export class DateLabelPickerUI extends Component<Props, State> {
     render(): ReactNode {
         return (
             <DatePickerContainerUI
+                relativeLayout={this.props.relativeLayout}
                 onTargetChanged={this.props.onChange}
                 value={this.props.value}
                 minYear={this.props.minYear}

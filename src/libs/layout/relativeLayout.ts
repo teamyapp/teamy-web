@@ -20,7 +20,7 @@ export class RelativeLayout {
         followerEl: HTMLElement,
         horizontalAlignment: HorizontalAlignment = 'center',
         verticalAlignment: VerticalAlignment = 'bottom',
-        overSpaceAction: OverSpaceAction = 'jumpHorizontally',
+        overSpaceAction: OverSpaceAction = 'overlap',
         offset: number = 10,
     ): LayoutAttachment {
         const updateFollowerPosition = () => {

@@ -144,6 +144,7 @@ export class InlineTaskUI extends Component<Props, State> {
         const now = new Date();
         return (
             <DateLabelPickerUI
+                relativeLayout={this.props.relativeLayout}
                 value={dueAt}
                 isWarn={endOfDueAt && endOfDueAt.getTime() < now.getTime()}
                 shownValue={dueAt && dueDate(dueAt)}

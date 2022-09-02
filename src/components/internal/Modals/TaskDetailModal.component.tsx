@@ -33,6 +33,8 @@ import { getShortName } from '../format';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 30;
+const DATE_PICKER_Z_INDEX = 1002;
+const DURATION_INPUT_Z_INDEX = 1000;
 
 interface Props {
     deps: Deps;
@@ -197,9 +199,11 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                 <div className={styles.Attributes}>
                                     <div className={styles.Row}>
                                         <DateTextPickerUI
+                                            relativeLayout={this.props.deps.relativeLayout}
                                             ref={this.dueAtDatePicker}
                                             label={'Due at'}
                                             value={dueAt}
+                                            zOffset={DATE_PICKER_Z_INDEX}
                                         />
                                     </div>
 
@@ -211,7 +215,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             duration={
                                                 this.state.updatedTask.effort
                                             }
-                                            zOffset={1000}
+                                            zOffset={DURATION_INPUT_Z_INDEX}
                                             icon={
                                                 <MaterialIconUI
                                                     iconStyle={'outlined'}

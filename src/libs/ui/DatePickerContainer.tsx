@@ -1,7 +1,10 @@
+
 import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 
-import { today } from '../../components/internal/format';
+import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
+import { today } from '../data/format';
+
 import { CalendarUI } from './Calendar';
 
 const dateFormat = 'MM/DD/YYYY';
@@ -19,11 +22,12 @@ interface Props {
     value?: Date;
     minYear?: number;
     maxYear?: number;
+    zOffset?: number;
+    relativeLayout: RelativeLayout;
 }
 
 interface State {
     value: string;
-    showCalendar: boolean;
     selectedDate: Date;
     shownDate: Date;
 }
@@ -37,7 +41,6 @@ export class DatePickerContainerUI extends Component<Props, State> {
             value: this.props.value
                 ? moment(this.props.value).format(dateFormat)
                 : '',
-            showCalendar: false,
             selectedDate: date,
             shownDate: date,
         };
@@ -45,21 +48,25 @@ export class DatePickerContainerUI extends Component<Props, State> {
 
     render(): ReactNode {
         return (
-            <div>
-                {this.props.target({
-                    onChange: this.handleCalendarChanged,
-                    onToggle: this.onToggle,
-                })}
-                {this.state.showCalendar && (
+            <RelativeLayoutContainerUI
+                zOffset={this.props.zOffset}
+                relativeLayout={this.props.relativeLayout}
+                renderReferenceElement={({ onToggle }) =>
+                    this.props.target({
+                        onToggle,
+                        onChange: this.handleCalendarChanged,
+                    })
+                }
+                renderFollower={({ onClose }) => (
                     <CalendarUI
-                        onClose={this.handleCalendarClosed}
+                        onClose={this.handleCalendarClosed(onClose)}
                         onChange={this.handleCalendarChanged}
                         onShownDateChange={this.handleShownDateChanged}
                         selectedDate={this.state.selectedDate}
                         shownDate={this.state.shownDate}
                     />
                 )}
-            </div>
+            />
         );
     }
 
@@ -76,18 +83,10 @@ export class DatePickerContainerUI extends Component<Props, State> {
         this.props.onTargetChanged?.call(null, date);
     };
 
-    private handleCalendarClosed = () => {
-        this.setState({
-            showCalendar: false,
-        });
-
-        this.props.onTargetFocus?.call(null);
-    };
-
-    private onToggle = () => {
-        const showCalendar = !this.state.showCalendar;
-        this.setState({
-            showCalendar: showCalendar,
-        });
+    private handleCalendarClosed = (onClose: () => void) => {
+        return () => {
+            onClose();
+            this.props.onTargetFocus?.call(null);
+        };
     };
 }
