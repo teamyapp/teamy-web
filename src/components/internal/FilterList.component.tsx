@@ -14,7 +14,7 @@ import { User } from '@core/entity/user';
 import styles from './FilterList.component.module.scss';
 import { getShortName } from './format';
 
-const DATE_PICKER_ZINDEX = 101;
+const DATE_PICKER_Z_INDEX = 101;
 
 interface Props {
     deps: Deps;

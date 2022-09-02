@@ -203,7 +203,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             ref={this.dueAtDatePicker}
                                             label={'Due at'}
                                             value={dueAt}
-                                            zOffset={DATE_PICKER_ZINDEX}
+                                            zOffset={DATE_PICKER_Z_INDEX}
                                         />
                                     </div>
 
@@ -215,7 +215,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             duration={
                                                 this.state.updatedTask.effort
                                             }
-                                            zOffset={DURATION_INPUT_ZINDEX}
+                                            zOffset={DURATION_INPUT_Z_INDEX}
                                             icon={
                                                 <MaterialIconUI
                                                     iconStyle={'outlined'}

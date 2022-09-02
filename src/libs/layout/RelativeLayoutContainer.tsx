@@ -34,9 +34,9 @@ interface States {
 }
 
 export class RelativeLayoutContainerUI extends Component<Props, States> {
-    private readonly popupContainer = document.createElement('div');
-    private readonly popupRef = createRef<HTMLDivElement>();
-    private readonly triggerRef = createRef<HTMLDivElement>();
+    private readonly followerContainer = document.createElement('div');
+    private readonly followerRef = createRef<HTMLDivElement>();
+    private readonly referenceElementRef = createRef<HTMLDivElement>();
     private layoutAttachment?: LayoutAttachment;
 
     constructor(props: Props) {
@@ -47,11 +47,11 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
     }
 
     componentDidMount() {
-        document.body.appendChild(this.popupContainer);
+        document.body.appendChild(this.followerContainer);
     }
 
     componentWillUnmount() {
-        document.body.removeChild(this.popupContainer);
+        document.body.removeChild(this.followerContainer);
     }
 
     private onClose = () => {
@@ -70,11 +70,11 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                 showPopup: true,
             },
             () => {
-                if (this.popupRef.current && this.triggerRef.current) {
+                if (this.followerRef.current && this.referenceElementRef.current) {
                     this.layoutAttachment =
                         this.props.relativeLayout.attachElements(
-                            this.triggerRef.current,
-                            this.popupRef.current,
+                            this.referenceElementRef.current,
+                            this.followerRef.current,
                             this.props.horizontalAlignment,
                             this.props.verticalAlignment,
                             this.props.overSpaceAction,
@@ -97,25 +97,25 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
     render() {
         return (
             <Fragment>
-                <span ref={this.triggerRef}>
+                <span ref={this.referenceElementRef}>
                     {this.props.renderReferenceElement({ onToggle: this.handleToggle })}
                 </span>
-                {this.state.showPopup && this.popupRef && createPortal(
+                {this.state.showPopup && this.followerRef && createPortal(
                     (
                         <div
-                            ref={this.popupRef}
+                            ref={this.followerRef}
                             style={{
                                 position: 'absolute',
                                 zIndex: (this.props.zOffset || 0) + 1,
                             }}
                         >
-                            {this.props.renderPopup({
+                            {this.props.renderFollower({
                                 onClose: this.onClose,
                                 onOpen: this.onOpen,
                             })}
                         </div>
                     ),
-                    this.popupContainer,
+                    this.followerContainer,
                 )}
             </Fragment>
         );

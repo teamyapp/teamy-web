@@ -3,7 +3,7 @@ import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 
 import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
-import { today } from '../../components/internal/format';
+import { today } from '../data/format';
 
 import { CalendarUI } from './Calendar';
 
@@ -57,7 +57,7 @@ export class DatePickerContainerUI extends Component<Props, State> {
                         onChange: this.handleCalendarChanged,
                     })
                 }
-                renderPopup={({ onClose }) => (
+                renderFollower={({ onClose }) => (
                     <CalendarUI
                         onClose={this.handleCalendarClosed(onClose)}
                         onChange={this.handleCalendarChanged}

@@ -29,3 +29,5 @@ yarn-error.log*
 
 # Identity config
 src/libs/identity/config.ts
+
+tsconfig.json
