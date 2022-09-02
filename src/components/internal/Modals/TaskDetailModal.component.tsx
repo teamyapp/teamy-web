@@ -29,7 +29,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { DurationInputUI } from '../DurationInput.ui';
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
-import { getShortName } from '../format';
+import { getUserShortName } from '../format';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 30;
@@ -118,7 +118,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             user={this.state.task.owner}
                                         />
                                         <div className={styles.TaskOwnerName}>
-                                            {`${getShortName(
+                                            {`${getUserShortName(
                                                 this.state.task.owner.firstName,
                                                 this.state.task.owner.lastName,
                                             )}`}

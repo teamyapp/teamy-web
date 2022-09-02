@@ -9,7 +9,7 @@ $drawerBackgroundColor: #f2eee9;
 $selectedTeamIndicatorColor: #1976d2;
 $contextMenuSidePadding: 20px;
 $teamIconRoundCorner: 10px;
-$teamIconSize: 40px;
+$teamIconSize: 48px;
 
 .Drawer {
     background-color: $drawerBackgroundColor;
@@ -70,7 +70,7 @@ $teamIconSize: 40px;
                 display: flex;
                 height: $teamIconSize;
                 justify-content: center;
-                padding: 10px;
+                padding: 6px;
                 width: $teamIconSize;
 
                 .Icon {

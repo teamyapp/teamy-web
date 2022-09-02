@@ -23,7 +23,7 @@ import { TaskStatus } from '@core/entity/taskStatus';
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
 import { UserProfileUI } from './UserProfile';
-import { dueDate, getShortName } from './format';
+import { dueDate, getUserShortName } from './format';
 
 const statusNames: Record<TaskStatus, string> = {
     TODO: 'Todo',
@@ -328,7 +328,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderAssignOwner(index: number): ReactNode {
         const owner = this.props.task.owner;
         const name = owner
-            ? getShortName(owner.firstName, owner.lastName)
+            ? getUserShortName(owner.firstName, owner.lastName)
             : 'Unassigned';
         return (
             <div key={index} className={styles.AssignOwner}>
