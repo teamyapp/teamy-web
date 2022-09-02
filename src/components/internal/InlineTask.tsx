@@ -93,7 +93,6 @@ export class InlineTaskUI extends Component<Props, State> {
                         <div className={styles.Attribute}>
                             {this.renderDueAt()}
                         </div>
-
                         <div className={styles.Attribute}>
                             {this.renderEffort()}
                         </div>
