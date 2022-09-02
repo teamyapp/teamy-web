@@ -19,6 +19,7 @@ export class TaskState {
         public ownerUserId?: number,
         public effort?: Duration,
         public updatedAt?: Date,
+        public deliveredAt?: Date
     ) {}
 
     public static fromMutationPayload(json: any): TaskState {
@@ -38,6 +39,7 @@ export class TaskState {
                 ? new Duration(json.Effort / MILLIS_TO_NANOS)
                 : undefined,
             toDate(json.UpdatedAt),
+            toDate(json.DeliveredAt)
         );
     }
 
@@ -56,6 +58,7 @@ export class TaskState {
             json.ownerUserId,
             json.effort,
             toDate(json.updatedAt),
+            toDate(json.deliveredAt)
         );
     }
 }

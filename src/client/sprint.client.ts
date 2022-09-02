@@ -49,6 +49,7 @@ export class SprintClient {
                                         id
                                     }
                                 }
+                                deliveredAt
                             }
                             createdAt
                         }

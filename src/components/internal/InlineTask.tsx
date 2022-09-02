@@ -90,9 +90,11 @@ export class InlineTaskUI extends Component<Props, State> {
                     </div>
                     {this.renderGoal()}
                     <div className={styles.BottomRow}>
-                        <div className={styles.Attribute}>
-                            {this.renderDueAt()}
-                        </div>
+                        {!this.props.task.deliveredAt && (
+                            <div className={styles.Attribute}>
+                                {this.renderDueAt()}
+                            </div>
+                        )}
                         <div className={styles.Attribute}>
                             {this.renderEffort()}
                         </div>

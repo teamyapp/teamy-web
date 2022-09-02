@@ -195,13 +195,13 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                             </div>
                             <div className={styles.RightSection}>
                                 <div className={styles.Attributes}>
-                                    <div className={styles.Row}>
+                                    {!this.state.task.deliveredAt && <div className={styles.Row}>
                                         <DateTextPickerUI
                                             ref={this.dueAtDatePicker}
                                             label={'Due at'}
                                             value={dueAt}
                                         />
-                                    </div>
+                                    </div>}
 
                                     <div
                                         className={`${styles.Row} ${styles.Effort}`}
