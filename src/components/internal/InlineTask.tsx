@@ -144,7 +144,6 @@ export class InlineTaskUI extends Component<Props, State> {
         const now = new Date();
         const endOfDueAt = byTheEndOf(dueAt)?.getTime();
         let warn = false;
-
         if (endOfDueAt) {
             warn = endOfDueAt < now.getTime();
             if (deliveredAt && deliveredAt.getTime() <= endOfDueAt) {
