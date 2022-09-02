@@ -90,11 +90,10 @@ export class InlineTaskUI extends Component<Props, State> {
                     </div>
                     {this.renderGoal()}
                     <div className={styles.BottomRow}>
-                        {!this.props.task.deliveredAt && (
-                            <div className={styles.Attribute}>
-                                {this.renderDueAt()}
-                            </div>
-                        )}
+                        <div className={styles.Attribute}>
+                            {this.renderDueAt()}
+                        </div>
+
                         <div className={styles.Attribute}>
                             {this.renderEffort()}
                         </div>
@@ -141,13 +140,19 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     private renderDueAt = () => {
-        const { dueAt } = this.props.task;
-        const endOfDueAt = byTheEndOf(dueAt);
+        const { dueAt, deliveredAt } = this.props.task;
         const now = new Date();
+        const endOfDueAt = byTheEndOf(dueAt)?.getTime();
+
         return (
             <DateLabelPickerUI
                 value={dueAt}
-                isWarn={endOfDueAt && endOfDueAt.getTime() < now.getTime()}
+                isWarn={
+                    !!endOfDueAt &&
+                    ((deliveredAt &&
+                        deliveredAt.getTime() > endOfDueAt) ||
+                        (!deliveredAt && endOfDueAt < now.getTime()))
+                }
                 shownValue={dueAt && dueDate(dueAt)}
                 onChange={this.handleEndDateChanged}
             />
