@@ -9,7 +9,7 @@ import { Message } from '@core/entity/message';
 
 import styles from './Thread.module.scss';
 import { UserProfileUI } from './UserProfile';
-import { getShortName } from './format';
+import { getUserShortName } from './format';
 import { timeFromNow } from '@lib/data/format';
 
 interface Props {
@@ -76,7 +76,7 @@ export class ThreadUI extends Component<Props, State> {
                     <div className={styles.RightSection}>
                         <div className={styles.RightTopRow}>
                             <div className={styles.AuthorName}>
-                                {getShortName(
+                                {getUserShortName(
                                     author.firstName,
                                     author.lastName,
                                 )}
