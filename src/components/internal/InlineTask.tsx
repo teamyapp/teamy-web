@@ -143,15 +143,19 @@ export class InlineTaskUI extends Component<Props, State> {
         const { dueAt, deliveredAt } = this.props.task;
         const now = new Date();
         const endOfDueAt = byTheEndOf(dueAt)?.getTime();
-        const isDeliveredLately =
-            !!endOfDueAt && deliveredAt && deliveredAt.getTime() > endOfDueAt;
-        const isOverdue =
-            !!endOfDueAt && !deliveredAt && endOfDueAt < now.getTime();
+        let warn = false;
+
+        if (endOfDueAt) {
+            warn = endOfDueAt < now.getTime();
+            if (deliveredAt && deliveredAt.getTime() <= endOfDueAt) {
+                warn = false;
+            }
+        }
 
         return (
             <DateLabelPickerUI
                 value={dueAt}
-                isWarn={isDeliveredLately || isOverdue}
+                isWarn={warn}
                 shownValue={dueAt && dueDate(dueAt)}
                 onChange={this.handleEndDateChanged}
             />
