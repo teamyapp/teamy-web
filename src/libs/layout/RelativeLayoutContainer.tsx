@@ -15,7 +15,7 @@ type Props = {
     onMouseLeave?: () => void;
     zOffset?: number;
     renderReferenceElement: ({ onToggle }: { onToggle: () => void }) => ReactNode;
-    renderPopup: ({
+    renderFollower: ({
         onClose,
         onOpen,
     }: {

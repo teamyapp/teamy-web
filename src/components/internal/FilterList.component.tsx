@@ -77,7 +77,7 @@ export class FilterListComponent extends Component<Props, State> {
                             value={this.props.taskFiltersData.startDate}
                             label={'Start'}
                             onChange={this.onStartDateChange}
-                            zOffset={DATE_PICKER_ZINDEX}
+                            zOffset={DATE_PICKER_Z_INDEX}
                         />
                     </div>
                     <div className={`${styles.Input} ${styles.TextField}`}>
@@ -87,7 +87,7 @@ export class FilterListComponent extends Component<Props, State> {
                             value={this.props.taskFiltersData.endDate}
                             label={'End'}
                             onChange={this.onEndDateChange}
-                            zOffset={DATE_PICKER_ZINDEX}
+                            zOffset={DATE_PICKER_Z_INDEX}
                         />
                     </div>
                 </div>

@@ -33,8 +33,9 @@ import { getShortName } from '../format';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 30;
-const DATE_PICKER_ZINDEX = 1002
-const DURATION_INPUT_ZINDEX = 1000
+const DATE_PICKER_Z_INDEX = 1002;
+const DURATION_INPUT_Z_INDEX = 1000;
+
 interface Props {
     deps: Deps;
     selectOwnerTaskId?: number;

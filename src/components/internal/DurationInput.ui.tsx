@@ -8,7 +8,6 @@ import { Duration } from '@core/entity/duration';
 
 import styles from './DurationInput.ui.module.scss';
 
-
 interface Props {
     relativeLayout: RelativeLayout;
     zOffset?: number;
@@ -44,7 +43,7 @@ export class DurationInputUI extends Component<Props> {
                             )}
                         </div>
                     )}
-                    renderPopup={({ onClose }) => (
+                    renderFollower={({ onClose }) => (
                         <DurationInputPopup
                             duration={duration}
                             onDurationChange={this.props.onDurationChange}
