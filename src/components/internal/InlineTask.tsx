@@ -139,14 +139,22 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     private renderDueAt = () => {
-        const { dueAt } = this.props.task;
-        const endOfDueAt = byTheEndOf(dueAt);
+        const { dueAt, deliveredAt } = this.props.task;
         const now = new Date();
+        const endOfDueAt = byTheEndOf(dueAt)?.getTime();
+        let warn = false;
+        if (endOfDueAt) {
+            warn = endOfDueAt < now.getTime();
+            if (deliveredAt && deliveredAt.getTime() <= endOfDueAt) {
+                warn = false;
+            }
+        }
+
         return (
             <DateLabelPickerUI
                 relativeLayout={this.props.relativeLayout}
                 value={dueAt}
-                isWarn={endOfDueAt && endOfDueAt.getTime() < now.getTime()}
+                isWarn={warn}
                 shownValue={dueAt && dueDate(dueAt)}
                 onChange={this.handleEndDateChanged}
             />

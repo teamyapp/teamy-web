@@ -85,6 +85,10 @@ export class TaskNode implements Task {
         return this.taskState.updatedAt;
     }
 
+    public get deliveredAt(): Date | undefined {
+        return this.taskState.deliveredAt;
+    }
+
     public get dueAt(): Date | undefined {
         return this.taskState.dueAt;
     }

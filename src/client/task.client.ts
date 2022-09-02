@@ -34,6 +34,7 @@ export class TaskClient {
                             }
                             isPlanned
                             createdAt
+                            deliveredAt
                             comments {
                                 id
                                 messages {
@@ -199,6 +200,7 @@ export class TaskClient {
                             id
                             status
                             updatedAt
+                            deliveredAt
                         }
                     }
                 `,

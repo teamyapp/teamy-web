@@ -359,6 +359,10 @@ export function mergeTask(
             remoteTask.updatedAt === undefined
                 ? localOldTask.updatedAt
                 : toDate(remoteTask.updatedAt),
+        deliveredAt:
+            remoteTask.deliveredAt === undefined
+                ? localOldTask.deliveredAt
+                : toDate(remoteTask.deliveredAt),
         dueAt:
             remoteTask.dueAt === undefined
                 ? localOldTask.dueAt

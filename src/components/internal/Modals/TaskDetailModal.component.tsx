@@ -197,7 +197,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                             </div>
                             <div className={styles.RightSection}>
                                 <div className={styles.Attributes}>
-                                    <div className={styles.Row}>
+                                    {!this.state.task.deliveredAt && <div className={styles.Row}>
                                         <DateTextPickerUI
                                             relativeLayout={this.props.deps.relativeLayout}
                                             ref={this.dueAtDatePicker}
@@ -205,7 +205,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             value={dueAt}
                                             zOffset={DATE_PICKER_Z_INDEX}
                                         />
-                                    </div>
+                                    </div>}
 
                                     <div
                                         className={`${styles.Row} ${styles.Effort}`}

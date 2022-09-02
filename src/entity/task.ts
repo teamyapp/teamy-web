@@ -10,6 +10,7 @@ export interface Task {
     id: number;
     goal: string;
     dueAt?: Date; // RFC3339 string, todo: create a RFC3339 type
+    deliveredAt?: Date;
     context?: string;
     owner?: User;
     owningTeam: Team;
