@@ -7,7 +7,6 @@ import { today } from '../../components/internal/format';
 
 import { CalendarUI } from './Calendar';
 
-
 const dateFormat = 'MM/DD/YYYY';
 
 interface Props {
