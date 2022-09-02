@@ -12,7 +12,7 @@ import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
 import styles from './FilterList.component.module.scss';
-import { getShortName } from './format';
+import { getUserShortName } from './format';
 
 const DATE_PICKER_Z_INDEX = 101;
 
@@ -140,7 +140,7 @@ export class FilterListComponent extends Component<Props, State> {
                 onChange={this.onTaskOwnersCheckBoxChange}
             />
             <div className={styles.Label}>
-                {getShortName(user.firstName, user.lastName)}
+                {getUserShortName(user.firstName, user.lastName)}
             </div>
         </div>
     );

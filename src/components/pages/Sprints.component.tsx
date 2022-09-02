@@ -7,6 +7,7 @@ import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
+import { TooltipUI } from '@lib/ui/Tooltip';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
@@ -34,13 +35,15 @@ import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Sprint } from '@core/entity/sprint';
 import { Task } from '@core/entity/task';
+import { User } from '@core/entity/user';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { KanbanUI } from '../internal/Kanban';
 import { PersonalStatusUI } from '../internal/PersonalStatus';
-import { getSprintName } from '../internal/format';
+import { UserProfileUI } from '../internal/UserProfile';
+import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
 
 const tabIds = ['me', 'team'];
@@ -70,6 +73,7 @@ interface State {
     activeTabIndex: number;
     currentUserId: number;
     selectedSprintId?: number;
+    teamMembers: User[];
     teamTasks: Task[];
     receivingSectionId?: string;
     sortOrders: SortOrders;
@@ -98,6 +102,7 @@ export class SprintsComponent extends Component<Props, State> {
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
+            teamMembers: [],
             activeTabIndex: 0,
             currentUserId: -1, // when not logged in yet
             teamTasks: [],
@@ -351,28 +356,105 @@ export class SprintsComponent extends Component<Props, State> {
                 );
             case tabIds[1]:
                 return (
-                    <KanbanUI
-                        deps={this.props.deps}
-                        tasks={this.state.teamTasks.filter(teamTasksFilter)}
-                        selectOwnerTaskId={this.props.selectOwnerTaskId}
-                        sortOrders={this.state.sortOrders}
-                        onCreateTask={this.onCreateTask}
-                        onUpdateTask={this.onUpdateTask}
-                        onStartTask={this.moveTaskToInProgress}
-                        onDeleteTask={this.onDeleteTask}
-                        onCompleteTask={this.moveTaskToDelivered}
-                        onViewTaskDetail={this.props.onViewTaskDetail}
-                        onReportTaskBlocked={this.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
-                        }
-                        onSelectUpcomingOrder={this.onSelectUpcomingOrder}
-                    />
+                    <div className={styles.TeamTab}>
+                        <div className={styles.TeamMembersSection}>
+                            <div className={styles.Content}>
+                                <div className={styles.Title}>
+                                    Members
+                                    <div className={styles.Counter}>
+                                        {this.state.teamMembers.length}
+                                    </div>
+                                </div>
+                                <div className={styles.TeamMemberList}>
+                                    <div className={styles.TeamMember}>
+                                        <div
+                                            className={
+                                                styles.EmptySelectionFace
+                                            }
+                                        >
+                                            <MaterialIconUI>
+                                                face
+                                            </MaterialIconUI>
+                                        </div>
+                                        <div className={styles.RightSection}>
+                                            <div className={styles.Name}>
+                                                Unassigned
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {this.state.teamMembers.map(
+                                        this.renderTeamMember,
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                        <div className={styles.Kanban}>
+                            <KanbanUI
+                                deps={this.props.deps}
+                                tasks={this.state.teamTasks.filter(
+                                    teamTasksFilter,
+                                )}
+                                selectOwnerTaskId={this.props.selectOwnerTaskId}
+                                sortOrders={this.state.sortOrders}
+                                onCreateTask={this.onCreateTask}
+                                onUpdateTask={this.onUpdateTask}
+                                onStartTask={this.moveTaskToInProgress}
+                                onDeleteTask={this.onDeleteTask}
+                                onCompleteTask={this.moveTaskToDelivered}
+                                onViewTaskDetail={this.props.onViewTaskDetail}
+                                onReportTaskBlocked={this.onReportTaskBlocked}
+                                onShowPotentialTaskOwners={
+                                    this.props.onShowPotentialTaskOwners
+                                }
+                                onSelectUpcomingOrder={
+                                    this.onSelectUpcomingOrder
+                                }
+                            />
+                        </div>
+                    </div>
                 );
             default:
                 return null;
         }
     }
+
+    private renderTeamMember = (teamMember: User, index: number) => {
+        return (
+            <div key={index} className={styles.TeamMember}>
+                <div className={styles.UserProfile}>
+                    <UserProfileUI user={teamMember} />
+                </div>
+                <div className={styles.RightSection}>
+                    <div className={styles.Name}>
+                        {getUserShortName(
+                            teamMember.firstName,
+                            teamMember.lastName,
+                        )}
+                    </div>
+                    <div className={styles.BandwidthSection}>
+                        <div className={styles.Icon}>
+                            <MaterialIconUI>electric_bolt</MaterialIconUI>
+                        </div>
+                        <div className={styles.Bandwidth}>
+                            <TooltipUI
+                                message={'Bandwidth'}
+                                position={'Bottom'}
+                            >
+                                <div className={styles.BandwidthFull}>
+                                    <div
+                                        className={styles.UnusedBandwidth}
+                                        style={{
+                                            width: '50%',
+                                        }}
+                                    />
+                                </div>
+                            </TooltipUI>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
 
     private updateState = () => {
         const appState = this.localStore.getState();
@@ -385,8 +467,10 @@ export class SprintsComponent extends Component<Props, State> {
             this.onTabClick(this.state.activeTabIndex, false);
         }
 
+        const teamMembers = this.graphSource.currentTeam()!.members;
         if (appState.currUserId) {
             this.setState({
+                teamMembers: teamMembers,
                 currentUserId: appState.currUserId!,
                 selectedSprintId: appState.currSprintId,
                 teamTasks: teamTasks,

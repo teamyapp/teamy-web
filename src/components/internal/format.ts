@@ -23,7 +23,10 @@ export const DURATIONS: Record<DurationKey, Duration> = {
     },
 };
 
-export function getShortName(firstName?: string, lastName?: string): string {
+export function getUserShortName(
+    firstName?: string,
+    lastName?: string,
+): string {
     if (!firstName) {
         return '';
     }

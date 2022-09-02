@@ -71,8 +71,7 @@ function calcLeft(
             left = referenceRect.left - followerRect.width;
             break;
         case 'right':
-            left =
-                referenceRect.left + referenceRect.width
+            left = referenceRect.left + referenceRect.width;
             break;
         case 'center':
             left =
@@ -95,8 +94,8 @@ function calcLeft(
                 left = offset;
                 break;
             case 'jumpHorizontally':
-                left = referenceRect.left + referenceRect.width
-                break
+                left = referenceRect.left + referenceRect.width;
+                break;
         }
     }
 
@@ -104,15 +103,15 @@ function calcLeft(
         switch (overSpaceAction) {
             case 'overlap':
             case 'jumpVertically':
-                left = rightBound - followerRect.width
-                break
+                left = rightBound - followerRect.width;
+                break;
             case 'jumpHorizontally':
                 left = referenceRect.left - followerRect.width;
-                break
+                break;
         }
     }
 
-    return Math.max(left, offset)
+    return Math.max(left, offset);
 }
 
 function calcTop(
@@ -149,11 +148,11 @@ function calcTop(
         switch (overSpaceAction) {
             case 'overlap':
             case 'jumpHorizontally':
-                top = offset
-                break
+                top = offset;
+                break;
             case 'jumpVertically':
                 top = referenceRect.top + referenceRect.height;
-                break
+                break;
         }
     }
 
@@ -162,12 +161,12 @@ function calcTop(
             case 'overlap':
             case 'jumpHorizontally':
                 top = bottomBound - followerRect.height;
-                break
+                break;
             case 'jumpVertically':
-                top = referenceRect.top - followerRect.height
-                break
-        }  
+                top = referenceRect.top - followerRect.height;
+                break;
+        }
     }
 
-    return Math.max(top, offset)
+    return Math.max(top, offset);
 }

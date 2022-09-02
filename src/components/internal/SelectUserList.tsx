@@ -6,7 +6,7 @@ import { User } from '@core/entity/user';
 
 import styles from './SelectUserList.module.scss';
 import { UserProfileUI } from './UserProfile';
-import { getShortName } from './format';
+import { getUserShortName } from './format';
 
 interface Props {
     emptySelectionUserName: string;
@@ -40,7 +40,7 @@ export class SelectUserListUI extends Component<Props> {
                 </div>
                 <UserProfileUI user={user} />
                 <div className={styles.Name}>
-                    {getShortName(user.firstName, user.lastName)}
+                    {getUserShortName(user.firstName, user.lastName)}
                 </div>
             </div>
         );
