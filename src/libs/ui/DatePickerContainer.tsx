@@ -1,10 +1,9 @@
-
 import moment from 'moment';
 import React, { Component, ReactNode } from 'react';
 
 import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
-import { today } from '../data/format';
 
+import { today } from '../data/format';
 import { CalendarUI } from './Calendar';
 
 const dateFormat = 'MM/DD/YYYY';

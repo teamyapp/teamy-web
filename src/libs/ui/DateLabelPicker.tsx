@@ -1,7 +1,8 @@
-import { RelativeLayout } from '@lib/layout/relativeLayout';
 import classNames from 'classnames';
 import moment from 'moment';
 import React, { Component, ReactNode, createRef } from 'react';
+
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 
 import styles from './DateLabelPicker.module.scss';
 import { DatePickerContainerUI } from './DatePickerContainer';

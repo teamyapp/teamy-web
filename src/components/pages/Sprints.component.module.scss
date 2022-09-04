@@ -30,7 +30,7 @@
             width: 100%;
             height: 100%;
 
-            .TeamMembersSection {
+            .ParticipantsSection {
                 display: flex;
                 box-sizing: border-box;
                 width: 240px;
@@ -67,22 +67,22 @@
                         }
                     }
 
-                    .TeamMemberList {
+                    .ParticipantList {
                         flex: 1;
                         overflow-y: auto;
-                        margin: 0 8px;
+                        margin: 0 8px 10px 8px;
                         padding: 4px 8px;
-                        margin-bottom: 10px;
 
-                        .TeamMember {
+                        .Participant {
                             display: flex;
                             --profile-width: 40px;
                             --profile-height: 40px;
 
                             &:not(:first-child) {
-                                margin-top: 12px;
+                                margin-top: 10px;
                             }
 
+                            .AllParticipants,
                             .EmptySelectionFace {
                                 display: flex;
                                 justify-content: center;
@@ -91,9 +91,17 @@
                                 height: 40px;
                                 overflow: hidden;
                                 --icon-size: 46px;
+                            }
+
+                            .AllParticipants {
+                                --icon-color: #{#ad1457};
+                            }
+
+                            .EmptySelectionFace {
                                 --icon-color: #3d7bf6;
                             }
 
+                            .AllParticipants,
                             .EmptySelectionFace,
                             .UserProfile {
                                 border-radius: 50%;
@@ -113,7 +121,7 @@
                                 justify-content: center;
 
                                 .Name {
-                                    font-size: 14px;
+                                    font-size: 15px;
                                     font-weight: bold;
                                     display: flex;
                                     flex-direction: column;
@@ -121,7 +129,7 @@
                                 }
 
                                 .BandwidthSection {
-                                    margin-top: 6px;
+                                    margin-top: 4px;
                                     width: 100%;
                                     display: flex;
                                     align-items: center;

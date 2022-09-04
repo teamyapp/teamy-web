@@ -357,16 +357,28 @@ export class SprintsComponent extends Component<Props, State> {
             case tabIds[1]:
                 return (
                     <div className={styles.TeamTab}>
-                        <div className={styles.TeamMembersSection}>
+                        <div className={styles.ParticipantsSection}>
                             <div className={styles.Content}>
                                 <div className={styles.Title}>
-                                    Members
+                                    Participants
                                     <div className={styles.Counter}>
                                         {this.state.teamMembers.length}
                                     </div>
                                 </div>
-                                <div className={styles.TeamMemberList}>
-                                    <div className={styles.TeamMember}>
+                                <div className={styles.ParticipantList}>
+                                    <div className={styles.Participant}>
+                                        <div className={styles.AllParticipants}>
+                                            <MaterialIconUI>
+                                                group_work
+                                            </MaterialIconUI>
+                                        </div>
+                                        <div className={styles.RightSection}>
+                                            <div className={styles.Name}>
+                                                All
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={styles.Participant}>
                                         <div
                                             className={
                                                 styles.EmptySelectionFace
@@ -383,7 +395,7 @@ export class SprintsComponent extends Component<Props, State> {
                                         </div>
                                     </div>
                                     {this.state.teamMembers.map(
-                                        this.renderTeamMember,
+                                        this.renderParticipant,
                                     )}
                                 </div>
                             </div>
@@ -418,17 +430,17 @@ export class SprintsComponent extends Component<Props, State> {
         }
     }
 
-    private renderTeamMember = (teamMember: User, index: number) => {
+    private renderParticipant = (participant: User, index: number) => {
         return (
-            <div key={index} className={styles.TeamMember}>
+            <div key={index} className={styles.Participant}>
                 <div className={styles.UserProfile}>
-                    <UserProfileUI user={teamMember} />
+                    <UserProfileUI user={participant} />
                 </div>
                 <div className={styles.RightSection}>
                     <div className={styles.Name}>
                         {getUserShortName(
-                            teamMember.firstName,
-                            teamMember.lastName,
+                            participant.firstName,
+                            participant.lastName,
                         )}
                     </div>
                     <div className={styles.BandwidthSection}>
