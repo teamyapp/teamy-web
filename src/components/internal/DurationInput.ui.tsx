@@ -1,4 +1,5 @@
 import React, { Component, ReactNode, createRef } from 'react';
+
 import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
 import { ButtonUI } from '@lib/ui/Button';
 import { SpacerUI } from '@lib/ui/Spacer';
@@ -19,22 +20,18 @@ interface Props {
 }
 
 export class DurationInputUI extends Component<Props> {
-
     render() {
         const { duration } = this.props;
         return (
             <div className={styles.Duration}>
                 <RelativeLayoutContainerUI
-                    overSpaceAction="jumpVertically"
+                    overSpaceAction='jumpVertically'
                     onOpen={this.props.onPopupOpen}
                     onClose={this.props.onPopupClose}
                     relativeLayout={this.props.relativeLayout}
                     zOffset={this.props.zOffset}
                     renderReferenceElement={({ onToggle }) => (
-                        <div
-                            className={styles.ValueRow}
-                            onClick={onToggle}
-                        >
+                        <div className={styles.ValueRow} onClick={onToggle}>
                             {this.props.icon}
                             {duration && (
                                 <div className={styles.Value}>
@@ -67,7 +64,6 @@ export class DurationInputUI extends Component<Props> {
         tryIncludeUnit(buffer, duration?.seconds || 0, 's');
         return buffer.join(' ');
     }
-
 }
 
 function tryIncludeUnit(buffer: string[], count: number, unit: string) {

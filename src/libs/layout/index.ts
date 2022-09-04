@@ -1,4 +1,4 @@
-import {RelativeLayout} from './relativeLayout'
-import {RelativeLayoutContainerUI} from './RelativeLayoutContainer'
+import { RelativeLayoutContainerUI } from './RelativeLayoutContainer';
+import { RelativeLayout } from './relativeLayout';
 
-export {RelativeLayout, RelativeLayoutContainerUI}
+export { RelativeLayout, RelativeLayoutContainerUI };
