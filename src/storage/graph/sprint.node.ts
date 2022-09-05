@@ -1,4 +1,5 @@
 import { Sprint } from '@core/entity/sprint';
+import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 import { TaskNode } from '@core/storage/graph/task.node';
 import { TeamNode } from '@core/storage/graph/team.node';
 import { SprintState } from '@core/storage/states/sprint.state';
@@ -42,6 +43,18 @@ export class SprintNode implements Sprint {
                         this.localStore,
                         appState.tasks[relation.taskId],
                     ),
+            );
+    }
+
+    public get participants(): SprintParticipantNode[] {
+        const appState = this.localStore.getState();
+        return appState.sprintParticipants
+            .filter(
+                (participant) => participant.sprintId === this.sprintState.id,
+            )
+            .map(
+                (participant) =>
+                    new SprintParticipantNode(this.localStore, participant),
             );
     }
 }

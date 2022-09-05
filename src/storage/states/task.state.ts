@@ -1,8 +1,6 @@
-import { Duration } from '@core/entity/duration';
+import { Duration, MILLIS_IN_NANOS } from '@core/entity/duration';
 import { toDate } from '@core/storage/states/parser';
 import { TaskStatus } from '@core/storage/states/taskStatus';
-
-const MILLIS_TO_NANOS = 1_000_000;
 
 export class TaskState {
     public constructor(
@@ -19,7 +17,7 @@ export class TaskState {
         public ownerUserId?: number,
         public effort?: Duration,
         public updatedAt?: Date,
-        public deliveredAt?: Date
+        public deliveredAt?: Date,
     ) {}
 
     public static fromMutationPayload(json: any): TaskState {
@@ -36,10 +34,10 @@ export class TaskState {
             json.Context,
             json.OwnerUserID,
             json.Effort
-                ? new Duration(json.Effort / MILLIS_TO_NANOS)
+                ? new Duration(json.Effort / MILLIS_IN_NANOS)
                 : undefined,
             toDate(json.UpdatedAt),
-            toDate(json.DeliveredAt)
+            toDate(json.DeliveredAt),
         );
     }
 
@@ -56,9 +54,9 @@ export class TaskState {
             toDate(json.dueAt),
             json.context,
             json.ownerUserId,
-            json.effort,
+            json.effort ? Duration.fromString(json.effort) : undefined,
             toDate(json.updatedAt),
-            toDate(json.deliveredAt)
+            toDate(json.deliveredAt),
         );
     }
 }

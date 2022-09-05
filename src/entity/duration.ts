@@ -7,6 +7,7 @@ const DAY_IN_MILLIS = 24 * HOUR_IN_MILLIS;
 const WEEK_IN_MILLIS = 7 * DAY_IN_MILLIS;
 const MONTH_IN_MILLIS = 30 * DAY_IN_MILLIS;
 const YEAR_IN_MILLIS = 365 * DAY_IN_MILLIS;
+export const MILLIS_IN_NANOS = 1_000_000;
 
 interface DurationJson {
     years?: number;
@@ -106,5 +107,27 @@ export class Duration {
 
     public toString(): string {
         return moment.duration(this.totalMilliSeconds).toISOString();
+    }
+
+    public toReadable(): string {
+        if (this._totalMilliSeconds === 0) {
+            return '0';
+        }
+
+        const buffer: string[] = [];
+        tryIncludeUnit(buffer, this.years, 'y');
+        tryIncludeUnit(buffer, this.months, 'mo');
+        tryIncludeUnit(buffer, this.weeks, 'w');
+        tryIncludeUnit(buffer, this.days, 'd');
+        tryIncludeUnit(buffer, this.hours, 'h');
+        tryIncludeUnit(buffer, this.minutes, 'min');
+        tryIncludeUnit(buffer, this.seconds, 's');
+        return buffer.join(' ');
+    }
+}
+
+function tryIncludeUnit(buffer: string[], count: number, unit: string) {
+    if (count > 0) {
+        buffer.push(`${count}${unit}`);
     }
 }

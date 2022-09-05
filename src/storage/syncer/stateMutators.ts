@@ -1,6 +1,7 @@
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
+import { RemoteSprintParticipant } from '@core/client/entity/remoteSprintParticipant';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteThread } from '@core/client/entity/remoteThread';
@@ -12,6 +13,7 @@ import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
 import { toDate, toInt } from '@core/storage/states/parser';
 import { SprintState } from '@core/storage/states/sprint.state';
+import { SprintParticipantState } from '@core/storage/states/sprintParticipant.state';
 import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation.state';
 import { TaskState } from '@core/storage/states/task.state';
 import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRelation.state';
@@ -520,6 +522,14 @@ export function mergeSprint(
             remainRelations.concat(addedRelations);
     }
 
+    if (remoteSprint.participants) {
+        currAppState = replaceSprintParticipants(
+            currAppState,
+            remoteSprintId,
+            remoteSprint.participants,
+        );
+    }
+
     currAppState.sprints[remoteSprintId] = localNewSprint;
     return currAppState;
 }
@@ -688,6 +698,37 @@ export function replaceTeamInvitations(
         currAppState = mergeInvitation(currAppState, remoteInvitation);
     });
     return currAppState;
+}
+
+export function replaceSprintParticipants(
+    appState: AppState,
+    sprintId: number,
+    newSprintParticipants: RemoteSprintParticipant[],
+): AppState {
+    const remainSprintParticipants = appState.sprintParticipants.filter(
+        (sprintParticipant) => {
+            return sprintParticipant.sprintId !== sprintId;
+        },
+    );
+    const addedSprintParticipants = newSprintParticipants.map(
+        (remoteSprintParticipant) =>
+            new SprintParticipantState(
+                sprintId,
+                parseInt(remoteSprintParticipant.user.id),
+                toDuration(remoteSprintParticipant.totalBandwidth)!,
+                toDuration(remoteSprintParticipant.unusedBandwidth)!,
+                toDate(remoteSprintParticipant.createdAt)!,
+                toDate(remoteSprintParticipant.updatedAt),
+            ),
+    );
+
+    newSprintParticipants.forEach((remoteParticipant) => {
+        appState = mergeUser(appState, remoteParticipant.user);
+    });
+    appState.sprintParticipants = remainSprintParticipants.concat(
+        addedSprintParticipants,
+    );
+    return appState;
 }
 
 export function deleteThread(appState: AppState, threadId: number): AppState {

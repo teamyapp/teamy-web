@@ -30,12 +30,13 @@ import { taskUrgencyOrder } from '@core/config/sortOrder';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
+import { Duration } from '@core/entity/duration';
 import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Sprint } from '@core/entity/sprint';
+import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
-import { User } from '@core/entity/user';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -73,8 +74,8 @@ interface State {
     activeTabIndex: number;
     currentUserId: number;
     selectedSprintId?: number;
-    teamMembers: User[];
-    teamTasks: Task[];
+    sprintTasks: Task[];
+    sprintParticipants: SprintParticipant[];
     receivingSectionId?: string;
     sortOrders: SortOrders;
 }
@@ -102,10 +103,10 @@ export class SprintsComponent extends Component<Props, State> {
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
-            teamMembers: [],
             activeTabIndex: 0,
             currentUserId: -1, // when not logged in yet
-            teamTasks: [],
+            sprintTasks: [],
+            sprintParticipants: [],
             sortOrders: {
                 upcoming: taskUrgencyOrder,
             },
@@ -336,7 +337,7 @@ export class SprintsComponent extends Component<Props, State> {
                 return (
                     <PersonalStatusUI
                         deps={this.props.deps}
-                        personalTasks={this.state.teamTasks.filter(
+                        personalTasks={this.state.sprintTasks.filter(
                             personalTasksFilter,
                         )}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
@@ -362,7 +363,7 @@ export class SprintsComponent extends Component<Props, State> {
                                 <div className={styles.Title}>
                                     Participants
                                     <div className={styles.Counter}>
-                                        {this.state.teamMembers.length}
+                                        {this.state.sprintParticipants.length}
                                     </div>
                                 </div>
                                 <div className={styles.ParticipantList}>
@@ -394,7 +395,7 @@ export class SprintsComponent extends Component<Props, State> {
                                             </div>
                                         </div>
                                     </div>
-                                    {this.state.teamMembers.map(
+                                    {this.state.sprintParticipants.map(
                                         this.renderParticipant,
                                     )}
                                 </div>
@@ -403,7 +404,7 @@ export class SprintsComponent extends Component<Props, State> {
                         <div className={styles.Kanban}>
                             <KanbanUI
                                 deps={this.props.deps}
-                                tasks={this.state.teamTasks.filter(
+                                tasks={this.state.sprintTasks.filter(
                                     teamTasksFilter,
                                 )}
                                 selectOwnerTaskId={this.props.selectOwnerTaskId}
@@ -430,18 +431,26 @@ export class SprintsComponent extends Component<Props, State> {
         }
     }
 
-    private renderParticipant = (participant: User, index: number) => {
+    private renderParticipant = (
+        participant: SprintParticipant,
+        index: number,
+    ) => {
+        const { user } = participant;
+        const unusedBandwidthPercent = safePercent(
+            participant.unusedBandwidth,
+            participant.totalBandwidth,
+        );
+        const unusedBandwidthReadable =
+            participant.unusedBandwidth.toReadable();
+        const totalBandwidthReadable = participant.totalBandwidth.toReadable();
         return (
             <div key={index} className={styles.Participant}>
                 <div className={styles.UserProfile}>
-                    <UserProfileUI user={participant} />
+                    <UserProfileUI user={user} />
                 </div>
                 <div className={styles.RightSection}>
                     <div className={styles.Name}>
-                        {getUserShortName(
-                            participant.firstName,
-                            participant.lastName,
-                        )}
+                        {getUserShortName(user.firstName, user.lastName)}
                     </div>
                     <div className={styles.BandwidthSection}>
                         <div className={styles.Icon}>
@@ -449,14 +458,14 @@ export class SprintsComponent extends Component<Props, State> {
                         </div>
                         <div className={styles.Bandwidth}>
                             <TooltipUI
-                                message={'Bandwidth'}
+                                message={`Bandwidth: ${unusedBandwidthReadable} / ${totalBandwidthReadable}`}
                                 position={'Bottom'}
                             >
                                 <div className={styles.BandwidthFull}>
                                     <div
                                         className={styles.UnusedBandwidth}
                                         style={{
-                                            width: '50%',
+                                            width: `${unusedBandwidthPercent}%`,
                                         }}
                                     />
                                 </div>
@@ -471,7 +480,8 @@ export class SprintsComponent extends Component<Props, State> {
     private updateState = () => {
         const appState = this.localStore.getState();
         const currentSprint = this.graphSource.currentSprint();
-        const teamTasks = currentSprint?.tasks || [];
+        const sprintTasks = currentSprint?.tasks || [];
+        const sprintParticipants = currentSprint?.participants || [];
         if (
             this.state.selectedSprintId &&
             this.state.selectedSprintId !== appState.currSprintId
@@ -479,13 +489,12 @@ export class SprintsComponent extends Component<Props, State> {
             this.onTabClick(this.state.activeTabIndex, false);
         }
 
-        const teamMembers = this.graphSource.currentTeam()!.members;
         if (appState.currUserId) {
             this.setState({
-                teamMembers: teamMembers,
+                sprintParticipants: sprintParticipants,
                 currentUserId: appState.currUserId!,
                 selectedSprintId: appState.currSprintId,
-                teamTasks: teamTasks,
+                sprintTasks: sprintTasks,
             });
         }
     };
@@ -594,4 +603,18 @@ export class SprintsComponent extends Component<Props, State> {
                 break;
         }
     }
+}
+
+function safePercent(dividend: Duration, divisor: Duration): number {
+    return (
+        safeDivide(dividend.totalMilliSeconds, divisor.totalMilliSeconds) * 100
+    );
+}
+
+function safeDivide(dividend: number, divisor: number): number {
+    if (divisor === 0) {
+        return 0;
+    }
+
+    return dividend / divisor;
 }
