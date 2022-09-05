@@ -1,6 +1,7 @@
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
 import { SprintState } from '@core/storage/states/sprint.state';
+import { SprintParticipantState } from '@core/storage/states/sprintParticipant.state';
 import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation.state';
 import { TaskState } from '@core/storage/states/task.state';
 import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRelation.state';
@@ -21,6 +22,7 @@ export class AppState {
         public taskAwaitForRelations: TaskAwaitForRelationState[],
         public userLinks: UserLinkState[],
         public sprintTaskRelations: SprintTaskRelationState[],
+        public sprintParticipants: SprintParticipantState[],
         public teamSelectedSprint: Record<number, number>,
         public currUserId?: number,
         public currTeamId?: number,
@@ -35,6 +37,7 @@ export class AppState {
             {},
             {},
             {},
+            [],
             [],
             [],
             [],

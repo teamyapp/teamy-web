@@ -35,7 +35,7 @@ export class DurationInputUI extends Component<Props> {
                             {this.props.icon}
                             {duration && (
                                 <div className={styles.Value}>
-                                    {this.renderDuration()}
+                                    {this.props.duration?.toReadable()}
                                 </div>
                             )}
                         </div>
@@ -50,25 +50,6 @@ export class DurationInputUI extends Component<Props> {
                 />
             </div>
         );
-    }
-
-    renderDuration() {
-        const { duration } = this.props;
-        const buffer: string[] = [];
-        tryIncludeUnit(buffer, duration?.years || 0, 'y');
-        tryIncludeUnit(buffer, duration?.months || 0, 'mo');
-        tryIncludeUnit(buffer, duration?.weeks || 0, 'w');
-        tryIncludeUnit(buffer, duration?.days || 0, 'd');
-        tryIncludeUnit(buffer, duration?.hours || 0, 'h');
-        tryIncludeUnit(buffer, duration?.minutes || 0, 'min');
-        tryIncludeUnit(buffer, duration?.seconds || 0, 's');
-        return buffer.join(' ');
-    }
-}
-
-function tryIncludeUnit(buffer: string[], count: number, unit: string) {
-    if (count > 0) {
-        buffer.push(`${count}${unit}`);
     }
 }
 

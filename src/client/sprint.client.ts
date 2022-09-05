@@ -52,6 +52,18 @@ export class SprintClient {
                                 deliveredAt
                             }
                             createdAt
+                            participants {
+                                sprint {
+                                    id
+                                }
+                                user {
+                                    id
+                                    firstName
+                                    lastName
+                                }
+                                totalBandwidth
+                                unusedBandwidth
+                            }
                         }
                     }
                 `,
@@ -81,6 +93,18 @@ export class SprintClient {
                                 id
                             }
                             createdAt
+                            participants {
+                                sprint {
+                                    id
+                                }
+                                user {
+                                    id
+                                    firstName
+                                    lastName
+                                }
+                                totalBandwidth
+                                unusedBandwidth
+                            }
                         }
                     }
                 `,
