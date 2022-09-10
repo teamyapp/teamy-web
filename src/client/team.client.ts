@@ -56,6 +56,7 @@ export class TeamClient {
                                 dueAt
                                 status
                                 isPlanned
+                                effort
                                 owner {
                                     id
                                     firstName
