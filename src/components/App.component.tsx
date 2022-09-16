@@ -369,6 +369,22 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 if (
+                    event.type === 'DragStart' &&
+                    sectionIds.includes(event.srcContainId) &&
+                    event.target.type === draggableTask
+                ) {
+                    await this.stateSyncer.startDraggingTask(event.target.data.id)
+                }
+
+                if (
+                    event.type === "DragEnd" &&
+                    sectionIds.includes(event.srcContainId) &&
+                    event.target.type === draggableTask
+                ) {
+                    await this.stateSyncer.stopDraggingTask(event.target.data.id)
+                }
+
+                if (
                     event.type === 'Drop' &&
                     sectionIds.includes(event.srcContainId) &&
                     sectionIds.includes(event.destContainerId) &&

@@ -11,7 +11,8 @@ export type DragAndDropEvent<Context> =
     | Drag
     | Drop<Context>
     | TurnOnDragging
-    | TurnOffDragging;
+    | TurnOffDragging
+    | DragStart;
 
 export interface DragTarget {
     type: string;
@@ -38,6 +39,12 @@ interface Drop<Context> extends Event {
     context?: Context;
 }
 
+interface DragStart extends Event {
+    type: 'DragStart';
+    srcContainId: string;
+    target: DragTarget;
+}
+
 interface Drag extends Event {
     type: 'Drag';
     mousePosition: Point;
@@ -45,6 +52,8 @@ interface Drag extends Event {
 
 interface DragEnd extends Event {
     type: 'DragEnd';
+    target: DragTarget;
+    srcContainId: string;
 }
 
 interface TurnOnDragging extends Event {
@@ -85,6 +94,12 @@ export class DragAndDropController<Context> {
         if (dragTarget.element) {
             this.createPreview(dragTarget.element);
         }
+
+        this.dragAndDropEventChan.put({
+            type: 'DragStart',
+            srcContainId: sourceContainerId,
+            target: dragTarget
+        });
     }
 
     public onContainerMouseEnter(
@@ -154,9 +169,6 @@ export class DragAndDropController<Context> {
                 context: this.context,
             });
         }
-
-        this.sourceContainerId = undefined;
-        this.draggedTarget = undefined;
     }
 
     public onDrag(left: number, top: number) {
@@ -212,14 +224,18 @@ export class DragAndDropController<Context> {
     }
 
     private onMouseUp = () => {
+        if(!this.draggedTarget || !this.sourceContainerId) {
+            return
+        }
+
         if (this.receivingContainerId) {
             this.onDropAtContainer(this.receivingContainerId);
             this.onContainerMouseLeave(this.receivingContainerId);
             this.receivingContainerId = undefined;
         }
-        this.sourceContainerId = undefined;
+        this.dragAndDropEventChan.put({ type: 'DragEnd', target:  this.draggedTarget, srcContainId: this.sourceContainerId});
         this.draggedTarget = undefined;
-        this.dragAndDropEventChan.put({ type: 'DragEnd' });
+        this.sourceContainerId = undefined;
         this.removePreview();
     };
 

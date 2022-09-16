@@ -1,6 +1,7 @@
 import { Duration } from '@core/entity/duration';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
+import { User } from '@core/entity/user';
 import { SprintNode } from '@core/storage/graph/sprint.node';
 import { TaskState } from '@core/storage/states/task.state';
 import { TaskStatus } from '@core/storage/states/taskStatus';
@@ -125,5 +126,22 @@ export class TaskNode implements Task {
                         appState.sprints[relation.sprintId],
                     ),
             );
+    }
+
+    public get draggingBy(): User | undefined {
+        const currentState = this.localStore.getState();
+        const taskActivities = currentState.taskActivities;
+        const taskActivity = taskActivities.find(({taskId, draggingClientId, isDragging }) => {
+            return isDragging && taskId === this.id && draggingClientId !== currentState.clientId
+        })
+
+        if (!taskActivity) {
+            return undefined;
+        }
+
+        return new UserNode(
+            this.localStore,
+            currentState.users[taskActivity.dragByUserId],
+        );
     }
 }

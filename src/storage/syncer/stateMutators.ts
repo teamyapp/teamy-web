@@ -22,6 +22,7 @@ import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
 
+import { TaskActivityState } from '../states/taskActivity.state';
 import { Mutation } from './mutation';
 
 class DeleteTaskAwaitForRelationPayload {
@@ -229,6 +230,26 @@ export async function applyTeamMemberMutation(
             }
 
             break;
+        }
+    }
+
+    return currState;
+}
+
+export function applyTaskActivityMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Update': {
+            const updatedTaskActivity = TaskActivityState.fromMutationPayload(mutation.payload)
+            const taskActivityIndex = currState.taskActivities.findIndex(({taskId}) => taskId === updatedTaskActivity.taskId)
+            if (taskActivityIndex !== -1) {
+                currState.taskActivities[taskActivityIndex] = updatedTaskActivity
+            } else {
+                currState.taskActivities.push(updatedTaskActivity)
+            }
+            break
         }
     }
 

@@ -9,6 +9,7 @@ import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
+import {TaskActivityState} from '@core/storage/states/taskActivity.state';
 
 export class AppState {
     public constructor(
@@ -24,9 +25,11 @@ export class AppState {
         public sprintTaskRelations: SprintTaskRelationState[],
         public sprintParticipants: SprintParticipantState[],
         public teamSelectedSprint: Record<number, number>,
+        public taskActivities: TaskActivityState[],
         public currUserId?: number,
         public currTeamId?: number,
         public currSprintId?: number,
+        public clientId?: number
     ) {}
 
     public static fromJson(json: any): AppState {
@@ -43,9 +46,11 @@ export class AppState {
             [],
             [],
             json.teamSelectedSprint || {},
+            [],
             json.currUserId,
             json.currTeamId,
             json.currSprintId,
+            json.clientId,
         );
     }
 }

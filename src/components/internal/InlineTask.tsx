@@ -72,46 +72,59 @@ export class InlineTaskUI extends Component<Props, State> {
 
     public render() {
         return (
-            <div className={styles.Task}>
-                <div className={styles.LeftSection}>
-                    <div className={styles.TopRow}>
-                        <span className={`${styles.Attribute} ${styles.Id}`}>
-                            {this.props.task.id}
-                        </span>
-                        {this.props.showStatus && (
-                            <span
-                                className={`${styles.Attribute} ${
-                                    styles.Status
-                                } ${styles[this.props.task.status]}`}
-                            >
-                                {statusNames[this.props.task.status]}
-                            </span>
-                        )}
-                    </div>
-                    {this.renderGoal()}
-                    <div className={styles.BottomRow}>
-                        <div className={styles.Attribute}>
-                            {this.renderDueAt()}
-                        </div>
-                        <div className={styles.Attribute}>
-                            {this.renderEffort()}
-                        </div>
-                    </div>
-                    <div className={styles.AwaitFor}>
-                        {this.props.task.awaitForTasks?.length > 0 &&
-                            this.renderAwaitForTasks()}
-                    </div>
-                </div>
+            <div className={styles.InlineTask}>
                 <div
-                    className={styles.ActionsSection}
-                    style={{
-                        gridTemplateColumns: `repeat(${
-                            this.props.numActionColumns || 3
-                        }, 1fr)`,
-                    }}
+                    className={`${styles.Task} ${
+                        this.props.task.draggingBy ? styles.TaskDragging : ''
+                    }`}
                 >
-                    {this.renderActions()}
+                    <div className={styles.LeftSection}>
+                        <div className={styles.TopRow}>
+                            <span
+                                className={`${styles.Attribute} ${styles.Id}`}
+                            >
+                                {this.props.task.id}
+                            </span>
+                            {this.props.showStatus && (
+                                <span
+                                    className={`${styles.Attribute} ${
+                                        styles.Status
+                                    } ${styles[this.props.task.status]}`}
+                                >
+                                    {statusNames[this.props.task.status]}
+                                </span>
+                            )}
+                        </div>
+                        {this.renderGoal()}
+                        <div className={styles.BottomRow}>
+                            <div className={styles.Attribute}>
+                                {this.renderDueAt()}
+                            </div>
+                            <div className={styles.Attribute}>
+                                {this.renderEffort()}
+                            </div>
+                        </div>
+                        <div className={styles.AwaitFor}>
+                            {this.props.task.awaitForTasks?.length > 0 &&
+                                this.renderAwaitForTasks()}
+                        </div>
+                    </div>
+                    <div
+                        className={styles.ActionsSection}
+                        style={{
+                            gridTemplateColumns: `repeat(${
+                                this.props.numActionColumns || 3
+                            }, 1fr)`,
+                        }}
+                    >
+                        {this.renderActions()}
+                    </div>
                 </div>
+                {this.props.task.draggingBy && (
+                    <div className={styles.DraggingBySection}>
+                      {this.props.task.draggingBy.firstName} {this.props.task.draggingBy.lastName} is dragging
+                    </div>
+                )}
             </div>
         );
     }

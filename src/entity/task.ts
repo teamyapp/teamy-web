@@ -20,4 +20,5 @@ export interface Task {
     status: TaskStatus;
     isPlanned: boolean;
     awaitForTasks: Task[];
+    draggingBy?: User;
 }

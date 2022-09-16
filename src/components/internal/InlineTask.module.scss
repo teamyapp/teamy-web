@@ -3,117 +3,141 @@
 @import '../../libs/ui/styleguide/elevation';
 @import 'inlineTask.shared';
 
-.Task {
-    .LeftSection {
-        .Goal {
-            @include goalText;
 
-            .Placeholder {
-                color: #757575;
+$draggingColor: #00897b;
+
+.InlineTask {
+    
+    .DraggingBySection {
+        float: right;
+        background-color:  $draggingColor;
+        border-radius: 5px 0 5px 5px;
+        height: 28px;
+        color: white;
+        font-weight: 500;
+        padding: 5px 8px;
+        margin-top: -4px;
+    }
+
+    .Task {
+        border-style: solid;
+        border-color: transparent;
+        .LeftSection {
+            .Goal {
+                @include goalText;
+
+                .Placeholder {
+                    color: #757575;
+                }
+            }
+
+            .GoalTextField {
+                background-color: #f5f5f5;
+                border: none;
+                @include goalText;
+                box-sizing: border-box;
+                height: 60px;
+                margin: 0;
+                outline: none;
+                padding: 0;
+                resize: none;
+                width: 100%;
             }
         }
 
-        .GoalTextField {
-            background-color: #f5f5f5;
-            border: none;
-            @include goalText;
-            box-sizing: border-box;
-            height: 60px;
-            margin: 0;
-            outline: none;
-            padding: 0;
-            resize: none;
-            width: 100%;
+        .ActionsSection,
+        .ViewDetailSection {
+            border-left: 2px solid $dividerColor;
         }
-    }
 
-    .ActionsSection,
-    .ViewDetailSection {
-        border-left: 2px solid $dividerColor;
-    }
+        .ActionsSection {
+            display: grid;
+            gap: 2px;
+            grid-auto-rows: min-content;
+            padding-left: $edgeSpace;
 
-    .ActionsSection {
-        display: grid;
-        gap: 2px;
-        grid-auto-rows: min-content;
-        padding-left: $edgeSpace;
+            .Action {
+                align-items: center;
+                border-radius: 4px;
+                --icon-box-size: #{$actionIconSize};
+                display: flex;
+                height: $actionIconSize;
+                justify-content: center;
+                padding: 4px;
+                --icon-size: #{$actionIconSize};
+                user-select: none;
+                width: $actionIconSize;
 
-        .Action {
-            align-items: center;
-            border-radius: 4px;
-            --icon-box-size: #{$actionIconSize};
+                &.Active,
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.07);
+                }
+            }
+
+            .AssignOwner {
+                --profile-height: #{$actionIconSize};
+                --profile-width: #{$actionIconSize};
+            }
+        }
+
+        .TopRow {
+            margin-bottom: 10px;
+
+            .Attribute {
+                font-weight: 500;
+                padding: 2px 6px;
+
+                &:not(:first-child) {
+                    margin-left: 10px;
+                }
+            }
+
+            .Id {
+                background-color: #1976d2;
+                color: white;
+            }
+
+            .Status {
+                color: white;
+                font-size: 14px;
+
+                &.TODO {
+                    background-color: #1e88e5;
+                }
+
+                &.PAUSED {
+                    background-color: #7b1fa2;
+                }
+
+                &.IN_PROGRESS {
+                    background-color: #ff551b;
+                }
+
+                &.AWAITING {
+                    background-color: #e91e63;
+                }
+
+                &.DELIVERED {
+                    background-color: #26882b;
+                }
+            }
+        }
+
+        .BottomRow {
             display: flex;
-            height: $actionIconSize;
-            justify-content: center;
-            padding: 4px;
-            --icon-size: #{$actionIconSize};
-            user-select: none;
-            width: $actionIconSize;
+            margin-top: 10px;
 
-            &.Active,
-            &:hover {
-                background-color: rgba(0, 0, 0, 0.07);
-            }
-        }
-
-        .AssignOwner {
-            --profile-height: #{$actionIconSize};
-            --profile-width: #{$actionIconSize};
-        }
-    }
-
-    .TopRow {
-        margin-bottom: 10px;
-
-        .Attribute {
-            font-weight: 500;
-            padding: 2px 6px;
-
-            &:not(:first-child) {
-                margin-left: 10px;
-            }
-        }
-
-        .Id {
-            background-color: #1976d2;
-            color: white;
-        }
-
-        .Status {
-            color: white;
-            font-size: 14px;
-
-            &.TODO {
-                background-color: #1e88e5;
-            }
-
-            &.PAUSED {
-                background-color: #7b1fa2;
-            }
-
-            &.IN_PROGRESS {
-                background-color: #ff551b;
-            }
-
-            &.AWAITING {
-                background-color: #e91e63;
-            }
-
-            &.DELIVERED {
-                background-color: #26882b;
+            .Attribute {
+                &:not(:first-child) {
+                    margin-left: 6px;
+                }
             }
         }
     }
 
-    .BottomRow {
-        display: flex;
-        margin-top: 10px;
-
-        .Attribute {
-            &:not(:first-child) {
-                margin-left: 6px;
-            }
-        }
+    .TaskDragging {
+        border-style: solid;
+        border-color: $draggingColor;
     }
 }
 
