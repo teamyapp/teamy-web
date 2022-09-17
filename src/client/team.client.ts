@@ -24,7 +24,6 @@ export class TeamClient {
                             iconUrl
                             taskActivities {
                                 taskId
-                                teamId
                                 isDragging
                                 dragByUserId
                                 draggingClientId

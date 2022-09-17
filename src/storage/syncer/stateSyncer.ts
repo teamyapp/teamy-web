@@ -339,13 +339,11 @@ export class StateSyncer {
         appState.taskActivities = taskActivities.map(
             ({
                 taskId,
-                teamId,
                 dragByUserId,
                 draggingClientId,
                 isDragging,
             }) => ({
                 taskId: Number(taskId),
-                teamId: Number(teamId),
                 dragByUserId: Number(dragByUserId),
                 draggingClientId: Number(draggingClientId),
                 isDragging,
