@@ -50,10 +50,6 @@ export class CalendarUI extends Component<Props, State> {
         };
     }
 
-    componentDidMount() {
-        this.calendarRef?.current?.focus();
-    }
-
     public render(): ReactNode {
         return (
             <div
