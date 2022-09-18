@@ -60,13 +60,18 @@ import {
     replaceTeamInvitations,
     replaceTeamMembers,
 } from './stateMutators';
+import { WithIdentity } from '@lib/network/WithIdentity';
+import { WebSocketHttpClient } from '@lib/network/WebSocket.HTTP.client';
 
 export class StateSyncer {
     private readonly connection: Connection;
     private readonly onMutationReceivedCh = chan<MessageEvent>();
     private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
+    private readonly webSocketHttpClient
 
     constructor(
+        private servicesWebAPIEndpoint: string,
+        private withIdentity: WithIdentity,
         private webSocketEndpoint: string,
         private identityClient: IdentityClient,
         private localStore: LocalStore,
@@ -79,6 +84,16 @@ export class StateSyncer {
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
+        this.webSocketHttpClient = new WebSocketHttpClient(this.servicesWebAPIEndpoint, this.withIdentity)
+    }
+
+    public async sendClientIsReady() {
+        let appState = this.localStore.getState();
+        if (!appState.clientId) {
+            return;
+        }
+
+        return this.webSocketHttpClient.sendClientIsReady(appState.clientId)
     }
 
     public onMutationReceived(): PopChannel<MessageEvent | undefined> {
@@ -106,6 +121,7 @@ export class StateSyncer {
                     await this.mutateState(messageEvent);
                 } else {
                     this.changeMetadataState(messageEvent);
+                    await this.sendClientIsReady()
                 }
 
                 this.onMutationReceivedCh.put(messageEvent);

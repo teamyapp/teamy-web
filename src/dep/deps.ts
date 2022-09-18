@@ -65,6 +65,8 @@ export function initDeps(): Deps {
     const localStore = new LocalStore();
     const graphSource = new GraphSource(localStore);
     const stateSyncer = new StateSyncer(
+        config.servicesWebAPIEndpoint,
+        httpClient,
         config.servicesWebSocketAPIEndpoint,
         identityClient,
         localStore,
