@@ -131,7 +131,7 @@ export class TaskNode implements Task {
     public get draggingBy(): User | undefined {
         const currentState = this.localStore.getState();
         const taskActivities = currentState.taskActivities;
-        const taskActivity = taskActivities.find(({taskId, draggingClientId, isDragging }) => {
+        const taskActivity = taskActivities.find(({taskId, dragTaskActivity: {draggingClientId, isDragging} }) => {
             return isDragging && taskId === this.id && draggingClientId !== currentState.clientId
         })
 
@@ -141,7 +141,7 @@ export class TaskNode implements Task {
 
         return new UserNode(
             this.localStore,
-            currentState.users[taskActivity.dragByUserId],
+            currentState.users[taskActivity.dragTaskActivity.dragByUserId],
         );
     }
 }

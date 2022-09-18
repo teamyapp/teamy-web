@@ -35,6 +35,7 @@ import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
+import { DragTaskActivity } from '../states/DragTaskActivity';
 import { LocalStore } from './localStore';
 import { Message, MessageEvent } from './message';
 import { Metadata } from './metadata';
@@ -337,16 +338,13 @@ export class StateSyncer {
         taskActivities: RemoteTaskActivity[],
     ): AppState {
         appState.taskActivities = taskActivities.map(
-            ({
-                taskId,
-                dragByUserId,
-                draggingClientId,
-                isDragging,
-            }) => ({
+            ({ taskId, dragTaskActivity }) => ({
                 taskId: Number(taskId),
-                dragByUserId: Number(dragByUserId),
-                draggingClientId: Number(draggingClientId),
-                isDragging,
+                dragTaskActivity: new DragTaskActivity(
+                    dragTaskActivity.isDragging,
+                    Number(dragTaskActivity.draggingClientId),
+                    Number(dragTaskActivity.dragByUserId),
+                ),
             }),
         );
 

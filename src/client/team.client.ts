@@ -24,9 +24,11 @@ export class TeamClient {
                             iconUrl
                             taskActivities {
                                 taskId
-                                isDragging
-                                dragByUserId
-                                draggingClientId
+                                dragTaskActivity {
+                                    isDragging
+                                    dragByUserId
+                                    draggingClientId
+                                }
                             }
                             sprints {
                                 id
