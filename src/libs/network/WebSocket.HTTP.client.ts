@@ -13,12 +13,9 @@ export class WebSocketHttpClient {
         clientId: number,
     ): Promise<Result<string, Errors>> {
         return this.httpClientWithIdentity.request(
-            `${this.connectionUrl}/real-time-state-sync/clients/ready`,
+            `${this.connectionUrl}/real-time-state-sync/clients/${clientId}/initial-state-ready`,
             { 
-                method: 'POST',
-                body: JSON.stringify({
-                    ClientID: clientId
-                })
+                method: 'PUT'
             },
         );
     }
