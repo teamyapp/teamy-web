@@ -69,6 +69,9 @@ export class StateSyncer {
     private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
     private readonly webSocketHttpClient
 
+    private initialStateReceived: boolean = false;
+    private clientIdReceived: boolean = false;
+
     constructor(
         private servicesWebAPIEndpoint: string,
         private withIdentity: WithIdentity,
@@ -87,13 +90,19 @@ export class StateSyncer {
         this.webSocketHttpClient = new WebSocketHttpClient(this.servicesWebAPIEndpoint, this.withIdentity)
     }
 
-    public async sendClientIsReady() {
+    public sendClientIsReady() {
         let appState = this.localStore.getState();
-        if (!appState.clientId) {
+        if (!this.clientIdReceived || !this.initialStateReceived || !appState.clientId) {
             return;
         }
-
+        
         return this.webSocketHttpClient.sendClientIsReady(appState.clientId)
+       
+    }
+
+    public async setInitialStateReceived() {
+        this.initialStateReceived = true
+        await this.sendClientIsReady()
     }
 
     public onMutationReceived(): PopChannel<MessageEvent | undefined> {
@@ -120,8 +129,7 @@ export class StateSyncer {
                 if (messageEvent instanceof Mutation) {
                     await this.mutateState(messageEvent);
                 } else {
-                    this.changeMetadataState(messageEvent);
-                    await this.sendClientIsReady()
+                    await this.changeMetadataState(messageEvent);
                 }
 
                 this.onMutationReceivedCh.put(messageEvent);
@@ -838,6 +846,8 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         appState.clientId = Number(metadata.clientId);
         this.localStore.updateState(appState);
+        this.clientIdReceived = true
+        await this.sendClientIsReady()
     }
 
     private async mutateState(mutation: Mutation) {
