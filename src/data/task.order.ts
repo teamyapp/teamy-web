@@ -13,7 +13,7 @@ export const orderByPriority: SortOrder = (
 
 export const orderByUrgency: SortOrder = (task1: Task, task2: Task): number => {
     if (!task1.dueAt && !task2.dueAt) {
-        return 0;
+        return task1.id - task2.id;
     }
 
     if (!task1.dueAt) {
