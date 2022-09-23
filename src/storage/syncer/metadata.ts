@@ -1,4 +1,3 @@
-
 export class Metadata {
     private constructor(
         public clientId: string,

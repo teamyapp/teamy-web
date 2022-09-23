@@ -7,7 +7,6 @@
 $draggingColor: #00897b;
 
 .InlineTask {
-    
     .DraggingBySection {
         float: right;
         background-color:  $draggingColor;
@@ -20,8 +19,11 @@ $draggingColor: #00897b;
     }
 
     .Task {
-        border-style: solid;
-        border-color: transparent;
+        border: 2px solid transparent;
+        &.Dragging {
+            border: 2px solid $draggingColor;
+        }
+        
         .LeftSection {
             .Goal {
                 @include goalText;
@@ -133,11 +135,6 @@ $draggingColor: #00897b;
                 }
             }
         }
-    }
-
-    .TaskDragging {
-        border-style: solid;
-        border-color: $draggingColor;
     }
 }
 

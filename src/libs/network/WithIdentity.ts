@@ -14,7 +14,6 @@ export class WithIdentity implements HTTPClient {
             body?: string;
         },
     ): Promise<Result<string, Errors>> {
-        debugger
         options = Object.assign(
             {
                 headers: {

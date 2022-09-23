@@ -52,8 +52,8 @@ interface Drag extends Event {
 
 interface DragEnd extends Event {
     type: 'DragEnd';
-    target: DragTarget;
     srcContainId: string;
+    target: DragTarget;
 }
 
 interface TurnOnDragging extends Event {
@@ -233,7 +233,11 @@ export class DragAndDropController<Context> {
             this.onContainerMouseLeave(this.receivingContainerId);
             this.receivingContainerId = undefined;
         }
-        this.dragAndDropEventChan.put({ type: 'DragEnd', target:  this.draggedTarget, srcContainId: this.sourceContainerId});
+        this.dragAndDropEventChan.put({ 
+            type: 'DragEnd', 
+            srcContainId: this.sourceContainerId;
+            target:  this.draggedTarget, 
+        });
         this.draggedTarget = undefined;
         this.sourceContainerId = undefined;
         this.removePreview();

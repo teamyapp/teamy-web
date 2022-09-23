@@ -514,7 +514,7 @@ export class AppComponent extends Component<Props, State> {
                     continue;
                 }
 
-                await this.stateSyncer.setInitialStateReceived()
+                await this.stateSyncer.setInitialStateReceived();
                 this.setState({
                     showMainContent: true,
                 });

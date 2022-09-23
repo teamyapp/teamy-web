@@ -16,7 +16,7 @@ export class TaskActivityState {
     public static fromJson(json: any): TaskActivityState {
         return new TaskActivityState(
             json.taskId,
-            json.dragTaskActivity
+             DragTaskActivity.fromJson(json.dragTaskActivity)
         )
     }
 }

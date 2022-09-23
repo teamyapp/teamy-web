@@ -65,12 +65,11 @@ import { WebSocketHttpClient } from '@lib/network/WebSocket.HTTP.client';
 
 export class StateSyncer {
     private readonly connection: Connection;
-    private readonly onMutationReceivedCh = chan<MessageEvent>();
+    private readonly onMutationReceivedCh = chan<Mutation>();
     private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
     private readonly webSocketHttpClient
 
     private initialStateReceived: boolean = false;
-    private clientIdReceived: boolean = false;
 
     constructor(
         private servicesWebAPIEndpoint: string,
@@ -90,22 +89,22 @@ export class StateSyncer {
         this.webSocketHttpClient = new WebSocketHttpClient(this.servicesWebAPIEndpoint, this.withIdentity)
     }
 
-    public sendClientIsReady() {
+    public notifyInitialStateReady() {
         let appState = this.localStore.getState();
         if (!this.clientIdReceived || !this.initialStateReceived || !appState.clientId) {
             return;
         }
         
-        return this.webSocketHttpClient.sendClientIsReady(appState.clientId)
+        return this.webSocketHttpClient.notifyInitialStateReady(appState.clientId)
        
     }
 
-    public async setInitialStateReceived() {
-        this.initialStateReceived = true
+    public async setInitialStateReady() {
+        this.initialStateReady = true
         await this.sendClientIsReady()
     }
 
-    public onMutationReceived(): PopChannel<MessageEvent | undefined> {
+    public onMessageReceived(): PopChannel<MessageEvent | undefined> {
         return this.onMutationReceivedMulti.copy();
     }
 
@@ -125,7 +124,7 @@ export class StateSyncer {
                 const json = JSON.parse(message);
                 console.log('JSON received: ', json);
                 const messageEvent = Message.fromMutationPayload(json);
-                console.log('Mutation received: ', messageEvent);
+                console.log('Message received: ', messageEvent);
                 if (messageEvent instanceof Mutation) {
                     await this.mutateState(messageEvent);
                 } else {
@@ -222,7 +221,7 @@ export class StateSyncer {
 
         appState = mergeTeam(appState, remoteTeam);
 
-        if (remoteTeam.taskActivities.length) {
+        if (remoteTeam.taskActivities.length > 0) {
             appState = this.mergeTaskActivities(
                 appState,
                 remoteTeam.taskActivities,
@@ -390,22 +389,24 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async startDraggingTask(taskId: number): Promise<string> {
+    public async startDraggingTask(taskId: number): Promise<string | undefined> {
         let appState = this.localStore.getState();
-        if (appState.clientId === undefined) {
-            return Promise.resolve('');
+        if (!appState.clientId) {
+            return;
         }
+        
         return this.taskClient.startDraggingTask(
             `${taskId}`,
             `${appState.clientId}`,
         );
     }
 
-    public async stopDraggingTask(taskId: number): Promise<string> {
+    public async stopDraggingTask(taskId: number): Promise<string | undefined> {
         let appState = this.localStore.getState();
-        if (appState.clientId === undefined) {
-            return Promise.resolve('');
+        if (!appState.clientId) {
+            return;
         }
+        
         return this.taskClient.stopDraggingTask(
             `${taskId}`,
             `${appState.clientId}`,
@@ -842,11 +843,10 @@ export class StateSyncer {
         return appState;
     }
 
-    private async changeMetadataState(metadata: Metadata) {
+    private async updateClientMetadata(metadata: Metadata) {
         let appState = this.localStore.getState();
         appState.clientId = Number(metadata.clientId);
         this.localStore.updateState(appState);
-        this.clientIdReceived = true
         await this.sendClientIsReady()
     }
 

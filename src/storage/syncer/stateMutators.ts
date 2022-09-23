@@ -249,7 +249,8 @@ export function applyTaskActivityMutation(
             } else {
                 currState.taskActivities.push(updatedTaskActivity)
             }
-            break
+            
+            break;
         }
     }
 
