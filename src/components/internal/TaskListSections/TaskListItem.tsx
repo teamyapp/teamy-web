@@ -18,6 +18,7 @@ interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     sectionId: string;
     task: Task;
+    currentClientId?: number;
     isSelectingOwner: boolean;
     filterTaskAction?: (action: TaskAction) => boolean;
     numActionColumns?: number;

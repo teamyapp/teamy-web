@@ -60,6 +60,7 @@ interface Props {
     deps: Deps;
     taskFilters: TaskFilters;
     selectOwnerTaskId?: number;
+    currentClientId?: number;
     onShowPotentialTaskOwners?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
@@ -340,6 +341,7 @@ export class SprintsComponent extends Component<Props, State> {
                         personalTasks={this.state.sprintTasks.filter(
                             personalTasksFilter,
                         )}
+                        currentClientId={this.props.currentClientId}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
                         sortOrders={this.state.sortOrders}
                         onCreateTask={this.onCreateTask}
@@ -408,6 +410,7 @@ export class SprintsComponent extends Component<Props, State> {
                                     teamTasksFilter,
                                 )}
                                 selectOwnerTaskId={this.props.selectOwnerTaskId}
+                                currentClientId={this.props.currentClientId}
                                 sortOrders={this.state.sortOrders}
                                 onCreateTask={this.onCreateTask}
                                 onUpdateTask={this.onUpdateTask}

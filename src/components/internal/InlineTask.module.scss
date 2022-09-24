@@ -10,18 +10,18 @@ $draggingColor: #00897b;
     .DraggingBySection {
         float: right;
         background-color:  $draggingColor;
-        border-radius: 5px 0 5px 5px;
+        border-radius: 0px 0 6px 6px;
         height: 28px;
         color: white;
         font-weight: 500;
         padding: 5px 8px;
-        margin-top: -4px;
     }
 
     .Task {
         border: 2px solid transparent;
         &.Dragging {
             border: 2px solid $draggingColor;
+            border-radius: 6px 6px 0px 6px;
         }
         
         .LeftSection {

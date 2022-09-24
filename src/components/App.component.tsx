@@ -92,6 +92,7 @@ interface State {
     currentTeam?: Team;
     teams: Team[];
     activeTeamId?: number;
+    currentClientId?: number;
     isDrawerOpen: boolean;
     showBacklog: boolean;
     backlogDropReceiverLayer: number;
@@ -251,6 +252,7 @@ export class AppComponent extends Component<Props, State> {
                                             <div className={styles.Backlog}>
                                                 <BacklogComponent
                                                     ref={this.backlogRef}
+                                                    currentClientId={this.state.currentClientId}
                                                     deps={this.props.deps}
                                                     dropReceiverLayer={
                                                         this.state
@@ -283,6 +285,9 @@ export class AppComponent extends Component<Props, State> {
                                                     selectOwnerTaskId={
                                                         this.state
                                                             .selectOwnerTaskId
+                                                    }
+                                                    currentClientId={
+                                                        this.state.currentClientId
                                                     }
                                                     taskFilters={
                                                         this.state.taskFilters
@@ -370,7 +375,6 @@ export class AppComponent extends Component<Props, State> {
 
                 if (
                     event.type === 'DragStart' &&
-                    sectionIds.includes(event.srcContainId) &&
                     event.target.type === draggableTask
                 ) {
                     await this.stateSyncer.startDraggingTask(event.target.data.id)
@@ -378,7 +382,6 @@ export class AppComponent extends Component<Props, State> {
 
                 if (
                     event.type === "DragEnd" &&
-                    sectionIds.includes(event.srcContainId) &&
                     event.target.type === draggableTask
                 ) {
                     await this.stateSyncer.stopDraggingTask(event.target.data.id)
@@ -454,14 +457,15 @@ export class AppComponent extends Component<Props, State> {
                     continue;
                 }
 
+                await this.stateSyncer.ensureConnected();
                 await this.stateSyncer.pullCurrentUserWithTeams();
                 let appState = this.localStore.getState();
+                this.setState({currentClientId: appState.clientId})
                 if (!appState.currUserId) {
                     this.trySignUp(routeUpdate.routePattern);
                     continue;
                 }
 
-                await this.stateSyncer.ensureConnected();
                 const currTeamId = appState.currTeamId;
                 if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
                     this.tryRedirect(currTeamId);

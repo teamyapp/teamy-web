@@ -7,12 +7,12 @@ import { Size, SizeTransformer } from './size';
 export type DragAndDropEvent<Context> =
     | DragEnter
     | DragLeave
+    | DragStart
     | DragEnd
     | Drag
     | Drop<Context>
     | TurnOnDragging
-    | TurnOffDragging
-    | DragStart;
+    | TurnOffDragging;
 
 export interface DragTarget {
     type: string;
@@ -41,7 +41,6 @@ interface Drop<Context> extends Event {
 
 interface DragStart extends Event {
     type: 'DragStart';
-    srcContainId: string;
     target: DragTarget;
 }
 
@@ -52,7 +51,6 @@ interface Drag extends Event {
 
 interface DragEnd extends Event {
     type: 'DragEnd';
-    srcContainId: string;
     target: DragTarget;
 }
 
@@ -97,7 +95,6 @@ export class DragAndDropController<Context> {
 
         this.dragAndDropEventChan.put({
             type: 'DragStart',
-            srcContainId: sourceContainerId,
             target: dragTarget
         });
     }
@@ -235,7 +232,6 @@ export class DragAndDropController<Context> {
         }
         this.dragAndDropEventChan.put({ 
             type: 'DragEnd', 
-            srcContainId: this.sourceContainerId;
             target:  this.draggedTarget, 
         });
         this.draggedTarget = undefined;

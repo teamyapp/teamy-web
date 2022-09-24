@@ -33,6 +33,7 @@ interface Props {
     children?: React.ReactNode;
     deps: Deps;
     dropReceiverLayer?: number;
+    currentClientId?: number;
     selectOwnerTaskId?: number;
     taskFilters: TaskFilters;
     onViewTaskDetail?: (taskId: number) => void;
@@ -176,6 +177,7 @@ export class BacklogComponent extends Component<Props, State> {
                     dragAndDropController={
                         this.props.deps.dragAndDropController
                     }
+                    currentClientId={this.props.currentClientId}
                     task={task}
                     numActionColumns={1}
                     showStatus={true}

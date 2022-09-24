@@ -40,6 +40,7 @@ interface Props {
     filterTaskAction?: (action: TaskAction) => boolean;
     showStatus?: boolean;
     numActionColumns?: number;
+    currentClientId?: number;
     isSelectingOwner?: boolean;
     onStartEditingTask?: () => void;
     onFinishEditingTask?: () => void;
@@ -120,9 +121,12 @@ export class InlineTaskUI extends Component<Props, State> {
                         {this.renderActions()}
                     </div>
                 </div>
-                {this.props.task.draggingBy && (
+                {this.props.task.draggingBy && this.props.task.draggingBy.clientId !== this.props.currentClientId && (
                     <div className={styles.DraggingBySection}>
-                      {this.props.task.draggingBy.firstName} {this.props.task.draggingBy.lastName} is dragging
+                        {getUserShortName(
+                            this.props.task.draggingBy.user.firstName,
+                            this.props.task.draggingBy.user.lastName,
+                        )}
                     </div>
                 )}
             </div>

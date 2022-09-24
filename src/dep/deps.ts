@@ -44,12 +44,13 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
-    const httpClient = new WithIdentity(new FetchHTTPClient());
+    const httpClient = new FetchHTTPClient()
+    const httpClientWithIdentity = new WithIdentity(httpClient);
     const identityClient = new IdentityClient(
         env,
         signInFinishPath,
         absoluteRootPath,
-        httpClient,
+        httpClientWithIdentity,
     );
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(

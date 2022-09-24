@@ -25,6 +25,7 @@ interface Props {
     personalTasks: Task[];
     sortOrders: SortOrders;
     selectOwnerTaskId?: number;
+    currentClientId?: number;
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -63,6 +64,7 @@ export class PersonalStatusUI extends Component<Props> {
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
+                        currentClientId={this.props.currentClientId}
                         needAttentionTask={needAttentionTask}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
@@ -87,6 +89,7 @@ export class PersonalStatusUI extends Component<Props> {
                             tasks={upcomingTasks}
                             selectOwnerTaskId={this.props.selectOwnerTaskId}
                             sortOrder={this.props.sortOrders.upcoming}
+                            currentClientId={this.props.currentClientId}
                             onCreateTask={this.props.onCreateTask}
                             onUpdateTask={this.props.onUpdateTask}
                             onStartTask={this.props.onStartTask}
@@ -107,6 +110,7 @@ export class PersonalStatusUI extends Component<Props> {
                             dragAndDropController={
                                 this.props.deps.dragAndDropController
                             }
+                            currentClientId={this.props.currentClientId}
                             tasks={awaitingTasks}
                             selectOwnerTaskId={this.props.selectOwnerTaskId}
                             onUpdateTask={this.props.onUpdateTask}
@@ -127,6 +131,7 @@ export class PersonalStatusUI extends Component<Props> {
                                 this.props.deps.dragAndDropController
                             }
                             tasks={deliveredTasks}
+                            currentClientId={this.props.currentClientId}
                             selectOwnerTaskId={this.props.selectOwnerTaskId}
                             onUpdateTask={this.props.onUpdateTask}
                             onStartTask={this.props.onStartTask}

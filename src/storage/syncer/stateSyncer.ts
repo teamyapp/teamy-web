@@ -4,7 +4,6 @@ import { PopChannel, chan, multi } from '@lib/csp/csp';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
-
 import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTaskActivity } from '@core/client/entity/remoteTaskActivity';
@@ -37,7 +36,7 @@ import { UserLinkState } from '@core/storage/states/userLink.state';
 
 import { DragTaskActivity } from '../states/DragTaskActivity';
 import { LocalStore } from './localStore';
-import { Message, MessageEvent } from './message';
+import { Message, MessageType } from './message';
 import { Metadata } from './metadata';
 import { Mutation } from './mutation';
 import {
@@ -60,20 +59,19 @@ import {
     replaceTeamInvitations,
     replaceTeamMembers,
 } from './stateMutators';
-import { WithIdentity } from '@lib/network/WithIdentity';
-import { WebSocketHttpClient } from '@lib/network/WebSocket.HTTP.client';
+import { HTTPClient } from '@lib/network/HTTP.client';
+import { StateSyncClient } from './stateSyncClient';
+
 
 export class StateSyncer {
     private readonly connection: Connection;
     private readonly onMutationReceivedCh = chan<Mutation>();
     private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
-    private readonly webSocketHttpClient
-
-    private initialStateReceived: boolean = false;
+    private readonly stateSyncClient;
 
     constructor(
-        private servicesWebAPIEndpoint: string,
-        private withIdentity: WithIdentity,
+        servicesWebAPIEndpoint: string,
+        httpClient: HTTPClient,
         private webSocketEndpoint: string,
         private identityClient: IdentityClient,
         private localStore: LocalStore,
@@ -86,25 +84,22 @@ export class StateSyncer {
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
-        this.webSocketHttpClient = new WebSocketHttpClient(this.servicesWebAPIEndpoint, this.withIdentity)
+        this.stateSyncClient = new StateSyncClient(
+            servicesWebAPIEndpoint,
+            httpClient,
+        );
     }
 
-    public notifyInitialStateReady() {
+    public async setInitialStateReceived() {
         let appState = this.localStore.getState();
-        if (!this.clientIdReceived || !this.initialStateReceived || !appState.clientId) {
+        if (!appState.clientId) {
             return;
         }
-        
-        return this.webSocketHttpClient.notifyInitialStateReady(appState.clientId)
-       
+
+        return this.stateSyncClient.sendClientIsReady(appState.clientId);
     }
 
-    public async setInitialStateReady() {
-        this.initialStateReady = true
-        await this.sendClientIsReady()
-    }
-
-    public onMessageReceived(): PopChannel<MessageEvent | undefined> {
+    public onMessageReceived(): PopChannel<Mutation | undefined> {
         return this.onMutationReceivedMulti.copy();
     }
 
@@ -114,27 +109,35 @@ export class StateSyncer {
         }
 
         const messageReceived = this.connection.onMessageReceived();
-        (async () => {
+        await this.connection.connect();
+        await new Promise(async (resolve) => {
             while (true) {
                 const message = await messageReceived.pop();
                 if (message === undefined) {
-                    return;
+                    resolve(null);
+                    return
                 }
-
+                
                 const json = JSON.parse(message);
                 console.log('JSON received: ', json);
                 const messageEvent = Message.fromMutationPayload(json);
                 console.log('Message received: ', messageEvent);
-                if (messageEvent instanceof Mutation) {
-                    await this.mutateState(messageEvent);
-                } else {
-                    await this.changeMetadataState(messageEvent);
+                switch (messageEvent.type) {
+                    case MessageType.Mutation: {
+                        const mutation = Mutation.fromMutationPayload(messageEvent.payload)
+                        await this.mutateState(mutation);
+                        this.onMutationReceivedCh.put(mutation);
+                        break
+                    }
+                    case MessageType.Metadata: {
+                        await this.updateMetadataState(Metadata.fromMutationPayload(messageEvent.payload));
+                        resolve(null);
+                        break
+                    }
                 }
 
-                this.onMutationReceivedCh.put(messageEvent);
             }
-        })().then();
-        await this.connection.connect();
+        });
     }
 
     public trySetCurrentTeam(currTeamId: number): boolean {
@@ -218,7 +221,7 @@ export class StateSyncer {
         if (!remoteTeam) {
             return;
         }
-
+        appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
 
         if (remoteTeam.taskActivities.length > 0) {
@@ -276,7 +279,7 @@ export class StateSyncer {
             `${currTeamId}`,
             remoteFilter,
         );
-
+        appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
         this.localStore.updateState(appState);
     }
@@ -291,6 +294,7 @@ export class StateSyncer {
         const sprint = await this.sprintClient.getSprintWithTaskPreviews(
             `${currSprintId}`,
         );
+        appState = this.localStore.getState();
         if (sprint) {
             appState = mergeSprint(appState, sprint);
         } else {
@@ -389,12 +393,14 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async startDraggingTask(taskId: number): Promise<string | undefined> {
+    public async startDraggingTask(
+        taskId: number,
+    ): Promise<string | undefined> {
         let appState = this.localStore.getState();
         if (!appState.clientId) {
             return;
         }
-        
+
         return this.taskClient.startDraggingTask(
             `${taskId}`,
             `${appState.clientId}`,
@@ -406,7 +412,7 @@ export class StateSyncer {
         if (!appState.clientId) {
             return;
         }
-        
+
         return this.taskClient.stopDraggingTask(
             `${taskId}`,
             `${appState.clientId}`,
@@ -515,6 +521,7 @@ export class StateSyncer {
         const remoteTask = await this.taskClient.moveTaskToInProgress(
             `${taskId}`,
         );
+        appState = this.localStore.getState();
         appState = mergeTask(appState, remoteTask);
         this.localStore.updateState(appState);
     }
@@ -530,6 +537,7 @@ export class StateSyncer {
         const remoteTask = await this.taskClient.moveTaskToDelivered(
             `${taskId}`,
         );
+        appState = this.localStore.getState();
         appState = mergeTask(appState, remoteTask);
         this.localStore.updateState(appState);
     }
@@ -553,6 +561,7 @@ export class StateSyncer {
         const remoteTask = await this.taskClient.moveTaskToUpcoming(
             `${taskId}`,
         );
+        appState = this.localStore.getState();
         appState = mergeTask(appState, remoteTask);
         this.localStore.updateState(appState);
     }
@@ -843,11 +852,10 @@ export class StateSyncer {
         return appState;
     }
 
-    private async updateClientMetadata(metadata: Metadata) {
+    private async updateMetadataState(metadata: Metadata) {
         let appState = this.localStore.getState();
         appState.clientId = Number(metadata.clientId);
         this.localStore.updateState(appState);
-        await this.sendClientIsReady()
     }
 
     private async mutateState(mutation: Mutation) {

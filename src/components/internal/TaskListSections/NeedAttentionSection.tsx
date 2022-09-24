@@ -23,6 +23,7 @@ interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     needAttentionTask?: Task;
     selectOwnerTaskId?: number;
+    currentClientId?: number;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
     onDeleteTask?: (taskId: number) => void;
@@ -69,6 +70,7 @@ export class NeedAttentionSection extends Component<Props> {
                         dragAndDropController={this.props.dragAndDropController}
                         sectionId={sectionId}
                         task={task}
+                        currentClientId={this.props.currentClientId}
                         isSelectingOwner={
                             this.props.selectOwnerTaskId === task.id
                         }

@@ -1,15 +1,13 @@
-import { Metadata } from "./metadata";
-import { Mutation } from "./mutation";
+export enum MessageType {
+    Mutation = 'Mutation',
+    Metadata = 'Metadata'
+}
 
-export type MessageType = 'Mutation' | 'Metadata';
-export type MessageEvent = Mutation | Metadata
 
 export class Message {
-    static fromMutationPayload(json: any): MessageEvent {
-        if (json.Type === 'Mutation') {
-            return Mutation.fromMutationPayload(json.Payload)
-        } else {
-            return Metadata.fromMutationPayload(json.Payload)
-        }
+    constructor(public type: MessageType, public payload: any) {}
+
+    static fromMutationPayload(json: any): Message {
+        return new Message(json.Type, json.Payload)
     }
 }
