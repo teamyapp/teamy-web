@@ -33,7 +33,6 @@ interface Props {
     children?: React.ReactNode;
     deps: Deps;
     dropReceiverLayer?: number;
-    currentClientId?: number;
     selectOwnerTaskId?: number;
     taskFilters: TaskFilters;
     onViewTaskDetail?: (taskId: number) => void;

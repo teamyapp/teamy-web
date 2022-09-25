@@ -1,7 +1,4 @@
-export enum MessageType {
-    Mutation = 'Mutation',
-    Metadata = 'Metadata'
-}
+export type MessageType = 'Mutation' | 'Metadata';
 
 
 export class Message {

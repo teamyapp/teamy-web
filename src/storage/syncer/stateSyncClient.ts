@@ -12,13 +12,12 @@ export class StateSyncClient {
         private readonly connectionUrl: string,
         private readonly httpClient: HTTPClient,
     ) {
-        this.withIdentityHttpClient = new WithIdentity(this.httpClient)
     }
 
     public sendClientIsReady(
         clientId: number,
     ): Promise<Result<string, Errors>> {
-        return this.withIdentityHttpClient.request(
+        return this.httpClient.request(
             `${this.connectionUrl}/real-time-state-sync/clients/${clientId}/initial-state-ready`,
             { 
                 method: 'PUT'

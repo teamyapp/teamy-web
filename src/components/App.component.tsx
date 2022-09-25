@@ -92,7 +92,6 @@ interface State {
     currentTeam?: Team;
     teams: Team[];
     activeTeamId?: number;
-    currentClientId?: number;
     isDrawerOpen: boolean;
     showBacklog: boolean;
     backlogDropReceiverLayer: number;
@@ -460,7 +459,6 @@ export class AppComponent extends Component<Props, State> {
                 await this.stateSyncer.ensureConnected();
                 await this.stateSyncer.pullCurrentUserWithTeams();
                 let appState = this.localStore.getState();
-                this.setState({currentClientId: appState.clientId})
                 if (!appState.currUserId) {
                     this.trySignUp(routeUpdate.routePattern);
                     continue;
@@ -518,7 +516,7 @@ export class AppComponent extends Component<Props, State> {
                     continue;
                 }
 
-                await this.stateSyncer.setInitialStateReceived();
+                await this.stateSyncer.notifyInitialStateReceived();
                 this.setState({
                     showMainContent: true,
                 });

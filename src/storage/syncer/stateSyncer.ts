@@ -62,16 +62,14 @@ import {
 import { HTTPClient } from '@lib/network/HTTP.client';
 import { StateSyncClient } from './stateSyncClient';
 
-
 export class StateSyncer {
     private readonly connection: Connection;
     private readonly onMutationReceivedCh = chan<Mutation>();
     private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
-    private readonly stateSyncClient;
+    private readonly stateSyncClient: StateSyncClient;
 
     constructor(
-        servicesWebAPIEndpoint: string,
-        httpClient: HTTPClient,
+        private stateSyncClient: StateSyncClient,
         private webSocketEndpoint: string,
         private identityClient: IdentityClient,
         private localStore: LocalStore,
@@ -84,10 +82,6 @@ export class StateSyncer {
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
-        this.stateSyncClient = new StateSyncClient(
-            servicesWebAPIEndpoint,
-            httpClient,
-        );
     }
 
     public async setInitialStateReceived() {
@@ -99,7 +93,7 @@ export class StateSyncer {
         return this.stateSyncClient.sendClientIsReady(appState.clientId);
     }
 
-    public onMessageReceived(): PopChannel<Mutation | undefined> {
+    public onMutationReceived(): PopChannel<Mutation | undefined> {
         return this.onMutationReceivedMulti.copy();
     }
 
@@ -114,13 +108,13 @@ export class StateSyncer {
             while (true) {
                 const message = await messageReceived.pop();
                 if (message === undefined) {
-                    resolve(null);
+                    resolve();
                     return
                 }
                 
                 const json = JSON.parse(message);
                 console.log('JSON received: ', json);
-                const messageEvent = Message.fromMutationPayload(json);
+                const message = Message.fromMutationPayload(json);
                 console.log('Message received: ', messageEvent);
                 switch (messageEvent.type) {
                     case MessageType.Mutation: {
@@ -131,7 +125,7 @@ export class StateSyncer {
                     }
                     case MessageType.Metadata: {
                         await this.updateMetadataState(Metadata.fromMutationPayload(messageEvent.payload));
-                        resolve(null);
+                        resolve();
                         break
                     }
                 }
@@ -221,6 +215,7 @@ export class StateSyncer {
         if (!remoteTeam) {
             return;
         }
+
         appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
 

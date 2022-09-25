@@ -76,7 +76,9 @@ export class InlineTaskUI extends Component<Props, State> {
             <div className={styles.InlineTask}>
                 <div
                     className={`${styles.Task} ${
-                        this.props.task.draggingBy ? styles.Dragging : ''
+                        classnames({
+                            [styles.Dragging]: this.props.task.draggingBy 
+                        })
                     }`}
                 >
                     <div className={styles.LeftSection}>
