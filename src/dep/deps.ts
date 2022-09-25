@@ -44,8 +44,8 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
-    const httpClient = new FetchHTTPClient()
-    const httpClientWithIdentity = new WithIdentity(httpClient);
+    let httpClient = new FetchHTTPClient();
+    httpClient = new WithIdentity(httpClient);
     const identityClient = new IdentityClient(
         env,
         signInFinishPath,
