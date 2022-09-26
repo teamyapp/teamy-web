@@ -27,6 +27,7 @@ import { UserActionEvent } from '@core/event/userAction';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -44,8 +45,7 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
-    let httpClient = new FetchHTTPClient();
-    httpClient = new WithIdentity(httpClient);
+    const httpClient = new WithIdentity(new FetchHTTPClient());
     const identityClient = new IdentityClient(
         env,
         signInFinishPath,
@@ -65,9 +65,9 @@ export function initDeps(): Deps {
     const sprintClient = new SprintClient(teamyGraphQLClient);
     const localStore = new LocalStore();
     const graphSource = new GraphSource(localStore);
+    const stateSyncClient = new StateSyncClient(config.servicesWebAPIEndpoint, httpClient)
     const stateSyncer = new StateSyncer(
-        config.servicesWebAPIEndpoint,
-        httpClient,
+        stateSyncClient,
         config.servicesWebSocketAPIEndpoint,
         identityClient,
         localStore,

@@ -60,17 +60,14 @@ import {
     replaceTeamMembers,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
-import { HTTPClient } from '@lib/network/HTTP.client';
 
 export class StateSyncer {
     private readonly connection: Connection;
     private readonly onMutationReceivedCh = chan<Mutation>();
     private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
-    private readonly stateSyncClient: StateSyncClient;
 
     constructor(
-        servicesWebAPIEndpoint: string,
-        httpClient: HTTPClient,
+        private stateSyncClient: StateSyncClient,
         private webSocketEndpoint: string,
         private identityClient: IdentityClient,
         private localStore: LocalStore,
@@ -83,7 +80,6 @@ export class StateSyncer {
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
-        this.stateSyncClient = new StateSyncClient(servicesWebAPIEndpoint, httpClient)
     }
 
     public async notifyInitialStateReceived() {
