@@ -60,7 +60,6 @@ interface Props {
     deps: Deps;
     taskFilters: TaskFilters;
     selectOwnerTaskId?: number;
-    currentClientId?: number;
     onShowPotentialTaskOwners?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
@@ -115,6 +114,8 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     public render(): ReactNode {
+        const clientId = this.localStore.getState().clientId
+
         // TODO: will change when PersonalStatus is merged with Kanban
         return this.state.selectedSprintId ? (
             <div className={styles.Sprint}>
@@ -129,7 +130,7 @@ export class SprintsComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <div className={styles.Content}>
-                    {this.renderTabContent(tabIds[this.state.activeTabIndex])}
+                    {this.renderTabContent(tabIds[this.state.activeTabIndex], clientId)}
                 </div>
             </div>
         ) : (
@@ -300,7 +301,7 @@ export class SprintsComponent extends Component<Props, State> {
         };
     };
 
-    private renderTabContent(tabId: string): ReactNode | null {
+    private renderTabContent(tabId: string, clientId?: number): ReactNode | null {
         let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
         let teamTasksFilter = filters.allTasks;
 
@@ -341,7 +342,7 @@ export class SprintsComponent extends Component<Props, State> {
                         personalTasks={this.state.sprintTasks.filter(
                             personalTasksFilter,
                         )}
-                        currentClientId={this.props.currentClientId}
+                        currentClientId={clientId}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
                         sortOrders={this.state.sortOrders}
                         onCreateTask={this.onCreateTask}
@@ -410,7 +411,7 @@ export class SprintsComponent extends Component<Props, State> {
                                     teamTasksFilter,
                                 )}
                                 selectOwnerTaskId={this.props.selectOwnerTaskId}
-                                currentClientId={this.props.currentClientId}
+                                currentClientId={clientId}
                                 sortOrders={this.state.sortOrders}
                                 onCreateTask={this.onCreateTask}
                                 onUpdateTask={this.onUpdateTask}

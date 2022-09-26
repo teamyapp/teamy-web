@@ -36,7 +36,7 @@ import { UserLinkState } from '@core/storage/states/userLink.state';
 
 import { DragTaskActivity } from '../states/DragTaskActivity';
 import { LocalStore } from './localStore';
-import { Message, MessageType } from './message';
+import { Message } from './message';
 import { Metadata } from './metadata';
 import { Mutation } from './mutation';
 import {
@@ -59,8 +59,8 @@ import {
     replaceTeamInvitations,
     replaceTeamMembers,
 } from './stateMutators';
-import { HTTPClient } from '@lib/network/HTTP.client';
 import { StateSyncClient } from './stateSyncClient';
+import { HTTPClient } from '@lib/network/HTTP.client';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -69,7 +69,8 @@ export class StateSyncer {
     private readonly stateSyncClient: StateSyncClient;
 
     constructor(
-        private stateSyncClient: StateSyncClient,
+        servicesWebAPIEndpoint: string,
+        httpClient: HTTPClient,
         private webSocketEndpoint: string,
         private identityClient: IdentityClient,
         private localStore: LocalStore,
@@ -82,9 +83,10 @@ export class StateSyncer {
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
+        this.stateSyncClient = new StateSyncClient(servicesWebAPIEndpoint, httpClient)
     }
 
-    public async setInitialStateReceived() {
+    public async notifyInitialStateReceived() {
         let appState = this.localStore.getState();
         if (!appState.clientId) {
             return;
@@ -103,29 +105,34 @@ export class StateSyncer {
         }
 
         const messageReceived = this.connection.onMessageReceived();
+        let metadataReceived = false
         await this.connection.connect();
         await new Promise(async (resolve) => {
             while (true) {
-                const message = await messageReceived.pop();
-                if (message === undefined) {
-                    resolve();
+                const receivedMessage = await messageReceived.pop();
+                if (receivedMessage === undefined) {
+                    resolve(null);
                     return
                 }
                 
-                const json = JSON.parse(message);
+                const json = JSON.parse(receivedMessage);
                 console.log('JSON received: ', json);
                 const message = Message.fromMutationPayload(json);
-                console.log('Message received: ', messageEvent);
-                switch (messageEvent.type) {
-                    case MessageType.Mutation: {
-                        const mutation = Mutation.fromMutationPayload(messageEvent.payload)
+                console.log('Message received: ', message);
+                switch (message.type) {
+                    case 'Mutation': {
+                        if (!metadataReceived) {
+                            break
+                        }
+                        const mutation = Mutation.fromMutationPayload(message.payload)
                         await this.mutateState(mutation);
                         this.onMutationReceivedCh.put(mutation);
                         break
                     }
-                    case MessageType.Metadata: {
-                        await this.updateMetadataState(Metadata.fromMutationPayload(messageEvent.payload));
-                        resolve();
+                    case 'Metadata': {
+                        await this.updateMetadataState(Metadata.fromMutationPayload(message.payload));
+                        metadataReceived = true
+                        resolve(null);
                         break
                     }
                 }

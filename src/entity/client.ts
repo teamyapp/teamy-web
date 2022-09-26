@@ -1,6 +1,6 @@
-import { UserNode } from '@core/storage/graph/user.node';
+import { User } from './user';
 
 export interface Client {
     id: number;
-    user: User
+    user: User;
 }

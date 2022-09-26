@@ -2,12 +2,7 @@ import { Errors } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { HTTPClient } from '@lib/network/HTTP.client';
 
-import { WithIdentity } from '@lib/network/WithIdentity';
-
 export class StateSyncClient {
-
-    private withIdentityHttpClient: WithIdentity
-
     constructor(
         private readonly connectionUrl: string,
         private readonly httpClient: HTTPClient,

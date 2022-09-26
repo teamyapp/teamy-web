@@ -50,7 +50,7 @@ export function initDeps(): Deps {
         env,
         signInFinishPath,
         absoluteRootPath,
-        httpClientWithIdentity,
+        httpClient,
     );
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(

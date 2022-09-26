@@ -72,12 +72,13 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     public render() {
+        const {draggingBy} = this.props.task;
         return (
             <div className={styles.InlineTask}>
                 <div
                     className={`${styles.Task} ${
-                        classnames({
-                            [styles.Dragging]: this.props.task.draggingBy 
+                        classNames({
+                            [styles.Dragging]: draggingBy 
                         })
                     }`}
                 >
@@ -123,11 +124,11 @@ export class InlineTaskUI extends Component<Props, State> {
                         {this.renderActions()}
                     </div>
                 </div>
-                {this.props.task.draggingBy && this.props.task.draggingBy.clientId !== this.props.currentClientId && (
+                {draggingBy && draggingBy.id !== this.props.currentClientId && (
                     <div className={styles.DraggingBySection}>
                         {getUserShortName(
-                            this.props.task.draggingBy.user.firstName,
-                            this.props.task.draggingBy.user.lastName,
+                            draggingBy.user.firstName,
+                            draggingBy.user.lastName,
                         )}
                     </div>
                 )}

@@ -251,7 +251,6 @@ export class AppComponent extends Component<Props, State> {
                                             <div className={styles.Backlog}>
                                                 <BacklogComponent
                                                     ref={this.backlogRef}
-                                                    currentClientId={this.state.currentClientId}
                                                     deps={this.props.deps}
                                                     dropReceiverLayer={
                                                         this.state
@@ -284,9 +283,6 @@ export class AppComponent extends Component<Props, State> {
                                                     selectOwnerTaskId={
                                                         this.state
                                                             .selectOwnerTaskId
-                                                    }
-                                                    currentClientId={
-                                                        this.state.currentClientId
                                                     }
                                                     taskFilters={
                                                         this.state.taskFilters

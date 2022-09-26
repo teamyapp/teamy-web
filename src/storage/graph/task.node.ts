@@ -1,4 +1,3 @@
-import { Client } from '@core/entity/client';
 import { Duration } from '@core/entity/duration';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
@@ -7,6 +6,7 @@ import { TaskState } from '@core/storage/states/task.state';
 import { TaskStatus } from '@core/storage/states/taskStatus';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
+import { ClientNode } from './client.node';
 import { TeamNode } from './team.node';
 import { ThreadNode } from './thread.node';
 import { UserNode } from './user.node';
@@ -128,27 +128,25 @@ export class TaskNode implements Task {
             );
     }
 
-    public get draggingBy(): Client | undefined {
+    public get draggingBy(): ClientNode | undefined {
         const currentState = this.localStore.getState();
         const taskActivities = currentState.taskActivities;
-        const taskActivity = taskActivities.find(({
-            taskId, 
-            dragTaskActivity: {
-                isDragging
-            }}) => {
-            return isDragging && taskId === this.id
-        })
+        const taskActivity = taskActivities.find(
+            ({ taskId, dragTaskActivity: { isDragging } }) => {
+                return isDragging && taskId === this.id;
+            },
+        );
 
         if (!taskActivity) {
             return undefined;
         }
 
-        return {
-            clientId: taskActivity.dragTaskActivity.draggingClientId,
-            user: new UserNode(
+        return new ClientNode(
+            taskActivity.dragTaskActivity.draggingClientId,
+            new UserNode(
                 this.localStore,
                 currentState.users[taskActivity.dragTaskActivity.dragByUserId],
             ),
-        } 
+        );
     }
 }
