@@ -78,7 +78,7 @@ export class InlineTaskUI extends Component<Props, State> {
                 <div
                     className={`${styles.Task} ${
                         classNames({
-                            [styles.Dragging]: draggingBy 
+                            [styles.Dragging]: draggingBy !== undefined
                         })
                     }`}
                 >
