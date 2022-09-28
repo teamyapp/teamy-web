@@ -227,7 +227,7 @@ export class StateSyncer {
         appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
 
-        if (!!remoteTeam.taskActivities?.length) {
+        if (remoteTeam.taskActivities?.length) {
             appState = this.mergeTaskActivities(
                 appState,
                 remoteTeam.taskActivities,
