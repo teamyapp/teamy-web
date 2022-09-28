@@ -14,7 +14,7 @@ export class ClientState {
     public static fromJson(json: any): ClientState {
         return new ClientState(
             json.id,
-            json.user.id,
+            json.userId,
         )
     }
 }
