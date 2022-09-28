@@ -141,12 +141,10 @@ export class TaskNode implements Task {
             return undefined;
         }
 
+        const clientState  = currentState.clients[taskActivity.dragTaskActivity.clientId]
         return new ClientNode(
-            taskActivity.dragTaskActivity.draggingClientId,
-            new UserNode(
-                this.localStore,
-                currentState.users[taskActivity.dragTaskActivity.dragByUserId],
-            ),
+            this.localStore,
+            clientState
         );
     }
 }

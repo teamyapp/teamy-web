@@ -4,6 +4,7 @@ import { PopChannel, chan, multi } from '@lib/csp/csp';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
+
 import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTaskActivity } from '@core/client/entity/remoteTaskActivity';
@@ -34,7 +35,7 @@ import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
-import { DragTaskActivity } from '../states/DragTaskActivity';
+import { ClientState } from '../states/client.state';
 import { LocalStore } from './localStore';
 import { Message } from './message';
 import { Metadata } from './metadata';
@@ -60,6 +61,7 @@ import {
     replaceTeamMembers,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
+import { TaskActivityState } from '../states/taskActivity.state';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -101,16 +103,16 @@ export class StateSyncer {
         }
 
         const messageReceived = this.connection.onMessageReceived();
-        let metadataReceived = false
+        let metadataReceived = false;
         await this.connection.connect();
         await new Promise(async (resolve) => {
             while (true) {
                 const receivedMessage = await messageReceived.pop();
                 if (receivedMessage === undefined) {
                     resolve(null);
-                    return
+                    return;
                 }
-                
+
                 const json = JSON.parse(receivedMessage);
                 console.log('JSON received: ', json);
                 const message = Message.fromMutationPayload(json);
@@ -118,21 +120,24 @@ export class StateSyncer {
                 switch (message.type) {
                     case 'Mutation': {
                         if (!metadataReceived) {
-                            break
+                            break;
                         }
-                        const mutation = Mutation.fromMutationPayload(message.payload)
+                        const mutation = Mutation.fromMutationPayload(
+                            message.payload,
+                        );
                         await this.mutateState(mutation);
                         this.onMutationReceivedCh.put(mutation);
-                        break
+                        break;
                     }
                     case 'Metadata': {
-                        await this.updateMetadataState(Metadata.fromMutationPayload(message.payload));
-                        metadataReceived = true
+                        await this.updateMetadataState(
+                            Metadata.fromMutationPayload(message.payload),
+                        );
+                        metadataReceived = true;
                         resolve(null);
-                        break
+                        break;
                     }
                 }
-
             }
         });
     }
@@ -222,7 +227,7 @@ export class StateSyncer {
         appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
 
-        if (remoteTeam.taskActivities.length > 0) {
+        if (!!remoteTeam.taskActivities?.length) {
             appState = this.mergeTaskActivities(
                 appState,
                 remoteTeam.taskActivities,
@@ -362,16 +367,13 @@ export class StateSyncer {
         appState: AppState,
         taskActivities: RemoteTaskActivity[],
     ): AppState {
-        appState.taskActivities = taskActivities.map(
-            ({ taskId, dragTaskActivity }) => ({
-                taskId: Number(taskId),
-                dragTaskActivity: new DragTaskActivity(
-                    dragTaskActivity.isDragging,
-                    Number(dragTaskActivity.draggingClientId),
-                    Number(dragTaskActivity.dragByUserId),
-                ),
-            }),
-        );
+        appState.taskActivities = []
+        appState.clients = {}
+        for (const taskActivity of taskActivities) {
+            const clientState = ClientState.fromJson(taskActivity.dragTaskActivity.client)
+            appState.clients[clientState.id] = clientState
+            appState.taskActivities.push(TaskActivityState.fromJson(taskActivity))
+        }
 
         return appState;
     }

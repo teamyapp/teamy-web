@@ -17,5 +17,5 @@ export interface RemoteTeam {
     tasks?: RemoteTask[];
     invitations?: RemoteInvitation[];
     sprints?: RemoteSprint[];
-    taskActivities:  RemoteTaskActivity[];
+    taskActivities?:  RemoteTaskActivity[];
 }

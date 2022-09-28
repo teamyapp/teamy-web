@@ -14,7 +14,7 @@ export class LocalStore {
         const savedState = localStorage.getItem(appStateKey);
         this.appState = savedState
             ? AppState.fromJson(JSON.parse(savedState))
-            : new AppState({}, {}, {}, {}, {}, {}, [], [], [], [], [], {}, []);
+            : new AppState({}, {}, {}, {}, {}, {}, {}, [], [], [], [], [], {}, []);
     }
 
     public getState(): AppState {

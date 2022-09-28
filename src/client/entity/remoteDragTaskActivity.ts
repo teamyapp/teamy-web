@@ -1,5 +1,6 @@
+import { RemoteClient } from "./remoteClient";
+
 export interface RemoteDragTaskActivity {
     isDragging: boolean;
-    dragByUserId: string;
-    draggingClientId: string;
+    client:  RemoteClient
 }

@@ -21,6 +21,7 @@ import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRela
 import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
+import { ClientState } from '../states/client.state';
 
 import { TaskActivityState } from '../states/taskActivity.state';
 import { Mutation } from './mutation';
@@ -243,6 +244,8 @@ export function applyTaskActivityMutation(
     switch (mutation.mutationType) {
         case 'Update': {
             const updatedTaskActivity = TaskActivityState.fromMutationPayload(mutation.payload)
+            const clientState = ClientState.fromMutationPayload(mutation.payload.DragTaskActivity.Client)
+            currState.clients[clientState.id] = clientState
             const taskActivityIndex = currState.taskActivities.findIndex(({taskId}) => taskId === updatedTaskActivity.taskId)
             if (taskActivityIndex !== -1) {
                 currState.taskActivities[taskActivityIndex] = updatedTaskActivity

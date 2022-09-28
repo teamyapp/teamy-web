@@ -26,8 +26,12 @@ export class TeamClient {
                                 taskId
                                 dragTaskActivity {
                                     isDragging
-                                    dragByUserId
-                                    draggingClientId
+                                    client {
+                                        id
+                                        user {
+                                            id
+                                        }
+                                    }
                                 }
                             }
                             sprints {
