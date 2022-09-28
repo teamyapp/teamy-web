@@ -5,7 +5,7 @@ import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { CreateTeamInput, UpdateTeamInput } from '@core/client/entity/input';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
-import { RemoteUser } from '@core/client/entity/remoteUser';
+import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;
@@ -99,7 +99,9 @@ export class TeamClient {
                                 id
                             }
                             members {
-                                id
+                                user {
+                                    id
+                                }
                             }
                         }
                     }
@@ -137,18 +139,20 @@ export class TeamClient {
             .then((payload: any) => payload?.updateTeam);
     }
 
-    public getTeamMembers(teamId: string): Promise<RemoteUser[]> {
+    public getTeamMembers(teamId: string): Promise<RemoteTeamMember[]> {
         return this.graphQLClient
             .query({
                 query: gql`
                     query getTeamMembers($teamId: ID!) {
                         teams(filter: { teamId: $teamId }) {
                             members {
-                                id
-                                lastName
-                                firstName
-                                profileUrl
-                                createdAt
+                                user {
+                                    id
+                                    lastName
+                                    firstName
+                                    profileUrl
+                                    createdAt
+                                }
                             }
                         }
                     }
@@ -163,7 +167,7 @@ export class TeamClient {
     public addMemberToTeam(
         teamId: string,
         memberUserId: string,
-    ): Promise<RemoteUser> {
+    ): Promise<RemoteTeamMember> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
@@ -172,12 +176,15 @@ export class TeamClient {
                             teamId: $teamId
                             memberUserId: $memberUserId
                         ) {
-                            id
-                            firstName
-                            lastName
-                            profileUrl
-                            teams {
+                            team {
                                 id
+                            }
+                            user {
+                                id
+                                lastName
+                                firstName
+                                profileUrl
+                                createdAt
                             }
                         }
                     }
@@ -193,7 +200,7 @@ export class TeamClient {
     public removeMemberFromTeam(
         teamId: string,
         memberUserId: string,
-    ): Promise<RemoteUser> {
+    ): Promise<RemoteTeamMember> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
@@ -205,10 +212,16 @@ export class TeamClient {
                             teamId: $teamId
                             memberUserId: $memberUserId
                         ) {
-                            id
-                            firstName
-                            lastName
-                            profileUrl
+                            team {
+                                id
+                            }
+                            user {
+                                id
+                                lastName
+                                firstName
+                                profileUrl
+                                createdAt
+                            }
                         }
                     }
                 `,

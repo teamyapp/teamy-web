@@ -13,6 +13,7 @@ import { SprintClient } from '@core/client/sprint.client';
 import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { UserClient } from '@core/client/user.client';
+import { Duration } from '@core/entity/duration';
 import { TaskFilter } from '@core/entity/filters';
 import {
     CreateInvitationInput,
@@ -27,7 +28,7 @@ import {
     UpdateUserInput,
 } from '@core/entity/input';
 import { AppState } from '@core/storage/states/app.state';
-import { toInt } from '@core/storage/states/parser';
+import { toDate, toInt } from '@core/storage/states/parser';
 import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation.state';
 import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
@@ -271,10 +272,6 @@ export class StateSyncer {
         const members = await this.teamClient.getTeamMembers(`${teamId}`);
         let appState = this.localStore.getState();
         appState = replaceTeamMembers(appState, teamId, members);
-        members.forEach((member) => {
-            appState = mergeUser(appState, member);
-        });
-
         this.localStore.updateState(appState);
     }
 
@@ -315,11 +312,6 @@ export class StateSyncer {
         const remoteTeam = await this.teamClient.createTeam(team);
         let appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
-
-        // TODO: dedupe with real time team member mutation
-        const userId = appState.currUserId;
-        const teamId = toInt(remoteTeam.id)!;
-        appState.teamMembers.push(new TeamMemberState(teamId, userId!));
         this.localStore.updateState(appState);
     }
 
@@ -346,8 +338,16 @@ export class StateSyncer {
 
         // TODO: dedupe with real time team member mutation
         let appState = this.localStore.getState();
-        appState = mergeUser(appState, remoteMember);
-        appState.teamMembers.push(new TeamMemberState(teamId, userId));
+        appState = mergeUser(appState, remoteMember.user);
+
+        const member = new TeamMemberState(
+            teamId,
+            userId,
+            Duration.fromString(remoteMember.weeklyBandwidth),
+            toDate(remoteMember.createdAt)!,
+            toDate(remoteMember.updatedAt),
+        );
+        appState.teamMembers.push(member);
         this.localStore.updateState(appState);
     }
 

@@ -4,6 +4,7 @@ import { Task } from '@core/entity/task';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { SprintNode } from '@core/storage/graph/sprint.node';
+import { TeamMemberNode } from '@core/storage/graph/teamMember.node';
 import { TeamState } from '@core/storage/states/team.state';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
@@ -44,16 +45,12 @@ export class TeamNode implements Team {
         );
     }
 
-    public get members(): User[] {
+    public get members(): TeamMemberNode[] {
         const appState = this.localStore.getState();
         return appState.teamMembers
             .filter((teamMember) => teamMember.teamId === this.teamState.id)
             .map(
-                (teamMember) =>
-                    new UserNode(
-                        this.localStore,
-                        appState.users[teamMember.userId],
-                    ),
+                (teamMember) => new TeamMemberNode(this.localStore, teamMember),
             );
     }
 

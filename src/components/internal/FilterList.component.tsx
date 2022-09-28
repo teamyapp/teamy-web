@@ -9,7 +9,7 @@ import { allTasks, between, ownedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
 import { Task } from '@core/entity/task';
-import { User } from '@core/entity/user';
+import { TeamMember } from '@core/entity/teamMember';
 
 import styles from './FilterList.component.module.scss';
 import { getUserShortName } from './format';
@@ -18,7 +18,7 @@ const DATE_PICKER_Z_INDEX = 101;
 
 interface Props {
     deps: Deps;
-    teamMembers: User[];
+    teamMembers: TeamMember[];
     taskFiltersData: TaskFiltersData;
     taskFilters: TaskFilters;
     onTaskFiltersDataChange?: (taskFiltersData: TaskFiltersData) => void;
@@ -128,22 +128,25 @@ export class FilterListComponent extends Component<Props, State> {
         );
     }
 
-    private renderOption = (user: User, index: number) => (
-        <div className={`${styles.Input} ${styles.Option}`} key={index}>
-            <input
-                type={'checkbox'}
-                className={styles.Checkbox}
-                value={`${userPrefix}${user.id}`}
-                checked={this.state.selectedTaskOwners.has(
-                    `${userPrefix}${user.id}`,
-                )}
-                onChange={this.onTaskOwnersCheckBoxChange}
-            />
-            <div className={styles.Label}>
-                {getUserShortName(user.firstName, user.lastName)}
+    private renderOption = (teamMember: TeamMember, index: number) => {
+        const user = teamMember.user;
+        return (
+            <div className={`${styles.Input} ${styles.Option}`} key={index}>
+                <input
+                    type={'checkbox'}
+                    className={styles.Checkbox}
+                    value={`${userPrefix}${user.id}`}
+                    checked={this.state.selectedTaskOwners.has(
+                        `${userPrefix}${user.id}`,
+                    )}
+                    onChange={this.onTaskOwnersCheckBoxChange}
+                />
+                <div className={styles.Label}>
+                    {getUserShortName(user.firstName, user.lastName)}
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     private onTaskOwnersCheckBoxChange = (
         event: ChangeEvent<HTMLInputElement>,
