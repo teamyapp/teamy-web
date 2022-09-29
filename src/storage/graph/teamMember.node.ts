@@ -13,13 +13,13 @@ export class TeamMemberNode implements TeamMember {
         private teamMemberState: TeamMemberState,
     ) {}
 
-    get team(): Team {
+    get team(): TeamNode {
         const appState = this.localStore.getState();
         const teamState = appState.teams[this.teamMemberState.teamId];
         return new TeamNode(this.localStore, teamState);
     }
 
-    get user(): User {
+    get user(): UserNode {
         const appState = this.localStore.getState();
         const userState = appState.users[this.teamMemberState.userId];
         return new UserNode(this.localStore, userState);

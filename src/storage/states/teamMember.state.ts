@@ -24,7 +24,7 @@ export class TeamMemberState {
         return new TeamMemberState(
             json.teamId,
             json.userId,
-            Duration.fromString(json.WeeklyBandwidth),
+            Duration.fromString(json.weeklyBandwidth),
             toDate(json.createdAt)!,
             toDate(json.updatedAt),
         );

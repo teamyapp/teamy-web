@@ -207,7 +207,7 @@ export async function applyTeamMemberMutation(
             const remoteTeamMembers = await teamClient.getTeamMembers(
                 `${teamMember.teamId}`,
             );
-            for (let remoteTeamMember of remoteTeamMembers) {
+            for (const remoteTeamMember of remoteTeamMembers) {
                 currState = mergeUser(currState, remoteTeamMember.user);
             }
 

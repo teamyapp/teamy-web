@@ -31,14 +31,14 @@ export class TeamNode implements Team {
         return this.teamState.createdAt;
     }
 
-    public get creator(): User {
+    public get creator(): UserNode {
         return new UserNode(
             this.localStore,
             this.localStore.getState().users[this.teamState.creatorUserId],
         );
     }
 
-    public get owner(): User {
+    public get owner(): UserNode {
         return new UserNode(
             this.localStore,
             this.localStore.getState().users[this.teamState.ownerUserId],
@@ -54,7 +54,7 @@ export class TeamNode implements Team {
             );
     }
 
-    public get tasks(): Task[] {
+    public get tasks(): TaskNode[] {
         const appState = this.localStore.getState();
         const tasks: TaskNode[] = [];
         for (let taskId in appState.tasks) {
@@ -67,7 +67,7 @@ export class TeamNode implements Team {
         return tasks;
     }
 
-    public get invitations(): Invitation[] {
+    public get invitations(): InvitationNode[] {
         const appState = this.localStore.getState();
         const invitations: InvitationNode[] = [];
         for (let invitationId in appState.invitations) {
@@ -82,7 +82,7 @@ export class TeamNode implements Team {
         return invitations;
     }
 
-    public get sprints(): Sprint[] {
+    public get sprints(): SprintNode[] {
         const appState = this.localStore.getState();
         const sprints: SprintNode[] = [];
         for (let sprintId in appState.sprints) {
