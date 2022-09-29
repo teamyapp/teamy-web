@@ -248,6 +248,7 @@ export function applyTaskActivityMutation(
                 const clientState = ClientState.fromMutationPayload(mutation.payload.DragTaskActivity.Client)
                 currState.clients[clientState.id] = clientState
             }
+            
             const taskActivityIndex = currState.taskActivities.findIndex(({taskId}) => taskId === updatedTaskActivity.taskId)
             if (taskActivityIndex !== -1) {
                 currState.taskActivities[taskActivityIndex] = updatedTaskActivity
