@@ -91,7 +91,7 @@ export class StateSyncer {
             return;
         }
 
-        return this.stateSyncClient.sendClientIsReady(appState.clientId);
+        return this.stateSyncClient.sendInitialStateIsReady(appState.clientId);
     }
 
     public onMutationReceived(): PopChannel<Mutation | undefined> {
