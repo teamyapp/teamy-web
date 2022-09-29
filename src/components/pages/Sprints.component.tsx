@@ -254,7 +254,7 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     private renderSelectSprint(): ReactNode {
-        let sprints =
+        let sprints: Sprint[] =
             this.graphSource.team(this.localStore.getState().currTeamId!)
                 ?.sprints || [];
         sprints = orderByStartTimeDesc(sprints);

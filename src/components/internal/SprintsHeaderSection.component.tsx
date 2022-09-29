@@ -164,7 +164,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     private updateState = () => {
         const currentSprint = this.graphSource.currentSprint();
-        let sprints = this.graphSource.currentTeam()?.sprints || [];
+        let sprints: Sprint[] = this.graphSource.currentTeam()?.sprints || [];
         sprints = orderByStartTimeDesc(sprints);
         this.setState({
             currentSprint,
