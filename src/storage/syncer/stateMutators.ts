@@ -321,49 +321,10 @@ export function mergeUser(
     remoteUser.teams?.forEach((remoteTeam) => {
         currAppState = mergeTeam(currAppState, remoteTeam);
     });
-    // if (remoteUser.teams) {
-    //     currAppState = replaceUserTeams(
-    //         currAppState,
-    //         remoteUserId,
-    //         remoteUser.teams,
-    //     );
-    // }
 
     currAppState.users[remoteUserId] = localNewUser;
     return currAppState;
 }
-//
-// export function mergeTeamMember(
-//     currAppState: AppState,
-//     remoteUser: RemoteUser,
-// ): AppState {
-//     const remoteUserId = toInt(remoteUser.id)!;
-//     const localOldUser: UserState = currAppState.users[remoteUserId] || {};
-//     const localNewUser: UserState = {
-//         id: remoteUserId,
-//         firstName: remoteUser.firstName || localOldUser.firstName,
-//         lastName: remoteUser.lastName || localOldUser.lastName,
-//         profileUrl:
-//             remoteUser.profileUrl === undefined
-//                 ? localOldUser.profileUrl
-//                 : remoteUser.profileUrl,
-//         createdAt: toDate(remoteUser.createdAt) || localOldUser.createdAt,
-//         updatedAt:
-//             remoteUser.updatedAt === undefined
-//                 ? localOldUser.updatedAt
-//                 : toDate(remoteUser.updatedAt),
-//     };
-//     if (remoteUser.teams) {
-//         currAppState = replaceUserTeams(
-//             currAppState,
-//             remoteUserId,
-//             remoteUser.teams,
-//         );
-//     }
-//
-//     currAppState.users[remoteUserId] = localNewUser;
-//     return currAppState;
-// }
 
 export function mergeTask(
     currAppState: AppState,
