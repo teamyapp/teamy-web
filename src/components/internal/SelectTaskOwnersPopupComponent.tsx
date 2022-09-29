@@ -101,9 +101,11 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
         selectedOwnerId?: number,
     ) => {
         await this.stateSyncer.pullCurrentTeamMembers();
-        const owners = this.graphSource.currentTeam()!.members;
+        const teamMembers = this.graphSource.currentTeam()!.members;
         this.setState({
-            potentialTaskOwners: owners,
+            potentialTaskOwners: teamMembers.map(
+                (teamMember) => teamMember.user,
+            ),
             selectOwnerTaskId: taskId,
             selectedOwnerId,
             selectOwnerUpdateTaskInput: updateTaskInput,

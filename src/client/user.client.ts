@@ -32,9 +32,13 @@ export class UserClient {
                                     id
                                 }
                                 members {
-                                    id
-                                    firstName
-                                    lastName
+                                    user {
+                                        id
+                                        lastName
+                                        firstName
+                                        profileUrl
+                                        createdAt
+                                    }
                                 }
                             }
                         }

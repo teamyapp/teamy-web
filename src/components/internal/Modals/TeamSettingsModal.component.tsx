@@ -16,7 +16,7 @@ import { orderByStatus } from '@core/data/invitation.order';
 import { Deps } from '@core/dep/deps';
 import { Invitation } from '@core/entity/invitation';
 import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
+import { TeamMember } from '@core/entity/teamMember';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -253,8 +253,9 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         );
     };
 
-    private renderTeamMember = (user: User, index: number) => {
+    private renderTeamMember = (teamMember: TeamMember, index: number) => {
         const currUserId = this.graphSource.currentUser()!.id;
+        const user = teamMember.user;
         return (
             <div key={index} className={styles.Cell}>
                 <UserProfileUI user={user} />

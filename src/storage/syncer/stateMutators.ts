@@ -4,6 +4,7 @@ import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteSprintParticipant } from '@core/client/entity/remoteSprintParticipant';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
+import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 import { RemoteThread } from '@core/client/entity/remoteThread';
 import { RemoteUser } from '@core/client/entity/remoteUser';
 import { TeamClient } from '@core/client/team.client';
@@ -203,11 +204,11 @@ export async function applyTeamMemberMutation(
                 mutation.payload,
             )!;
             currState.teamMembers = currState.teamMembers.concat(teamMember);
-            const remoteUsers = await teamClient.getTeamMembers(
+            const remoteTeamMembers = await teamClient.getTeamMembers(
                 `${teamMember.teamId}`,
             );
-            for (let user of remoteUsers) {
-                currState = mergeUser(currState, user);
+            for (const remoteTeamMember of remoteTeamMembers) {
+                currState = mergeUser(currState, remoteTeamMember.user);
             }
 
             break;
@@ -316,13 +317,10 @@ export function mergeUser(
                 ? localOldUser.updatedAt
                 : toDate(remoteUser.updatedAt),
     };
-    if (remoteUser.teams) {
-        currAppState = replaceUserTeams(
-            currAppState,
-            remoteUserId,
-            remoteUser.teams,
-        );
-    }
+
+    remoteUser.teams?.forEach((remoteTeam) => {
+        currAppState = mergeTeam(currAppState, remoteTeam);
+    });
 
     currAppState.users[remoteUserId] = localNewUser;
     return currAppState;
@@ -604,40 +602,27 @@ export function mergeThread(
     return currAppState;
 }
 
-export function replaceUserTeams(
-    currAppState: AppState,
-    userId: number,
-    userTeams: RemoteTeam[],
-): AppState {
-    const newTeamMembers = userTeams.map(
-        (team) => new TeamMemberState(toInt(team.id)!, userId),
-    );
-    let teamMembers = currAppState.teamMembers.filter(
-        (teamMember) => teamMember.userId !== userId,
-    );
-    currAppState.teamMembers = teamMembers.concat(newTeamMembers);
-
-    userTeams.forEach((remoteTeam) => {
-        currAppState = mergeTeam(currAppState, remoteTeam);
-    });
-    return currAppState;
-}
-
 export function replaceTeamMembers(
     currAppState: AppState,
     teamId: number,
-    teamMembers: RemoteUser[],
+    teamMembers: RemoteTeamMember[],
 ): AppState {
     const newTeamMembers = teamMembers.map(
-        (member) => new TeamMemberState(teamId, toInt(member.id)!),
+        (remoteTeamMember) =>
+            new TeamMemberState(
+                teamId,
+                Number(remoteTeamMember.user.id),
+                Duration.fromString(remoteTeamMember.weeklyBandwidth),
+                toDate(remoteTeamMember.createdAt)!,
+                toDate(remoteTeamMember.updatedAt),
+            ),
     );
-
     let remainTeamMembers = currAppState.teamMembers.filter(
         (teamMember) => teamMember.teamId !== teamId,
     );
     currAppState.teamMembers = remainTeamMembers.concat(newTeamMembers);
     teamMembers.forEach((member) => {
-        currAppState = mergeUser(currAppState, member);
+        currAppState = mergeUser(currAppState, member.user);
     });
     return currAppState;
 }
