@@ -137,7 +137,7 @@ export class TaskNode implements Task {
             },
         );
 
-        if (!taskActivity) {
+        if (!taskActivity?.dragTaskActivity.clientId) {
             return undefined;
         }
 

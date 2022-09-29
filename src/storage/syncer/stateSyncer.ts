@@ -62,6 +62,7 @@ import {
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { TaskActivityState } from '../states/taskActivity.state';
+import { DragTaskActivityState } from '../states/dragTaskActivity.state';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -370,9 +371,14 @@ export class StateSyncer {
         appState.taskActivities = []
         appState.clients = {}
         for (const taskActivity of taskActivities) {
-            const clientState = ClientState.fromJson(taskActivity.dragTaskActivity.client)
-            appState.clients[clientState.id] = clientState
-            appState.taskActivities.push(TaskActivityState.fromJson(taskActivity))
+            const client = taskActivity.dragTaskActivity.client
+            const clientId =  client ? Number(client.id) : undefined
+            if (client && clientId) {
+                appState.clients[clientId] = new ClientState(clientId, Number(client.user.id))
+                appState = mergeUser(appState, client.user)
+            }
+            
+            appState.taskActivities.push(new TaskActivityState(Number(taskActivity.taskId), new DragTaskActivityState(taskActivity.dragTaskActivity.isDragging, clientId)))
         }
 
         return appState;

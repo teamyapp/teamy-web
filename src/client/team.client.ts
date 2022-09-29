@@ -30,6 +30,8 @@ export class TeamClient {
                                         id
                                         user {
                                             id
+                                            firstName
+                                            lastName
                                         }
                                     }
                                 }
