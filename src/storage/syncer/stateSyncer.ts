@@ -399,7 +399,6 @@ export class StateSyncer {
                 ),
             );
 
-            debugger
             res.taskActivities[index] = taskActivityState;
             return res;
         }, appState);
