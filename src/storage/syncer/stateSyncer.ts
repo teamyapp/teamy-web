@@ -388,6 +388,8 @@ export class StateSyncer {
             if (remoteClient) {
                 clientId = Number(remoteClient.id);
                 res = mergeClient(res, remoteClient);
+            } else {
+                clientId = taskActivity.dragTaskActivity.clientId;
             }
 
             const taskActivityState = new TaskActivityState(
