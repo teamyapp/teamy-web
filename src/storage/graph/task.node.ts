@@ -132,7 +132,7 @@ export class TaskNode implements Task {
         const currentState = this.localStore.getState();
         const taskActivities = currentState.taskActivities;
         const taskActivity = taskActivities.find(({teamId, taskId}) => {
-            return teamId === currentState.currTeamId && taskId === this.id
+            return teamId === this.owningTeam.id && taskId === this.id
         })
 
         if (!taskActivity?.dragTaskActivity.clientId || !taskActivity.dragTaskActivity.isDragging) {

@@ -376,7 +376,7 @@ export class StateSyncer {
             }
 
             const remoteTaskActivity = taskActivities.find(
-                ({ taskId }) => Number(taskId) === taskActivity.taskId,
+                ({ taskId }) => Number(taskId) === taskActivity.taskId && teamId === taskActivity.teamId,
             );
 
             if (!remoteTaskActivity) {
