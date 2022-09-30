@@ -264,7 +264,17 @@ export function applyTaskActivityMutation(
             })
 
             if (index !== -1) {
-                currState.taskActivities[index] = updatedTaskActivity
+                const localOldTaskActivity = currState.taskActivities[index]
+                const localNewTaskActivity: TaskActivityState = {
+                    taskId: updatedTaskActivity.taskId,
+                    teamId: updatedTaskActivity.teamId,
+                    dragTaskActivity: {
+                        isDragging: updatedTaskActivity.dragTaskActivity.isDragging ?? localOldTaskActivity.dragTaskActivity.isDragging,
+                        clientId: updatedTaskActivity.dragTaskActivity.clientId || localOldTaskActivity.dragTaskActivity.clientId
+                    }
+                }
+
+                currState.taskActivities[index] = localNewTaskActivity
             } else {
                 currState.taskActivities.push(updatedTaskActivity)
             }
