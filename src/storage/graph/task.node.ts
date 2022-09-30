@@ -131,13 +131,11 @@ export class TaskNode implements Task {
     public get draggingBy(): ClientNode | undefined {
         const currentState = this.localStore.getState();
         const taskActivities = currentState.taskActivities;
-        const taskActivity = taskActivities.find(
-            ({ taskId, dragTaskActivity: { isDragging } }) => {
-                return isDragging && taskId === this.id;
-            },
-        );
+        const taskActivity = taskActivities.find(({teamId, taskId}) => {
+            return teamId === currentState.currTeamId && taskId === this.id
+        })
 
-        if (!taskActivity?.dragTaskActivity.clientId) {
+        if (!taskActivity?.dragTaskActivity.clientId || !taskActivity.dragTaskActivity.isDragging) {
             return undefined;
         }
 

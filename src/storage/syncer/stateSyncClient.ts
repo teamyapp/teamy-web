@@ -9,7 +9,7 @@ export class StateSyncClient {
     ) {
     }
 
-    public sendClientIsReady(
+    public sendInitialStateIsReady(
         clientId: number,
     ): Promise<Result<string, Errors>> {
         return this.httpClient.request(

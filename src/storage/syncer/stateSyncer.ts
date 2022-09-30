@@ -35,7 +35,8 @@ import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
-import { ClientState } from '../states/client.state';
+import { DragTaskActivityState } from '../states/dragTaskActivity.state';
+import { TaskActivityState } from '../states/taskActivity.state';
 import { LocalStore } from './localStore';
 import { Message } from './message';
 import { Metadata } from './metadata';
@@ -51,6 +52,7 @@ import {
     applyTeamMutation,
     applyUserMutation,
     deleteThread,
+    mergeClient,
     mergeInvitation,
     mergeMessage,
     mergeSprint,
@@ -61,8 +63,6 @@ import {
     replaceTeamMembers,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
-import { TaskActivityState } from '../states/taskActivity.state';
-import { DragTaskActivityState } from '../states/dragTaskActivity.state';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -229,8 +229,9 @@ export class StateSyncer {
         appState = mergeTeam(appState, remoteTeam);
 
         if (remoteTeam.taskActivities?.length) {
-            appState = this.mergeTaskActivities(
+            appState = this.replaceTeamTaskActivities(
                 appState,
+                currTeamId,
                 remoteTeam.taskActivities,
             );
         }
@@ -364,24 +365,44 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public mergeTaskActivities(
+    public replaceTeamTaskActivities(
         appState: AppState,
+        teamId: number,
         taskActivities: RemoteTaskActivity[],
     ): AppState {
-        appState.taskActivities = []
-        appState.clients = {}
-        for (const taskActivity of taskActivities) {
-            const client = taskActivity.dragTaskActivity.client
-            const clientId =  client ? Number(client.id) : undefined
-            if (client && clientId) {
-                appState.clients[clientId] = new ClientState(clientId, Number(client.user.id))
-                appState = mergeUser(appState, client.user)
+        return appState.taskActivities.reduce((res, taskActivity, index) => {
+            if (taskActivity.teamId !== teamId) {
+                return res;
             }
-            
-            appState.taskActivities.push(new TaskActivityState(Number(taskActivity.taskId), new DragTaskActivityState(taskActivity.dragTaskActivity.isDragging, clientId)))
-        }
 
-        return appState;
+            const remoteTaskActivity = taskActivities.find(
+                ({ taskId }) => Number(taskId) === taskActivity.taskId,
+            );
+
+            if (!remoteTaskActivity) {
+                return res;
+            }
+
+            const remoteClient = remoteTaskActivity.dragTaskActivity.client;
+            let clientId;
+            if (remoteClient) {
+                clientId = Number(remoteClient.id);
+                res = mergeClient(res, remoteClient);
+            }
+
+            const taskActivityState = new TaskActivityState(
+                teamId,
+                taskActivity.taskId,
+                new DragTaskActivityState(
+                    remoteTaskActivity.dragTaskActivity.isDragging,
+                    clientId,
+                ),
+            );
+
+            debugger
+            res.taskActivities[index] = taskActivityState;
+            return res;
+        }, appState);
     }
 
     public async updateTeam(

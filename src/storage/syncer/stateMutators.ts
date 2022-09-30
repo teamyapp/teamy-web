@@ -1,3 +1,4 @@
+import { RemoteClient } from '@core/client/entity/remoteClient';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
@@ -21,6 +22,7 @@ import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRela
 import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
+
 import { ClientState } from '../states/client.state';
 
 import { TaskActivityState } from '../states/taskActivity.state';
@@ -245,16 +247,28 @@ export function applyTaskActivityMutation(
         case 'Update': {
             const updatedTaskActivity = TaskActivityState.fromMutationPayload(mutation.payload)
             if (mutation.payload.DragTaskActivity.Client) {
+                // TODO: merge client from realtime mutation payload 
                 const clientState = ClientState.fromMutationPayload(mutation.payload.DragTaskActivity.Client)
-                currState.clients[clientState.id] = clientState
+
+                const localOldClient = currState.clients[clientState.id] || {}
+                const localNewClient: ClientState = {
+                    id: clientState.id,
+                    userId: clientState.userId || localOldClient.userId
+                }
+
+                currState.clients[clientState.id] = localNewClient
             }
             
-            const taskActivityIndex = currState.taskActivities.findIndex(({taskId}) => taskId === updatedTaskActivity.taskId)
-            if (taskActivityIndex !== -1) {
-                currState.taskActivities[taskActivityIndex] = updatedTaskActivity
+            const index = currState.taskActivities.findIndex(({taskId}) => {
+                return taskId === updatedTaskActivity.taskId
+            })
+
+            if (index !== -1) {
+                currState.taskActivities[index] = updatedTaskActivity
             } else {
                 currState.taskActivities.push(updatedTaskActivity)
             }
+
             
             break;
         }
@@ -323,6 +337,19 @@ export function deleteTeamTasks(currState: AppState, teamId: number): AppState {
 
     currState.tasks = newTasks;
     return currState;
+}
+
+export function mergeClient(currAppState: AppState, remoteClient: RemoteClient): AppState {
+    const clientId = Number(remoteClient.id)
+    const localOldClient: ClientState = currAppState.clients[clientId] || {}
+    const localNewClient: ClientState = {
+        id: clientId,
+        userId: toInt(remoteClient.user.id) || localOldClient.userId
+    }
+
+    currAppState.clients[clientId] = localNewClient
+
+    return currAppState
 }
 
 export function mergeUser(
