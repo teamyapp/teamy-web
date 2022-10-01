@@ -75,7 +75,7 @@ export class DeliveredSection extends Component<Props> {
     }
 
     private renderInlineTask = (
-        sectionId: string
+        sectionId: string,
     ): ((task: Task) => ReactNode) => {
         return (task: Task) => {
             return (

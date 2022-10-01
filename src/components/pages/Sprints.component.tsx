@@ -114,7 +114,7 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     public render(): ReactNode {
-        const clientId = this.localStore.getState().currClientId
+        const clientId = this.localStore.getState().currClientId;
         // TODO: will change when PersonalStatus is merged with Kanban
         return this.state.selectedSprintId ? (
             <div className={styles.Sprint}>
@@ -129,7 +129,10 @@ export class SprintsComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <div className={styles.Content}>
-                    {this.renderTabContent(tabIds[this.state.activeTabIndex], clientId)}
+                    {this.renderTabContent(
+                        tabIds[this.state.activeTabIndex],
+                        clientId,
+                    )}
                 </div>
             </div>
         ) : (
@@ -300,7 +303,10 @@ export class SprintsComponent extends Component<Props, State> {
         };
     };
 
-    private renderTabContent(tabId: string, clientId?: number): ReactNode | null {
+    private renderTabContent(
+        tabId: string,
+        clientId?: number,
+    ): ReactNode | null {
         let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
         let teamTasksFilter = filters.allTasks;
 

@@ -131,7 +131,8 @@ export class InlineTaskUI extends Component<Props, State> {
                         {getUserShortName(
                             draggingBy.user.firstName,
                             draggingBy.user.lastName,
-                        )} is dragging
+                        )}{' '}
+                        is dragging
                     </div>
                 )}
             </div>

@@ -1,8 +1,8 @@
 import { Duration } from '@core/entity/duration';
 import { Team } from '@core/entity/team';
 import { Thread } from '@core/entity/thread';
-import { Client } from './client';
 
+import { Client } from './client';
 import { TaskAction } from './taskAction';
 import { TaskStatus } from './taskStatus';
 import { User } from './user';

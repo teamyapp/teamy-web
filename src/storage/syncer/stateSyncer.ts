@@ -33,6 +33,7 @@ import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation
 import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
+
 import { LocalStore } from './localStore';
 import { Message } from './message';
 import { Metadata } from './metadata';
@@ -48,7 +49,6 @@ import {
     applyTeamMutation,
     applyUserMutation,
     deleteThread,
-    replaceTeamTaskActivities,
     mergeInvitation,
     mergeMessage,
     mergeSprint,
@@ -57,6 +57,7 @@ import {
     mergeUser,
     replaceTeamInvitations,
     replaceTeamMembers,
+    replaceTeamTaskActivities,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 
@@ -65,7 +66,7 @@ export class StateSyncer {
     private readonly onMutationReceivedCh = chan<Mutation>();
     private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
 
-    private metadataReceived = false
+    private metadataReceived = false;
 
     constructor(
         private stateSyncClient: StateSyncClient,
@@ -84,17 +85,18 @@ export class StateSyncer {
     }
 
     public async notifyInitialStateReceived() {
-        
         if (!this.metadataReceived) {
             return;
         }
 
         let appState = this.localStore.getState();
         if (!appState.currClientId) {
-            return
+            return;
         }
 
-        return this.stateSyncClient.sendInitialStateIsReady(appState.currClientId);
+        return this.stateSyncClient.sendInitialStateIsReady(
+            appState.currClientId,
+        );
     }
 
     public onMutationReceived(): PopChannel<Mutation | undefined> {

@@ -1,7 +1,8 @@
-import { Client } from "@core/entity/client";
+import { Client } from '@core/entity/client';
 import { LocalStore } from '@core/storage/syncer/localStore';
-import { ClientState } from "../states/client.state";
-import { UserNode } from "./user.node";
+
+import { ClientState } from '../states/client.state';
+import { UserNode } from './user.node';
 
 export class ClientNode implements Client {
     constructor(private localStore: LocalStore, private client: ClientState) {}
@@ -11,6 +12,9 @@ export class ClientNode implements Client {
     }
 
     public get user(): UserNode {
-        return new UserNode(this.localStore, this.localStore.getState().users[this.client.userId])
+        return new UserNode(
+            this.localStore,
+            this.localStore.getState().users[this.client.userId],
+        );
     }
 }

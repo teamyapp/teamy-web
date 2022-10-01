@@ -95,7 +95,7 @@ export class DragAndDropController<Context> {
 
         this.dragAndDropEventChan.put({
             type: 'DragStart',
-            target: dragTarget
+            target: dragTarget,
         });
     }
 
@@ -221,8 +221,8 @@ export class DragAndDropController<Context> {
     }
 
     private onMouseUp = () => {
-        if(!this.draggedTarget || !this.sourceContainerId) {
-            return
+        if (!this.draggedTarget || !this.sourceContainerId) {
+            return;
         }
 
         if (this.receivingContainerId) {
@@ -230,9 +230,9 @@ export class DragAndDropController<Context> {
             this.onContainerMouseLeave(this.receivingContainerId);
             this.receivingContainerId = undefined;
         }
-        this.dragAndDropEventChan.put({ 
-            type: 'DragEnd', 
-            target:  this.draggedTarget, 
+        this.dragAndDropEventChan.put({
+            type: 'DragEnd',
+            target: this.draggedTarget,
         });
         this.draggedTarget = undefined;
         this.sourceContainerId = undefined;

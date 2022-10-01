@@ -372,14 +372,18 @@ export class AppComponent extends Component<Props, State> {
                     event.type === 'DragStart' &&
                     event.target.type === draggableTask
                 ) {
-                    await this.stateSyncer.startDraggingTask(event.target.data.id)
+                    await this.stateSyncer.startDraggingTask(
+                        event.target.data.id,
+                    );
                 }
 
                 if (
-                    event.type === "DragEnd" &&
+                    event.type === 'DragEnd' &&
                     event.target.type === draggableTask
                 ) {
-                    await this.stateSyncer.stopDraggingTask(event.target.data.id)
+                    await this.stateSyncer.stopDraggingTask(
+                        event.target.data.id,
+                    );
                 }
 
                 if (

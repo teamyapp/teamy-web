@@ -3,13 +3,12 @@
 @import '../../libs/ui/styleguide/elevation';
 @import 'inlineTask.shared';
 
-
 $draggingColor: #00897b;
 
 .InlineTask {
     .DraggingBySection {
         float: right;
-        background-color:  $draggingColor;
+        background-color: $draggingColor;
         border-radius: 0px 0 6px 6px;
         height: 28px;
         color: white;
@@ -19,12 +18,12 @@ $draggingColor: #00897b;
 
     .Task {
         border: 2px solid transparent;
-        
+
         &.Dragging {
             border: 2px solid $draggingColor;
             border-radius: 6px 6px 0px 6px;
         }
-        
+
         .LeftSection {
             .Goal {
                 @include goalText;

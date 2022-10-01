@@ -222,7 +222,7 @@ export class TaskClient {
             })
             .then((payload: any) => payload?.stopDraggingTask);
     }
-    
+
     moveTaskToDelivered(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({

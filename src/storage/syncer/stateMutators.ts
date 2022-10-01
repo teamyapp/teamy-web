@@ -256,9 +256,14 @@ export function applyTaskActivityMutation(
                 currState.clients[clientState.id] = clientState;
             }
 
-            const index = currState.taskActivities.findIndex(({ taskId, teamId }) => {
-                return teamId === updatedTaskActivity.teamId && taskId === updatedTaskActivity.taskId;
-            });
+            const index = currState.taskActivities.findIndex(
+                ({ taskId, teamId }) => {
+                    return (
+                        teamId === updatedTaskActivity.teamId &&
+                        taskId === updatedTaskActivity.taskId
+                    );
+                },
+            );
 
             if (index !== -1) {
                 currState.taskActivities[index] = updatedTaskActivity;
@@ -666,7 +671,8 @@ export function mergeTaskActivity(
             taskActivity.taskId === taskId && taskActivity.teamId === teamId,
     );
 
-    const localOldTaskActivity = index !== -1 ? currAppState.taskActivities[index] : undefined
+    const localOldTaskActivity =
+        index !== -1 ? currAppState.taskActivities[index] : undefined;
 
     const remoteClient = remoteTaskActivity.dragTaskActivity.client;
     let clientId;
@@ -687,12 +693,12 @@ export function mergeTaskActivity(
     );
 
     if (index !== -1) {
-        currAppState.taskActivities[index] = taskActivityState
+        currAppState.taskActivities[index] = taskActivityState;
     } else {
-        currAppState.taskActivities.push(taskActivityState)
+        currAppState.taskActivities.push(taskActivityState);
     }
-    
-    return currAppState
+
+    return currAppState;
 }
 
 export function replaceTeamMembers(
@@ -755,7 +761,7 @@ export function replaceTeamTaskActivities(
                 teamId,
                 remoteTaskActivity,
             )),
-    ); 
+    );
 
     return appState;
 }

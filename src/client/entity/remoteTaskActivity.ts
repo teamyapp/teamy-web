@@ -1,6 +1,6 @@
-import { RemoteDragTaskActivity } from "./remoteDragTaskActivity";
+import { RemoteDragTaskActivity } from './remoteDragTaskActivity';
 
 export interface RemoteTaskActivity {
     taskId: string;
-    dragTaskActivity: RemoteDragTaskActivity
+    dragTaskActivity: RemoteDragTaskActivity;
 }
