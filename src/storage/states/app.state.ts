@@ -31,7 +31,7 @@ export class AppState {
         public currUserId?: number,
         public currTeamId?: number,
         public currSprintId?: number,
-        public clientId?: number
+        public currClientId?: number
     ) {}
 
     public static fromJson(json: any): AppState {

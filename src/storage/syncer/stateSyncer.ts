@@ -888,7 +888,6 @@ export class StateSyncer {
 
     private async mutateState(mutation: Mutation) {
         let appState = this.localStore.getState();
-
         switch (mutation.collectionType) {
             case 'Task': {
                 appState = applyTaskMutation(appState, mutation);

@@ -24,7 +24,6 @@ import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
 
 import { ClientState } from '../states/client.state';
-
 import { TaskActivityState } from '../states/taskActivity.state';
 import { Mutation } from './mutation';
 
@@ -358,7 +357,6 @@ export function mergeClient(currAppState: AppState, remoteClient: RemoteClient):
     }
 
     currAppState.clients[clientId] = localNewClient
-
     return currAppState
 }
 
