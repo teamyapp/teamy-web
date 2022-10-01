@@ -25,6 +25,7 @@ interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
     selectOwnerTaskId?: number;
+    currentClientId?: number;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
     onDeleteTask?: (taskId: number) => void;
@@ -87,6 +88,7 @@ export class DeliveredSection extends Component<Props> {
                         isSelectingOwner={
                             this.props.selectOwnerTaskId === task.id
                         }
+                        currentClientId={this.props.currentClientId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

@@ -26,6 +26,7 @@ import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 export interface Deps {
@@ -64,7 +65,12 @@ export function initDeps(): Deps {
     const sprintClient = new SprintClient(teamyGraphQLClient);
     const localStore = new LocalStore();
     const graphSource = new GraphSource(localStore);
+    const stateSyncClient = new StateSyncClient(
+        config.servicesWebAPIEndpoint,
+        httpClient,
+    );
     const stateSyncer = new StateSyncer(
+        stateSyncClient,
         config.servicesWebSocketAPIEndpoint,
         identityClient,
         localStore,

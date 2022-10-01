@@ -46,6 +46,7 @@ interface Props {
     createTaskDefaultOwner?: User;
     sortOrder?: string;
     selectOwnerTaskId?: number;
+    currentClientId?: number;
     isPersonal?: boolean;
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
@@ -146,6 +147,7 @@ export class UpcomingSection extends Component<Props, State> {
                         isSelectingOwner={
                             this.props.selectOwnerTaskId === task.id
                         }
+                        currentClientId={this.props.currentClientId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

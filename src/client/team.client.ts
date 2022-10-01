@@ -22,6 +22,20 @@ export class TeamClient {
                         teams(filter: { teamId: $teamId }) {
                             id
                             iconUrl
+                            taskActivities {
+                                taskId
+                                dragTaskActivity {
+                                    isDragging
+                                    client {
+                                        id
+                                        user {
+                                            id
+                                            firstName
+                                            lastName
+                                        }
+                                    }
+                                }
+                            }
                             sprints {
                                 id
                                 startAt

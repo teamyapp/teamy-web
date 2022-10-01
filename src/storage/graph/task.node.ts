@@ -6,6 +6,7 @@ import { TaskState } from '@core/storage/states/task.state';
 import { TaskStatus } from '@core/storage/states/taskStatus';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
+import { ClientNode } from './client.node';
 import { TeamNode } from './team.node';
 import { ThreadNode } from './thread.node';
 import { UserNode } from './user.node';
@@ -125,5 +126,24 @@ export class TaskNode implements Task {
                         appState.sprints[relation.sprintId],
                     ),
             );
+    }
+
+    public get draggingBy(): ClientNode | undefined {
+        const currentState = this.localStore.getState();
+        const taskActivities = currentState.taskActivities;
+        const taskActivity = taskActivities.find(({ teamId, taskId }) => {
+            return teamId === this.owningTeam.id && taskId === this.id;
+        });
+
+        if (
+            !taskActivity?.dragTaskActivity.isDragging ||
+            !taskActivity.dragTaskActivity.clientId
+        ) {
+            return undefined;
+        }
+
+        const clientState =
+            currentState.clients[taskActivity.dragTaskActivity.clientId];
+        return new ClientNode(this.localStore, clientState);
     }
 }

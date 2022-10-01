@@ -40,6 +40,7 @@ interface Props {
     filterTaskAction?: (action: TaskAction) => boolean;
     showStatus?: boolean;
     numActionColumns?: number;
+    currentClientId?: number;
     isSelectingOwner?: boolean;
     onStartEditingTask?: () => void;
     onFinishEditingTask?: () => void;
@@ -71,47 +72,69 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     public render() {
+        const { draggingBy } = this.props.task;
+
+        const showDraggingBy =
+            draggingBy && draggingBy.id !== this.props.currentClientId;
+
         return (
-            <div className={styles.Task}>
-                <div className={styles.LeftSection}>
-                    <div className={styles.TopRow}>
-                        <span className={`${styles.Attribute} ${styles.Id}`}>
-                            {this.props.task.id}
-                        </span>
-                        {this.props.showStatus && (
-                            <span
-                                className={`${styles.Attribute} ${
-                                    styles.Status
-                                } ${styles[this.props.task.status]}`}
-                            >
-                                {statusNames[this.props.task.status]}
-                            </span>
-                        )}
-                    </div>
-                    {this.renderGoal()}
-                    <div className={styles.BottomRow}>
-                        <div className={styles.Attribute}>
-                            {this.renderDueAt()}
-                        </div>
-                        <div className={styles.Attribute}>
-                            {this.renderEffort()}
-                        </div>
-                    </div>
-                    <div className={styles.AwaitFor}>
-                        {this.props.task.awaitForTasks?.length > 0 &&
-                            this.renderAwaitForTasks()}
-                    </div>
-                </div>
+            <div className={styles.InlineTask}>
                 <div
-                    className={styles.ActionsSection}
-                    style={{
-                        gridTemplateColumns: `repeat(${
-                            this.props.numActionColumns || 3
-                        }, 1fr)`,
-                    }}
+                    className={`${styles.Task} ${classNames({
+                        [styles.Dragging]: showDraggingBy,
+                    })}`}
                 >
-                    {this.renderActions()}
+                    <div className={styles.LeftSection}>
+                        <div className={styles.TopRow}>
+                            <span
+                                className={`${styles.Attribute} ${styles.Id}`}
+                            >
+                                {this.props.task.id}
+                            </span>
+                            {this.props.showStatus && (
+                                <span
+                                    className={`${styles.Attribute} ${
+                                        styles.Status
+                                    } ${styles[this.props.task.status]}`}
+                                >
+                                    {statusNames[this.props.task.status]}
+                                </span>
+                            )}
+                        </div>
+                        {this.renderGoal()}
+                        <div className={styles.BottomRow}>
+                            <div className={styles.Attribute}>
+                                {this.renderDueAt()}
+                            </div>
+                            <div className={styles.Attribute}>
+                                {this.renderEffort()}
+                            </div>
+                        </div>
+                        <div className={styles.AwaitFor}>
+                            {this.props.task.awaitForTasks?.length > 0 &&
+                                this.renderAwaitForTasks()}
+                        </div>
+                    </div>
+                    <div
+                        className={styles.ActionsSection}
+                        style={{
+                            gridTemplateColumns: `repeat(${
+                                this.props.numActionColumns || 3
+                            }, 1fr)`,
+                        }}
+                    >
+                        {this.renderActions()}
+                    </div>
                 </div>
+                {showDraggingBy && (
+                    <div className={styles.DraggingBySection}>
+                        {getUserShortName(
+                            draggingBy.user.firstName,
+                            draggingBy.user.lastName,
+                        )}{' '}
+                        is dragging
+                    </div>
+                )}
             </div>
         );
     }

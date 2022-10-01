@@ -1,8 +1,10 @@
+import { RemoteClient } from '@core/client/entity/remoteClient';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteSprintParticipant } from '@core/client/entity/remoteSprintParticipant';
 import { RemoteTask } from '@core/client/entity/remoteTask';
+import { RemoteTaskActivity } from '@core/client/entity/remoteTaskActivity';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 import { RemoteThread } from '@core/client/entity/remoteThread';
@@ -22,6 +24,9 @@ import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
 
+import { ClientState } from '../states/client.state';
+import { DragTaskActivityState } from '../states/dragTaskActivity.state';
+import { TaskActivityState } from '../states/taskActivity.state';
 import { Mutation } from './mutation';
 
 class DeleteTaskAwaitForRelationPayload {
@@ -235,6 +240,44 @@ export async function applyTeamMemberMutation(
     return currState;
 }
 
+export function applyTaskActivityMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Update': {
+            const updatedTaskActivity = TaskActivityState.fromMutationPayload(
+                mutation.payload,
+            );
+            if (mutation.payload.DragTaskActivity.Client) {
+                const clientState = ClientState.fromMutationPayload(
+                    mutation.payload.DragTaskActivity.Client,
+                );
+                currState.clients[clientState.id] = clientState;
+            }
+
+            const index = currState.taskActivities.findIndex(
+                ({ taskId, teamId }) => {
+                    return (
+                        teamId === updatedTaskActivity.teamId &&
+                        taskId === updatedTaskActivity.taskId
+                    );
+                },
+            );
+
+            if (index !== -1) {
+                currState.taskActivities[index] = updatedTaskActivity;
+            } else {
+                currState.taskActivities.push(updatedTaskActivity);
+            }
+
+            break;
+        }
+    }
+
+    return currState;
+}
+
 export function applyTaskAwaitingForRelationMutation(
     currState: AppState,
     mutation: Mutation,
@@ -295,6 +338,21 @@ export function deleteTeamTasks(currState: AppState, teamId: number): AppState {
 
     currState.tasks = newTasks;
     return currState;
+}
+
+export function mergeClient(
+    currAppState: AppState,
+    remoteClient: RemoteClient,
+): AppState {
+    const clientId = Number(remoteClient.id);
+    const localOldClient: ClientState = currAppState.clients[clientId] || {};
+    const localNewClient: ClientState = {
+        id: clientId,
+        userId: toInt(remoteClient.user.id) || localOldClient.userId,
+    };
+
+    currAppState.clients[clientId] = localNewClient;
+    return currAppState;
 }
 
 export function mergeUser(
@@ -602,6 +660,47 @@ export function mergeThread(
     return currAppState;
 }
 
+export function mergeTaskActivity(
+    currAppState: AppState,
+    teamId: number,
+    remoteTaskActivity: RemoteTaskActivity,
+): AppState {
+    const taskId = Number(remoteTaskActivity.taskId);
+    const index = currAppState.taskActivities.findIndex(
+        (taskActivity) =>
+            taskActivity.taskId === taskId && taskActivity.teamId === teamId,
+    );
+
+    const localOldTaskActivity =
+        index !== -1 ? currAppState.taskActivities[index] : undefined;
+
+    const remoteClient = remoteTaskActivity.dragTaskActivity.client;
+    let clientId;
+    if (remoteClient) {
+        clientId = Number(remoteClient.id);
+        currAppState = mergeClient(currAppState, remoteClient);
+    } else {
+        clientId = localOldTaskActivity?.dragTaskActivity.clientId;
+    }
+
+    const taskActivityState = new TaskActivityState(
+        teamId,
+        taskId,
+        new DragTaskActivityState(
+            remoteTaskActivity.dragTaskActivity.isDragging,
+            clientId,
+        ),
+    );
+
+    if (index !== -1) {
+        currAppState.taskActivities[index] = taskActivityState;
+    } else {
+        currAppState.taskActivities.push(taskActivityState);
+    }
+
+    return currAppState;
+}
+
 export function replaceTeamMembers(
     currAppState: AppState,
     teamId: number,
@@ -644,6 +743,27 @@ export function replaceTeamSprints(
         currAppState = mergeSprint(currAppState, remoteSprint);
     });
     return currAppState;
+}
+
+export function replaceTeamTaskActivities(
+    appState: AppState,
+    teamId: number,
+    remoteTaskActivities: RemoteTaskActivity[],
+): AppState {
+    appState.taskActivities = appState.taskActivities.filter(
+        (taskActivity) => taskActivity.teamId !== teamId,
+    );
+
+    remoteTaskActivities.forEach(
+        (remoteTaskActivity) =>
+            (appState = mergeTaskActivity(
+                appState,
+                teamId,
+                remoteTaskActivity,
+            )),
+    );
+
+    return appState;
 }
 
 function replaceAndMergeAwaitFor(

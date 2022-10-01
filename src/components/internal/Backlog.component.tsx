@@ -113,6 +113,7 @@ export class BacklogComponent extends Component<Props, State> {
         }
 
         const filteredTasks = this.state.unplannedTasks.filter(backlogFilter);
+        const clientId = this.localStore.getState().currClientId;
         return (
             <div className={styles.Backlog}>
                 <DragAndDropContainer
@@ -145,7 +146,9 @@ export class BacklogComponent extends Component<Props, State> {
                                     onDiscardNewTask={this.onDiscardNewTask}
                                 />
                             )}
-                            {filteredTasks.map(this.renderTask)}
+                            {filteredTasks.map((task, index) =>
+                                this.renderTask(task, index, clientId),
+                            )}
                         </div>
                     </div>
                 </DragAndDropContainer>
@@ -167,7 +170,11 @@ export class BacklogComponent extends Component<Props, State> {
         });
     }
 
-    private renderTask = (task: Task, index: number): ReactNode => {
+    private renderTask = (
+        task: Task,
+        index: number,
+        clientId?: number,
+    ): ReactNode => {
         return (
             <div className={styles.ListItem} key={index}>
                 <TaskListItem
@@ -176,6 +183,7 @@ export class BacklogComponent extends Component<Props, State> {
                     dragAndDropController={
                         this.props.deps.dragAndDropController
                     }
+                    currentClientId={clientId}
                     task={task}
                     numActionColumns={1}
                     showStatus={true}

@@ -18,6 +18,7 @@ interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     sectionId: string;
     task: Task;
+    currentClientId?: number;
     isSelectingOwner: boolean;
     filterTaskAction?: (action: TaskAction) => boolean;
     numActionColumns?: number;
@@ -48,6 +49,7 @@ export class TaskListItem extends Component<Props> {
                 <InlineTaskUI
                     relativeLayout={this.props.relativeLayout}
                     task={this.props.task}
+                    currentClientId={this.props.currentClientId}
                     isSelectingOwner={this.props.isSelectingOwner}
                     filterTaskAction={this.props.filterTaskAction}
                     numActionColumns={this.props.numActionColumns}

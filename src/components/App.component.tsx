@@ -369,6 +369,24 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 if (
+                    event.type === 'DragStart' &&
+                    event.target.type === draggableTask
+                ) {
+                    await this.stateSyncer.startDraggingTask(
+                        event.target.data.id,
+                    );
+                }
+
+                if (
+                    event.type === 'DragEnd' &&
+                    event.target.type === draggableTask
+                ) {
+                    await this.stateSyncer.stopDraggingTask(
+                        event.target.data.id,
+                    );
+                }
+
+                if (
                     event.type === 'Drop' &&
                     sectionIds.includes(event.srcContainId) &&
                     sectionIds.includes(event.destContainerId) &&
@@ -438,6 +456,7 @@ export class AppComponent extends Component<Props, State> {
                     continue;
                 }
 
+                await this.stateSyncer.ensureConnected();
                 await this.stateSyncer.pullCurrentUserWithTeams();
                 let appState = this.localStore.getState();
                 if (!appState.currUserId) {
@@ -445,7 +464,6 @@ export class AppComponent extends Component<Props, State> {
                     continue;
                 }
 
-                await this.stateSyncer.ensureConnected();
                 const currTeamId = appState.currTeamId;
                 if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
                     this.tryRedirect(currTeamId);
@@ -497,6 +515,8 @@ export class AppComponent extends Component<Props, State> {
                     });
                     continue;
                 }
+
+                await this.stateSyncer.notifyInitialStateReceived();
                 this.setState({
                     showMainContent: true,
                 });

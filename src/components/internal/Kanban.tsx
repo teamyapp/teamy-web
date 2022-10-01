@@ -27,6 +27,7 @@ interface Props {
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     sortOrders: SortOrders;
     selectOwnerTaskId?: number;
+    currentClientId?: number;
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -62,6 +63,7 @@ export class KanbanUI extends Component<Props> {
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
+                        currentClientId={this.props.currentClientId}
                         tasks={upcomingTasks}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
                         sortOrder={this.props.sortOrders.upcoming}
@@ -85,6 +87,7 @@ export class KanbanUI extends Component<Props> {
                             this.props.deps.dragAndDropController
                         }
                         tasks={inProgressTasks}
+                        currentClientId={this.props.currentClientId}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
@@ -103,6 +106,7 @@ export class KanbanUI extends Component<Props> {
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
+                        currentClientId={this.props.currentClientId}
                         tasks={awaitingTasks}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
@@ -123,6 +127,7 @@ export class KanbanUI extends Component<Props> {
                             this.props.deps.dragAndDropController
                         }
                         tasks={deliveredTasks}
+                        currentClientId={this.props.currentClientId}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}

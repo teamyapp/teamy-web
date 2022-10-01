@@ -7,6 +7,7 @@ import { Size, SizeTransformer } from './size';
 export type DragAndDropEvent<Context> =
     | DragEnter
     | DragLeave
+    | DragStart
     | DragEnd
     | Drag
     | Drop<Context>
@@ -38,6 +39,11 @@ interface Drop<Context> extends Event {
     context?: Context;
 }
 
+interface DragStart extends Event {
+    type: 'DragStart';
+    target: DragTarget;
+}
+
 interface Drag extends Event {
     type: 'Drag';
     mousePosition: Point;
@@ -45,6 +51,7 @@ interface Drag extends Event {
 
 interface DragEnd extends Event {
     type: 'DragEnd';
+    target: DragTarget;
 }
 
 interface TurnOnDragging extends Event {
@@ -85,6 +92,11 @@ export class DragAndDropController<Context> {
         if (dragTarget.element) {
             this.createPreview(dragTarget.element);
         }
+
+        this.dragAndDropEventChan.put({
+            type: 'DragStart',
+            target: dragTarget,
+        });
     }
 
     public onContainerMouseEnter(
@@ -154,9 +166,6 @@ export class DragAndDropController<Context> {
                 context: this.context,
             });
         }
-
-        this.sourceContainerId = undefined;
-        this.draggedTarget = undefined;
     }
 
     public onDrag(left: number, top: number) {
@@ -212,14 +221,21 @@ export class DragAndDropController<Context> {
     }
 
     private onMouseUp = () => {
+        if (!this.draggedTarget || !this.sourceContainerId) {
+            return;
+        }
+
         if (this.receivingContainerId) {
             this.onDropAtContainer(this.receivingContainerId);
             this.onContainerMouseLeave(this.receivingContainerId);
             this.receivingContainerId = undefined;
         }
-        this.sourceContainerId = undefined;
+        this.dragAndDropEventChan.put({
+            type: 'DragEnd',
+            target: this.draggedTarget,
+        });
         this.draggedTarget = undefined;
-        this.dragAndDropEventChan.put({ type: 'DragEnd' });
+        this.sourceContainerId = undefined;
         this.removePreview();
     };
 

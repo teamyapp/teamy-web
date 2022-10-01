@@ -191,6 +191,38 @@ export class TaskClient {
             .then((payload: any) => payload?.moveTaskToInProgress);
     }
 
+    startDraggingTask(taskId: string, clientId: string): Promise<string> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation startDraggingTask($taskId: ID!, $clientId: ID!) {
+                        startDraggingTask(taskId: $taskId, clientId: $clientId)
+                    }
+                `,
+                variables: {
+                    taskId,
+                    clientId,
+                },
+            })
+            .then((payload: any) => payload?.startDraggingTask);
+    }
+
+    stopDraggingTask(taskId: string, clientId: string): Promise<string> {
+        return this.graphQLClient
+            .mutate({
+                mutation: gql`
+                    mutation stopDraggingTask($taskId: ID!, $clientId: ID!) {
+                        stopDraggingTask(taskId: $taskId, clientId: $clientId)
+                    }
+                `,
+                variables: {
+                    taskId,
+                    clientId,
+                },
+            })
+            .then((payload: any) => payload?.stopDraggingTask);
+    }
+
     moveTaskToDelivered(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
