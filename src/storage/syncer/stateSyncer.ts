@@ -7,7 +7,6 @@ import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { RemoteTask } from '@core/client/entity/remoteTask';
-import { RemoteTaskActivity } from '@core/client/entity/remoteTaskActivity';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
 import { SprintClient } from '@core/client/sprint.client';
@@ -34,9 +33,6 @@ import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation
 import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
-
-import { DragTaskActivityState } from '../states/dragTaskActivity.state';
-import { TaskActivityState } from '../states/taskActivity.state';
 import { LocalStore } from './localStore';
 import { Message } from './message';
 import { Metadata } from './metadata';
@@ -52,7 +48,7 @@ import {
     applyTeamMutation,
     applyUserMutation,
     deleteThread,
-    mergeClient,
+    replaceTeamTaskActivities,
     mergeInvitation,
     mergeMessage,
     mergeSprint,
@@ -68,6 +64,8 @@ export class StateSyncer {
     private readonly connection: Connection;
     private readonly onMutationReceivedCh = chan<Mutation>();
     private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
+
+    private metadataReceived = false
 
     constructor(
         private stateSyncClient: StateSyncClient,
@@ -86,12 +84,17 @@ export class StateSyncer {
     }
 
     public async notifyInitialStateReceived() {
-        let appState = this.localStore.getState();
-        if (!appState.clientId) {
+        
+        if (!this.metadataReceived) {
             return;
         }
 
-        return this.stateSyncClient.sendInitialStateIsReady(appState.clientId);
+        let appState = this.localStore.getState();
+        if (!appState.currClientId) {
+            return
+        }
+
+        return this.stateSyncClient.sendInitialStateIsReady(appState.currClientId);
     }
 
     public onMutationReceived(): PopChannel<Mutation | undefined> {
@@ -104,7 +107,6 @@ export class StateSyncer {
         }
 
         const messageReceived = this.connection.onMessageReceived();
-        let metadataReceived = false;
         await this.connection.connect();
         await new Promise(async (resolve) => {
             while (true) {
@@ -120,7 +122,7 @@ export class StateSyncer {
                 console.log('Message received: ', message);
                 switch (message.type) {
                     case 'Mutation': {
-                        if (!metadataReceived) {
+                        if (!this.metadataReceived) {
                             break;
                         }
                         const mutation = Mutation.fromMutationPayload(
@@ -134,7 +136,7 @@ export class StateSyncer {
                         await this.updateMetadataState(
                             Metadata.fromMutationPayload(message.payload),
                         );
-                        metadataReceived = true;
+                        this.metadataReceived = true;
                         resolve(null);
                         break;
                     }
@@ -229,7 +231,7 @@ export class StateSyncer {
         appState = mergeTeam(appState, remoteTeam);
 
         if (remoteTeam.taskActivities?.length) {
-            appState = this.replaceTeamTaskActivities(
+            appState = replaceTeamTaskActivities(
                 appState,
                 currTeamId,
                 remoteTeam.taskActivities,
@@ -365,47 +367,6 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public replaceTeamTaskActivities(
-        appState: AppState,
-        teamId: number,
-        taskActivities: RemoteTaskActivity[],
-    ): AppState {
-        return appState.taskActivities.reduce((res, taskActivity, index) => {
-            if (taskActivity.teamId !== teamId) {
-                return res;
-            }
-
-            const remoteTaskActivity = taskActivities.find(
-                ({ taskId }) => Number(taskId) === taskActivity.taskId && teamId === taskActivity.teamId,
-            );
-
-            if (!remoteTaskActivity) {
-                return res;
-            }
-
-            const remoteClient = remoteTaskActivity.dragTaskActivity.client;
-            let clientId;
-            if (remoteClient) {
-                clientId = Number(remoteClient.id);
-                res = mergeClient(res, remoteClient);
-            } else {
-                clientId = taskActivity.dragTaskActivity.clientId;
-            }
-
-            const taskActivityState = new TaskActivityState(
-                teamId,
-                taskActivity.taskId,
-                new DragTaskActivityState(
-                    remoteTaskActivity.dragTaskActivity.isDragging,
-                    clientId,
-                ),
-            );
-
-            res.taskActivities[index] = taskActivityState;
-            return res;
-        }, appState);
-    }
-
     public async updateTeam(
         teamId: number,
         input: UpdateTeamInput,
@@ -425,25 +386,25 @@ export class StateSyncer {
         taskId: number,
     ): Promise<string | undefined> {
         let appState = this.localStore.getState();
-        if (!appState.clientId) {
+        if (!appState.currClientId) {
             return;
         }
 
         return this.taskClient.startDraggingTask(
             `${taskId}`,
-            `${appState.clientId}`,
+            `${appState.currClientId}`,
         );
     }
 
     public async stopDraggingTask(taskId: number): Promise<string | undefined> {
         let appState = this.localStore.getState();
-        if (!appState.clientId) {
+        if (!appState.currClientId) {
             return;
         }
 
         return this.taskClient.stopDraggingTask(
             `${taskId}`,
-            `${appState.clientId}`,
+            `${appState.currClientId}`,
         );
     }
 
@@ -882,7 +843,7 @@ export class StateSyncer {
 
     private async updateMetadataState(metadata: Metadata) {
         let appState = this.localStore.getState();
-        appState.clientId = Number(metadata.clientId);
+        appState.currClientId = Number(metadata.clientId);
         this.localStore.updateState(appState);
     }
 

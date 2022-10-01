@@ -114,7 +114,7 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     public render(): ReactNode {
-        const clientId = this.localStore.getState().clientId
+        const clientId = this.localStore.getState().currClientId
         // TODO: will change when PersonalStatus is merged with Kanban
         return this.state.selectedSprintId ? (
             <div className={styles.Sprint}>

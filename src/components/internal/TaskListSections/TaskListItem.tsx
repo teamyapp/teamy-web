@@ -49,6 +49,7 @@ export class TaskListItem extends Component<Props> {
                 <InlineTaskUI
                     relativeLayout={this.props.relativeLayout}
                     task={this.props.task}
+                    currentClientId={this.props.currentClientId}
                     isSelectingOwner={this.props.isSelectingOwner}
                     filterTaskAction={this.props.filterTaskAction}
                     numActionColumns={this.props.numActionColumns}

@@ -113,7 +113,7 @@ export class BacklogComponent extends Component<Props, State> {
         }
 
         const filteredTasks = this.state.unplannedTasks.filter(backlogFilter);
-        const clientId = this.localStore.getState().clientId
+        const clientId = this.localStore.getState().currClientId
         return (
             <div className={styles.Backlog}>
                 <DragAndDropContainer

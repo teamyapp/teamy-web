@@ -135,7 +135,7 @@ export class TaskNode implements Task {
             return teamId === this.owningTeam.id && taskId === this.id
         })
 
-        if (!taskActivity?.dragTaskActivity.clientId || !taskActivity.dragTaskActivity.isDragging) {
+        if (!taskActivity?.dragTaskActivity.isDragging || !taskActivity.dragTaskActivity.clientId) {
             return undefined;
         }
 
