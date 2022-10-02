@@ -9,7 +9,7 @@ import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 import { RemoteThread } from '@core/client/entity/remoteThread';
 import { RemoteUser } from '@core/client/entity/remoteUser';
-import { TeamClient } from '@core/client/team.client';
+import { TeamMemberClient } from '@core/client/teamMember.client';
 import { Duration } from '@core/entity/duration';
 import { AppState } from '@core/storage/states/app.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
@@ -201,7 +201,7 @@ export function applyUserMutation(
 export async function applyTeamMemberMutation(
     currState: AppState,
     mutation: Mutation,
-    teamClient: TeamClient,
+    teamMemberClient: TeamMemberClient,
 ): Promise<AppState> {
     switch (mutation.mutationType) {
         case 'Create': {
@@ -209,7 +209,7 @@ export async function applyTeamMemberMutation(
                 mutation.payload,
             )!;
             currState.teamMembers = currState.teamMembers.concat(teamMember);
-            const remoteTeamMembers = await teamClient.getTeamMembers(
+            const remoteTeamMembers = await teamMemberClient.getTeamMembers(
                 `${teamMember.teamId}`,
             );
             for (const remoteTeamMember of remoteTeamMembers) {

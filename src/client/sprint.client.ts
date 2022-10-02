@@ -2,7 +2,7 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import { CreateSprintInput } from '@core/client/entity/input';
+import { RemoteCreateSprintInput } from '@core/client/entity/input';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 
@@ -76,7 +76,7 @@ export class SprintClient {
 
     public createSprint(
         teamId: string,
-        sprint: CreateSprintInput,
+        sprint: RemoteCreateSprintInput,
     ): Promise<RemoteSprint> {
         return this.graphQLClient
             .mutate({

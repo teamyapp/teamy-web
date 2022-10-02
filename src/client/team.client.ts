@@ -3,9 +3,11 @@ import { gql } from '@apollo/client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
-import { CreateTeamInput, UpdateTeamInput } from '@core/client/entity/input';
+import {
+    RemoteCreateTeamInput,
+    RemoteUpdateTeamInput,
+} from '@core/client/entity/input';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
-import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;
@@ -100,7 +102,7 @@ export class TeamClient {
             .then((payload: any) => payload?.teams[0]);
     }
 
-    public createTeam(team: CreateTeamInput): Promise<RemoteTeam> {
+    public createTeam(team: RemoteCreateTeamInput): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
@@ -129,7 +131,7 @@ export class TeamClient {
 
     public updateTeam(
         teamId: string,
-        input: UpdateTeamInput,
+        input: RemoteUpdateTeamInput,
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
@@ -151,100 +153,6 @@ export class TeamClient {
                 },
             })
             .then((payload: any) => payload?.updateTeam);
-    }
-
-    public getTeamMembers(teamId: string): Promise<RemoteTeamMember[]> {
-        return this.graphQLClient
-            .query({
-                query: gql`
-                    query getTeamMembers($teamId: ID!) {
-                        teams(filter: { teamId: $teamId }) {
-                            members {
-                                user {
-                                    id
-                                    lastName
-                                    firstName
-                                    profileUrl
-                                    createdAt
-                                }
-                            }
-                        }
-                    }
-                `,
-                variables: {
-                    teamId,
-                },
-            })
-            .then((payload: any) => payload?.teams[0]?.members);
-    }
-
-    public addMemberToTeam(
-        teamId: string,
-        memberUserId: string,
-    ): Promise<RemoteTeamMember> {
-        return this.graphQLClient
-            .mutate({
-                mutation: gql`
-                    mutation addMemberToTeam($teamId: ID!, $memberUserId: ID!) {
-                        addMemberToTeam(
-                            teamId: $teamId
-                            memberUserId: $memberUserId
-                        ) {
-                            team {
-                                id
-                            }
-                            user {
-                                id
-                                lastName
-                                firstName
-                                profileUrl
-                                createdAt
-                            }
-                        }
-                    }
-                `,
-                variables: {
-                    teamId,
-                    memberUserId,
-                },
-            })
-            .then((payload: any) => payload?.addMemberToTeam);
-    }
-
-    public removeMemberFromTeam(
-        teamId: string,
-        memberUserId: string,
-    ): Promise<RemoteTeamMember> {
-        return this.graphQLClient
-            .mutate({
-                mutation: gql`
-                    mutation removeMemberFromTeam(
-                        $teamId: ID!
-                        $memberUserId: ID!
-                    ) {
-                        removeMemberFromTeam(
-                            teamId: $teamId
-                            memberUserId: $memberUserId
-                        ) {
-                            team {
-                                id
-                            }
-                            user {
-                                id
-                                lastName
-                                firstName
-                                profileUrl
-                                createdAt
-                            }
-                        }
-                    }
-                `,
-                variables: {
-                    teamId,
-                    memberUserId,
-                },
-            })
-            .then((payload: any) => payload?.removeMemberFromTeam);
     }
 
     public createTeamIconUploadSession(teamId: string): Promise<string> {

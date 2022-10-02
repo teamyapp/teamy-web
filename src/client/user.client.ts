@@ -31,15 +31,6 @@ export class UserClient {
                                 owner {
                                     id
                                 }
-                                members {
-                                    user {
-                                        id
-                                        lastName
-                                        firstName
-                                        profileUrl
-                                        createdAt
-                                    }
-                                }
                             }
                         }
                     }

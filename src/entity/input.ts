@@ -62,3 +62,8 @@ export interface CreateSprintInput {
     startAt: Date;
     endAt: Date;
 }
+
+export interface UpdateTeamMemberInput {
+    userId: number;
+    weeklyBandwidth: Duration;
+}
