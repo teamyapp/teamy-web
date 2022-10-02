@@ -2,7 +2,10 @@ import { gql } from '@apollo/client';
 
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import { CreateTaskInput, UpdateTaskInput } from '@core/client/entity/input';
+import {
+    RemoteCreateTaskInput,
+    RemoteUpdateTaskInput,
+} from '@core/client/entity/input';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 
 export class TaskClient {
@@ -64,7 +67,10 @@ export class TaskClient {
             .then((payload: any) => payload?.tasks[0]);
     }
 
-    createTask(teamId: string, task: CreateTaskInput): Promise<RemoteTask> {
+    createTask(
+        teamId: string,
+        task: RemoteCreateTaskInput,
+    ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`
@@ -101,7 +107,10 @@ export class TaskClient {
             .then((payload: any) => payload?.createTask);
     }
 
-    updateTask(taskId: string, input: UpdateTaskInput): Promise<RemoteTask> {
+    updateTask(
+        taskId: string,
+        input: RemoteUpdateTaskInput,
+    ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
                 mutation: gql`

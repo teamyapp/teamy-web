@@ -220,6 +220,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             duration={
                                                 this.state.updatedTask.effort
                                             }
+                                            canClear={true}
                                             zOffset={DURATION_INPUT_Z_INDEX}
                                             icon={
                                                 <MaterialIconUI

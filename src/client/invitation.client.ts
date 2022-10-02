@@ -3,8 +3,8 @@ import { gql } from '@apollo/client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import {
-    CreateInvitationInput,
-    UpdateInvitationInput,
+    RemoteCreateInvitationInput,
+    RemoteUpdateInvitationInput,
 } from '@core/client/entity/input';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 
@@ -89,7 +89,7 @@ export class InvitationClient {
 
     public createInvitation(
         teamId: string,
-        input: CreateInvitationInput,
+        input: RemoteCreateInvitationInput,
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
@@ -122,7 +122,7 @@ export class InvitationClient {
 
     public updateInvitation(
         invitationId: string,
-        input: UpdateInvitationInput,
+        input: RemoteUpdateInvitationInput,
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({

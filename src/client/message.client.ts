@@ -3,8 +3,8 @@ import { gql } from '@apollo/client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import {
-    CreateMessageInput,
-    UpdateMessageInput,
+    RemoteCreateMessageInput,
+    RemoteUpdateMessageInput,
 } from '@core/client/entity/input';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
 
@@ -17,7 +17,7 @@ export class MessageClient {
 
     public createMessage(
         threadId: string,
-        input: CreateMessageInput,
+        input: RemoteCreateMessageInput,
     ): Promise<RemoteMessage> {
         return this.graphQLClient
             .mutate({
@@ -49,7 +49,7 @@ export class MessageClient {
 
     public updateMessage(
         messageId: string,
-        input: UpdateMessageInput,
+        input: RemoteUpdateMessageInput,
     ): Promise<RemoteMessage> {
         return this.graphQLClient
             .mutate({

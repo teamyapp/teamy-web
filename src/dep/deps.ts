@@ -16,6 +16,7 @@ import { MessageClient } from '@core/client/message.client';
 import { SprintClient } from '@core/client/sprint.client';
 import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
+import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
 import { getConfig } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
@@ -60,6 +61,7 @@ export function initDeps(): Deps {
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);
     const teamClient = new TeamClient(teamyGraphQLClient);
+    const teamMemberClient = new TeamMemberClient(teamyGraphQLClient);
     const invitationClient = new InvitationClient(teamyGraphQLClient);
     const messageClient = new MessageClient(teamyGraphQLClient);
     const sprintClient = new SprintClient(teamyGraphQLClient);
@@ -77,6 +79,7 @@ export function initDeps(): Deps {
         taskClient,
         messageClient,
         teamClient,
+        teamMemberClient,
         userClient,
         invitationClient,
         sprintClient,

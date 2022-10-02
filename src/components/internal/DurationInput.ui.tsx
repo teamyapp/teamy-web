@@ -13,10 +13,11 @@ interface Props {
     relativeLayout: RelativeLayout;
     zOffset?: number;
     duration?: Duration;
+    canClear?: boolean;
+    icon?: ReactNode;
     onPopupOpen?: () => void;
     onPopupClose?: () => void;
     onDurationChange?: (duration?: Duration) => void;
-    icon?: ReactNode;
 }
 
 export class DurationInputUI extends Component<Props> {
@@ -43,6 +44,7 @@ export class DurationInputUI extends Component<Props> {
                     renderFollower={({ onClose }) => (
                         <DurationInputPopup
                             duration={duration}
+                            canClear={this.props.canClear}
                             onDurationChange={this.props.onDurationChange}
                             onClose={onClose}
                         />
@@ -55,6 +57,7 @@ export class DurationInputUI extends Component<Props> {
 
 interface PopupProps {
     duration?: Duration;
+    canClear?: boolean;
     onDurationChange?: (duration?: Duration) => void;
     onClose?: () => void;
     onMouseEnter?: () => void;
@@ -71,7 +74,6 @@ export class DurationInputPopup extends Component<PopupProps> {
 
     render() {
         const { duration } = this.props;
-
         return (
             <div
                 className={`${styles.InputPopup}`}
@@ -132,9 +134,16 @@ export class DurationInputPopup extends Component<PopupProps> {
                     <div className={`${styles.Button} ${styles.SaveButton}`}>
                         <ButtonUI label={'Save'} onClick={this.onSaveClick} />
                     </div>
-                    <div className={`${styles.Button} ${styles.ClearButton}`}>
-                        <ButtonUI label={'Clear'} onClick={this.onClearClick} />
-                    </div>
+                    {this.props.canClear && (
+                        <div
+                            className={`${styles.Button} ${styles.ClearButton}`}
+                        >
+                            <ButtonUI
+                                label={'Clear'}
+                                onClick={this.onClearClick}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         );

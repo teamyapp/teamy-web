@@ -12,6 +12,7 @@ import { MessageClient } from '@core/client/message.client';
 import { SprintClient } from '@core/client/sprint.client';
 import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
+import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
 import { Duration } from '@core/entity/duration';
 import { TaskFilter } from '@core/entity/filters';
@@ -25,6 +26,7 @@ import {
     UpdateMessageInput,
     UpdateTaskInput,
     UpdateTeamInput,
+    UpdateTeamMemberInput,
     UpdateUserInput,
 } from '@core/entity/input';
 import { AppState } from '@core/storage/states/app.state';
@@ -76,6 +78,7 @@ export class StateSyncer {
         private taskClient: TaskClient,
         private messageClient: MessageClient,
         private teamClient: TeamClient,
+        private teamMemberClient: TeamMemberClient,
         private userClient: UserClient,
         private invitationClient: InvitationClient,
         private sprintClient: SprintClient,
@@ -323,7 +326,7 @@ export class StateSyncer {
     }
 
     public async pullTeamMembers(teamId: number): Promise<void> {
-        const members = await this.teamClient.getTeamMembers(`${teamId}`);
+        const members = await this.teamMemberClient.getTeamMembers(`${teamId}`);
         let appState = this.localStore.getState();
         appState = replaceTeamMembers(appState, teamId, members);
         this.localStore.updateState(appState);
@@ -410,24 +413,34 @@ export class StateSyncer {
         );
     }
 
-    public async addTeamMember(teamId: number, userId: number): Promise<void> {
-        const remoteMember = await this.teamClient.addMemberToTeam(
+    public async updateTeamMember(
+        teamId: number,
+        input: UpdateTeamMemberInput,
+    ): Promise<void> {
+        const remoteTeamMember = await this.teamMemberClient.updateTeamMember(
             `${teamId}`,
-            `${userId}`,
+            {
+                userId: `${input.userId}`,
+                weeklyBandwidth: input.weeklyBandwidth.toString(),
+            },
         );
+        const appState = this.localStore.getState();
+        appState.teamMembers = appState.teamMembers.map((teamMember) => {
+            if (
+                teamMember.teamId !== teamId ||
+                teamMember.userId !== input.userId
+            ) {
+                return teamMember;
+            }
 
-        // TODO: dedupe with real time team member mutation
-        let appState = this.localStore.getState();
-        appState = mergeUser(appState, remoteMember.user);
-
-        const member = new TeamMemberState(
-            teamId,
-            userId,
-            Duration.fromString(remoteMember.weeklyBandwidth),
-            toDate(remoteMember.createdAt)!,
-            toDate(remoteMember.updatedAt),
-        );
-        appState.teamMembers.push(member);
+            return new TeamMemberState(
+                teamId,
+                input.userId,
+                Duration.fromString(remoteTeamMember.weeklyBandwidth),
+                toDate(remoteTeamMember.createdAt)!,
+                toDate(remoteTeamMember.updatedAt),
+            );
+        });
         this.localStore.updateState(appState);
     }
 
@@ -692,9 +705,15 @@ export class StateSyncer {
         userId: number,
     ): Promise<void> {
         let appState = this.localStore.getState();
-        delete appState.teamMembers[userId];
+        appState.teamMembers = appState.teamMembers.filter(
+            (teamMember) =>
+                !(teamMember.teamId === teamId && teamMember.userId === userId),
+        );
         this.localStore.updateState(appState);
-        await this.teamClient.removeMemberFromTeam(`${teamId}`, `${userId}`);
+        await this.teamMemberClient.removeMemberFromTeam(
+            `${teamId}`,
+            `${userId}`,
+        );
     }
 
     public async createSprint(
@@ -883,7 +902,7 @@ export class StateSyncer {
                 appState = await applyTeamMemberMutation(
                     appState,
                     mutation,
-                    this.teamClient,
+                    this.teamMemberClient,
                 );
                 break;
             }

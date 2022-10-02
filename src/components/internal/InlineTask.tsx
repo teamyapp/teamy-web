@@ -206,6 +206,7 @@ export class InlineTaskUI extends Component<Props, State> {
                         weight
                     </MaterialIconUI>
                 }
+                canClear={true}
                 onPopupOpen={this.onEffortPopupOpen}
                 onPopupClose={this.onEffortPopupClose}
                 onDurationChange={this.onEffortChange}
