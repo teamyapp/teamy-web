@@ -715,7 +715,7 @@ export function removeOrMergeTeamMembers(
         });
 
     const newTeamMemberStates: TeamMemberState[] = [];
-    for (let remoteTeamMember of remoteTeamMembers) {
+    for (const remoteTeamMember of remoteTeamMembers) {
         const key = `${teamId}:${remoteTeamMember.user.id}`;
         let oldTeamMemberState = teamMemberStateMap[key];
         const bandwidth =
