@@ -514,7 +514,7 @@ export function mergeTeam(
     }
 
     if (remoteTeam.members) {
-        currAppState = replaceTeamMembers(
+        currAppState = removeOrMergeTeamMembers(
             currAppState,
             remoteTeamId,
             remoteTeam.members,
@@ -701,26 +701,52 @@ export function mergeTaskActivity(
     return currAppState;
 }
 
-export function replaceTeamMembers(
+export function removeOrMergeTeamMembers(
     currAppState: AppState,
     teamId: number,
-    teamMembers: RemoteTeamMember[],
+    remoteTeamMembers: RemoteTeamMember[],
 ): AppState {
-    const newTeamMembers = teamMembers.map(
-        (remoteTeamMember) =>
-            new TeamMemberState(
-                teamId,
-                Number(remoteTeamMember.user.id),
-                Duration.fromString(remoteTeamMember.weeklyBandwidth),
-                toDate(remoteTeamMember.createdAt)!,
-                toDate(remoteTeamMember.updatedAt),
-            ),
-    );
-    let remainTeamMembers = currAppState.teamMembers.filter(
-        (teamMember) => teamMember.teamId !== teamId,
-    );
-    currAppState.teamMembers = remainTeamMembers.concat(newTeamMembers);
-    teamMembers.forEach((member) => {
+    const teamMemberStateMap: Record<string, TeamMemberState> = {};
+    currAppState.teamMembers
+        .filter((teamMemberState) => teamMemberState.teamId === teamId)
+        .forEach((teamMemberState) => {
+            const key = `${teamId}:${teamMemberState.userId}`;
+            teamMemberStateMap[key] = teamMemberState;
+        });
+
+    const newTeamMemberStates: TeamMemberState[] = [];
+    for (let remoteTeamMember of remoteTeamMembers) {
+        const key = `${teamId}:${remoteTeamMember.user.id}`;
+        let oldTeamMemberState = teamMemberStateMap[key];
+        const bandwidth =
+            remoteTeamMember.weeklyBandwidth === undefined
+                ? oldTeamMemberState?.weeklyBandwidth
+                : Duration.fromString(remoteTeamMember.weeklyBandwidth);
+        const createdAt =
+            remoteTeamMember.createdAt === undefined
+                ? oldTeamMemberState?.createdAt
+                : toDate(remoteTeamMember.createdAt)!;
+        const updatedAt =
+            remoteTeamMember.updatedAt === undefined
+                ? oldTeamMemberState?.updatedAt
+                : toDate(remoteTeamMember.updatedAt)!;
+        const newTeamMemberState = new TeamMemberState(
+            teamId,
+            Number(remoteTeamMember.user.id),
+            bandwidth,
+            createdAt,
+            updatedAt,
+        );
+        newTeamMemberStates.push(newTeamMemberState);
+    }
+
+    currAppState.teamMembers = currAppState.teamMembers
+        .filter((teamMemberState) => {
+            return teamMemberState.teamId !== teamId;
+        })
+        .concat(newTeamMemberStates);
+
+    remoteTeamMembers.forEach((member) => {
         currAppState = mergeUser(currAppState, member.user);
     });
     return currAppState;

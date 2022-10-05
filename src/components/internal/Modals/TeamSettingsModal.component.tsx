@@ -108,7 +108,15 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         );
     }
 
-    public componentDidMount() {
+    public open = async (teamId: number, defaultTabIndex: number = 0) => {
+        await this.stateSyncer.pullTeamMembers(teamId);
+        await this.stateSyncer.pullTeamInvitations(teamId);
+        await this.updateState(teamId, defaultTabIndex);
+        this.init(teamId);
+        this.modalRef.current?.open();
+    };
+
+    private init(teamID: number) {
         this.onStateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -117,26 +125,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     return;
                 }
 
-                if (this.state.team) {
-                    await this.updateState(
-                        this.state.team.id,
-                        this.state.currentTabIndex,
-                    );
-                }
+                await this.updateState(teamID, this.state.currentTabIndex);
             }
-        })();
+        })().then();
     }
-
-    public componentWillUnmount() {
-        closeIfNot(this.onStateChangeChan);
-    }
-
-    public open = async (teamId: number, defaultTabIndex: number = 0) => {
-        await this.stateSyncer.pullTeamMembers(teamId);
-        await this.stateSyncer.pullTeamInvitations(teamId);
-        await this.updateState(teamId, defaultTabIndex);
-        this.modalRef.current?.open();
-    };
 
     private async updateState(teamId: number, defaultTabIndex: number) {
         const team = await this.graphSource.team(teamId);
@@ -445,6 +437,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     private onCloseButtonClick = () => {
+        closeIfNot(this.onStateChangeChan);
         this.modalRef.current?.close();
     };
 

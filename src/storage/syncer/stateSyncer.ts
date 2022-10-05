@@ -57,8 +57,8 @@ import {
     mergeTask,
     mergeTeam,
     mergeUser,
+    removeOrMergeTeamMembers,
     replaceTeamInvitations,
-    replaceTeamMembers,
     replaceTeamTaskActivities,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
@@ -328,7 +328,7 @@ export class StateSyncer {
     public async pullTeamMembers(teamId: number): Promise<void> {
         const members = await this.teamMemberClient.getTeamMembers(`${teamId}`);
         let appState = this.localStore.getState();
-        appState = replaceTeamMembers(appState, teamId, members);
+        appState = removeOrMergeTeamMembers(appState, teamId, members);
         this.localStore.updateState(appState);
     }
 
