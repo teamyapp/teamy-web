@@ -9,9 +9,10 @@ export function groupByOwners(tasks: Task[]): Map<number | undefined, Task[]> {
 }
 
 export function flattenGroupedTasksByOwner(groupedTasks: Map<number | undefined, Task[]>): Task[] {
-    const allTasks =  Array.from(groupedTasks.entries())
-    const unAssignedTasks  = allTasks.find(([key, _]) => key === undefined )?.[1] || []
-    const assignedTasks = allTasks.filter(([key, _]) => key !== undefined).flatMap(([_, tasks]) => tasks)
-
-    return assignedTasks.concat(unAssignedTasks)
+    const unAssignedTasks  = groupedTasks.get(undefined)  || [];
+    const assignedTasks = Array.from(groupedTasks.keys())
+        .filter(userId => userId !== undefined)
+        .sort((userId1, userId2) => userId1! - userId2!)
+        .flatMap(userId => groupedTasks.get(userId)!);
+    return assignedTasks.concat(unAssignedTasks);
 }
