@@ -13,5 +13,5 @@ export function flattenGroupedTasksByOwner(groupedTasks: Map<number | undefined,
     const unAssignedTasks  = allTasks.find(([key, _]) => key === undefined )?.[1] || []
     const assignedTasks = allTasks.filter(([key, _]) => key !== undefined).flatMap(([_, tasks]) => tasks)
 
-    return assignedTasks.concat(unAssignedTasks || [])
+    return assignedTasks.concat(unAssignedTasks)
 }
