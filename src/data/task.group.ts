@@ -3,12 +3,15 @@ import { groupBy } from '@lib/data/groupBy';
 import { Task } from '@core/entity/task';
 
 export function groupByOwners(tasks: Task[]): Map<number | undefined, Task[]> {
-    const unAssignedTasks = tasks.filter(task => !task.owner)
-    const assignedTasks = tasks.filter(task => !!task.owner)
-    const groupedTasks = groupBy(assignedTasks, (task: Task) => {
+    return groupBy(tasks, (task: Task) => {
         return task.owner?.id;
     });
+}
 
-    groupedTasks.set(-1, unAssignedTasks)
-    return groupedTasks
+export function flattenGroupedTasksByOwner(groupedTasks: Map<number | undefined, Task[]>): Task[] {
+    const allTasks =  Array.from(groupedTasks.entries())
+    const unAssignedTasks  = allTasks.find(([key, _]) => key === undefined )?.[1]
+    const assingedTasks = allTasks.filter(([key, _]) => key !== undefined).flatMap(([_, tasks]) => tasks)
+
+    return assingedTasks.concat(unAssignedTasks || [])
 }
