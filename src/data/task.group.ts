@@ -11,7 +11,7 @@ export function groupByOwners(tasks: Task[]): Map<number | undefined, Task[]> {
 export function flattenGroupedTasksByOwner(groupedTasks: Map<number | undefined, Task[]>): Task[] {
     const allTasks =  Array.from(groupedTasks.entries())
     const unAssignedTasks  = allTasks.find(([key, _]) => key === undefined )?.[1]
-    const assingedTasks = allTasks.filter(([key, _]) => key !== undefined).flatMap(([_, tasks]) => tasks)
+    const assignedTasks = allTasks.filter(([key, _]) => key !== undefined).flatMap(([_, tasks]) => tasks)
 
-    return assingedTasks.concat(unAssignedTasks || [])
+    return assignedTasks.concat(unAssignedTasks || [])
 }
