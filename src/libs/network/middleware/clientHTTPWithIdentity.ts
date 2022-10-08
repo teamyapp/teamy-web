@@ -22,7 +22,6 @@ export const clientHTTPWithIdentity: HTTPClientMiddleware = (
                 ...options?.headers,
                 Authorization: `Bearer ${getAccessToken()}`,
             };
-
             return httpClient.request(url, {
                 ...options,
                 method,
