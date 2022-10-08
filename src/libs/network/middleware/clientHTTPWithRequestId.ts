@@ -24,7 +24,6 @@ export const clientHTTPWithRequestId: HTTPClientMiddleware = (
                 ...options?.headers,
                 [REQUEST_ID_HEADER]: uuidv4(),
             };
-
             return httpClient.request(url, {
                 ...options,
                 method,
