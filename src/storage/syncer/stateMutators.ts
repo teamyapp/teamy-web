@@ -2,9 +2,7 @@ import { RemoteClient } from '@core/client/entity/remoteClient';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
-import {
-    RemoteSprintParticipant
-} from '@core/client/entity/remoteSprintParticipant';
+import { RemoteSprintParticipant } from '@core/client/entity/remoteSprintParticipant';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTaskActivity } from '@core/client/entity/remoteTaskActivity';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
@@ -18,16 +16,10 @@ import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
 import { toDate, toInt } from '@core/storage/states/parser';
 import { SprintState } from '@core/storage/states/sprint.state';
-import {
-    SprintParticipantState
-} from '@core/storage/states/sprintParticipant.state';
-import {
-    SprintTaskRelationState
-} from '@core/storage/states/sprintTaskRelation.state';
+import { SprintParticipantState } from '@core/storage/states/sprintParticipant.state';
+import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation.state';
 import { TaskState } from '@core/storage/states/task.state';
-import {
-    TaskAwaitForRelationState
-} from '@core/storage/states/taskAwaitForRelation.state';
+import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRelation.state';
 import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
@@ -38,8 +30,7 @@ import { TaskActivityState } from '../states/taskActivity.state';
 import { Mutation } from './mutation';
 
 class DeleteTaskAwaitForRelationPayload {
-    constructor(public awaitingTaskId: number, public awaitForTaskId: number) {
-    }
+    constructor(public awaitingTaskId: number, public awaitForTaskId: number) {}
 
     public static fromMutationPayload(
         json: any,
@@ -85,9 +76,9 @@ export function applySprintTaskMutation(
                 currState.sprintTaskRelations.find(
                     (sprintTaskRelationItem) =>
                         sprintTaskRelationItem.taskId ===
-                        sprintTaskRelation.taskId &&
+                            sprintTaskRelation.taskId &&
                         sprintTaskRelationItem.sprintId ===
-                        sprintTaskRelation.sprintId,
+                            sprintTaskRelation.sprintId,
                 )
             ) {
                 break;
@@ -104,9 +95,9 @@ export function applySprintTaskMutation(
                     (sprintTaskRelationItem) =>
                         !(
                             sprintTaskRelationItem.taskId ===
-                            sprintTaskRelation.taskId &&
+                                sprintTaskRelation.taskId &&
                             sprintTaskRelationItem.sprintId ===
-                            sprintTaskRelation.sprintId
+                                sprintTaskRelation.sprintId
                         ),
                 );
         }
@@ -266,7 +257,7 @@ export function applyTaskActivityMutation(
             }
 
             const index = currState.taskActivities.findIndex(
-                ({taskId, teamId}) => {
+                ({ taskId, teamId }) => {
                     return (
                         teamId === updatedTaskActivity.teamId &&
                         taskId === updatedTaskActivity.taskId
@@ -309,7 +300,7 @@ export function applyTaskAwaitingForRelationMutation(
                 currState.taskAwaitForRelations.filter(
                     (relation) =>
                         relation.awaitingTaskId !==
-                        deleteInput.awaitingTaskId &&
+                            deleteInput.awaitingTaskId &&
                         relation.awaitForTaskId !== deleteInput.awaitForTaskId,
                 );
         }
@@ -715,17 +706,23 @@ export function removeOrMergeTeamMembers(
     teamId: number,
     remoteTeamMembers: RemoteTeamMember[],
 ): AppState {
-    const teamMemberStateMap: Record<string, TeamMemberState> = currAppState.teamMembers
-        .reduce((prevTeamMemberStateMap: Record<string, TeamMemberState>, teamMemberState) => {
-            if (teamMemberState.teamId !== teamId) {
-                return prevTeamMemberStateMap;
-            }
+    const teamMemberStateMap: Record<string, TeamMemberState> =
+        currAppState.teamMembers.reduce(
+            (
+                prevTeamMemberStateMap: Record<string, TeamMemberState>,
+                teamMemberState,
+            ) => {
+                if (teamMemberState.teamId !== teamId) {
+                    return prevTeamMemberStateMap;
+                }
 
-            const key = `${teamId}:${teamMemberState.userId}`;
-            prevTeamMemberStateMap[key] = teamMemberState;
-            return prevTeamMemberStateMap;
-        }, {});
-    const newTeamMemberStates = remoteTeamMembers.map(remoteTeamMember => {
+                const key = `${teamId}:${teamMemberState.userId}`;
+                prevTeamMemberStateMap[key] = teamMemberState;
+                return prevTeamMemberStateMap;
+            },
+            {},
+        );
+    const newTeamMemberStates = remoteTeamMembers.map((remoteTeamMember) => {
         const key = `${teamId}:${remoteTeamMember.user.id}`;
         const oldTeamMemberState = teamMemberStateMap[key];
         const bandwidth =
