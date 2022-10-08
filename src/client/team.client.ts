@@ -1,5 +1,3 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
@@ -19,7 +17,8 @@ export class TeamClient {
     public getTeamWithSprintPreviews(teamId: string): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
-                query: gql`
+                operationName: "getTeam",
+                query: `
                     query getTeam($teamId: ID!) {
                         teams(filter: { teamId: $teamId }) {
                             id
@@ -62,7 +61,8 @@ export class TeamClient {
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
-                query: gql`
+                operationName: "getTeam",
+                query: `
                     query getTeam($teamId: ID!, $taskFilter: TaskFilter) {
                         teams(filter: { teamId: $teamId }) {
                             id
@@ -105,7 +105,8 @@ export class TeamClient {
     public createTeam(team: RemoteCreateTeamInput): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "createTeam",
+                query: `
                     mutation createTeam($input: CreateTeamInput!) {
                         createTeam(team: $input) {
                             id
@@ -135,7 +136,8 @@ export class TeamClient {
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "updateTeam",
+                query: `
                     mutation updateTeam(
                         $teamId: ID!
                         $input: UpdateTeamInput!
@@ -158,7 +160,8 @@ export class TeamClient {
     public createTeamIconUploadSession(teamId: string): Promise<string> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "createTeamIconUploadSession",
+                query: `
                     mutation createTeamIconUploadSession($teamId: ID!) {
                         createTeamIconUploadSession(teamId: $teamId)
                     }
@@ -176,7 +179,8 @@ export class TeamClient {
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "finishTeamIconUploadSession",
+                query: `
                     mutation finishTeamIconUploadSession(
                         $teamId: ID!
                         $fileUploadSessionId: ID!

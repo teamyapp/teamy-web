@@ -9,5 +9,5 @@ export interface HTTPClient {
             headers?: Record<string, string>;
             body?: string;
         },
-    ): Promise<Result<string, Errors>>;
+    ): Promise<Result<any, Errors>>;
 }

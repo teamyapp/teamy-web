@@ -1,60 +1,54 @@
-import {
-    ApolloClient,
-    InMemoryCache,
-    MutationOptions,
-    NormalizedCacheObject,
-    QueryOptions,
-} from '@apollo/client';
+import { HTTPClient } from './HTTP.client';
+
+interface QueryOptions {
+    query: string;
+    operationName: string;
+    variables?: Record<string, any>;
+}
 
 export class GraphQLClient {
-    private readonly client: ApolloClient<NormalizedCacheObject>;
-
     constructor(
-        graphQLEndpoint: string,
-        private getAccessToken?: () => string,
-    ) {
-        this.client = new ApolloClient({
-            uri: graphQLEndpoint,
-            cache: new InMemoryCache(),
-        });
-    }
+        private graphQLEndpoint: string,
+        private httpClient: HTTPClient,
+    ) {}
 
-    async mutate(options: MutationOptions): Promise<any> {
-        options.errorPolicy = 'all';
-        options.context = this.getAuthContext();
-        const result = await this.client.mutate(options);
-        if (result.errors) {
-            // todo: should handle errors
-            // suggestion: errors can be pushed to a channel
-            // and we can handle errors in a coroutine as well
-            // we can have 1 global error channel that an Error Alert Component subscribes to
-            console.error(result.errors);
-        }
-        return result.data;
-    }
-
-    async query(options: QueryOptions): Promise<any> {
-        options.fetchPolicy = 'network-only';
-        options.errorPolicy = 'all';
-        options.context = this.getAuthContext();
-        const result = await this.client.query(options);
-        if (result.errors) {
-            // todo: should handle errors
-            // suggestion: errors can be pushed to a channel
-            // and we can handle errors in a coroutine as well
-            // we can have 1 global error channel that an Error Alert Component subscribes to
-            console.error(result.errors);
-        }
-        return result.data;
-    }
-
-    private getAuthContext() {
-        return {
-            headers: {
-                Authorization: `Bearer ${
-                    this.getAccessToken?.call(null) || ''
-                }`,
+    async mutate(mutateOptions: QueryOptions): Promise<any> {
+        const [result, errors] = await this.httpClient.request(
+            this.graphQLEndpoint,
+            {
+                method: 'POST',
+                body: JSON.stringify(mutateOptions),
             },
-        };
+        );
+
+        if (errors) {
+            // todo: should handle errors
+            // suggestion: errors can be pushed to a channel
+            // and we can handle errors in a coroutine as well
+            // we can have 1 global error channel that an Error Alert Component subscribes to
+            console.error(errors);
+        }
+
+        return result?.data;
+    }
+
+    async query(queryOptions: QueryOptions): Promise<any> {
+        const [result, errors] = await this.httpClient.request(
+            this.graphQLEndpoint,
+            {
+                method: 'POST',
+                body: JSON.stringify(queryOptions),
+            },
+        );
+
+        if (errors) {
+            // todo: should handle errors
+            // suggestion: errors can be pushed to a channel
+            // and we can handle errors in a coroutine as well
+            // we can have 1 global error channel that an Error Alert Component subscribes to
+            console.error(errors);
+        }
+
+        return result?.data;
     }
 }

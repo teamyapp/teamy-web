@@ -1,5 +1,3 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteUser } from '@core/client/entity/remoteUser';
@@ -15,7 +13,8 @@ export class UserClient {
     public getMeWithTeams(): Promise<RemoteUser> {
         return this.graphQLClient
             .query({
-                query: gql`
+                operationName:"getMeWithTeams",
+                query: `
                     query getMeWithTeams {
                         me {
                             id
@@ -51,7 +50,8 @@ export class UserClient {
     public getMe(): Promise<RemoteUser> {
         return this.graphQLClient
             .query({
-                query: gql`
+                operationName: "getMe",
+                query: `
                     query getMe {
                         me {
                             id
@@ -70,7 +70,8 @@ export class UserClient {
     public createUser(input: CreateUserInput): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName:"createUser",
+                query: `
                     mutation createUser($input: CreateUserInput!) {
                         createUser(user: $input) {
                             id
@@ -90,7 +91,8 @@ export class UserClient {
     ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "updateUser",
+                query: `
                     mutation updateUser(
                         $userId: ID!
                         $input: UpdateUserInput!
@@ -115,7 +117,8 @@ export class UserClient {
     public createUserProfileUploadSession(): Promise<string> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "createUserProfileUploadSession",
+                query: `
                     mutation createUserProfileUploadSession {
                         createUserProfileUploadSession
                     }
@@ -129,7 +132,8 @@ export class UserClient {
     ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "finishUserProfileUploadSession",
+                query:`
                     mutation finishUserProfileUploadSession(
                         $fileUploadSessionId: ID!
                     ) {

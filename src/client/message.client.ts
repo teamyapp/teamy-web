@@ -1,5 +1,3 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import {
@@ -21,7 +19,8 @@ export class MessageClient {
     ): Promise<RemoteMessage> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "createMessage",
+                query: `
                     mutation createMessage(
                         $threadId: ID!
                         $message: CreateMessageInput!
@@ -53,7 +52,8 @@ export class MessageClient {
     ): Promise<RemoteMessage> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "updateMessage",
+                query: `
                     mutation updateMessage(
                         $messageId: ID!
                         $input: UpdateMessageInput!
@@ -80,7 +80,8 @@ export class MessageClient {
     public deleteMessage(messageId: string): Promise<RemoteMessage> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                operationName: "deleteMessage",
+                query: `
                     mutation deleteMessage($messageId: ID!) {
                         deleteMessage(messageId: $messageId) {
                             id
