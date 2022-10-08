@@ -1,7 +1,6 @@
 import { HTTPClient } from '../HTTP.client';
 
 export type HTTPClientMiddleware = (httpClient: HTTPClient) => HTTPClient;
-
 export function httpClientWithMiddlewares(
     httpClient: HTTPClient,
     middlewares: HTTPClientMiddleware[],
