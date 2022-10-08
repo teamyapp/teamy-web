@@ -1,12 +1,15 @@
-import { Errors } from "@lib/error/errors";
-import { Result } from "@lib/error/result";
 import { v4 as uuidv4 } from 'uuid';
-import { HTTPClient } from "../HTTP.client";
-import { HTTPClientMiddleware } from "./middleware";
-import {REQUEST_ID_HEADER} from "./headers";
 
+import { Errors } from '@lib/error/errors';
+import { Result } from '@lib/error/result';
 
-export const clientHTTPWithRequestId: HTTPClientMiddleware = (httpClient: HTTPClient): HTTPClient => {
+import { HTTPClient } from '../HTTP.client';
+import { REQUEST_ID_HEADER } from './headers';
+import { HTTPClientMiddleware } from './middleware';
+
+export const clientHTTPWithRequestId: HTTPClientMiddleware = (
+    httpClient: HTTPClient,
+): HTTPClient => {
     return {
         request: (
             url: string,
@@ -16,17 +19,17 @@ export const clientHTTPWithRequestId: HTTPClientMiddleware = (httpClient: HTTPCl
                 body?: string;
             },
         ): Promise<Result<string, Errors>> => {
-            return httpClient.request(
-                url, 
-                {
-                    ...options,
-                    method: options?.method || "GET",
-                    headers: {
-                        ...options?.headers,
-                        [REQUEST_ID_HEADER]: uuidv4()
-                    }
-                }
-            )
-        }
-    }
-}
+            const method = options?.method || 'GET';
+            const headers = {
+                ...options?.headers,
+                [REQUEST_ID_HEADER]: uuidv4(),
+            };
+
+            return httpClient.request(url, {
+                ...options,
+                method,
+                headers,
+            });
+        },
+    };
+};

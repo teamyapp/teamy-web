@@ -6,6 +6,9 @@ import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { clientHTTPWithIdentity } from '@lib/network/middleware/clientHTTPWithIdentity';
+import { clientHTTPWithRequestId } from '@lib/network/middleware/clientHTTPWithRequestId';
+import { httpClientWithMiddlewares } from '@lib/network/middleware/middleware';
 import { PubSub } from '@lib/pubSub/pubSub';
 import { Router, createBrowserRouter } from '@lib/router/router';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
@@ -28,9 +31,6 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { httpClientWithMiddlewares } from '@lib/network/middleware/middleware';
-import { clientHTTPWithRequestId } from '@lib/network/middleware/clientHTTPWithRequestId';
-import { clientHTTPwithIdentity } from '@lib/network/middleware/clientHTTPwithIdentity';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -48,7 +48,10 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
-    const httpClient = httpClientWithMiddlewares(new FetchHTTPClient(), [clientHTTPWithRequestId, clientHTTPwithIdentity])
+    const httpClient = httpClientWithMiddlewares(new FetchHTTPClient(), [
+        clientHTTPWithRequestId,
+        clientHTTPWithIdentity,
+    ]);
     const identityClient = new IdentityClient(
         env,
         signInFinishPath,
