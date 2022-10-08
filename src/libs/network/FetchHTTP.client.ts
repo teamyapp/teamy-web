@@ -27,6 +27,7 @@ export class FetchHTTPClient implements HTTPClient {
         },
     ): Promise<Result<string, Errors>> {
         return new Promise<Result<string, Errors>>((resolve) => {
+            debugger
             fetch(url, {
                 method: options?.method,
                 mode: 'cors',
