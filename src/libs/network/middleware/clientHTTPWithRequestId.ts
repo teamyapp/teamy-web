@@ -16,7 +16,6 @@ export const clientHTTPWithRequestId: HTTPClientMiddleware = (httpClient: HTTPCl
                 body?: string;
             },
         ): Promise<Result<string, Errors>> => {
-            debugger
             return httpClient.request(
                 url, 
                 {
