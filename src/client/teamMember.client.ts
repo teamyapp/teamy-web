@@ -13,7 +13,6 @@ export class TeamMemberClient {
     public getTeamMembers(teamId: string): Promise<RemoteTeamMember[]> {
         return this.graphQLClient
             .query({
-                operationName: "getTeamMembers",
                 query: `
                     query getTeamMembers($teamId: ID!) {
                         teams(filter: { teamId: $teamId }) {
@@ -45,8 +44,7 @@ export class TeamMemberClient {
     ): Promise<RemoteTeamMember> {
         return this.graphQLClient
             .mutate({
-                operationName:"updateTeamMember",
-                query: `
+                mutation: `
                     mutation updateTeamMember(
                         $teamId: ID!
                         $input: UpdateTeamMemberInput!
@@ -76,8 +74,7 @@ export class TeamMemberClient {
     ): Promise<RemoteTeamMember> {
         return this.graphQLClient
             .mutate({
-                operationName: "addMemberToTeam",
-                query:`
+                mutation:`
                     mutation addMemberToTeam($teamId: ID!, $memberUserId: ID!) {
                         addMemberToTeam(
                             teamId: $teamId
@@ -110,8 +107,7 @@ export class TeamMemberClient {
     ): Promise<RemoteTeamMember> {
         return this.graphQLClient
             .mutate({
-                operationName:"removeMemberFromTeam",
-                query: `
+                mutation: `
                     mutation removeMemberFromTeam(
                         $teamId: ID!
                         $memberUserId: ID!

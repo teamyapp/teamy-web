@@ -25,8 +25,8 @@ export class FetchHTTPClient implements HTTPClient {
             headers?: Record<string, string>;
             body?: string;
         },
-    ): Promise<Result<any, Errors>> {
-        return new Promise<Result<any, Errors>>((resolve) => {
+    ): Promise<Result<string, Errors>> {
+        return new Promise<Result<string, Errors>>((resolve) => {
             fetch(url, {
                 method: options?.method,
                 mode: 'cors',
@@ -43,7 +43,7 @@ export class FetchHTTPClient implements HTTPClient {
                         ]);
                         return null;
                     } else {
-                        resolve([await response.json(), null]);
+                        resolve([await response.text(), null]);
                     }
                 })
                 .catch(() => {

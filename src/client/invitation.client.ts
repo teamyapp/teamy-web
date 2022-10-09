@@ -19,7 +19,6 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .query({
-                operationName: "getInvitations",
                 query: `
                     query getInvitations(
                         $invitationId: ID
@@ -60,7 +59,6 @@ export class InvitationClient {
     public getInvitations(teamId: string): Promise<RemoteInvitation[]> {
         return this.graphQLClient
             .query({
-                operationName: "getInvitations",
                 query: `
                     query getInvitations($teamId: ID!) {
                         teams(filter: { teamId: $teamId }) {
@@ -93,7 +91,6 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                operationName: "createInvitation",
                 mutation: `
                     mutation createInvitation(
                         $teamId: ID!
@@ -127,8 +124,7 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                operationName: "updateInvitation",
-                query: `
+                mutation: `
                     mutation updateInvitation(
                         $invitationId: ID!
                         $input: UpdateInvitationInput!
@@ -156,8 +152,7 @@ export class InvitationClient {
     public deleteInvitation(invitationId: string): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                operationName: "deleteInvitation",
-                query: `
+                mutation: `
                     mutation deleteInvitation($invitationId: ID!) {
                         deleteInvitation(invitationId: $invitationId) {
                             id
@@ -177,8 +172,7 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                operationName: "acceptInvitation",
-                query: `
+                mutation: `
                     mutation acceptInvitation(
                         $invitationId: ID!
                         $invitationCode: String!
@@ -218,8 +212,7 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                operationName: "declineInvitation",
-                query: `
+                mutation: `
                     mutation declineInvitation(
                         $invitationId: ID!
                         $invitationCode: String!

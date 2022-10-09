@@ -2,7 +2,13 @@ import { HTTPClient } from './HTTP.client';
 
 interface QueryOptions {
     query: string;
-    operationName: string;
+    operationName?: string;
+    variables?: Record<string, any>;
+}
+
+interface MutateOptions {
+    mutation: string;
+    operationName?: string;
     variables?: Record<string, any>;
 }
 
@@ -12,12 +18,16 @@ export class GraphQLClient {
         private httpClient: HTTPClient,
     ) {}
 
-    async mutate(mutateOptions: QueryOptions): Promise<any> {
+    async mutate(mutateOptions: MutateOptions): Promise<any> {
+        const {mutation, ...others} =  mutateOptions
         const [result, errors] = await this.httpClient.request(
             this.graphQLEndpoint,
             {
                 method: 'POST',
-                body: JSON.stringify(mutateOptions),
+                body: JSON.stringify({
+                    query: mutation,
+                    ...others
+                }),
             },
         );
 
@@ -29,7 +39,8 @@ export class GraphQLClient {
             console.error(errors);
         }
 
-        return result?.data;
+        const json = JSON.parse(result || "")
+        return json?.data
     }
 
     async query(queryOptions: QueryOptions): Promise<any> {
@@ -49,6 +60,7 @@ export class GraphQLClient {
             console.error(errors);
         }
 
-        return result?.data;
+        const json = JSON.parse(result || "")
+        return json?.data
     }
 }

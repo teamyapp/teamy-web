@@ -17,7 +17,6 @@ export class TeamClient {
     public getTeamWithSprintPreviews(teamId: string): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
-                operationName: "getTeam",
                 query: `
                     query getTeam($teamId: ID!) {
                         teams(filter: { teamId: $teamId }) {
@@ -61,7 +60,6 @@ export class TeamClient {
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
-                operationName: "getTeam",
                 query: `
                     query getTeam($teamId: ID!, $taskFilter: TaskFilter) {
                         teams(filter: { teamId: $teamId }) {
@@ -105,8 +103,7 @@ export class TeamClient {
     public createTeam(team: RemoteCreateTeamInput): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
-                operationName: "createTeam",
-                query: `
+                mutation: `
                     mutation createTeam($input: CreateTeamInput!) {
                         createTeam(team: $input) {
                             id
@@ -136,8 +133,7 @@ export class TeamClient {
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
-                operationName: "updateTeam",
-                query: `
+                mutation: `
                     mutation updateTeam(
                         $teamId: ID!
                         $input: UpdateTeamInput!
@@ -160,8 +156,7 @@ export class TeamClient {
     public createTeamIconUploadSession(teamId: string): Promise<string> {
         return this.graphQLClient
             .mutate({
-                operationName: "createTeamIconUploadSession",
-                query: `
+                mutation: `
                     mutation createTeamIconUploadSession($teamId: ID!) {
                         createTeamIconUploadSession(teamId: $teamId)
                     }
@@ -179,8 +174,7 @@ export class TeamClient {
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
-                operationName: "finishTeamIconUploadSession",
-                query: `
+                mutation: `
                     mutation finishTeamIconUploadSession(
                         $teamId: ID!
                         $fileUploadSessionId: ID!

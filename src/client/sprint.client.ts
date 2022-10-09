@@ -14,7 +14,6 @@ export class SprintClient {
     public getSprintWithTaskPreviews(sprintId: string): Promise<RemoteSprint> {
         return this.graphQLClient
             .query({
-                operationName: "getSprint",
                 query: `
                     query getSprint($sprintId: ID!) {
                         sprints(filter: { sprintId: $sprintId }) {
@@ -79,8 +78,7 @@ export class SprintClient {
     ): Promise<RemoteSprint> {
         return this.graphQLClient
             .mutate({
-                operationName: "createSprint",
-                query: `
+                mutation: `
                     mutation createSprint(
                         $teamId: ID!
                         $sprint: CreateSprintInput!
@@ -119,8 +117,7 @@ export class SprintClient {
     public deleteSprint(sprintId: string): Promise<RemoteSprint> {
         return this.graphQLClient
             .mutate({
-                operationName: "deleteSprint",
-                query: `
+                mutation: `
                     mutation deleteSprint($sprintId: ID!) {
                         deleteSprint(sprintId: $sprintId) {
                             id
@@ -141,8 +138,7 @@ export class SprintClient {
     ): Promise<RemoteTask[]> {
         return this.graphQLClient
             .mutate({
-                operationName: "moveTasksToSprint",
-                query: `
+                mutation: `
                     mutation moveTasksToSprint(
                         $fromSprintId: ID!
                         $toSprintId: ID!
@@ -172,8 +168,7 @@ export class SprintClient {
     ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                operationName: "addTaskToSprint",
-                query: `
+                mutation: `
                     mutation addTaskToSprint($sprintId: ID!, $taskId: ID!) {
                         addTaskToSprint(sprintId: $sprintId, taskId: $taskId) {
                             id
@@ -195,8 +190,7 @@ export class SprintClient {
     ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                operationName: "removeTaskFromSprint",
-                query: `
+                mutation: `
                     mutation removeTaskFromSprint(
                         $sprintId: ID!
                         $taskId: ID!

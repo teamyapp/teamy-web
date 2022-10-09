@@ -13,7 +13,6 @@ export class UserClient {
     public getMeWithTeams(): Promise<RemoteUser> {
         return this.graphQLClient
             .query({
-                operationName:"getMeWithTeams",
                 query: `
                     query getMeWithTeams {
                         me {
@@ -50,7 +49,6 @@ export class UserClient {
     public getMe(): Promise<RemoteUser> {
         return this.graphQLClient
             .query({
-                operationName: "getMe",
                 query: `
                     query getMe {
                         me {
@@ -70,8 +68,7 @@ export class UserClient {
     public createUser(input: CreateUserInput): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                operationName:"createUser",
-                query: `
+                mutation: `
                     mutation createUser($input: CreateUserInput!) {
                         createUser(user: $input) {
                             id
@@ -91,8 +88,7 @@ export class UserClient {
     ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                operationName: "updateUser",
-                query: `
+                mutation: `
                     mutation updateUser(
                         $userId: ID!
                         $input: UpdateUserInput!
@@ -117,8 +113,7 @@ export class UserClient {
     public createUserProfileUploadSession(): Promise<string> {
         return this.graphQLClient
             .mutate({
-                operationName: "createUserProfileUploadSession",
-                query: `
+                mutation: `
                     mutation createUserProfileUploadSession {
                         createUserProfileUploadSession
                     }
@@ -132,8 +127,7 @@ export class UserClient {
     ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                operationName: "finishUserProfileUploadSession",
-                query:`
+                mutation:`
                     mutation finishUserProfileUploadSession(
                         $fileUploadSessionId: ID!
                     ) {

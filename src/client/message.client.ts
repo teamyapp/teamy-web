@@ -19,8 +19,7 @@ export class MessageClient {
     ): Promise<RemoteMessage> {
         return this.graphQLClient
             .mutate({
-                operationName: "createMessage",
-                query: `
+                mutation: `
                     mutation createMessage(
                         $threadId: ID!
                         $message: CreateMessageInput!
@@ -52,8 +51,7 @@ export class MessageClient {
     ): Promise<RemoteMessage> {
         return this.graphQLClient
             .mutate({
-                operationName: "updateMessage",
-                query: `
+                mutation: `
                     mutation updateMessage(
                         $messageId: ID!
                         $input: UpdateMessageInput!
@@ -80,8 +78,7 @@ export class MessageClient {
     public deleteMessage(messageId: string): Promise<RemoteMessage> {
         return this.graphQLClient
             .mutate({
-                operationName: "deleteMessage",
-                query: `
+                mutation: `
                     mutation deleteMessage($messageId: ID!) {
                         deleteMessage(messageId: $messageId) {
                             id
