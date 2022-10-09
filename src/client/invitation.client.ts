@@ -94,7 +94,7 @@ export class InvitationClient {
         return this.graphQLClient
             .mutate({
                 operationName: "createInvitation",
-                query: `
+                mutation: `
                     mutation createInvitation(
                         $teamId: ID!
                         $input: CreateInvitationInput!
