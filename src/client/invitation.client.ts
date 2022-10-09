@@ -1,5 +1,3 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import {
@@ -21,7 +19,7 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getInvitations(
                         $invitationId: ID
                         $invitationCode: String
@@ -61,7 +59,7 @@ export class InvitationClient {
     public getInvitations(teamId: string): Promise<RemoteInvitation[]> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getInvitations($teamId: ID!) {
                         teams(filter: { teamId: $teamId }) {
                             invitations {
@@ -93,7 +91,7 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation createInvitation(
                         $teamId: ID!
                         $input: CreateInvitationInput!
@@ -126,7 +124,7 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation updateInvitation(
                         $invitationId: ID!
                         $input: UpdateInvitationInput!
@@ -154,7 +152,7 @@ export class InvitationClient {
     public deleteInvitation(invitationId: string): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation deleteInvitation($invitationId: ID!) {
                         deleteInvitation(invitationId: $invitationId) {
                             id
@@ -174,7 +172,7 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation acceptInvitation(
                         $invitationId: ID!
                         $invitationCode: String!
@@ -214,7 +212,7 @@ export class InvitationClient {
     ): Promise<RemoteInvitation> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation declineInvitation(
                         $invitationId: ID!
                         $invitationCode: String!

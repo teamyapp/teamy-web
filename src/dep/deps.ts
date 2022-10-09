@@ -2,7 +2,7 @@ import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { BoundingBoxChangeEventMonitor } from '@lib/event/boundingBoxEvent';
 import { EventDetectionScheduler } from '@lib/event/scheduler';
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
-import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
+import { IdentityClient } from '@lib/identity/Identity.client';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
@@ -61,7 +61,7 @@ export function initDeps(): Deps {
     const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,
-        getAccessToken,
+        httpClient,
     );
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);

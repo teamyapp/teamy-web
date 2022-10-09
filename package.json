@@ -22,7 +22,6 @@
         "build-storybook": "build-storybook -o docs"
     },
     "dependencies": {
-        "@apollo/client": "^3.5.6",
         "@teamyapp/ext": "0.0.3",
         "classnames": "^2.3.1",
         "graphql": "^16.1.0",

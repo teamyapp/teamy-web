@@ -1,5 +1,3 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteUpdateTeamMemberInput } from '@core/client/entity/input';
@@ -15,7 +13,7 @@ export class TeamMemberClient {
     public getTeamMembers(teamId: string): Promise<RemoteTeamMember[]> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getTeamMembers($teamId: ID!) {
                         teams(filter: { teamId: $teamId }) {
                             members {
@@ -46,7 +44,7 @@ export class TeamMemberClient {
     ): Promise<RemoteTeamMember> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation updateTeamMember(
                         $teamId: ID!
                         $input: UpdateTeamMemberInput!
@@ -76,7 +74,7 @@ export class TeamMemberClient {
     ): Promise<RemoteTeamMember> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation:`
                     mutation addMemberToTeam($teamId: ID!, $memberUserId: ID!) {
                         addMemberToTeam(
                             teamId: $teamId
@@ -109,7 +107,7 @@ export class TeamMemberClient {
     ): Promise<RemoteTeamMember> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation removeMemberFromTeam(
                         $teamId: ID!
                         $memberUserId: ID!

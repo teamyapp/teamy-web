@@ -1,5 +1,3 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteCreateSprintInput } from '@core/client/entity/input';
@@ -16,7 +14,7 @@ export class SprintClient {
     public getSprintWithTaskPreviews(sprintId: string): Promise<RemoteSprint> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getSprint($sprintId: ID!) {
                         sprints(filter: { sprintId: $sprintId }) {
                             id
@@ -80,7 +78,7 @@ export class SprintClient {
     ): Promise<RemoteSprint> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation createSprint(
                         $teamId: ID!
                         $sprint: CreateSprintInput!
@@ -119,7 +117,7 @@ export class SprintClient {
     public deleteSprint(sprintId: string): Promise<RemoteSprint> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation deleteSprint($sprintId: ID!) {
                         deleteSprint(sprintId: $sprintId) {
                             id
@@ -140,7 +138,7 @@ export class SprintClient {
     ): Promise<RemoteTask[]> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation moveTasksToSprint(
                         $fromSprintId: ID!
                         $toSprintId: ID!
@@ -170,7 +168,7 @@ export class SprintClient {
     ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation addTaskToSprint($sprintId: ID!, $taskId: ID!) {
                         addTaskToSprint(sprintId: $sprintId, taskId: $taskId) {
                             id
@@ -192,7 +190,7 @@ export class SprintClient {
     ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation removeTaskFromSprint(
                         $sprintId: ID!
                         $taskId: ID!
