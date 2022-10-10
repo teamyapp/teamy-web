@@ -27,6 +27,14 @@ export class DrawerUI extends Component<Props> {
     private selectedTeamId?: number;
 
     render = () => {
+        const sortedTeams = this.props.teams.sort((team1, team2) => {
+            if (team1.name === team2.name) {
+                return team1.id - team2.id
+            }
+
+            return team1.name < team2.name ? -1 : 1
+        })
+
         return (
             <div
                 className={`${styles.Drawer} ${classNames({
@@ -46,7 +54,7 @@ export class DrawerUI extends Component<Props> {
                     </div>
                 </div>
                 <div className={styles.Teams}>
-                    {this.props.teams.map(this.renderTeam)}
+                    {sortedTeams.map(this.renderTeam)}
                     <div className={styles.CreateTeamFrame}>
                         <TooltipUI message={'Create Team'} position={'Right'}>
                             <div
