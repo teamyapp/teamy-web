@@ -23,7 +23,10 @@ import {
     taskValueOrder,
     upcomingSortOrders,
 } from '@core/config/sortOrder';
-import { flattenGroupedTasksByOwner, groupByOwners } from '@core/data/task.group';
+import {
+    flattenGroupedTasksByOwner,
+    groupByOwners,
+} from '@core/data/task.group';
 import {
     orderByEffort,
     orderById,
@@ -77,7 +80,9 @@ export class UpcomingSection extends Component<Props, State> {
     }
 
     public render() {
-        const flattenTasks = flattenGroupedTasksByOwner(groupByOwners(this.props.tasks))
+        const flattenTasks = flattenGroupedTasksByOwner(
+            groupByOwners(this.props.tasks),
+        );
         return (
             <div className={styles.TaskListSection}>
                 <DragAndDropContainer

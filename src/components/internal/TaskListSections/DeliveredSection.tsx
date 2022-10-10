@@ -13,7 +13,10 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { deliveredSectionId } from '@core/config/sections';
-import { flattenGroupedTasksByOwner, groupByOwners } from '@core/data/task.group';
+import {
+    flattenGroupedTasksByOwner,
+    groupByOwners,
+} from '@core/data/task.group';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 
@@ -42,7 +45,9 @@ interface Props {
 
 export class DeliveredSection extends Component<Props> {
     public render() {
-        const flattenTasks = flattenGroupedTasksByOwner(groupByOwners(this.props.tasks))
+        const flattenTasks = flattenGroupedTasksByOwner(
+            groupByOwners(this.props.tasks),
+        );
         return (
             <div className={`${styles.TaskListSection}`}>
                 <DragAndDropContainer

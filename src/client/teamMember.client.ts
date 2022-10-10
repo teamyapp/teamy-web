@@ -74,7 +74,7 @@ export class TeamMemberClient {
     ): Promise<RemoteTeamMember> {
         return this.graphQLClient
             .mutate({
-                mutation:`
+                mutation: `
                     mutation addMemberToTeam($teamId: ID!, $memberUserId: ID!) {
                         addMemberToTeam(
                             teamId: $teamId

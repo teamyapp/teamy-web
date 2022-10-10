@@ -23,24 +23,15 @@ import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRela
 import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
+import {
+    DeleteSprintParticipantPayload,
+    DeleteTaskAwaitForRelationPayload,
+} from '@core/storage/syncer/payload';
 
 import { ClientState } from '../states/client.state';
 import { DragTaskActivityState } from '../states/dragTaskActivity.state';
 import { TaskActivityState } from '../states/taskActivity.state';
 import { Mutation } from './mutation';
-
-class DeleteTaskAwaitForRelationPayload {
-    constructor(public awaitingTaskId: number, public awaitForTaskId: number) {}
-
-    public static fromMutationPayload(
-        json: any,
-    ): DeleteTaskAwaitForRelationPayload {
-        return new DeleteTaskAwaitForRelationPayload(
-            json.AwaitingTaskID,
-            json.AwaitForTaskID,
-        );
-    }
-}
 
 export function applyTaskMutation(
     currState: AppState,
@@ -303,6 +294,45 @@ export function applyTaskAwaitingForRelationMutation(
                             deleteInput.awaitingTaskId &&
                         relation.awaitForTaskId !== deleteInput.awaitForTaskId,
                 );
+        }
+    }
+
+    return currState;
+}
+
+export function applySprintParticipantMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create':
+        case 'Update': {
+            const newSprintParticipant =
+                SprintParticipantState.fromMutationPayload(mutation.payload);
+            currState.sprintParticipants = currState.sprintParticipants.filter(
+                (sprintParticipant) =>
+                    !(
+                        sprintParticipant.sprintId ===
+                            newSprintParticipant.sprintId &&
+                        sprintParticipant.userId === newSprintParticipant.userId
+                    ),
+            );
+            currState.sprintParticipants =
+                currState.sprintParticipants.concat(newSprintParticipant);
+            break;
+        }
+        case 'Delete': {
+            const payload = DeleteSprintParticipantPayload.fromMutationPayload(
+                mutation.payload,
+            );
+            currState.sprintParticipants = currState.sprintParticipants.filter(
+                (sprintParticipant) =>
+                    !(
+                        sprintParticipant.sprintId === payload.sprintId &&
+                        sprintParticipant.userId === payload.userId
+                    ),
+            );
+            break;
         }
     }
 

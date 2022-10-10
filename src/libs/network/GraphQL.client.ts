@@ -19,14 +19,14 @@ export class GraphQLClient {
     ) {}
 
     async mutate(mutateOptions: MutateOptions): Promise<any> {
-        const {mutation, ...others} =  mutateOptions
+        const { mutation, ...others } = mutateOptions;
         const [result, errors] = await this.httpClient.request(
             this.graphQLEndpoint,
             {
                 method: 'POST',
                 body: JSON.stringify({
                     query: mutation,
-                    ...others
+                    ...others,
                 }),
             },
         );
@@ -39,8 +39,8 @@ export class GraphQLClient {
             console.error(errors);
         }
 
-        const json = JSON.parse(result || "")
-        return json?.data
+        const json = JSON.parse(result || '');
+        return json?.data;
     }
 
     async query(queryOptions: QueryOptions): Promise<any> {
@@ -60,7 +60,7 @@ export class GraphQLClient {
             console.error(errors);
         }
 
-        const json = JSON.parse(result || "")
-        return json?.data
+        const json = JSON.parse(result || '');
+        return json?.data;
     }
 }
