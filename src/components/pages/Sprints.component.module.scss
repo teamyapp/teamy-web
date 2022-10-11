@@ -109,8 +109,11 @@
 
                                 &:hover {
                                     cursor: pointer;
-                                    outline: 3px solid #1976d2;
                                 }
+                            }
+
+                            .SelectedUserProfile {
+                                outline: 3px solid #1976d2;
                             }
 
                             .RightSection {
