@@ -186,7 +186,9 @@ export class InvitationClient {
                             joiningTeam {
                                 id
                                 members {
-                                    id
+                                    user {
+                                        id
+                                    }
                                 }
                             }
                             receiver {
