@@ -127,7 +127,7 @@ export class UserClient {
     ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation:`
+                mutation: `
                     mutation finishUserProfileUploadSession(
                         $fileUploadSessionId: ID!
                     ) {

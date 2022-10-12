@@ -43,6 +43,7 @@ import { Mutation } from './mutation';
 import {
     applyInvitationMutation,
     applyMessageMutation,
+    applySprintParticipantMutation,
     applySprintTaskMutation,
     applyTaskActivityMutation,
     applyTaskAwaitingForRelationMutation,
@@ -916,6 +917,9 @@ export class StateSyncer {
             case 'TaskActivity': {
                 appState = applyTaskActivityMutation(appState, mutation);
                 break;
+            }
+            case 'SprintParticipant': {
+                appState = applySprintParticipantMutation(appState, mutation);
             }
         }
 
