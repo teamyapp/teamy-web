@@ -2,9 +2,7 @@ import { RemoteClient } from '@core/client/entity/remoteClient';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
-import {
-    RemoteSprintParticipant
-} from '@core/client/entity/remoteSprintParticipant';
+import { RemoteSprintParticipant } from '@core/client/entity/remoteSprintParticipant';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTaskActivity } from '@core/client/entity/remoteTaskActivity';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
@@ -13,21 +11,16 @@ import { RemoteThread } from '@core/client/entity/remoteThread';
 import { RemoteUser } from '@core/client/entity/remoteUser';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { Duration } from '@core/entity/duration';
+import { TeamMember } from '@core/entity/teamMember';
 import { AppState } from '@core/storage/states/app.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
 import { toDate, toInt } from '@core/storage/states/parser';
 import { SprintState } from '@core/storage/states/sprint.state';
-import {
-    SprintParticipantState
-} from '@core/storage/states/sprintParticipant.state';
-import {
-    SprintTaskRelationState
-} from '@core/storage/states/sprintTaskRelation.state';
+import { SprintParticipantState } from '@core/storage/states/sprintParticipant.state';
+import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation.state';
 import { TaskState } from '@core/storage/states/task.state';
-import {
-    TaskAwaitForRelationState
-} from '@core/storage/states/taskAwaitForRelation.state';
+import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRelation.state';
 import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
@@ -40,7 +33,6 @@ import { ClientState } from '../states/client.state';
 import { DragTaskActivityState } from '../states/dragTaskActivity.state';
 import { TaskActivityState } from '../states/taskActivity.state';
 import { Mutation } from './mutation';
-import { TeamMember } from '@core/entity/teamMember';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -76,9 +68,9 @@ export function applySprintTaskMutation(
                 currState.sprintTaskRelations.find(
                     (sprintTaskRelationItem) =>
                         sprintTaskRelationItem.taskId ===
-                        sprintTaskRelation.taskId &&
+                            sprintTaskRelation.taskId &&
                         sprintTaskRelationItem.sprintId ===
-                        sprintTaskRelation.sprintId,
+                            sprintTaskRelation.sprintId,
                 )
             ) {
                 break;
@@ -95,9 +87,9 @@ export function applySprintTaskMutation(
                     (sprintTaskRelationItem) =>
                         !(
                             sprintTaskRelationItem.taskId ===
-                            sprintTaskRelation.taskId &&
+                                sprintTaskRelation.taskId &&
                             sprintTaskRelationItem.sprintId ===
-                            sprintTaskRelation.sprintId
+                                sprintTaskRelation.sprintId
                         ),
                 );
         }
@@ -247,13 +239,19 @@ export async function applyTeamMemberMutation(
     return currState;
 }
 
-function addOrReplaceTeamMember(currState: AppState, newTeamMember: TeamMemberState): AppState {
+function addOrReplaceTeamMember(
+    currState: AppState,
+    newTeamMember: TeamMemberState,
+): AppState {
     currState.teamMembers = currState.teamMembers.filter(
-        teamMember => !(
-            teamMember.teamId === newTeamMember.teamId &&
-            teamMember.userId === newTeamMember.userId));
+        (teamMember) =>
+            !(
+                teamMember.teamId === newTeamMember.teamId &&
+                teamMember.userId === newTeamMember.userId
+            ),
+    );
     currState.teamMembers = currState.teamMembers.concat(newTeamMember);
-    return currState
+    return currState;
 }
 
 export function applyTaskActivityMutation(
@@ -273,7 +271,7 @@ export function applyTaskActivityMutation(
             }
 
             const index = currState.taskActivities.findIndex(
-                ({taskId, teamId}) => {
+                ({ taskId, teamId }) => {
                     return (
                         teamId === updatedTaskActivity.teamId &&
                         taskId === updatedTaskActivity.taskId
@@ -316,7 +314,7 @@ export function applyTaskAwaitingForRelationMutation(
                 currState.taskAwaitForRelations.filter(
                     (relation) =>
                         relation.awaitingTaskId !==
-                        deleteInput.awaitingTaskId &&
+                            deleteInput.awaitingTaskId &&
                         relation.awaitForTaskId !== deleteInput.awaitForTaskId,
                 );
         }
@@ -338,7 +336,7 @@ export function applySprintParticipantMutation(
                 (sprintParticipant) =>
                     !(
                         sprintParticipant.sprintId ===
-                        newSprintParticipant.sprintId &&
+                            newSprintParticipant.sprintId &&
                         sprintParticipant.userId === newSprintParticipant.userId
                     ),
             );
