@@ -62,6 +62,6 @@ export function contains(keyword: string): Filter<Task> {
     return (task: Task) =>
         task.goal.toLocaleLowerCase().includes(lowerKeyword) ||
         task.context?.toLocaleLowerCase().includes(lowerKeyword) ||
-        String(task.id).includes(lowerKeyword) || 
+        String(task.id).includes(lowerKeyword) ||
         false;
 }

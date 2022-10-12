@@ -196,12 +196,12 @@ export async function applyTeamMemberMutation(
 ): Promise<AppState> {
     switch (mutation.mutationType) {
         case 'Create': {
-            const teamMember = TeamMemberState.fromMutationPayload(
+            const addedTeamMember = TeamMemberState.fromMutationPayload(
                 mutation.payload,
-            )!;
-            currState.teamMembers = currState.teamMembers.concat(teamMember);
+            );
+            currState = addOrReplaceTeamMember(currState, addedTeamMember);
             const remoteTeamMembers = await teamMemberClient.getTeamMembers(
-                `${teamMember.teamId}`,
+                `${addedTeamMember.teamId}`,
             );
             for (const remoteTeamMember of remoteTeamMembers) {
                 currState = mergeUser(currState, remoteTeamMember.user);
@@ -209,10 +209,17 @@ export async function applyTeamMemberMutation(
 
             break;
         }
+        case 'Update': {
+            const updatedTeamMember = TeamMemberState.fromMutationPayload(
+                mutation.payload,
+            );
+            currState = addOrReplaceTeamMember(currState, updatedTeamMember);
+            break;
+        }
         case 'Delete': {
             const deletedTeamMember = TeamMemberState.fromMutationPayload(
                 mutation.payload,
-            )!;
+            );
             currState.teamMembers = currState.teamMembers.filter(
                 (teamMember) =>
                     !(
@@ -228,6 +235,21 @@ export async function applyTeamMemberMutation(
         }
     }
 
+    return currState;
+}
+
+function addOrReplaceTeamMember(
+    currState: AppState,
+    newTeamMember: TeamMemberState,
+): AppState {
+    currState.teamMembers = currState.teamMembers.filter(
+        (teamMember) =>
+            !(
+                teamMember.teamId === newTeamMember.teamId &&
+                teamMember.userId === newTeamMember.userId
+            ),
+    );
+    currState.teamMembers = currState.teamMembers.concat(newTeamMember);
     return currState;
 }
 
