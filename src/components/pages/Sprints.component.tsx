@@ -509,7 +509,7 @@ export class SprintsComponent extends Component<Props, State> {
         const filters = Array.from(this.state.selectedTaskOwners).map(
             (key: string): Filter<Task> => {
                 if (key === userUnassigned) {
-                    return (task: Task) => !task.owner || task.owner.id === -1;
+                    return (task: Task) => !task.owner;
                 } else if (key.startsWith(userPrefix)) {
                     const parts = key.split('/');
                     return ownedBy(parseInt(parts[1]));

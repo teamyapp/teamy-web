@@ -10,7 +10,6 @@ import { TeamMember } from '@core/entity/teamMember';
 import styles from './FilterList.component.module.scss';
 
 
-
 const DATE_PICKER_Z_INDEX = 101;
 
 interface Props {
