@@ -105,6 +105,10 @@ export class FilterListComponent extends Component<Props> {
         );
     };
 
+    private onSaveFiltersClick = () => {
+        console.log('onSaveFiltersClick');
+    };
+
     private onEndDateChange = (date?: Date) => {
         const startDate = this.startDataPickerRef.current?.value || null;
         this.props.onTaskFiltersDataChange?.call(

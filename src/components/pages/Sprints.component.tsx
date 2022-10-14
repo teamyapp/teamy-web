@@ -383,10 +383,11 @@ export class SprintsComponent extends Component<Props, State> {
                                 <div className={styles.ParticipantList}>
                                     <div className={styles.Participant}>
                                         <div
+                                        
                                             className={`${
                                                 styles.AllParticipants
                                             }  ${classNames({
-                                                [styles.SelectedUserProfile]:
+                                                [styles.Selected]:
                                                     this.state.selectedTaskOwners.has(
                                                         userAll,
                                                     ),
@@ -410,7 +411,7 @@ export class SprintsComponent extends Component<Props, State> {
                                             className={`${
                                                 styles.EmptySelectionFace
                                             }  ${classNames({
-                                                [styles.SelectedUserProfile]:
+                                                [styles.Selected]:
                                                     this.state.selectedTaskOwners.has(
                                                         userUnassigned,
                                                     ),
@@ -538,7 +539,7 @@ export class SprintsComponent extends Component<Props, State> {
             <div key={index} className={styles.Participant}>
                 <div
                     className={`${styles.UserProfile} ${classNames({
-                        [styles.SelectedUserProfile]:
+                        [styles.Selected]:
                             this.state.selectedTaskOwners.has(userIdentity),
                     })}`}
                     onClick={this.onTaskOwnersChange(userIdentity)}
