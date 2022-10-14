@@ -383,7 +383,7 @@ export class SprintsComponent extends Component<Props, State> {
                                 <div className={styles.ParticipantList}>
                                     <div className={styles.Participant}>
                                         <div
-                                        
+
                                             className={`${
                                                 styles.AllParticipants
                                             }  ${classNames({
@@ -469,13 +469,12 @@ export class SprintsComponent extends Component<Props, State> {
 
     private onTaskOwnersChange = (value: string) => {
         return () => {
-            const hasValue = this.state.selectedTaskOwners.has(value);
             if (value === userAll) {
                 this.state.selectedTaskOwners.clear();
             } else {
                 this.state.selectedTaskOwners.delete(userAll);
             }
-
+            const hasValue = this.state.selectedTaskOwners.has(value);
             if (!hasValue) {
                 this.state.selectedTaskOwners.add(value);
             } else {
