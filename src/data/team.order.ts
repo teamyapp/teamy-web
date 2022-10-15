@@ -12,5 +12,3 @@ export const orderByName: SortOrder<Team> = (
     return team1.name < team2.name ? -1 : 1
 };
 
-
-
