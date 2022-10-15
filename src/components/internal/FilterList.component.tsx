@@ -1,18 +1,14 @@
-import React, { ChangeEvent, Component, createRef } from 'react';
-
-import { Filter, or } from '@lib/data/filter';
+import React, { Component, createRef } from 'react';
+import { between } from '@core/data/task.filter';
 import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { SpacerUI } from '@lib/ui/Spacer';
-
-import { userAll, userPrefix, userUnassigned } from '@core/config/filter';
-import { allTasks, between, ownedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
 import { Task } from '@core/entity/task';
 import { TeamMember } from '@core/entity/teamMember';
 
 import styles from './FilterList.component.module.scss';
-import { getUserShortName } from './format';
+
 
 const DATE_PICKER_Z_INDEX = 101;
 
@@ -25,20 +21,9 @@ interface Props {
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
 }
 
-interface State {
-    selectedTaskOwners: Set<string>;
-}
-
-export class FilterListComponent extends Component<Props, State> {
+export class FilterListComponent extends Component<Props> {
     private startDataPickerRef = createRef<DateTextPickerUI>();
     private endDataPickerRef = createRef<DateTextPickerUI>();
-
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            selectedTaskOwners: props.taskFiltersData.selectedTaskOwners,
-        };
-    }
 
     render() {
         return (
@@ -57,13 +42,10 @@ export class FilterListComponent extends Component<Props, State> {
                 </div>
                 <div className={styles.Content}>
                     {this.renderTimeRangeFilterGroup()}
-                    {this.renderTaskOwnerFilterGroup()}
                 </div>
             </div>
         );
     }
-
-    public async componentDidMount() {}
 
     private renderTimeRangeFilterGroup() {
         return (
@@ -95,99 +77,6 @@ export class FilterListComponent extends Component<Props, State> {
         );
     }
 
-    private renderTaskOwnerFilterGroup() {
-        return (
-            <div className={styles.Group}>
-                <div className={styles.GroupName}>Task Owner:</div>
-                <div className={styles.GroupContent}>
-                    <div className={`${styles.Input} ${styles.Option}`}>
-                        <input
-                            type={'checkbox'}
-                            className={styles.Checkbox}
-                            value={userAll}
-                            checked={this.state.selectedTaskOwners.has(userAll)}
-                            onChange={this.onTaskOwnersCheckBoxChange}
-                        />
-                        <div className={styles.Label}>All</div>
-                    </div>
-                    {this.props.teamMembers.map(this.renderOption)}
-                    <div className={`${styles.Input} ${styles.Option}`}>
-                        <input
-                            type={'checkbox'}
-                            className={styles.Checkbox}
-                            value={userUnassigned}
-                            checked={this.state.selectedTaskOwners.has(
-                                userUnassigned,
-                            )}
-                            onChange={this.onTaskOwnersCheckBoxChange}
-                        />
-                        <div className={styles.Label}>Unassigned</div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    private renderOption = (teamMember: TeamMember, index: number) => {
-        const user = teamMember.user;
-        return (
-            <div className={`${styles.Input} ${styles.Option}`} key={index}>
-                <input
-                    type={'checkbox'}
-                    className={styles.Checkbox}
-                    value={`${userPrefix}${user.id}`}
-                    checked={this.state.selectedTaskOwners.has(
-                        `${userPrefix}${user.id}`,
-                    )}
-                    onChange={this.onTaskOwnersCheckBoxChange}
-                />
-                <div className={styles.Label}>
-                    {getUserShortName(user.firstName, user.lastName)}
-                </div>
-            </div>
-        );
-    };
-
-    private onTaskOwnersCheckBoxChange = (
-        event: ChangeEvent<HTMLInputElement>,
-    ) => {
-        const value = event.currentTarget.value;
-        const hasValue = this.state.selectedTaskOwners.has(value);
-        if (value === userAll) {
-            this.state.selectedTaskOwners.clear();
-        } else {
-            this.state.selectedTaskOwners.delete(userAll);
-        }
-
-        if (!hasValue) {
-            this.state.selectedTaskOwners.add(value);
-        } else {
-            this.state.selectedTaskOwners.delete(value);
-        }
-
-        this.forceUpdate();
-        this.props.onTaskFiltersDataChange?.call(
-            null,
-            Object.assign<any, TaskFiltersData, Partial<TaskFiltersData>>(
-                {},
-                this.props.taskFiltersData,
-                {
-                    selectedTaskOwners: this.state.selectedTaskOwners,
-                },
-            ),
-        );
-        this.props.onTaskFiltersChange?.call(
-            null,
-            Object.assign<any, TaskFilters, Partial<TaskFilters>>(
-                {},
-                this.props.taskFilters,
-                {
-                    taskOwnerFilter: this.getTaskOwnerFilter(),
-                },
-            ),
-        );
-    };
-
     private onStartDateChange = (date?: Date) => {
         const endDate = this.endDataPickerRef.current?.value || null;
         this.props.onTaskFiltersDataChange?.call(
@@ -214,6 +103,10 @@ export class FilterListComponent extends Component<Props, State> {
                 },
             ),
         );
+    };
+
+    private onSaveFiltersClick = () => {
+        console.log('onSaveFiltersClick');
     };
 
     private onEndDateChange = (date?: Date) => {
@@ -243,28 +136,4 @@ export class FilterListComponent extends Component<Props, State> {
             ),
         );
     };
-
-    private onSaveFiltersClick = () => {
-        console.log('onSaveFiltersClick');
-    };
-
-    private getTaskOwnerFilter(): Filter<Task> {
-        if (this.state.selectedTaskOwners.has(userAll)) {
-            return allTasks;
-        }
-
-        const filters = Array.from(this.state.selectedTaskOwners).map(
-            (key: string): Filter<Task> => {
-                if (key === userUnassigned) {
-                    return (task: Task) => !task.owner || task.owner.id === -1;
-                } else if (key.startsWith(userPrefix)) {
-                    const parts = key.split('/');
-                    return ownedBy(parseInt(parts[1]));
-                } else {
-                    return allTasks;
-                }
-            },
-        );
-        return or(...filters);
-    }
 }

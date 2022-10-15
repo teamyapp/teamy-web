@@ -297,6 +297,9 @@ export class AppComponent extends Component<Props, State> {
                                                     onCreateSprintClick={
                                                         this.onCreateSprintClick
                                                     }
+                                                    onTaskFiltersChange={
+                                                        this.onTaskFiltersChange
+                                                    }
                                                 />
                                             </Route>
                                         </div>

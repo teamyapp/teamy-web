@@ -109,6 +109,10 @@
 
                                 &:hover {
                                     cursor: pointer;
+                                    outline: 3px solid rgba(25, 118, 210, 0.5)
+                                }
+
+                                &.Selected {
                                     outline: 3px solid #1976d2;
                                 }
                             }

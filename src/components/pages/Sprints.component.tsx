@@ -1,8 +1,9 @@
-import React, { Component, ReactNode, createRef } from 'react';
 
+import React, { Component, ReactNode, createRef } from 'react';
+import classNames from 'classnames';
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { and } from '@lib/data/filter';
+import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -12,6 +13,7 @@ import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
+import { userAll, userPrefix, userUnassigned } from '@core/config/filter';
 import {
     getSprintId,
     getTabId,
@@ -28,6 +30,7 @@ import {
 } from '@core/config/sections';
 import { taskUrgencyOrder } from '@core/config/sortOrder';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
+import { allTasks, ownedBy } from '@core/data/task.filter';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { Duration } from '@core/entity/duration';
@@ -68,6 +71,7 @@ interface Props {
     ) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onCreateSprintClick?: () => void;
+    onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
 }
 
 interface State {
@@ -78,6 +82,7 @@ interface State {
     sprintParticipants: SprintParticipant[];
     receivingSectionId?: string;
     sortOrders: SortOrders;
+    selectedTaskOwners: Set<string>;
 }
 
 const acceptedRoutePatterns = [sprintsRoutePattern, sprintTabRoutePattern];
@@ -110,6 +115,7 @@ export class SprintsComponent extends Component<Props, State> {
             sortOrders: {
                 upcoming: taskUrgencyOrder,
             },
+            selectedTaskOwners: new Set<string>([userAll]),
         };
     }
 
@@ -376,7 +382,20 @@ export class SprintsComponent extends Component<Props, State> {
                                 </div>
                                 <div className={styles.ParticipantList}>
                                     <div className={styles.Participant}>
-                                        <div className={styles.AllParticipants}>
+                                        <div
+
+                                            className={`${
+                                                styles.AllParticipants
+                                            }  ${classNames({
+                                                [styles.Selected]:
+                                                    this.state.selectedTaskOwners.has(
+                                                        userAll,
+                                                    ),
+                                            })}`}
+                                            onClick={this.onTaskOwnersChange(
+                                                userAll,
+                                            )}
+                                        >
                                             <MaterialIconUI>
                                                 group_work
                                             </MaterialIconUI>
@@ -389,9 +408,17 @@ export class SprintsComponent extends Component<Props, State> {
                                     </div>
                                     <div className={styles.Participant}>
                                         <div
-                                            className={
+                                            className={`${
                                                 styles.EmptySelectionFace
-                                            }
+                                            }  ${classNames({
+                                                [styles.Selected]:
+                                                    this.state.selectedTaskOwners.has(
+                                                        userUnassigned,
+                                                    ),
+                                            })}`}
+                                            onClick={this.onTaskOwnersChange(
+                                                userUnassigned,
+                                            )}
                                         >
                                             <MaterialIconUI>
                                                 face
@@ -440,6 +467,61 @@ export class SprintsComponent extends Component<Props, State> {
         }
     }
 
+    private onTaskOwnersChange = (value: string) => {
+        return () => {
+            if (value === userAll) {
+                this.state.selectedTaskOwners.clear();
+            } else {
+                this.state.selectedTaskOwners.delete(userAll);
+            }
+
+            const hasValue = this.state.selectedTaskOwners.has(value);
+            if (!hasValue) {
+                this.state.selectedTaskOwners.add(value);
+            } else {
+                this.state.selectedTaskOwners.delete(value);
+            }
+
+            if (!this.state.selectedTaskOwners.size) {
+                this.state.selectedTaskOwners.add(userAll)
+            }
+
+            this.forceUpdate();
+            this.props.onTaskFiltersChange?.call(
+                null,
+                Object.assign<any, TaskFilters, Partial<TaskFilters>>(
+                    {},
+                    this.props.taskFilters,
+                    {
+                        taskOwnerFilter: this.getTaskOwnerFilter(),
+                    },
+                ),
+            );
+        };
+    };
+
+    private getTaskOwnerFilter(): Filter<Task> {
+        if (
+            this.state.selectedTaskOwners.has(userAll)
+        ) {
+            return allTasks;
+        }
+
+        const filters = Array.from(this.state.selectedTaskOwners).map(
+            (key: string): Filter<Task> => {
+                if (key === userUnassigned) {
+                    return (task: Task) => !task.owner;
+                } else if (key.startsWith(userPrefix)) {
+                    const parts = key.split('/');
+                    return ownedBy(parseInt(parts[1]));
+                } else {
+                    return allTasks;
+                }
+            },
+        );
+        return or(...filters);
+    }
+
     private renderParticipant = (
         participant: SprintParticipant,
         index: number,
@@ -452,9 +534,16 @@ export class SprintsComponent extends Component<Props, State> {
         const unusedBandwidthReadable =
             participant.unusedBandwidth.toReadable();
         const totalBandwidthReadable = participant.totalBandwidth.toReadable();
+        const userIdentity = `${userPrefix}${user.id}`;
         return (
             <div key={index} className={styles.Participant}>
-                <div className={styles.UserProfile}>
+                <div
+                    className={`${styles.UserProfile} ${classNames({
+                        [styles.Selected]:
+                            this.state.selectedTaskOwners.has(userIdentity),
+                    })}`}
+                    onClick={this.onTaskOwnersChange(userIdentity)}
+                >
                     <UserProfileUI user={user} />
                 </div>
                 <div className={styles.RightSection}>
