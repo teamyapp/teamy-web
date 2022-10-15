@@ -1,3 +1,1 @@
-import { Task } from '@core/entity/task';
-
-export type SortOrder = (task1: Task, task2: Task) => number;
+export type SortOrder<T> = (entity1: T, entity2: T) => number;
