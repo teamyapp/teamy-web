@@ -474,6 +474,7 @@ export class SprintsComponent extends Component<Props, State> {
             } else {
                 this.state.selectedTaskOwners.delete(userAll);
             }
+
             const hasValue = this.state.selectedTaskOwners.has(value);
             if (!hasValue) {
                 this.state.selectedTaskOwners.add(value);
