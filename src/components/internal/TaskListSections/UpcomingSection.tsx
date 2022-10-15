@@ -196,7 +196,7 @@ export class UpcomingSection extends Component<Props, State> {
         return newGroupedTasks;
     }
 
-    private getSortOrder(): SortOrder {
+    private getSortOrder(): SortOrder<Task> {
         switch (this.props.sortOrder) {
             case taskPriorityOrder:
                 return orderByPriority;

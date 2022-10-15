@@ -8,6 +8,7 @@ import { Team } from '@core/entity/team';
 
 import styles from './Drawer.module.scss';
 import { TeamContextMenuComponent } from './TeamContextMenu.component';
+import { orderByName } from '@core/data/team.order';
 
 interface Props {
     teams: Team[];
@@ -46,7 +47,7 @@ export class DrawerUI extends Component<Props> {
                     </div>
                 </div>
                 <div className={styles.Teams}>
-                    {this.props.teams.map(this.renderTeam)}
+                    {this.props.teams.sort(orderByName).map(this.renderTeam)}
                     <div className={styles.CreateTeamFrame}>
                         <TooltipUI message={'Create Team'} position={'Right'}>
                             <div
