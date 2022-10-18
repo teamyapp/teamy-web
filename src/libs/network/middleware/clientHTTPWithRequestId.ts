@@ -5,9 +5,9 @@ import { Result } from '@lib/error/result';
 
 import { HTTPClient } from '../HTTP.client';
 import { REQUEST_ID_HEADER } from './headers';
-import { HTTPClientMiddleware } from './middleware';
+import { Middleware } from '../../middleware/middleware';
 
-export const clientHTTPWithRequestId: HTTPClientMiddleware = (
+export const clientHTTPWithRequestId: Middleware<HTTPClient> = (
     httpClient: HTTPClient,
 ): HTTPClient => {
     return {

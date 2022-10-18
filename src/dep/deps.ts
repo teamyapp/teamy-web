@@ -4,17 +4,25 @@ import { EventDetectionScheduler } from '@lib/event/scheduler';
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { BuiltInRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
+import { WithMiddlewares } from '@lib/middleware/middleware';
 import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { HTTPClient } from '@lib/network/HTTP.client';
 import { clientHTTPWithIdentity } from '@lib/network/middleware/clientHTTPWithIdentity';
+import { clientHTTPWithLogger } from '@lib/network/middleware/clientHTTPWithLogger';
 import { clientHTTPWithRequestId } from '@lib/network/middleware/clientHTTPWithRequestId';
 import { clientHTTPWithRetry } from '@lib/network/middleware/clientHTTPWithRetry';
-import { httpClientWithMiddlewares } from '@lib/network/middleware/middleware';
 import { PubSub } from '@lib/pubSub/pubSub';
 import { ExponentialBackoff } from '@lib/retry/backoff/exponential';
 import { MaxCountRetry } from '@lib/retry/maxCount';
 import { Router, createBrowserRouter } from '@lib/router/router';
+import { BuiltInRuntime } from '@lib/runtime/runtime';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
+import { Logger } from '@lib/telemetry/Logger';
+import { ObsClient } from '@lib/telemetry/ObsClient';
+import { RawLogger } from '@lib/telemetry/RawLogger';
+import { logWithContext } from '@lib/telemetry/middleware/logWithContext';
 
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
@@ -34,8 +42,6 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { BuiltInRuntime } from '@lib/runtime/runtime';
-import { BuiltInRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -54,22 +60,36 @@ export interface Deps {
 export function initDeps(): Deps {
     const env = getEnvironment();
     const config = getConfig(env);
-    const httpClient = httpClientWithMiddlewares(new FetchHTTPClient(), [
+    const httpClient = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         clientHTTPWithRequestId,
         clientHTTPWithIdentity,
         clientHTTPWithRetry(
-            new MaxCountRetry(new BuiltInRuntime(), new ExponentialBackoff(new BuiltInRandomNumberGenerator()), 10),
+            new MaxCountRetry(
+                new BuiltInRuntime(),
+                new ExponentialBackoff(new BuiltInRandomNumberGenerator()),
+                10,
+            ),
         ),
+    ]);
+    const obsClient = new ObsClient(config.cloudWebAPIEndpoint, httpClient);
+    const logger = WithMiddlewares<Logger>(new RawLogger('Info', obsClient), [
+        logWithContext,
+    ]);
+
+    const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
+        clientHTTPWithRequestId,
+        clientHTTPWithIdentity,
+        clientHTTPWithLogger(logger),
     ]);
     const identityClient = new IdentityClient(
         env,
         signInFinishPath,
         absoluteRootPath,
-        httpClient,
+        httpWithLogger,
     );
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,
-        httpClient,
+        httpWithLogger,
     );
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);
@@ -82,7 +102,7 @@ export function initDeps(): Deps {
     const graphSource = new GraphSource(localStore);
     const stateSyncClient = new StateSyncClient(
         config.servicesWebAPIEndpoint,
-        httpClient,
+        httpWithLogger,
     );
     const stateSyncer = new StateSyncer(
         stateSyncClient,

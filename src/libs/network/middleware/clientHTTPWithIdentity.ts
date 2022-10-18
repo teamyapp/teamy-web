@@ -3,9 +3,9 @@ import { Result } from '@lib/error/result';
 import { getAccessToken } from '@lib/identity/Identity.client';
 
 import { HTTPClient } from '../HTTP.client';
-import { HTTPClientMiddleware } from './middleware';
+import { Middleware } from '../../middleware/middleware';
 
-export const clientHTTPWithIdentity: HTTPClientMiddleware = (
+export const clientHTTPWithIdentity: Middleware<HTTPClient> = (
     httpClient: HTTPClient,
 ): HTTPClient => {
     return {
