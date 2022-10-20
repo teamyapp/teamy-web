@@ -8,6 +8,7 @@ import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { clientHTTPWithIdentity } from '@lib/network/middleware/clientHTTPWithIdentity';
 import { clientHTTPWithRequestId } from '@lib/network/middleware/clientHTTPWithRequestId';
+import { clientHTTPWithExponentialRetry } from '@lib/network/middleware/clientHTTPWithExponentialRetry';
 import { httpClientWithMiddlewares } from '@lib/network/middleware/middleware';
 import { PubSub } from '@lib/pubSub/pubSub';
 import { Router, createBrowserRouter } from '@lib/router/router';
@@ -48,9 +49,11 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
+    const config = getConfig(env);
     const httpClient = httpClientWithMiddlewares(new FetchHTTPClient(), [
         clientHTTPWithRequestId,
         clientHTTPWithIdentity,
+        clientHTTPWithExponentialRetry()
     ]);
     const identityClient = new IdentityClient(
         env,
@@ -58,7 +61,6 @@ export function initDeps(): Deps {
         absoluteRootPath,
         httpClient,
     );
-    const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,
         httpClient,
