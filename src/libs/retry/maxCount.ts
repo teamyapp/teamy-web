@@ -11,7 +11,6 @@ export class MaxCount implements Retry {
         return new Promise(async (resolve) => {
             while(retries < this.maxCount) {
                 retries++
-
                 err = await execute()
                 if (err === null) {
                     this.backoff.onSuccess()
@@ -25,7 +24,5 @@ export class MaxCount implements Retry {
 
             resolve(([retries, err]))
         })        
-        
     }
-
 }

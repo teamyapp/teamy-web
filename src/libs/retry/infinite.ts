@@ -7,7 +7,6 @@ export class Infinite implements Retry {
 
     public withRetry(execute: () => Promise<Error | null>): Promise<[number, Error | null]> {
         let retries = 0
-
         return new Promise(async (resolve) => {
             while(true) {
                 retries++

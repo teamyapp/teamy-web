@@ -1,6 +1,6 @@
 import { BackOff } from '.';
 
-export class Exponential implements BackOff {
+export class ExponentialBackoff implements Backoff {
     constructor(
         private minDelay: number,
         private maxDelay: number,
@@ -23,8 +23,7 @@ export class Exponential implements BackOff {
 
     public onFailure() {
         const scaled = Math.pow(this.nextDelay, this.scalingFactor);
-       
-        this.nextDelay = Math.min(scaled + this.randOffset(), this.maxDelay);
+        this.nextDelay = Math.min(scaled, this.maxDelay) + this.randOffset();
     }
 
     public delay() {

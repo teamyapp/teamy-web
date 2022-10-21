@@ -3,7 +3,6 @@ export interface Clock {
     wait(timeout: number): Promise<void>
 }
 
-
 export class BrowserClock implements Clock {
     now(): Date {
         return new Date()

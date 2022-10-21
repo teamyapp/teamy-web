@@ -20,17 +20,14 @@ export class Timeout implements Retry {
                     return
                 }
                 
-                if (this.clock.now().getTime() >= expiredAt) {
+                this.backoff.onFailure();
+                if (this.clock.now().getTime() + this.backoff.delay() >= expiredAt) {
                     break
                 }
 
-                this.backoff.onFailure()
-                await this.clock.wait(this.backoff.delay())
             }
 
             resolve(([retries, err]))
         })        
-        
     }
-
 }

@@ -6,11 +6,10 @@ import { BrowserClock } from '@lib/retry/clock';
 import { HTTPClient } from '../HTTP.client';
 import { HTTPClientMiddleware } from './middleware';
 
-const backoff = new ExponentialBuilder().build()
+const backoff = new ExponentialBackoffBuilder().build()
 const clock = new BrowserClock()
-
-export function clientHTTPWithExponentialRetry(
-    maxRetries: number = 10,
+Declare retry class here.
+export function clientHTTPWithRetry(
 ): HTTPClientMiddleware {
     return (httpClient: HTTPClient): HTTPClient => {
         return {
@@ -32,7 +31,6 @@ export function clientHTTPWithExponentialRetry(
                             url,
                             options,
                         );
-
                         const error = result[1]
                         if (error === null) {
                             backoff.onSuccess()
