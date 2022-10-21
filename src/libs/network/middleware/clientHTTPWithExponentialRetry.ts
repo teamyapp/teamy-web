@@ -1,12 +1,13 @@
 import { Errors } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
-import { wait } from '@lib/retry/retry';
 import { ExponentialBuilder } from '@lib/retry/backoff/exponential';
+import { BrowserClock } from '@lib/retry/clock';
 
 import { HTTPClient } from '../HTTP.client';
 import { HTTPClientMiddleware } from './middleware';
 
 const backoff = new ExponentialBuilder().build()
+const clock = new BrowserClock()
 
 export function clientHTTPWithExponentialRetry(
     maxRetries: number = 10,
@@ -40,7 +41,7 @@ export function clientHTTPWithExponentialRetry(
                         } 
                         
                         backoff.onFailure()
-                        await wait(backoff.delay());
+                        await clock.wait(backoff.delay());
                     }
 
                     resolve(result)
