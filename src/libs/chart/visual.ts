@@ -108,7 +108,6 @@ export function makeLabels(
     const labelTextMeter = new TextMeter(ctx, '16px bold serif');
     for (let index = 0; index < yLabels.length; index++) {
         const yLabel = yLabels[index];
-
         const textMetrics = labelTextMeter.measureText(yLabel);
         const yLabelSize = {
             width: textMetrics.width,
@@ -270,7 +269,7 @@ export function makeDataPointMarkers(
     dataPoints: DataPoint[],
 ): Drawable {
     const drawables: Drawable[] = [];
-    for (let dataPoint of dataPoints) {
+    for (const dataPoint of dataPoints) {
         const markerSize: Size = {
             width: 8,
             height: 8,
