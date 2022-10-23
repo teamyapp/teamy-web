@@ -172,8 +172,9 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                             validateNewImage={this.validateTeamIconImage}
                         />
                     </div>
-                    <div className={styles.TeamIdSection}>
-                        Id: {this.state.team?.id}
+                    <div className={styles.IdSection}>
+                        <div>ID:</div>
+                        <div className={styles.Id}>{this.state.team?.id}</div>
                     </div>
                     <div className={styles.TeamNameSection}>
                         <TextFieldUI
