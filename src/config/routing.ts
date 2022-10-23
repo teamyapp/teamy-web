@@ -27,6 +27,7 @@ export const invitationRoutePattern = `${rootRoutePattern}invitation`;
 export const sprintsRoutePattern = `${teamRoutePattern}/sprints`;
 export const sprintRoutePattern = `${sprintsRoutePattern}/{${sprintIdParam}}`;
 export const sprintTabRoutePattern = `${sprintRoutePattern}/{${tabIdParam}}`;
+export const insightsRoutePattern = `${teamRoutePattern}/insights`;
 export const cloudRoutePattern = `${rootRoutePattern}cloud`;
 export const signUpRoutePattern = `${rootRoutePattern}sign-up`;
 export const signInRoutePattern = `${cloudRoutePattern}/identity/sign-in`;
