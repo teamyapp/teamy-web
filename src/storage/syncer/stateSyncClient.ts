@@ -1,4 +1,4 @@
-import { Errors } from '@lib/error/errors';
+import { CustomError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { HTTPClient } from '@lib/network/HTTP.client';
 
@@ -10,7 +10,7 @@ export class StateSyncClient {
 
     public sendInitialStateIsReady(
         clientId: number,
-    ): Promise<Result<string, Errors>> {
+    ): Promise<Result<string, CustomError>> {
         return this.httpClient.request(
             `${this.connectionUrl}/real-time-state-sync/clients/${clientId}/initial-state-ready`,
             {

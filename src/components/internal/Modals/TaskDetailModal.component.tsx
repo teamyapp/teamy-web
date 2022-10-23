@@ -19,7 +19,7 @@ import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
-import { Duration } from '@core/entity/duration';
+import { Duration } from '@lib/retry/duration';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/storage/graph/graphSource';

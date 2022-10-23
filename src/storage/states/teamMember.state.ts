@@ -1,4 +1,4 @@
-import { Duration, MILLIS_IN_NANOS } from '@core/entity/duration';
+import { Duration, MILLIS_IN_NANOS } from '@lib/retry/duration';
 import { toDate } from '@core/storage/states/parser';
 
 export class TeamMemberState {

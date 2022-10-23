@@ -1,5 +1,7 @@
+import { Duration } from "../duration"
+
 export interface BackOff {
 	onSuccess: () => void
 	onFailure: () => void
-	delay: () => number
+	delay: () => Duration
 }

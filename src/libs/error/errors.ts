@@ -9,3 +9,12 @@ export enum Errors {
     ServerInternalError,
     NotImplemented,
 }
+
+
+export class CustomError extends Error {
+    constructor(public errors: Errors, public message:  string = "") {
+        super(message)
+    }
+}
+
+

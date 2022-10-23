@@ -15,7 +15,7 @@ import { Point } from '@lib/ui/position';
 import { invitationLink } from '@core/config/routing';
 import { orderByStatus } from '@core/data/invitation.order';
 import { Deps } from '@core/dep/deps';
-import { Duration } from '@core/entity/duration';
+import { Duration } from '@lib/retry/duration';
 import { Invitation } from '@core/entity/invitation';
 import { Team } from '@core/entity/team';
 import { TeamMember } from '@core/entity/teamMember';

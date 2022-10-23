@@ -8,7 +8,7 @@ import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { clientHTTPWithIdentity } from '@lib/network/middleware/clientHTTPWithIdentity';
 import { clientHTTPWithRequestId } from '@lib/network/middleware/clientHTTPWithRequestId';
-import { clientHTTPWithExponentialRetry } from '@lib/network/middleware/clientHTTPWithExponentialRetry';
+import { clientHTTPWithRetry } from '@lib/network/middleware/clientHTTPWithRetry';
 import { httpClientWithMiddlewares } from '@lib/network/middleware/middleware';
 import { PubSub } from '@lib/pubSub/pubSub';
 import { Router, createBrowserRouter } from '@lib/router/router';
@@ -32,6 +32,9 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { MaxCount } from '@lib/retry/maxCount';
+import { BrowserClock } from '@lib/retry/clock';
+import { Exponential } from '@lib/retry/backoff/exponential';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -53,7 +56,7 @@ export function initDeps(): Deps {
     const httpClient = httpClientWithMiddlewares(new FetchHTTPClient(), [
         clientHTTPWithRequestId,
         clientHTTPWithIdentity,
-        clientHTTPWithExponentialRetry()
+        clientHTTPWithRetry(new MaxCount(new BrowserClock(), new Exponential(), 10))
     ]);
     const identityClient = new IdentityClient(
         env,

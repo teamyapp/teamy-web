@@ -14,7 +14,7 @@ import { TooltipUI } from '@lib/ui/Tooltip';
 import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
-import { Duration } from '@core/entity/duration';
+import { Duration } from '@lib/retry/duration';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';

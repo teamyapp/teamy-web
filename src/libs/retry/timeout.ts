@@ -1,5 +1,5 @@
 import { Retry } from "./retry";
-import { BackOff } from "./backoff";
+import { BackOff } from "./backoff/backoff";
 import { Clock } from "./clock";
 
 export class Timeout implements Retry {
@@ -21,7 +21,7 @@ export class Timeout implements Retry {
                 }
                 
                 this.backoff.onFailure();
-                if (this.clock.now().getTime() + this.backoff.delay() >= expiredAt) {
+                if (this.clock.now().getTime() + this.backoff.delay().totalMilliSeconds >= expiredAt) {
                     break
                 }
 

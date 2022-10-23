@@ -14,7 +14,7 @@ import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
-import { Duration } from '@core/entity/duration';
+import { Duration } from '@lib/retry/duration';
 import { TaskFilter } from '@core/entity/filters';
 import {
     CreateInvitationInput,

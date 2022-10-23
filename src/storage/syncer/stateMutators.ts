@@ -10,7 +10,7 @@ import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 import { RemoteThread } from '@core/client/entity/remoteThread';
 import { RemoteUser } from '@core/client/entity/remoteUser';
 import { TeamMemberClient } from '@core/client/teamMember.client';
-import { Duration } from '@core/entity/duration';
+import { Duration } from '@lib/retry/duration';
 import { AppState } from '@core/storage/states/app.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';

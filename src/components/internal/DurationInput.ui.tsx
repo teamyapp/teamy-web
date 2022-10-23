@@ -5,7 +5,7 @@ import { ButtonUI } from '@lib/ui/Button';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { TextFieldUI } from '@lib/ui/TextField';
 
-import { Duration } from '@core/entity/duration';
+import { Duration } from '@lib/retry/duration';
 
 import styles from './DurationInput.ui.module.scss';
 

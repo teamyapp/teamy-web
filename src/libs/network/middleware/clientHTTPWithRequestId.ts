@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { Errors } from '@lib/error/errors';
+import { CustomError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 
 import { HTTPClient } from '../HTTP.client';
@@ -18,7 +18,7 @@ export const clientHTTPWithRequestId: HTTPClientMiddleware = (
                 headers?: Record<string, string>;
                 body?: string;
             },
-        ): Promise<Result<string, Errors>> => {
+        ): Promise<Result<string, CustomError>> => {
             const method = options?.method || 'GET';
             const headers = {
                 ...options?.headers,

@@ -33,7 +33,7 @@ import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import { allTasks, ownedBy } from '@core/data/task.filter';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
-import { Duration } from '@core/entity/duration';
+import { Duration } from '@lib/retry/duration';
 import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';

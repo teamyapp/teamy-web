@@ -1,5 +1,5 @@
 import { Retry } from "./retry";
-import { BackOff } from "./backoff";
+import { BackOff } from "./backoff/backoff";
 import { Clock } from "./clock";
 
 export class MaxCount implements Retry {
