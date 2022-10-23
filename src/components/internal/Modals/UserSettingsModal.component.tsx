@@ -183,9 +183,9 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                                 validateNewImage={this.validateUserProfileImage}
                             />
                         </div>
-                        <div className={styles.UserIdSection}>
+                        <div className={styles.IdSection}>
                             <div>ID:</div>
-                            <div className={styles.UserId}>
+                            <div className={styles.Id}>
                                 {this.state.user?.id}
                             </div>
                         </div>
