@@ -7,9 +7,6 @@ export class Page {
         this.drawables.push(drawable);
     }
 
-    // remove(drawableId: number) {
-    //     this.drawables = this.drawables.filter(drawable => drawable.getId() !== drawableId);
-    // }
 
     draw(ctx: CanvasRenderingContext2D, dpi: number) {
         for (const drawable of this.drawables) {
