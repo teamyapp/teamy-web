@@ -1,5 +1,6 @@
 @use 'sass:math';
 @import 'Modal.shared.module';
+@import 'Field.shared.module';
 
 $defaultTeamIconBackground: $primaryColor;
 $memberProfileWidth: 60px;
