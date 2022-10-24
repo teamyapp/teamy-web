@@ -49,6 +49,7 @@ import { PersonalStatusUI } from '../internal/PersonalStatus';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
+import { Keyboard } from '@lib/event/keyBoardEventMoniter';
 
 const tabIds = ['me', 'team'];
 
@@ -468,14 +469,16 @@ export class SprintsComponent extends Component<Props, State> {
 
     private onTaskOwnersChange = (value: string) => {
         return () => {
-            if (value === userAll) {
-                this.state.selectedTaskOwners.clear();
+
+            if (this.props.deps.keyBoardEventMonitor.checkKeyBoardEvent(Keyboard.Ctrl, "Pressed")) {
+                console.log("ctrl is pressed")
             } else {
-                this.state.selectedTaskOwners.delete(userAll);
+                console.log("ctrl is not pressed")
             }
 
             const hasValue = this.state.selectedTaskOwners.has(value);
             if (!hasValue) {
+                this.state.selectedTaskOwners.clear()
                 this.state.selectedTaskOwners.add(value);
             } else {
                 this.state.selectedTaskOwners.delete(value);
