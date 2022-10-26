@@ -4,6 +4,7 @@ import { PopChannel, chan, multi } from '@lib/csp/csp';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
+import { Duration } from '@lib/retry/duration';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { RemoteTask } from '@core/client/entity/remoteTask';
@@ -14,7 +15,6 @@ import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
-import { Duration } from '@lib/retry/duration';
 import { TaskFilter } from '@core/entity/filters';
 import {
     CreateInvitationInput,

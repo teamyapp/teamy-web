@@ -10,11 +10,8 @@ export enum Errors {
     NotImplemented,
 }
 
-
 export class CustomError extends Error {
-    constructor(public errors: Errors, public message:  string = "") {
-        super(message)
+    constructor(public errors: Errors, public message: string = '') {
+        super(message);
     }
 }
-
-

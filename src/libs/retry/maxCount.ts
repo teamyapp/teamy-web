@@ -1,28 +1,35 @@
-import { Retry } from "./retry";
-import { BackOff } from "./backoff/backoff";
-import { Clock } from "./clock";
+import { Runtime } from '@lib/runtime/runtime';
+
+import { BackOff } from './backoff/backoff';
+import { Retry } from './retry';
 
 export class MaxCount implements Retry {
-    constructor(private clock: Clock, private backoff: BackOff, private maxCount: number) {}
+    constructor(
+        private runtime: Runtime,
+        private backoff: BackOff,
+        private maxCount: number,
+    ) {}
 
-    public withRetry(execute: () => Promise<Error | null>): Promise<[number, Error | null]> {
-        let retries = 0
-        let err: Error | null
+    public withRetry(
+        execute: () => Promise<Error | undefined>,
+    ): Promise<[number, Error | undefined]> {
+        let retries = 0;
+        let err: Error | undefined;
         return new Promise(async (resolve) => {
-            while(retries < this.maxCount) {
-                retries++
-                err = await execute()
-                if (err === null) {
-                    this.backoff.onSuccess()
-                    resolve([retries, null])
-                    return
+            while (retries < this.maxCount) {
+                err = await execute();
+                if (err === undefined) {
+                    this.backoff.onSuccess();
+                    resolve([retries, undefined]);
+                    return;
                 }
 
-                this.backoff.onFailure()
-                await this.clock.wait(this.backoff.delay())
+                this.backoff.onFailure();
+                await this.runtime.threadSleep(this.backoff.delay());
+                retries++;
             }
 
-            resolve(([retries, err]))
-        })        
+            resolve([retries, err]);
+        });
     }
 }

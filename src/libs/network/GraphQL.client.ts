@@ -39,8 +39,8 @@ export class GraphQLClient {
             console.error(errors);
         }
 
-        const json = result ? JSON.parse(result) : null
-        return json?.data
+        const json = result ? JSON.parse(result) : null;
+        return json?.data;
     }
 
     async query(queryOptions: QueryOptions): Promise<any> {
@@ -60,7 +60,7 @@ export class GraphQLClient {
             console.error(errors);
         }
 
-        const json = result ? JSON.parse(result) : null
-        return json?.data
+        const json = result ? JSON.parse(result) : null;
+        return json?.data;
     }
 }

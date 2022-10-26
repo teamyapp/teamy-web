@@ -4,11 +4,11 @@ import React, { Component, MouseEvent, createRef } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
+import { orderByName } from '@core/data/team.order';
 import { Team } from '@core/entity/team';
 
 import styles from './Drawer.module.scss';
 import { TeamContextMenuComponent } from './TeamContextMenu.component';
-import { orderByName } from '@core/data/team.order';
 
 interface Props {
     teams: Team[];

@@ -1,6 +1,7 @@
-import { Duration } from '../duration';
-import { BackOff } from './backoff';
+import { Duration } from '@lib/entity/duration';
+import { RandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 
+import { BackOff } from './backoff';
 
 interface ExponentialOptions {
     minDelay: number;
@@ -13,10 +14,11 @@ interface ExponentialOptions {
 }
 
 export class Exponential implements BackOff {
-    private options: ExponentialOptions
+    private options: ExponentialOptions;
 
     constructor(
-        options: Partial<ExponentialOptions> = {}
+        private randGen: RandomNumberGenerator,
+        options: Partial<ExponentialOptions> = {},
     ) {
         this.options = {
             minDelay: 200,
@@ -26,10 +28,10 @@ export class Exponential implements BackOff {
             randomOffset: 100,
             randomOffsetUnit: 1,
             resetOnSuccess: false,
-            ...options
-        }
+            ...options,
+        };
 
-        this.options.nextDelay = this.options.minDelay
+        this.options.nextDelay = this.options.minDelay;
     }
 
     public onSuccess() {
@@ -38,22 +40,30 @@ export class Exponential implements BackOff {
             return;
         }
 
-        const scaled = Math.pow(this.options.nextDelay, -this.options.scalingFactor);
-        this.options.nextDelay = Math.max(scaled, this.options.minDelay) + this.randOffset();
+        const scaled = Math.pow(
+            this.options.nextDelay,
+            -this.options.scalingFactor,
+        );
+        this.options.nextDelay =
+            Math.max(scaled, this.options.minDelay) + this.randOffset();
     }
 
     public onFailure() {
-        const scaled = Math.pow(this.options.nextDelay, this.options.scalingFactor);
-        this.options.nextDelay = Math.min(scaled, this.options.maxDelay) + this.randOffset();
+        const scaled = Math.pow(
+            this.options.nextDelay,
+            this.options.scalingFactor,
+        );
+        this.options.nextDelay =
+            Math.min(scaled, this.options.maxDelay) + this.randOffset();
     }
 
     public delay() {
-        return new Duration(this.options.nextDelay)
+        return new Duration(this.options.nextDelay);
     }
 
     private randOffset() {
         return (
-            Math.floor(Math.random() * this.options.randomOffset) *
+            Math.floor(this.randGen.randomFloat() * this.options.randomOffset) *
             this.options.randomOffsetUnit
         );
     }

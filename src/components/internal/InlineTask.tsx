@@ -8,13 +8,13 @@ import React, {
 } from 'react';
 
 import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { Duration } from '@lib/retry/duration';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
-import { Duration } from '@lib/retry/duration';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';

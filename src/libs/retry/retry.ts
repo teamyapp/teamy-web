@@ -1,3 +1,5 @@
 export interface Retry {
-	withRetry: (execute: () => Promise<Error | null>) => Promise<[number, Error | null]>
+    withRetry: (
+        execute: () => Promise<Error | undefined>,
+    ) => Promise<[number, Error | undefined]>;
 }

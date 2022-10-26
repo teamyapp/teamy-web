@@ -11,7 +11,10 @@ export const orderByPriority: SortOrder<Task> = (
     return 0;
 };
 
-export const orderByUrgency: SortOrder<Task> = (task1: Task, task2: Task): number => {
+export const orderByUrgency: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
     if (!task1.dueAt && !task2.dueAt) {
         return task1.id - task2.id;
     }
@@ -32,12 +35,18 @@ export const orderByUrgency: SortOrder<Task> = (task1: Task, task2: Task): numbe
     return task1.id - task2.id;
 };
 
-export const orderByValue: SortOrder<Task> = (task1: Task, task2: Task): number => {
+export const orderByValue: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
     // TODO: implement me
     return 0;
 };
 
-export const orderByEffort: SortOrder<Task> = (task1: Task, task2: Task): number => {
+export const orderByEffort: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
     // TODO: implement me
     return 0;
 };
@@ -65,6 +74,9 @@ export const orderByStatusUrgencyAsc: SortOrder<Task> = (
     return orderByUrgency(task1, task2);
 };
 
-export const orderById: SortOrder<Task> = (task1: Task, task2: Task): number => {
+export const orderById: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
     return task1.id - task2.id;
 };
