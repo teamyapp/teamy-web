@@ -105,7 +105,7 @@
         "moduleNameMapper": {
             "^@core/dep/(.*)": "<rootDir>/src/dep/$1",
             "^@lib/testing/(.*)": "<rootDir>/src/libs/testing/$1",
-            "^@lib/csp/(.*)": "<rootDir>/src/libs/csp/$1"
+            "^@lib/(.*)": "<rootDir>/src/libs/$1"
         }
     }
 }
