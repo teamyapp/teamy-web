@@ -13,7 +13,7 @@ export interface SendChannel<Item> {
     length(): number;
 }
 
-export interface ReceiveChannel<Item> extends AsyncIterable<Item>{
+export interface ReceiveChannel<Item> extends AsyncIterable<Item> {
     receive(): Promise<[Item | undefined, boolean]>;
     isClosed(): boolean;
     length(): number;
@@ -54,7 +54,7 @@ export class Channel<Item> implements SendChannel<Item>, ReceiveChannel<Item> {
                 resume: () => {
                     resolve(true);
                 },
-                item: item
+                item: item,
             });
         });
     }
@@ -86,7 +86,7 @@ export class Channel<Item> implements SendChannel<Item>, ReceiveChannel<Item> {
 
         return new Promise((resolve, reject) => {
             this.receiveQueue = this.receiveQueue.concat({
-                resume: resolve
+                resume: resolve,
             });
         });
     }
@@ -117,18 +117,18 @@ export class Channel<Item> implements SendChannel<Item>, ReceiveChannel<Item> {
 
     [Symbol.asyncIterator](): AsyncIterator<Item> {
         return {
-            next: async(): Promise<IteratorResult<Item>> => {
+            next: async (): Promise<IteratorResult<Item>> => {
                 const [value, succeed] = await this.receive();
                 if (succeed) {
                     return {
                         value: value!,
-                        done: false
-                    }
+                        done: false,
+                    };
                 } else {
                     return {
                         value: value,
-                        done: true
-                    }
+                        done: true,
+                    };
                 }
             },
         };
