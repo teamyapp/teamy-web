@@ -276,7 +276,7 @@ export class SprintsComponent extends Component<Props, State> {
             while (true) {
                 console.log('[SprintsComponent] waiting for keyboard event');
                 const keyboardEventEle = await this.keyBoardEventChan!.pop();
-                if (keyboardEventEle === undefined) {
+                if (keyboardEventEle === undefined || this.state.isInMultiSelection) {
                     return;
                 }
 
