@@ -82,6 +82,14 @@
                                 margin-top: 10px;
                             }
 
+                            .CheckboxContainer{
+                                display: flex;
+
+                                input[type=checkbox] {
+                                    margin-right: 8px;
+                                }
+                            }
+
                             .AllParticipants,
                             .EmptySelectionFace {
                                 display: flex;

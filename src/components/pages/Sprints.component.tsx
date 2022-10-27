@@ -6,6 +6,7 @@ import { closeIfNot } from '@lib/csp/lib';
 import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Duration } from '@lib/entity/duration';
+import { KeyboardEventEle } from '@lib/event/keyBoardEventMoniter';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
@@ -49,7 +50,6 @@ import { PersonalStatusUI } from '../internal/PersonalStatus';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
-import { Keyboard } from '@lib/event/keyBoardEventMoniter';
 
 const tabIds = ['me', 'team'];
 
@@ -84,6 +84,7 @@ interface State {
     receivingSectionId?: string;
     sortOrders: SortOrders;
     selectedTaskOwners: Set<string>;
+    isInMultiSelection: boolean;
 }
 
 const acceptedRoutePatterns = [sprintsRoutePattern, sprintTabRoutePattern];
@@ -98,6 +99,7 @@ export class SprintsComponent extends Component<Props, State> {
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
+    private keyBoardEventChan?: csp.PopChannel<KeyboardEventEle | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
@@ -117,6 +119,7 @@ export class SprintsComponent extends Component<Props, State> {
                 upcoming: taskUrgencyOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
+            isInMultiSelection: false,
         };
     }
 
@@ -148,6 +151,7 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     public componentDidMount() {
+        this.monitorKeyboardEvents();
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -262,6 +266,28 @@ export class SprintsComponent extends Component<Props, State> {
         closeIfNot(this.stateChangeChan);
         closeIfNot(this.routeChangeChan);
         closeIfNot(this.dragAndDropEventChan);
+    }
+
+    private monitorKeyboardEvents() {
+        this.keyBoardEventChan =
+            this.props.deps.keyBoardEventMonitor.subscribe();
+
+        (async () => {
+            while (true) {
+                console.log('[SprintsComponent] waiting for keyboard event');
+                const keyboardEventEle = await this.keyBoardEventChan!.pop();
+                if (keyboardEventEle === undefined) {
+                    return;
+                }
+
+                const event = keyboardEventEle.event;
+                if (keyboardEventEle.key === 'Control' && event === 'keydown') {
+                    this.setState({
+                        isInMultiSelection: true,
+                    });
+                }
+            }
+        })();
     }
 
     private renderSelectSprint(): ReactNode {
@@ -384,21 +410,28 @@ export class SprintsComponent extends Component<Props, State> {
                                 <div className={styles.ParticipantList}>
                                     <div className={styles.Participant}>
                                         <div
-                                            className={`${
-                                                styles.AllParticipants
-                                            }  ${classNames({
-                                                [styles.Selected]:
-                                                    this.state.selectedTaskOwners.has(
-                                                        userAll,
-                                                    ),
-                                            })}`}
                                             onClick={this.onTaskOwnersChange(
                                                 userAll,
                                             )}
+                                            className={styles.CheckboxContainer}
                                         >
-                                            <MaterialIconUI>
-                                                group_work
-                                            </MaterialIconUI>
+                                            {this.checkToRenderCheckbox(
+                                                userAll,
+                                            )}
+                                            <div
+                                                className={`${
+                                                    styles.AllParticipants
+                                                }  ${classNames({
+                                                    [styles.Selected]:
+                                                        this.state.selectedTaskOwners.has(
+                                                            userAll,
+                                                        ),
+                                                })}`}
+                                            >
+                                                <MaterialIconUI>
+                                                    group_work
+                                                </MaterialIconUI>
+                                            </div>
                                         </div>
                                         <div className={styles.RightSection}>
                                             <div className={styles.Name}>
@@ -408,21 +441,28 @@ export class SprintsComponent extends Component<Props, State> {
                                     </div>
                                     <div className={styles.Participant}>
                                         <div
-                                            className={`${
-                                                styles.EmptySelectionFace
-                                            }  ${classNames({
-                                                [styles.Selected]:
-                                                    this.state.selectedTaskOwners.has(
-                                                        userUnassigned,
-                                                    ),
-                                            })}`}
                                             onClick={this.onTaskOwnersChange(
                                                 userUnassigned,
                                             )}
+                                            className={styles.CheckboxContainer}
                                         >
-                                            <MaterialIconUI>
-                                                face
-                                            </MaterialIconUI>
+                                            {this.checkToRenderCheckbox(
+                                                userUnassigned,
+                                            )}
+                                            <div
+                                                className={`${
+                                                    styles.EmptySelectionFace
+                                                }  ${classNames({
+                                                    [styles.Selected]:
+                                                        this.state.selectedTaskOwners.has(
+                                                            userUnassigned,
+                                                        ),
+                                                })}`}
+                                            >
+                                                <MaterialIconUI>
+                                                    face
+                                                </MaterialIconUI>
+                                            </div>
                                         </div>
                                         <div className={styles.RightSection}>
                                             <div className={styles.Name}>
@@ -467,24 +507,44 @@ export class SprintsComponent extends Component<Props, State> {
         }
     }
 
+    private checkToRenderCheckbox = (userIdentity: string): ReactNode => {
+        if (!this.state.isInMultiSelection) {
+            return null;
+        }
+
+        return (
+            <input
+                readOnly
+                type='checkbox'
+                checked={this.state.selectedTaskOwners.has(userIdentity)}
+            ></input>
+        );
+    };
+
     private onTaskOwnersChange = (value: string) => {
         return () => {
-
-            if (this.props.deps.keyBoardEventMonitor.checkKeyBoardEvent(Keyboard.Ctrl, "Pressed")) {
-                console.log("ctrl is pressed")
-            } else {
-                console.log("ctrl is not pressed")
-            }
-
             const hasValue = this.state.selectedTaskOwners.has(value);
+
             if (!hasValue) {
-                this.state.selectedTaskOwners.clear()
+                if (!this.state.isInMultiSelection) {
+                    this.state.selectedTaskOwners.clear();
+                }
                 this.state.selectedTaskOwners.add(value);
             } else {
                 this.state.selectedTaskOwners.delete(value);
+                if (
+                    !this.state.isInMultiSelection &&
+                    !this.state.selectedTaskOwners.size
+                ) {
+                    this.state.selectedTaskOwners.add(userAll);
+                }
             }
 
-            if (!this.state.selectedTaskOwners.size) {
+            if (
+                this.state.isInMultiSelection &&
+                !this.state.selectedTaskOwners.size
+            ) {
+                this.setState({ isInMultiSelection: false });
                 this.state.selectedTaskOwners.add(userAll);
             }
 
@@ -538,13 +598,18 @@ export class SprintsComponent extends Component<Props, State> {
         return (
             <div key={index} className={styles.Participant}>
                 <div
-                    className={`${styles.UserProfile} ${classNames({
-                        [styles.Selected]:
-                            this.state.selectedTaskOwners.has(userIdentity),
-                    })}`}
                     onClick={this.onTaskOwnersChange(userIdentity)}
+                    className={styles.CheckboxContainer}
                 >
-                    <UserProfileUI user={user} />
+                    {this.checkToRenderCheckbox(userIdentity)}
+                    <div
+                        className={`${styles.UserProfile} ${classNames({
+                            [styles.Selected]:
+                                this.state.selectedTaskOwners.has(userIdentity),
+                        })}`}
+                    >
+                        <UserProfileUI user={user} />
+                    </div>
                 </div>
                 <div className={styles.RightSection}>
                     <div className={styles.Name}>
