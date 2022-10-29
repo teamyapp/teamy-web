@@ -276,12 +276,16 @@ export class SprintsComponent extends Component<Props, State> {
             while (true) {
                 console.log('[SprintsComponent] waiting for keyboard event');
                 const keyboardEventEle = await this.keyBoardEventChan!.pop();
-                if (keyboardEventEle === undefined || this.state.isInMultiSelection) {
+                if (keyboardEventEle === undefined) {
                     return;
                 }
 
                 const event = keyboardEventEle.event;
-                if (keyboardEventEle.key === 'Control' && event === 'keydown') {
+                if (
+                    !this.state.isInMultiSelection &&
+                    keyboardEventEle.key === 'Control' &&
+                    event === 'keydown'
+                ) {
                     this.setState({
                         isInMultiSelection: true,
                     });
@@ -525,26 +529,36 @@ export class SprintsComponent extends Component<Props, State> {
         return () => {
             const hasValue = this.state.selectedTaskOwners.has(value);
 
-            if (!hasValue) {
-                if (!this.state.isInMultiSelection) {
-                    this.state.selectedTaskOwners.clear();
+            if (this.state.isInMultiSelection) {
+                if (value === userAll) {
+                    if (!hasValue) {
+                        this.state.selectedTaskOwners.clear();
+                        this.state.selectedTaskOwners.add(value);
+                    } else {
+                        this.state.selectedTaskOwners.delete(value);
+                    }
+                } else {
+                    if (!hasValue) {
+                        this.state.selectedTaskOwners.delete(userAll);
+                        this.state.selectedTaskOwners.add(value);
+                    } else {
+                        this.state.selectedTaskOwners.delete(value);
+                    }
                 }
-                this.state.selectedTaskOwners.add(value);
             } else {
-                this.state.selectedTaskOwners.delete(value);
-                if (
-                    !this.state.isInMultiSelection &&
-                    !this.state.selectedTaskOwners.size
-                ) {
-                    this.state.selectedTaskOwners.add(userAll);
+                if (!hasValue) {
+                    this.state.selectedTaskOwners.clear();
+                    this.state.selectedTaskOwners.add(value);
+                } else {
+                    this.state.selectedTaskOwners.delete(userAll);
                 }
             }
 
-            if (
-                this.state.isInMultiSelection &&
-                !this.state.selectedTaskOwners.size
-            ) {
-                this.setState({ isInMultiSelection: false });
+            if (!this.state.selectedTaskOwners.size) {
+                if (this.state.isInMultiSelection) {
+                    this.setState({ isInMultiSelection: false });
+                }
+
                 this.state.selectedTaskOwners.add(userAll);
             }
 
