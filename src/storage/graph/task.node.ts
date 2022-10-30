@@ -1,4 +1,4 @@
-import { Duration } from '@lib/retry/duration';
+import { Duration } from '@lib/entity/duration';
 
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';

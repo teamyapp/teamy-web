@@ -5,7 +5,7 @@ import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
-import { Duration } from '@lib/retry/duration';
+import { Duration } from '@lib/entity/duration';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';

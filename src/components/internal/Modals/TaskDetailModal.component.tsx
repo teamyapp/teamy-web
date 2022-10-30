@@ -10,7 +10,7 @@ import React, {
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
-import { Duration } from '@lib/retry/duration';
+import { Duration } from '@lib/entity/duration';
 import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';

@@ -1,4 +1,4 @@
-import { Duration } from '@lib/retry/duration';
+import { Duration } from '@lib/entity/duration';
 
 import { RemoteClient } from '@core/client/entity/remoteClient';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';

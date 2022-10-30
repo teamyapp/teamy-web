@@ -1,4 +1,4 @@
-import { Duration } from '@lib/retry/duration';
+import { Duration } from '@lib/entity/duration';
 
 export interface CreateUserInput {
     lastName: string;

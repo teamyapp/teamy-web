@@ -1,4 +1,4 @@
-import { Duration } from '@lib/retry/duration';
+import { Duration } from '@lib/entity/duration';
 
 import { TeamMember } from '@core/entity/teamMember';
 import { TeamNode } from '@core/storage/graph/team.node';

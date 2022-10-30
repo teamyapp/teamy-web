@@ -15,13 +15,13 @@ export function clientHTTPWithRetry(retry: Retry): HTTPClientMiddleware {
                 let result: Result<string, CustomError>;
 
                 const execute = () =>
-                    new Promise<Error | null>(async (_resolve) => {
+                    new Promise<Error | undefined>(async (_resolve) => {
                         result = await httpClient.request(url, options);
 
                         if (result[1] !== null) {
                             _resolve(result[1]);
                         } else {
-                            _resolve(null);
+                            _resolve(undefined);
                         }
                     });
 
