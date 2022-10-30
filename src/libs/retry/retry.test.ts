@@ -11,28 +11,22 @@ import { Timeout } from './timeout';
 export interface Executable {
     count: number;
     execute: () => Promise<undefined | Error>;
+    beforeRetryDelay?: () => Promise<void>;
 }
 
 describe('Retry', () => {
     const testRandGen = new TestRandomNumberGenerator();
     let testRuntime: TestRuntime;
-    let testClock: TestClock;
     let executeObj: Executable;
     let backoff: BackOff;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
         backoff = new Exponential(testRandGen);
-        testClock = new TestClock();
         executeObj = {
             count: 0,
             async execute() {
-                if (this.count === 0) {
-                    this.count++;
-                    return new Error('first error');
-                } else {
-                    this.count++;
-                }
+                return undefined
             },
         };
     });
@@ -44,6 +38,7 @@ describe('Retry', () => {
         });
 
         it('should work with timeout', async () => {
+            const testClock = new TestClock()
             const timeout = new Timeout(testClock, testRuntime, backoff, 10);
             await timeout.withRetry(executeObj.execute.bind(executeObj));
         });

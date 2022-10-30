@@ -21,7 +21,6 @@ export class Timeout implements Retry {
         const expiredAt = this.clock.now().getTime() + this.duration;
         return new Promise(async (resolve) => {
             while (true) {
-                retries++;
                 err = await execute();
                 await this.beforeRetryDelay?.call(null);
                 if (err === undefined) {
@@ -36,10 +35,12 @@ export class Timeout implements Retry {
                         this.backoff.delay().totalMilliSeconds >=
                     expiredAt
                 ) {
+                    retries++;
                     break;
                 }
 
                 await this.runtime.threadSleep(this.backoff.delay());
+                retries++;
             }
 
             resolve([retries, err]);

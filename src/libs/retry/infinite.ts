@@ -12,9 +12,8 @@ export class Infinite implements Retry {
         let retries = 0;
         return new Promise(async (resolve) => {
             while (true) {
-                retries++;
                 const err = await execute();
-                if (err === null) {
+                if (err === undefined) {
                     this.backoff.onSuccess();
                     resolve([retries, undefined]);
                     return;
@@ -22,6 +21,7 @@ export class Infinite implements Retry {
 
                 this.backoff.onFailure();
                 await this.runtime.threadSleep(this.backoff.delay());
+                retries++;
             }
         });
     }

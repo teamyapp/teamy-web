@@ -7,34 +7,44 @@ import { TestRuntime } from '@lib/runtime/runtime';
 import { Exponential } from './backoff/exponential';
 import { Executable } from './retry.test';
 import { Timeout } from './timeout';
+import { Semaphore } from '@lib/sync/semaphore';
+import { Duration } from '@lib/entity/duration';
 
 describe('Timeout', () => {
     const testRandGen = new TestRandomNumberGenerator();
+    let beforeSleepSemaphore: Semaphore;
+    let exitSemaphore: Semaphore;
     let testRuntime: TestRuntime;
     let testClock: TestClock;
-    let executeObj: Executable;
-    let originalDate: Date;
-    let beforeRetryDelay: () => Promise<void>;
+    let executable: Executable;
+    let duration: Duration
+
     beforeEach(() => {
         testRuntime = new TestRuntime();
         testClock = new TestClock();
-        originalDate = new Date();
-        executeObj = {
+
+        executable = {
             count: 0,
             async execute() {
-                if (this.count === 0) {
-                    this.count++;
+                const prevCount = this.count;
+                this.count++;
+                if (prevCount < 2) {
                     return new Error('first error');
-                } else {
-                    this.count++;
                 }
-            },
+            },  
+            async beforeRetryDelay() {
+                testClock.setCurrentTime(new Date(testClock.now().getTime() + 2));
+            }
         };
 
-        beforeRetryDelay = async () => {
-            testClock.setCurrentTime(new Date(originalDate.getTime() + 2));
+        beforeSleepSemaphore = new Semaphore('BeforeSleep');
+        exitSemaphore = new Semaphore('Exit');
+        testClock.setCurrentTime(new Date());
+        testRuntime.beforeThreadSleep = async (_duration: Duration) => {
+            beforeSleepSemaphore.release();
+            duration = _duration
+            testClock.setCurrentTime(new Date(testClock.now().getTime() + duration.totalMilliSeconds))
         };
-        testClock.setCurrentTime(originalDate);
     });
 
     it('should get result in time', async () => {
@@ -43,18 +53,37 @@ describe('Timeout', () => {
             randomOffset: 0,
             scalingFactor: 2,
         });
+
         const timeout = new Timeout(
             testClock,
             testRuntime,
             backoff,
-            7,
-            beforeRetryDelay,
+            25,
+            executable.beforeRetryDelay?.bind(executable),
         );
-        const [retries, error] = await timeout.withRetry(
-            executeObj.execute.bind(executeObj),
-        );
-        strictEqual(retries, 2);
-        strictEqual(error, null);
+
+        (async () => {
+            const [retries, error] = await timeout.withRetry(
+                executable.execute.bind(executable),
+            );
+
+            strictEqual(retries, 2);
+            strictEqual(duration.totalMilliSeconds, 16)
+            strictEqual(error, undefined);
+            exitSemaphore.release();
+        })()
+
+        await beforeSleepSemaphore.wait()
+        strictEqual(duration.totalMilliSeconds, 4)
+        strictEqual(executable.count, 1)
+        testRuntime.threadAwake()
+
+        await beforeSleepSemaphore.wait()
+        strictEqual(duration.totalMilliSeconds, 16)
+        strictEqual(executable.count, 2)
+        testRuntime.threadAwake()
+
+        await exitSemaphore.wait()
     });
 
     it('should throw error if not getting result in time', async () => {
@@ -63,17 +92,31 @@ describe('Timeout', () => {
             randomOffset: 0,
             scalingFactor: 2,
         });
+
         const timeout = new Timeout(
             testClock,
             testRuntime,
             backoff,
-            1,
-            beforeRetryDelay,
+            24,
+            executable.beforeRetryDelay?.bind(executable),
         );
-        const [retries, error] = await timeout.withRetry(
-            executeObj.execute.bind(executeObj),
-        );
-        strictEqual(retries, 1);
-        strictEqual(error?.message, 'first error');
+
+        (async () => {
+            const [retries, error] = await timeout.withRetry(
+                executable.execute.bind(executable),
+            );
+
+            strictEqual(retries, 2);
+            strictEqual(duration.totalMilliSeconds, 4)
+            strictEqual(error?.message, "first error");
+            exitSemaphore.release();
+        })()
+
+        await beforeSleepSemaphore.wait()
+        strictEqual(duration.totalMilliSeconds, 4)
+        strictEqual(executable.count, 1)
+        testRuntime.threadAwake()
+
+        await exitSemaphore.wait()
     });
 });
