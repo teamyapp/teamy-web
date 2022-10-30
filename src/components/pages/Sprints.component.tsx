@@ -550,7 +550,7 @@ export class SprintsComponent extends Component<Props, State> {
                     this.state.selectedTaskOwners.clear();
                     this.state.selectedTaskOwners.add(value);
                 } else {
-                    this.state.selectedTaskOwners.delete(userAll);
+                    this.state.selectedTaskOwners.delete(value);
                 }
             }
 
