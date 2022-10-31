@@ -3,11 +3,12 @@ import { strictEqual } from 'assert';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
 
-import { Exponential } from './backoff/exponential';
-import { Infinite } from './infinite';
+import { ExponentialBackoff } from './backoff/exponential';
+import { InfiniteRetry } from './infinite';
 import { Executable } from './retry.test';
 import { Semaphore } from '@lib/sync/semaphore';
 import { Duration } from '@lib/entity/duration';
+import { Errors, InternalError } from '@lib/error/errors';
 
 describe('Infinite', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -25,7 +26,7 @@ describe('Infinite', () => {
                 const prevCount = this.count;
                 this.count++;
                 if (prevCount < 10) {
-                    return new Error('first error');
+                    return new InternalError(Errors.BadRequest, 'first error');
                 }
             },
         };
@@ -38,12 +39,12 @@ describe('Infinite', () => {
     });
 
     it('retry until succeeded', async () => {
-        const backoff = new Exponential(testRandGen, {
+        const backoff = new ExponentialBackoff(testRandGen, {
             minDelay: 2,
             randomOffset: 0,
             scalingFactor: 2,
         });
-        const infinite = new Infinite(testRuntime, backoff);
+        const infinite = new InfiniteRetry(testRuntime, backoff);
 
         (async () => {
             const [retries, error] = await infinite.withRetry(
@@ -57,9 +58,9 @@ describe('Infinite', () => {
         })().then();
         
 
-        for (let retry = 1; time <= 10; time++) {
+        for (let retry = 1; retry <= 10; retry++) {
             await beforeSleepSemaphore.wait();
-            strictEqual(executable.count, time);
+            strictEqual(executable.count, retry);
             testRuntime.threadAwake();
         }
     });

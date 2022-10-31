@@ -1,4 +1,4 @@
-import { CustomError } from '@lib/error/errors';
+import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { Retry } from '@lib/retry/retry';
 
@@ -11,21 +11,19 @@ export function clientHTTPWithRetry(retry: Retry): HTTPClientMiddleware {
             request: async (
                 url: string,
                 options,
-            ): Promise<Result<string, CustomError>> => {
-                let result: Result<string, CustomError>;
+            ): Promise<Result<string, InternalError>> => {
+                let result: Result<string, InternalError>;
 
-                const execute = () =>
-                    new Promise<Error | undefined>(async (_resolve) => {
-                        result = await httpClient.request(url, options);
+                await retry.withRetry(() =>
+                new Promise<InternalError | undefined>(async (resolve) => {
+                    result = await httpClient.request(url, options);
 
-                        if (result[1] !== null) {
-                            _resolve(result[1]);
-                        } else {
-                            _resolve(undefined);
-                        }
-                    });
-
-                await retry.withRetry(execute);
+                    if (result[1] !== null) {
+                        resolve(result[1]);
+                    } else {
+                        resolve(undefined);
+                    }
+                }));
                 return result!;
             },
         };

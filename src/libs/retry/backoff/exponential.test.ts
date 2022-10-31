@@ -2,19 +2,19 @@ import { strictEqual } from 'assert';
 
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 
-import { Exponential } from './exponential';
+import { ExponentialBackoff } from './exponential';
 
 describe('Exponential', () => {
     const testRandGen = new TestRandomNumberGenerator();
     
     it('should create default exponential backoff', () => {
         const exponentialBackoff = new ExponentialBackoff(testRandGen);
-        strictEqual(exponential.delay().totalMilliSeconds, 200);
+        strictEqual(exponentialBackoff.delay().totalMilliSeconds, 200);
     });
 
     it('should not override default nextDelay', () => {
-        const exponential = new Exponential(testRandGen, { nextDelay: 300 });
-        strictEqual(exponential.delay().totalMilliSeconds, 200);
+        const exponentialBackoff = new ExponentialBackoff(testRandGen, { randomOffset: 3 });
+        strictEqual(exponentialBackoff.delay().totalMilliSeconds, 200);
     });
 
     describe('randomized', () => {
@@ -23,7 +23,7 @@ describe('Exponential', () => {
         });
         
         it('should add next delay after failure', () => {
-            const exponential = new Exponential(testRandGen, {
+            const exponential = new ExponentialBackoff(testRandGen, {
                 minDelay: 4,
                 randomOffset: 10,
             });
@@ -33,7 +33,7 @@ describe('Exponential', () => {
         });
 
         it('should reduce next delay after success', () => {
-            const exponential = new Exponential(testRandGen, {
+            const exponential = new ExponentialBackoff(testRandGen, {
                 minDelay: 4,
                 randomOffset: 10,
             });
@@ -41,10 +41,14 @@ describe('Exponential', () => {
             exponential.onSuccess();
             strictEqual(exponential.delay().totalMilliSeconds, 9);
         });
+
+        afterAll(() => {
+            testRandGen.setRandomFloats([])
+        })
     });
 
     it('should not wait more than max delay', () => {
-        const exponential = new Exponential(testRandGen, {
+        const exponential = new ExponentialBackoff(testRandGen, {
             minDelay: 4,
             maxDelay: 10,
             randomOffset: 0,
@@ -55,7 +59,7 @@ describe('Exponential', () => {
     });
 
     it('should not wait less than min delay', () => {
-        const exponential = new Exponential(testRandGen, {
+        const exponential = new ExponentialBackoff(testRandGen, {
             minDelay: 10,
             randomOffset: 0,
         });
@@ -65,12 +69,16 @@ describe('Exponential', () => {
     });
 
     it('should reset delay after success', () => {
-        const exponential = new Exponential(testRandGen, {
+        const exponential = new ExponentialBackoff(testRandGen, {
             minDelay: 4,
             resetOnSuccess: true,
             randomOffset: 0,
         });
         strictEqual(exponential.delay().totalMilliSeconds, 4);
+        exponential.onFailure()
+        strictEqual(exponential.delay().totalMilliSeconds, 16);
+        exponential.onFailure()
+        strictEqual(exponential.delay().totalMilliSeconds, 256);
         exponential.onSuccess();
         strictEqual(exponential.delay().totalMilliSeconds, 4);
     });

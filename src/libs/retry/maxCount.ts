@@ -1,9 +1,10 @@
+import { InternalError } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
 
 import { BackOff } from './backoff/backoff';
 import { Retry } from './retry';
 
-export class MaxCount implements Retry {
+export class MaxCountRetry implements Retry {
     constructor(
         private runtime: Runtime,
         private backoff: BackOff,
@@ -12,9 +13,9 @@ export class MaxCount implements Retry {
 
     public withRetry(
         execute: () => Promise<InternalError | undefined>,
-    ): Promise<[number, Error | undefined]> {
+    ): Promise<[number, InternalError | undefined]> {
         let retries = 0;
-        let err: Error | undefined;
+        let err: InternalError | undefined;
         return new Promise(async (resolve) => {
             while (retries < this.maxCount) {
                 err = await execute();

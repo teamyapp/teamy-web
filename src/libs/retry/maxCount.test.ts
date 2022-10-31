@@ -4,10 +4,11 @@ import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
-import { Exponential } from './backoff/exponential';
-import { MaxCount } from './maxCount';
+import { ExponentialBackoff } from './backoff/exponential';
+import { MaxCountRetry } from './maxCount';
 import { Executable } from './retry.test';
 import { Duration } from '@lib/entity/duration';
+import { Errors, InternalError } from '@lib/error/errors';
 
 describe('MaxCount', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -25,7 +26,7 @@ describe('MaxCount', () => {
                 const prevCount = this.count;
                 this.count++;
                 if (prevCount < 2) {
-                    return new Error('first error');
+                    return new InternalError(Errors.BadRequest, 'first error');
                 }
             },
         };
@@ -38,12 +39,12 @@ describe('MaxCount', () => {
     });
 
     it('should succeed before reaching max count', async () => {
-        const backoff = new Exponential(testRandGen, {
+        const backoff = new ExponentialBackoff(testRandGen, {
             minDelay: 2,
             randomOffset: 0,
             scalingFactor: 2,
         });
-        const maxCount = new MaxCount(testRuntime, backoff, 3);
+        const maxCount = new MaxCountRetry(testRuntime, backoff, 3);
         (async () => {
             const [retries, error] = await maxCount.withRetry(
                 executable.execute.bind(executable),
@@ -66,12 +67,12 @@ describe('MaxCount', () => {
     });
 
     it('should not call more than max count retries', async () => {
-        const backoff = new Exponential(testRandGen, {
+        const backoff = new ExponentialBackoff(testRandGen, {
             minDelay: 2,
             randomOffset: 0,
             scalingFactor: 2,
         });
-        const maxCount = new MaxCount(testRuntime, backoff, 2);
+        const maxCount = new MaxCountRetry(testRuntime, backoff, 2);
         (async () => {
             const [retries, error] = await maxCount.withRetry(
                 executable.execute.bind(executable),

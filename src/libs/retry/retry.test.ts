@@ -1,17 +1,17 @@
+import { InternalError } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestClock } from '@lib/runtime/clock';
 import { TestRuntime } from '@lib/runtime/runtime';
 
 import { BackOff } from './backoff/backoff';
-import { Exponential } from './backoff/exponential';
-import { Infinite } from './infinite';
-import { MaxCount } from './maxCount';
-import { Timeout } from './timeout';
+import { ExponentialBackoff } from './backoff/exponential';
+import { InfiniteRetry } from './infinite';
+import { MaxCountRetry } from './maxCount';
+import { TimeoutRetry } from './timeout';
 
 export interface Executable {
     count: number;
     execute: () => Promise<InternalError | undefined>;
-    beforeRetryDelay?: () => Promise<void>;
 }
 
 describe('Retry', () => {
@@ -22,7 +22,7 @@ describe('Retry', () => {
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
-        backoff = new Exponential(testRandGen);
+        backoff = new ExponentialBackoff(testRandGen);
         executeObj = {
             count: 0,
             async execute() {
@@ -33,18 +33,18 @@ describe('Retry', () => {
 
     describe('Retry', () => {
         it('should work with maxCount', async () => {
-            const maxCount = new MaxCount(testRuntime, backoff, 10);
+            const maxCount = new MaxCountRetry(testRuntime, backoff, 10);
             await maxCount.withRetry(executeObj.execute.bind(executeObj));
         });
 
         it('should work with timeout', async () => {
             const testClock = new TestClock()
-            const timeout = new Timeout(testClock, testRuntime, backoff, 10);
+            const timeout = new TimeoutRetry(testClock, testRuntime, backoff, 10);
             await timeout.withRetry(executeObj.execute.bind(executeObj));
         });
 
         it('should work with infinity', async () => {
-            const timeout = new Infinite(testRuntime, backoff);
+            const timeout = new InfiniteRetry(testRuntime, backoff);
             await timeout.withRetry(executeObj.execute.bind(executeObj));
         });
     });

@@ -1,4 +1,4 @@
-import { CustomError, Errors } from '@lib/error/errors';
+import { InternalError, Errors } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 
 import { HTTPClient } from './HTTP.client';
@@ -14,9 +14,9 @@ const errorMap: Record<number, Errors> = {
 };
 
 export class FetchHTTPClient implements HTTPClient {
-    private static getError(httpStatusCode: number): CustomError {
+    private static getError(httpStatusCode: number): InternalError {
         const error = errorMap[httpStatusCode] || Errors.Unknown;
-        return new CustomError(error);
+        return new InternalError(error);
     }
 
     async request(
@@ -26,8 +26,8 @@ export class FetchHTTPClient implements HTTPClient {
             headers?: Record<string, string>;
             body?: string;
         },
-    ): Promise<Result<string, CustomError>> {
-        return new Promise<Result<string, CustomError>>((resolve) => {
+    ): Promise<Result<string, InternalError>> {
+        return new Promise<Result<string, InternalError>>((resolve) => {
             fetch(url, {
                 method: options?.method,
                 mode: 'cors',
@@ -48,7 +48,7 @@ export class FetchHTTPClient implements HTTPClient {
                     }
                 })
                 .catch(() => {
-                    resolve([null, new CustomError(Errors.Unknown)]);
+                    resolve([null, new InternalError(Errors.Unknown)]);
                 });
         });
     }

@@ -1,3 +1,4 @@
+import { InternalError } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
 
 import { BackOff } from './backoff/backoff';
@@ -7,8 +8,8 @@ export class InfiniteRetry implements Retry {
     constructor(private runtime: Runtime, private backoff: BackOff) {}
 
     public withRetry(
-        execute: () => Promise<Error | undefined>,
-    ): Promise<[number, Error | undefined]> {
+        execute: () => Promise<InternalError | undefined>,
+    ): Promise<[number, InternalError | undefined]> {
         let retries = 0;
         return new Promise(async (resolve) => {
             while (true) {

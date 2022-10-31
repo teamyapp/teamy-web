@@ -1,10 +1,11 @@
+import { InternalError } from '@lib/error/errors';
 import { Clock } from '@lib/runtime/clock';
 import { Runtime } from '@lib/runtime/runtime';
 
 import { BackOff } from './backoff/backoff';
 import { Retry } from './retry';
 
-export class Timeout implements Retry {
+export class TimeoutRetry implements Retry {
     constructor(
         private clock: Clock,
         private runtime: Runtime,

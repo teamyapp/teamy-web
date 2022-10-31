@@ -11,8 +11,8 @@ import { clientHTTPWithRequestId } from '@lib/network/middleware/clientHTTPWithR
 import { clientHTTPWithRetry } from '@lib/network/middleware/clientHTTPWithRetry';
 import { httpClientWithMiddlewares } from '@lib/network/middleware/middleware';
 import { PubSub } from '@lib/pubSub/pubSub';
-import { Exponential } from '@lib/retry/backoff/exponential';
-import { MaxCount } from '@lib/retry/maxCount';
+import { ExponentialBackoff } from '@lib/retry/backoff/exponential';
+import { MaxCountRetry } from '@lib/retry/maxCount';
 import { Router, createBrowserRouter } from '@lib/router/router';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
 
@@ -58,7 +58,7 @@ export function initDeps(): Deps {
         clientHTTPWithRequestId,
         clientHTTPWithIdentity,
         clientHTTPWithRetry(
-            new MaxCount(new BuiltInRuntime(), new Exponential(new BuiltInRandomNumberGenerator()), 10),
+            new MaxCountRetry(new BuiltInRuntime(), new ExponentialBackoff(new BuiltInRandomNumberGenerator()), 10),
         ),
     ]);
     const identityClient = new IdentityClient(
