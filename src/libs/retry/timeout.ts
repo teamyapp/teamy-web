@@ -14,10 +14,10 @@ export class Timeout implements Retry {
     ) {}
 
     public withRetry(
-        execute: () => Promise<Error | undefined>,
-    ): Promise<[number, Error | undefined]> {
+        execute: () => Promise<InternalError | undefined>,
+    ): Promise<[number, InternalError | undefined]> {
         let retries = 0;
-        let err: Error | undefined;
+        let err: InternalError | undefined;
         const expiredAt = this.clock.now().getTime() + this.duration;
         return new Promise(async (resolve) => {
             while (true) {

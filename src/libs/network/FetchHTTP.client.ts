@@ -16,7 +16,6 @@ const errorMap: Record<number, Errors> = {
 export class FetchHTTPClient implements HTTPClient {
     private static getError(httpStatusCode: number): CustomError {
         const error = errorMap[httpStatusCode] || Errors.Unknown;
-
         return new CustomError(error);
     }
 

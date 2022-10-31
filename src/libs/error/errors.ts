@@ -10,7 +10,7 @@ export enum Errors {
     NotImplemented,
 }
 
-export class CustomError extends Error {
+export class InternalError extends Error {
     constructor(public errors: Errors, public message: string = '') {
         super(message);
     }

@@ -6,8 +6,9 @@ import { Exponential } from './exponential';
 
 describe('Exponential', () => {
     const testRandGen = new TestRandomNumberGenerator();
-    it('should create default exponential', () => {
-        const exponential = new Exponential(testRandGen);
+    
+    it('should create default exponential backoff', () => {
+        const exponentialBackoff = new ExponentialBackoff(testRandGen);
         strictEqual(exponential.delay().totalMilliSeconds, 200);
     });
 
@@ -20,6 +21,7 @@ describe('Exponential', () => {
         beforeEach(() => {
             testRandGen.setRandomFloats([0.5])
         });
+        
         it('should add next delay after failure', () => {
             const exponential = new Exponential(testRandGen, {
                 minDelay: 4,
@@ -38,9 +40,6 @@ describe('Exponential', () => {
             strictEqual(exponential.delay().totalMilliSeconds, 4);
             exponential.onSuccess();
             strictEqual(exponential.delay().totalMilliSeconds, 9);
-        });
-        afterEach(() => {
-            jest.spyOn(global.Math, 'random').mockRestore();
         });
     });
 

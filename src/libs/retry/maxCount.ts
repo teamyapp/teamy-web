@@ -11,7 +11,7 @@ export class MaxCount implements Retry {
     ) {}
 
     public withRetry(
-        execute: () => Promise<Error | undefined>,
+        execute: () => Promise<InternalError | undefined>,
     ): Promise<[number, Error | undefined]> {
         let retries = 0;
         let err: Error | undefined;

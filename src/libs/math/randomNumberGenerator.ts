@@ -18,8 +18,9 @@ export class TestRandomNumberGenerator implements RandomNumberGenerator {
         }
 
         if (this.nextRandomFloatIndex === this.randomFloats.length) {
-            this.nextRandomFloatIndex = 0
+            this.nextRandomFloatIndex = 0;
         }
+        
         const num = this.randomFloats[this.nextRandomFloatIndex];
         this.nextRandomFloatIndex++;
         return num;

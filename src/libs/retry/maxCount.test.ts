@@ -37,7 +37,7 @@ describe('MaxCount', () => {
         };
     });
 
-    it('should get result before reaching max count', async () => {
+    it('should succeed before reaching max count', async () => {
         const backoff = new Exponential(testRandGen, {
             minDelay: 2,
             randomOffset: 0,
@@ -50,18 +50,15 @@ describe('MaxCount', () => {
             );
 
             strictEqual(retries, 2);
-            strictEqual(duration.totalMilliSeconds, 16)
             strictEqual(error, undefined);
             exitSemaphore.release();
         })().then();
 
         await beforeSleepSemaphore.wait();
-        strictEqual(duration.totalMilliSeconds, 4)
         strictEqual(executable.count, 1);
         testRuntime.threadAwake();
 
         await beforeSleepSemaphore.wait();
-        strictEqual(duration.totalMilliSeconds, 16)
         strictEqual(executable.count, 2);
 
         testRuntime.threadAwake();

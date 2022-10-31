@@ -10,7 +10,7 @@ import { Timeout } from './timeout';
 
 export interface Executable {
     count: number;
-    execute: () => Promise<undefined | Error>;
+    execute: () => Promise<InternalError | undefined>;
     beforeRetryDelay?: () => Promise<void>;
 }
 

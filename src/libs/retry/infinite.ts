@@ -3,7 +3,7 @@ import { Runtime } from '@lib/runtime/runtime';
 import { BackOff } from './backoff/backoff';
 import { Retry } from './retry';
 
-export class Infinite implements Retry {
+export class InfiniteRetry implements Retry {
     constructor(private runtime: Runtime, private backoff: BackOff) {}
 
     public withRetry(

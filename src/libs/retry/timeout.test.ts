@@ -47,7 +47,7 @@ describe('Timeout', () => {
         };
     });
 
-    it('should get result in time', async () => {
+    it('should succeed before timeout', async () => {
         const backoff = new Exponential(testRandGen, {
             minDelay: 2,
             randomOffset: 0,
@@ -68,25 +68,22 @@ describe('Timeout', () => {
             );
 
             strictEqual(retries, 2);
-            strictEqual(duration.totalMilliSeconds, 16)
             strictEqual(error, undefined);
             exitSemaphore.release();
         })()
 
         await beforeSleepSemaphore.wait()
-        strictEqual(duration.totalMilliSeconds, 4)
         strictEqual(executable.count, 1)
         testRuntime.threadAwake()
 
         await beforeSleepSemaphore.wait()
-        strictEqual(duration.totalMilliSeconds, 16)
         strictEqual(executable.count, 2)
         testRuntime.threadAwake()
 
         await exitSemaphore.wait()
     });
 
-    it('should throw error if not getting result in time', async () => {
+    it('should get error when reaching timeout', async () => {
         const backoff = new Exponential(testRandGen, {
             minDelay: 2,
             randomOffset: 0,
@@ -107,13 +104,11 @@ describe('Timeout', () => {
             );
 
             strictEqual(retries, 2);
-            strictEqual(duration.totalMilliSeconds, 4)
             strictEqual(error?.message, "first error");
             exitSemaphore.release();
         })()
 
         await beforeSleepSemaphore.wait()
-        strictEqual(duration.totalMilliSeconds, 4)
         strictEqual(executable.count, 1)
         testRuntime.threadAwake()
 

@@ -37,14 +37,13 @@ describe('Infinite', () => {
         };
     });
 
-    it('should call execute until max time', async () => {
+    it('retry until succeeded', async () => {
         const backoff = new Exponential(testRandGen, {
             minDelay: 2,
             randomOffset: 0,
             scalingFactor: 2,
         });
         const infinite = new Infinite(testRuntime, backoff);
-
 
         (async () => {
             const [retries, error] = await infinite.withRetry(
@@ -58,7 +57,7 @@ describe('Infinite', () => {
         })().then();
         
 
-        for (let time = 1; time <= 10; time++) {
+        for (let retry = 1; time <= 10; time++) {
             await beforeSleepSemaphore.wait();
             strictEqual(executable.count, time);
             testRuntime.threadAwake();

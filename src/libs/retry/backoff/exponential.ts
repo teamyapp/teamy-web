@@ -6,14 +6,13 @@ import { BackOff } from './backoff';
 interface ExponentialOptions {
     minDelay: number;
     maxDelay: number;
-    nextDelay: number;
     scalingFactor: number;
     randomOffset: number;
     randomOffsetUnit: number;
     resetOnSuccess: boolean;
 }
 
-export class Exponential implements BackOff {
+export class ExponentialBackoff implements Backoff {
     private options: ExponentialOptions;
 
     constructor(
@@ -30,7 +29,6 @@ export class Exponential implements BackOff {
             resetOnSuccess: false,
             ...options,
         };
-
         this.options.nextDelay = this.options.minDelay;
     }
 
