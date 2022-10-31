@@ -10,8 +10,8 @@ export class InfiniteRetry implements Retry {
     public withRetry(
         execute: () => Promise<InternalError | undefined>,
     ): Promise<[number, InternalError | undefined]> {
-        let retries = 0;
         return new Promise(async (resolve) => {
+            let retries = 0;
             while (true) {
                 const err = await execute();
                 if (err === undefined) {

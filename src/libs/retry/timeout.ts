@@ -17,10 +17,11 @@ export class TimeoutRetry implements Retry {
     public withRetry(
         execute: () => Promise<InternalError | undefined>,
     ): Promise<[number, InternalError | undefined]> {
-        let retries = 0;
-        let err: InternalError | undefined;
-        const expiredAt = this.clock.now().getTime() + this.duration;
         return new Promise(async (resolve) => {
+            let retries = 0;
+            let err: InternalError | undefined;
+            const expiredAt = this.clock.now().getTime() + this.duration;
+
             while (true) {
                 err = await execute();
                 await this.beforeRetryDelay?.call(null);
