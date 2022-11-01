@@ -11,8 +11,3 @@ export interface Logger {
         context: Context, level: LogLevel, props: Props
     ): void;
 }
-
- 
-
-
-

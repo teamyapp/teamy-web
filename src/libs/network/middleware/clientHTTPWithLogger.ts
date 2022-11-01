@@ -24,12 +24,10 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                     const context = {
                         requestId: options?.headers && options?.headers[REQUEST_ID_HEADER]
                     }
-
                     logger.logWithContext(context,  "Info", {
                         [Prop.FileName]: fileName,
                         [Prop.LineNumber]: "28"
                     })
-
                     return httpClient.request(url, options);
                 },
             };

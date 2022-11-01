@@ -5,7 +5,7 @@ import { Props } from './Props';
 
 export class ObsClient {
     constructor(
-        private readonly connectionUrl: string,
+        private readonly telemetryApiEndpoint: string,
         private readonly httpClient: HTTPClient,
     ) {}
 
@@ -13,7 +13,7 @@ export class ObsClient {
         logEntries: Props[]
     ): Promise<Result<string, Errors>> {
         return this.httpClient.request(
-            `${this.connectionUrl}/monitor/upload-log`,
+            `${this.connectionUrl}/telemetry/upload-log`,
             {
                 method: 'POST',
                 body: JSON.stringify(logEntries)
