@@ -1,4 +1,5 @@
-import { Duration } from '@core/entity/duration';
+import { Duration } from '@lib/entity/duration';
+
 import { TeamMember } from '@core/entity/teamMember';
 import { TeamNode } from '@core/storage/graph/team.node';
 import { UserNode } from '@core/storage/graph/user.node';

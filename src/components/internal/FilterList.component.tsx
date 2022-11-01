@@ -1,14 +1,15 @@
 import React, { Component, createRef } from 'react';
-import { between } from '@core/data/task.filter';
+
 import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { SpacerUI } from '@lib/ui/Spacer';
+
+import { between } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
 import { Task } from '@core/entity/task';
 import { TeamMember } from '@core/entity/teamMember';
 
 import styles from './FilterList.component.module.scss';
-
 
 const DATE_PICKER_Z_INDEX = 101;
 

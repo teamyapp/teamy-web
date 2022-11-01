@@ -8,8 +8,11 @@ import { FetchHTTPClient } from '@lib/network/FetchHTTP.client';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { clientHTTPWithIdentity } from '@lib/network/middleware/clientHTTPWithIdentity';
 import { clientHTTPWithRequestId } from '@lib/network/middleware/clientHTTPWithRequestId';
+import { clientHTTPWithRetry } from '@lib/network/middleware/clientHTTPWithRetry';
 import { httpClientWithMiddlewares } from '@lib/network/middleware/middleware';
 import { PubSub } from '@lib/pubSub/pubSub';
+import { ExponentialBackoff } from '@lib/retry/backoff/exponential';
+import { MaxCountRetry } from '@lib/retry/maxCount';
 import { Router, createBrowserRouter } from '@lib/router/router';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
 
@@ -31,6 +34,8 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { BuiltInRuntime } from '@lib/runtime/runtime';
+import { BuiltInRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -48,9 +53,13 @@ export interface Deps {
 
 export function initDeps(): Deps {
     const env = getEnvironment();
+    const config = getConfig(env);
     const httpClient = httpClientWithMiddlewares(new FetchHTTPClient(), [
         clientHTTPWithRequestId,
         clientHTTPWithIdentity,
+        clientHTTPWithRetry(
+            new MaxCountRetry(new BuiltInRuntime(), new ExponentialBackoff(new BuiltInRandomNumberGenerator()), 10),
+        ),
     ]);
     const identityClient = new IdentityClient(
         env,
@@ -58,7 +67,6 @@ export function initDeps(): Deps {
         absoluteRootPath,
         httpClient,
     );
-    const config = getConfig(env);
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,
         httpClient,

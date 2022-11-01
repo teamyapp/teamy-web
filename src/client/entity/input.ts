@@ -1,4 +1,3 @@
-import { Duration } from '@core/entity/duration';
 
 export interface RemoteCreateUserInput {
     lastName: string;

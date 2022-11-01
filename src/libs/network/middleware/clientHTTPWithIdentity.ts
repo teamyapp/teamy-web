@@ -1,4 +1,4 @@
-import { Errors } from '@lib/error/errors';
+import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { getAccessToken } from '@lib/identity/Identity.client';
 
@@ -16,7 +16,7 @@ export const clientHTTPWithIdentity: HTTPClientMiddleware = (
                 headers?: Record<string, string>;
                 body?: string;
             },
-        ): Promise<Result<string, Errors>> => {
+        ): Promise<Result<string, InternalError>> => {
             const method = options?.method || 'GET';
             const headers = {
                 ...options?.headers,

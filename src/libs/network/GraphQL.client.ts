@@ -39,7 +39,7 @@ export class GraphQLClient {
             console.error(errors);
         }
 
-        const json = JSON.parse(result || '');
+        const json = result ? JSON.parse(result) : null;
         return json?.data;
     }
 
@@ -60,7 +60,7 @@ export class GraphQLClient {
             console.error(errors);
         }
 
-        const json = JSON.parse(result || '');
+        const json = result ? JSON.parse(result) : null;
         return json?.data;
     }
 }

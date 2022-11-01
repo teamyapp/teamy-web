@@ -1,4 +1,4 @@
-import { Errors } from '@lib/error/errors';
+import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 
 export interface HTTPClient {
@@ -9,5 +9,5 @@ export interface HTTPClient {
             headers?: Record<string, string>;
             body?: string;
         },
-    ): Promise<Result<string, Errors>>;
+    ): Promise<Result<string, InternalError>>;
 }

@@ -1,9 +1,9 @@
-import { Errors } from '@lib/error/errors';
+import { InternalError, Errors } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 
 import { HTTPClient } from './HTTP.client';
 
-const errors: Record<number, Errors> = {
+const errorMap: Record<number, Errors> = {
     400: Errors.BadRequest,
     401: Errors.Unauthenticated,
     404: Errors.NotFound,
@@ -14,8 +14,9 @@ const errors: Record<number, Errors> = {
 };
 
 export class FetchHTTPClient implements HTTPClient {
-    private static getError(httpStatusCode: number): Errors {
-        return errors[httpStatusCode] || Errors.Unknown;
+    private static getError(httpStatusCode: number): InternalError {
+        const error = errorMap[httpStatusCode] || Errors.Unknown;
+        return new InternalError(error);
     }
 
     async request(
@@ -25,8 +26,8 @@ export class FetchHTTPClient implements HTTPClient {
             headers?: Record<string, string>;
             body?: string;
         },
-    ): Promise<Result<string, Errors>> {
-        return new Promise<Result<string, Errors>>((resolve) => {
+    ): Promise<Result<string, InternalError>> {
+        return new Promise<Result<string, InternalError>>((resolve) => {
             fetch(url, {
                 method: options?.method,
                 mode: 'cors',
@@ -47,7 +48,7 @@ export class FetchHTTPClient implements HTTPClient {
                     }
                 })
                 .catch(() => {
-                    resolve([null, Errors.Unknown]);
+                    resolve([null, new InternalError(Errors.Unknown)]);
                 });
         });
     }

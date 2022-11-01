@@ -1,10 +1,11 @@
-
-import React, { Component, ReactNode, createRef } from 'react';
 import classNames from 'classnames';
+import React, { Component, ReactNode, createRef } from 'react';
+
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
+import { Duration } from '@lib/entity/duration';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
@@ -33,7 +34,6 @@ import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import { allTasks, ownedBy } from '@core/data/task.filter';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
-import { Duration } from '@core/entity/duration';
 import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
@@ -383,7 +383,6 @@ export class SprintsComponent extends Component<Props, State> {
                                 <div className={styles.ParticipantList}>
                                     <div className={styles.Participant}>
                                         <div
-
                                             className={`${
                                                 styles.AllParticipants
                                             }  ${classNames({
@@ -483,7 +482,7 @@ export class SprintsComponent extends Component<Props, State> {
             }
 
             if (!this.state.selectedTaskOwners.size) {
-                this.state.selectedTaskOwners.add(userAll)
+                this.state.selectedTaskOwners.add(userAll);
             }
 
             this.forceUpdate();
@@ -501,9 +500,7 @@ export class SprintsComponent extends Component<Props, State> {
     };
 
     private getTaskOwnerFilter(): Filter<Task> {
-        if (
-            this.state.selectedTaskOwners.has(userAll)
-        ) {
+        if (this.state.selectedTaskOwners.has(userAll)) {
             return allTasks;
         }
 

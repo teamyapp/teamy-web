@@ -1,4 +1,4 @@
-import { Duration } from '@core/entity/duration';
+import { Duration } from '@lib/entity/duration';
 
 export interface CreateUserInput {
     lastName: string;

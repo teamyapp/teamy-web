@@ -5,6 +5,7 @@ export class Semaphore {
     private availableThreads: number;
 
     constructor(
+        private id: string,
         private initialAvailableThreads: number = 0,
         private maxAvailableThreads: number = 1,
     ) {

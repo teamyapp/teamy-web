@@ -107,5 +107,10 @@
             "^@lib/testing/(.*)": "<rootDir>/src/libs/testing/$1",
             "^@lib/(.*)": "<rootDir>/src/libs/$1"
         }
+    },
+    "babel": {
+        "presets": [
+            "@babel/preset-typescript"
+        ]
     }
 }
