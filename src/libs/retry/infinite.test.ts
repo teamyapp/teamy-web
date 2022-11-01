@@ -10,7 +10,7 @@ import { Semaphore } from '@lib/sync/semaphore';
 import { Duration } from '@lib/entity/duration';
 import { Errors, InternalError } from '@lib/error/errors';
 
-describe('Infinite', () => {
+describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();
     let testRuntime: TestRuntime;
     let executable: Executable;
