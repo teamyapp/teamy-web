@@ -16,7 +16,6 @@ export function clientHTTPWithRetry(retry: Retry): HTTPClientMiddleware {
                 await retry.withRetry(() =>
                 new Promise<InternalError | undefined>(async (resolve) => {
                     result = await httpClient.request(url, options);
-
                     if (result[1] !== null) {
                         resolve(result[1]);
                     } else {
