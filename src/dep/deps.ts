@@ -20,9 +20,7 @@ import { Router, createBrowserRouter } from '@lib/router/router';
 import { BuiltInRuntime } from '@lib/runtime/runtime';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { Logger } from '@lib/telemetry/Logger';
-import { ObsClient } from '@lib/telemetry/ObsClient';
 import { RawLogger } from '@lib/telemetry/RawLogger';
-import { logWithContext } from '@lib/telemetry/middleware/logWithContext';
 
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
@@ -42,6 +40,9 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
+import { logWithRequestId } from '@lib/telemetry/middleware/logWithRequestId';
+import { logWithServiceName } from '@lib/telemetry/middleware/logWithServiceName';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -60,7 +61,7 @@ export interface Deps {
 export function initDeps(): Deps {
     const env = getEnvironment();
     const config = getConfig(env);
-    const httpClient = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
+    const httpMiddlewares = [
         clientHTTPWithRequestId,
         clientHTTPWithIdentity,
         clientHTTPWithRetry(
@@ -70,15 +71,16 @@ export function initDeps(): Deps {
                 10,
             ),
         ),
-    ]);
-    const obsClient = new ObsClient(config.cloudWebAPIEndpoint, httpClient);
-    const logger = WithMiddlewares<Logger>(new RawLogger('Info', obsClient), [
-        logWithContext,
-    ]);
+    ]
+    const httpClient = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), httpMiddlewares);
+
+    const telemetryClient = new TelemetryClient(config.cloudWebAPIEndpoint, httpClient)
+    const logger = WithMiddlewares<Logger>(new RawLogger(config.defaultLogLevel, telemetryClient), [
+        logWithRequestId, logWithServiceName
+    ])
 
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
-        clientHTTPWithRequestId,
-        clientHTTPWithIdentity,
+        ...httpMiddlewares,
         clientHTTPWithLogger(logger),
     ]);
     const identityClient = new IdentityClient(

@@ -11,11 +11,8 @@ export const clientHTTPWithIdentity: Middleware<HTTPClient> = (
     return {
         request: (
             url: string,
-            options?: {
-                method: string;
-                headers?: Record<string, string>;
-                body?: string;
-            },
+            options,
+            context = {}
         ): Promise<Result<string, InternalError>> => {
             const method = options?.method || 'GET';
             const headers = {
@@ -26,7 +23,7 @@ export const clientHTTPWithIdentity: Middleware<HTTPClient> = (
                 ...options,
                 method,
                 headers,
-            });
+            }, context);
         },
     };
 };

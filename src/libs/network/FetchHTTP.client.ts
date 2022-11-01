@@ -40,15 +40,16 @@ export class FetchHTTPClient implements HTTPClient {
                     if (response.status >= 400) {
                         resolve([
                             null,
+                            response.headers,
                             FetchHTTPClient.getError(response.status),
                         ]);
                         return null;
                     } else {
-                        resolve([await response.text(), null]);
+                        resolve([await response.text(), response.headers, null]);
                     }
                 })
                 .catch(() => {
-                    resolve([null, new InternalError(Errors.Unknown)]);
+                    resolve([null, null, new InternalError(Errors.Unknown)]);
                 });
         });
     }

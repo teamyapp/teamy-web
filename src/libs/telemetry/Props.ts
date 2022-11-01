@@ -1,10 +1,16 @@
-export enum Prop {
-    Cause =  "Cause",
-    Message = "Message",
-    HappenAt = "HappenAt" ,
-    Severity = "Severity" ,
-    FileName = "FileName" ,
-    LineNumber = "LineNumber",
-}
+import { PartialRecord } from "@lib/types";
 
-export type Props = Record<string, any>
+export type Prop =
+    | 'Body'
+    | 'Method'
+    | 'Headers'
+    | 'Cause'
+    | 'Message'
+    | 'HappenAt'
+    | 'Severity'
+    | 'FileName'
+    | 'LineNumber'
+    | 'ServiceName'
+    | 'RequestId';
+
+export type Props = PartialRecord<Prop, any>;

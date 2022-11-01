@@ -102,7 +102,7 @@ export class IdentityClient {
                 body: accessToken,
             },
         );
-        return result[1] === null;
+        return result[2] === null;
     }
 }
 

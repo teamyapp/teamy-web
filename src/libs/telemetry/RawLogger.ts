@@ -1,55 +1,64 @@
-import { Logger } from "./Logger";
-import { LogLevel, LogLevelRank } from "./LogLevel";
-import { ObsClient } from "./ObsClient";
-import { Props, Prop } from "./Props";
+import { Duration } from '@lib/entity/duration';
 
-const wait = (duration: number) => new Promise((resolve) => setTimeout(resolve, duration))
-const duration = 2000
+import { LOG_LEVEL_RANKS, LogLevel } from './LogLevel';
+import { Context, Logger } from './Logger';
+import { Props } from './Props';
+import { TelemetryClient } from './TelemetryClient';
+import { BuiltInRuntime } from '@lib/runtime/runtime';
+
+const LOG_UPLOAD_INTERVAL = Duration.fromString('T2S');
 
 export class RawLogger implements Logger {
-    private logEntries: Props[] = []
+    private logEntries: Props[] = [];
+    private runtime = new BuiltInRuntime()
 
-    constructor(private visibleLevel: LogLevel, obsClient: ObsClient) {
+    constructor(
+        private visibleLevel: LogLevel,
+        telemetryClient: TelemetryClient,
+    ) {
         this.visibleLevel = visibleLevel;
 
         (async () => {
-            while(true) {
-                await wait(duration)
+            while (true) {
+                await this.runtime.threadSleep(LOG_UPLOAD_INTERVAL);
                 if (!this.logEntries.length) {
-                    continue
+                    continue;
                 }
 
-                obsClient.uploadLog(this.logEntries)
-                this.logEntries = []
+                telemetryClient.uploadLog(this.logEntries);
+                this.logEntries = [];
             }
-        })()
+        })();
     }
 
     public log(level: LogLevel, properties: Props) {
-        this.logAndSkip(level, properties)
+        this.logAndSkip(level, properties);
     }
-    
+
     public logAndSkip(level: LogLevel, properties: Props) {
-        if (LogLevelRank[level] <= LogLevelRank[this.visibleLevel]) {
-            properties = this.withDefaults(level, properties)
-            this.logEntries.push(properties)
+        if (LOG_LEVEL_RANKS[level] <= LOG_LEVEL_RANKS[this.visibleLevel]) {
+            properties = this.withDefaults(level, properties);
+            this.logEntries.push(properties);
         }
     }
-    
-    public logWithContext(ct: Props, level: LogLevel, props: Props) {
-        this.logWithContextAndSkip(ct, level, props)
+
+    public logWithContext(ct: Context, level: LogLevel, props: Props) {
+        this.logWithContextAndSkip(ct, level, props);
     }
 
     private withDefaults(level: LogLevel, props: Props): Props {
         return {
             ...props,
-            [Prop.HappenAt]: new Date().toUTCString(),
-            [Prop.Severity]: level
-        }
-    }
-    
-    public logWithContextAndSkip(context: Props, level: LogLevel, properties: Props) {
-        this.logAndSkip(level, properties)
+            HappenAt: new Date().toUTCString(),
+            Severity: level,
+        };
     }
 
+    public logWithContextAndSkip(
+        context: Context,
+        level: LogLevel,
+        properties: Props,
+    ) {
+        this.logAndSkip(level, properties);
+    }
 }

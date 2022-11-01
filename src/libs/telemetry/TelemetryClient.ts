@@ -1,9 +1,9 @@
-import { Errors } from '@lib/error/errors';
+import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { HTTPClient } from '@lib/network/HTTP.client';
 import { Props } from './Props';
 
-export class ObsClient {
+export class TelemetryClient {
     constructor(
         private readonly telemetryApiEndpoint: string,
         private readonly httpClient: HTTPClient,
@@ -11,9 +11,9 @@ export class ObsClient {
 
     public uploadLog(
         logEntries: Props[]
-    ): Promise<Result<string, Errors>> {
+    ): Promise<Result<string, InternalError>> {
         return this.httpClient.request(
-            `${this.connectionUrl}/telemetry/upload-log`,
+            `${this.telemetryApiEndpoint}/telemetry/upload-log`,
             {
                 method: 'POST',
                 body: JSON.stringify(logEntries)
