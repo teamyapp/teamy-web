@@ -13,7 +13,6 @@ export function clientHTTPWithRetry(retry: Retry): HTTPClientMiddleware {
                 options,
             ): Promise<Result<string, InternalError>> => {
                 let result: Result<string, InternalError>;
-
                 await retry.withRetry(() =>
                 new Promise<InternalError | undefined>(async (resolve) => {
                     result = await httpClient.request(url, options);
