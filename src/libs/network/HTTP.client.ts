@@ -1,7 +1,6 @@
 import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 
-
 export interface Context {
     requestId?: string
     serviceName?: string

@@ -35,7 +35,6 @@ export class RawLogger implements Logger {
         this.logAndSkip(level, properties);
     }
 
-    public logAndSkip(level: LogLevel, properties: Props) {
         if (LOG_LEVEL_RANKS[level] <= LOG_LEVEL_RANKS[this.visibleLevel]) {
             properties = this.withDefaults(level, properties);
             this.logEntries.push(properties);
@@ -54,11 +53,4 @@ export class RawLogger implements Logger {
         };
     }
 
-    public logWithContextAndSkip(
-        context: Context,
-        level: LogLevel,
-        properties: Props,
-    ) {
-        this.logAndSkip(level, properties);
-    }
 }

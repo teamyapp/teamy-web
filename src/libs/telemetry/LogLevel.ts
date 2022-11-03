@@ -1,5 +1,4 @@
-
-export type LogLevel = 'Off' | 'Fatal' | 'Error' | 'Warning' | 'Info' | 'Debug'
+export type LogLevel = 'Off' | 'Fatal' | 'Error' | 'Warning' | 'Info' | 'Debug';
 export const LOG_LEVEL_RANKS: Record<LogLevel, number> = {
 	Off:     0,
 	Fatal:   1,

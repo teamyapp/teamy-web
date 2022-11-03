@@ -73,7 +73,6 @@ export function initDeps(): Deps {
         ),
     ]
     const httpClient = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), httpMiddlewares);
-
     const telemetryClient = new TelemetryClient(config.cloudWebAPIEndpoint, httpClient)
     const logger = WithMiddlewares<Logger>(new RawLogger(config.defaultLogLevel, telemetryClient), [
         logWithRequestId, logWithServiceName

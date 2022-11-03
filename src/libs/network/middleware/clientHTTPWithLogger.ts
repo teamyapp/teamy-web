@@ -15,21 +15,20 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
             ): Promise<Result<string, InternalError>> => {
                 logger.logWithContext(context, 'Info', {
                     Headers: JSON.stringify(options?.headers),
-                    Method: options?.method || "get",
+                    Method: options?.method || "Get",
                     Body: options?.body ? JSON.stringify(options?.body) : "",
                     FileName: 'COMPILE_TIME_INJECT_FILENAME',
                     LineNumber: 'COMPILE_TIME_INJECT_LINE_NUMBER',
                 });
-                const [res, headers, error] = await httpClient.request(url, options, context);
+                const [res, resHeaders, error] = await httpClient.request(url, options, context);
                 logger.logWithContext(context, error ? 'Error' : 'Info', {
                     Headers: headers ? JSON.stringify(headers) : "",
-                    Method: options?.method || "get",
+                    Method: options?.method || 'Get',
                     Body: res,
                     Cause: error,
                     FileName: 'COMPILE_TIME_INJECT_FILENAME',
                     LineNumber: 'COMPILE_TIME_INJECT_LINE_NUMBER',
                 });
-
                 return [res, headers, error]
             },
         };

@@ -13,4 +13,4 @@ export type Prop =
     | 'ServiceName'
     | 'RequestId';
 
-export type Props = PartialRecord<Prop, any>;
+export type Props = PartialRecord<string, any>;
