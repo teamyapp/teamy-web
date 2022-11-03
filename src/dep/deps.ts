@@ -21,6 +21,9 @@ import { BuiltInRuntime } from '@lib/runtime/runtime';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { Logger } from '@lib/telemetry/Logger';
 import { RawLogger } from '@lib/telemetry/RawLogger';
+import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
+import { logWithRequestId } from '@lib/telemetry/middleware/logWithRequestId';
+import { logWithServiceName } from '@lib/telemetry/middleware/logWithServiceName';
 
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
@@ -40,9 +43,6 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
-import { logWithRequestId } from '@lib/telemetry/middleware/logWithRequestId';
-import { logWithServiceName } from '@lib/telemetry/middleware/logWithServiceName';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -71,12 +71,22 @@ export function initDeps(): Deps {
                 10,
             ),
         ),
-    ]
-    const httpClient = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), httpMiddlewares);
-    const telemetryClient = new TelemetryClient(config.cloudWebAPIEndpoint, httpClient)
-    const logger = WithMiddlewares<Logger>(new RawLogger(config.defaultLogLevel, telemetryClient), [
-        logWithRequestId, logWithServiceName
-    ])
+    ];
+    const httpClient = WithMiddlewares<HTTPClient>(
+        new FetchHTTPClient(),
+        httpMiddlewares,
+    );
+    const telemetryClient = new TelemetryClient(
+        config.cloudWebAPIEndpoint,
+        httpClient,
+    );
+    const logger = WithMiddlewares<Logger>(
+        new RawLogger(config.defaultLogLevel, new BuiltInRuntime(), telemetryClient),
+        [
+            logWithRequestId, 
+            logWithServiceName('teamy-web-browser')
+        ],
+    );
 
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,

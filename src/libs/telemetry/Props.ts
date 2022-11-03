@@ -1,5 +1,3 @@
-import { PartialRecord } from "@lib/types";
-
 export type Prop =
     | 'Body'
     | 'Method'
@@ -13,4 +11,4 @@ export type Prop =
     | 'ServiceName'
     | 'RequestId';
 
-export type Props = PartialRecord<string, any>;
+export type Props = Record<string, any>;

@@ -2,7 +2,7 @@ import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { Logger } from '@lib/telemetry/Logger';
 import { Middleware } from '../../middleware/middleware';
-import { Context, HTTPClient } from '../HTTP.client';
+import { HTTPClient } from '../HTTP.client';
 
 export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
     (logger: Logger) =>
@@ -11,7 +11,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
             request: async (
                 url: string,
                 options,
-                context: Context = {},
+                context = {},
             ): Promise<Result<string, InternalError>> => {
                 logger.logWithContext(context, 'Info', {
                     Headers: JSON.stringify(options?.headers),
@@ -22,14 +22,14 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                 });
                 const [res, resHeaders, error] = await httpClient.request(url, options, context);
                 logger.logWithContext(context, error ? 'Error' : 'Info', {
-                    Headers: headers ? JSON.stringify(headers) : "",
+                    Headers: resHeaders ? JSON.stringify(resHeaders) : "",
                     Method: options?.method || 'Get',
                     Body: res,
                     Cause: error,
                     FileName: 'COMPILE_TIME_INJECT_FILENAME',
                     LineNumber: 'COMPILE_TIME_INJECT_LINE_NUMBER',
                 });
-                return [res, headers, error]
+                return [res, resHeaders, error]
             },
         };
     };
