@@ -43,7 +43,7 @@ export class ExponentialBackoff implements BackOff {
 
         const scaled = Math.pow(
             this.nextDelay,
-            -this.scalingFactor,
+            1/this.scalingFactor,
         );
         this.nextDelay =
             Math.max(scaled, this.minDelay) + this.randOffset();

@@ -68,6 +68,20 @@ describe('Exponential', () => {
         strictEqual(exponential.delay().totalMilliSeconds, 10);
     });
 
+    it('should not reset delay after success', () => {
+        const exponential = new ExponentialBackoff(testRandGen, {
+            minDelay: 4,
+            randomOffset: 0,
+        });
+        strictEqual(exponential.delay().totalMilliSeconds, 4);
+        exponential.onFailure()
+        strictEqual(exponential.delay().totalMilliSeconds, 16);
+        exponential.onFailure()
+        strictEqual(exponential.delay().totalMilliSeconds, 256);
+        exponential.onSuccess();
+        strictEqual(exponential.delay().totalMilliSeconds, 16);
+    });
+
     it('should reset delay after success', () => {
         const exponential = new ExponentialBackoff(testRandGen, {
             minDelay: 4,
