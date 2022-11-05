@@ -1,6 +1,6 @@
 import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
-import { HTTPClient } from '@lib/network/HTTP.client';
+import { HTTPClient, HTTPResponse } from '@lib/network/HTTP.client';
 import { Props } from './Props';
 
 export class TelemetryClient {
@@ -11,7 +11,7 @@ export class TelemetryClient {
 
     public uploadLog(
         logEntries: Props[]
-    ): Promise<Result<string, InternalError>> {
+    ): Promise<Result<HTTPResponse, InternalError>> {
         return this.httpClient.request(
             `${this.telemetryApiEndpoint}/telemetry/upload-log`,
             {

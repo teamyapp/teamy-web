@@ -1,6 +1,6 @@
 import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
-import { HTTPClient } from '@lib/network/HTTP.client';
+import { HTTPClient, HTTPResponse } from '@lib/network/HTTP.client';
 
 export class StateSyncClient {
     constructor(
@@ -10,7 +10,7 @@ export class StateSyncClient {
 
     public sendInitialStateIsReady(
         clientId: number,
-    ): Promise<Result<string, InternalError>> {
+    ): Promise<Result<HTTPResponse, InternalError>> {
         return this.httpClient.request(
             `${this.connectionUrl}/real-time-state-sync/clients/${clientId}/initial-state-ready`,
             {

@@ -3,7 +3,7 @@ import { Result } from '@lib/error/result';
 import { Middleware } from '@lib/middleware/middleware';
 import { Retry } from '@lib/retry/retry';
 
-import { HTTPClient } from '../HTTP.client';
+import { HTTPClient, HTTPResponse } from '../HTTP.client';
 
 export function clientHTTPWithRetry(retry: Retry): Middleware<HTTPClient> {
     return (httpClient: HTTPClient): HTTPClient => {
@@ -11,14 +11,14 @@ export function clientHTTPWithRetry(retry: Retry): Middleware<HTTPClient> {
             request: async (
                 url: string,
                 options,
-                context = {}
-            ): Promise<Result<string, InternalError>> => {
-                let result: Result<string, InternalError>;
+                context
+            ): Promise<Result<HTTPResponse, InternalError>> => {
+                let result: Result<HTTPResponse, InternalError>;
                 await retry.withRetry(() =>
                 new Promise<InternalError | undefined>(async (resolve) => {
                     result = await httpClient.request(url, options, context);
-                    if (result[2] !== null) {
-                        resolve(result[2]);
+                    if (result[1] !== null) {
+                        resolve(result[1]);
                     } else {
                         resolve(undefined);
                     }

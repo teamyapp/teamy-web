@@ -72,7 +72,7 @@ export class IdentityClient {
                 method: 'GET',
             },
         );
-        window.location.replace(result[0]!);
+        window.location.replace(result[0]!.body!);
     }
 
     public async listUserLinks(): Promise<UserLink[]> {
@@ -82,7 +82,7 @@ export class IdentityClient {
                 method: 'GET',
             },
         );
-        return result[0] ? JSON.parse(result[0]) : [];
+        return result[0]?.body ? JSON.parse(result[0].body) : [];
     }
 
     public async deleteUserLink(authProvider: string): Promise<void> {
@@ -102,7 +102,7 @@ export class IdentityClient {
                 body: accessToken,
             },
         );
-        return result[2] === null;
+        return result[1] === null;
     }
 }
 

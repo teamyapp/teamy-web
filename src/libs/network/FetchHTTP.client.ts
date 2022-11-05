@@ -1,7 +1,7 @@
-import { InternalError, Errors } from '@lib/error/errors';
+import { Errors, InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 
-import { HTTPClient } from './HTTP.client';
+import { HTTPClient, HTTPResponse } from './HTTP.client';
 
 const errorMap: Record<number, Errors> = {
     400: Errors.BadRequest,
@@ -26,8 +26,8 @@ export class FetchHTTPClient implements HTTPClient {
             headers?: Record<string, string>;
             body?: string;
         },
-    ): Promise<Result<string, InternalError>> {
-        return new Promise<Result<string, InternalError>>((resolve) => {
+    ): Promise<Result<HTTPResponse, InternalError>> {
+        return new Promise<Result<HTTPResponse, InternalError>>((resolve) => {
             fetch(url, {
                 method: options?.method,
                 mode: 'cors',
@@ -37,19 +37,31 @@ export class FetchHTTPClient implements HTTPClient {
                 body: options?.body,
             })
                 .then(async (response) => {
+                    const header = Object.fromEntries(response.headers.entries())
+
                     if (response.status >= 400) {
                         resolve([
-                            null,
-                            response.headers,
+                            {
+                                body: null,
+                                header,
+                                statusCode: response.status
+                            },
                             FetchHTTPClient.getError(response.status),
                         ]);
                         return null;
                     } else {
-                        resolve([await response.text(), response.headers, null]);
+                        resolve([
+                            {
+                                body: await response.text(),
+                                header,
+                                statusCode: response.status
+                            },
+                            null,
+                        ]);
                     }
                 })
                 .catch(() => {
-                    resolve([null, null, new InternalError(Errors.Unknown)]);
+                    resolve([null, new InternalError(Errors.Unknown)]);
                 });
         });
     }

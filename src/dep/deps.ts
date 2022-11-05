@@ -68,7 +68,7 @@ export function initDeps(): Deps {
             new MaxCountRetry(
                 new BuiltInRuntime(),
                 new ExponentialBackoff(new BuiltInRandomNumberGenerator()),
-                10,
+                config.maxRetryTimes,
             ),
         ),
     ];

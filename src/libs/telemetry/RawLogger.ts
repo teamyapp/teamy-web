@@ -1,8 +1,8 @@
 import { Duration } from '@lib/entity/duration';
 
 import { LOG_LEVEL_RANKS, LogLevel } from './LogLevel';
-import { Context, Logger } from './Logger';
-import { Props } from './Props';
+import { Logger } from './Logger';
+import { HappenAtProp, Props, SeverityProp } from './Props';
 import { TelemetryClient } from './TelemetryClient';
 import { Runtime } from '@lib/runtime/runtime';
 
@@ -31,7 +31,7 @@ export class RawLogger implements Logger {
         })();
     }
 
-    public logWithContext(ct: Context, level: LogLevel, properties: Props) {
+    public logWithContext(level: LogLevel, properties: Props) {
         if (LOG_LEVEL_RANKS[level] <= LOG_LEVEL_RANKS[this.visibleLevel]) {
             properties = this.withDefaults(level, properties);
             this.logEntries.push(properties);
@@ -41,8 +41,8 @@ export class RawLogger implements Logger {
     private withDefaults(level: LogLevel, props: Props): Props {
         return {
             ...props,
-            HappenAt: new Date().toUTCString(),
-            Severity: level,
+            [HappenAtProp]: new Date().toUTCString(),
+            [SeverityProp]: level,
         };
     }
 

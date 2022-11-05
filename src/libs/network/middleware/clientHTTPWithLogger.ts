@@ -1,35 +1,36 @@
 import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { Logger } from '@lib/telemetry/Logger';
+import { BodyProp, CauseProp, FileNameProp, HeadersProp, LineNumberProp, MethodProp } from '@lib/telemetry/Props';
 import { Middleware } from '../../middleware/middleware';
-import { HTTPClient } from '../HTTP.client';
+import { HTTPClient, HTTPResponse } from '../HTTP.client';
 
 export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
     (logger: Logger) =>
     (httpClient: HTTPClient): HTTPClient => {
         return {
             request: async (
-                url: string,
+                url,
                 options,
-                context = {},
+                context,
             ): Promise<Result<HTTPResponse, InternalError>> => {
-                logger.logWithContext(context, 'Info', {
-                    Headers: JSON.stringify(options?.headers),
-                    Method: options?.method || "Get",
-                    Body: options?.body ? JSON.stringify(options?.body) : "",
-                    FileName: 'COMPILE_TIME_INJECT_FILENAME',
-                    LineNumber: 'COMPILE_TIME_INJECT_LINE_NUMBER',
-                });
-                const [res, resHeaders, error] = await httpClient.request(url, options, context);
-                logger.logWithContext(context, error ? 'Error' : 'Info', {
-                    Headers: resHeaders ? JSON.stringify(resHeaders) : "",
-                    Method: options?.method || 'Get',
-                    Body: res,
-                    Cause: error,
-                    FileName: 'COMPILE_TIME_INJECT_FILENAME',
-                    LineNumber: 'COMPILE_TIME_INJECT_LINE_NUMBER',
-                });
-                return [res, resHeaders, error]
+                logger.logWithContext('Info', {
+                    [HeadersProp]: JSON.stringify(options?.headers),
+                    [MethodProp]: options?.method || "Get",
+                    [BodyProp]: options?.body ? JSON.stringify(options?.body) : "",
+                    [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
+                    [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
+                }, context);
+                const [result, error] = await httpClient.request(url, options, context);
+                logger.logWithContext(error ? 'Error' : 'Info', {
+                    [HeadersProp]: result?.header ? JSON.stringify(result.header) : "",
+                    [MethodProp]: options?.method || 'Get',
+                    [BodyProp]: result?.body,
+                    [CauseProp]: error,
+                    [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
+                    [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
+                }, context);
+                return [result, error]
             },
         };
     };
