@@ -12,7 +12,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                 url: string,
                 options,
                 context = {},
-            ): Promise<Result<string, InternalError>> => {
+            ): Promise<Result<HTTPResponse, InternalError>> => {
                 logger.logWithContext(context, 'Info', {
                     Headers: JSON.stringify(options?.headers),
                     Method: options?.method || "Get",
