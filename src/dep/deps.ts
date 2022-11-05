@@ -87,7 +87,6 @@ export function initDeps(): Deps {
             logWithServiceName('teamy-web-browser')
         ],
     );
-
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,
         clientHTTPWithLogger(logger),
