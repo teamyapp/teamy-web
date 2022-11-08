@@ -68,7 +68,7 @@ describe('Exponential', () => {
         strictEqual(exponential.delay().totalMilliSeconds, 10);
     });
 
-    it('should not reset delay after success', () => {
+    it('should scale down after success', () => {
         const exponential = new ExponentialBackoff(testRandGen, {
             minDelay: 4,
             randomOffset: 0,
