@@ -75,10 +75,13 @@ describe('Exponential', () => {
         });
         strictEqual(exponential.delay().totalMilliSeconds, 4);
         exponential.onFailure()
+
         strictEqual(exponential.delay().totalMilliSeconds, 16);
         exponential.onFailure()
+
         strictEqual(exponential.delay().totalMilliSeconds, 256);
         exponential.onSuccess();
+
         strictEqual(exponential.delay().totalMilliSeconds, 16);
     });
 
@@ -90,10 +93,13 @@ describe('Exponential', () => {
         });
         strictEqual(exponential.delay().totalMilliSeconds, 4);
         exponential.onFailure()
+
         strictEqual(exponential.delay().totalMilliSeconds, 16);
         exponential.onFailure()
+
         strictEqual(exponential.delay().totalMilliSeconds, 256);
         exponential.onSuccess();
+        
         strictEqual(exponential.delay().totalMilliSeconds, 4);
     });
 });
