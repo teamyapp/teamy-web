@@ -22,11 +22,17 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                     [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
                 }, context);
                 const [result, error] = await httpClient.request(url, options, context);
-                logger.logWithContext(error ? 'Error' : 'Info', {
-                    [HeadersProp]: result?.header ? JSON.stringify(result.header) : "",
+
+                if (error) {
+                    logger.logWithContext('Error', {
+                        [CauseProp]: error,
+                    }, context);
+                }
+
+                logger.logWithContext('Info', {
+                    [HeadersProp]: result?.headers ? JSON.stringify(result.headers) : "",
                     [MethodProp]: options?.method || 'Get',
                     [BodyProp]: result?.body,
-                    [CauseProp]: error,
                     [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
                     [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
                 }, context);

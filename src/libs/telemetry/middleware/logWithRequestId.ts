@@ -7,7 +7,7 @@ export const logWithRequestId: Middleware<Logger> = (
 ): Logger => {
     return {
         logWithContext(level, props, context) {
-            logger.logWithContext(level, {...props, [RequestIdProp]: context?.requestId}, context)
+            logger.logWithContext(level, context?.requestId ? {...props, [RequestIdProp]: context.requestId} : props, context)
         },
     };
 };
