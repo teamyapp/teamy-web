@@ -2,7 +2,7 @@ import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 export interface HTTPResponse {
     body: string | null;
-    header: Record<string, string>;
+    headers: Record<string, string>;
     statusCode: number;
 }
 export interface HTTPClient {
