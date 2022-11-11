@@ -8,6 +8,7 @@ import {
     HeadersProp,
     LineNumberProp,
     MethodProp,
+    StageProp,
 } from '@lib/telemetry/Props';
 
 import { Middleware } from '../../middleware/middleware';
@@ -32,6 +33,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                             : '',
                         [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
                         [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
+                        [StageProp]: 'begin'
                     },
                     context,
                 );
@@ -61,6 +63,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                         [BodyProp]: result?.body,
                         [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
                         [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
+                        [StageProp]: 'end'
                     },
                     context,
                 );

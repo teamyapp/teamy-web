@@ -9,5 +9,6 @@ export const FileNameProp = 'FileName';
 export const LineNumberProp = 'LineNumber';
 export const RequestIdProp = 'RequestId';
 export const ServiceNameProp = 'ServiceName';
+export const StageProp = 'Stage';
 
 export type Props = Record<string, any>;
