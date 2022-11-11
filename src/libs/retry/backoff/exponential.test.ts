@@ -76,10 +76,10 @@ describe('Exponential', () => {
             randomOffset: 0,
         });
         strictEqual(exponential.delay().totalMilliSeconds, 4);
-        exponential.onFailure()
+        exponential.onFailure();
 
         strictEqual(exponential.delay().totalMilliSeconds, 16);
-        exponential.onFailure()
+        exponential.onFailure();
 
         strictEqual(exponential.delay().totalMilliSeconds, 256);
         exponential.onSuccess();
@@ -99,7 +99,7 @@ describe('Exponential', () => {
         exponential.onFailure();
         strictEqual(exponential.delay().totalMilliSeconds, 256);
         exponential.onSuccess();
-        
+
         strictEqual(exponential.delay().totalMilliSeconds, 4);
     });
 });

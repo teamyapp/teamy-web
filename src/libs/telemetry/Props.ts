@@ -10,5 +10,7 @@ export const LineNumberProp = 'LineNumber';
 export const RequestIdProp = 'RequestId';
 export const ServiceNameProp = 'ServiceName';
 export const StageProp = 'Stage';
+export const PathProp = 'Path';
+export const ProtocolProp = 'Protocol';
 
 export type Props = Record<string, any>;
