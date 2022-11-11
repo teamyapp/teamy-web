@@ -13,11 +13,12 @@ export class TelemetryClient {
     public uploadLog(
         logEntries: Props[],
     ): Promise<Result<HTTPResponse, InternalError>> {
+
         return this.httpClient.request(
             `${this.telemetryApiEndpoint}/telemetry/upload-log`,
             {
                 method: 'POST',
-                body: JSON.stringify(logEntries),
+                body: JSON.stringify(logEntries.map(logEntry => JSON.stringify(logEntry))),
             },
         );
     }
