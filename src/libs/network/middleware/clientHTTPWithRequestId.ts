@@ -12,9 +12,13 @@ export const clientHTTPWithRequestId: Middleware<HTTPClient> = (
 ): HTTPClient => {
     return {
         request: (
-            url,
-            options,
-            context
+            url: string,
+            options?: {
+                method: string;
+                headers?: Record<string, string>;
+                body?: string;
+            },
+            context?: Record<string, string>,
         ): Promise<Result<HTTPResponse, InternalError>> => {
             const method = options?.method || 'GET';
             const requestId = uuidv4();

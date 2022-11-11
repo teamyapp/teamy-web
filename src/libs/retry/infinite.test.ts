@@ -1,14 +1,14 @@
 import { strictEqual } from 'assert';
 
+import { Duration } from '@lib/entity/duration';
+import { Errors, InternalError } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
+import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { InfiniteRetry } from './infinite';
 import { Executable } from './retry.test';
-import { Semaphore } from '@lib/sync/semaphore';
-import { Duration } from '@lib/entity/duration';
-import { Errors, InternalError } from '@lib/error/errors';
 
 describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -34,7 +34,7 @@ describe('InfiniteRetry', () => {
         exitSemaphore = new Semaphore('Exit');
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
-            duration = _duration
+            duration = _duration;
         };
     });
 
@@ -52,11 +52,10 @@ describe('InfiniteRetry', () => {
             );
 
             strictEqual(retries, 10);
-            strictEqual(duration.totalMilliSeconds, 60000)
+            strictEqual(duration.totalMilliSeconds, 60000);
             strictEqual(error, undefined);
             exitSemaphore.release();
         })().then();
-        
 
         for (let retry = 1; retry <= 10; retry++) {
             await beforeSleepSemaphore.wait();

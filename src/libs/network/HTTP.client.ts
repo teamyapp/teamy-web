@@ -1,5 +1,6 @@
 import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
+
 export interface HTTPResponse {
     body: string | null;
     headers: Record<string, string>;
@@ -13,6 +14,6 @@ export interface HTTPClient {
             headers?: Record<string, string>;
             body?: string;
         },
-        context?: Record<string, string>
+        context?: Record<string, string>,
     ): Promise<Result<HTTPResponse, InternalError>>;
 }

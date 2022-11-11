@@ -1,10 +1,10 @@
 import { Duration } from '@lib/entity/duration';
+import { Runtime } from '@lib/runtime/runtime';
 
 import { LOG_LEVEL_RANKS, LogLevel } from './LogLevel';
 import { Logger } from './Logger';
 import { HappenAtProp, Props, SeverityProp } from './Props';
 import { TelemetryClient } from './TelemetryClient';
-import { Runtime } from '@lib/runtime/runtime';
 
 const LOG_UPLOAD_INTERVAL = Duration.fromString('T2S');
 
@@ -45,5 +45,4 @@ export class RawLogger implements Logger {
             [SeverityProp]: level,
         };
     }
-
 }

@@ -10,19 +10,31 @@ export function clientHTTPWithRetry(retry: Retry): Middleware<HTTPClient> {
         return {
             request: async (
                 url: string,
-                options,
-                context
+                options?: {
+                    method: string;
+                    headers?: Record<string, string>;
+                    body?: string;
+                },
+                context?: Record<string, string>,
             ): Promise<Result<HTTPResponse, InternalError>> => {
                 let result: Result<HTTPResponse, InternalError>;
-                await retry.withRetry(() =>
-                new Promise<InternalError | undefined>(async (resolve) => {
-                    result = await httpClient.request(url, options, context);
-                    if (result[1] !== null) {
-                        resolve(result[1]);
-                    } else {
-                        resolve(undefined);
-                    }
-                }));
+                await retry.withRetry(
+                    () =>
+                        new Promise<InternalError | undefined>(
+                            async (resolve) => {
+                                result = await httpClient.request(
+                                    url,
+                                    options,
+                                    context,
+                                );
+                                if (result[1] !== null) {
+                                    resolve(result[1]);
+                                } else {
+                                    resolve(undefined);
+                                }
+                            },
+                        ),
+                );
                 return result!;
             },
         };

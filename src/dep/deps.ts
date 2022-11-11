@@ -81,11 +81,12 @@ export function initDeps(): Deps {
         httpClient,
     );
     const logger = WithMiddlewares<Logger>(
-        new RawLogger(config.defaultLogLevel, new BuiltInRuntime(), telemetryClient),
-        [
-            logWithRequestId, 
-            logWithServiceName('teamy-web-browser')
-        ],
+        new RawLogger(
+            config.defaultLogLevel,
+            new BuiltInRuntime(),
+            telemetryClient,
+        ),
+        [logWithRequestId, logWithServiceName('teamy-web-browser')],
     );
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,

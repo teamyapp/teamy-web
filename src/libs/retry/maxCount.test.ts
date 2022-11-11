@@ -1,5 +1,7 @@
 import { strictEqual } from 'assert';
 
+import { Duration } from '@lib/entity/duration';
+import { Errors, InternalError } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
@@ -7,8 +9,6 @@ import { Semaphore } from '@lib/sync/semaphore';
 import { ExponentialBackoff } from './backoff/exponential';
 import { MaxCountRetry } from './maxCount';
 import { Executable } from './retry.test';
-import { Duration } from '@lib/entity/duration';
-import { Errors, InternalError } from '@lib/error/errors';
 
 describe('MaxCount', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -34,7 +34,7 @@ describe('MaxCount', () => {
         exitSemaphore = new Semaphore('Exit');
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
-            duration = _duration
+            duration = _duration;
         };
     });
 
@@ -79,19 +79,19 @@ describe('MaxCount', () => {
             );
 
             strictEqual(retries, 2);
-            strictEqual(duration.totalMilliSeconds, 16)
+            strictEqual(duration.totalMilliSeconds, 16);
             strictEqual(error?.message, 'first error');
             exitSemaphore.release();
         })().then();
 
         await beforeSleepSemaphore.wait();
         strictEqual(executable.count, 1);
-        strictEqual(duration.totalMilliSeconds, 4)
+        strictEqual(duration.totalMilliSeconds, 4);
         testRuntime.threadAwake();
 
         await beforeSleepSemaphore.wait();
         strictEqual(executable.count, 2);
-        strictEqual(duration.totalMilliSeconds, 16)
+        strictEqual(duration.totalMilliSeconds, 16);
         testRuntime.threadAwake();
 
         await exitSemaphore.wait();

@@ -1,5 +1,6 @@
 import { Duration } from '@lib/entity/duration';
 import { RandomNumberGenerator } from '@lib/math/randomNumberGenerator';
+
 import { BackOff } from './backoff';
 
 interface ExponentialOptions {
@@ -24,15 +25,22 @@ export class ExponentialBackoff implements BackOff {
         private randGen: RandomNumberGenerator,
         options: Partial<ExponentialOptions> = {},
     ) {
-        const {minDelay, maxDelay, scalingFactor, randomOffset, randomOffsetUnit, resetOnSuccess} = options
-        this.minDelay = minDelay ?? this.minDelay
-        this.maxDelay = maxDelay ?? this.maxDelay
-        this.scalingFactor = scalingFactor ?? this.scalingFactor
-        this.randomOffset = randomOffset ?? this.randomOffset
-        this.randomOffsetUnit = randomOffsetUnit ?? this.randomOffsetUnit
-        this.resetOnSuccess = resetOnSuccess ?? this.resetOnSuccess
+        const {
+            minDelay,
+            maxDelay,
+            scalingFactor,
+            randomOffset,
+            randomOffsetUnit,
+            resetOnSuccess,
+        } = options;
+        this.minDelay = minDelay ?? this.minDelay;
+        this.maxDelay = maxDelay ?? this.maxDelay;
+        this.scalingFactor = scalingFactor ?? this.scalingFactor;
+        this.randomOffset = randomOffset ?? this.randomOffset;
+        this.randomOffsetUnit = randomOffsetUnit ?? this.randomOffsetUnit;
+        this.resetOnSuccess = resetOnSuccess ?? this.resetOnSuccess;
 
-        this.nextDelay = minDelay ?? this.nextDelay
+        this.nextDelay = minDelay ?? this.nextDelay;
     }
 
     public onSuccess() {
@@ -41,21 +49,13 @@ export class ExponentialBackoff implements BackOff {
             return;
         }
 
-        const scaled = Math.pow(
-            this.nextDelay,
-            1/this.scalingFactor,
-        );
-        this.nextDelay =
-            Math.max(scaled, this.minDelay) + this.randOffset();
+        const scaled = Math.pow(this.nextDelay, 1 / this.scalingFactor);
+        this.nextDelay = Math.max(scaled, this.minDelay) + this.randOffset();
     }
 
     public onFailure() {
-        const scaled = Math.pow(
-            this.nextDelay,
-            this.scalingFactor,
-        );
-        this.nextDelay =
-            Math.min(scaled, this.maxDelay) + this.randOffset();
+        const scaled = Math.pow(this.nextDelay, this.scalingFactor);
+        this.nextDelay = Math.min(scaled, this.maxDelay) + this.randOffset();
     }
 
     public delay() {

@@ -37,14 +37,16 @@ export class FetchHTTPClient implements HTTPClient {
                 body: options?.body,
             })
                 .then(async (response) => {
-                    const headers = Object.fromEntries(response.headers.entries())
+                    const headers = Object.fromEntries(
+                        response.headers.entries(),
+                    );
 
                     if (response.status >= 400) {
                         resolve([
                             {
                                 body: null,
                                 headers,
-                                statusCode: response.status
+                                statusCode: response.status,
                             },
                             FetchHTTPClient.getError(response.status),
                         ]);
@@ -54,7 +56,7 @@ export class FetchHTTPClient implements HTTPClient {
                             {
                                 body: await response.text(),
                                 headers,
-                                statusCode: response.status
+                                statusCode: response.status,
                             },
                             null,
                         ]);

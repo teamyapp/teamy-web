@@ -1,5 +1,6 @@
-import { Environment } from '@core/env/environment';
 import { LogLevel } from '@lib/telemetry/LogLevel';
+
+import { Environment } from '@core/env/environment';
 
 export const taskGoalLengthLimit = 100;
 
@@ -7,8 +8,8 @@ export interface Config {
     servicesWebAPIEndpoint: string;
     servicesWebSocketAPIEndpoint: string;
     cloudWebAPIEndpoint: string;
-    defaultLogLevel: LogLevel
-    maxAPIRetryTimes: number
+    defaultLogLevel: LogLevel;
+    maxAPIRetryTimes: number;
 }
 
 const developmentConfig: Config = {
@@ -16,7 +17,7 @@ const developmentConfig: Config = {
     servicesWebSocketAPIEndpoint: 'ws://localhost:9000',
     cloudWebAPIEndpoint: 'http://localhost:9011',
     defaultLogLevel: 'Debug',
-    maxAPIRetryTimes: 10
+    maxAPIRetryTimes: 10,
 };
 
 const testingConfig: Config = {
@@ -24,7 +25,7 @@ const testingConfig: Config = {
     servicesWebSocketAPIEndpoint: 'wss://web-backend.testing.teamyapp.com',
     cloudWebAPIEndpoint: 'https://cloud.testing.teamyapp.com',
     defaultLogLevel: 'Debug',
-    maxAPIRetryTimes: 10
+    maxAPIRetryTimes: 10,
 };
 
 const stagingConfig: Config = {
@@ -32,7 +33,7 @@ const stagingConfig: Config = {
     servicesWebSocketAPIEndpoint: 'wss://web-backend.staging.teamyapp.com',
     cloudWebAPIEndpoint: 'https://cloud.staging.teamyapp.com',
     defaultLogLevel: 'Info',
-    maxAPIRetryTimes: 10
+    maxAPIRetryTimes: 10,
 };
 
 const productionConfig: Config = {
@@ -40,7 +41,7 @@ const productionConfig: Config = {
     servicesWebSocketAPIEndpoint: 'wss://web-backend.teamyapp.com',
     cloudWebAPIEndpoint: 'https://cloud.teamyapp.com',
     defaultLogLevel: 'Info',
-    maxAPIRetryTimes: 10
+    maxAPIRetryTimes: 10,
 };
 
 export function getConfig(env: Environment): Config {
