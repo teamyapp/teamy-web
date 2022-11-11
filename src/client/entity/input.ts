@@ -1,4 +1,3 @@
-
 export interface RemoteCreateUserInput {
     lastName: string;
     firstName: string;

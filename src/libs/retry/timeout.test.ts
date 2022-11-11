@@ -1,15 +1,15 @@
 import { strictEqual } from 'assert';
 
+import { Duration } from '@lib/entity/duration';
+import { Errors, InternalError } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestClock } from '@lib/runtime/clock';
 import { TestRuntime } from '@lib/runtime/runtime';
+import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { Executable } from './retry.test';
 import { TimeoutRetry } from './timeout';
-import { Semaphore } from '@lib/sync/semaphore';
-import { Duration } from '@lib/entity/duration';
-import { Errors, InternalError } from '@lib/error/errors';
 
 describe('Timeout', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -18,8 +18,8 @@ describe('Timeout', () => {
     let testRuntime: TestRuntime;
     let testClock: TestClock;
     let executable: Executable;
-    let duration: Duration
-    let beforeRetryDelay: () => Promise<void>
+    let duration: Duration;
+    let beforeRetryDelay: () => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
@@ -33,18 +33,22 @@ describe('Timeout', () => {
                 if (prevCount < 2) {
                     return new InternalError(Errors.BadRequest, 'first error');
                 }
-            },  
+            },
         };
         beforeRetryDelay = async () => {
             testClock.setCurrentTime(new Date(testClock.now().getTime() + 2));
-        }
+        };
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
         exitSemaphore = new Semaphore('Exit');
         testClock.setCurrentTime(new Date());
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
-            duration = _duration
-            testClock.setCurrentTime(new Date(testClock.now().getTime() + duration.totalMilliSeconds))
+            duration = _duration;
+            testClock.setCurrentTime(
+                new Date(
+                    testClock.now().getTime() + duration.totalMilliSeconds,
+                ),
+            );
         };
     });
 
@@ -71,17 +75,17 @@ describe('Timeout', () => {
             strictEqual(retries, 2);
             strictEqual(error, undefined);
             exitSemaphore.release();
-        })()
+        })();
 
-        await beforeSleepSemaphore.wait()
-        strictEqual(executable.count, 1)
-        testRuntime.threadAwake()
+        await beforeSleepSemaphore.wait();
+        strictEqual(executable.count, 1);
+        testRuntime.threadAwake();
 
-        await beforeSleepSemaphore.wait()
-        strictEqual(executable.count, 2)
-        testRuntime.threadAwake()
+        await beforeSleepSemaphore.wait();
+        strictEqual(executable.count, 2);
+        testRuntime.threadAwake();
 
-        await exitSemaphore.wait()
+        await exitSemaphore.wait();
     });
 
     it('should get error when reaching timeout', async () => {
@@ -105,14 +109,14 @@ describe('Timeout', () => {
             );
 
             strictEqual(retries, 2);
-            strictEqual(error?.message, "first error");
+            strictEqual(error?.message, 'first error');
             exitSemaphore.release();
-        })()
+        })();
 
-        await beforeSleepSemaphore.wait()
-        strictEqual(executable.count, 1)
-        testRuntime.threadAwake()
+        await beforeSleepSemaphore.wait();
+        strictEqual(executable.count, 1);
+        testRuntime.threadAwake();
 
-        await exitSemaphore.wait()
+        await exitSemaphore.wait();
     });
 });

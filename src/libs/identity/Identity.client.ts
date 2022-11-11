@@ -66,23 +66,23 @@ export class IdentityClient {
             `${this.config.apiBaseEndpoint}/user-links/${authProvider}/create`,
         );
         createUserLinkApi.searchParams.set(redirectUrlParam, redirectUrl);
-        const result = await this.httpClient.request(
+        const [result] = await this.httpClient.request(
             createUserLinkApi.toString(),
             {
                 method: 'GET',
             },
         );
-        window.location.replace(result[0]!);
+        window.location.replace(result!.body!);
     }
 
     public async listUserLinks(): Promise<UserLink[]> {
-        const result = await this.httpClient.request(
+        const [result] = await this.httpClient.request(
             `${this.config.apiBaseEndpoint}/user-links`,
             {
                 method: 'GET',
             },
         );
-        return result[0] ? JSON.parse(result[0]) : [];
+        return result?.body ? JSON.parse(result.body) : [];
     }
 
     public async deleteUserLink(authProvider: string): Promise<void> {
@@ -95,14 +95,14 @@ export class IdentityClient {
     }
 
     private async verifyToken(accessToken: string): Promise<boolean> {
-        const result = await this.httpClient.request(
+        const [, error] = await this.httpClient.request(
             `${this.config.apiBaseEndpoint}/verify-token`,
             {
                 method: 'POST',
                 body: accessToken,
             },
         );
-        return result[1] === null;
+        return error === null;
     }
 }
 

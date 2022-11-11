@@ -1,10 +1,10 @@
 import moment from 'moment';
 
 import { PopChannel, chan, multi } from '@lib/csp/csp';
+import { Duration } from '@lib/entity/duration';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
-import { Duration } from '@lib/entity/duration';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { RemoteTask } from '@core/client/entity/remoteTask';

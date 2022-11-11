@@ -7,7 +7,6 @@ export class Page {
         this.drawables.push(drawable);
     }
 
-
     draw(ctx: CanvasRenderingContext2D, dpi: number) {
         for (const drawable of this.drawables) {
             drawable.draw(ctx, dpi);

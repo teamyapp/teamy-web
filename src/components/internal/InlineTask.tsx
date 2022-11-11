@@ -7,8 +7,8 @@ import React, {
     ReactNode,
 } from 'react';
 
-import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { Duration } from '@lib/entity/duration';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
