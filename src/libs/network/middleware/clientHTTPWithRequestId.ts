@@ -4,7 +4,7 @@ import { InternalError } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 
 import { Middleware } from '../../middleware/middleware';
-import { HTTPClient, HTTPResponse } from '../HTTP.client';
+import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
 import { REQUEST_ID_HEADER } from './headers';
 
 export const clientHTTPWithRequestId: Middleware<HTTPClient> = (
@@ -13,11 +13,7 @@ export const clientHTTPWithRequestId: Middleware<HTTPClient> = (
     return {
         request: (
             url: string,
-            options?: {
-                method: string;
-                headers?: Record<string, string>;
-                body?: string;
-            },
+            options?: HTTPRequestOptions,
             context?: Record<string, string>,
         ): Promise<Result<HTTPResponse, InternalError>> => {
             const method = options?.method || 'GET';

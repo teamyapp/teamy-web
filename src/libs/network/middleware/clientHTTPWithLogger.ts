@@ -11,7 +11,7 @@ import {
 } from '@lib/telemetry/Props';
 
 import { Middleware } from '../../middleware/middleware';
-import { HTTPClient, HTTPResponse } from '../HTTP.client';
+import { HTTPClient,HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
 
 export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
     (logger: Logger) =>
@@ -19,11 +19,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
         return {
             request: async (
                 url: string,
-                options?: {
-                    method: string;
-                    headers?: Record<string, string>;
-                    body?: string;
-                },
+                options?: HTTPRequestOptions,
                 context?: Record<string, string>,
             ): Promise<Result<HTTPResponse, InternalError>> => {
                 logger.logWithContext(

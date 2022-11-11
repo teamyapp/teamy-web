@@ -6,14 +6,17 @@ export interface HTTPResponse {
     headers: Record<string, string>;
     statusCode: number;
 }
+
+export interface HTTPRequestOptions {
+    method: string;
+    headers?: Record<string, string>;
+    body?: string; 
+}
+
 export interface HTTPClient {
     request(
         url: string,
-        options?: {
-            method: string;
-            headers?: Record<string, string>;
-            body?: string;
-        },
+        options?:HTTPRequestOptions,
         context?: Record<string, string>,
     ): Promise<Result<HTTPResponse, InternalError>>;
 }

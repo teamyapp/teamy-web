@@ -3,18 +3,14 @@ import { Result } from '@lib/error/result';
 import { Middleware } from '@lib/middleware/middleware';
 import { Retry } from '@lib/retry/retry';
 
-import { HTTPClient, HTTPResponse } from '../HTTP.client';
+import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
 
 export function clientHTTPWithRetry(retry: Retry): Middleware<HTTPClient> {
     return (httpClient: HTTPClient): HTTPClient => {
         return {
             request: async (
                 url: string,
-                options?: {
-                    method: string;
-                    headers?: Record<string, string>;
-                    body?: string;
-                },
+                options?: HTTPRequestOptions,
                 context?: Record<string, string>,
             ): Promise<Result<HTTPResponse, InternalError>> => {
                 let result: Result<HTTPResponse, InternalError>;

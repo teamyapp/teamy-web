@@ -3,7 +3,7 @@ import { Result } from '@lib/error/result';
 import { getAccessToken } from '@lib/identity/Identity.client';
 
 import { Middleware } from '../../middleware/middleware';
-import { HTTPClient, HTTPResponse } from '../HTTP.client';
+import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
 
 export const clientHTTPWithIdentity: Middleware<HTTPClient> = (
     httpClient: HTTPClient,
@@ -11,11 +11,7 @@ export const clientHTTPWithIdentity: Middleware<HTTPClient> = (
     return {
         request: (
             url: string,
-            options?: {
-                method: string;
-                headers?: Record<string, string>;
-                body?: string;
-            },
+            options?: HTTPRequestOptions,
             context?: Record<string, string>,
         ): Promise<Result<HTTPResponse, InternalError>> => {
             const method = options?.method || 'GET';
