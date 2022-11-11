@@ -8,11 +8,13 @@ import {
     HeadersProp,
     LineNumberProp,
     MethodProp,
+    PathProp,
+    ProtocolProp,
     StageProp,
 } from '@lib/telemetry/Props';
 
 import { Middleware } from '../../middleware/middleware';
-import { HTTPClient,HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
+import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
 
 export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
     (logger: Logger) =>
@@ -26,8 +28,11 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                 logger.logWithContext(
                     'Info',
                     {
-                        [HeadersProp]: JSON.stringify(options?.headers),
+                        [ProtocolProp]: 'web',
+                        [StageProp]: 'begin',
                         [MethodProp]: options?.method || 'Get',
+                        [PathProp]: url,
+                        [HeadersProp]: JSON.stringify(options?.headers),
                         [BodyProp]: options?.body
                             ? JSON.stringify(options?.body)
                             : '',
@@ -56,10 +61,13 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                 logger.logWithContext(
                     'Info',
                     {
+                        [ProtocolProp]: 'web',
+                        [StageProp]: 'end',
+                        [MethodProp]: options?.method || 'Get',
+                        [PathProp]: url,
                         [HeadersProp]: result?.headers
                             ? JSON.stringify(result.headers)
                             : '',
-                        [MethodProp]: options?.method || 'Get',
                         [BodyProp]: result?.body,
                         [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
                         [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',

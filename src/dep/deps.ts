@@ -86,7 +86,7 @@ export function initDeps(): Deps {
             new BuiltInRuntime(),
             telemetryClient,
         ),
-        [logWithRequestId, logWithServiceName('teamy-web-browser')],
+        [logWithRequestId, logWithServiceName('teamy/web-browser')],
     );
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,

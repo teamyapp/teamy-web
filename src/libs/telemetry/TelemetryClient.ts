@@ -18,7 +18,9 @@ export class TelemetryClient {
             `${this.telemetryApiEndpoint}/telemetry/upload-log`,
             {
                 method: 'POST',
-                body: JSON.stringify(logEntries.map(logEntry => JSON.stringify(logEntry))),
+                body: JSON.stringify(
+                    logEntries.map((logEntry) => JSON.stringify(logEntry)),
+                ),
             },
         );
     }
