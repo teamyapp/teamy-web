@@ -43,6 +43,7 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { logWithCommitId } from '@lib/telemetry/middleware/logWithCommitId';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -86,7 +87,7 @@ export function initDeps(): Deps {
             new BuiltInRuntime(),
             telemetryClient,
         ),
-        [logWithRequestId, logWithServiceName('teamy/web-browser')],
+        [logWithRequestId, logWithServiceName('teamy/web-browser'), logWithCommitId],
     );
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,
