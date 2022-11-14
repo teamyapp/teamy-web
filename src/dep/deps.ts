@@ -22,7 +22,7 @@ import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { Logger } from '@lib/telemetry/Logger';
 import { RawLogger } from '@lib/telemetry/RawLogger';
 import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
-import { logWithCommitId } from '@lib/telemetry/middleware/logWithCommitId';
+import { logWithCommit } from '@lib/telemetry/middleware/logWithCommit';
 import { logWithRequestId } from '@lib/telemetry/middleware/logWithRequestId';
 import { logWithServiceName } from '@lib/telemetry/middleware/logWithServiceName';
 
@@ -90,7 +90,7 @@ export function initDeps(): Deps {
         [
             logWithRequestId,
             logWithServiceName('teamy/web-browser'),
-            logWithCommitId(getEnvVar('GIT_LONG_COMMIT_HASH')),
+            logWithCommit(getEnvVar('GIT_LONG_COMMIT_HASH')),
         ],
     );
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [

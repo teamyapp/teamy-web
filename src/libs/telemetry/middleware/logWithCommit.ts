@@ -1,15 +1,15 @@
 import { Middleware } from '@lib/middleware/middleware';
 import { Logger } from '../Logger';
-import { CommitIdProp } from '../Props';
+import { CommitProp } from '../Props';
 
-export const logWithCommitId: (commitId: string) => Middleware<Logger> =
+export const logWithCommit: (commitId: string) => Middleware<Logger> =
     (commitId: string) =>
     (logger: Logger): Logger => {
         return {
             logWithContext(level, props, context) {
                 logger.logWithContext(
                     level,
-                    { ...props, [CommitIdProp]: commitId },
+                    { ...props, [CommitProp]: commitId },
                     context,
                 );
             },
