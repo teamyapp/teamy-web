@@ -22,6 +22,7 @@ import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { Logger } from '@lib/telemetry/Logger';
 import { RawLogger } from '@lib/telemetry/RawLogger';
 import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
+import { logWithCommit } from '@lib/telemetry/middleware/logWithCommit';
 import { logWithRequestId } from '@lib/telemetry/middleware/logWithRequestId';
 import { logWithServiceName } from '@lib/telemetry/middleware/logWithServiceName';
 
@@ -37,7 +38,7 @@ import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { absoluteRootPath, signInFinishPath } from '@core/config/routing';
 import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
-import { getEnvironment } from '@core/env/environment';
+import { getEnvVar, getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
@@ -86,7 +87,11 @@ export function initDeps(): Deps {
             new BuiltInRuntime(),
             telemetryClient,
         ),
-        [logWithRequestId, logWithServiceName('teamy/web-browser')],
+        [
+            logWithRequestId,
+            logWithServiceName('teamy/web-browser'),
+            logWithCommit(getEnvVar('GIT_LONG_COMMIT_HASH')),
+        ],
     );
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,

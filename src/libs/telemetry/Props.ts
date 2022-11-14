@@ -12,5 +12,6 @@ export const ServiceNameProp = 'ServiceName';
 export const StageProp = 'Stage';
 export const PathProp = 'Path';
 export const ProtocolProp = 'Protocol';
+export const CommitProp = 'Commit'
 
 export type Props = Record<string, any>;
