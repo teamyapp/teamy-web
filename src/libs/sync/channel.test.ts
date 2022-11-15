@@ -281,7 +281,7 @@ describe('Buffered Channel', () => {
 
 describe('Unbuffered Channel', () => {
     test('send value without waiting receiver', async () => {
-        const channel = new Channel<number>();
+        const channel = new Channel<number>(0);
         strictEqual(channel.length(), 0);
 
         (async () => {
@@ -313,7 +313,7 @@ describe('Unbuffered Channel', () => {
     });
 
     test('send value with waiting receivers', async () => {
-        const channel = new Channel<number>(0);
+        const channel = new Channel<number>(3);
         strictEqual(channel.length(), 0);
 
         (async () => {
@@ -381,7 +381,7 @@ describe('Unbuffered Channel', () => {
     });
 
     test('receive value with pending senders', async () => {
-        const channel = new Channel<number>(0);
+        const channel = new Channel<number>(3);
         strictEqual(channel.length(), 0);
 
         (async () => {
