@@ -21,6 +21,7 @@ import {
     getTeamId,
     insightsRoutePattern,
     invitationRoutePattern,
+    planningRoutePattern,
     rootRoutePattern,
     signInFinishRoutePattern,
     signInRoutePattern,
@@ -71,6 +72,7 @@ import { UserProfileUpdatedFeedbackComponent } from './internal/feedbacks/UserPr
 import { DebugComponent } from './pages/Debug.component';
 import { InsightsComponent } from './pages/Insights.component';
 import { InvitationComponent } from './pages/Invitation.component';
+import { PlanningComponent } from './pages/Planning.component';
 import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
 
@@ -115,6 +117,7 @@ const acceptedRoutePatterns = [
     sprintsRoutePattern,
     sprintTabRoutePattern,
     insightsRoutePattern,
+    planningRoutePattern,
     invitationRoutePattern,
     taskRoutePattern,
 ];
@@ -310,6 +313,12 @@ export class AppComponent extends Component<Props, State> {
                                                 pattern={insightsRoutePattern}
                                             >
                                                 <InsightsComponent />
+                                            </Route>
+                                            <Route
+                                                router={this.router}
+                                                pattern={planningRoutePattern}
+                                            >
+                                                <PlanningComponent />
                                             </Route>
                                         </div>
                                     </div>
