@@ -41,7 +41,7 @@ export class RawLogger implements Logger {
     private withDefaults(level: LogLevel, props: Props): Props {
         return {
             ...props,
-            [HappenAtProp]: new Date().toUTCString(),
+            [HappenAtProp]: new Date().toISOString(),
             [SeverityProp]: level,
         };
     }
