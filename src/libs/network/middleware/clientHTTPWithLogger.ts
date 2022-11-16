@@ -25,13 +25,16 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                 options?: HTTPRequestOptions,
                 context?: Record<string, string>,
             ): Promise<Result<HTTPResponse, InternalError>> => {
+                const urlObj = new URL(url)
+                const path = urlObj.pathname
+
                 logger.logWithContext(
                     'Info',
                     {
                         [ProtocolProp]: 'web',
                         [StageProp]: 'begin',
                         [MethodProp]: options?.method || 'Get',
-                        [PathProp]: url,
+                        [PathProp]: path,
                         [HeadersProp]: JSON.stringify(options?.headers),
                         [BodyProp]: options?.body
                             ? JSON.stringify(options?.body)
@@ -64,7 +67,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                         [ProtocolProp]: 'web',
                         [StageProp]: 'end',
                         [MethodProp]: options?.method || 'Get',
-                        [PathProp]: url,
+                        [PathProp]: path,
                         [HeadersProp]: result?.headers
                             ? JSON.stringify(result.headers)
                             : '',
