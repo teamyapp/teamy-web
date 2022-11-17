@@ -1,19 +1,27 @@
 import { Command } from '@lib/editor/Command';
+import { Attribute } from '@lib/editor/attribute/attribute';
 import { IdGenerator, withNodeId } from '@lib/editor/id';
-import { flattenClassNames } from '@lib/editor/style';
+import { formatSelectedKeys } from '@lib/editor/style';
 
 import { EditorSelection } from '../selection/Selection';
-import { EditorNode, executeCommandOnChildren } from './Editor.node';
+import {
+    DOMNodePosition,
+    EditorNode,
+    ExecuteCommandResult,
+    executeCommandOnChildren,
+} from './Editor.node';
 import styles from './Root.module.scss';
 import { TextNode } from './Text.node';
 
 export class RootNode implements EditorNode {
     private domElement?: HTMLElement;
     private children: EditorNode[];
-    private readonly classNames: Map<string, boolean>;
+    private readonly classNames: Record<string, boolean>;
 
     constructor(private idGenerator: IdGenerator, private readonly id: number) {
-        this.classNames = new Map<string, boolean>();
+        this.classNames = {};
+
+        // TODO: remove sample data
         const textNode1 = new TextNode(
             this.idGenerator,
             idGenerator.generateId(),
@@ -32,13 +40,15 @@ export class RootNode implements EditorNode {
             withNodeId(this.domElement, this.id);
 
             this.domElement.contentEditable = 'true';
-            this.classNames.set(styles.Root, true);
-            this.domElement.className = flattenClassNames(this.classNames);
+            this.classNames[styles.Root] = true;
+            this.domElement.className = formatSelectedKeys(this.classNames);
 
             this.children.forEach((childNode: EditorNode) => {
                 const childDOM = childNode.getOrCreateDOM();
                 this.domElement?.appendChild(childDOM);
             });
+
+            // this.registerEvents();
         }
 
         return this.domElement;
@@ -47,14 +57,15 @@ export class RootNode implements EditorNode {
     executeCommand(
         command: Command,
         selection?: EditorSelection,
-    ): EditorNode[] {
-        this.children = executeCommandOnChildren(
+    ): ExecuteCommandResult {
+        const result = executeCommandOnChildren(
             this.domElement!,
             this.children,
             command,
             selection,
         );
-        return [this];
+        this.children = result.nodes;
+        return result;
     }
 
     updateStyles(): void {
@@ -75,5 +86,17 @@ export class RootNode implements EditorNode {
 
     tryMerge(child: EditorNode): EditorNode | undefined {
         return;
+    }
+
+    dispose() {
+        this.domElement = undefined;
+    }
+
+    getDOMNodePosition(offset: number): DOMNodePosition {
+        throw new Error('not implemented');
+    }
+
+    collectAttributes(attributeNames: string[]): Attribute<any>[] {
+        return [];
     }
 }

@@ -1,107 +1,142 @@
-import { Color } from '@lib/editor/Color';
-import {
-    setTextColorCommand,
-    toggleTextBoldFormatCommand,
-} from '@lib/editor/Command';
-import { IdGenerator } from '@lib/editor/id';
+import { Command } from '@lib/editor/Command';
+import { Attribute } from '@lib/editor/attribute/attribute';
+import { IdGenerator, getNodeId } from '@lib/editor/id';
+import { EditorRangeSelection } from '@lib/editor/selection/EditorRange.selection';
 
-import { EditorNode } from './nodes/Editor.node';
-import { RootNode } from './nodes/Root.node';
-import { EditorRangeSelection } from './selection/EditorRange.selection';
-import { EditorSelection } from './selection/Selection';
+import { EditorNode } from './node/Editor.node';
+import { RootNode } from './node/Root.node';
+import { DOMSelection, EditorSelection } from './selection/Selection';
+
+interface EventHandlers {
+    onSelectionChange?: () => void;
+}
 
 export class Editor {
     private containerDOM?: HTMLElement;
-    private rootDOM?: HTMLElement;
     private rootNode: EditorNode;
     private selection?: EditorSelection;
 
-    // TODO: remove this. Added for testing only.
-    private executed: boolean = false;
-
-    constructor() {
+    constructor(private eventHandlers?: EventHandlers) {
         const idGenerator = new IdGenerator();
         this.rootNode = new RootNode(idGenerator, idGenerator.generateId());
     }
 
     render(containerDOM: HTMLElement) {
         this.containerDOM = containerDOM;
-        this.rootDOM = this.rootNode.getOrCreateDOM();
-        containerDOM.appendChild(this.rootDOM);
+        containerDOM.appendChild(this.rootNode.getOrCreateDOM());
+        document.addEventListener(
+            'selectionchange',
+            this.onDocumentSelectionChange,
+        );
+    }
 
-        // TODO: remove this
-        // Simulate formatting words.
-        if (!this.executed) {
-            this.executed = true;
-            setTimeout(() => {
-                this.selection = new EditorRangeSelection(1, 1, 1, 10);
-                this.selection.selectNodes(this.rootNode);
-                this.rootNode.executeCommand(
-                    toggleTextBoldFormatCommand(),
-                    this.selection,
-                );
-            }, 2000);
+    executeCommand(command: Command): void {
+        const result = this.rootNode.executeCommand(command, this.selection);
+        result.selection?.selectDOM();
+    }
 
-            setTimeout(() => {
-                this.selection = new EditorRangeSelection(2, 2, 2, 7);
-                this.selection.selectNodes(this.rootNode);
-                this.rootNode.executeCommand(
-                    setTextColorCommand(new Color(194, 24, 91)),
-                    this.selection,
-                );
-            }, 4000);
-
-            setTimeout(() => {
-                this.selection = new EditorRangeSelection(6, 0, 6, 0);
-                this.selection.selectNodes(this.rootNode);
-                this.rootNode.executeCommand(
-                    setTextColorCommand(new Color(76, 175, 80)),
-                    this.selection,
-                );
-
-                this.selection = new EditorRangeSelection(8, 0, 8, 0);
-                this.selection.selectNodes(this.rootNode);
-                this.rootNode.executeCommand(
-                    toggleTextBoldFormatCommand(),
-                    this.selection,
-                );
-
-                this.selection = new EditorRangeSelection(7, 1, 7, 1);
-                this.selection.selectNodes(this.rootNode);
-                this.rootNode.executeCommand(
-                    setTextColorCommand(new Color(76, 175, 80)),
-                    this.selection,
-                );
-
-                this.selection = new EditorRangeSelection(10, 0, 10, 0);
-                this.selection.selectNodes(this.rootNode);
-                this.rootNode.executeCommand(
-                    toggleTextBoldFormatCommand(),
-                    this.selection,
-                );
-            }, 6000);
-
-            setTimeout(() => {
-                this.selection = new EditorRangeSelection(8, 0, 8, 0);
-                this.selection.selectNodes(this.rootNode);
-                this.rootNode.executeCommand(
-                    setTextColorCommand(new Color(0, 0, 0)),
-                    this.selection,
-                );
-
-                this.selection = new EditorRangeSelection(10, 0, 10, 0);
-                this.selection.selectNodes(this.rootNode);
-                this.rootNode.executeCommand(
-                    setTextColorCommand(new Color(0, 0, 0)),
-                    this.selection,
-                );
-            }, 8000);
-        }
+    collectAttributesFromSelection(
+        attributeNames: string[],
+    ): Record<string, Attribute<any>> {
+        return this.selection?.collectAttributes(attributeNames) || {};
     }
 
     dispose() {
-        if (this.rootDOM) {
-            this.containerDOM?.removeChild(this.rootDOM);
+        document.removeEventListener(
+            'selectionchange',
+            this.onDocumentSelectionChange,
+        );
+
+        const rootDOM = this.rootNode.getOrCreateDOM();
+        if (rootDOM) {
+            this.containerDOM?.removeChild(rootDOM);
+            this.rootNode.dispose!();
         }
     }
+
+    private onDocumentSelectionChange = () => {
+        const domSelection = getDOMSelection();
+        if (!domSelection) {
+            return;
+        }
+
+        // TODO: support other types of selections
+        this.selection = new EditorRangeSelection(
+            domSelection.startEditorNodeId,
+            domSelection.startDOMOffset,
+            domSelection.endEditorNodeId,
+            domSelection.endDOMOffset,
+        );
+        this.selection.findEditorNodes(this.rootNode);
+        this.eventHandlers?.onSelectionChange?.call(null);
+    };
+}
+
+function getDOMSelection(): DOMSelection | undefined {
+    const domSelection = document.getSelection();
+    if (!domSelection) {
+        return;
+    }
+
+    let startDOMNode = domSelection.anchorNode;
+    while (startDOMNode && startDOMNode.nodeType !== Node.ELEMENT_NODE) {
+        startDOMNode = startDOMNode.parentNode;
+    }
+
+    if (startDOMNode === null) {
+        return;
+    }
+
+    let endDOMNode = domSelection.focusNode;
+    while (endDOMNode && endDOMNode.nodeType !== Node.ELEMENT_NODE) {
+        endDOMNode = endDOMNode.parentNode;
+    }
+
+    if (endDOMNode === null) {
+        return;
+    }
+
+    const startDOMElement = startDOMNode as HTMLElement;
+    const startEditorNodeId = getNodeId(startDOMElement);
+    if (!startEditorNodeId) {
+        return;
+    }
+
+    const endDOMElement = endDOMNode as HTMLElement;
+    const endEditorNodeId = getNodeId(endDOMElement);
+    if (!endEditorNodeId) {
+        return;
+    }
+
+    if (isSelectionBackward(startDOMElement, endDOMElement, domSelection)) {
+        return {
+            startEditorNodeId: endEditorNodeId,
+            startDOMElement: endDOMElement,
+            startDOMOffset: domSelection.focusOffset,
+            endEditorNodeId: startEditorNodeId,
+            endDOMElement: startDOMElement,
+            endDOMOffset: domSelection.anchorOffset,
+        };
+    }
+
+    return {
+        startEditorNodeId,
+        startDOMElement,
+        startDOMOffset: domSelection.anchorOffset,
+        endEditorNodeId,
+        endDOMElement,
+        endDOMOffset: domSelection.focusOffset,
+    };
+}
+
+function isSelectionBackward(
+    startDOMElement: HTMLElement,
+    endDOMElement: HTMLElement,
+    domSelection: Selection,
+) {
+    const position = startDOMElement.compareDocumentPosition(endDOMElement);
+    return (
+        position === Node.DOCUMENT_POSITION_PRECEDING ||
+        (position === 0 && domSelection.anchorOffset > domSelection.focusOffset)
+    );
 }

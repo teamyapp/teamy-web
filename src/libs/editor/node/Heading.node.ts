@@ -1,9 +1,14 @@
 import { Command } from '@lib/editor/Command';
+import { Attribute } from '@lib/editor/attribute/attribute';
 import { IdGenerator } from '@lib/editor/id';
-import { flattenClassNames } from '@lib/editor/style';
+import { formatSelectedKeys } from '@lib/editor/style';
 
 import { EditorSelection } from '../selection/Selection';
-import { EditorNode } from './Editor.node';
+import {
+    DOMNodePosition,
+    EditorNode,
+    ExecuteCommandResult,
+} from './Editor.node';
 import styles from './Heading.module.scss';
 
 type HeadingSize = 1 | 2 | 3 | 4 | 5 | 6;
@@ -21,12 +26,12 @@ export class HeadingNode implements EditorNode {
     private size: HeadingSize;
     private domElement?: HTMLElement;
     private children: EditorNode[];
-    private readonly classNames: Map<string, boolean>;
+    private readonly classNames: Record<string, boolean>;
 
     constructor(private idGenerator: IdGenerator, private readonly id: number) {
         this.size = 1;
         this.children = [];
-        this.classNames = new Map<string, boolean>();
+        this.classNames = {};
     }
 
     getId(): number {
@@ -38,8 +43,8 @@ export class HeadingNode implements EditorNode {
             this.domElement = document.createElement(
                 SIZE_TO_HEADING_TAG[this.size],
             );
-            this.classNames.set(styles.Heading, true);
-            this.domElement.className = flattenClassNames(this.classNames);
+            this.classNames[styles.Heading] = true;
+            this.domElement.className = formatSelectedKeys(this.classNames);
         }
 
         return this.domElement;
@@ -52,8 +57,11 @@ export class HeadingNode implements EditorNode {
     executeCommand(
         command: Command,
         selection?: EditorSelection,
-    ): EditorNode[] {
-        return [this];
+    ): ExecuteCommandResult {
+        return {
+            nodes: [this],
+            selection: selection,
+        };
     }
 
     isContainer(): boolean {
@@ -70,5 +78,13 @@ export class HeadingNode implements EditorNode {
 
     tryMerge(child: EditorNode): EditorNode | undefined {
         return;
+    }
+
+    getDOMNodePosition(offset: number): DOMNodePosition {
+        throw new Error('not implemented');
+    }
+
+    collectAttributes(attributeNames: string[]): Attribute<any>[] {
+        return [];
     }
 }
