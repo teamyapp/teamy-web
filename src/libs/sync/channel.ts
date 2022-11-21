@@ -51,9 +51,7 @@ export class Channel<Item> implements SendChannel<Item>, ReceiveChannel<Item> {
 
         return new Promise((resolve, reject) => {
             this.sendQueue = this.sendQueue.concat({
-                resume: () => {
-                    resolve(true);
-                },
+                resume: resolve,
                 item: item,
             });
         });
