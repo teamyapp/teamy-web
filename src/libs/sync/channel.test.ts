@@ -1,6 +1,7 @@
 import { strictEqual } from 'assert';
 
 import { Channel } from '@lib/sync/channel';
+import { Semaphore } from './semaphore';
 
 describe('Buffered Channel', () => {
     test('send value when buffer has space', async () => {
@@ -190,7 +191,7 @@ describe('Buffered Channel', () => {
         strictEqual(succeed, false);
     });
 
-    test('cannot send after channel is closed', async () => {
+    test('cannot receive after channel is closed', async () => {
         const channel = new Channel<number>(3);
         strictEqual(channel.length(), 0);
 
@@ -209,42 +210,47 @@ describe('Buffered Channel', () => {
         strictEqual(succeed, false);
     });
 
-    test('pending send after channel is closed', async () => {
-        const channel = new Channel<number>(3);
+    test('close channel with pending send', async () => {
+        const exitSemaphore = new Semaphore('Exit');
+        const channel = new Channel<number>(1);
         strictEqual(channel.length(), 0);
-
+        
         await channel.send(1);
         strictEqual(channel.length(), 1);
 
         (async () => {
-            await new Promise<void>((resolve, reject) => {
-                setTimeout(resolve, 100);
-            });
-
             const succeed = await channel.send(2);
             strictEqual(succeed, false);
+            exitSemaphore.release()
         })().then();
 
+        await new Promise<void>((resolve, reject) => {
+            setTimeout(resolve, 100);
+        });
+
         channel.close();
+        await exitSemaphore.wait()
     });
 
-    test('pending receive after channel is closed', async () => {
-        const channel = new Channel<number>(3);
+    test('close channel with pending receive', async () => {
+        const exitSemaphore = new Semaphore('Exit');
+        const channel = new Channel<number>(1);
         strictEqual(channel.length(), 0);
 
-        await channel.send(1);
-        strictEqual(channel.length(), 1);
 
         (async () => {
-            await new Promise<void>((resolve, reject) => {
-                setTimeout(resolve, 100);
-            });
 
-            const [val, succeed] = await channel.receive();
+            const [, succeed] = await channel.receive();
             strictEqual(succeed, false);
+            exitSemaphore.release()
         })().then();
 
+        await new Promise<void>((resolve, reject) => {
+            setTimeout(resolve, 100);
+        });
+
         channel.close();
+        await exitSemaphore.wait()
     });
 
     test('iterate channel values', async () => {
