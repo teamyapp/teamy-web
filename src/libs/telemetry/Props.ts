@@ -13,5 +13,6 @@ export const StageProp = 'Stage';
 export const PathProp = 'Path';
 export const ProtocolProp = 'Protocol';
 export const CommitProp = 'Commit'
+export const HostProp = 'Host'
 
 export type Props = Record<string, any>;
