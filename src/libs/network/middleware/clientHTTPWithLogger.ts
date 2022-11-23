@@ -32,6 +32,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                     {
                         [ProtocolProp]: 'web',
                         [StageProp]: 'begin',
+                        [HostProp]: host,
                         [MethodProp]: options?.method || 'Get',
                         [PathProp]: pathname,
                         [HeadersProp]: JSON.stringify(options?.headers),
@@ -41,7 +42,6 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                         [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
                         [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
                         [StageProp]: 'begin',
-                        [HostProp]: host
                     },
                     context,
                 );
@@ -66,6 +66,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                     {
                         [ProtocolProp]: 'web',
                         [StageProp]: 'end',
+                        [HostProp]: host,
                         [MethodProp]: options?.method || 'Get',
                         [PathProp]: pathname,
                         [HeadersProp]: result?.headers
@@ -75,7 +76,6 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                         [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
                         [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
                         [StageProp]: 'end',
-                        [HostProp]: host
                     },
                     context,
                 );
