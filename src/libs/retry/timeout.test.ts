@@ -63,7 +63,7 @@ describe('Timeout', () => {
             testClock,
             testRuntime,
             backoff,
-            25,
+            17,
             beforeRetryDelay,
         );
 
@@ -99,7 +99,7 @@ describe('Timeout', () => {
             testClock,
             testRuntime,
             backoff,
-            24,
+            16,
             beforeRetryDelay,
         );
 

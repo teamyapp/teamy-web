@@ -49,12 +49,12 @@ export class ExponentialBackoff implements BackOff {
             return;
         }
 
-        const scaled = Math.pow(this.nextDelay, 1 / this.scalingFactor);
+        const scaled = this.nextDelay / this.scalingFactor;
         this.nextDelay = Math.max(scaled, this.minDelay) + this.randOffset();
     }
 
     public onFailure() {
-        const scaled = Math.pow(this.nextDelay, this.scalingFactor);
+        const scaled = this.nextDelay * this.scalingFactor;
         this.nextDelay = Math.min(scaled, this.maxDelay) + this.randOffset();
     }
 

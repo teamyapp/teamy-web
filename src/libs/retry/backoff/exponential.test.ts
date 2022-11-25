@@ -31,7 +31,7 @@ describe('Exponential', () => {
             });
             strictEqual(exponential.delay().totalMilliSeconds, 4);
             exponential.onFailure();
-            strictEqual(exponential.delay().totalMilliSeconds, 21);
+            strictEqual(exponential.delay().totalMilliSeconds, 13);
         });
 
         it('should reduce next delay after success', () => {
@@ -57,6 +57,7 @@ describe('Exponential', () => {
         });
         strictEqual(exponential.delay().totalMilliSeconds, 4);
         exponential.onFailure();
+        exponential.onFailure();
         strictEqual(exponential.delay().totalMilliSeconds, 10);
     });
 
@@ -78,13 +79,13 @@ describe('Exponential', () => {
         strictEqual(exponential.delay().totalMilliSeconds, 4);
         exponential.onFailure();
 
-        strictEqual(exponential.delay().totalMilliSeconds, 16);
+        strictEqual(exponential.delay().totalMilliSeconds, 8);
         exponential.onFailure();
 
-        strictEqual(exponential.delay().totalMilliSeconds, 256);
+        strictEqual(exponential.delay().totalMilliSeconds, 16);
         exponential.onSuccess();
 
-        strictEqual(exponential.delay().totalMilliSeconds, 16);
+        strictEqual(exponential.delay().totalMilliSeconds, 8);
     });
 
     it('should reset delay after success', () => {
@@ -95,9 +96,9 @@ describe('Exponential', () => {
         });
         strictEqual(exponential.delay().totalMilliSeconds, 4);
         exponential.onFailure();
-        strictEqual(exponential.delay().totalMilliSeconds, 16);
+        strictEqual(exponential.delay().totalMilliSeconds, 8);
         exponential.onFailure();
-        strictEqual(exponential.delay().totalMilliSeconds, 256);
+        strictEqual(exponential.delay().totalMilliSeconds, 16);
         exponential.onSuccess();
 
         strictEqual(exponential.delay().totalMilliSeconds, 4);

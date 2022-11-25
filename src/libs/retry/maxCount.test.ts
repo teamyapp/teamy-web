@@ -79,7 +79,7 @@ describe('MaxCount', () => {
             );
 
             strictEqual(retries, 2);
-            strictEqual(duration.totalMilliSeconds, 16);
+            strictEqual(duration.totalMilliSeconds, 8);
             strictEqual(error?.message, 'first error');
             exitSemaphore.release();
         })().then();
@@ -91,7 +91,7 @@ describe('MaxCount', () => {
 
         await beforeSleepSemaphore.wait();
         strictEqual(executable.count, 2);
-        strictEqual(duration.totalMilliSeconds, 16);
+        strictEqual(duration.totalMilliSeconds, 8);
         testRuntime.threadAwake();
 
         await exitSemaphore.wait();
