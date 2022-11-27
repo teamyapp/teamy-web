@@ -43,6 +43,7 @@ describe('InfiniteRetry', () => {
             minDelay: 2,
             randomOffset: 0,
             scalingFactor: 2,
+            maxDelay: 600
         });
         const infinite = new InfiniteRetry(testRuntime, backoff);
 
@@ -52,7 +53,7 @@ describe('InfiniteRetry', () => {
             );
 
             strictEqual(retries, 10);
-            strictEqual(duration.totalMilliSeconds, 60000);
+            strictEqual(duration.totalMilliSeconds, 600);
             strictEqual(error, undefined);
             exitSemaphore.release();
         })().then();
