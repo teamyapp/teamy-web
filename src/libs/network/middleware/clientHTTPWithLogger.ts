@@ -6,6 +6,7 @@ import {
     CauseProp,
     FileNameProp,
     HeadersProp,
+    HostProp,
     LineNumberProp,
     MethodProp,
     PathProp,
@@ -25,22 +26,21 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                 options?: HTTPRequestOptions,
                 context?: Record<string, string>,
             ): Promise<Result<HTTPResponse, InternalError>> => {
-                const urlObj = new URL(url)
-                const path = urlObj.pathname
+                const {pathname, host} = new URL(url)
                 logger.logWithContext(
                     'Info',
                     {
                         [ProtocolProp]: 'web',
                         [StageProp]: 'begin',
+                        [HostProp]: host,
                         [MethodProp]: options?.method || 'Get',
-                        [PathProp]: path,
+                        [PathProp]: pathname,
                         [HeadersProp]: JSON.stringify(options?.headers),
                         [BodyProp]: options?.body
                             ? JSON.stringify(options?.body)
                             : '',
                         [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
                         [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
-                        [StageProp]: 'begin'
                     },
                     context,
                 );
@@ -65,15 +65,15 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                     {
                         [ProtocolProp]: 'web',
                         [StageProp]: 'end',
+                        [HostProp]: host,
                         [MethodProp]: options?.method || 'Get',
-                        [PathProp]: path,
+                        [PathProp]: pathname,
                         [HeadersProp]: result?.headers
                             ? JSON.stringify(result.headers)
                             : '',
                         [BodyProp]: result?.body,
                         [FileNameProp]: 'COMPILE_TIME_INJECT_FILENAME',
                         [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
-                        [StageProp]: 'end'
                     },
                     context,
                 );
