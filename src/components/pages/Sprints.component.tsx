@@ -6,8 +6,9 @@ import { closeIfNot } from '@lib/csp/lib';
 import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Duration } from '@lib/entity/duration';
-import { KeyboardEventEle } from '@lib/event/keyBoardEventMoniter';
+import { CustomKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
 import { RouteUpdate, Router } from '@lib/router/router';
+import { isMacOs } from '@lib/runtime/utils';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -84,7 +85,8 @@ interface State {
     receivingSectionId?: string;
     sortOrders: SortOrders;
     selectedTaskOwners: Set<string>;
-    isInMultiSelection: boolean;
+    isInTempMultiSelection: boolean;
+    isInPermanentMultiSelection: boolean;
 }
 
 const acceptedRoutePatterns = [sprintsRoutePattern, sprintTabRoutePattern];
@@ -99,7 +101,7 @@ export class SprintsComponent extends Component<Props, State> {
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
-    private keyBoardEventChan?: csp.PopChannel<KeyboardEventEle | undefined>;
+    private keyBoardEventChan?: csp.PopChannel<CustomKeyboardEvent | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
@@ -119,7 +121,8 @@ export class SprintsComponent extends Component<Props, State> {
                 upcoming: taskUrgencyOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
-            isInMultiSelection: false,
+            isInTempMultiSelection: false,
+            isInPermanentMultiSelection: false,
         };
     }
 
@@ -282,13 +285,17 @@ export class SprintsComponent extends Component<Props, State> {
 
                 const event = keyboardEventEle.event;
                 if (
-                    !this.state.isInMultiSelection &&
-                    keyboardEventEle.key === 'Control' &&
-                    event === 'keydown'
+                    keyboardEventEle.key === 'Control' ||
+                    (isMacOs() && keyboardEventEle.metaKey)
                 ) {
-                    this.setState({
-                        isInMultiSelection: true,
-                    });
+                    if (['keydown', 'keyup'].includes(event)) {
+                        this.setState({
+                            isInTempMultiSelection: this.state
+                                .isInPermanentMultiSelection
+                                ? false
+                                : event === 'keydown',
+                        });
+                    }
                 }
             }
         })();
@@ -405,10 +412,15 @@ export class SprintsComponent extends Component<Props, State> {
                     <div className={styles.TeamTab}>
                         <div className={styles.ParticipantsSection}>
                             <div className={styles.Content}>
-                                <div className={styles.Title}>
-                                    Participants
-                                    <div className={styles.Counter}>
-                                        {this.state.sprintParticipants.length}
+                                <div className={styles.ActionBar}>
+                                    <div className={styles.Title}>
+                                        Participants
+                                        <div className={styles.Counter}>
+                                            {
+                                                this.state.sprintParticipants
+                                                    .length
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                                 <div className={styles.ParticipantList}>
@@ -417,11 +429,7 @@ export class SprintsComponent extends Component<Props, State> {
                                             onClick={this.onTaskOwnersChange(
                                                 userAll,
                                             )}
-                                            className={styles.CheckboxContainer}
                                         >
-                                            {this.checkToRenderCheckbox(
-                                                userAll,
-                                            )}
                                             <div
                                                 className={`${
                                                     styles.AllParticipants
@@ -448,11 +456,7 @@ export class SprintsComponent extends Component<Props, State> {
                                             onClick={this.onTaskOwnersChange(
                                                 userUnassigned,
                                             )}
-                                            className={styles.CheckboxContainer}
                                         >
-                                            {this.checkToRenderCheckbox(
-                                                userUnassigned,
-                                            )}
                                             <div
                                                 className={`${
                                                     styles.EmptySelectionFace
@@ -477,6 +481,26 @@ export class SprintsComponent extends Component<Props, State> {
                                     {this.state.sprintParticipants.map(
                                         this.renderParticipant,
                                     )}
+                                </div>
+                                <div className={styles.ActionBar}>
+                                    <div
+                                        className={
+                                            styles.MultiSelectionToggleContainer
+                                        }
+                                        onClick={this.toggleMultiSelection}
+                                    >
+                                        <input
+                                            className={styles.Toggle}
+                                            type='checkbox'
+                                            checked={this.isInMultipleSelectionMode()}
+                                        />
+                                        <div>
+                                            Select{' '}
+                                            {this.isInMultipleSelectionMode()
+                                                ? 'Many'
+                                                : 'Single'}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -511,25 +535,30 @@ export class SprintsComponent extends Component<Props, State> {
         }
     }
 
-    private checkToRenderCheckbox = (userIdentity: string): ReactNode => {
-        if (!this.state.isInMultiSelection) {
-            return null;
+    private toggleMultiSelection = () => {
+        if (this.state.isInTempMultiSelection) {
+            return;
         }
 
-        return (
-            <input
-                readOnly
-                type='checkbox'
-                checked={this.state.selectedTaskOwners.has(userIdentity)}
-            ></input>
-        );
+        this.setState({
+            isInPermanentMultiSelection:
+                !this.state.isInPermanentMultiSelection,
+        });
     };
+
+    private isInMultipleSelectionMode() {
+        return (
+            this.state.isInPermanentMultiSelection ||
+            this.state.isInTempMultiSelection
+        );
+    }
 
     private onTaskOwnersChange = (value: string) => {
         return () => {
             const hasValue = this.state.selectedTaskOwners.has(value);
+            const isInMultipleSelection = this.isInMultipleSelectionMode();
 
-            if (this.state.isInMultiSelection) {
+            if (isInMultipleSelection) {
                 if (value === userAll) {
                     if (!hasValue) {
                         this.state.selectedTaskOwners.clear();
@@ -555,10 +584,6 @@ export class SprintsComponent extends Component<Props, State> {
             }
 
             if (!this.state.selectedTaskOwners.size) {
-                if (this.state.isInMultiSelection) {
-                    this.setState({ isInMultiSelection: false });
-                }
-
                 this.state.selectedTaskOwners.add(userAll);
             }
 
@@ -611,11 +636,7 @@ export class SprintsComponent extends Component<Props, State> {
         const userIdentity = `${userPrefix}${user.id}`;
         return (
             <div key={index} className={styles.Participant}>
-                <div
-                    onClick={this.onTaskOwnersChange(userIdentity)}
-                    className={styles.CheckboxContainer}
-                >
-                    {this.checkToRenderCheckbox(userIdentity)}
+                <div onClick={this.onTaskOwnersChange(userIdentity)}>
                     <div
                         className={`${styles.UserProfile} ${classNames({
                             [styles.Selected]:

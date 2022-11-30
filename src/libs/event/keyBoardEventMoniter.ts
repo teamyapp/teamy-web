@@ -1,34 +1,36 @@
 import { chan, multi } from "@lib/csp/csp";
 
-
 type KeyboardEventType = keyof Pick<DocumentEventMap, "keydown" | "keyup">
 
-
-
-
-export interface KeyboardEventEle {
+export interface CustomKeyboardEvent {
     event: KeyboardEventType,
     key: string
+    metaKey?: boolean
 }
 
 export class KeyBoardEventMonitor {
-    private keyEventChan = chan<KeyboardEventEle>()
-    private keyEventMultiChan = multi<KeyboardEventEle>(this.keyEventChan)
+    private keyEventChan = chan<CustomKeyboardEvent>()
+    private keyEventMultiChan = multi<CustomKeyboardEvent>(this.keyEventChan)
 
-    private keyupListener = (event: KeyboardEvent) => {
+    private onKeyUp = (event: KeyboardEvent) => {
         this.keyEventChan.put({
             key: event.key,
-            event: "keyup"
+            event: "keyup",
+            metaKey: event.metaKey
         })
-        
+        this.addKeyDownListener()
     }
 
-    private keydownListener = (event: KeyboardEvent) => {
+    private onKeyDown = (event: KeyboardEvent) => {
         this.keyEventChan.put({
             key: event.key,
-            event: "keydown"
+            event: "keydown",
+            metaKey: event.metaKey
         })
+    }
 
+    private addKeyDownListener() {
+        document.addEventListener('keydown', this.onKeyDown, {once: true});
     }
 
     public subscribe() {
@@ -36,12 +38,12 @@ export class KeyBoardEventMonitor {
     }
 
     public start() {
-        document.addEventListener('keydown', this.keydownListener);
-        document.addEventListener('keyup', this.keyupListener);
+        this.addKeyDownListener()
+        document.addEventListener('keyup', this.onKeyUp);
     }
 
     public stop() {
-        document.removeEventListener('keydown', this.keydownListener);
-        document.removeEventListener('keyup', this.keyupListener);
+        document.removeEventListener('keydown', this.onKeyDown);
+        document.removeEventListener('keyup', this.onKeyUp);
     }
 }
