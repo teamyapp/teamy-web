@@ -1,15 +1,15 @@
-import { chan, multi } from "@lib/csp/csp";
+import { chan, multi, PopChannel } from "@lib/csp/csp";
 type KeyboardEventType = 'keydown' | 'keyup';
 
-export interface CustomKeyboardEvent {
+export interface KeyboardEvenPayload {
     event: KeyboardEventType,
     key: string
     metaKey?: boolean
 }
 
 export class KeyBoardEventMonitor {
-    private keyEventChan = chan<CustomKeyboardEvent>()
-    private keyEventMultiChan = multi<CustomKeyboardEvent>(this.keyEventChan)
+    private keyEventChan = chan<KeyboardEvenPayload>()
+    private keyEventMultiChan = multi<KeyboardEvenPayload>(this.keyEventChan)
 
     private onKeyUp = (event: KeyboardEvent) => {
         this.keyEventChan.put({
@@ -31,7 +31,7 @@ export class KeyBoardEventMonitor {
         document.addEventListener('keydown', this.onKeyDown, {once: true});
     }
 
-    public subscribe(): PopChannel<KeyboardEvenPayload | undefined>; {
+    public subscribe(): PopChannel<KeyboardEvenPayload | undefined> {
         return this.keyEventMultiChan.copy()
     }
 

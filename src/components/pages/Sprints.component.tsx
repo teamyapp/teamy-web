@@ -6,7 +6,7 @@ import { closeIfNot } from '@lib/csp/lib';
 import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Duration } from '@lib/entity/duration';
-import { CustomKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
+import { KeyboardEvenPayload } from '@lib/event/keyBoardEventMoniter';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { isMacOs } from '@lib/runtime/utils';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -101,7 +101,7 @@ export class SprintsComponent extends Component<Props, State> {
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
-    private keyBoardEventChan?: csp.PopChannel<CustomKeyboardEvent | undefined>;
+    private keyBoardEventChan?: csp.PopChannel<KeyboardEvenPayload | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
