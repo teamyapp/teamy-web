@@ -1,6 +1,5 @@
 import { chan, multi } from "@lib/csp/csp";
-
-type KeyboardEventType = keyof Pick<DocumentEventMap, "keydown" | "keyup">
+type KeyboardEventType = 'keydown' | 'keyup';
 
 export interface CustomKeyboardEvent {
     event: KeyboardEventType,
@@ -28,12 +27,11 @@ export class KeyBoardEventMonitor {
             metaKey: event.metaKey
         })
     }
-
     private addKeyDownListener() {
         document.addEventListener('keydown', this.onKeyDown, {once: true});
     }
 
-    public subscribe() {
+    public subscribe(): PopChannel<KeyboardEvenPayload | undefined>; {
         return this.keyEventMultiChan.copy()
     }
 
