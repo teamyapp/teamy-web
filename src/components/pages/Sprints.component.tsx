@@ -101,7 +101,9 @@ export class SprintsComponent extends Component<Props, State> {
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
-    private keyBoardEventChan?: csp.PopChannel<InternalKeyboardEvent | undefined>;
+    private keyBoardEventChan?: csp.PopChannel<
+        InternalKeyboardEvent | undefined
+    >;
     private dragAndDropEventChan?: csp.PopChannel<
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
@@ -121,7 +123,7 @@ export class SprintsComponent extends Component<Props, State> {
                 upcoming: taskUrgencyOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
-            allowMultiSelection: false
+            allowMultiSelection: false,
         };
     }
 
@@ -288,15 +290,18 @@ export class SprintsComponent extends Component<Props, State> {
                     (getPlatform() === 'Mac' && keyboardEventEle.metaKey)
                 ) {
                     if (['keydown', 'keyup'].includes(event)) {
-                        if (this.isSelectionModePermanent && this.state.allowMultiSelection) {
-                            continue
+                        if (
+                            this.isSelectionModePermanent &&
+                            this.state.allowMultiSelection
+                        ) {
+                            continue;
                         }
-                        
+
                         this.setState({
-                            allowMultiSelection: event === 'keydown'
-                        })
-                        
-                        this.isSelectionModePermanent = event === 'keyup'
+                            allowMultiSelection: event === 'keydown',
+                        });
+
+                        this.isSelectionModePermanent = event === 'keyup';
                     }
                 }
             }
@@ -494,7 +499,9 @@ export class SprintsComponent extends Component<Props, State> {
                                         <input
                                             className={styles.Toggle}
                                             type='checkbox'
-                                            checked={this.state.allowMultiSelection}
+                                            checked={
+                                                this.state.allowMultiSelection
+                                            }
                                         />
                                         <div>
                                             Select{' '}
@@ -538,14 +545,12 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     private toggleMultiSelection = () => {
-
         if (!this.isSelectionModePermanent) {
-            return
+            return;
         }
 
         this.setState({
-            allowMultiSelection:
-                !this.state.allowMultiSelection,
+            allowMultiSelection: !this.state.allowMultiSelection,
         });
     };
 
