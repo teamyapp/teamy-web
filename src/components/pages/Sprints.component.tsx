@@ -8,7 +8,7 @@ import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Duration } from '@lib/entity/duration';
 import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
 import { RouteUpdate, Router } from '@lib/router/router';
-import { isMacOs } from '@lib/runtime/utils';
+import { isMacOs } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TooltipUI } from '@lib/ui/Tooltip';
