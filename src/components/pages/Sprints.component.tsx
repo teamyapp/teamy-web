@@ -6,7 +6,7 @@ import { closeIfNot } from '@lib/csp/lib';
 import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Duration } from '@lib/entity/duration';
-import { KeyboardEvenPayload } from '@lib/event/keyBoardEventMoniter';
+import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { isMacOs } from '@lib/runtime/utils';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -85,8 +85,7 @@ interface State {
     receivingSectionId?: string;
     sortOrders: SortOrders;
     selectedTaskOwners: Set<string>;
-    isInTempMultiSelection: boolean;
-    isInPermanentMultiSelection: boolean;
+    allowMultiSelection: boolean;
 }
 
 const acceptedRoutePatterns = [sprintsRoutePattern, sprintTabRoutePattern];
@@ -98,10 +97,11 @@ export class SprintsComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
 
     private readonly tabsRef = createRef<TabsUI>();
+    private isSelectionModePermanent: boolean = true;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
-    private keyBoardEventChan?: csp.PopChannel<KeyboardEvenPayload | undefined>;
+    private keyBoardEventChan?: csp.PopChannel<InternalKeyboardEvent | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
@@ -121,8 +121,7 @@ export class SprintsComponent extends Component<Props, State> {
                 upcoming: taskUrgencyOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
-            isInTempMultiSelection: false,
-            isInPermanentMultiSelection: false,
+            allowMultiSelection: false
         };
     }
 
@@ -289,12 +288,15 @@ export class SprintsComponent extends Component<Props, State> {
                     (isMacOs() && keyboardEventEle.metaKey)
                 ) {
                     if (['keydown', 'keyup'].includes(event)) {
+                        if (this.isSelectionModePermanent && this.state.allowMultiSelection) {
+                            continue
+                        }
+                        
                         this.setState({
-                            isInTempMultiSelection: this.state
-                                .isInPermanentMultiSelection
-                                ? false
-                                : event === 'keydown',
-                        });
+                            allowMultiSelection: event === 'keydown'
+                        })
+                        
+                        this.isSelectionModePermanent = event === 'keyup'
                     }
                 }
             }
@@ -492,11 +494,11 @@ export class SprintsComponent extends Component<Props, State> {
                                         <input
                                             className={styles.Toggle}
                                             type='checkbox'
-                                            checked={this.isInMultipleSelectionMode()}
+                                            checked={this.state.allowMultiSelection}
                                         />
                                         <div>
                                             Select{' '}
-                                            {this.isInMultipleSelectionMode()
+                                            {this.state.allowMultiSelection
                                                 ? 'Many'
                                                 : 'Single'}
                                         </div>
@@ -536,29 +538,22 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     private toggleMultiSelection = () => {
-        if (this.state.isInTempMultiSelection) {
-            return;
+
+        if (!this.isSelectionModePermanent) {
+            return
         }
 
         this.setState({
-            isInPermanentMultiSelection:
-                !this.state.isInPermanentMultiSelection,
+            allowMultiSelection:
+                !this.state.allowMultiSelection,
         });
     };
-
-    private isInMultipleSelectionMode() {
-        return (
-            this.state.isInPermanentMultiSelection ||
-            this.state.isInTempMultiSelection
-        );
-    }
 
     private onTaskOwnersChange = (value: string) => {
         return () => {
             const hasValue = this.state.selectedTaskOwners.has(value);
-            const isInMultipleSelection = this.isInMultipleSelectionMode();
 
-            if (isInMultipleSelection) {
+            if (this.state.allowMultiSelection) {
                 if (value === userAll) {
                     if (!hasValue) {
                         this.state.selectedTaskOwners.clear();

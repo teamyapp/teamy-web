@@ -1,15 +1,16 @@
 import { chan, multi, PopChannel } from "@lib/csp/csp";
 type KeyboardEventType = 'keydown' | 'keyup';
 
-export interface KeyboardEvenPayload {
+export interface InternalKeyboardEvent {
     event: KeyboardEventType,
     key: string
     metaKey?: boolean
 }
 
 export class KeyBoardEventMonitor {
-    private keyEventChan = chan<KeyboardEvenPayload>()
-    private keyEventMultiChan = multi<KeyboardEvenPayload>(this.keyEventChan)
+    private keyEventChan = chan<InternalKeyboardEvent>()
+    private keyEventMultiChan = multi<InternalKeyboardEvent>(this.keyEventChan)
+    private holdKeySet = new Set<string>()
 
     private onKeyUp = (event: KeyboardEvent) => {
         this.keyEventChan.put({
@@ -18,6 +19,7 @@ export class KeyBoardEventMonitor {
             metaKey: event.metaKey
         })
         this.addKeyDownListener()
+        this.holdKeySet.delete(event.key)
     }
 
     private onKeyDown = (event: KeyboardEvent) => {
@@ -26,12 +28,14 @@ export class KeyBoardEventMonitor {
             event: "keydown",
             metaKey: event.metaKey
         })
+
+        this.holdKeySet.add(event.key)
     }
     private addKeyDownListener() {
         document.addEventListener('keydown', this.onKeyDown, {once: true});
     }
 
-    public subscribe(): PopChannel<KeyboardEvenPayload | undefined> {
+    public subscribe(): PopChannel<InternalKeyboardEvent | undefined> {
         return this.keyEventMultiChan.copy()
     }
 
@@ -43,5 +47,9 @@ export class KeyBoardEventMonitor {
     public stop() {
         document.removeEventListener('keydown', this.onKeyDown);
         document.removeEventListener('keyup', this.onKeyUp);
+    }
+
+    public isKeyHold(key: string): boolean {
+        return this.holdKeySet.has(key)
     }
 }
