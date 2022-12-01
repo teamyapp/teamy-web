@@ -8,7 +8,7 @@ import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Duration } from '@lib/entity/duration';
 import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
 import { RouteUpdate, Router } from '@lib/router/router';
-import { isMacOs } from '@lib/runtime/os';
+import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -285,7 +285,7 @@ export class SprintsComponent extends Component<Props, State> {
                 const event = keyboardEventEle.event;
                 if (
                     keyboardEventEle.key === 'Control' ||
-                    (isMacOs() && keyboardEventEle.metaKey)
+                    (getPlatform() === 'Mac' && keyboardEventEle.metaKey)
                 ) {
                     if (['keydown', 'keyup'].includes(event)) {
                         if (this.isSelectionModePermanent && this.state.allowMultiSelection) {
