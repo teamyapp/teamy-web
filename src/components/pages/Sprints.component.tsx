@@ -506,7 +506,7 @@ export class SprintsComponent extends Component<Props, State> {
                                         <div>
                                             Select{' '}
                                             {this.state.allowMultiSelection
-                                                ? 'Many'
+                                                ? 'many'
                                                 : 'Single'}
                                         </div>
                                     </div>
