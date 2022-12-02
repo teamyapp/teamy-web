@@ -494,7 +494,7 @@ export class SprintsComponent extends Component<Props, State> {
                                         className={
                                             styles.MultiSelectionToggleContainer
                                         }
-                                        onClick={this.toggleMultiSelection}
+                                        onClick={this.toggleMultiSelectionPermanently}
                                     >
                                         <input
                                             className={styles.Toggle}
