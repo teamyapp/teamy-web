@@ -18,7 +18,7 @@ export class KeyBoardEventMonitor {
             event: "keyup",
             metaKey: event.metaKey
         })
-        this.addKeyDownListener()
+        document.addEventListener('keydown', this.onKeyDown, {once: true});
         this.holdKeySet.delete(event.key)
     }
 
@@ -31,16 +31,13 @@ export class KeyBoardEventMonitor {
 
         this.holdKeySet.add(event.key)
     }
-    private addKeyDownListener() {
-        document.addEventListener('keydown', this.onKeyDown, {once: true});
-    }
 
     public subscribe(): PopChannel<InternalKeyboardEvent | undefined> {
         return this.keyEventMultiChan.copy()
     }
 
     public start() {
-        this.addKeyDownListener()
+        document.addEventListener('keydown', this.onKeyDown, {once: true});
         document.addEventListener('keyup', this.onKeyUp);
     }
 

@@ -97,7 +97,7 @@ export class SprintsComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
 
     private readonly tabsRef = createRef<TabsUI>();
-    private isSelectionModePermanent: boolean = true;
+    private isSelectionModePermanent: boolean = false;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
@@ -279,20 +279,19 @@ export class SprintsComponent extends Component<Props, State> {
         (async () => {
             while (true) {
                 console.log('[SprintsComponent] waiting for keyboard event');
-                const keyboardEventEle = await this.keyBoardEventChan!.pop();
-                if (keyboardEventEle === undefined) {
+                const keyboardEvent = await this.keyBoardEventChan!.pop();
+                if (keyboardEvent === undefined) {
                     return;
                 }
 
-                const event = keyboardEventEle.event;
+                const event = keyboardEvent.event;
                 if (
-                    keyboardEventEle.key === 'Control' ||
-                    (getPlatform() === 'Mac' && keyboardEventEle.metaKey)
+                    keyboardEvent.key === 'Control' ||
+                    (getPlatform() === 'Mac' && keyboardEvent.metaKey)
                 ) {
                     if (['keydown', 'keyup'].includes(event)) {
                         if (
-                            this.isSelectionModePermanent &&
-                            this.state.allowMultiSelection
+                            this.isSelectionModePermanent
                         ) {
                             continue;
                         }
@@ -300,8 +299,6 @@ export class SprintsComponent extends Component<Props, State> {
                         this.setState({
                             allowMultiSelection: event === 'keydown',
                         });
-
-                        this.isSelectionModePermanent = event === 'keyup';
                     }
                 }
             }
@@ -544,10 +541,8 @@ export class SprintsComponent extends Component<Props, State> {
         }
     }
 
-    private toggleMultiSelection = () => {
-        if (!this.isSelectionModePermanent) {
-            return;
-        }
+    private toggleMultiSelectionPermanently = () => {
+        this.isSelectionModePermanent = !this.state.allowMultiSelection
 
         this.setState({
             allowMultiSelection: !this.state.allowMultiSelection,
