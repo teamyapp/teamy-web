@@ -19,32 +19,42 @@ export class KeyBoardEventMonitor {
         return (KeyboardKeys as readonly string[]).includes(eventKey);
     }
 
+    private getKeyBoardKey(event: KeyboardEvent): null | KeyboardKey {
+        if (event.metaKey) {
+            return 'Meta';
+        }
+
+        if (this.isOfTypeKeyboardKey(event.key)) {
+            return event.key;
+        }
+
+        return null;
+    }
+
     private onKeyUp = (event: KeyboardEvent) => {
-        const isKeyboardKey = this.isOfTypeKeyboardKey(event.key);
-        if (isKeyboardKey || event.metaKey) {
+        const keyboardKey = this.getKeyBoardKey(event);
+        if (keyboardKey) {
             this.keyEventChan.put({
-                key: isKeyboardKey ? event.key : 'Meta',
+                key: keyboardKey,
                 eventType: 'keyup',
             });
 
-            this.holdKeySet.delete(isKeyboardKey ? event.key : 'Meta');
+            this.holdKeySet.delete(keyboardKey);
         }
     };
 
     private onKeyDown = (event: KeyboardEvent) => {
-        const isKeyboardKey = this.isOfTypeKeyboardKey(event.key);
-        if (isKeyboardKey && this.isKeyHold(event.key)) {
+        const keyboardKey = this.getKeyBoardKey(event);
+        if (keyboardKey === null || this.isKeyHold(keyboardKey)) {
             return;
         }
 
-        if (isKeyboardKey || event.metaKey) {
-            this.keyEventChan.put({
-                key: isKeyboardKey ? event.key : 'Meta',
-                eventType: 'keydown',
-            });
+        this.keyEventChan.put({
+            key: keyboardKey,
+            eventType: 'keydown',
+        });
 
-            this.holdKeySet.add(isKeyboardKey ? event.key : 'Meta');
-        }
+        this.holdKeySet.add(keyboardKey);
     };
 
     public subscribe(): PopChannel<InternalKeyboardEvent | undefined> {
