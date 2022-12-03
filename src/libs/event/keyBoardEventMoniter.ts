@@ -34,12 +34,11 @@ export class KeyBoardEventMonitor {
     private onKeyUp = (event: KeyboardEvent) => {
         const keyboardKey = this.getKeyBoardKey(event);
         if (keyboardKey) {
+            this.holdKeySet.delete(keyboardKey);
             this.keyEventChan.put({
                 key: keyboardKey,
                 eventType: 'keyup',
             });
-
-            this.holdKeySet.delete(keyboardKey);
         }
     };
 
@@ -49,12 +48,11 @@ export class KeyBoardEventMonitor {
             return;
         }
 
+        this.holdKeySet.add(keyboardKey);
         this.keyEventChan.put({
             key: keyboardKey,
             eventType: 'keydown',
         });
-
-        this.holdKeySet.add(keyboardKey);
     };
 
     public subscribe(): PopChannel<InternalKeyboardEvent | undefined> {
