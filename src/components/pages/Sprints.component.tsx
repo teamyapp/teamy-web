@@ -287,7 +287,7 @@ export class SprintsComponent extends Component<Props, State> {
                 const event = keyboardEvent.event;
                 if (
                     keyboardEvent.key === 'Control' ||
-                    (getPlatform() === 'Mac' && keyboardEvent.metaKey)
+                    (getPlatform() === 'Mac' && keyboardEvent.key === 'Meta')
                 ) {
                     if (['keydown', 'keyup'].includes(event)) {
                         if (
@@ -491,7 +491,7 @@ export class SprintsComponent extends Component<Props, State> {
                                         className={
                                             styles.MultiSelectionToggleContainer
                                         }
-                                        onClick={this.toggleMultiSelectionPermanently}
+                                        onClick={this.onMultiSelectionToggleClick}
                                     >
                                         <input
                                             className={styles.Toggle}
@@ -541,9 +541,8 @@ export class SprintsComponent extends Component<Props, State> {
         }
     }
 
-    private toggleMultiSelectionPermanently = () => {
-        this.isSelectionModePermanent = !this.state.allowMultiSelection
-
+    private onMultiSelectionToggleClick = () => {
+        this.isSelectionModePermanent = !this.state.allowMultiSelection;
         this.setState({
             allowMultiSelection: !this.state.allowMultiSelection,
         });
