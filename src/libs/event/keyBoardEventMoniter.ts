@@ -1,6 +1,13 @@
 import { chan, multi, PopChannel } from "@lib/csp/csp";
 type KeyboardEventType = 'keydown' | 'keyup';
 
+const KeyboardKeys = ['Control', 'Meta'] as const;
+type KeyboardKey = (typeof KeyboardKeys)[number];
+
+function isOfTypeKeyboardKey (eventKey: string): eventKey is KeyboardKey {
+  return (KeyboardKeys as readonly string[]).includes(eventKey);
+}
+
 export interface InternalKeyboardEvent {
     eventType: KeyboardEventType,
     key: KeyboardKey
@@ -12,22 +19,31 @@ export class KeyBoardEventMonitor {
     private holdKeySet = new Set<KeyboardKey>();
 
     private onKeyUp = (event: KeyboardEvent) => {
-        this.keyEventChan.put({
-            key: event.key,
-            eventType: 'keyup',
-        })
-        document.addEventListener('keydown', this.onKeyDown, {once: true});
-        this.holdKeySet.delete(event.key)
+        const isKeyboardKey = isOfTypeKeyboardKey(event.key)
+        if (isKeyboardKey || event.metaKey) {
+            this.keyEventChan.put({
+                key: isKeyboardKey ? event.key : 'Meta',
+                eventType: 'keyup',
+            })
+            
+            this.holdKeySet.delete(isKeyboardKey ? event.key : 'Meta')
+        }        
     }
 
     private onKeyDown = (event: KeyboardEvent) => {
-        this.keyEventChan.put({
-            key: event.key,
-            event: "keydown",
-            metaKey: event.metaKey
-        });
-
-        this.holdKeySet.add(event.key);
+        const isKeyboardKey = isOfTypeKeyboardKey(event.key)
+        if (isKeyboardKey && this.isKeyHold(event.key)) {
+            return
+        }
+        
+        if (isKeyboardKey|| event.metaKey) {
+            this.keyEventChan.put({
+                key: isKeyboardKey ? event.key : 'Meta',
+                eventType: "keydown",
+            });
+    
+            this.holdKeySet.add(isKeyboardKey ? event.key : 'Meta')
+        }
     }
 
     public subscribe(): PopChannel<InternalKeyboardEvent | undefined> {
@@ -35,7 +51,7 @@ export class KeyBoardEventMonitor {
     }
 
     public start() {
-        document.addEventListener('keydown', this.onKeyDown, {once: true});
+        document.addEventListener('keydown', this.onKeyDown);
         document.addEventListener('keyup', this.onKeyUp);
     }
 
@@ -44,7 +60,7 @@ export class KeyBoardEventMonitor {
         document.removeEventListener('keyup', this.onKeyUp);
     }
 
-    public isKeyHold(key: string): boolean {
+    public isKeyHold(key: KeyboardKey): boolean {
         return this.holdKeySet.has(key)
     }
 }

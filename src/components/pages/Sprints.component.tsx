@@ -284,12 +284,12 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                const event = keyboardEvent.event;
+                const {key, eventType} = keyboardEvent;
                 if (
-                    keyboardEvent.key === 'Control' ||
-                    (getPlatform() === 'Mac' && keyboardEvent.key === 'Meta')
+                    key === 'Control' ||
+                    (getPlatform() === 'Mac' && key === 'Meta')
                 ) {
-                    if (['keydown', 'keyup'].includes(event)) {
+                    if (['keydown', 'keyup'].includes(eventType)) {
                         if (
                             this.isSelectionModePermanent
                         ) {
@@ -297,7 +297,7 @@ export class SprintsComponent extends Component<Props, State> {
                         }
 
                         this.setState({
-                            allowMultiSelection: event === 'keydown',
+                            allowMultiSelection: eventType === 'keydown',
                         });
                     }
                 }
@@ -552,29 +552,14 @@ export class SprintsComponent extends Component<Props, State> {
         return () => {
             const hasValue = this.state.selectedTaskOwners.has(value);
 
-            if (this.state.allowMultiSelection) {
-                if (value === userAll) {
-                    if (!hasValue) {
-                        this.state.selectedTaskOwners.clear();
-                        this.state.selectedTaskOwners.add(value);
-                    } else {
-                        this.state.selectedTaskOwners.delete(value);
-                    }
-                } else {
-                    if (!hasValue) {
-                        this.state.selectedTaskOwners.delete(userAll);
-                        this.state.selectedTaskOwners.add(value);
-                    } else {
-                        this.state.selectedTaskOwners.delete(value);
-                    }
-                }
+            if (hasValue) {
+                this.state.selectedTaskOwners.delete(value);
+            } else if (this.state.allowMultiSelection && value !== userAll) {
+                this.state.selectedTaskOwners.delete(userAll);
+                this.state.selectedTaskOwners.add(value);
             } else {
-                if (!hasValue) {
-                    this.state.selectedTaskOwners.clear();
-                    this.state.selectedTaskOwners.add(value);
-                } else {
-                    this.state.selectedTaskOwners.delete(value);
-                }
+                this.state.selectedTaskOwners.clear();
+                this.state.selectedTaskOwners.add(value);
             }
 
             if (!this.state.selectedTaskOwners.size) {
