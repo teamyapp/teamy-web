@@ -6,7 +6,9 @@ import { closeIfNot } from '@lib/csp/lib';
 import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Duration } from '@lib/entity/duration';
+import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
 import { RouteUpdate, Router } from '@lib/router/router';
+import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -83,6 +85,7 @@ interface State {
     receivingSectionId?: string;
     sortOrders: SortOrders;
     selectedTaskOwners: Set<string>;
+    allowMultiSelection: boolean;
 }
 
 const acceptedRoutePatterns = [sprintsRoutePattern, sprintTabRoutePattern];
@@ -94,9 +97,13 @@ export class SprintsComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
 
     private readonly tabsRef = createRef<TabsUI>();
+    private isSelectionModePermanent: boolean = false;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
+    private keyBoardEventChan?: csp.PopChannel<
+        InternalKeyboardEvent | undefined
+    >;
     private dragAndDropEventChan?: csp.PopChannel<
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
@@ -116,6 +123,7 @@ export class SprintsComponent extends Component<Props, State> {
                 upcoming: taskUrgencyOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
+            allowMultiSelection: false,
         };
     }
 
@@ -147,6 +155,7 @@ export class SprintsComponent extends Component<Props, State> {
     }
 
     public componentDidMount() {
+        this.monitorKeyboardEvents();
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -263,6 +272,39 @@ export class SprintsComponent extends Component<Props, State> {
         closeIfNot(this.dragAndDropEventChan);
     }
 
+    private monitorKeyboardEvents() {
+        this.keyBoardEventChan =
+            this.props.deps.keyBoardEventMonitor.subscribe();
+
+        (async () => {
+            while (true) {
+                console.log('[SprintsComponent] waiting for keyboard event');
+                const keyboardEvent = await this.keyBoardEventChan!.pop();
+                if (keyboardEvent === undefined) {
+                    return;
+                }
+
+                const {key, eventType} = keyboardEvent;
+                if (
+                    key === 'Control' ||
+                    (getPlatform() === 'Mac' && key === 'Meta')
+                ) {
+                    if (['keydown', 'keyup'].includes(eventType)) {
+                        if (
+                            this.isSelectionModePermanent
+                        ) {
+                            continue;
+                        }
+
+                        this.setState({
+                            allowMultiSelection: eventType === 'keydown',
+                        });
+                    }
+                }
+            }
+        })();
+    }
+
     private renderSelectSprint(): ReactNode {
         let sprints: Sprint[] =
             this.graphSource.team(this.localStore.getState().currTeamId!)
@@ -374,30 +416,38 @@ export class SprintsComponent extends Component<Props, State> {
                     <div className={styles.TeamTab}>
                         <div className={styles.ParticipantsSection}>
                             <div className={styles.Content}>
-                                <div className={styles.Title}>
-                                    Participants
-                                    <div className={styles.Counter}>
-                                        {this.state.sprintParticipants.length}
+                                <div className={styles.ActionBar}>
+                                    <div className={styles.Title}>
+                                        Participants
+                                        <div className={styles.Counter}>
+                                            {
+                                                this.state.sprintParticipants
+                                                    .length
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                                 <div className={styles.ParticipantList}>
                                     <div className={styles.Participant}>
                                         <div
-                                            className={`${
-                                                styles.AllParticipants
-                                            }  ${classNames({
-                                                [styles.Selected]:
-                                                    this.state.selectedTaskOwners.has(
-                                                        userAll,
-                                                    ),
-                                            })}`}
                                             onClick={this.onTaskOwnersChange(
                                                 userAll,
                                             )}
                                         >
-                                            <MaterialIconUI>
-                                                group_work
-                                            </MaterialIconUI>
+                                            <div
+                                                className={`${
+                                                    styles.AllParticipants
+                                                }  ${classNames({
+                                                    [styles.Selected]:
+                                                        this.state.selectedTaskOwners.has(
+                                                            userAll,
+                                                        ),
+                                                })}`}
+                                            >
+                                                <MaterialIconUI>
+                                                    group_work
+                                                </MaterialIconUI>
+                                            </div>
                                         </div>
                                         <div className={styles.RightSection}>
                                             <div className={styles.Name}>
@@ -407,21 +457,24 @@ export class SprintsComponent extends Component<Props, State> {
                                     </div>
                                     <div className={styles.Participant}>
                                         <div
-                                            className={`${
-                                                styles.EmptySelectionFace
-                                            }  ${classNames({
-                                                [styles.Selected]:
-                                                    this.state.selectedTaskOwners.has(
-                                                        userUnassigned,
-                                                    ),
-                                            })}`}
                                             onClick={this.onTaskOwnersChange(
                                                 userUnassigned,
                                             )}
                                         >
-                                            <MaterialIconUI>
-                                                face
-                                            </MaterialIconUI>
+                                            <div
+                                                className={`${
+                                                    styles.EmptySelectionFace
+                                                }  ${classNames({
+                                                    [styles.Selected]:
+                                                        this.state.selectedTaskOwners.has(
+                                                            userUnassigned,
+                                                        ),
+                                                })}`}
+                                            >
+                                                <MaterialIconUI>
+                                                    face
+                                                </MaterialIconUI>
+                                            </div>
                                         </div>
                                         <div className={styles.RightSection}>
                                             <div className={styles.Name}>
@@ -432,6 +485,28 @@ export class SprintsComponent extends Component<Props, State> {
                                     {this.state.sprintParticipants.map(
                                         this.renderParticipant,
                                     )}
+                                </div>
+                                <div className={styles.ActionBar}>
+                                    <div
+                                        className={
+                                            styles.MultiSelectionToggleContainer
+                                        }
+                                        onClick={this.onMultiSelectionToggleClick}
+                                    >
+                                        <input
+                                            className={styles.Toggle}
+                                            type='checkbox'
+                                            checked={
+                                                this.state.allowMultiSelection
+                                            }
+                                        />
+                                        <div>
+                                            Select{' '}
+                                            {this.state.allowMultiSelection
+                                                ? 'many'
+                                                : 'single'}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -466,19 +541,25 @@ export class SprintsComponent extends Component<Props, State> {
         }
     }
 
+    private onMultiSelectionToggleClick = () => {
+        this.isSelectionModePermanent = !this.state.allowMultiSelection;
+        this.setState({
+            allowMultiSelection: !this.state.allowMultiSelection,
+        });
+    };
+
     private onTaskOwnersChange = (value: string) => {
         return () => {
-            if (value === userAll) {
-                this.state.selectedTaskOwners.clear();
-            } else {
-                this.state.selectedTaskOwners.delete(userAll);
-            }
-
             const hasValue = this.state.selectedTaskOwners.has(value);
-            if (!hasValue) {
+
+            if (hasValue) {
+                this.state.selectedTaskOwners.delete(value);
+            } else if (this.state.allowMultiSelection && value !== userAll) {
+                this.state.selectedTaskOwners.delete(userAll);
                 this.state.selectedTaskOwners.add(value);
             } else {
-                this.state.selectedTaskOwners.delete(value);
+                this.state.selectedTaskOwners.clear();
+                this.state.selectedTaskOwners.add(value);
             }
 
             if (!this.state.selectedTaskOwners.size) {
@@ -534,14 +615,15 @@ export class SprintsComponent extends Component<Props, State> {
         const userIdentity = `${userPrefix}${user.id}`;
         return (
             <div key={index} className={styles.Participant}>
-                <div
-                    className={`${styles.UserProfile} ${classNames({
-                        [styles.Selected]:
-                            this.state.selectedTaskOwners.has(userIdentity),
-                    })}`}
-                    onClick={this.onTaskOwnersChange(userIdentity)}
-                >
-                    <UserProfileUI user={user} />
+                <div onClick={this.onTaskOwnersChange(userIdentity)}>
+                    <div
+                        className={`${styles.UserProfile} ${classNames({
+                            [styles.Selected]:
+                                this.state.selectedTaskOwners.has(userIdentity),
+                        })}`}
+                    >
+                        <UserProfileUI user={user} />
+                    </div>
                 </div>
                 <div className={styles.RightSection}>
                     <div className={styles.Name}>

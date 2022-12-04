@@ -423,10 +423,12 @@ export class AppComponent extends Component<Props, State> {
             }
         })().then();
         this.props.deps.eventDetectionScheduler.start();
+        this.props.deps.keyBoardEventMonitor.start()
     }
 
     public componentWillUnmount() {
         this.props.deps.eventDetectionScheduler.stop();
+        this.props.deps.keyBoardEventMonitor.stop();
         closeIfNot(this.stateChangeChan);
         closeIfNot(this.routeChangeChan);
         closeIfNot(this.dragAndDropEventChan);

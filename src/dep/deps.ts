@@ -44,6 +44,7 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { KeyBoardEventMonitor } from '@lib/event/keyBoardEventMoniter';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -57,6 +58,7 @@ export interface Deps {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     feedbackPubSub: PubSub<Feedback>;
     fileUploadSessionFactory: FileUploadSessionFactory;
+    keyBoardEventMonitor: KeyBoardEventMonitor;
 }
 
 export function initDeps(): Deps {
@@ -148,7 +150,9 @@ export function initDeps(): Deps {
         boundingBoxChangeEventMonitor,
     );
     const relativeLayout = new RelativeLayout(boundingBoxChangeEventMonitor);
+    const keyBoardEventMonitor = new KeyBoardEventMonitor()
     return {
+        keyBoardEventMonitor,
         eventDetectionScheduler,
         relativeLayout,
         identityClient,
