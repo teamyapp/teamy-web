@@ -284,15 +284,15 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                const {key, eventType} = keyboardEvent;
+                const { key, eventType } = keyboardEvent;
+                const platform = getPlatform();
+
                 if (
-                    key === 'Control' ||
-                    (getPlatform() === 'Mac' && key === 'Meta')
+                    (platform === 'Windows' && key === 'Control') ||
+                    (platform === 'Mac' && key === 'Meta')
                 ) {
                     if (['keydown', 'keyup'].includes(eventType)) {
-                        if (
-                            this.isSelectionModePermanent
-                        ) {
+                        if (this.isSelectionModePermanent) {
                             continue;
                         }
 
@@ -416,15 +416,10 @@ export class SprintsComponent extends Component<Props, State> {
                     <div className={styles.TeamTab}>
                         <div className={styles.ParticipantsSection}>
                             <div className={styles.Content}>
-                                <div className={styles.ActionBar}>
-                                    <div className={styles.Title}>
-                                        Participants
-                                        <div className={styles.Counter}>
-                                            {
-                                                this.state.sprintParticipants
-                                                    .length
-                                            }
-                                        </div>
+                                <div className={styles.Title}>
+                                    Participants
+                                    <div className={styles.Counter}>
+                                        {this.state.sprintParticipants.length}
                                     </div>
                                 </div>
                                 <div className={styles.ParticipantList}>
@@ -491,7 +486,9 @@ export class SprintsComponent extends Component<Props, State> {
                                         className={
                                             styles.MultiSelectionToggleContainer
                                         }
-                                        onClick={this.onMultiSelectionToggleClick}
+                                        onClick={
+                                            this.onMultiSelectionToggleClick
+                                        }
                                     >
                                         <input
                                             className={styles.Toggle}
@@ -500,12 +497,7 @@ export class SprintsComponent extends Component<Props, State> {
                                                 this.state.allowMultiSelection
                                             }
                                         />
-                                        <div>
-                                            Select{' '}
-                                            {this.state.allowMultiSelection
-                                                ? 'many'
-                                                : 'single'}
-                                        </div>
+                                        <div className={styles.ToggleLabel} >Select many</div>
                                     </div>
                                 </div>
                             </div>
@@ -552,14 +544,20 @@ export class SprintsComponent extends Component<Props, State> {
         return () => {
             const hasValue = this.state.selectedTaskOwners.has(value);
 
-            if (hasValue) {
-                this.state.selectedTaskOwners.delete(value);
-            } else if (this.state.allowMultiSelection && value !== userAll) {
-                this.state.selectedTaskOwners.delete(userAll);
-                this.state.selectedTaskOwners.add(value);
+            if (this.state.allowMultiSelection && value !== userAll) {
+                if (hasValue) {
+                    this.state.selectedTaskOwners.delete(value);
+                } else {
+                    this.state.selectedTaskOwners.delete(userAll);
+                    this.state.selectedTaskOwners.add(value);
+                }
             } else {
-                this.state.selectedTaskOwners.clear();
-                this.state.selectedTaskOwners.add(value);
+                if (hasValue && this.state.selectedTaskOwners.size === 1) {
+                    this.state.selectedTaskOwners.delete(value);
+                } else {
+                    this.state.selectedTaskOwners.clear();
+                    this.state.selectedTaskOwners.add(value);
+                }
             }
 
             if (!this.state.selectedTaskOwners.size) {

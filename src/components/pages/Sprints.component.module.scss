@@ -63,7 +63,7 @@
                     .ParticipantList {
                         flex: 1;
                         overflow-y: auto;
-                        margin: 0 8px 10px 8px;
+                        margin: 0 8px;
                         padding: 4px 8px;
 
                         .Participant {
@@ -171,8 +171,9 @@
                             }
                         }
                     }
-                    
-                    .ActionBar {
+
+                    .ActionBar,
+                    .Title {
                         text-align: center;
                         margin: 10px;
                         color: white;
@@ -180,17 +181,28 @@
                         border-radius: 4px;
                         background-color: #1565c0;
                     }
-                    
+
                     .MultiSelectionToggleContainer {
                         display: flex;
                         align-items: center;
                         font-size: 15px;
                         font-weight: 500;
-                        cursor: pointer;
+
+                        &:hover {
+                            cursor: pointer;
+                        }
 
                         .Toggle {
+                            &:hover {
+                                cursor: pointer;
+                            }
+
                             margin-left: 8px;
                             margin-right: 8px;
+                        }
+
+                        .ToggleLabel {
+                            user-select: none;
                         }
                     }
                 }

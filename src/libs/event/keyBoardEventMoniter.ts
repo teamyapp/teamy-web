@@ -18,16 +18,14 @@ export class KeyBoardEventMonitor {
     private keyEventMultiChan = multi<InternalKeyboardEvent>(this.keyEventChan);
     private holdKeySet = new Set<KeyboardKey>();
 
-    private getKeyBoardKey(event: KeyboardEvent): undefined | KeyboardKey {
-        if (event.metaKey) {
-            return 'Meta';
+    private onKeyUp = (event: KeyboardEvent) => {
+        let keyboardKey: KeyboardKey
+        if (!event.metaKey && this.isKeyHold('Meta')) {
+            keyboardKey = 'Meta'
+        } else {
+            keyboardKey = keyMap[event.key]
         }
 
-       return keyMap[event.key]
-    }
-
-    private onKeyUp = (event: KeyboardEvent) => {
-        const keyboardKey = this.getKeyBoardKey(event);
         if (keyboardKey) {
             this.holdKeySet.delete(keyboardKey);
             this.keyEventChan.put({
@@ -38,7 +36,13 @@ export class KeyBoardEventMonitor {
     };
 
     private onKeyDown = (event: KeyboardEvent) => {
-        const keyboardKey = this.getKeyBoardKey(event);
+        let keyboardKey: KeyboardKey
+        if (event.metaKey && !this.isKeyHold('Meta')) {
+            keyboardKey = 'Meta';
+        } else {
+            keyboardKey = keyMap[event.key]
+        }
+
         if (keyboardKey === undefined || this.isKeyHold(keyboardKey)) {
             return;
         }
