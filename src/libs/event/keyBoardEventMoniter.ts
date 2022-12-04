@@ -2,10 +2,9 @@ import { PopChannel, chan, multi } from '@lib/csp/csp';
 
 type KeyboardEventType = 'keydown' | 'keyup';
 
-type InternalEventKey = 'Control';
 type KeyboardKey = 'Control' | 'Meta';
 
-const keyMap: Record<InternalEventKey, KeyboardKey> = {
+const keyMap: Record<string, KeyboardKey> = {
     Control: 'Control',
 };
 
@@ -19,18 +18,12 @@ export class KeyBoardEventMonitor {
     private keyEventMultiChan = multi<InternalKeyboardEvent>(this.keyEventChan);
     private holdKeySet = new Set<KeyboardKey>();
 
-
-    private getKeyBoardKey(event: KeyboardEvent): null | KeyboardKey {
+    private getKeyBoardKey(event: KeyboardEvent): undefined | KeyboardKey {
         if (event.metaKey) {
             return 'Meta';
         }
 
-        const keyboardKey = keyMap[event.key as InternalEventKey]
-        if (keyboardKey) {
-            return keyboardKey;
-        }
-
-        return null;
+       return keyMap[event.key]
     }
 
     private onKeyUp = (event: KeyboardEvent) => {
@@ -46,7 +39,7 @@ export class KeyBoardEventMonitor {
 
     private onKeyDown = (event: KeyboardEvent) => {
         const keyboardKey = this.getKeyBoardKey(event);
-        if (keyboardKey === null || this.isKeyHold(keyboardKey)) {
+        if (keyboardKey === undefined || this.isKeyHold(keyboardKey)) {
             return;
         }
 
