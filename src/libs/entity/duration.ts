@@ -10,6 +10,7 @@ const YEAR_IN_MILLIS = 365 * DAY_IN_MILLIS;
 export const MILLIS_IN_NANOS = 1_000_000;
 
 interface DurationJson {
+    sign?: number;
     years?: number;
     months?: number;
     weeks?: number;
@@ -29,7 +30,7 @@ export class Duration {
     private readonly _seconds: number;
 
     constructor(private _totalMilliSeconds: number) {
-        let tmpTotalMillis = _totalMilliSeconds;
+        let tmpTotalMillis = Math.abs(_totalMilliSeconds);
         this._years = Math.floor(tmpTotalMillis / YEAR_IN_MILLIS);
         tmpTotalMillis = tmpTotalMillis % YEAR_IN_MILLIS;
         this._months = Math.floor(tmpTotalMillis / MONTH_IN_MILLIS);
@@ -46,6 +47,7 @@ export class Duration {
     }
 
     public static fromJson(json: DurationJson): Duration {
+        const sign = json.sign || 1;
         let totalMillis = (json.years || 0) * YEAR_IN_MILLIS;
         totalMillis += (json.months || 0) * MONTH_IN_MILLIS;
         totalMillis += (json.weeks || 0) * WEEK_IN_MILLIS;
@@ -53,7 +55,7 @@ export class Duration {
         totalMillis += (json.hours || 0) * HOUR_IN_MILLIS;
         totalMillis += (json.minutes || 0) * MINUTE_IN_MILLIS;
         totalMillis += (json.seconds || 0) * SECOND_IN_MILLIS;
-        return new Duration(totalMillis);
+        return new Duration(sign * totalMillis);
     }
 
     public static fromString(durationText: string): Duration {
@@ -122,7 +124,13 @@ export class Duration {
         tryIncludeUnit(buffer, this.hours, 'h');
         tryIncludeUnit(buffer, this.minutes, 'min');
         tryIncludeUnit(buffer, this.seconds, 's');
-        return buffer.join(' ');
+        let readableValue = buffer.join(' ');
+
+        if (this._totalMilliSeconds < 0) {
+            return `-${readableValue}`;
+        }
+
+        return readableValue;
     }
 }
 

@@ -152,7 +152,7 @@
                                         margin-left: 6px;
 
                                         .BandwidthFull {
-                                            border-radius: 5px;
+                                            //border-radius: 5px;
                                             height: 8px;
                                             background-color: rgba(
                                                 0,
@@ -166,7 +166,11 @@
                                             }
 
                                             .UnusedBandwidth {
-                                                border-radius: 5px;
+                                                &.Negative {
+                                                    background-color: #c62828;
+                                                }
+
+                                                //border-radius: 5px;
                                                 height: 100%;
                                                 background-color: #1565c0;
                                                 transition: width 400ms

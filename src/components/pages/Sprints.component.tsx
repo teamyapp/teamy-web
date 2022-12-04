@@ -558,9 +558,17 @@ export class SprintsComponent extends Component<Props, State> {
                             >
                                 <div className={styles.BandwidthFull}>
                                     <div
-                                        className={styles.UnusedBandwidth}
+                                        className={`${
+                                            styles.UnusedBandwidth
+                                        } ${classNames({
+                                            [styles.Negative]:
+                                                participant.unusedBandwidth
+                                                    .totalMilliSeconds < 0,
+                                        })}`}
                                         style={{
-                                            width: `${unusedBandwidthPercent}%`,
+                                            width: `${Math.abs(
+                                                unusedBandwidthPercent,
+                                            )}%`,
                                         }}
                                     />
                                 </div>
