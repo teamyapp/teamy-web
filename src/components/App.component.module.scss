@@ -95,6 +95,8 @@
 
                 .Teams {
                     @include elevation(4);
+                    overflow-y: auto;
+                    height: 300px;
 
                     .TeamRow {
                         text-align: center;

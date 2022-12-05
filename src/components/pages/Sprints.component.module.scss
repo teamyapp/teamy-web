@@ -262,6 +262,8 @@
 
         .Sprints {
             @include elevation(4);
+            overflow-y: auto;
+            height: 300px;
 
             .SprintRow {
                 text-align: center;
