@@ -58,7 +58,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                     <div className={styles.MoveSection}>
                         <div
                             className={styles.Button}
-                            onClick={this.onCopyTasksToNextSprint}
+                            onClick={this.onCopyUnfinishedTasksClick}
                         >
                             <MaterialIconUI>outbound</MaterialIconUI>
                         </div>
