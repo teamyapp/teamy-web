@@ -198,7 +198,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         return true;
     };
 
-    private onCopyTasksToNextSprint = () => {
+    private onCopyUnfinishedTasksClick = () => {
         if (!this.canCopyTasksToNextSprint()) {
             alert('can not copy tasks to next sprint');
             return;

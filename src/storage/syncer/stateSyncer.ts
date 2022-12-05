@@ -767,20 +767,10 @@ export class StateSyncer {
     }
 
     public async copyTasksToSprint(toSprintId: number, taskIds: number[]) {
-        const remoteTasks = await this.sprintClient.copyTasksToSprint(
+        await this.sprintClient.copyTasksToSprint(
             `${toSprintId}`,
             taskIds.map(String),
         );
-        const appState = remoteTasks.reduce(
-            (appState, remoteTask) =>
-                this._createTaskSprintRelation(
-                    appState,
-                    remoteTask,
-                    toSprintId,
-                ),
-            this.localStore.getState(),
-        );
-        this.localStore.updateState(appState);
     }
 
     public async moveTasksToSprint(
