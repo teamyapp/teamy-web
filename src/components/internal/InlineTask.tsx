@@ -110,10 +110,8 @@ export class InlineTaskUI extends Component<Props, State> {
                                 {this.renderEffort()}
                             </div>
                         </div>
-                        <div className={styles.AwaitFor}>
-                            {this.props.task.awaitForTasks?.length > 0 &&
-                                this.renderAwaitForTasks()}
-                        </div>
+                        {this.props.task.awaitForTasks?.length > 0 &&
+                            this.renderAwaitForTasks()}
                     </div>
                     <div
                         className={styles.ActionsSection}
