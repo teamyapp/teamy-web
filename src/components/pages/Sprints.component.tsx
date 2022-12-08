@@ -261,7 +261,6 @@ export class SprintsComponent extends Component<Props, State> {
                     sectionIds.includes(event.destContainerId) &&
                     event.target.type === draggableTask
                 ) {
-                    debugger;
                     this.processTaskDrop(
                         event.srcContainId,
                         event.destContainerId,
