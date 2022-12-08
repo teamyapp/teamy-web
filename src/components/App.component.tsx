@@ -33,6 +33,7 @@ import {
     taskRoutePattern,
 } from '@core/config/routing';
 import {
+    awaitingSectionId,
     backlogSectionId,
     deliveredSectionId,
     inProgressSectionId,
@@ -80,6 +81,7 @@ const sectionIds = [
     backlogSectionId,
     upcomingSectionId,
     inProgressSectionId,
+    awaitingSectionId,
     deliveredSectionId,
     needAttentionSectionId,
 ];
@@ -812,7 +814,7 @@ export class AppComponent extends Component<Props, State> {
 
     private processTask(task: Task, context?: DragAndDropContext) {
         const sprintId = this.localStore.getState().currSprintId;
-
+        debugger
         if (sprintId) {
             this.stateSyncer.addTaskToSprint(sprintId, task.id);
             if (context?.isPersonal) {

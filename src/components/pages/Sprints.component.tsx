@@ -250,12 +250,18 @@ export class SprintsComponent extends Component<Props, State> {
                 if (event === undefined) {
                     return;
                 }
+
+                if (event.type !== 'Drop') {
+                    continue
+                }
+
                 if (
                     event.type === 'Drop' &&
                     sectionIds.includes(event.srcContainId) &&
                     sectionIds.includes(event.destContainerId) &&
                     event.target.type === draggableTask
                 ) {
+                    debugger;
                     this.processTaskDrop(
                         event.srcContainId,
                         event.destContainerId,

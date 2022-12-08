@@ -47,6 +47,7 @@ export class NeedAttentionSection extends Component<Props> {
                     containerId={needAttentionSectionId}
                     itemType={draggableTask}
                     itemSizeTransformer={sectionItemSizeTransformer}
+                    context={{ isPersonal: true }}
                 >
                     <SectionUI title={'Need Attention'}>
                         {this.props.needAttentionTask &&
