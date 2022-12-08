@@ -84,14 +84,19 @@ $draggingColor: #00897b;
 
         .TopRow {
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            height: 22px;
 
             .Attribute {
-                font-weight: 500;
-                padding: 2px 6px;
-
-                &:not(:first-child) {
-                    margin-left: 10px;
-                }
+                height: 100%;
+                font-size: 14px;
+                border-radius: 4px;
+                font-weight: 600;
+                padding: 0 6px;
+                display: flex;
+                align-items: center;
             }
 
             .Id {
@@ -101,7 +106,6 @@ $draggingColor: #00897b;
 
             .Status {
                 color: white;
-                font-size: 14px;
 
                 &.TODO {
                     background-color: #1e88e5;
@@ -128,11 +132,10 @@ $draggingColor: #00897b;
         .BottomRow {
             display: flex;
             margin-top: 10px;
+            gap: 6px;
 
             .Attribute {
-                &:not(:first-child) {
-                    margin-left: 6px;
-                }
+                height: 25px;
             }
         }
     }

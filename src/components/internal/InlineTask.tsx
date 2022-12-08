@@ -86,19 +86,19 @@ export class InlineTaskUI extends Component<Props, State> {
                 >
                     <div className={styles.LeftSection}>
                         <div className={styles.TopRow}>
-                            <span
+                            <div
                                 className={`${styles.Attribute} ${styles.Id}`}
                             >
                                 {this.props.task.id}
-                            </span>
+                            </div>
                             {this.props.showStatus && (
-                                <span
+                                <div
                                     className={`${styles.Attribute} ${
                                         styles.Status
                                     } ${styles[this.props.task.status]}`}
                                 >
                                     {statusNames[this.props.task.status]}
-                                </span>
+                                </div>
                             )}
                         </div>
                         {this.renderGoal()}
