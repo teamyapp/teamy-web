@@ -58,7 +58,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                     <div className={styles.MoveSection}>
                         <div
                             className={styles.Button}
-                            onClick={this.onMoveTasksToNextSprint}
+                            onClick={this.onCopyUnfinishedTasksClick}
                         >
                             <MaterialIconUI>outbound</MaterialIconUI>
                         </div>
@@ -178,7 +178,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         });
     };
 
-    private canMoveTasksToNextSprint = () => {
+    private canCopyTasksToNextSprint = () => {
         const currentSprint = this.graphSource.currentSprint();
         if (!currentSprint) {
             return false;
@@ -198,9 +198,9 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         return true;
     };
 
-    private onMoveTasksToNextSprint = () => {
-        if (!this.canMoveTasksToNextSprint()) {
-            alert('can not move tasks to next sprint');
+    private onCopyUnfinishedTasksClick = () => {
+        if (!this.canCopyTasksToNextSprint()) {
+            alert('can not copy tasks to next sprint');
             return;
         }
 
@@ -208,8 +208,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         const nextSprint = this.getNextSprint(currentSprint)!;
         const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
         const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
-        this.stateSyncer.moveTasksToSprint(
-            currentSprint.id,
+        this.stateSyncer.copyTasksToSprint(
             nextSprint.id,
             unfinishedTaskIds,
         );

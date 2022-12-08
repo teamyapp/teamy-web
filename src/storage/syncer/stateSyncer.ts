@@ -766,6 +766,13 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async copyTasksToSprint(toSprintId: number, taskIds: number[]) {
+        await this.sprintClient.copyTasksToSprint(
+            `${toSprintId}`,
+            taskIds.map(String),
+        );
+    }
+
     public async moveTasksToSprint(
         fromSprintId: number,
         toSprintId: number,
@@ -779,7 +786,7 @@ export class StateSyncer {
 
         const appState = remoteTasks.reduce(
             (appState, remoteTask) =>
-                this._updateTaskSprint(
+                this._moveTaskToSprint(
                     appState,
                     remoteTask,
                     fromSprintId,
@@ -790,7 +797,7 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    private _updateTaskSprint(
+    private _moveTaskToSprint(
         appState: AppState,
         remoteTask: RemoteTask,
         fromSprintId: number,
@@ -810,12 +817,6 @@ export class StateSyncer {
                 ),
         );
 
-        const relation: SprintTaskRelationState = {
-            sprintId: toSprintId,
-            taskId,
-        };
-        appState.sprintTaskRelations =
-            appState.sprintTaskRelations.concat(relation);
         return appState;
     }
 

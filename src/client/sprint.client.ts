@@ -162,6 +162,33 @@ export class SprintClient {
             .then((payload: any) => payload?.moveTasksToSprint);
     }
 
+    public copyTasksToSprint(
+        toSprintId: string,
+        taskIds: string[],
+    ): Promise<RemoteTask[]> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation copyTasksToSprint(
+                        $toSprintId: ID!
+                        $taskIds: [ID!]!
+                    ) {
+                        copyTasksToSprint(
+                            toSprintId: $toSprintId
+                            taskIds: $taskIds
+                        ) {
+                            id
+                        }
+                    }
+                `,
+                variables: {
+                    toSprintId,
+                    taskIds,
+                },
+            })
+            .then((payload: any) => payload?.copyTasksToSprint);
+    }
+
     public addTaskToSprint(
         sprintId: string,
         taskId: string,
