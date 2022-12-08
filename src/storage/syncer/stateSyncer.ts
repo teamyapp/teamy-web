@@ -808,7 +808,6 @@ export class StateSyncer {
             return appState;
         }
 
-
         appState = mergeTask(appState, remoteTask);
         appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
             (relation) =>
