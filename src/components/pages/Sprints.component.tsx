@@ -251,21 +251,18 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                if (event.type !== 'Drop') {
-                    continue
-                }
-
-                if (
-                    event.type === 'Drop' &&
-                    sectionIds.includes(event.srcContainId) &&
-                    sectionIds.includes(event.destContainerId) &&
-                    event.target.type === draggableTask
-                ) {
-                    this.processTaskDrop(
-                        event.srcContainId,
-                        event.destContainerId,
-                        event.target.data,
-                    );
+                if (event.type === 'Drop') {
+                    if (
+                        sectionIds.includes(event.srcContainId) &&
+                        sectionIds.includes(event.destContainerId) &&
+                        event.target.type === draggableTask
+                    ) {
+                        this.processTaskDrop(
+                            event.srcContainId,
+                            event.destContainerId,
+                            event.target.data,
+                        );
+                    }
                 }
             }
         })().then();
