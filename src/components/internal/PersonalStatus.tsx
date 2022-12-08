@@ -122,6 +122,7 @@ export class PersonalStatusUI extends Component<Props> {
                             onShowPotentialTaskOwners={
                                 this.props.onShowPotentialTaskOwners
                             }
+                            isPersonal
                         />
                     </div>
                     <div className={`${styles.TaskListSection}`}>
@@ -142,6 +143,7 @@ export class PersonalStatusUI extends Component<Props> {
                             onShowPotentialTaskOwners={
                                 this.props.onShowPotentialTaskOwners
                             }
+                            isPersonal
                         />
                     </div>
                 </div>

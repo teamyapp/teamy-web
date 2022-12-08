@@ -29,6 +29,7 @@ interface Props {
     tasks: Task[];
     selectOwnerTaskId?: number;
     currentClientId?: number;
+    isPersonal?: boolean;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
     onDeleteTask?: (taskId: number) => void;
@@ -55,6 +56,7 @@ export class DeliveredSection extends Component<Props> {
                     containerId={deliveredSectionId}
                     itemType={draggableTask}
                     itemSizeTransformer={sectionItemSizeTransformer}
+                    context={{ isPersonal: this.props.isPersonal }}
                 >
                     <SectionUI
                         title={'Delivered'}

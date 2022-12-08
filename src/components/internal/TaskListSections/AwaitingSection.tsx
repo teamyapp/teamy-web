@@ -25,6 +25,7 @@ interface Props {
     tasks: Task[];
     selectOwnerTaskId?: number;
     currentClientId?: number;
+    isPersonal?: boolean;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
     onDeleteTask?: (taskId: number) => void;
@@ -48,6 +49,7 @@ export class AwaitingSection extends Component<Props> {
                     containerId={awaitingSectionId}
                     itemType={draggableTask}
                     itemSizeTransformer={sectionItemSizeTransformer}
+                    context={{ isPersonal: this.props.isPersonal }}
                 >
                     <SectionUI
                         title={'Awaiting'}
