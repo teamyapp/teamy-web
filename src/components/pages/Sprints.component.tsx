@@ -51,6 +51,7 @@ import { PersonalStatusUI } from '../internal/PersonalStatus';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
+import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 
 const tabIds = ['me', 'team'];
 
@@ -676,7 +677,7 @@ export class SprintsComponent extends Component<Props, State> {
 
         if (appState.currUserId) {
             this.setState({
-                sprintParticipants: sprintParticipants,
+                sprintParticipants: sortParticipantsByName(sprintParticipants),
                 currentUserId: appState.currUserId!,
                 selectedSprintId: appState.currSprintId,
                 sprintTasks: sprintTasks,
@@ -802,4 +803,16 @@ function safeDivide(dividend: number, divisor: number): number {
     }
 
     return dividend / divisor;
+}
+
+function sortParticipantsByName(participants: SprintParticipantNode[]) {
+    return [...participants].sort((participantA, participantB) => {
+        if (participantA.user.fullName.toUpperCase() < participantB.user.fullName.toUpperCase() ) {
+            return 1
+        } else if (participantA.user.fullName.toUpperCase() > participantB.user.fullName.toUpperCase()){
+            return -1
+        }
+
+        return 0
+    })
 }
