@@ -43,6 +43,7 @@ import { Sprint } from '@core/entity/sprint';
 import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/storage/graph/graphSource';
+import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
@@ -51,7 +52,6 @@ import { PersonalStatusUI } from '../internal/PersonalStatus';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
-import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 
 const tabIds = ['me', 'team'];
 
@@ -500,7 +500,9 @@ export class SprintsComponent extends Component<Props, State> {
                                                 this.state.allowMultiSelection
                                             }
                                         />
-                                        <div className={styles.ToggleLabel} >Select many</div>
+                                        <div className={styles.ToggleLabel}>
+                                            Select many
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -807,12 +809,14 @@ function safeDivide(dividend: number, divisor: number): number {
 
 function sortParticipantsByName(participants: SprintParticipantNode[]) {
     return [...participants].sort((participantA, participantB) => {
-        if (participantA.user.fullName.toUpperCase() < participantB.user.fullName.toUpperCase() ) {
-            return 1
-        } else if (participantA.user.fullName.toUpperCase() > participantB.user.fullName.toUpperCase()){
-            return -1
+        const fullNameA = participantA.user.fullName.toUpperCase();
+        const fullNameB = participantB.user.fullName.toUpperCase();
+        if (fullNameA < fullNameB) {
+            return 1;
+        } else if (fullNameA > fullNameB) {
+            return -1;
         }
 
-        return 0
-    })
+        return 0;
+    });
 }
