@@ -43,6 +43,7 @@ import { Sprint } from '@core/entity/sprint';
 import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/storage/graph/graphSource';
+import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
@@ -499,7 +500,9 @@ export class SprintsComponent extends Component<Props, State> {
                                                 this.state.allowMultiSelection
                                             }
                                         />
-                                        <div className={styles.ToggleLabel} >Select many</div>
+                                        <div className={styles.ToggleLabel}>
+                                            Select many
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -676,7 +679,7 @@ export class SprintsComponent extends Component<Props, State> {
 
         if (appState.currUserId) {
             this.setState({
-                sprintParticipants: sprintParticipants,
+                sprintParticipants: sortParticipantsByName(sprintParticipants),
                 currentUserId: appState.currUserId!,
                 selectedSprintId: appState.currSprintId,
                 sprintTasks: sprintTasks,
@@ -802,4 +805,18 @@ function safeDivide(dividend: number, divisor: number): number {
     }
 
     return dividend / divisor;
+}
+
+function sortParticipantsByName(participants: SprintParticipantNode[]) {
+    return [...participants].sort((participantA, participantB) => {
+        const fullNameA = participantA.user.fullName.toUpperCase();
+        const fullNameB = participantB.user.fullName.toUpperCase();
+        if (fullNameA < fullNameB) {
+            return 1;
+        } else if (fullNameA > fullNameB) {
+            return -1;
+        }
+
+        return 0;
+    });
 }
