@@ -1,4 +1,4 @@
-export type MessageType = 'Mutation' | 'Metadata';
+export type MessageType = 'Transaction' | 'Metadata';
 
 export class Message {
     constructor(public type: MessageType, public payload: any) {}
