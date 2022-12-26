@@ -314,7 +314,7 @@ export class AppComponent extends Component<Props, State> {
                                                 router={this.router}
                                                 pattern={insightsRoutePattern}
                                             >
-                                                <InsightsComponent />
+                                                <InsightsComponent deps={this.props.deps}/>
                                             </Route>
                                             <Route
                                                 router={this.router}

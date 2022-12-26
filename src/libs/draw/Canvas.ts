@@ -4,25 +4,30 @@ export class Canvas {
     private readonly ctx: CanvasRenderingContext2D;
     private readonly pages: Page[] = [];
     private readonly activePageIndex: number = 0;
+    private readonly dpi: number;
     private selectedDrawableId?: number;
 
     constructor(private readonly canvasEl: HTMLCanvasElement) {
+        this.dpi = window.devicePixelRatio;
         this.ctx = canvasEl.getContext('2d')!;
         const defaultPage = new Page();
         this.pages.push(defaultPage);
+        this.resize();
     }
 
     public get context(): CanvasRenderingContext2D {
         return this.ctx;
     }
 
+    public resize() {
+        const parentRect = this.canvasEl.parentElement?.getBoundingClientRect();
+        this.canvasEl.width = (parentRect?.width || document.documentElement.offsetWidth) * this.dpi;
+        this.canvasEl.height = (parentRect?.height || document.documentElement.offsetHeight) * this.dpi;
+    }
+
     public clearAndDraw() {
         this.clearCanvas();
-        const dpi = window.devicePixelRatio;
-        const canvasRect = this.canvasEl.getBoundingClientRect();
-        this.canvasEl.width = canvasRect.width * dpi;
-        this.canvasEl.height = canvasRect.height * dpi;
-        this.drawPage(dpi);
+        this.drawPage(this.dpi);
     }
 
     public getPage(pageIndex: number): Page {
