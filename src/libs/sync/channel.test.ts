@@ -1,6 +1,7 @@
 import { strictEqual } from 'assert';
 
 import { Channel } from '@lib/sync/channel';
+
 import { Semaphore } from './semaphore';
 
 describe('Buffered Channel', () => {
@@ -214,14 +215,14 @@ describe('Buffered Channel', () => {
         const exitSemaphore = new Semaphore('Exit');
         const channel = new Channel<number>(1);
         strictEqual(channel.length(), 0);
-        
+
         await channel.send(1);
         strictEqual(channel.length(), 1);
 
         (async () => {
             const succeed = await channel.send(2);
             strictEqual(succeed, false);
-            exitSemaphore.release()
+            exitSemaphore.release();
         })().then();
 
         await new Promise<void>((resolve, reject) => {
@@ -229,7 +230,7 @@ describe('Buffered Channel', () => {
         });
 
         channel.close();
-        await exitSemaphore.wait()
+        await exitSemaphore.wait();
     });
 
     test('close channel with pending receive', async () => {
@@ -237,12 +238,10 @@ describe('Buffered Channel', () => {
         const channel = new Channel<number>(1);
         strictEqual(channel.length(), 0);
 
-
         (async () => {
-
             const [, succeed] = await channel.receive();
             strictEqual(succeed, false);
-            exitSemaphore.release()
+            exitSemaphore.release();
         })().then();
 
         await new Promise<void>((resolve, reject) => {
@@ -250,7 +249,7 @@ describe('Buffered Channel', () => {
         });
 
         channel.close();
-        await exitSemaphore.wait()
+        await exitSemaphore.wait();
     });
 
     test('iterate channel values', async () => {

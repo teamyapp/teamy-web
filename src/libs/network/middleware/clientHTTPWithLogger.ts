@@ -26,7 +26,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                 options?: HTTPRequestOptions,
                 context?: Record<string, string>,
             ): Promise<Result<HTTPResponse, InternalError>> => {
-                const {pathname, host} = new URL(url)
+                const { pathname, host } = new URL(url);
                 logger.logWithContext(
                     'Info',
                     {

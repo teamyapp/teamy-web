@@ -1,5 +1,6 @@
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { BoundingBoxChangeEventMonitor } from '@lib/event/boundingBoxEvent';
+import { KeyBoardEventMonitor } from '@lib/event/keyBoardEventMoniter';
 import { EventDetectionScheduler } from '@lib/event/scheduler';
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { IdentityClient } from '@lib/identity/Identity.client';
@@ -44,7 +45,6 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { KeyBoardEventMonitor } from '@lib/event/keyBoardEventMoniter';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -150,7 +150,7 @@ export function initDeps(): Deps {
         boundingBoxChangeEventMonitor,
     );
     const relativeLayout = new RelativeLayout(boundingBoxChangeEventMonitor);
-    const keyBoardEventMonitor = new KeyBoardEventMonitor()
+    const keyBoardEventMonitor = new KeyBoardEventMonitor();
     return {
         keyBoardEventMonitor,
         eventDetectionScheduler,
