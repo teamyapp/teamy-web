@@ -1,13 +1,49 @@
 .Insights {
     display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
-    padding: 20px;
-    box-sizing: border-box;
-    background-color: #fafafa;
+    background-color: #eeeeee;
 
-    .Dashboard {
-        width: 50%;
-        height: 540px;
+    .ToolBar {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        flex-shrink: 0;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+        background-color: white;
+        z-index: 10;
+        display: flex;
+        --drop-down-color: #1565c0;
+
+        .Spacer {
+            flex: 1;
+        }
+    }
+
+    .DashboardSection {
+        width: 100%;
+        flex: 1;
+        padding: 10px;
+        box-sizing: border-box;
+        overflow-y: auto;
+
+        .Dashboards {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            scrollbar-gutter: both-edges;
+
+            .Dashboard {
+                width: calc(50% - 5px);
+                height: 600px;
+                box-sizing: border-box;
+                background-color: white;
+                box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+                border-radius: 4px;
+                padding: 20px;
+            }
+        }
     }
 }

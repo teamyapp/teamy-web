@@ -21,8 +21,14 @@ export class Canvas {
 
     public resize() {
         const parentRect = this.canvasEl.parentElement?.getBoundingClientRect();
-        this.canvasEl.width = (parentRect?.width || document.documentElement.offsetWidth) * this.dpi;
-        this.canvasEl.height = (parentRect?.height || document.documentElement.offsetHeight) * this.dpi;
+        const parentWidth =
+            parentRect?.width || document.documentElement.offsetWidth;
+        const parentHeight =
+            parentRect?.height || document.documentElement.offsetHeight;
+        this.canvasEl.width = parentWidth * this.dpi;
+        this.canvasEl.height = parentHeight * this.dpi;
+        this.canvasEl.style.width = `${parentWidth}px`;
+        this.canvasEl.style.height = `${parentHeight}px`;
     }
 
     public clearAndDraw() {

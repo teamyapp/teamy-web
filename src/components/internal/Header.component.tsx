@@ -1,13 +1,22 @@
 import classNames from 'classnames';
 import React, { ChangeEvent, Component, FocusEvent, createRef } from 'react';
 
+import * as csp from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { Route } from '@lib/router/Route';
-import { Router } from '@lib/router/router';
+import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
 
 import { userAll } from '@core/config/filter';
-import { sprintsRoutePattern, teamRoutePattern } from '@core/config/routing';
+import {
+    helpCenterRoutePattern,
+    insightsRoutePattern,
+    knowledgeRoutePattern,
+    planningRoutePattern,
+    sprintsRoutePattern,
+    teamRoutePattern,
+} from '@core/config/routing';
 import { contains } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
@@ -35,12 +44,22 @@ interface Props {
     onShowTeamMembersClick?: (teamId: number) => void;
     onShowInvitationsClick?: (teamId: number) => void;
     onViewTeamSettingsClick?: (teamId: number) => void;
+    onShowSprintsViewClick?: () => void;
+    onShowInsightsViewClick?: () => void;
+    onShowPlanningViewClick?: () => void;
+    onShowKnowledgeViewClick?: () => void;
+    onShowHelpCenterViewClick?: () => void;
 }
 
 interface State {
     isSearchBarFocused: boolean;
     showBacklog: boolean;
     taskFiltersData: TaskFiltersData;
+    showSprintsView: boolean;
+    showInsightsView: boolean;
+    showPlanningView: boolean;
+    showKnowledgeView: boolean;
+    showHelpCenterView: boolean;
 }
 
 export class HeaderComponent extends Component<Props, State> {
@@ -48,6 +67,7 @@ export class HeaderComponent extends Component<Props, State> {
     private readonly searchBarRef = createRef<HTMLDivElement>();
     private readonly searchInputRef = createRef<HTMLInputElement>();
     private readonly teamContextMenuRef = createRef<TeamContextMenuComponent>();
+    private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
 
     constructor(props: Props) {
         super(props);
@@ -58,6 +78,11 @@ export class HeaderComponent extends Component<Props, State> {
             taskFiltersData: {
                 selectedTaskOwners: new Set<string>([userAll]),
             },
+            showSprintsView: false,
+            showInsightsView: false,
+            showPlanningView: false,
+            showKnowledgeView: false,
+            showHelpCenterView: false,
         };
     }
 
@@ -155,6 +180,54 @@ export class HeaderComponent extends Component<Props, State> {
                 </div>
                 <SpacerUI />
                 <div className={styles.RightSection}>
+                    <Route router={this.router} pattern={teamRoutePattern}>
+                        <div className={styles.ButtonsSection}>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]: this.state.showSprintsView,
+                                })}`}
+                                onClick={this.props.onShowSprintsViewClick}
+                            >
+                                <MaterialIconUI>sprint</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showInsightsView,
+                                })}`}
+                                onClick={this.props.onShowInsightsViewClick}
+                            >
+                                <MaterialIconUI>insights</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showPlanningView,
+                                })}`}
+                                onClick={this.props.onShowPlanningViewClick}
+                            >
+                                <MaterialIconUI>flag</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showKnowledgeView,
+                                })}`}
+                                onClick={this.props.onShowKnowledgeViewClick}
+                            >
+                                <MaterialIconUI>school</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showHelpCenterView,
+                                })}`}
+                                onClick={this.props.onShowHelpCenterViewClick}
+                            >
+                                <MaterialIconUI>forum</MaterialIconUI>
+                            </div>
+                        </div>
+                    </Route>
                     <div className={styles.UserActionSection}></div>
                     {this.props.me && (
                         <div className={styles.UserSection}>
@@ -172,6 +245,66 @@ export class HeaderComponent extends Component<Props, State> {
                 </div>
             </header>
         );
+    }
+
+    componentDidMount() {
+        this.monitorRouteChanges();
+    }
+
+    componentWillUnmount() {
+        closeIfNot(this.routeChangeChan);
+    }
+
+    private monitorRouteChanges() {
+        this.routeChangeChan = this.router.subscribeRouteChange();
+        console.log('[HeaderComponent] subscribing route changes');
+        (async () => {
+            while (true) {
+                const routeUpdate = await this.routeChangeChan!.pop();
+                if (routeUpdate === undefined) {
+                    return;
+                }
+
+                this.setState({
+                    showSprintsView: false,
+                    showInsightsView: false,
+                    showPlanningView: false,
+                    showKnowledgeView: false,
+                    showHelpCenterView: false,
+                });
+
+                if (routeUpdate.routePattern.startsWith(sprintsRoutePattern)) {
+                    this.setState({
+                        showSprintsView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(insightsRoutePattern)
+                ) {
+                    this.setState({
+                        showInsightsView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(planningRoutePattern)
+                ) {
+                    this.setState({
+                        showPlanningView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(knowledgeRoutePattern)
+                ) {
+                    this.setState({
+                        showKnowledgeView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(helpCenterRoutePattern)
+                ) {
+                    this.setState({
+                        showHelpCenterView: true,
+                    });
+                }
+            }
+        })().then();
+        this.router.navigateToCurrUri();
     }
 
     public toggleSearchInputFocus = () => {

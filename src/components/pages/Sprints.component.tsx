@@ -499,7 +499,9 @@ export class SprintsComponent extends Component<Props, State> {
                                                 this.state.allowMultiSelection
                                             }
                                         />
-                                        <div className={styles.ToggleLabel} >Select many</div>
+                                        <div className={styles.ToggleLabel}>
+                                            Select many
+                                        </div>
                                     </div>
                                 </div>
                             </div>

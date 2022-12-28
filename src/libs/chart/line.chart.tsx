@@ -1,4 +1,4 @@
-import { Component, createRef, ReactNode } from 'react';
+import { Component, ReactNode, createRef } from 'react';
 
 import { CoordTranslator } from '@lib/chart/coordTranslator';
 import { DataPoint, Range } from '@lib/chart/data';
@@ -26,14 +26,14 @@ export interface DataLine {
 interface Props {
     lines: DataLine[];
     xRange: Range;
-    xLineOffset: number,
-    xLabelOffset: number,
+    xLineOffset: number;
+    xLabelOffset: number;
     xLabels: string[];
     xLabelGap: number;
     xLabelTitle: string;
     yRange: Range;
-    yLineOffset: number,
-    yLabelOffset: number,
+    yLineOffset: number;
+    yLabelOffset: number;
     yLabels: string[];
     yLabelGap: number;
     yLabelTitle: string;
@@ -41,6 +41,7 @@ interface Props {
     gridHeight: number;
     gridXGap: number;
     gridYGap: number;
+    gridYMarginRight: number;
 }
 
 export class LineChart extends Component<Props> {
@@ -51,12 +52,10 @@ export class LineChart extends Component<Props> {
         return (
             <div className={styles.LineChart}>
                 <div className={styles.CanvasSection}>
-                    <canvas ref={this.canvasRef} className={styles.Canvas}/>
+                    <canvas ref={this.canvasRef} className={styles.Canvas} />
                 </div>
                 <div className={styles.AnnotationSection}>
-                    {
-                        this.props.lines.map(this.renderLineAnnotation)
-                    }
+                    {this.props.lines.map(this.renderLineAnnotation)}
                 </div>
             </div>
         );
@@ -68,20 +67,24 @@ export class LineChart extends Component<Props> {
             this.redrawChart();
         }
 
-        window.addEventListener('resize', this.onWindowResize)
+        window.addEventListener('resize', this.onWindowResize);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('resize', this.onWindowResize)
+        window.removeEventListener('resize', this.onWindowResize);
     }
 
-    componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<{}>, snapshot?: any) {
+    componentDidUpdate(
+        prevProps: Readonly<Props>,
+        prevState: Readonly<{}>,
+        snapshot?: any,
+    ) {
         this.redrawChart();
     }
 
     private redrawChart() {
         if (!this.canvas) {
-            return
+            return;
         }
 
         const {
@@ -102,16 +105,21 @@ export class LineChart extends Component<Props> {
             gridHeight,
             gridXGap,
             gridYGap,
+            gridYMarginRight,
         } = this.props;
         const gridDrawRegionPosition: Point = {
             left: yLabelMaxWidth + LABEL_MARGIN,
             top: 40,
         };
 
-        const gridWidth = this.canvasRef.current!.offsetWidth - yLabelMaxWidth - LABEL_MARGIN;
+        const gridWidth =
+            this.canvasRef.current!.offsetWidth -
+            yLabelMaxWidth -
+            LABEL_MARGIN -
+            gridYMarginRight;
         const gridSize: Size = {
             height: gridHeight,
-            width: gridWidth
+            width: gridWidth,
         };
 
         const coordTranslator = new CoordTranslator(
@@ -155,7 +163,12 @@ export class LineChart extends Component<Props> {
         components.push(labels);
 
         for (const line of lines) {
-            const curve = makeCurve(coordTranslator, line.dataPoints, line.color, 2);
+            const curve = makeCurve(
+                coordTranslator,
+                line.dataPoints,
+                line.color,
+                2,
+            );
             components.push(curve);
             const dataPointMarkers = makeDataPointMarkers(
                 coordTranslator,
@@ -175,14 +188,22 @@ export class LineChart extends Component<Props> {
     private onWindowResize = () => {
         this.canvas?.resize();
         this.redrawChart();
-    }
+    };
 
-    private renderLineAnnotation = (line: DataLine, index: number): ReactNode => {
-        return line.name && (
-            <div className={styles.LineAnnotation} key={index}>
-                <div className={styles.ColorSymbol} style={{backgroundColor: line.color}}/>
-                <div className={styles.Name}>{line.name}</div>
-            </div>
-        )
+    private renderLineAnnotation = (
+        line: DataLine,
+        index: number,
+    ): ReactNode => {
+        return (
+            line.name && (
+                <div className={styles.LineAnnotation} key={index}>
+                    <div
+                        className={styles.ColorSymbol}
+                        style={{ backgroundColor: line.color }}
+                    />
+                    <div className={styles.Name}>{line.name}</div>
+                </div>
+            )
+        );
     };
 }

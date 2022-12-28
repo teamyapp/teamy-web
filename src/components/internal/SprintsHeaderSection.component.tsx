@@ -208,10 +208,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         const nextSprint = this.getNextSprint(currentSprint)!;
         const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
         const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
-        this.stateSyncer.copyTasksToSprint(
-            nextSprint.id,
-            unfinishedTaskIds,
-        );
+        this.stateSyncer.copyTasksToSprint(nextSprint.id, unfinishedTaskIds);
     };
 
     private getNextSprint(currentSprint: Sprint) {

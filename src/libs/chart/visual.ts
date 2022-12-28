@@ -126,7 +126,9 @@ export function makeLabels(
                     yLabelSize.width -
                     LABEL_MARGIN,
                 top:
-                    coordTranslator.yCoordToDrawRegion( yLabelOffset +index * yLabelGap) -
+                    coordTranslator.yCoordToDrawRegion(
+                        yLabelOffset + index * yLabelGap,
+                    ) -
                     yLabelSize.height / 2,
             },
             yLabel,
@@ -181,8 +183,9 @@ export function makeLabels(
         const label = new Text(
             {
                 left:
-
-                    coordTranslator.xCoordToDrawRegion(xLabelOffset+index * xLabelGap) -
+                    coordTranslator.xCoordToDrawRegion(
+                        xLabelOffset + index * xLabelGap,
+                    ) -
                     xLabelSize.width / 2,
                 top:
                     coordTranslator.yCoordToDrawRegion(yRange.start) +
