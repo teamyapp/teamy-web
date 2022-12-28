@@ -43,7 +43,7 @@ describe('InfiniteRetry', () => {
             minDelay: 2,
             randomOffset: 0,
             scalingFactor: 2,
-            maxDelay: 600
+            maxDelay: 600,
         });
         const infinite = new InfiniteRetry(testRuntime, backoff);
 

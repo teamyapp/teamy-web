@@ -19,11 +19,11 @@ export class KeyBoardEventMonitor {
     private holdKeySet = new Set<KeyboardKey>();
 
     private onKeyUp = (event: KeyboardEvent) => {
-        let keyboardKey: KeyboardKey
+        let keyboardKey: KeyboardKey;
         if (!event.metaKey && this.isKeyHold('Meta')) {
-            keyboardKey = 'Meta'
+            keyboardKey = 'Meta';
         } else {
-            keyboardKey = keyMap[event.key]
+            keyboardKey = keyMap[event.key];
         }
 
         if (keyboardKey) {
@@ -36,11 +36,11 @@ export class KeyBoardEventMonitor {
     };
 
     private onKeyDown = (event: KeyboardEvent) => {
-        let keyboardKey: KeyboardKey
+        let keyboardKey: KeyboardKey;
         if (event.metaKey && !this.isKeyHold('Meta')) {
             keyboardKey = 'Meta';
         } else {
-            keyboardKey = keyMap[event.key]
+            keyboardKey = keyMap[event.key];
         }
 
         if (keyboardKey === undefined || this.isKeyHold(keyboardKey)) {

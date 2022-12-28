@@ -1,4 +1,5 @@
 import { Middleware } from '@lib/middleware/middleware';
+
 import { Logger } from '../Logger';
 import { CommitProp } from '../Props';
 
