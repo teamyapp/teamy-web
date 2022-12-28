@@ -9,7 +9,6 @@ import { ProductivityOverviewDashboardComponent } from '../internal/Dashboards/P
 import styles from './Insights.component.module.scss';
 
 const defaultTimeRangeKey = 'past-1-month';
-
 const timeRangeOptions: Option[] = [
     {
         key: 'past-1-week',
