@@ -18,8 +18,10 @@ const DEBUG = false;
 export function makeGrid(
     coordTranslator: CoordTranslator,
     xRange: Range,
-    yRange: Range,
+    xLineOffset: number,
     gridXGap: number,
+    yRange: Range,
+    yLineOffset: number,
     gridYGap: number,
     showHorizontalLine: boolean,
     showVerticalLine: boolean,
@@ -29,7 +31,7 @@ export function makeGrid(
     if (showHorizontalLine) {
         const xRangeLen = xRange.end - xRange.start;
         for (
-            let relativeY = yRange.start;
+            let relativeY = yLineOffset;
             relativeY <= yRange.end;
             relativeY += gridYGap
         ) {
@@ -46,7 +48,7 @@ export function makeGrid(
     if (showVerticalLine) {
         const yRangeLen = yRange.end - yRange.start;
         for (
-            let relativeX = xRange.start;
+            let relativeX = xLineOffset;
             relativeX <= xRange.end;
             relativeX += gridXGap
         ) {
@@ -96,13 +98,15 @@ export function makeLabels(
     ctx: CanvasRenderingContext2D,
     coordTranslator: CoordTranslator,
     xRange: Range,
-    yRange: Range,
-    xLabelTitle: string,
+    xLabelOffset: number,
     xLabels: string[],
-    yLabelTitle: string,
-    yLabels: string[],
     xLabelGap: number,
+    xLabelTitle: string,
+    yRange: Range,
+    yLabelOffset: number,
+    yLabels: string[],
     yLabelGap: number,
+    yLabelTitle: string,
 ): Drawable {
     const drawables: Drawable[] = [];
     const labelTextMeter = new TextMeter(ctx, '16px bold serif');
@@ -122,7 +126,9 @@ export function makeLabels(
                     yLabelSize.width -
                     LABEL_MARGIN,
                 top:
-                    coordTranslator.yCoordToDrawRegion(index * yLabelGap) -
+                    coordTranslator.yCoordToDrawRegion(
+                        yLabelOffset + index * yLabelGap,
+                    ) -
                     yLabelSize.height / 2,
             },
             yLabel,
@@ -174,11 +180,12 @@ export function makeLabels(
             maxXLabelVerticalHeight,
             xLabelVerticalHeight,
         );
-
         const label = new Text(
             {
                 left:
-                    coordTranslator.xCoordToDrawRegion(index * xLabelGap) -
+                    coordTranslator.xCoordToDrawRegion(
+                        xLabelOffset + index * xLabelGap,
+                    ) -
                     xLabelSize.width / 2,
                 top:
                     coordTranslator.yCoordToDrawRegion(yRange.start) +
@@ -213,8 +220,7 @@ export function makeLabels(
         {
             left:
                 coordTranslator.xCoordToDrawRegion(xRange.start) -
-                yLabelSize.width / 2 -
-                yLabelGap,
+                yLabelSize.width / 2,
             top:
                 coordTranslator.yCoordToDrawRegion(yRange.end) -
                 yLabelSize.height -
@@ -294,6 +300,8 @@ export function makeDataPointMarkers(
 export function makeCurve(
     coordTranslator: CoordTranslator,
     dataPoints: DataPoint[],
+    color: string,
+    thickness: number,
 ): Drawable {
     const drawables: Drawable[] = [];
 
@@ -302,6 +310,8 @@ export function makeCurve(
         top: coordTranslator.yCoordToDrawRegion(dataPoint.y),
     }));
     const curve = new PolygonalChain(points);
+    curve.strokeColor = color;
+    curve.thickness = thickness;
     drawables.push(curve);
     return new Group(drawables);
 }

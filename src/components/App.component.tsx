@@ -19,8 +19,14 @@ import {
     debugRoutePattern,
     getTaskId,
     getTeamId,
+    helpCenterPath,
+    helpCenterRoutePattern,
+    insightsPath,
     insightsRoutePattern,
     invitationRoutePattern,
+    knowledgePath,
+    knowledgeRoutePattern,
+    planningPath,
     planningRoutePattern,
     rootRoutePattern,
     signInFinishRoutePattern,
@@ -120,6 +126,8 @@ const acceptedRoutePatterns = [
     sprintTabRoutePattern,
     insightsRoutePattern,
     planningRoutePattern,
+    knowledgeRoutePattern,
+    helpCenterRoutePattern,
     invitationRoutePattern,
     taskRoutePattern,
 ];
@@ -244,6 +252,21 @@ export class AppComponent extends Component<Props, State> {
                                 onViewTeamSettingsClick={
                                     this.onViewTeamSettingsClick
                                 }
+                                onShowSprintsViewClick={
+                                    this.onShowSprintsViewClick
+                                }
+                                onShowInsightsViewClick={
+                                    this.onShowInsightsViewClick
+                                }
+                                onShowPlanningViewClick={
+                                    this.onShowPlanningViewClick
+                                }
+                                onShowKnowledgeViewClick={
+                                    this.onShowKnowledgeViewClick
+                                }
+                                onShowHelpCenterViewClick={
+                                    this.onShowHelpCenterViewClick
+                                }
                             />
                             {this.state.showMainContent &&
                                 (this.state.activeTeamId ? (
@@ -314,7 +337,9 @@ export class AppComponent extends Component<Props, State> {
                                                 router={this.router}
                                                 pattern={insightsRoutePattern}
                                             >
-                                                <InsightsComponent />
+                                                <InsightsComponent
+                                                    deps={this.props.deps}
+                                                />
                                             </Route>
                                             <Route
                                                 router={this.router}
@@ -425,7 +450,7 @@ export class AppComponent extends Component<Props, State> {
             }
         })().then();
         this.props.deps.eventDetectionScheduler.start();
-        this.props.deps.keyBoardEventMonitor.start()
+        this.props.deps.keyBoardEventMonitor.start();
     }
 
     public componentWillUnmount() {
@@ -778,6 +803,26 @@ export class AppComponent extends Component<Props, State> {
 
     private onCreateSprintClick = () => {
         this.createSprintModalRef.current?.open();
+    };
+
+    private onShowSprintsViewClick = () => {
+        this.router.navigateTo(sprintsPath(this.state.activeTeamId!));
+    };
+
+    private onShowInsightsViewClick = () => {
+        this.router.navigateTo(insightsPath(this.state.activeTeamId!));
+    };
+
+    private onShowPlanningViewClick = () => {
+        this.router.navigateTo(planningPath(this.state.activeTeamId!));
+    };
+
+    private onShowKnowledgeViewClick = () => {
+        this.router.navigateTo(knowledgePath(this.state.activeTeamId!));
+    };
+
+    private onShowHelpCenterViewClick = () => {
+        this.router.navigateTo(helpCenterPath(this.state.activeTeamId!));
     };
 
     private processTaskDrop(

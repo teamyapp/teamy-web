@@ -304,10 +304,14 @@ export class StateSyncer {
             return;
         }
 
+        await this.pullSprint(currSprintId);
+    }
+
+    public async pullSprint(sprintId: number) {
         const sprint = await this.sprintClient.getSprintWithTaskPreviews(
-            `${currSprintId}`,
+            `${sprintId}`,
         );
-        appState = this.localStore.getState();
+        let appState = this.localStore.getState();
         if (sprint) {
             appState = mergeSprint(appState, sprint);
         } else {
