@@ -47,7 +47,9 @@ export class DrawerUI extends Component<Props> {
                     </div>
                 </div>
                 <div className={styles.Teams}>
-                    {this.props.teams.sort(orderByName).map(this.renderTeam)}
+                    {[...this.props.teams]
+                        .sort(orderByName)
+                        .map(this.renderTeam)}
                     <div className={styles.CreateTeamFrame}>
                         <TooltipUI message={'Create Team'} position={'Right'}>
                             <div
