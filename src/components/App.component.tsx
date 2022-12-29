@@ -1,6 +1,5 @@
 import { CloudComponent } from '@cloud/Cloud.component';
 import { Extension, ExtensionRuntime } from '@teamyapp/ext';
-import { strict } from 'assert';
 import classNames from 'classnames';
 import React, { Component, Fragment, createRef } from 'react';
 
