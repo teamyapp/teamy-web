@@ -159,7 +159,6 @@ export class AppComponent extends Component<Props, State> {
     >;
 
     private extensions: Extension[] = [];
-    private pulledCurrentUserAndTeams: boolean = false;
     private selectedActiveTeam: boolean = false;
 
     constructor(props: Props) {
@@ -402,7 +401,6 @@ export class AppComponent extends Component<Props, State> {
     }
 
     public async componentDidMount() {
-        this.pulledCurrentUserAndTeams = false;
         this.selectedActiveTeam = false;
         console.log(`[AppComponent]componentDidMount`);
         this.monitorStateChanges();
@@ -462,7 +460,6 @@ export class AppComponent extends Component<Props, State> {
         closeIfNot(this.routeChangeChan);
         closeIfNot(this.dragAndDropEventChan);
         this.props.deps.shortcutMonitor.dispose();
-        this.pulledCurrentUserAndTeams = false;
         this.selectedActiveTeam = false;
     }
 
@@ -513,10 +510,7 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 await this.stateSyncer.ensureConnected();
-                if (!this.pulledCurrentUserAndTeams) {
-                    this.pulledCurrentUserAndTeams = true;
-                    await this.stateSyncer.pullCurrentUserWithTeams();
-                }
+                await this.stateSyncer.pullCurrentUserWithTeams();
 
                 let appState = this.localStore.getState();
                 if (!appState.currUserId) {
