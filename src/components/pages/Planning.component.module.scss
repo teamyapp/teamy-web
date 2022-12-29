@@ -1,6 +1,7 @@
 .Planning {
     height: 100%;
     width: 100%;
+    background-color: white;
 
     .Document {
         width: 100%;
@@ -16,6 +17,7 @@
             align-items: center;
             justify-content: center;
             box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+            z-index: 10;
 
             .Divider {
                 height: 22px;
