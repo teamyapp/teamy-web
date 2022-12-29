@@ -400,8 +400,8 @@ export class AppComponent extends Component<Props, State> {
     }
 
     public async componentDidMount() {
-        this.selectedActiveTeam = false;
         console.log(`[AppComponent]componentDidMount`);
+         this.selectedActiveTeam = false;
         this.monitorStateChanges();
         this.monitorRouteChanges();
         this.monitorUserActions();
