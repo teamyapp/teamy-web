@@ -225,6 +225,7 @@ export class Router {
         if (this.currRouteUpdate) {
             ch.put(this.currRouteUpdate);
         }
+
         return ch;
     }
 

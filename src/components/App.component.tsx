@@ -32,7 +32,6 @@ import {
     signInFinishRoutePattern,
     signInRoutePattern,
     signUpRoutePattern,
-    sprintTabRoutePattern,
     sprintsPath,
     sprintsRoutePattern,
     taskPath,
@@ -118,12 +117,8 @@ const publicRoutePatterns = [
 ];
 
 const acceptedRoutePatterns = [
-    debugRoutePattern,
     signUpRoutePattern,
-    signInRoutePattern,
-    signInFinishRoutePattern,
     sprintsRoutePattern,
-    sprintTabRoutePattern,
     insightsRoutePattern,
     planningRoutePattern,
     knowledgeRoutePattern,
@@ -163,6 +158,7 @@ export class AppComponent extends Component<Props, State> {
     >;
 
     private extensions: Extension[] = [];
+    private selectedActiveTeam: boolean = false;
 
     constructor(props: Props) {
         super(props);
@@ -404,6 +400,8 @@ export class AppComponent extends Component<Props, State> {
     }
 
     public async componentDidMount() {
+        console.log(`[AppComponent]componentDidMount`);
+         this.selectedActiveTeam = false;
         this.monitorStateChanges();
         this.monitorRouteChanges();
         this.monitorUserActions();
@@ -454,12 +452,14 @@ export class AppComponent extends Component<Props, State> {
     }
 
     public componentWillUnmount() {
+        console.log(`[AppComponent]componentWillUnmount`);
         this.props.deps.eventDetectionScheduler.stop();
         this.props.deps.keyBoardEventMonitor.stop();
         closeIfNot(this.stateChangeChan);
         closeIfNot(this.routeChangeChan);
         closeIfNot(this.dragAndDropEventChan);
         this.props.deps.shortcutMonitor.dispose();
+        this.selectedActiveTeam = false;
     }
 
     private monitorStateChanges() {
@@ -493,7 +493,9 @@ export class AppComponent extends Component<Props, State> {
                     return;
                 }
 
-                if (publicRoutePatterns.includes(routeUpdate.routePattern)) {
+                if (
+                    includePrefix(publicRoutePatterns, routeUpdate.routePattern)
+                ) {
                     continue;
                 }
 
@@ -508,6 +510,7 @@ export class AppComponent extends Component<Props, State> {
 
                 await this.stateSyncer.ensureConnected();
                 await this.stateSyncer.pullCurrentUserWithTeams();
+
                 let appState = this.localStore.getState();
                 if (!appState.currUserId) {
                     this.trySignUp(routeUpdate.routePattern);
@@ -515,7 +518,12 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 const currTeamId = appState.currTeamId;
-                if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
+                if (
+                    !includePrefix(
+                        acceptedRoutePatterns,
+                        routeUpdate.routePattern,
+                    )
+                ) {
                     this.tryRedirect(currTeamId);
                     console.log(
                         '[AppComponent] discarded',
@@ -537,25 +545,17 @@ export class AppComponent extends Component<Props, State> {
                     continue;
                 }
 
-                const teamId = parseInt(teamIdParam);
-                if (teamId !== currTeamId) {
-                    await this.onActiveTeamSelect(teamId);
-                } else {
-                    this.onTeamInit();
-                }
-
-                appState = this.localStore.getState();
-                if (appState.currTeamId) {
-                    await this.stateSyncer.pullCurrentTeam();
-                } else {
-                    this.router.navigateTo(rootRoutePattern);
+                const newTeamId = parseInt(teamIdParam);
+                if (!this.selectedActiveTeam || newTeamId !== currTeamId) {
+                    this.selectedActiveTeam = true;
+                    await this.showActiveTeam(newTeamId);
                 }
 
                 const taskIdParam = getTaskId(routeUpdate.params);
                 if (taskIdParam) {
                     const taskId = parseInt(taskIdParam);
                     if (isNaN(taskId)) {
-                        this.tryRedirect(teamId);
+                        this.tryRedirect(newTeamId);
                         continue;
                     }
 
@@ -619,17 +619,23 @@ export class AppComponent extends Component<Props, State> {
             <div
                 key={index}
                 className={styles.TeamRow}
-                onClick={this.onActiveTeamClick(team.id)}
+                onClick={this.onActiveTeamSelectHandler(team.id)}
             >
                 {team.name}
             </div>
         );
     };
 
-    private onActiveTeamClick = (teamId: number) => {
+    private onActiveTeamSelectHandler = (teamId: number) => {
         return () => {
-            this.onActiveTeamSelect(teamId, true).then();
+            this.router.navigateTo(sprintsPath(teamId), {
+                notifyRouteChange: true,
+            });
         };
+    };
+
+    private onActiveTeamSelect = async (teamId: number) => {
+        await this.showActiveTeam(teamId);
     };
 
     private onTaskFiltersChange = (taskFilters: TaskFilters) => {
@@ -668,35 +674,23 @@ export class AppComponent extends Component<Props, State> {
         this.createTeamModalRef.current?.open();
     };
 
-    private onActiveTeamSelect = async (
-        teamId: number,
-        notifyRouteChange: boolean = false,
-    ): Promise<void> => {
+    private showActiveTeam = async (teamId: number): Promise<void> => {
         const appState = this.localStore.getState();
         const prevActiveTeamId = appState.currTeamId;
         if (this.stateSyncer.trySetCurrentTeam(teamId)) {
             await this.stateSyncer.pullCurrentTeam();
-
-            const teamIdParam = getTeamId(
-                this.router.currentRouteUpdate.params,
-            );
-            if (!teamIdParam || parseInt(teamIdParam) !== teamId) {
-                this.router.navigateTo(sprintsPath(teamId), {
-                    notifyRouteChange: notifyRouteChange,
-                });
-            }
-
-            this.onTeamInit();
+            await this.onTeamInit();
             return;
         }
 
         if (prevActiveTeamId) {
-            this.stateSyncer.trySetCurrentTeam(prevActiveTeamId);
             this.router.navigateTo(sprintsPath(prevActiveTeamId), {
-                notifyRouteChange: false,
+                notifyRouteChange: true,
             });
-            this.onTeamInit();
+            return;
         }
+
+        this.router.navigateTo(rootRoutePattern);
     };
 
     private onTeamMembersAdded = async (teamId: number) => {
@@ -923,8 +917,12 @@ export class AppComponent extends Component<Props, State> {
     };
 
     private async onTeamInit() {
-        this.extensions = await this.loadExtensions();
-        await this.showRequiredActionsIfAny();
+        try {
+            this.extensions = await this.loadExtensions();
+            await this.showRequiredActionsIfAny();
+        } catch (err) {
+            console.log(`Fail to load extensions: ${err}`);
+        }
     }
 
     private loadExtensions(): Promise<Extension[]> {
@@ -951,4 +949,14 @@ export class AppComponent extends Component<Props, State> {
             this.identityClient,
         );
     }
+}
+
+function includePrefix(patterns: string[], input: string): boolean {
+    for (const pattern of patterns) {
+        if (input.startsWith(pattern)) {
+            return true;
+        }
+    }
+
+    return false;
 }

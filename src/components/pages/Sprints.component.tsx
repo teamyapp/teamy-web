@@ -168,20 +168,26 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
+                const appState = this.localStore.getState();
+                const currentSprint = this.graphSource.currentSprint();
+                const sprintTasks = currentSprint?.tasks || [];
+                const sprintParticipants = currentSprint?.participants || [];
                 if (
-                    acceptedRoutePatterns.includes(
-                        this.router.currentRouteUpdate.routePattern,
-                    )
+                    this.state.selectedSprintId &&
+                    this.state.selectedSprintId !== appState.currSprintId
                 ) {
-                    const sprintIdParam = getSprintId(
-                        this.router.currentRouteUpdate.params,
-                    );
-                    if (!sprintIdParam) {
-                        this.onTabClick(this.state.activeTabIndex);
-                    }
+                    this.selectTab(this.state.activeTabIndex, false);
                 }
 
-                this.updateState();
+                if (appState.currUserId) {
+                    this.setState({
+                        sprintParticipants:
+                            sortParticipantsByName(sprintParticipants),
+                        currentUserId: appState.currUserId!,
+                        selectedSprintId: appState.currSprintId,
+                        sprintTasks: sprintTasks,
+                    });
+                }
             }
         })().then();
 
@@ -216,24 +222,30 @@ export class SprintsComponent extends Component<Props, State> {
 
                 const sprintIdParam = getSprintId(routeUpdate.params);
                 if (!sprintIdParam) {
-                    this.onTabClick(this.state.activeTabIndex, true);
+                    this.selectTab(this.state.activeTabIndex, true);
                     continue;
                 }
 
+                const newSprintId = parseInt(sprintIdParam);
                 const tabId = getTabId(routeUpdate.params);
                 if (!tabId || tabIds.indexOf(tabId) < 0) {
-                    this.onTabClick(this.state.activeTabIndex, true);
+                    this.router.navigateTo(
+                        sprintTabPath(
+                            currTeamId,
+                            newSprintId,
+                            tabIds[this.state.activeTabIndex],
+                        ),
+                    );
                     continue;
                 }
 
-                const tabIndex = tabIds.indexOf(tabId);
-                const newSprintId = parseInt(sprintIdParam);
                 if (newSprintId !== appState.currSprintId) {
                     if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
                         this.router.navigateTo(sprintsPath(currTeamId));
                     }
                 }
 
+                const tabIndex = tabIds.indexOf(tabId);
                 this.setState({
                     activeTabIndex: tabIndex,
                 });
@@ -349,8 +361,9 @@ export class SprintsComponent extends Component<Props, State> {
 
     private onSprintRowClick = (sprintId: number) => {
         return async () => {
-            this.stateSyncer.trySetCurrentSprint(sprintId);
-            await this.stateSyncer.pullCurrentSprint();
+            if (this.stateSyncer.trySetCurrentSprint(sprintId)) {
+                await this.stateSyncer.pullCurrentSprint();
+            }
         };
     };
 
@@ -496,7 +509,7 @@ export class SprintsComponent extends Component<Props, State> {
                                         <input
                                             className={styles.Toggle}
                                             type='checkbox'
-                                            checked={
+                                            defaultChecked={
                                                 this.state.allowMultiSelection
                                             }
                                         />
@@ -665,32 +678,11 @@ export class SprintsComponent extends Component<Props, State> {
         );
     };
 
-    private updateState = () => {
-        const appState = this.localStore.getState();
-        const currentSprint = this.graphSource.currentSprint();
-        const sprintTasks = currentSprint?.tasks || [];
-        const sprintParticipants = currentSprint?.participants || [];
-        if (
-            this.state.selectedSprintId &&
-            this.state.selectedSprintId !== appState.currSprintId
-        ) {
-            this.onTabClick(this.state.activeTabIndex, false);
-        }
-
-        if (appState.currUserId) {
-            this.setState({
-                sprintParticipants: sortParticipantsByName(sprintParticipants),
-                currentUserId: appState.currUserId!,
-                selectedSprintId: appState.currSprintId,
-                sprintTasks: sprintTasks,
-            });
-        }
+    private onTabClick = (index: number) => {
+        this.selectTab(index, false);
     };
 
-    private onTabClick = (
-        index: number,
-        notifyRouteChange: boolean = false,
-    ) => {
+    private selectTab = (index: number, notifyRouteChange: boolean) => {
         const appState = this.localStore.getState();
         const currTeamId = appState.currTeamId;
         if (!currTeamId) {
@@ -704,7 +696,9 @@ export class SprintsComponent extends Component<Props, State> {
 
         this.router.navigateTo(
             sprintTabPath(currTeamId, currSprintId, tabIds[index]),
-            { notifyRouteChange: notifyRouteChange },
+            {
+                notifyRouteChange: notifyRouteChange,
+            },
         );
 
         const tabIndex = tabIds.indexOf(tabIds[index]);

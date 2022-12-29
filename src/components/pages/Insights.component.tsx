@@ -1,9 +1,16 @@
 import moment from 'moment';
 import { Component } from 'react';
 
+import * as csp from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
+import { Router } from '@lib/router/router';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 
+import { insightsPath } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { ProductivityOverviewDashboardComponent } from '../internal/Dashboards/ProductivityOverviewDashboard.component';
 import styles from './Insights.component.module.scss';
@@ -46,8 +53,18 @@ interface State {
 }
 
 export class InsightsComponent extends Component<Props, State> {
+    private readonly router: Router;
+    private readonly localStore: LocalStore;
+    private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
+    private stateChangeChan?: csp.PopChannel<boolean | undefined>;
+
     constructor(props: Props) {
         super(props);
+        this.router = props.deps.router;
+        this.localStore = props.deps.localStore;
+        this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             startTime: new Date(),
             endTime: new Date(),
@@ -87,6 +104,26 @@ export class InsightsComponent extends Component<Props, State> {
 
     componentDidMount() {
         this.onTimeRangeSelect(defaultTimeRangeKey);
+
+        this.stateChangeChan = this.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                console.log('[SprintsComponent] waiting for state changes');
+                const hasChanged = await this.stateChangeChan!.pop();
+                if (hasChanged === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+
+                const appState = this.localStore.getState();
+                this.router.navigateTo(insightsPath(appState.currTeamId!));
+            }
+        })().then();
+    }
+
+    componentWillUnmount() {
+        closeIfNot(this.stateChangeChan);
     }
 
     private onTimeRangeSelect = (optionKey: string) => {
