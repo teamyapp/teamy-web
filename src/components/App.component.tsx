@@ -32,7 +32,6 @@ import {
     signInFinishRoutePattern,
     signInRoutePattern,
     signUpRoutePattern,
-    sprintTabRoutePattern,
     sprintsPath,
     sprintsRoutePattern,
     taskPath,
