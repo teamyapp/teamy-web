@@ -619,14 +619,14 @@ export class AppComponent extends Component<Props, State> {
             <div
                 key={index}
                 className={styles.TeamRow}
-                onClick={this.OnActiveTeamSelectHandler(team.id)}
+                onClick={this.onActiveTeamSelectHandler(team.id)}
             >
                 {team.name}
             </div>
         );
     };
 
-    private OnActiveTeamSelectHandler = (teamId: number) => {
+    private onActiveTeamSelectHandler = (teamId: number) => {
         return () => {
             this.router.navigateTo(sprintsPath(teamId), {
                 notifyRouteChange: true,
