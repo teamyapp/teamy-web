@@ -136,10 +136,7 @@ export class StateSyncer {
                             message.payload,
                         );
 
-                        const mutations = transaction.mutations.map(
-                            Mutation.fromMutationPayload,
-                        );
-                        await this.mutateState(mutations);
+                        await this.mutateState(transaction);
                         mutations.forEach((mutation) => {
                             this.onMutationReceivedCh.put(mutation);
                         });
@@ -877,9 +874,9 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    private async mutateState(mutations: Mutation[]) {
+    private async mutateState(transaction: Transaction) {
         let appState = this.localStore.getState();
-        for (const mutation of mutations) {
+        for (const mutation of transaction.mutations) {
             switch (mutation.collectionType) {
                 case 'Task': {
                     appState = applyTaskMutation(appState, mutation);

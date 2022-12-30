@@ -2,14 +2,14 @@ import { Mutation } from "./mutation";
 
 export class Transaction {
     private constructor(
-        public mutations: Mutation[],
         public id: number,
+        public mutations: Mutation[],
     ) {}
 
     static fromTransactionPayload(json: any): Transaction {
         return new Transaction(
-            json.Mutations,
             json.ID,
+            json.Mutations,
         );
     }
 }
