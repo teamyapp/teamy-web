@@ -39,7 +39,6 @@ import { UserLinkState } from '@core/storage/states/userLink.state';
 import { LocalStore } from './localStore';
 import { Message } from './message';
 import { Metadata } from './metadata';
-import { Mutation } from './mutation';
 import {
     applyInvitationMutation,
     applyMessageMutation,
@@ -67,8 +66,8 @@ import { Transaction } from './transaction';
 
 export class StateSyncer {
     private readonly connection: Connection;
-    private readonly onMutationReceivedCh = chan<Mutation>();
-    private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
+    private readonly onTransactionReceivedCh = chan<Transaction>();
+    private readonly onTransactionReceivedMulti = multi(this.onTransactionReceivedCh);
 
     private metadataReceived = false;
 
@@ -104,8 +103,8 @@ export class StateSyncer {
         );
     }
 
-    public onMutationReceived(): PopChannel<Mutation | undefined> {
-        return this.onMutationReceivedMulti.copy();
+    public onTransactionReceived(): PopChannel<Transaction | undefined> {
+        return this.onTransactionReceivedMulti.copy();
     }
 
     public async ensureConnected(): Promise<void> {
@@ -137,9 +136,7 @@ export class StateSyncer {
                         );
 
                         await this.mutateState(transaction);
-                        mutations.forEach((mutation) => {
-                            this.onMutationReceivedCh.put(mutation);
-                        });
+                        this.onTransactionReceivedCh.put(transaction);
                         break;
                     }
                     case 'Metadata': {
