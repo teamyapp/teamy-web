@@ -509,9 +509,10 @@ export class SprintsComponent extends Component<Props, State> {
                                         <input
                                             className={styles.Toggle}
                                             type='checkbox'
-                                            defaultChecked={
+                                            checked={
                                                 this.state.allowMultiSelection
                                             }
+                                            onChange={()=>{}}
                                         />
                                         <div className={styles.ToggleLabel}>
                                             Select many
