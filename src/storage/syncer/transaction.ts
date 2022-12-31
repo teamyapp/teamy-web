@@ -9,7 +9,7 @@ export class Transaction {
     static fromTransactionPayload(json: any): Transaction {
         return new Transaction(
             json.ID,
-            json.Mutations,
+            json.Mutations.map(Mutation.fromMutationPayload),
         );
     }
 }
