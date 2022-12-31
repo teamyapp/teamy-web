@@ -20,6 +20,7 @@ import { userAll, userPrefix, userUnassigned } from '@core/config/filter';
 import {
     getSprintId,
     getTabId,
+    getTeamId,
     sprintTabPath,
     sprintTabRoutePattern,
     sprintsPath,
@@ -89,7 +90,10 @@ interface State {
     allowMultiSelection: boolean;
 }
 
-const acceptedRoutePatterns = [sprintsRoutePattern, sprintTabRoutePattern];
+const acceptedRoutePatterns = [
+    // sprintsRoutePattern,
+    sprintTabRoutePattern,
+];
 
 export class SprintsComponent extends Component<Props, State> {
     private readonly router: Router;
@@ -172,6 +176,7 @@ export class SprintsComponent extends Component<Props, State> {
                 const currentSprint = this.graphSource.currentSprint();
                 const sprintTasks = currentSprint?.tasks || [];
                 const sprintParticipants = currentSprint?.participants || [];
+                debugger;
                 if (
                     this.state.selectedSprintId &&
                     this.state.selectedSprintId !== appState.currSprintId
@@ -192,8 +197,9 @@ export class SprintsComponent extends Component<Props, State> {
         })().then();
 
         for (const routePattern of acceptedRoutePatterns) {
-            this.router.registerRoute(routePattern, false);
+            this.router.registerRoute(routePattern, true);
         }
+
         this.routeChangeChan = this.router.subscribeRouteChange();
         console.log('[SprintComponent] subscribing');
         (async () => {
@@ -215,30 +221,9 @@ export class SprintsComponent extends Component<Props, State> {
                 );
 
                 const appState = this.localStore.getState();
-                const currTeamId = appState.currTeamId;
-                if (!currTeamId) {
-                    continue;
-                }
-
-                const sprintIdParam = getSprintId(routeUpdate.params);
-                if (!sprintIdParam) {
-                    this.selectTab(this.state.activeTabIndex, true);
-                    continue;
-                }
-
-                const newSprintId = parseInt(sprintIdParam);
-                const tabId = getTabId(routeUpdate.params);
-                if (!tabId || tabIds.indexOf(tabId) < 0) {
-                    this.router.navigateTo(
-                        sprintTabPath(
-                            currTeamId,
-                            newSprintId,
-                            tabIds[this.state.activeTabIndex],
-                        ),
-                    );
-                    continue;
-                }
-
+                const currTeamId = parseInt(getTeamId(routeUpdate.params)!);
+                const newSprintId = parseInt(getSprintId(routeUpdate.params)!);
+                const tabId = getTabId(routeUpdate.params)!;
                 if (newSprintId !== appState.currSprintId) {
                     if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
                         this.router.navigateTo(sprintsPath(currTeamId));
@@ -254,6 +239,7 @@ export class SprintsComponent extends Component<Props, State> {
                 );
             }
         })().then();
+        this.redirectIfNeeded();
 
         this.dragAndDropEventChan =
             this.props.deps.dragAndDropController.subscribeDragAndDropEvent();
@@ -285,6 +271,43 @@ export class SprintsComponent extends Component<Props, State> {
         closeIfNot(this.stateChangeChan);
         closeIfNot(this.routeChangeChan);
         closeIfNot(this.dragAndDropEventChan);
+    }
+
+    private redirectIfNeeded() {
+        const routeUpdate = this.router.currentRouteUpdate;
+        const teamIdParam = getTeamId(routeUpdate.params);
+        if (!teamIdParam) {
+            return;
+        }
+
+        const newTeamId = parseInt(teamIdParam);
+        const sprintIdParam = getSprintId(routeUpdate.params);
+        if (!sprintIdParam) {
+            this.selectTab(this.state.activeTabIndex, true);
+            return;
+        }
+
+        const newSprintId = parseInt(sprintIdParam);
+        if (isNaN(newSprintId)) {
+            this.selectTab(this.state.activeTabIndex, true);
+            return;
+        }
+
+        if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
+            this.selectTab(this.state.activeTabIndex, true);
+            return;
+        }
+
+        const tabId = getTabId(routeUpdate.params);
+        if (!tabId || tabIds.indexOf(tabId) < 0) {
+            this.router.navigateTo(
+                sprintTabPath(
+                    newTeamId,
+                    newSprintId,
+                    tabIds[this.state.activeTabIndex],
+                ),
+            );
+        }
     }
 
     private monitorKeyboardEvents() {
@@ -512,7 +535,7 @@ export class SprintsComponent extends Component<Props, State> {
                                             checked={
                                                 this.state.allowMultiSelection
                                             }
-                                            onChange={()=>{}}
+                                            onChange={() => {}}
                                         />
                                         <div className={styles.ToggleLabel}>
                                             Select many

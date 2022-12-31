@@ -36,6 +36,8 @@ import {
     sprintsRoutePattern,
     taskPath,
     taskRoutePattern,
+    teamPath,
+    teamsPath,
 } from '@core/config/routing';
 import {
     awaitingSectionId,
@@ -401,7 +403,7 @@ export class AppComponent extends Component<Props, State> {
 
     public async componentDidMount() {
         console.log(`[AppComponent]componentDidMount`);
-         this.selectedActiveTeam = false;
+        this.selectedActiveTeam = false;
         this.monitorStateChanges();
         this.monitorRouteChanges();
         this.monitorUserActions();
@@ -546,6 +548,11 @@ export class AppComponent extends Component<Props, State> {
                 }
 
                 const newTeamId = parseInt(teamIdParam);
+                if (isNaN(newTeamId)) {
+                    this.tryRedirect(currTeamId);
+                    continue;
+                }
+
                 if (!this.selectedActiveTeam || newTeamId !== currTeamId) {
                     this.selectedActiveTeam = true;
                     await this.showActiveTeam(newTeamId);
@@ -563,7 +570,6 @@ export class AppComponent extends Component<Props, State> {
                     this.setState({
                         showBackground: true,
                     });
-                    continue;
                 }
 
                 await this.stateSyncer.notifyInitialStateReceived();
