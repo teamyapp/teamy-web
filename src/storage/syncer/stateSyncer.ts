@@ -39,7 +39,6 @@ import { UserLinkState } from '@core/storage/states/userLink.state';
 import { LocalStore } from './localStore';
 import { Message } from './message';
 import { Metadata } from './metadata';
-import { Mutation } from './mutation';
 import {
     applyInvitationMutation,
     applyMessageMutation,
@@ -63,11 +62,12 @@ import {
     replaceTeamTaskActivities,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
+import { Transaction } from './transaction';
 
 export class StateSyncer {
     private readonly connection: Connection;
-    private readonly onMutationReceivedCh = chan<Mutation>();
-    private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
+    private readonly onTransactionReceivedCh = chan<Transaction>();
+    private readonly onTransactionReceivedMulti = multi(this.onTransactionReceivedCh);
 
     private metadataReceived = false;
 
@@ -103,8 +103,8 @@ export class StateSyncer {
         );
     }
 
-    public onMutationReceived(): PopChannel<Mutation | undefined> {
-        return this.onMutationReceivedMulti.copy();
+    public onTransactionReceived(): PopChannel<Transaction | undefined> {
+        return this.onTransactionReceivedMulti.copy();
     }
 
     public async ensureConnected(): Promise<void> {
@@ -127,15 +127,16 @@ export class StateSyncer {
                 const message = Message.fromMutationPayload(json);
                 console.log('Message received: ', message);
                 switch (message.type) {
-                    case 'Mutation': {
+                    case 'Transaction': {
                         if (!this.metadataReceived) {
                             break;
                         }
-                        const mutation = Mutation.fromMutationPayload(
+                        const transaction = Transaction.fromTransactionPayload(
                             message.payload,
                         );
-                        await this.mutateState(mutation);
-                        this.onMutationReceivedCh.put(mutation);
+
+                        await this.mutateState(transaction);
+                        this.onTransactionReceivedCh.put(transaction);
                         break;
                     }
                     case 'Metadata': {
@@ -874,57 +875,62 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    private async mutateState(mutation: Mutation) {
+    private async mutateState(transaction: Transaction) {
         let appState = this.localStore.getState();
-        switch (mutation.collectionType) {
-            case 'Task': {
-                appState = applyTaskMutation(appState, mutation);
-                break;
-            }
-            case 'SprintTaskRelation': {
-                appState = applySprintTaskMutation(appState, mutation);
-                break;
-            }
-            case 'Invitation': {
-                appState = applyInvitationMutation(appState, mutation);
-                break;
-            }
-            case 'Message': {
-                appState = applyMessageMutation(appState, mutation);
-                break;
-            }
-            case 'Thread': {
-                break;
-            }
-            case 'Team': {
-                appState = applyTeamMutation(appState, mutation);
-                break;
-            }
-            case 'User': {
-                appState = applyUserMutation(appState, mutation);
-                break;
-            }
-            case 'TeamMember': {
-                appState = await applyTeamMemberMutation(
-                    appState,
-                    mutation,
-                    this.teamMemberClient,
-                );
-                break;
-            }
-            case 'TaskAwaitForRelation': {
-                appState = applyTaskAwaitingForRelationMutation(
-                    appState,
-                    mutation,
-                );
-                break;
-            }
-            case 'TaskActivity': {
-                appState = applyTaskActivityMutation(appState, mutation);
-                break;
-            }
-            case 'SprintParticipant': {
-                appState = applySprintParticipantMutation(appState, mutation);
+        for (const mutation of transaction.mutations) {
+            switch (mutation.collectionType) {
+                case 'Task': {
+                    appState = applyTaskMutation(appState, mutation);
+                    break;
+                }
+                case 'SprintTaskRelation': {
+                    appState = applySprintTaskMutation(appState, mutation);
+                    break;
+                }
+                case 'Invitation': {
+                    appState = applyInvitationMutation(appState, mutation);
+                    break;
+                }
+                case 'Message': {
+                    appState = applyMessageMutation(appState, mutation);
+                    break;
+                }
+                case 'Thread': {
+                    break;
+                }
+                case 'Team': {
+                    appState = applyTeamMutation(appState, mutation);
+                    break;
+                }
+                case 'User': {
+                    appState = applyUserMutation(appState, mutation);
+                    break;
+                }
+                case 'TeamMember': {
+                    appState = await applyTeamMemberMutation(
+                        appState,
+                        mutation,
+                        this.teamMemberClient,
+                    );
+                    break;
+                }
+                case 'TaskAwaitForRelation': {
+                    appState = applyTaskAwaitingForRelationMutation(
+                        appState,
+                        mutation,
+                    );
+                    break;
+                }
+                case 'TaskActivity': {
+                    appState = applyTaskActivityMutation(appState, mutation);
+                    break;
+                }
+                case 'SprintParticipant': {
+                    appState = applySprintParticipantMutation(
+                        appState,
+                        mutation,
+                    );
+                }
             }
         }
 
