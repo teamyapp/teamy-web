@@ -36,8 +36,10 @@ export const signUpRoutePattern = `${rootRoutePattern}sign-up`;
 export const signInRoutePattern = `${cloudRoutePattern}/identity/sign-in`;
 export const signInFinishRoutePattern = `${cloudRoutePattern}/identity/sign-in-finish`;
 
-export const teamPath = (teamId: number) => `/teams/${teamId}`;
-export const sprintsPath = (teamId: number) => `/teams/${teamId}/sprints`;
+export const teamsPath = `/teams`;
+export const teamPath = (teamId: number) => `${teamsPath}/${teamId}`;
+export const sprintsPath = (teamId: number) =>
+    `${teamsPath}/${teamId}/sprints`;
 export const sprintTabPath = (
     teamId: number,
     sprintId: number,
@@ -45,11 +47,14 @@ export const sprintTabPath = (
 ) => `${teamPath(teamId)}/sprints/${sprintId}/${tabId}`;
 export const taskPath = (teamId: number, taskId: number) =>
     `${teamPath(teamId)}/tasks/${taskId}`;
-export const insightsPath = (teamId: number) => `/teams/${teamId}/insights`;
-export const planningPath = (teamId: number) => `/teams/${teamId}/planning`;
-export const knowledgePath = (teamId: number) => `/teams/${teamId}/knowledge`;
+export const insightsPath = (teamId: number) =>
+    `${teamsPath}/${teamId}/insights`;
+export const planningPath = (teamId: number) =>
+    `${teamsPath}/${teamId}/planning`;
+export const knowledgePath = (teamId: number) =>
+    `${teamsPath}/${teamId}/knowledge`;
 export const helpCenterPath = (teamId: number) =>
-    `/teams/${teamId}/help-center`;
+    `${teamsPath}/${teamId}/help-center`;
 
 export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`;
 

@@ -91,7 +91,6 @@ interface State {
 }
 
 const acceptedRoutePatterns = [
-    // sprintsRoutePattern,
     sprintTabRoutePattern,
 ];
 
@@ -176,7 +175,6 @@ export class SprintsComponent extends Component<Props, State> {
                 const currentSprint = this.graphSource.currentSprint();
                 const sprintTasks = currentSprint?.tasks || [];
                 const sprintParticipants = currentSprint?.participants || [];
-                debugger;
                 if (
                     this.state.selectedSprintId &&
                     this.state.selectedSprintId !== appState.currSprintId
@@ -220,23 +218,16 @@ export class SprintsComponent extends Component<Props, State> {
                     routeUpdate.params.pathParams,
                 );
 
-                const appState = this.localStore.getState();
-                const currTeamId = parseInt(getTeamId(routeUpdate.params)!);
-                const newSprintId = parseInt(getSprintId(routeUpdate.params)!);
-                const tabId = getTabId(routeUpdate.params)!;
-                if (newSprintId !== appState.currSprintId) {
-                    if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
-                        this.router.navigateTo(sprintsPath(currTeamId));
-                    }
+                if (routeUpdate.routePattern.startsWith(sprintTabRoutePattern)) {
+                    const tabId = getTabId(routeUpdate.params)!;
+                    const tabIndex = tabIds.indexOf(tabId);
+                    this.setState({
+                        activeTabIndex: tabIndex,
+                    });
+                    this.tabsRef.current?.setSelectedTabIndex(
+                        tabIds.indexOf(tabId),
+                    );
                 }
-
-                const tabIndex = tabIds.indexOf(tabId);
-                this.setState({
-                    activeTabIndex: tabIndex,
-                });
-                this.tabsRef.current?.setSelectedTabIndex(
-                    tabIds.indexOf(tabId),
-                );
             }
         })().then();
         this.redirectIfNeeded();
