@@ -48,6 +48,16 @@ export function applyTaskMutation(
         case 'Delete': {
             const taskId = mutation.payload;
             delete currState.tasks[taskId];
+            currState.sprintTaskRelations = currState.sprintTaskRelations.filter((sprintTaskRelation) => {
+                return sprintTaskRelation.taskId !== taskId
+            })
+            currState.taskAwaitForRelations = currState.taskAwaitForRelations.filter((taskAwaitForRelation) => {
+                return taskAwaitForRelation.awaitForTaskId !== taskId && taskAwaitForRelation.awaitingTaskId !== taskId
+            })
+            currState.taskActivities = currState.taskActivities.filter((taskActivity) => {
+                return taskActivity.taskId !== taskId
+            })
+
             break;
         }
     }

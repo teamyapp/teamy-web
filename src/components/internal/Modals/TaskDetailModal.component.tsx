@@ -297,6 +297,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                 task: undefined,
                 updatedTask: undefined,
             });
+            this.close()
             return;
         }
         this.setState({
