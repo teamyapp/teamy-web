@@ -40,7 +40,7 @@ interface Props {
     deps: Deps;
     selectOwnerTaskId?: number;
     onClose?: () => void;
-    onShowPotentialTaskOwners?: (
+    onShowPotantialTaskOwnersToUpdateTask?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
@@ -375,7 +375,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
         const task = this.state.task!;
         const element = event.currentTarget as HTMLDivElement;
-        this.props.onShowPotentialTaskOwners?.call(
+        this.props.onShowPotantialTaskOwnersToUpdateTask?.call(
             null,
             task.id,
             this.state.updatedTask!,

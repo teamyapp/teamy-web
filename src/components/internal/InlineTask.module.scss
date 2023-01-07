@@ -47,39 +47,8 @@ $draggingColor: #00897b;
             }
         }
 
-        .ActionsSection,
         .ViewDetailSection {
             border-left: 2px solid $dividerColor;
-        }
-
-        .ActionsSection {
-            display: grid;
-            gap: 2px;
-            grid-auto-rows: min-content;
-            padding-left: $edgeSpace;
-
-            .Action {
-                align-items: center;
-                border-radius: 4px;
-                --icon-box-size: #{$actionIconSize};
-                display: flex;
-                height: $actionIconSize;
-                justify-content: center;
-                padding: 4px;
-                --icon-size: #{$actionIconSize};
-                user-select: none;
-                width: $actionIconSize;
-
-                &.Active,
-                &:hover {
-                    background-color: rgba(0, 0, 0, 0.07);
-                }
-            }
-
-            .AssignOwner {
-                --profile-height: #{$actionIconSize};
-                --profile-width: #{$actionIconSize};
-            }
         }
 
         .TopRow {
@@ -141,13 +110,6 @@ $draggingColor: #00897b;
     }
 }
 
-@mixin actionIcon {
-    border-radius: 50%;
-    align-items: center;
-    display: flex;
-    --icon-color: white;
-}
-
 .StartTaskIcon {
     background-color: #00897b;
     @include actionIcon;
@@ -182,14 +144,6 @@ $draggingColor: #00897b;
     background-color: #6d4c41;
     @include actionIcon;
     --icon-size: #{$actionIconSize - 12px};
-}
-
-.AssignOwnerIcon {
-    align-items: center;
-    border-radius: 50%;
-    --icon-color: #3d7bf6;
-    display: flex;
-    --icon-size: #{$actionIconSize + 4px};
 }
 
 .AwaitForTasksSection {

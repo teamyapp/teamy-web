@@ -4,7 +4,6 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { Deps } from '@core/dep/deps';
-import { UpdateTaskInput } from '@core/entity/input';
 import { User } from '@core/entity/user';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -17,25 +16,26 @@ const taskOwnersListHorizontalOffset = 10;
 
 interface Props {
     deps: Deps;
+    selectedOwnerId?: number,
     onClose?: () => void;
+    onSelectOwner?: (taskOwnerId?: number) => void,
 }
 
 interface State {
-    selectOwnerTaskId?: number;
     showPotentialTaskOwnersList: boolean;
     findTaskOwnersAlignTargetBoundBox?: BoundingBoxFinder;
     taskOwnersListVisible: boolean;
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
     potentialTaskOwners: User[];
-    selectedOwnerId?: number;
-    selectOwnerUpdateTaskInput?: UpdateTaskInput;
 }
 
 export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
+    private onClose?: () => void;
+
 
     constructor(props: Props) {
         super(props);
@@ -76,7 +76,7 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
                     </div>
                     <SelectUserListUI
                         emptySelectionUserName={'Unassigned'}
-                        selectedUserId={this.state.selectedOwnerId}
+                        selectedUserId={this.props.selectedOwnerId}
                         users={this.state.potentialTaskOwners}
                         onSelectUser={this.onSelectTaskOwner}
                         onRemoveSelection={this.onRemoveTaskOwner}
@@ -95,20 +95,16 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
     }
 
     public show = async (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
+        onClose?: () => void,
     ) => {
+        this.onClose = onClose
         await this.stateSyncer.pullCurrentTeamMembers();
         const teamMembers = this.graphSource.currentTeam()!.members;
         this.setState({
             potentialTaskOwners: teamMembers.map(
                 (teamMember) => teamMember.user,
             ),
-            selectOwnerTaskId: taskId,
-            selectedOwnerId,
-            selectOwnerUpdateTaskInput: updateTaskInput,
             findTaskOwnersAlignTargetBoundBox: findAlignTargetBoundBox,
             showPotentialTaskOwnersList: true,
         });
@@ -154,51 +150,29 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
     private onCloseTaskOwnersListClick = () => {
         this.setState({
             potentialTaskOwners: [],
-            selectOwnerTaskId: undefined,
             taskOwnersListVisible: false,
             showPotentialTaskOwnersList: false,
         });
+        this.onClose?.call(null)
         this.props.onClose?.call(null);
     };
 
     private onSelectTaskOwner = (userId: number) => {
-        this.stateSyncer.updateTask(
-            this.state.selectOwnerTaskId!,
-            Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
-                {},
-                this.state.selectOwnerUpdateTaskInput!,
-                {
-                    ownerUserId: userId,
-                },
-            ),
-        );
         this.setState({
             potentialTaskOwners: [],
             showPotentialTaskOwnersList: false,
             taskOwnersListVisible: false,
-            selectedOwnerId: undefined,
-            selectOwnerTaskId: undefined,
         });
+        this.props.onSelectOwner?.call(this, userId);
     };
 
     private onRemoveTaskOwner = () => {
-        this.stateSyncer.updateTask(
-            this.state.selectOwnerTaskId!,
-            Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
-                {},
-                this.state.selectOwnerUpdateTaskInput!,
-                {
-                    ownerUserId: undefined,
-                },
-            ),
-        );
         this.setState({
             potentialTaskOwners: [],
             showPotentialTaskOwnersList: false,
             taskOwnersListVisible: false,
-            selectedOwnerId: undefined,
-            selectOwnerTaskId: undefined,
         });
+        this.props.onSelectOwner?.call(this);
     };
 
     private onWindowResize = () => {

@@ -34,13 +34,18 @@ interface Props {
     deps: Deps;
     dropReceiverLayer?: number;
     selectOwnerTaskId?: number;
+    selectedOwnerId?: number;
     taskFilters: TaskFilters;
     onViewTaskDetail?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
+    onShowPotantialTaskOwnersToUpdateTask?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
         selectedOwnerId?: number,
+    ) => void;
+    onShowPotantialTaskOwnersToCreateTask?: (
+        findAlignTargetBoundBox: BoundingBoxFinder,
+        onClose: () => void,
     ) => void;
 }
 
@@ -142,8 +147,13 @@ export class BacklogComponent extends Component<Props, State> {
                         <div className={styles.TaskList}>
                             {this.state.onEditingNewTask && (
                                 <InlineCreateTaskUI
+                                    deps={this.props.deps}
+                                    taskOwnerId={this.props.selectedOwnerId}
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
+                                    onShowPotantialTaskOwnersToCreateTask={
+                                        this.props.onShowPotantialTaskOwnersToCreateTask
+                                    }
                                 />
                             )}
                             {filteredTasks.map((task, index) =>
@@ -164,6 +174,8 @@ export class BacklogComponent extends Component<Props, State> {
 
     private updateState() {
         let tasks = this.graphSource.currentTeam()?.tasks || [];
+
+
         tasks = tasks.filter(unplanned).sort(orderByStatusUrgencyAsc);
         this.setState({
             unplannedTasks: tasks,
@@ -192,8 +204,8 @@ export class BacklogComponent extends Component<Props, State> {
                     onUpdateTask={this.onUpdateTask}
                     onDeleteTask={this.onDeleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}
-                    onShowPotentialTaskOwners={
-                        this.props.onShowPotentialTaskOwners
+                    onShowPotantialTaskOwnersToUpdateTask={
+                        this.props.onShowPotantialTaskOwnersToUpdateTask
                     }
                 />
             </div>

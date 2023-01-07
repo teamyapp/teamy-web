@@ -27,6 +27,7 @@ interface Props {
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     sortOrders: SortOrders;
     selectOwnerTaskId?: number;
+    selectedOwnerId?: number;
     currentClientId?: number;
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
@@ -35,11 +36,15 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
+    onShowPotantialTaskOwnersToUpdateTask?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
         selectedOwnerId?: number,
+    ) => void;
+    onShowPotantialTaskOwnersToCreateTask?: (
+        findAlignTargetBoundBox: BoundingBoxFinder,
+        onClose: () => void,
     ) => void;
     onSelectUpcomingOrder?: (order: string) => void;
 }
@@ -59,6 +64,7 @@ export class KanbanUI extends Component<Props> {
             <div className={styles.TaskLists}>
                 <div className={`${styles.TaskListSection}`}>
                     <UpcomingSection
+                        deps={this.props.deps}
                         relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
@@ -66,6 +72,7 @@ export class KanbanUI extends Component<Props> {
                         currentClientId={this.props.currentClientId}
                         tasks={upcomingTasks}
                         selectOwnerTaskId={this.props.selectOwnerTaskId}
+                        selectedOwnerId={this.props.selectedOwnerId}
                         sortOrder={this.props.sortOrders.upcoming}
                         onCreateTask={this.props.onCreateTask}
                         onUpdateTask={this.props.onUpdateTask}
@@ -74,8 +81,11 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
+                        onShowPotantialTaskOwnersToUpdateTask={
+                            this.props.onShowPotantialTaskOwnersToUpdateTask
+                        }
+                        onShowPotantialTaskOwnersToCreateTask={
+                            this.props.onShowPotantialTaskOwnersToCreateTask
                         }
                         onSelectSortOrder={this.props.onSelectUpcomingOrder}
                     />
@@ -95,8 +105,8 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
+                        onShowPotantialTaskOwnersToUpdateTask={
+                            this.props.onShowPotantialTaskOwnersToUpdateTask
                         }
                     />
                 </div>
@@ -115,8 +125,8 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
+                        onShowPotantialTaskOwnersToUpdateTask={
+                            this.props.onShowPotantialTaskOwnersToUpdateTask
                         }
                     />
                 </div>
@@ -135,8 +145,8 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
+                        onShowPotantialTaskOwnersToUpdateTask={
+                            this.props.onShowPotantialTaskOwnersToUpdateTask
                         }
                     />
                 </div>

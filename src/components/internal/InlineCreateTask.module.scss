@@ -16,18 +16,19 @@
         }
     }
 
-    .Owner {
-        .Action {
-            height: $actionIconSize;
-            padding: 4px;
-            width: $actionIconSize;
-        }
+    .ActionsSection {
+        grid-template-columns: repeat(3, 1fr)
+    }
+    
+    .SaveTaskEditionIcon {
+        background-color: #00897b;
+        @include actionIcon;
+        --icon-size: #{$actionIconSize + 4px};
+    }
 
-        .OwnerIcon {
-            --icon-color: #1976d2;
-            --profile-height: #{$actionIconSize};
-            --icon-size: #{$actionIconSize};
-            --profile-width: #{$actionIconSize};
-        }
+    .CancelTaskEditionIcon {
+        background-color: #e53935;
+        @include actionIcon;
+        --icon-size: #{$actionIconSize - 6px};
     }
 }

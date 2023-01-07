@@ -32,7 +32,7 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
+    onShowPotantialTaskOwnersToUpdateTask?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
@@ -96,8 +96,8 @@ export class AwaitingSection extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
+                        onShowPotantialTaskOwnersToUpdateTask={
+                            this.props.onShowPotantialTaskOwnersToUpdateTask
                         }
                     />
                 </div>

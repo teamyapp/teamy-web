@@ -102,6 +102,7 @@ interface State {
     backlogDropReceiverLayer: number;
     taskFilters: TaskFilters;
     selectOwnerTaskId?: number;
+    selectedOwnerId?: number;
 }
 
 export class AppComponent extends Component<Props, State> {
@@ -126,6 +127,7 @@ export class AppComponent extends Component<Props, State> {
     private readonly requiredActionsModalRef =
         createRef<RequiredActionsModalComponent>();
     private readonly backlogRef = createRef<BacklogComponent>();
+    private onSelectOwner?: (taskOwnerId?: number) => void;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
@@ -264,9 +266,15 @@ export class AppComponent extends Component<Props, State> {
                                                 taskFilters={
                                                     this.state.taskFilters
                                                 }
-                                                onShowPotentialTaskOwners={
+                                                selectedOwnerId={
+                                                    this.state.selectedOwnerId
+                                                }
+                                                onShowPotantialTaskOwnersToUpdateTask={
                                                     this
-                                                        .onShowPotentialTaskOwners
+                                                        .onShowPotantialTaskOwnersToUpdateTask
+                                                }
+                                                onShowPotantialTaskOwnersToCreateTask={
+                                                    this.onShowPotantialTaskOwnersToCreateTask
                                                 }
                                                 onViewTaskDetail={
                                                     this.onViewTaskDetail
@@ -287,9 +295,15 @@ export class AppComponent extends Component<Props, State> {
                                                 taskFilters={
                                                     this.state.taskFilters
                                                 }
-                                                onShowPotentialTaskOwners={
+                                                selectedOwnerId={
+                                                    this.state.selectedOwnerId
+                                                }
+                                                onShowPotantialTaskOwnersToUpdateTask={
                                                     this
-                                                        .onShowPotentialTaskOwners
+                                                        .onShowPotantialTaskOwnersToUpdateTask
+                                                }
+                                                onShowPotantialTaskOwnersToCreateTask={
+                                                    this.onShowPotantialTaskOwnersToCreateTask
                                                 }
                                                 onViewTaskDetail={
                                                     this.onViewTaskDetail
@@ -332,12 +346,14 @@ export class AppComponent extends Component<Props, State> {
                     deps={this.props.deps}
                     selectOwnerTaskId={this.state.selectOwnerTaskId}
                     onClose={this.onTaskDetailModalClose}
-                    onShowPotentialTaskOwners={this.onShowPotentialTaskOwners}
+                    onShowPotantialTaskOwnersToUpdateTask={this.onShowPotantialTaskOwnersToUpdateTask}
                 />
                 <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
                     onClose={this.onTaskOwnersPopupClose}
+                    onSelectOwner={this.onSelectOwner}
+                    selectedOwnerId={this.state.selectedOwnerId}
                 />
                 <CreateTeamModalComponent
                     ref={this.createTeamModalRef}
@@ -629,23 +645,44 @@ export class AppComponent extends Component<Props, State> {
         });
     };
 
-    private onShowPotentialTaskOwners = (
+    private onShowPotantialTaskOwnersToUpdateTask = (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
         selectedOwnerId?: number,
     ) => {
         this.selectTaskOwnersPopupRef.current?.show.call(
-            null,
-            taskId,
-            updateTaskInput,
-            findAlignTargetBoundBox,
-            selectedOwnerId,
-        );
+            this,
+            findAlignTargetBoundBox
+        )
+        this.onSelectOwner = (ownerUserId) => {
+            this.stateSyncer.updateTask(taskId, {
+                ...updateTaskInput,
+                ownerUserId
+            })
+        }
         this.setState({
+            selectedOwnerId,
             selectOwnerTaskId: taskId,
         });
-    };
+    }
+
+    private onShowPotantialTaskOwnersToCreateTask = (
+        findAlignTargetBoundBox: BoundingBoxFinder,
+        onClose: () => void,
+    ) => {
+        this.selectTaskOwnersPopupRef.current?.show.call(
+            this,
+            findAlignTargetBoundBox,
+            onClose
+        );
+
+        this.onSelectOwner = (selectedOwnerId) => {
+            this.setState({
+                selectedOwnerId
+            });
+        }
+    }
 
     private onTaskOwnersPopupClose = () => {
         this.setState({

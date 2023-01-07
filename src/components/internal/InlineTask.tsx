@@ -50,7 +50,7 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
+    onShowPotantialTaskOwnersToUpdateTask?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
@@ -328,7 +328,7 @@ export class InlineTaskUI extends Component<Props, State> {
                         onClick={this.onCompleteTaskClick}
                     >
                         <div className={` ${styles.CompleteTaskIcon}`}>
-                            <MaterialIconUI>check</MaterialIconUI>
+                            <MaterialIconUI>task_alt</MaterialIconUI>
                         </div>
                     </div>
                 </TooltipUI>
@@ -420,7 +420,7 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
-        this.props.onShowPotentialTaskOwners?.call(
+        this.props.onShowPotantialTaskOwnersToUpdateTask?.call(
             null,
             this.props.task.id,
             this.getUpdatedTask(),

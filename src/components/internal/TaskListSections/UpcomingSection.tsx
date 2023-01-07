@@ -36,19 +36,20 @@ import {
 } from '@core/data/task.order';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
-import { User } from '@core/entity/user';
 
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
+import { Deps } from '@core/dep/deps';
 
 interface Props {
+    deps: Deps;
     relativeLayout: RelativeLayout;
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
-    createTaskDefaultOwner?: User;
     sortOrder?: string;
     selectOwnerTaskId?: number;
+    selectedOwnerId?: number;
     currentClientId?: number;
     isPersonal?: boolean;
     onCreateTask?: (task: CreateTaskInput) => void;
@@ -58,11 +59,15 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
+    onShowPotantialTaskOwnersToUpdateTask?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
         selectedOwnerId?: number,
+    ) => void;
+    onShowPotantialTaskOwnersToCreateTask?: (
+        findAlignTargetBoundBox: BoundingBoxFinder,
+        onClose: () => void,
     ) => void;
     onSelectSortOrder?: (order: string) => void;
 }
@@ -121,9 +126,14 @@ export class UpcomingSection extends Component<Props, State> {
                         <div className={styles.TaskList}>
                             {this.state.onEditingNewTask && (
                                 <InlineCreateTaskUI
-                                    owner={this.props.createTaskDefaultOwner}
+                                    deps={this.props.deps}
+                                    taskOwnerId={this.props.selectedOwnerId}
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
+                                    onShowPotantialTaskOwnersToCreateTask={
+                                        this.props.onShowPotantialTaskOwnersToCreateTask
+                                    }
+                                    defaultToCurrentUser
                                 />
                             )}
                             {flattenTasks.map(
@@ -158,8 +168,8 @@ export class UpcomingSection extends Component<Props, State> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
+                        onShowPotantialTaskOwnersToUpdateTask={
+                            this.props.onShowPotantialTaskOwnersToUpdateTask
                         }
                     />
                 </div>
