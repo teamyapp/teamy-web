@@ -12,11 +12,12 @@ export class MaxCountRetry implements Retry {
     ) {}
 
     public withRetry(
-        execute: () => Promise<InternalError | undefined>,
+        execute: () => Promise<[InternalError, boolean] | undefined>,
     ): Promise<[number, InternalError | undefined]> {
         return new Promise(async (resolve) => {
             let retries = 0;
-            let err: InternalError | undefined;
+            let err: [InternalError, boolean] | undefined;
+
             while (retries < this.maxCount) {
                 err = await execute();
                 if (err === undefined) {
@@ -24,13 +25,16 @@ export class MaxCountRetry implements Retry {
                     resolve([retries, undefined]);
                     return;
                 }
+                if (err[1]) {
+                    break
+                }
 
                 this.backoff.onFailure();
                 await this.runtime.threadSleep(this.backoff.delay());
                 retries++;
             }
 
-            resolve([retries, err]);
+            resolve([retries, err && err[0]]);
         });
     }
 }

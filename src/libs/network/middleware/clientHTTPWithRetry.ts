@@ -1,4 +1,4 @@
-import { InternalError } from '@lib/error/errors';
+import { InternalError, Errors } from '@lib/error/errors';
 import { Result } from '@lib/error/result';
 import { Middleware } from '@lib/middleware/middleware';
 import { Retry } from '@lib/retry/retry';
@@ -16,7 +16,7 @@ export function clientHTTPWithRetry(retry: Retry): Middleware<HTTPClient> {
                 let result: Result<HTTPResponse, InternalError>;
                 await retry.withRetry(
                     () =>
-                        new Promise<InternalError | undefined>(
+                        new Promise<[InternalError, boolean] | undefined>(
                             async (resolve) => {
                                 result = await httpClient.request(
                                     url,
@@ -24,7 +24,7 @@ export function clientHTTPWithRetry(retry: Retry): Middleware<HTTPClient> {
                                     context,
                                 );
                                 if (result[1] !== null) {
-                                    resolve(result[1]);
+                                    resolve([result[1], shouldStopRetry(result[1])]);
                                 } else {
                                     resolve(undefined);
                                 }
@@ -35,4 +35,18 @@ export function clientHTTPWithRetry(retry: Retry): Middleware<HTTPClient> {
             },
         };
     };
+}
+
+
+function shouldStopRetry(error: InternalError): boolean {
+    switch (error.errors) {
+        case Errors.Unauthenticated:
+        case Errors.NotImplemented:
+        case Errors.BadRequest:
+            return true
+        default:
+            break;
+    }
+
+    return false
 }

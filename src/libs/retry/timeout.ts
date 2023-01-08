@@ -15,11 +15,11 @@ export class TimeoutRetry implements Retry {
     ) {}
 
     public withRetry(
-        execute: () => Promise<InternalError | undefined>,
+        execute: () => Promise<[InternalError, boolean] | undefined>,
     ): Promise<[number, InternalError | undefined]> {
         return new Promise(async (resolve) => {
             let retries = 0;
-            let err: InternalError | undefined;
+            let err: [InternalError, boolean] | undefined;
             const expiredAt = this.clock.now().getTime() + this.duration;
 
             while (true) {
@@ -29,6 +29,10 @@ export class TimeoutRetry implements Retry {
                     this.backoff.onSuccess();
                     resolve([retries, undefined]);
                     return;
+                }
+
+                if (err[1]) {
+                    break
                 }
 
                 this.backoff.onFailure();
@@ -45,7 +49,7 @@ export class TimeoutRetry implements Retry {
                 retries++;
             }
 
-            resolve([retries, err]);
+            resolve([retries, err[0]]);
         });
     }
 }
