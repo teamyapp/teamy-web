@@ -17,7 +17,7 @@ import { clientHTTPWithRetry } from '@lib/network/middleware/clientHTTPWithRetry
 import { PubSub } from '@lib/pubSub/pubSub';
 import { ExponentialBackoff } from '@lib/retry/backoff/exponential';
 import { MaxCountRetry } from '@lib/retry/maxCount';
-import { Router, createBrowserRouter } from '@lib/router/router';
+import { Router } from '@lib/router/router';
 import { BuiltInRuntime } from '@lib/runtime/runtime';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { Logger } from '@lib/telemetry/Logger';
@@ -135,7 +135,7 @@ export function initDeps(): Deps {
         invitationClient,
         sprintClient,
     );
-    const router = createBrowserRouter();
+    const router = new Router();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
     const dragAndDropController =
         new DragAndDropController<DragAndDropContext>();

@@ -38,20 +38,64 @@ interface NavigateOptions {
     notifyRouteChange?: boolean;
 }
 
+export interface RouteInterceptorResult {
+    isRedirected?: boolean;
+    stopPipeline?: boolean;
+}
+
+export type RouteInterceptor = (router: Router, routeUpdate: RouteUpdate) => Promise<RouteInterceptorResult>;
+
 export class Router {
     private readonly routeChangeChan = chan<RouteUpdate>();
-    private readonly routeChangeMultiCaster = multi<RouteUpdate>(
-        this.routeChangeChan,
+    private readonly notifyRouteChangeChan = chan<RouteUpdate>();
+    private readonly notifyRouteChangeChanMultiCaster = multi<RouteUpdate>(
+        this.notifyRouteChangeChan,
     );
     private readonly root: Segment = {
         isPath: false,
         children: {},
     };
+    private routeInterceptors: RouteInterceptor[] = [];
     private currUri?: string;
     private currRouteUpdate!: RouteUpdate;
 
+
     constructor() {
         window.addEventListener('popstate', this.onPopState);
+        (async () => {
+            while (true) {
+                const routeUpdate = await this.routeChangeChan.pop();
+                if (routeUpdate === undefined) {
+                    return;
+                }
+
+                await this.processRouteChange(routeUpdate);
+            }
+        })();
+    }
+
+    private async processRouteChange(routeUpdate: RouteUpdate) {
+        for (const interceptor of this.routeInterceptors) {
+            const result = await interceptor(this, routeUpdate);
+            if (result.isRedirected) {
+                return;
+            }
+
+            if (result.stopPipeline) {
+                break;
+            }
+        }
+
+        this.notifyRouteChangeChan.put(routeUpdate);
+    }
+
+    public addRouteInterceptor(interceptor: RouteInterceptor) {
+        this.removeRouteInterceptor(interceptor);
+        this.routeInterceptors = this.routeInterceptors.concat(interceptor);
+    }
+
+    public removeRouteInterceptor(interceptor: RouteInterceptor) {
+        this.routeInterceptors = this.routeInterceptors.filter(currInterceptor => currInterceptor !== interceptor);
     }
 
     public get currentRouteUpdate(): RouteUpdate {
@@ -62,8 +106,11 @@ export class Router {
         return this.currUri;
     }
 
-    initBrowserUri() {
-        this.currUri = `${window.location.pathname}${window.location.search}`;
+    public initBrowserUri() {
+        const browserUri = `${window.location.pathname}${window.location.search}`;
+        this.navigateTo(browserUri, {
+            skipDuplicate: true
+        });
     }
 
     public registerRoute(
@@ -142,6 +189,7 @@ export class Router {
     }
 
     public navigateTo(uri: string, options?: NavigateOptions): Errors | void {
+        // debugger;
         options = withDefaults(options);
         if (!uri || uri.length < 1) {
             return 'InvalidUri';
@@ -221,7 +269,7 @@ export class Router {
     }
 
     public subscribeRouteChange(): PopChannel<RouteUpdate | undefined> {
-        const ch = this.routeChangeMultiCaster.copy();
+        const ch = this.notifyRouteChangeChanMultiCaster.copy();
         if (this.currRouteUpdate) {
             ch.put(this.currRouteUpdate);
         }
@@ -235,7 +283,7 @@ export class Router {
 
     public navigateToCurrUri() {
         if (this.currUri) {
-            this.navigateTo(this.currUri, { skipDuplicate: false });
+            this.navigateTo(this.currUri, {skipDuplicate: false});
         }
     }
 
@@ -284,12 +332,6 @@ function isPathParameter(segment: string): boolean {
         return false;
     }
     return segment[0] === '{' && segment[segment.length - 1] === '}';
-}
-
-export function createBrowserRouter(): Router {
-    const router = new Router();
-    router.initBrowserUri();
-    return router;
 }
 
 function withDefaults(options?: NavigateOptions): NavigateOptions {

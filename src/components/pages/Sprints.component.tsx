@@ -18,12 +18,8 @@ import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
 import { userAll, userPrefix, userUnassigned } from '@core/config/filter';
 import {
-    getSprintId,
-    getTabId,
-    sprintTabPath,
-    sprintTabRoutePattern,
     sprintsPath,
-    sprintsRoutePattern,
+    sprintTabPath,
 } from '@core/config/routing';
 import {
     deliveredSectionId,
@@ -43,7 +39,9 @@ import { Sprint } from '@core/entity/sprint';
 import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/storage/graph/graphSource';
-import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
+import {
+    SprintParticipantNode
+} from '@core/storage/graph/sprintParticipant.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
@@ -52,8 +50,7 @@ import { PersonalStatusUI } from '../internal/PersonalStatus';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
-
-const tabIds = ['me', 'team'];
+import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 
 const sectionIds = [
     upcomingSectionId,
@@ -89,8 +86,6 @@ interface State {
     allowMultiSelection: boolean;
 }
 
-const acceptedRoutePatterns = [sprintsRoutePattern, sprintTabRoutePattern];
-
 export class SprintsComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly localStore: LocalStore;
@@ -101,13 +96,8 @@ export class SprintsComponent extends Component<Props, State> {
     private isSelectionModePermanent: boolean = false;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
-    private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
-    private keyBoardEventChan?: csp.PopChannel<
-        InternalKeyboardEvent | undefined
-    >;
-    private dragAndDropEventChan?: csp.PopChannel<
-        DragAndDropEvent<DragAndDropContext> | undefined
-    >;
+    private keyBoardEventChan?: csp.PopChannel<InternalKeyboardEvent | undefined>;
+    private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent<DragAndDropContext> | undefined>;
 
     constructor(props: Props) {
         super(props);
@@ -145,7 +135,7 @@ export class SprintsComponent extends Component<Props, State> {
                 </div>
                 <div className={styles.Content}>
                     {this.renderTabContent(
-                        tabIds[this.state.activeTabIndex],
+                        sprintTabIds[this.state.activeTabIndex],
                         clientId,
                     )}
                 </div>
@@ -173,85 +163,30 @@ export class SprintsComponent extends Component<Props, State> {
                 const sprintTasks = currentSprint?.tasks || [];
                 const sprintParticipants = currentSprint?.participants || [];
                 if (
-                    this.state.selectedSprintId &&
                     this.state.selectedSprintId !== appState.currSprintId
                 ) {
-                    this.selectTab(this.state.activeTabIndex, false);
+                    // debugger;
+                    if (appState.currSprintId) {
+                        this.selectTab(this.state.activeTabIndex, false);
+                    } else {
+                        this.router.navigateTo(sprintsPath(appState.currTeamId!));
+                    }
                 }
 
                 if (appState.currUserId) {
+                    const activeSprintTabIndex =
+                        appState.activeSprintTabIndex ||
+                        sprintTabIds.indexOf(defaultSprintTabId);
                     this.setState({
                         sprintParticipants:
                             sortParticipantsByName(sprintParticipants),
                         currentUserId: appState.currUserId!,
                         selectedSprintId: appState.currSprintId,
                         sprintTasks: sprintTasks,
+                        activeTabIndex:activeSprintTabIndex,
                     });
+                    this.tabsRef.current?.setSelectedTabIndex(activeSprintTabIndex);
                 }
-            }
-        })().then();
-
-        for (const routePattern of acceptedRoutePatterns) {
-            this.router.registerRoute(routePattern, false);
-        }
-        this.routeChangeChan = this.router.subscribeRouteChange();
-        console.log('[SprintComponent] subscribing');
-        (async () => {
-            while (true) {
-                const routeUpdate = await this.routeChangeChan!.pop();
-                if (routeUpdate === undefined) {
-                    return;
-                }
-
-                if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
-                    continue;
-                }
-
-                console.log(
-                    '[SprintComponent] accepted',
-                    routeUpdate.routePattern,
-                    routeUpdate.suffix,
-                    routeUpdate.params.pathParams,
-                );
-
-                const appState = this.localStore.getState();
-                const currTeamId = appState.currTeamId;
-                if (!currTeamId) {
-                    continue;
-                }
-
-                const sprintIdParam = getSprintId(routeUpdate.params);
-                if (!sprintIdParam) {
-                    this.selectTab(this.state.activeTabIndex, true);
-                    continue;
-                }
-
-                const newSprintId = parseInt(sprintIdParam);
-                const tabId = getTabId(routeUpdate.params);
-                if (!tabId || tabIds.indexOf(tabId) < 0) {
-                    this.router.navigateTo(
-                        sprintTabPath(
-                            currTeamId,
-                            newSprintId,
-                            tabIds[this.state.activeTabIndex],
-                        ),
-                    );
-                    continue;
-                }
-
-                if (newSprintId !== appState.currSprintId) {
-                    if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
-                        this.router.navigateTo(sprintsPath(currTeamId));
-                    }
-                }
-
-                const tabIndex = tabIds.indexOf(tabId);
-                this.setState({
-                    activeTabIndex: tabIndex,
-                });
-                this.tabsRef.current?.setSelectedTabIndex(
-                    tabIds.indexOf(tabId),
-                );
             }
         })().then();
 
@@ -283,7 +218,6 @@ export class SprintsComponent extends Component<Props, State> {
 
     public componentWillUnmount() {
         closeIfNot(this.stateChangeChan);
-        closeIfNot(this.routeChangeChan);
         closeIfNot(this.dragAndDropEventChan);
     }
 
@@ -299,7 +233,7 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                const { key, eventType } = keyboardEvent;
+                const {key, eventType} = keyboardEvent;
                 const platform = getPlatform();
 
                 if (
@@ -404,7 +338,7 @@ export class SprintsComponent extends Component<Props, State> {
         }
 
         switch (tabId) {
-            case tabIds[0]:
+            case sprintTabIds[0]:
                 return (
                     <PersonalStatusUI
                         deps={this.props.deps}
@@ -427,7 +361,7 @@ export class SprintsComponent extends Component<Props, State> {
                         onSelectUpcomingOrder={this.onSelectUpcomingOrder}
                     />
                 );
-            case tabIds[1]:
+            case sprintTabIds[1]:
                 return (
                     <div className={styles.TeamTab}>
                         <div className={styles.ParticipantsSection}>
@@ -508,11 +442,12 @@ export class SprintsComponent extends Component<Props, State> {
                                     >
                                         <input
                                             className={styles.Toggle}
-                                            type='checkbox'
+                                            type="checkbox"
                                             checked={
                                                 this.state.allowMultiSelection
                                             }
-                                            onChange={()=>{}}
+                                            onChange={() => {
+                                            }}
                                         />
                                         <div className={styles.ToggleLabel}>
                                             Select many
@@ -621,7 +556,7 @@ export class SprintsComponent extends Component<Props, State> {
         participant: SprintParticipant,
         index: number,
     ) => {
-        const { user } = participant;
+        const {user} = participant;
         const unusedBandwidthPercent = safePercent(
             participant.unusedBandwidth,
             participant.totalBandwidth,
@@ -639,7 +574,7 @@ export class SprintsComponent extends Component<Props, State> {
                                 this.state.selectedTaskOwners.has(userIdentity),
                         })}`}
                     >
-                        <UserProfileUI user={user} />
+                        <UserProfileUI user={user}/>
                     </div>
                 </div>
                 <div className={styles.RightSection}>
@@ -661,8 +596,8 @@ export class SprintsComponent extends Component<Props, State> {
                                             styles.UnusedBandwidth
                                         } ${classNames({
                                             [styles.Negative]:
-                                                participant.unusedBandwidth
-                                                    .totalMilliSeconds < 0,
+                                            participant.unusedBandwidth
+                                                .totalMilliSeconds < 0,
                                         })}`}
                                         style={{
                                             width: `${Math.abs(
@@ -690,19 +625,19 @@ export class SprintsComponent extends Component<Props, State> {
             return;
         }
 
-        const currSprintId = appState.currSprintId;
-        if (!currSprintId) {
+        const sprintId = appState.currSprintId;
+        if (!sprintId) {
             return;
         }
 
         this.router.navigateTo(
-            sprintTabPath(currTeamId, currSprintId, tabIds[index]),
+            sprintTabPath(currTeamId, sprintId, sprintTabIds[index]),
             {
                 notifyRouteChange: notifyRouteChange,
             },
         );
 
-        const tabIndex = tabIds.indexOf(tabIds[index]);
+        const tabIndex = sprintTabIds.indexOf(sprintTabIds[index]);
         this.setState({
             activeTabIndex: tabIndex,
         });

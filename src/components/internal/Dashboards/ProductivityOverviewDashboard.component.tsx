@@ -34,6 +34,7 @@ export class ProductivityOverviewDashboardComponent extends Component<
     private readonly stateSyncer: StateSyncer;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
+    private activeTeamId?:number;
 
     constructor(props: Props) {
         super(props);
@@ -59,16 +60,9 @@ export class ProductivityOverviewDashboardComponent extends Component<
                     return;
                 }
 
-                this.updateState();
+                await this.updateState();
             }
         })().then();
-        await Promise.all(
-            this.graphSource
-                .currentTeam()!
-                .sprints.map((sprint) =>
-                    this.stateSyncer.pullSprint(sprint.id),
-                ),
-        );
     }
 
     componentWillUnmount() {
@@ -133,11 +127,20 @@ export class ProductivityOverviewDashboardComponent extends Component<
         );
     }
 
-    updateState() {
-        const sprints = this.graphSource.currentTeam()?.sprints || [];
-        this.setState({
-            sprints,
-        });
+    async updateState() {
+        const appState = this.localStore.getState();
+        if (appState.fetchedTeamData && appState.currTeamId !== this.activeTeamId) {
+            this.activeTeamId = appState.currTeamId;
+            const sprints = this.graphSource.currentTeam()?.sprints || [];
+            this.setState({
+                sprints,
+            });
+            await Promise.all(
+                sprints.map((sprint) =>
+                    this.stateSyncer.pullSprint(sprint.id),
+                ),
+            );
+        }
     }
 
     getXLabels(): string[] {

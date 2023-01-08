@@ -20,8 +20,9 @@ export const getInvitationCode = (params?: Params) =>
     params?.queryParams[invitationCodeParam];
 
 export const rootRoutePattern = '/';
+export const teamsRoutePattern = `${rootRoutePattern}teams`;
 export const debugRoutePattern = `${rootRoutePattern}debug`;
-export const teamRoutePattern = `${rootRoutePattern}teams/{${teamIdParam}}`;
+export const teamRoutePattern = `${teamsRoutePattern}/{${teamIdParam}}`;
 export const taskRoutePattern = `${teamRoutePattern}/tasks/{${taskIdParam}}`;
 export const invitationRoutePattern = `${rootRoutePattern}invitation`;
 export const sprintsRoutePattern = `${teamRoutePattern}/sprints`;
@@ -58,3 +59,28 @@ export const invitationLink = (invitationId: number, code: string) =>
 
 export const absoluteUri = (relativePath: string) =>
     `${absoluteRootPath}${relativePath}`;
+
+export const publicRoutes = [
+    signInRoutePattern,
+    signInFinishRoutePattern,
+    debugRoutePattern,
+];
+
+export const appRoutes = [
+    signUpRoutePattern,
+    teamsRoutePattern,
+];
+
+export const teamsRoutes = [
+    sprintsRoutePattern,
+    insightsRoutePattern,
+    planningRoutePattern,
+    knowledgeRoutePattern,
+    helpCenterRoutePattern,
+    invitationRoutePattern,
+    taskRoutePattern,
+]
+
+export const sprintsRoutes = [
+    sprintTabRoutePattern
+];

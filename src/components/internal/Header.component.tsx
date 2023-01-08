@@ -186,7 +186,7 @@ export class HeaderComponent extends Component<Props, State> {
                                 className={`${styles.Button} ${classNames({
                                     [styles.Active]: this.state.showSprintsView,
                                 })}`}
-                                onClick={this.props.onShowSprintsViewClick}
+                                onClick={this.onShowSprintsViewClick}
                             >
                                 <MaterialIconUI>sprint</MaterialIconUI>
                             </div>
@@ -195,7 +195,7 @@ export class HeaderComponent extends Component<Props, State> {
                                     [styles.Active]:
                                         this.state.showInsightsView,
                                 })}`}
-                                onClick={this.props.onShowInsightsViewClick}
+                                onClick={this.onShowInsightsViewClick}
                             >
                                 <MaterialIconUI>insights</MaterialIconUI>
                             </div>
@@ -204,7 +204,7 @@ export class HeaderComponent extends Component<Props, State> {
                                     [styles.Active]:
                                         this.state.showPlanningView,
                                 })}`}
-                                onClick={this.props.onShowPlanningViewClick}
+                                onClick={this.onShowPlanningViewClick}
                             >
                                 <MaterialIconUI>flag</MaterialIconUI>
                             </div>
@@ -213,7 +213,7 @@ export class HeaderComponent extends Component<Props, State> {
                                     [styles.Active]:
                                         this.state.showKnowledgeView,
                                 })}`}
-                                onClick={this.props.onShowKnowledgeViewClick}
+                                onClick={this.onShowKnowledgeViewClick}
                             >
                                 <MaterialIconUI>school</MaterialIconUI>
                             </div>
@@ -222,7 +222,7 @@ export class HeaderComponent extends Component<Props, State> {
                                     [styles.Active]:
                                         this.state.showHelpCenterView,
                                 })}`}
-                                onClick={this.props.onShowHelpCenterViewClick}
+                                onClick={this.onShowHelpCenterViewClick}
                             >
                                 <MaterialIconUI>forum</MaterialIconUI>
                             </div>
@@ -265,14 +265,7 @@ export class HeaderComponent extends Component<Props, State> {
                     return;
                 }
 
-                this.setState({
-                    showSprintsView: false,
-                    showInsightsView: false,
-                    showPlanningView: false,
-                    showKnowledgeView: false,
-                    showHelpCenterView: false,
-                });
-
+                this.resetViewButtons();
                 if (routeUpdate.routePattern.startsWith(sprintsRoutePattern)) {
                     this.setState({
                         showSprintsView: true,
@@ -304,7 +297,6 @@ export class HeaderComponent extends Component<Props, State> {
                 }
             }
         })().then();
-        this.router.navigateToCurrUri();
     }
 
     public toggleSearchInputFocus = () => {
@@ -399,4 +391,54 @@ export class HeaderComponent extends Component<Props, State> {
             );
         }
     };
+
+    private onShowSprintsViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showSprintsView: true
+        });
+        this.props.onShowSprintsViewClick?.call(null);
+    }
+
+    private onShowInsightsViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showInsightsView: true
+        });
+        this.props.onShowInsightsViewClick?.call(null);
+    }
+
+    private onShowPlanningViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showPlanningView: true
+        });
+        this.props.onShowPlanningViewClick?.call(null);
+    }
+
+    private onShowKnowledgeViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showKnowledgeView: true
+        });
+        this.props.onShowKnowledgeViewClick?.call(null);
+    }
+
+    private onShowHelpCenterViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showHelpCenterView: true
+        });
+        this.props.onShowHelpCenterViewClick?.call(null);
+    }
+
+    private resetViewButtons() {
+        this.setState({
+            showSprintsView: false,
+            showInsightsView: false,
+            showPlanningView: false,
+            showKnowledgeView: false,
+            showHelpCenterView: false,
+        });
+    }
 }
