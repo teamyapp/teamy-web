@@ -43,7 +43,10 @@ export interface RouteInterceptorResult {
     stopPipeline?: boolean;
 }
 
-export type RouteInterceptor = (router: Router, routeUpdate: RouteUpdate) => Promise<RouteInterceptorResult>;
+export type RouteInterceptor = (
+    router: Router,
+    routeUpdate: RouteUpdate,
+) => Promise<RouteInterceptorResult>;
 
 export class Router {
     private readonly routeChangeChan = chan<RouteUpdate>();
@@ -58,7 +61,6 @@ export class Router {
     private routeInterceptors: RouteInterceptor[] = [];
     private currUri?: string;
     private currRouteUpdate!: RouteUpdate;
-
 
     constructor() {
         window.addEventListener('popstate', this.onPopState);
@@ -95,7 +97,9 @@ export class Router {
     }
 
     public removeRouteInterceptor(interceptor: RouteInterceptor) {
-        this.routeInterceptors = this.routeInterceptors.filter(currInterceptor => currInterceptor !== interceptor);
+        this.routeInterceptors = this.routeInterceptors.filter(
+            (currInterceptor) => currInterceptor !== interceptor,
+        );
     }
 
     public get currentRouteUpdate(): RouteUpdate {
@@ -109,7 +113,7 @@ export class Router {
     public initBrowserUri() {
         const browserUri = `${window.location.pathname}${window.location.search}`;
         this.navigateTo(browserUri, {
-            skipDuplicate: true
+            skipDuplicate: true,
         });
     }
 
@@ -283,7 +287,7 @@ export class Router {
 
     public navigateToCurrUri() {
         if (this.currUri) {
-            this.navigateTo(this.currUri, {skipDuplicate: false});
+            this.navigateTo(this.currUri, { skipDuplicate: false });
         }
     }
 

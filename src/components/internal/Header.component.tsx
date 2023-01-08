@@ -9,6 +9,11 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
 
 import { userAll } from '@core/config/filter';
+import { contains } from '@core/data/task.filter';
+import { Deps } from '@core/dep/deps';
+import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
+import { Team } from '@core/entity/team';
+import { User } from '@core/entity/user';
 import {
     helpCenterRoutePattern,
     insightsRoutePattern,
@@ -16,12 +21,7 @@ import {
     planningRoutePattern,
     sprintsRoutePattern,
     teamRoutePattern,
-} from '@core/config/routing';
-import { contains } from '@core/data/task.filter';
-import { Deps } from '@core/dep/deps';
-import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
-import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
+} from '@core/routing/routes';
 
 import { FilterListComponent } from './FilterList.component';
 import styles from './Header.component.module.scss';
@@ -395,42 +395,42 @@ export class HeaderComponent extends Component<Props, State> {
     private onShowSprintsViewClick = () => {
         this.resetViewButtons();
         this.setState({
-            showSprintsView: true
+            showSprintsView: true,
         });
         this.props.onShowSprintsViewClick?.call(null);
-    }
+    };
 
     private onShowInsightsViewClick = () => {
         this.resetViewButtons();
         this.setState({
-            showInsightsView: true
+            showInsightsView: true,
         });
         this.props.onShowInsightsViewClick?.call(null);
-    }
+    };
 
     private onShowPlanningViewClick = () => {
         this.resetViewButtons();
         this.setState({
-            showPlanningView: true
+            showPlanningView: true,
         });
         this.props.onShowPlanningViewClick?.call(null);
-    }
+    };
 
     private onShowKnowledgeViewClick = () => {
         this.resetViewButtons();
         this.setState({
-            showKnowledgeView: true
+            showKnowledgeView: true,
         });
         this.props.onShowKnowledgeViewClick?.call(null);
-    }
+    };
 
     private onShowHelpCenterViewClick = () => {
         this.resetViewButtons();
         this.setState({
-            showHelpCenterView: true
+            showHelpCenterView: true,
         });
         this.props.onShowHelpCenterViewClick?.call(null);
-    }
+    };
 
     private resetViewButtons() {
         this.setState({

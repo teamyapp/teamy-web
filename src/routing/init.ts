@@ -1,13 +1,15 @@
-import { Deps } from '@core/dep/deps';
 import { RefObject } from 'react';
-import { AppComponent } from '../components/App.component';
+
+import { Deps } from '@core/dep/deps';
 import {
     appRoutes,
     publicRoutes,
     rootRoutePattern,
     sprintsRoutes,
-    teamsRoutes
-} from '@core/config/routing';
+    teamsRoutes,
+} from '@core/routing/routes';
+
+import { AppComponent } from '../components/App.component';
 import { addRouteInterceptors } from './interceptors';
 
 export function initRouter(deps: Deps, appRef: RefObject<AppComponent>) {

@@ -7,7 +7,7 @@ import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { Duration } from '@lib/entity/duration';
 import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
-import { RouteUpdate, Router } from '@lib/router/router';
+import { Router } from '@lib/router/router';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
@@ -18,16 +18,13 @@ import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
 import { userAll, userPrefix, userUnassigned } from '@core/config/filter';
 import {
-    sprintsPath,
-    sprintTabPath,
-} from '@core/config/routing';
-import {
     deliveredSectionId,
     inProgressSectionId,
     needAttentionSectionId,
     upcomingSectionId,
 } from '@core/config/sections';
 import { taskUrgencyOrder } from '@core/config/sortOrder';
+import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import { allTasks, ownedBy } from '@core/data/task.filter';
 import * as filters from '@core/data/task.filter';
@@ -38,10 +35,9 @@ import { SortOrders } from '@core/entity/sortOrders';
 import { Sprint } from '@core/entity/sprint';
 import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
+import { sprintTabPath, sprintsPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
-import {
-    SprintParticipantNode
-} from '@core/storage/graph/sprintParticipant.node';
+import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
@@ -50,7 +46,6 @@ import { PersonalStatusUI } from '../internal/PersonalStatus';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
-import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 
 const sectionIds = [
     upcomingSectionId,
@@ -76,6 +71,7 @@ interface Props {
 
 interface State {
     activeTabIndex: number;
+    tabReady: boolean;
     currentUserId: number;
     selectedSprintId?: number;
     sprintTasks: Task[];
@@ -96,8 +92,12 @@ export class SprintsComponent extends Component<Props, State> {
     private isSelectionModePermanent: boolean = false;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
-    private keyBoardEventChan?: csp.PopChannel<InternalKeyboardEvent | undefined>;
-    private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent<DragAndDropContext> | undefined>;
+    private keyBoardEventChan?: csp.PopChannel<
+        InternalKeyboardEvent | undefined
+    >;
+    private dragAndDropEventChan?: csp.PopChannel<
+        DragAndDropEvent<DragAndDropContext> | undefined
+    >;
 
     constructor(props: Props) {
         super(props);
@@ -107,6 +107,7 @@ export class SprintsComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             activeTabIndex: 0,
+            tabReady: false,
             currentUserId: -1, // when not logged in yet
             sprintTasks: [],
             sprintParticipants: [],
@@ -121,28 +122,30 @@ export class SprintsComponent extends Component<Props, State> {
     public render(): ReactNode {
         const clientId = this.localStore.getState().currClientId;
         // TODO: will change when PersonalStatus is merged with Kanban
-        return this.state.selectedSprintId ? (
-            <div className={styles.Sprint}>
-                <div className={styles.Tabs}>
-                    <div className={styles.Container}>
-                        <TabsUI
-                            ref={this.tabsRef}
-                            defaultSelectedIndex={this.state.activeTabIndex}
-                            tabNames={['Me', 'Team']}
-                            onTabClick={this.onTabClick}
-                        />
-                    </div>
-                </div>
-                <div className={styles.Content}>
-                    {this.renderTabContent(
-                        sprintTabIds[this.state.activeTabIndex],
-                        clientId,
-                    )}
-                </div>
-            </div>
-        ) : (
-            this.renderSelectSprint()
-        );
+        return this.state.selectedSprintId
+            ? this.state.tabReady && (
+                  <div className={styles.Sprint}>
+                      <div className={styles.Tabs}>
+                          <div className={styles.Container}>
+                              <TabsUI
+                                  ref={this.tabsRef}
+                                  defaultSelectedIndex={
+                                      this.state.activeTabIndex
+                                  }
+                                  tabNames={['Me', 'Team']}
+                                  onTabClick={this.onTabClick}
+                              />
+                          </div>
+                      </div>
+                      <div className={styles.Content}>
+                          {this.renderTabContent(
+                              sprintTabIds[this.state.activeTabIndex],
+                              clientId,
+                          )}
+                      </div>
+                  </div>
+              )
+            : this.renderSelectSprint();
     }
 
     public componentDidMount() {
@@ -162,31 +165,40 @@ export class SprintsComponent extends Component<Props, State> {
                 const currentSprint = this.graphSource.currentSprint();
                 const sprintTasks = currentSprint?.tasks || [];
                 const sprintParticipants = currentSprint?.participants || [];
-                if (
-                    this.state.selectedSprintId !== appState.currSprintId
-                ) {
-                    // debugger;
-                    if (appState.currSprintId) {
-                        this.selectTab(this.state.activeTabIndex, false);
-                    } else {
-                        this.router.navigateTo(sprintsPath(appState.currTeamId!));
+                const activeSprintTabIndex =
+                    appState.activeSprintTabIndex ||
+                    sprintTabIds.indexOf(defaultSprintTabId);
+                if (appState.currSprintId) {
+                    if (
+                        appState.sprintTabReady &&
+                        (appState.currSprintId !==
+                            this.state.selectedSprintId ||
+                            appState.activeSprintTabIndex !==
+                                this.state.activeTabIndex)
+                    ) {
+                        this.selectTab(activeSprintTabIndex, false);
                     }
+                } else {
+                    this.router.navigateTo(sprintsPath(appState.currTeamId!));
                 }
 
                 if (appState.currUserId) {
-                    const activeSprintTabIndex =
-                        appState.activeSprintTabIndex ||
-                        sprintTabIds.indexOf(defaultSprintTabId);
                     this.setState({
+                        tabReady: appState.sprintTabReady || false,
                         sprintParticipants:
                             sortParticipantsByName(sprintParticipants),
                         currentUserId: appState.currUserId!,
                         selectedSprintId: appState.currSprintId,
                         sprintTasks: sprintTasks,
-                        activeTabIndex:activeSprintTabIndex,
                     });
-                    this.tabsRef.current?.setSelectedTabIndex(activeSprintTabIndex);
                 }
+
+                // if (activeSprintTabIndex) {
+                //     this.setState({
+                //         activeTabIndex: activeSprintTabIndex
+                //     });
+                //     this.tabsRef.current?.setSelectedTabIndex(activeSprintTabIndex);
+                // }
             }
         })().then();
 
@@ -233,7 +245,7 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                const {key, eventType} = keyboardEvent;
+                const { key, eventType } = keyboardEvent;
                 const platform = getPlatform();
 
                 if (
@@ -442,12 +454,11 @@ export class SprintsComponent extends Component<Props, State> {
                                     >
                                         <input
                                             className={styles.Toggle}
-                                            type="checkbox"
+                                            type='checkbox'
                                             checked={
                                                 this.state.allowMultiSelection
                                             }
-                                            onChange={() => {
-                                            }}
+                                            onChange={() => {}}
                                         />
                                         <div className={styles.ToggleLabel}>
                                             Select many
@@ -556,7 +567,7 @@ export class SprintsComponent extends Component<Props, State> {
         participant: SprintParticipant,
         index: number,
     ) => {
-        const {user} = participant;
+        const { user } = participant;
         const unusedBandwidthPercent = safePercent(
             participant.unusedBandwidth,
             participant.totalBandwidth,
@@ -574,7 +585,7 @@ export class SprintsComponent extends Component<Props, State> {
                                 this.state.selectedTaskOwners.has(userIdentity),
                         })}`}
                     >
-                        <UserProfileUI user={user}/>
+                        <UserProfileUI user={user} />
                     </div>
                 </div>
                 <div className={styles.RightSection}>
@@ -596,8 +607,8 @@ export class SprintsComponent extends Component<Props, State> {
                                             styles.UnusedBandwidth
                                         } ${classNames({
                                             [styles.Negative]:
-                                            participant.unusedBandwidth
-                                                .totalMilliSeconds < 0,
+                                                participant.unusedBandwidth
+                                                    .totalMilliSeconds < 0,
                                         })}`}
                                         style={{
                                             width: `${Math.abs(
@@ -615,7 +626,9 @@ export class SprintsComponent extends Component<Props, State> {
     };
 
     private onTabClick = (index: number) => {
-        this.selectTab(index, false);
+        const appState = this.localStore.getState();
+        appState.activeSprintTabIndex = index;
+        this.localStore.updateState(appState);
     };
 
     private selectTab = (index: number, notifyRouteChange: boolean) => {

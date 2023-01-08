@@ -9,11 +9,11 @@ import {
 import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 
+import { Deps } from '@core/dep/deps';
 import {
     signInFinishRoutePattern,
     signInRoutePattern,
-} from '@core/config/routing';
-import { Deps } from '@core/dep/deps';
+} from '@core/routing/routes';
 
 import { SignInComponent } from './identity/SignIn.component';
 

@@ -3,7 +3,7 @@ import { ExtensionRuntime } from '@teamyapp/ext';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Router } from '@lib/router/router';
 
-import { absoluteUri } from '@core/config/routing';
+import { absoluteUri } from '@core/routing/routes';
 
 export class TeamyExtensionRuntime implements ExtensionRuntime {
     constructor(

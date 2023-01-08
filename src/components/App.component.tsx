@@ -16,22 +16,6 @@ import { BoundingBoxFinder } from '@lib/ui/position';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
 import {
-    debugRoutePattern,
-    getTeamId,
-    helpCenterPath,
-    insightsPath,
-    insightsRoutePattern,
-    invitationRoutePattern,
-    knowledgePath,
-    planningPath,
-    planningRoutePattern,
-    rootRoutePattern,
-    signUpRoutePattern,
-    sprintsPath,
-    sprintsRoutePattern,
-    taskPath,
-} from '@core/config/routing';
-import {
     awaitingSectionId,
     backlogSectionId,
     deliveredSectionId,
@@ -46,6 +30,22 @@ import { Task } from '@core/entity/task';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { UserActionEvent } from '@core/event/userAction';
+import {
+    debugRoutePattern,
+    getTeamId,
+    helpCenterPath,
+    insightsPath,
+    insightsRoutePattern,
+    invitationRoutePattern,
+    knowledgePath,
+    planningPath,
+    planningRoutePattern,
+    rootRoutePattern,
+    signUpRoutePattern,
+    sprintsPath,
+    sprintsRoutePattern,
+    taskPath,
+} from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -240,90 +240,87 @@ export class AppComponent extends Component<Props, State> {
                                     this.onShowHelpCenterViewClick
                                 }
                             />
-                            {
-                                (this.state.activeTeamId ? (
-                                    <div className={styles.Team}>
-                                        <div
-                                            className={`${
-                                                styles.Sidebar
-                                            } ${classNames({
-                                                [styles.Shown]:
-                                                    this.state.showBacklog,
-                                            })}`}
-                                        >
-                                            <div className={styles.Backlog}>
-                                                <BacklogComponent
-                                                    ref={this.backlogRef}
-                                                    deps={this.props.deps}
-                                                    dropReceiverLayer={
-                                                        this.state
-                                                            .backlogDropReceiverLayer
-                                                    }
-                                                    selectOwnerTaskId={
-                                                        this.state
-                                                            .selectOwnerTaskId
-                                                    }
-                                                    taskFilters={
-                                                        this.state.taskFilters
-                                                    }
-                                                    onShowPotentialTaskOwners={
-                                                        this
-                                                            .onShowPotentialTaskOwners
-                                                    }
-                                                    onViewTaskDetail={
-                                                        this.onViewTaskDetail
-                                                    }
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className={styles.Content}>
-                                            <Route
-                                                router={this.router}
-                                                pattern={sprintsRoutePattern}
-                                            >
-                                                <SprintsComponent
-                                                    deps={this.props.deps}
-                                                    selectOwnerTaskId={
-                                                        this.state
-                                                            .selectOwnerTaskId
-                                                    }
-                                                    taskFilters={
-                                                        this.state.taskFilters
-                                                    }
-                                                    onShowPotentialTaskOwners={
-                                                        this
-                                                            .onShowPotentialTaskOwners
-                                                    }
-                                                    onViewTaskDetail={
-                                                        this.onViewTaskDetail
-                                                    }
-                                                    onCreateSprintClick={
-                                                        this.onCreateSprintClick
-                                                    }
-                                                    onTaskFiltersChange={
-                                                        this.onTaskFiltersChange
-                                                    }
-                                                />
-                                            </Route>
-                                            <Route
-                                                router={this.router}
-                                                pattern={insightsRoutePattern}
-                                            >
-                                                <InsightsComponent
-                                                    deps={this.props.deps}
-                                                />
-                                            </Route>
-                                            <Route
-                                                router={this.router}
-                                                pattern={planningRoutePattern}
-                                            >
-                                                <PlanningComponent />
-                                            </Route>
+                            {this.state.activeTeamId ? (
+                                <div className={styles.Team}>
+                                    <div
+                                        className={`${
+                                            styles.Sidebar
+                                        } ${classNames({
+                                            [styles.Shown]:
+                                                this.state.showBacklog,
+                                        })}`}
+                                    >
+                                        <div className={styles.Backlog}>
+                                            <BacklogComponent
+                                                ref={this.backlogRef}
+                                                deps={this.props.deps}
+                                                dropReceiverLayer={
+                                                    this.state
+                                                        .backlogDropReceiverLayer
+                                                }
+                                                selectOwnerTaskId={
+                                                    this.state.selectOwnerTaskId
+                                                }
+                                                taskFilters={
+                                                    this.state.taskFilters
+                                                }
+                                                onShowPotentialTaskOwners={
+                                                    this
+                                                        .onShowPotentialTaskOwners
+                                                }
+                                                onViewTaskDetail={
+                                                    this.onViewTaskDetail
+                                                }
+                                            />
                                         </div>
                                     </div>
-                                ) : (
-                                    this.renderSelectActiveTeam()
-                                ))}
+                                    <div className={styles.Content}>
+                                        <Route
+                                            router={this.router}
+                                            pattern={sprintsRoutePattern}
+                                        >
+                                            <SprintsComponent
+                                                deps={this.props.deps}
+                                                selectOwnerTaskId={
+                                                    this.state.selectOwnerTaskId
+                                                }
+                                                taskFilters={
+                                                    this.state.taskFilters
+                                                }
+                                                onShowPotentialTaskOwners={
+                                                    this
+                                                        .onShowPotentialTaskOwners
+                                                }
+                                                onViewTaskDetail={
+                                                    this.onViewTaskDetail
+                                                }
+                                                onCreateSprintClick={
+                                                    this.onCreateSprintClick
+                                                }
+                                                onTaskFiltersChange={
+                                                    this.onTaskFiltersChange
+                                                }
+                                            />
+                                        </Route>
+                                        <Route
+                                            router={this.router}
+                                            pattern={insightsRoutePattern}
+                                        >
+                                            <InsightsComponent
+                                                deps={this.props.deps}
+                                            />
+                                        </Route>
+                                        <Route
+                                            router={this.router}
+                                            pattern={planningRoutePattern}
+                                        >
+                                            <PlanningComponent />
+                                        </Route>
+                                    </div>
+                                </div>
+                            ) : (
+                                this.renderSelectActiveTeam()
+                            )}
                         </div>
                     </Fragment>
                 )}
@@ -679,31 +676,31 @@ export class AppComponent extends Component<Props, State> {
 
     private onShowSprintsViewClick = () => {
         this.router.navigateTo(sprintsPath(this.state.activeTeamId!), {
-            notifyRouteChange: true
+            notifyRouteChange: true,
         });
     };
 
     private onShowInsightsViewClick = () => {
         this.router.navigateTo(insightsPath(this.state.activeTeamId!), {
-            notifyRouteChange: true
+            notifyRouteChange: true,
         });
     };
 
     private onShowPlanningViewClick = () => {
         this.router.navigateTo(planningPath(this.state.activeTeamId!), {
-            notifyRouteChange: true
+            notifyRouteChange: true,
         });
     };
 
     private onShowKnowledgeViewClick = () => {
         this.router.navigateTo(knowledgePath(this.state.activeTeamId!), {
-            notifyRouteChange: true
+            notifyRouteChange: true,
         });
     };
 
     private onShowHelpCenterViewClick = () => {
         this.router.navigateTo(helpCenterPath(this.state.activeTeamId!), {
-            notifyRouteChange: true
+            notifyRouteChange: true,
         });
     };
 

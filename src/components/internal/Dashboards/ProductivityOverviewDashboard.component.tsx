@@ -34,7 +34,7 @@ export class ProductivityOverviewDashboardComponent extends Component<
     private readonly stateSyncer: StateSyncer;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
-    private activeTeamId?:number;
+    private activeTeamId?: number;
 
     constructor(props: Props) {
         super(props);
@@ -129,16 +129,17 @@ export class ProductivityOverviewDashboardComponent extends Component<
 
     async updateState() {
         const appState = this.localStore.getState();
-        if (appState.fetchedTeamData && appState.currTeamId !== this.activeTeamId) {
+        if (
+            appState.fetchedTeamData &&
+            appState.currTeamId !== this.activeTeamId
+        ) {
             this.activeTeamId = appState.currTeamId;
             const sprints = this.graphSource.currentTeam()?.sprints || [];
             this.setState({
                 sprints,
             });
             await Promise.all(
-                sprints.map((sprint) =>
-                    this.stateSyncer.pullSprint(sprint.id),
-                ),
+                sprints.map((sprint) => this.stateSyncer.pullSprint(sprint.id)),
             );
         }
     }

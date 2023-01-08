@@ -66,10 +66,7 @@ export const publicRoutes = [
     debugRoutePattern,
 ];
 
-export const appRoutes = [
-    signUpRoutePattern,
-    teamsRoutePattern,
-];
+export const appRoutes = [signUpRoutePattern, teamsRoutePattern];
 
 export const teamsRoutes = [
     sprintsRoutePattern,
@@ -79,8 +76,6 @@ export const teamsRoutes = [
     helpCenterRoutePattern,
     invitationRoutePattern,
     taskRoutePattern,
-]
-
-export const sprintsRoutes = [
-    sprintTabRoutePattern
 ];
+
+export const sprintsRoutes = [sprintTabRoutePattern];

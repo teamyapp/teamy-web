@@ -1,7 +1,7 @@
-import React, { createRef, RefObject } from 'react';
+import React, { createRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { Deps, initDeps } from '@core/dep/deps';
+import { initDeps } from '@core/dep/deps';
 
 import { AppComponent } from './components/App.component';
 import './index.scss';
