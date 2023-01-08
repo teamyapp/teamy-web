@@ -193,7 +193,6 @@ export class Router {
     }
 
     public navigateTo(uri: string, options?: NavigateOptions): Errors | void {
-        // debugger;
         options = withDefaults(options);
         if (!uri || uri.length < 1) {
             return 'InvalidUri';
@@ -273,12 +272,7 @@ export class Router {
     }
 
     public subscribeRouteChange(): PopChannel<RouteUpdate | undefined> {
-        const ch = this.notifyRouteChangeChanMultiCaster.copy();
-        if (this.currRouteUpdate) {
-            ch.put(this.currRouteUpdate);
-        }
-
-        return ch;
+        return this.notifyRouteChangeChanMultiCaster.copy();
     }
 
     public dispose() {

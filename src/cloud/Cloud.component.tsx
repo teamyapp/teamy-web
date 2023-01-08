@@ -16,6 +16,7 @@ import {
 } from '@core/routing/routes';
 
 import { SignInComponent } from './identity/SignIn.component';
+import { exactMatch } from '@core/routing/match';
 
 interface Props {
     deps: Deps;
@@ -33,9 +34,7 @@ export class CloudComponent extends Component<Props> {
     }
 
     public async componentDidMount() {
-        this.router.registerRoute(signInFinishRoutePattern, false);
         this.routeChangeCh = this.router.subscribeRouteChange();
-
         (async () => {
             while (true) {
                 const routeUpdate = await this.routeChangeCh?.pop();
@@ -43,7 +42,7 @@ export class CloudComponent extends Component<Props> {
                     return;
                 }
 
-                if (routeUpdate?.routePattern === signInFinishRoutePattern) {
+                if (exactMatch(routeUpdate, signInFinishRoutePattern)) {
                     this.identityClient.finishSignIn(
                         routeUpdate.params.queryParams[accessTokenParam],
                     );

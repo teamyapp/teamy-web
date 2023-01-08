@@ -66,7 +66,11 @@ export const publicRoutes = [
     debugRoutePattern,
 ];
 
-export const appRoutes = [signUpRoutePattern, teamsRoutePattern];
+export const appRoutes = [
+    signUpRoutePattern,
+    teamsRoutePattern,
+    invitationRoutePattern
+];
 
 export const teamsRoutes = [
     sprintsRoutePattern,
