@@ -10,13 +10,13 @@ import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 
 import { Deps } from '@core/dep/deps';
+import { exactMatch } from '@core/routing/match';
 import {
     signInFinishRoutePattern,
     signInRoutePattern,
 } from '@core/routing/routes';
 
 import { SignInComponent } from './identity/SignIn.component';
-import { exactMatch } from '@core/routing/match';
 
 interface Props {
     deps: Deps;

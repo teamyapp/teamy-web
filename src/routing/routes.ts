@@ -69,7 +69,7 @@ export const publicRoutes = [
 export const appRoutes = [
     signUpRoutePattern,
     teamsRoutePattern,
-    invitationRoutePattern
+    invitationRoutePattern,
 ];
 
 export const teamsRoutes = [

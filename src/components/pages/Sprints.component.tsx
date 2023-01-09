@@ -80,6 +80,7 @@ interface State {
     sortOrders: SortOrders;
     selectedTaskOwners: Set<string>;
     allowMultiSelection: boolean;
+    isPageReady?: boolean;
 }
 
 export class SprintsComponent extends Component<Props, State> {
@@ -116,36 +117,40 @@ export class SprintsComponent extends Component<Props, State> {
             },
             selectedTaskOwners: new Set<string>([userAll]),
             allowMultiSelection: false,
+            isPageReady: false,
         };
     }
 
     public render(): ReactNode {
         const clientId = this.localStore.getState().currClientId;
         // TODO: will change when PersonalStatus is merged with Kanban
-        return this.state.selectedSprintId
-            ? this.state.tabReady && (
-                  <div className={styles.Sprint}>
-                      <div className={styles.Tabs}>
-                          <div className={styles.Container}>
-                              <TabsUI
-                                  ref={this.tabsRef}
-                                  defaultSelectedIndex={
-                                      this.state.activeTabIndex
-                                  }
-                                  tabNames={['Me', 'Team']}
-                                  onTabClick={this.onTabClick}
-                              />
+        return (
+            this.state.isPageReady &&
+            (this.state.selectedSprintId
+                ? this.state.tabReady && (
+                      <div className={styles.Sprint}>
+                          <div className={styles.Tabs}>
+                              <div className={styles.Container}>
+                                  <TabsUI
+                                      ref={this.tabsRef}
+                                      defaultSelectedIndex={
+                                          this.state.activeTabIndex
+                                      }
+                                      tabNames={['Me', 'Team']}
+                                      onTabClick={this.onTabClick}
+                                  />
+                              </div>
+                          </div>
+                          <div className={styles.Content}>
+                              {this.renderTabContent(
+                                  sprintTabIds[this.state.activeTabIndex],
+                                  clientId,
+                              )}
                           </div>
                       </div>
-                      <div className={styles.Content}>
-                          {this.renderTabContent(
-                              sprintTabIds[this.state.activeTabIndex],
-                              clientId,
-                          )}
-                      </div>
-                  </div>
-              )
-            : this.renderSelectSprint();
+                  )
+                : this.renderSelectSprint())
+        );
     }
 
     public componentDidMount() {
@@ -190,15 +195,9 @@ export class SprintsComponent extends Component<Props, State> {
                         currentUserId: appState.currUserId!,
                         selectedSprintId: appState.currSprintId,
                         sprintTasks: sprintTasks,
+                        isPageReady: appState.sprintTabReady,
                     });
                 }
-
-                // if (activeSprintTabIndex) {
-                //     this.setState({
-                //         activeTabIndex: activeSprintTabIndex
-                //     });
-                //     this.tabsRef.current?.setSelectedTabIndex(activeSprintTabIndex);
-                // }
             }
         })().then();
 

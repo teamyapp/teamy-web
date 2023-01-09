@@ -265,6 +265,7 @@ async function initTeam(
     const appState = localStore.getState();
     appState.fetchedTeamData = true;
     localStore.updateState(appState);
+    await stateSyncer.notifyInitialStateReceived();
     (async () => {
         appRef.current?.onTeamInit();
     })();
