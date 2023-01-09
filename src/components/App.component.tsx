@@ -9,34 +9,12 @@ import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { TeamyExtensionRuntime } from '@lib/ext/runtime';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
-import { RouteUpdate, Router } from '@lib/router/router';
+import { Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
-import {
-    debugRoutePattern,
-    getTaskId,
-    getTeamId,
-    helpCenterPath,
-    helpCenterRoutePattern,
-    insightsPath,
-    insightsRoutePattern,
-    invitationRoutePattern,
-    knowledgePath,
-    knowledgeRoutePattern,
-    planningPath,
-    planningRoutePattern,
-    rootRoutePattern,
-    signInFinishRoutePattern,
-    signInRoutePattern,
-    signUpRoutePattern,
-    sprintsPath,
-    sprintsRoutePattern,
-    taskPath,
-    taskRoutePattern,
-} from '@core/config/routing';
 import {
     awaitingSectionId,
     backlogSectionId,
@@ -52,6 +30,22 @@ import { Task } from '@core/entity/task';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { UserActionEvent } from '@core/event/userAction';
+import {
+    debugRoutePattern,
+    getTeamId,
+    helpCenterPath,
+    insightsPath,
+    insightsRoutePattern,
+    invitationRoutePattern,
+    knowledgePath,
+    planningPath,
+    planningRoutePattern,
+    rootRoutePattern,
+    signUpRoutePattern,
+    sprintsPath,
+    sprintsRoutePattern,
+    taskPath,
+} from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -79,7 +73,7 @@ import { DebugComponent } from './pages/Debug.component';
 import { InsightsComponent } from './pages/Insights.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { PlanningComponent } from './pages/Planning.component';
-import { SignUpComponent, signUpRedirectKey } from './pages/SignUp.component';
+import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
 
 const sectionIds = [
@@ -96,9 +90,9 @@ interface Props {
 }
 
 interface State {
-    showMainContent: boolean;
-    showBackground: boolean;
-    showPrivatePage: boolean;
+    // showMainContent: boolean;
+    // showBackground: boolean;
+    // showPrivatePage: boolean;
     me?: User;
     currentTeam?: Team;
     teams: Team[];
@@ -109,23 +103,6 @@ interface State {
     taskFilters: TaskFilters;
     selectOwnerTaskId?: number;
 }
-
-const publicRoutePatterns = [
-    signInRoutePattern,
-    signInFinishRoutePattern,
-    debugRoutePattern,
-];
-
-const acceptedRoutePatterns = [
-    signUpRoutePattern,
-    sprintsRoutePattern,
-    insightsRoutePattern,
-    planningRoutePattern,
-    knowledgeRoutePattern,
-    helpCenterRoutePattern,
-    invitationRoutePattern,
-    taskRoutePattern,
-];
 
 export class AppComponent extends Component<Props, State> {
     private readonly router: Router;
@@ -151,14 +128,12 @@ export class AppComponent extends Component<Props, State> {
     private readonly backlogRef = createRef<BacklogComponent>();
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
-    private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
 
     private extensions: Extension[] = [];
-    private selectedActiveTeam: boolean = false;
 
     constructor(props: Props) {
         super(props);
@@ -169,9 +144,9 @@ export class AppComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             showBacklog: false,
-            showMainContent: false,
-            showBackground: false,
-            showPrivatePage: false,
+            // showMainContent: false,
+            // showBackground: false,
+            // showPrivatePage: false,
             isDrawerOpen: false,
             teams: [],
             taskFilters: {},
@@ -182,12 +157,13 @@ export class AppComponent extends Component<Props, State> {
     public render() {
         return (
             <div
-                style={{
-                    backgroundColor: '',
-                }}
-                className={`${styles.App} ${classNames({
-                    [styles.ShowBackground]: this.state.showBackground,
-                })}`}
+                // style={{
+                //     backgroundColor: '',
+                // }}
+                className={`${styles.App}`}
+                // className={`${styles.App} ${classNames({
+                //     [styles.ShowBackground]: this.state.showBackground,
+                // })}`}
             >
                 <Route router={this.router} pattern={debugRoutePattern}>
                     <DebugComponent
@@ -199,7 +175,7 @@ export class AppComponent extends Component<Props, State> {
                 <Route router={this.router} pattern={signUpRoutePattern}>
                     <SignUpComponent deps={this.props.deps} />
                 </Route>
-                {this.state.showPrivatePage && this.state.me && (
+                {this.state.me && (
                     <Fragment>
                         <div className={styles.Drawer}>
                             <DrawerUI
@@ -264,90 +240,87 @@ export class AppComponent extends Component<Props, State> {
                                     this.onShowHelpCenterViewClick
                                 }
                             />
-                            {this.state.showMainContent &&
-                                (this.state.activeTeamId ? (
-                                    <div className={styles.Team}>
-                                        <div
-                                            className={`${
-                                                styles.Sidebar
-                                            } ${classNames({
-                                                [styles.Shown]:
-                                                    this.state.showBacklog,
-                                            })}`}
-                                        >
-                                            <div className={styles.Backlog}>
-                                                <BacklogComponent
-                                                    ref={this.backlogRef}
-                                                    deps={this.props.deps}
-                                                    dropReceiverLayer={
-                                                        this.state
-                                                            .backlogDropReceiverLayer
-                                                    }
-                                                    selectOwnerTaskId={
-                                                        this.state
-                                                            .selectOwnerTaskId
-                                                    }
-                                                    taskFilters={
-                                                        this.state.taskFilters
-                                                    }
-                                                    onShowPotentialTaskOwners={
-                                                        this
-                                                            .onShowPotentialTaskOwners
-                                                    }
-                                                    onViewTaskDetail={
-                                                        this.onViewTaskDetail
-                                                    }
-                                                />
-                                            </div>
-                                        </div>
-                                        <div className={styles.Content}>
-                                            <Route
-                                                router={this.router}
-                                                pattern={sprintsRoutePattern}
-                                            >
-                                                <SprintsComponent
-                                                    deps={this.props.deps}
-                                                    selectOwnerTaskId={
-                                                        this.state
-                                                            .selectOwnerTaskId
-                                                    }
-                                                    taskFilters={
-                                                        this.state.taskFilters
-                                                    }
-                                                    onShowPotentialTaskOwners={
-                                                        this
-                                                            .onShowPotentialTaskOwners
-                                                    }
-                                                    onViewTaskDetail={
-                                                        this.onViewTaskDetail
-                                                    }
-                                                    onCreateSprintClick={
-                                                        this.onCreateSprintClick
-                                                    }
-                                                    onTaskFiltersChange={
-                                                        this.onTaskFiltersChange
-                                                    }
-                                                />
-                                            </Route>
-                                            <Route
-                                                router={this.router}
-                                                pattern={insightsRoutePattern}
-                                            >
-                                                <InsightsComponent
-                                                    deps={this.props.deps}
-                                                />
-                                            </Route>
-                                            <Route
-                                                router={this.router}
-                                                pattern={planningRoutePattern}
-                                            >
-                                                <PlanningComponent />
-                                            </Route>
+                            {this.state.activeTeamId ? (
+                                <div className={styles.Team}>
+                                    <div
+                                        className={`${
+                                            styles.Sidebar
+                                        } ${classNames({
+                                            [styles.Shown]:
+                                                this.state.showBacklog,
+                                        })}`}
+                                    >
+                                        <div className={styles.Backlog}>
+                                            <BacklogComponent
+                                                ref={this.backlogRef}
+                                                deps={this.props.deps}
+                                                dropReceiverLayer={
+                                                    this.state
+                                                        .backlogDropReceiverLayer
+                                                }
+                                                selectOwnerTaskId={
+                                                    this.state.selectOwnerTaskId
+                                                }
+                                                taskFilters={
+                                                    this.state.taskFilters
+                                                }
+                                                onShowPotentialTaskOwners={
+                                                    this
+                                                        .onShowPotentialTaskOwners
+                                                }
+                                                onViewTaskDetail={
+                                                    this.onViewTaskDetail
+                                                }
+                                            />
                                         </div>
                                     </div>
-                                ) : (
-                                    this.renderSelectActiveTeam()
-                                ))}
+                                    <div className={styles.Content}>
+                                        <Route
+                                            router={this.router}
+                                            pattern={sprintsRoutePattern}
+                                        >
+                                            <SprintsComponent
+                                                deps={this.props.deps}
+                                                selectOwnerTaskId={
+                                                    this.state.selectOwnerTaskId
+                                                }
+                                                taskFilters={
+                                                    this.state.taskFilters
+                                                }
+                                                onShowPotentialTaskOwners={
+                                                    this
+                                                        .onShowPotentialTaskOwners
+                                                }
+                                                onViewTaskDetail={
+                                                    this.onViewTaskDetail
+                                                }
+                                                onCreateSprintClick={
+                                                    this.onCreateSprintClick
+                                                }
+                                                onTaskFiltersChange={
+                                                    this.onTaskFiltersChange
+                                                }
+                                            />
+                                        </Route>
+                                        <Route
+                                            router={this.router}
+                                            pattern={insightsRoutePattern}
+                                        >
+                                            <InsightsComponent
+                                                deps={this.props.deps}
+                                            />
+                                        </Route>
+                                        <Route
+                                            router={this.router}
+                                            pattern={planningRoutePattern}
+                                        >
+                                            <PlanningComponent />
+                                        </Route>
+                                    </div>
+                                </div>
+                            ) : (
+                                this.renderSelectActiveTeam()
+                            )}
                         </div>
                     </Fragment>
                 )}
@@ -401,9 +374,9 @@ export class AppComponent extends Component<Props, State> {
 
     public async componentDidMount() {
         console.log(`[AppComponent]componentDidMount`);
-         this.selectedActiveTeam = false;
         this.monitorStateChanges();
-        this.monitorRouteChanges();
+        this.router.initBrowserUri();
+        // this.monitorRouteChanges();
         this.monitorUserActions();
         this.dragAndDropEventChan =
             this.props.deps.dragAndDropController.subscribeDragAndDropEvent();
@@ -456,10 +429,8 @@ export class AppComponent extends Component<Props, State> {
         this.props.deps.eventDetectionScheduler.stop();
         this.props.deps.keyBoardEventMonitor.stop();
         closeIfNot(this.stateChangeChan);
-        closeIfNot(this.routeChangeChan);
         closeIfNot(this.dragAndDropEventChan);
         this.props.deps.shortcutMonitor.dispose();
-        this.selectedActiveTeam = false;
     }
 
     private monitorStateChanges() {
@@ -477,102 +448,6 @@ export class AppComponent extends Component<Props, State> {
                 this.updateState();
             }
         })().then();
-    }
-
-    private monitorRouteChanges() {
-        this.router.registerRoute(rootRoutePattern, false);
-        acceptedRoutePatterns.forEach((pattern: string) => {
-            this.router.registerRoute(pattern, false);
-        });
-        this.routeChangeChan = this.router.subscribeRouteChange();
-        console.log('[AppComponent] subscribing');
-        (async () => {
-            while (true) {
-                const routeUpdate = await this.routeChangeChan!.pop();
-                if (routeUpdate === undefined) {
-                    return;
-                }
-
-                if (
-                    includePrefix(publicRoutePatterns, routeUpdate.routePattern)
-                ) {
-                    continue;
-                }
-
-                const isSignedIn = await this.identityClient.isSignedIn();
-                this.setState({
-                    showPrivatePage: isSignedIn,
-                });
-                if (!isSignedIn) {
-                    this.identityClient.trySignIn();
-                    continue;
-                }
-
-                await this.stateSyncer.ensureConnected();
-                await this.stateSyncer.pullCurrentUserWithTeams();
-
-                let appState = this.localStore.getState();
-                if (!appState.currUserId) {
-                    this.trySignUp(routeUpdate.routePattern);
-                    continue;
-                }
-
-                const currTeamId = appState.currTeamId;
-                if (
-                    !includePrefix(
-                        acceptedRoutePatterns,
-                        routeUpdate.routePattern,
-                    )
-                ) {
-                    this.tryRedirect(currTeamId);
-                    console.log(
-                        '[AppComponent] discarded',
-                        routeUpdate.routePattern,
-                        routeUpdate.suffix,
-                        routeUpdate.params.pathParams,
-                    );
-                    continue;
-                }
-
-                console.log(
-                    '[AppComponent] accepted',
-                    routeUpdate.routePattern,
-                    routeUpdate.suffix,
-                    routeUpdate.params.pathParams,
-                );
-                const teamIdParam = getTeamId(routeUpdate.params);
-                if (!teamIdParam) {
-                    continue;
-                }
-
-                const newTeamId = parseInt(teamIdParam);
-                if (!this.selectedActiveTeam || newTeamId !== currTeamId) {
-                    this.selectedActiveTeam = true;
-                    await this.showActiveTeam(newTeamId);
-                }
-
-                const taskIdParam = getTaskId(routeUpdate.params);
-                if (taskIdParam) {
-                    const taskId = parseInt(taskIdParam);
-                    if (isNaN(taskId)) {
-                        this.tryRedirect(newTeamId);
-                        continue;
-                    }
-
-                    this.onViewTaskDetail(taskId);
-                    this.setState({
-                        showBackground: true,
-                    });
-                    continue;
-                }
-
-                await this.stateSyncer.notifyInitialStateReceived();
-                this.setState({
-                    showMainContent: true,
-                });
-            }
-        })().then();
-        this.router.navigateToCurrUri();
     }
 
     private monitorUserActions() {
@@ -708,16 +583,16 @@ export class AppComponent extends Component<Props, State> {
         });
     }
 
-    private tryRedirect(activeTeamId?: number) {
-        if (activeTeamId) {
-            this.router.navigateTo(sprintsPath(activeTeamId));
-        } else {
-            this.router.navigateTo(rootRoutePattern);
-            this.setState({
-                showMainContent: true,
-            });
-        }
-    }
+    // private tryRedirect(activeTeamId?: number) {
+    //     if (activeTeamId) {
+    //         this.router.navigateTo(sprintsPath(activeTeamId));
+    //     } else {
+    //         this.router.navigateTo(rootRoutePattern);
+    //         this.setState({
+    //             showMainContent: true,
+    //         });
+    //     }
+    // }
 
     private processUserAction(userAction: UserActionEvent) {
         switch (userAction) {
@@ -727,15 +602,15 @@ export class AppComponent extends Component<Props, State> {
         }
     }
 
-    private trySignUp(currRoutePattern: string) {
-        if (currRoutePattern === signUpRoutePattern) {
-            return;
-        }
-
-        const currUrl = window.location.href;
-        localStorage.setItem(signUpRedirectKey, currUrl);
-        this.props.deps.router.navigateTo(signUpRoutePattern);
-    }
+    // private trySignUp(currRoutePattern: string) {
+    //     if (currRoutePattern === signUpRoutePattern) {
+    //         return;
+    //     }
+    //
+    //     const currUrl = window.location.href;
+    //     localStorage.setItem(signUpRedirectKey, currUrl);
+    //     this.props.deps.router.navigateTo(signUpRoutePattern);
+    // }
 
     private onBacklogToggle = () => {
         if (!this.state.showBacklog) {
@@ -778,7 +653,7 @@ export class AppComponent extends Component<Props, State> {
         });
     };
 
-    private onViewTaskDetail = (taskId: number) => {
+    public onViewTaskDetail = (taskId: number) => {
         this.taskDetailModalRef.current?.open(taskId);
         if (this.state.activeTeamId) {
             this.router.navigateTo(taskPath(this.state.activeTeamId, taskId), {
@@ -800,23 +675,33 @@ export class AppComponent extends Component<Props, State> {
     };
 
     private onShowSprintsViewClick = () => {
-        this.router.navigateTo(sprintsPath(this.state.activeTeamId!));
+        this.router.navigateTo(sprintsPath(this.state.activeTeamId!), {
+            notifyRouteChange: true,
+        });
     };
 
     private onShowInsightsViewClick = () => {
-        this.router.navigateTo(insightsPath(this.state.activeTeamId!));
+        this.router.navigateTo(insightsPath(this.state.activeTeamId!), {
+            notifyRouteChange: true,
+        });
     };
 
     private onShowPlanningViewClick = () => {
-        this.router.navigateTo(planningPath(this.state.activeTeamId!));
+        this.router.navigateTo(planningPath(this.state.activeTeamId!), {
+            notifyRouteChange: true,
+        });
     };
 
     private onShowKnowledgeViewClick = () => {
-        this.router.navigateTo(knowledgePath(this.state.activeTeamId!));
+        this.router.navigateTo(knowledgePath(this.state.activeTeamId!), {
+            notifyRouteChange: true,
+        });
     };
 
     private onShowHelpCenterViewClick = () => {
-        this.router.navigateTo(helpCenterPath(this.state.activeTeamId!));
+        this.router.navigateTo(helpCenterPath(this.state.activeTeamId!), {
+            notifyRouteChange: true,
+        });
     };
 
     private processTaskDrop(
@@ -916,7 +801,7 @@ export class AppComponent extends Component<Props, State> {
         this.requiredActionsModalRef.current?.completeCurrentStep();
     };
 
-    private async onTeamInit() {
+    public async onTeamInit() {
         try {
             this.extensions = await this.loadExtensions();
             await this.showRequiredActionsIfAny();
@@ -951,12 +836,12 @@ export class AppComponent extends Component<Props, State> {
     }
 }
 
-function includePrefix(patterns: string[], input: string): boolean {
-    for (const pattern of patterns) {
-        if (input.startsWith(pattern)) {
-            return true;
-        }
-    }
-
-    return false;
-}
+// function includePrefix(patterns: string[], input: string): boolean {
+//     for (const pattern of patterns) {
+//         if (input.startsWith(pattern)) {
+//             return true;
+//         }
+//     }
+//
+//     return false;
+// }

@@ -17,7 +17,7 @@ import { clientHTTPWithRetry } from '@lib/network/middleware/clientHTTPWithRetry
 import { PubSub } from '@lib/pubSub/pubSub';
 import { ExponentialBackoff } from '@lib/retry/backoff/exponential';
 import { MaxCountRetry } from '@lib/retry/maxCount';
-import { Router, createBrowserRouter } from '@lib/router/router';
+import { Router } from '@lib/router/router';
 import { BuiltInRuntime } from '@lib/runtime/runtime';
 import { ShortcutMonitor } from '@lib/shortcut/monitor';
 import { Logger } from '@lib/telemetry/Logger';
@@ -36,11 +36,11 @@ import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
 import { getConfig } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
-import { absoluteRootPath, signInFinishPath } from '@core/config/routing';
 import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
 import { getEnvVar, getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
+import { absoluteRootPath, signInFinishPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
@@ -135,7 +135,7 @@ export function initDeps(): Deps {
         invitationClient,
         sprintClient,
     );
-    const router = createBrowserRouter();
+    const router = new Router();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);
     const dragAndDropController =
         new DragAndDropController<DragAndDropContext>();

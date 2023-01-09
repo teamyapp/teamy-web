@@ -1,10 +1,7 @@
-import { Mutation } from "./mutation";
+import { Mutation } from './mutation';
 
 export class Transaction {
-    private constructor(
-        public id: number,
-        public mutations: Mutation[],
-    ) {}
+    private constructor(public id: number, public mutations: Mutation[]) {}
 
     static fromTransactionPayload(json: any): Transaction {
         return new Transaction(

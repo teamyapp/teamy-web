@@ -13,12 +13,12 @@ import { TextFieldUI } from '@lib/ui/TextField';
 import { TooltipUI } from '@lib/ui/Tooltip';
 import { Point } from '@lib/ui/position';
 
-import { invitationLink } from '@core/config/routing';
 import { orderByStatus } from '@core/data/invitation.order';
 import { Deps } from '@core/dep/deps';
 import { Invitation } from '@core/entity/invitation';
 import { Team } from '@core/entity/team';
 import { TeamMember } from '@core/entity/teamMember';
+import { invitationLink } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';

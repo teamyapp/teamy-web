@@ -67,7 +67,9 @@ import { Transaction } from './transaction';
 export class StateSyncer {
     private readonly connection: Connection;
     private readonly onTransactionReceivedCh = chan<Transaction>();
-    private readonly onTransactionReceivedMulti = multi(this.onTransactionReceivedCh);
+    private readonly onTransactionReceivedMulti = multi(
+        this.onTransactionReceivedCh,
+    );
 
     private metadataReceived = false;
 

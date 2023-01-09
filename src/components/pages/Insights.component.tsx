@@ -6,8 +6,8 @@ import { closeIfNot } from '@lib/csp/lib';
 import { Router } from '@lib/router/router';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 
-import { insightsPath } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
+import { insightsPath, insightsRoutePattern } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -117,7 +117,13 @@ export class InsightsComponent extends Component<Props, State> {
                 }
 
                 const appState = this.localStore.getState();
-                this.router.navigateTo(insightsPath(appState.currTeamId!));
+                if (
+                    this.router.currentRouteUpdate.routePattern.startsWith(
+                        insightsRoutePattern,
+                    )
+                ) {
+                    this.router.navigateTo(insightsPath(appState.currTeamId!));
+                }
             }
         })().then();
     }

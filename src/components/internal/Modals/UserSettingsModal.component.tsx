@@ -8,7 +8,6 @@ import { ModalUI } from '@lib/ui/Modal';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TextFieldUI } from '@lib/ui/TextField';
 
-import { absoluteUri } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import {
     AuthProvider,
@@ -17,6 +16,7 @@ import {
     authProviders,
 } from '@core/entity/linkedUser';
 import { User } from '@core/entity/user';
+import { absoluteUri } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';

@@ -8,9 +8,9 @@ import { ModalUI } from '@lib/ui/Modal';
 import { TextAreaUI } from '@lib/ui/TextArea';
 import { TextFieldUI } from '@lib/ui/TextField';
 
-import { invitationLink } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import { Team } from '@core/entity/team';
+import { invitationLink } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 

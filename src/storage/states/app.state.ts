@@ -32,6 +32,10 @@ export class AppState {
         public currTeamId?: number,
         public currSprintId?: number,
         public currClientId?: number,
+        public activeSprintTabIndex?: number,
+        public fetchedMeData?: boolean,
+        public fetchedTeamData?: boolean,
+        public sprintTabReady?: boolean,
     ) {}
 
     public static fromJson(json: any): AppState {
