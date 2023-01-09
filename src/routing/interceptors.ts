@@ -84,6 +84,7 @@ const userSignUpInterceptor = (
             appState = localStore.getState();
             appState.fetchedMeData = true;
             localStore.updateState(appState);
+
             if (!appState.currUserId) {
                 const currUrl = window.location.href;
                 localStorage.setItem(signUpRedirectKey, currUrl);
@@ -265,6 +266,7 @@ async function initTeam(
     const appState = localStore.getState();
     appState.fetchedTeamData = true;
     localStore.updateState(appState);
+
     await stateSyncer.notifyInitialStateReceived();
     (async () => {
         appRef.current?.onTeamInit();

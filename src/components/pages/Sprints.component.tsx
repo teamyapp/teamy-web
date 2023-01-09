@@ -71,7 +71,6 @@ interface Props {
 
 interface State {
     activeTabIndex: number;
-    tabReady: boolean;
     currentUserId: number;
     selectedSprintId?: number;
     sprintTasks: Task[];
@@ -108,7 +107,6 @@ export class SprintsComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             activeTabIndex: 0,
-            tabReady: false,
             currentUserId: -1, // when not logged in yet
             sprintTasks: [],
             sprintParticipants: [],
@@ -127,7 +125,7 @@ export class SprintsComponent extends Component<Props, State> {
         return (
             this.state.isPageReady &&
             (this.state.selectedSprintId
-                ? this.state.tabReady && (
+                ? this.state.isPageReady && (
                       <div className={styles.Sprint}>
                           <div className={styles.Tabs}>
                               <div className={styles.Container}>
@@ -174,12 +172,9 @@ export class SprintsComponent extends Component<Props, State> {
                     appState.activeSprintTabIndex ||
                     sprintTabIds.indexOf(defaultSprintTabId);
                 if (appState.currSprintId) {
-                    if (
-                        appState.sprintTabReady &&
-                        (appState.currSprintId !==
-                            this.state.selectedSprintId ||
-                            appState.activeSprintTabIndex !==
-                                this.state.activeTabIndex)
+                    if (appState.sprintTabReady)
+                        if (appState.currSprintId !== this.state.selectedSprintId ||
+                            appState.activeSprintTabIndex !== this.state.activeTabIndex
                     ) {
                         this.selectTab(activeSprintTabIndex, false);
                     }
@@ -189,7 +184,6 @@ export class SprintsComponent extends Component<Props, State> {
 
                 if (appState.currUserId) {
                     this.setState({
-                        tabReady: appState.sprintTabReady || false,
                         sprintParticipants:
                             sortParticipantsByName(sprintParticipants),
                         currentUserId: appState.currUserId!,
