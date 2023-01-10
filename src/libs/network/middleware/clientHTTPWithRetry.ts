@@ -1,7 +1,7 @@
-import { InternalError, Errors } from '@lib/error/errors';
-import { Result } from '@lib/error/result';
+import { InternalError } from '@lib/error/errors';
 import { Middleware } from '@lib/middleware/middleware';
 import { Retry } from '@lib/retry/retry';
+import { Optional } from '@lib/sugar/optional';
 
 import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
 
@@ -12,22 +12,18 @@ export function clientHTTPWithRetry(retry: Retry): Middleware<HTTPClient> {
                 url: string,
                 options?: HTTPRequestOptions,
                 context?: Record<string, string>,
-            ): Promise<Result<HTTPResponse, InternalError>> => {
-                let result: Result<HTTPResponse, InternalError>;
+            ): Promise<[Optional<HTTPResponse>, Optional<InternalError>]> => {
+                let result: [Optional<HTTPResponse>, Optional<InternalError>];
                 await retry.withRetry(
                     () =>
-                        new Promise<[InternalError, boolean] | undefined>(
+                        new Promise<Optional<InternalError>>(
                             async (resolve) => {
                                 result = await httpClient.request(
                                     url,
                                     options,
                                     context,
                                 );
-                                if (result[1] !== null) {
-                                    resolve([result[1], shouldStopRetry(result[1])]);
-                                } else {
-                                    resolve(undefined);
-                                }
+                                resolve(result[1]);
                             },
                         ),
                 );
@@ -35,18 +31,4 @@ export function clientHTTPWithRetry(retry: Retry): Middleware<HTTPClient> {
             },
         };
     };
-}
-
-
-function shouldStopRetry(error: InternalError): boolean {
-    switch (error.errors) {
-        case Errors.Unauthenticated:
-        case Errors.NotImplemented:
-        case Errors.BadRequest:
-            return true
-        default:
-            break;
-    }
-
-    return false
 }

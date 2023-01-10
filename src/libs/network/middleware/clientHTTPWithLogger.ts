@@ -1,5 +1,5 @@
 import { InternalError } from '@lib/error/errors';
-import { Result } from '@lib/error/result';
+import { Optional } from '@lib/sugar/optional';
 import { Logger } from '@lib/telemetry/Logger';
 import {
     BodyProp,
@@ -25,7 +25,7 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                 url: string,
                 options?: HTTPRequestOptions,
                 context?: Record<string, string>,
-            ): Promise<Result<HTTPResponse, InternalError>> => {
+            ): Promise<[Optional<HTTPResponse>, Optional<InternalError>]> => {
                 const { pathname, host } = new URL(url);
                 logger.logWithContext(
                     'Info',

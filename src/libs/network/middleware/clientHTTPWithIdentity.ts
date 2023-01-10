@@ -1,6 +1,6 @@
 import { InternalError } from '@lib/error/errors';
-import { Result } from '@lib/error/result';
 import { getAccessToken } from '@lib/identity/Identity.client';
+import { Optional } from '@lib/sugar/optional';
 
 import { Middleware } from '../../middleware/middleware';
 import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
@@ -13,7 +13,7 @@ export const clientHTTPWithIdentity: Middleware<HTTPClient> = (
             url: string,
             options?: HTTPRequestOptions,
             context?: Record<string, string>,
-        ): Promise<Result<HTTPResponse, InternalError>> => {
+        ): Promise<[Optional<HTTPResponse>, Optional<InternalError>]> => {
             const method = options?.method || 'GET';
             const headers = {
                 ...options?.headers,

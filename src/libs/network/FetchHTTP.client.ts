@@ -1,24 +1,19 @@
-import { Errors, InternalError } from '@lib/error/errors';
-import { Result } from '@lib/error/result';
+import { InternalError, ErrorCode } from '@lib/error/errors';
+import { Optional } from '@lib/sugar/optional';
 
 import { HTTPClient, HTTPResponse } from './HTTP.client';
 
-const errorMap: Record<number, Errors> = {
-    400: Errors.BadRequest,
-    401: Errors.Unauthenticated,
-    404: Errors.NotFound,
-    408: Errors.RequestTimeOut,
-    500: Errors.ServerInternalError,
-    501: Errors.NotImplemented,
-    503: Errors.ServiceUnavailable,
+const httpStatusCodeToErrorCode: Record<number, ErrorCode> = {
+    400: 'BadRequest',
+    401: 'Unauthenticated',
+    404: 'NotFound',
+    408: 'RequestTimeOut',
+    500: 'Unhandled',
+    501: 'NotImplemented',
+    503: 'ServiceUnavailable',
 };
 
 export class FetchHTTPClient implements HTTPClient {
-    private static getError(httpStatusCode: number): InternalError {
-        const error = errorMap[httpStatusCode] || Errors.Unknown;
-        return new InternalError(error);
-    }
-
     async request(
         url: string,
         options?: {
@@ -26,8 +21,8 @@ export class FetchHTTPClient implements HTTPClient {
             headers?: Record<string, string>;
             body?: string;
         },
-    ): Promise<Result<HTTPResponse, InternalError>> {
-        return new Promise<Result<HTTPResponse, InternalError>>((resolve) => {
+    ): Promise<[Optional<HTTPResponse>, Optional<InternalError>]> {
+        return new Promise<[Optional<HTTPResponse>, Optional<InternalError>]>((resolve) => {
             fetch(url, {
                 method: options?.method,
                 mode: 'cors',
@@ -48,7 +43,7 @@ export class FetchHTTPClient implements HTTPClient {
                                 headers,
                                 statusCode: response.status,
                             },
-                            FetchHTTPClient.getError(response.status),
+                            {errorCode: getErrorCode(response.status)},
                         ]);
                         return null;
                     } else {
@@ -58,13 +53,17 @@ export class FetchHTTPClient implements HTTPClient {
                                 headers,
                                 statusCode: response.status,
                             },
-                            null,
+                            undefined,
                         ]);
                     }
                 })
                 .catch(() => {
-                    resolve([null, new InternalError(Errors.Unknown)]);
+                    resolve([undefined, {errorCode: 'Unhandled'}]);
                 });
         });
     }
+}
+
+function getErrorCode(httpStatusCode: number): ErrorCode {
+    return httpStatusCodeToErrorCode[httpStatusCode] || 'Unhandled';
 }

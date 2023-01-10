@@ -1,4 +1,4 @@
-import { InternalError } from '@lib/error/errors';
+import { InternalError, ERROR_CATEGORIES } from '@lib/error/errors';
 import { Clock } from '@lib/runtime/clock';
 import { Runtime } from '@lib/runtime/runtime';
 
@@ -15,11 +15,11 @@ export class TimeoutRetry implements Retry {
     ) {}
 
     public withRetry(
-        execute: () => Promise<[InternalError, boolean] | undefined>,
+        execute: () => Promise<InternalError | undefined>,
     ): Promise<[number, InternalError | undefined]> {
         return new Promise(async (resolve) => {
             let retries = 0;
-            let err: [InternalError, boolean] | undefined;
+            let err: InternalError | undefined;
             const expiredAt = this.clock.now().getTime() + this.duration;
 
             while (true) {
@@ -31,8 +31,10 @@ export class TimeoutRetry implements Retry {
                     return;
                 }
 
-                if (err[1]) {
-                    break
+                const errorCategory = ERROR_CATEGORIES[err.errorCode]
+                if (errorCategory === 'ClientInteraction') {
+                    resolve([retries, err]);
+                    return;
                 }
 
                 this.backoff.onFailure();
@@ -49,7 +51,7 @@ export class TimeoutRetry implements Retry {
                 retries++;
             }
 
-            resolve([retries, err[0]]);
+            resolve([retries, err]);
         });
     }
 }

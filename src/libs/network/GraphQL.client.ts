@@ -20,7 +20,7 @@ export class GraphQLClient {
 
     async mutate(mutateOptions: MutateOptions): Promise<any> {
         const { mutation, ...others } = mutateOptions;
-        const [result, errors] = await this.httpClient.request(
+        const [result, httpError] = await this.httpClient.request(
             this.graphQLEndpoint,
             {
                 method: 'POST',
@@ -30,21 +30,30 @@ export class GraphQLClient {
                 }),
             },
         );
+        
+        if (httpError) {
+            console.error(httpError.errorCode)
+            return
+        }
 
-        if (errors) {
+        const json = result?.body ? JSON.parse(result.body) : null;
+        if (!json) {
+            return
+        }
+
+        if (json.errors) {
             // todo: should handle errors
             // suggestion: errors can be pushed to a channel
             // and we can handle errors in a coroutine as well
             // we can have 1 global error channel that an Error Alert Component subscribes to
-            console.error(errors);
+            console.error(json.errors)
         }
-
-        const json = result?.body ? JSON.parse(result.body) : null;
-        return json?.data;
+        
+        return json.data;
     }
 
     async query(queryOptions: QueryOptions): Promise<any> {
-        const [result, errors] = await this.httpClient.request(
+        const [result, httpError] = await this.httpClient.request(
             this.graphQLEndpoint,
             {
                 method: 'POST',
@@ -52,15 +61,24 @@ export class GraphQLClient {
             },
         );
 
-        if (errors) {
+        if (httpError) {
+            console.error(httpError.errorCode)
+            return
+        }
+
+        const json = result?.body ? JSON.parse(result.body) : null;
+        if (!json) {
+            return
+        }
+
+        if (json.errors) {
             // todo: should handle errors
             // suggestion: errors can be pushed to a channel
             // and we can handle errors in a coroutine as well
             // we can have 1 global error channel that an Error Alert Component subscribes to
-            console.error(errors);
+            console.error(json.errors)
         }
 
-        const json = result?.body ? JSON.parse(result.body) : null;
-        return json?.data;
+        return json.data;
     }
 }

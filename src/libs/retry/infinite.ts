@@ -1,4 +1,4 @@
-import { InternalError } from '@lib/error/errors';
+import { ERROR_CATEGORIES, InternalError } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
 
 import { BackOff } from './backoff/backoff';
@@ -8,7 +8,7 @@ export class InfiniteRetry implements Retry {
     constructor(private runtime: Runtime, private backoff: BackOff) {}
 
     public withRetry(
-        execute: () => Promise<[InternalError, boolean] | undefined>,
+        execute: () => Promise<InternalError | undefined>,
     ): Promise<[number, InternalError | undefined]> {
         return new Promise(async (resolve) => {
             let retries = 0;
@@ -20,8 +20,9 @@ export class InfiniteRetry implements Retry {
                     return;
                 }
 
-                if (err[1]) {
-                    resolve([retries, err[0]]);
+                const errorCategory = ERROR_CATEGORIES[err.errorCode] 
+                if (errorCategory === 'ClientInteraction') {
+                    resolve([retries, err]);
                     return;
                 }
 

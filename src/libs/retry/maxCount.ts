@@ -1,4 +1,4 @@
-import { InternalError } from '@lib/error/errors';
+import { InternalError, ERROR_CATEGORIES } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
 
 import { BackOff } from './backoff/backoff';
@@ -12,11 +12,11 @@ export class MaxCountRetry implements Retry {
     ) {}
 
     public withRetry(
-        execute: () => Promise<[InternalError, boolean] | undefined>,
+        execute: () => Promise<InternalError | undefined>,
     ): Promise<[number, InternalError | undefined]> {
         return new Promise(async (resolve) => {
             let retries = 0;
-            let err: [InternalError, boolean] | undefined;
+            let err: InternalError | undefined;
 
             while (retries < this.maxCount) {
                 err = await execute();
@@ -25,8 +25,11 @@ export class MaxCountRetry implements Retry {
                     resolve([retries, undefined]);
                     return;
                 }
-                if (err[1]) {
-                    break
+
+                const errorCategory = ERROR_CATEGORIES[err.errorCode]
+                if (errorCategory === 'ClientInteraction') {
+                    resolve([retries, err]);
+                    return;
                 }
 
                 this.backoff.onFailure();
@@ -34,7 +37,7 @@ export class MaxCountRetry implements Retry {
                 retries++;
             }
 
-            resolve([retries, err && err[0]]);
+            resolve([retries, err]);
         });
     }
 }

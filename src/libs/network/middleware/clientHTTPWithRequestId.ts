@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { InternalError } from '@lib/error/errors';
-import { Result } from '@lib/error/result';
 
 import { Middleware } from '../../middleware/middleware';
 import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
 import { REQUEST_ID_HEADER } from './headers';
+import { Optional } from '@lib/sugar/optional';
 
 export const clientHTTPWithRequestId: Middleware<HTTPClient> = (
     httpClient: HTTPClient,
@@ -15,7 +15,7 @@ export const clientHTTPWithRequestId: Middleware<HTTPClient> = (
             url: string,
             options?: HTTPRequestOptions,
             context?: Record<string, string>,
-        ): Promise<Result<HTTPResponse, InternalError>> => {
+        ): Promise<[Optional<HTTPResponse>, Optional<InternalError>]> => {
             const method = options?.method || 'GET';
             const requestId = uuidv4();
             const headers = {
