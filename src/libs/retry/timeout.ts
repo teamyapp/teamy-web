@@ -1,3 +1,4 @@
+import { Duration } from '@lib/entity/duration';
 import { InternalError, ERROR_CATEGORIES } from '@lib/error/errors';
 import { Clock } from '@lib/runtime/clock';
 import { Runtime } from '@lib/runtime/runtime';
@@ -12,6 +13,7 @@ export class TimeoutRetry implements Retry {
         private backoff: BackOff,
         private duration: number,
         private beforeRetryDelay?: () => Promise<void>,
+        private beforeThreadSleep?: (duration?: Duration) => Promise<void>
     ) {}
 
     public withRetry(
@@ -31,24 +33,26 @@ export class TimeoutRetry implements Retry {
                     return;
                 }
 
+                retries++
                 const errorCategory = ERROR_CATEGORIES[err.errorCode]
                 if (errorCategory === 'ClientInteraction') {
+                    await this.beforeThreadSleep?.call(null)
                     resolve([retries, err]);
                     return;
                 }
 
                 this.backoff.onFailure();
+                const duration = this.backoff.delay()
                 if (
                     this.clock.now().getTime() +
-                        this.backoff.delay().totalMilliSeconds >=
+                    duration.totalMilliSeconds >=
                     expiredAt
                 ) {
-                    retries++;
                     break;
                 }
 
-                await this.runtime.threadSleep(this.backoff.delay());
-                retries++;
+                await this.beforeThreadSleep?.call(null, duration)
+                await this.runtime.threadSleep(duration);
             }
 
             resolve([retries, err]);

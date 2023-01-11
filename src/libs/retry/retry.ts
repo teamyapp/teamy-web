@@ -5,3 +5,8 @@ export interface Retry {
         execute: () => Promise<InternalError | undefined>,
     ) => Promise<[number, InternalError | undefined]>;
 }
+
+export interface Executable {
+    count: number,
+    execute: () => Promise<InternalError | undefined>,
+}

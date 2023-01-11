@@ -1,3 +1,4 @@
+import { Duration } from '@lib/entity/duration';
 import { InternalError, ERROR_CATEGORIES } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
 
@@ -9,6 +10,7 @@ export class MaxCountRetry implements Retry {
         private runtime: Runtime,
         private backoff: BackOff,
         private maxCount: number,
+        private beforeThreadSleep?: (duration?: Duration) => Promise<void>
     ) {}
 
     public withRetry(
@@ -25,16 +27,18 @@ export class MaxCountRetry implements Retry {
                     resolve([retries, undefined]);
                     return;
                 }
-
+                retries++
                 const errorCategory = ERROR_CATEGORIES[err.errorCode]
                 if (errorCategory === 'ClientInteraction') {
+                    await this.beforeThreadSleep?.call(null)
                     resolve([retries, err]);
                     return;
                 }
 
                 this.backoff.onFailure();
-                await this.runtime.threadSleep(this.backoff.delay());
-                retries++;
+                const duration = this.backoff.delay()
+                await this.beforeThreadSleep?.call(null, duration)
+                await this.runtime.threadSleep(duration);
             }
 
             resolve([retries, err]);

@@ -15,13 +15,8 @@ export class BuiltInRuntime implements Runtime {
 
 export class TestRuntime implements Runtime {
     private readonly semaphore = new Semaphore('TestRunTime');
-    public beforeThreadSleep?: (duration: Duration) => Promise<void>;
 
     async threadSleep(duration: Duration): Promise<void> {
-        if (this.beforeThreadSleep) {
-            await this.beforeThreadSleep(duration);
-        }
-
         return await this.semaphore.wait();
     }
 

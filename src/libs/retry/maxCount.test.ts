@@ -1,14 +1,14 @@
-import { strictEqual } from 'assert';
+import { deepStrictEqual, strictEqual } from 'assert';
 
 import { Duration } from '@lib/entity/duration';
-import { Errors, InternalError } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { MaxCountRetry } from './maxCount';
-import { Executable } from './retry.test';
+import { Executable } from './retry';
+import { ErrorCode } from '@lib/error/errors';
 
 describe('MaxCount', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -17,82 +17,79 @@ describe('MaxCount', () => {
     let beforeSleepSemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let duration: Duration;
+    let beforeThreadSleep: (duration?: Duration) => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
+        beforeSleepSemaphore = new Semaphore('BeforeSleep');
+        exitSemaphore = new Semaphore('Exit');
+        beforeThreadSleep = async (_duration?: Duration) => {
+            beforeSleepSemaphore.release();
+            if (_duration) {
+                duration = _duration;
+            }
+        };
+    });
+
+    it.each([
+        ["should succeed reaching max count", {
+            errorCode: 'RequestTimeOut',
+            retries: 2,
+            error: undefined,
+            runs: 2,
+            maxCountNum: 3
+        }],
+        ["should get error when reaching max count",{
+            errorCode: 'RequestTimeOut',
+            retries: 2,
+            error: { errorCode: 'RequestTimeOut', message: 'first error' },
+            runs: 2,
+            maxCountNum: 2
+        }],
+        ["should stop retry immediately",{
+            errorCode: 'Unauthenticated',
+            retries: 1,
+            error: { errorCode: 'Unauthenticated', message: 'first error' },
+            runs: 1,
+            maxCountNum: 3
+        }],
+    ])('%s', async (_, {errorCode, retries, error, runs, maxCountNum}) => {
         executable = {
             count: 0,
             async execute() {
                 const prevCount = this.count;
                 this.count++;
                 if (prevCount < 2) {
-                    return new InternalError(Errors.BadRequest, 'first error');
+                    return {
+                        errorCode: errorCode as ErrorCode,
+                        message: 'first error',
+                    };
                 }
             },
         };
-        beforeSleepSemaphore = new Semaphore('BeforeSleep');
-        exitSemaphore = new Semaphore('Exit');
-        testRuntime.beforeThreadSleep = async (_duration: Duration) => {
-            beforeSleepSemaphore.release();
-            duration = _duration;
-        };
-    });
 
-    it('should succeed before reaching max count', async () => {
         const backoff = new ExponentialBackoff(testRandGen, {
             minDelay: 2,
             randomOffset: 0,
             scalingFactor: 2,
         });
-        const maxCount = new MaxCountRetry(testRuntime, backoff, 3);
+        const maxCount = new MaxCountRetry(testRuntime, backoff, maxCountNum, beforeThreadSleep);
         (async () => {
-            const [retries, error] = await maxCount.withRetry(
+            const [retriesRes, errorRes] = await maxCount.withRetry(
                 executable.execute.bind(executable),
             );
 
-            strictEqual(retries, 2);
-            strictEqual(error, undefined);
-            exitSemaphore.release();
-        })().then();
-
-        await beforeSleepSemaphore.wait();
-        strictEqual(executable.count, 1);
-        testRuntime.threadAwake();
-
-        await beforeSleepSemaphore.wait();
-        strictEqual(executable.count, 2);
-
-        testRuntime.threadAwake();
-        await exitSemaphore.wait();
-    });
-
-    it('should not call more than max count retries', async () => {
-        const backoff = new ExponentialBackoff(testRandGen, {
-            minDelay: 2,
-            randomOffset: 0,
-            scalingFactor: 2,
-        });
-        const maxCount = new MaxCountRetry(testRuntime, backoff, 2);
-        (async () => {
-            const [retries, error] = await maxCount.withRetry(
-                executable.execute.bind(executable),
-            );
-
-            strictEqual(retries, 2);
+            strictEqual(retriesRes, retries);
             strictEqual(duration.totalMilliSeconds, 8);
-            strictEqual(error?.message, 'first error');
+            deepStrictEqual(errorRes, error);
             exitSemaphore.release();
         })().then();
 
-        await beforeSleepSemaphore.wait();
-        strictEqual(executable.count, 1);
-        strictEqual(duration.totalMilliSeconds, 4);
-        testRuntime.threadAwake();
-
-        await beforeSleepSemaphore.wait();
-        strictEqual(executable.count, 2);
-        strictEqual(duration.totalMilliSeconds, 8);
-        testRuntime.threadAwake();
+        for (let run = 0; run < runs; run++) {
+            await beforeSleepSemaphore.wait();
+            strictEqual(executable.count, run + 1);
+            testRuntime.threadAwake();
+        }
 
         await exitSemaphore.wait();
     });

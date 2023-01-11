@@ -1,14 +1,14 @@
 import { strictEqual } from 'assert';
 
 import { Duration } from '@lib/entity/duration';
-import { Errors, InternalError } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { InfiniteRetry } from './infinite';
-import { Executable } from './retry.test';
+import { Executable } from './retry';
+
 
 describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -17,6 +17,7 @@ describe('InfiniteRetry', () => {
     let beforeSleepSemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let duration: Duration;
+    let beforeThreadSleep: (duration?: Duration) => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
@@ -26,15 +27,20 @@ describe('InfiniteRetry', () => {
                 const prevCount = this.count;
                 this.count++;
                 if (prevCount < 10) {
-                    return new InternalError(Errors.BadRequest, 'first error');
+                    return {
+                        errorCode: 'RequestTimeOut',
+                        message: 'first error'
+                    }
                 }
             },
         };
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
         exitSemaphore = new Semaphore('Exit');
-        testRuntime.beforeThreadSleep = async (_duration: Duration) => {
+        beforeThreadSleep = async (_duration?: Duration) => {
             beforeSleepSemaphore.release();
-            duration = _duration;
+            if (_duration) {
+                duration = _duration;
+            }
         };
     });
 
@@ -45,7 +51,7 @@ describe('InfiniteRetry', () => {
             scalingFactor: 2,
             maxDelay: 600,
         });
-        const infinite = new InfiniteRetry(testRuntime, backoff);
+        const infinite = new InfiniteRetry(testRuntime, backoff, beforeThreadSleep);
 
         (async () => {
             const [retries, error] = await infinite.withRetry(
