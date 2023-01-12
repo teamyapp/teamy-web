@@ -1,4 +1,4 @@
-import { InternalError, ERROR_CATEGORIES } from '@lib/error/errors';
+import { ERROR_CATEGORIES, InternalError } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
 
 import { BackOff } from './backoff/backoff';
@@ -27,10 +27,10 @@ export class MaxCountRetry implements Retry {
                     return;
                 }
 
-                retries++
-                const errorCategory = ERROR_CATEGORIES[err.errorCode]
+                retries++;
+                const errorCategory = ERROR_CATEGORIES[err.errorCode];
                 if (errorCategory === 'ClientInteraction') {
-                    await this.beforeSkipRetry?.call(null)
+                    await this.beforeSkipRetry?.call(null);
                     resolve([retries, err]);
                     return;
                 }

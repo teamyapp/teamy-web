@@ -1,11 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { InternalError } from '@lib/error/errors';
+import { Optional } from '@lib/sugar/optional';
 
 import { Middleware } from '../../middleware/middleware';
 import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
 import { REQUEST_ID_HEADER } from './headers';
-import { Optional } from '@lib/sugar/optional';
 
 export const clientHTTPWithRequestId: Middleware<HTTPClient> = (
     httpClient: HTTPClient,

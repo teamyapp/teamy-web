@@ -19,7 +19,7 @@ export class TestRuntime implements Runtime {
 
     async threadSleep(duration: Duration): Promise<void> {
         if (this.beforeThreadSleep) {
-            await this.beforeThreadSleep(duration); 
+            await this.beforeThreadSleep(duration);
         }
 
         return await this.semaphore.wait();

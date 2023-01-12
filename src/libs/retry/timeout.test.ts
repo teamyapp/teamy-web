@@ -8,8 +8,8 @@ import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
-import { TimeoutRetry } from './timeout';
 import { Executable } from './infinite.test';
+import { TimeoutRetry } from './timeout';
 
 describe('Timeout', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -31,12 +31,12 @@ describe('Timeout', () => {
             testClock.setCurrentTime(new Date(testClock.now().getTime() + 2));
         };
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
-        beforeSkipRetrySemaphore = new Semaphore('BeforeSkipRetry')
+        beforeSkipRetrySemaphore = new Semaphore('BeforeSkipRetry');
         exitSemaphore = new Semaphore('Exit');
         testClock.setCurrentTime(new Date());
         beforeSkipRetry = async () => {
             beforeSkipRetrySemaphore.release();
-        }
+        };
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
             duration = _duration;
@@ -45,38 +45,56 @@ describe('Timeout', () => {
                     testClock.now().getTime() + duration.totalMilliSeconds,
                 ),
             );
-            
         };
     });
 
     it.each([
-        ["should succeed before timeout", {
-            errorCode: 'RequestTimeOut',
-            retries: 2,
-            expectedErrorCode: undefined,
-            timeoutDuration: 17,
-            runs: 2,
-            runSkipRetry: false,
-        }],
-        ["should get error when reaching timeout",{
-            errorCode: 'RequestTimeOut',
-            retries: 2,
-            expectedErrorCode: 'RequestTimeOut',
-            timeoutDuration: 16,
-            runs: 1,
-            runSkipRetry: false,
-        }],
-        ["should stop retry immediately",{
-            errorCode: 'Unauthenticated',
-            retries: 1,
-            expectedErrorCode: 'Unauthenticated',
-            timeoutDuration: 17,
-            runs: 1,
-            runSkipRetry: true,
-        }],
+        [
+            'should succeed before timeout',
+            {
+                errorCode: 'RequestTimeOut',
+                retries: 2,
+                expectedErrorCode: undefined,
+                timeoutDuration: 17,
+                runs: 2,
+                runSkipRetry: false,
+            },
+        ],
+        [
+            'should get error when reaching timeout',
+            {
+                errorCode: 'RequestTimeOut',
+                retries: 2,
+                expectedErrorCode: 'RequestTimeOut',
+                timeoutDuration: 16,
+                runs: 1,
+                runSkipRetry: false,
+            },
+        ],
+        [
+            'should stop retry immediately',
+            {
+                errorCode: 'Unauthenticated',
+                retries: 1,
+                expectedErrorCode: 'Unauthenticated',
+                timeoutDuration: 17,
+                runs: 1,
+                runSkipRetry: true,
+            },
+        ],
     ])(
         '%s',
-        async (_, { errorCode, retries, expectedErrorCode, timeoutDuration, runs, runSkipRetry }) => {
+        async (
+            _,
+            {
+                errorCode,
+                retries,
+                expectedErrorCode,
+                timeoutDuration,
+                runs,
+                runSkipRetry,
+            },
+        ) => {
             executable = {
                 count: 0,
                 async execute() {
@@ -122,7 +140,7 @@ describe('Timeout', () => {
                 } else {
                     await beforeSleepSemaphore.wait();
                 }
-                
+
                 strictEqual(executable.count, run + 1);
                 testRuntime.threadAwake();
             }

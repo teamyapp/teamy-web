@@ -8,18 +8,18 @@ export type ErrorCode =
     | 'NotImplemented';
 
 export interface InternalError {
-    errorCode: ErrorCode
-    message?: string
+    errorCode: ErrorCode;
+    message?: string;
 }
 
-export type ErrorCategory = 'Transient' | 'Outage' | 'ClientInteraction'
+export type ErrorCategory = 'Transient' | 'Outage' | 'ClientInteraction';
 
 export const ERROR_CATEGORIES: Record<ErrorCode, ErrorCategory> = {
-     RequestTimeOut: 'Transient',
-     Unhandled: 'Outage',
-     ServiceUnavailable: 'Outage',
-     NotImplemented: 'Outage',
-     BadRequest: 'ClientInteraction',
-     Unauthenticated: 'ClientInteraction',
-     NotFound: 'ClientInteraction',
-}
+    RequestTimeOut: 'Transient',
+    Unhandled: 'Outage',
+    ServiceUnavailable: 'Outage',
+    NotImplemented: 'Outage',
+    BadRequest: 'ClientInteraction',
+    Unauthenticated: 'ClientInteraction',
+    NotFound: 'ClientInteraction',
+};

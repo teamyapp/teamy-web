@@ -30,15 +30,15 @@ export class GraphQLClient {
                 }),
             },
         );
-        
+
         if (httpError) {
-            console.error(httpError.errorCode)
-            return
+            console.error(httpError.errorCode);
+            return;
         }
 
         const json = result?.body ? JSON.parse(result.body) : null;
         if (!json) {
-            return
+            return;
         }
 
         if (json.errors) {
@@ -46,9 +46,9 @@ export class GraphQLClient {
             // suggestion: errors can be pushed to a channel
             // and we can handle errors in a coroutine as well
             // we can have 1 global error channel that an Error Alert Component subscribes to
-            console.error(json.errors)
+            console.error(json.errors);
         }
-        
+
         return json.data;
     }
 
@@ -62,13 +62,13 @@ export class GraphQLClient {
         );
 
         if (httpError) {
-            console.error(httpError.errorCode)
-            return
+            console.error(httpError.errorCode);
+            return;
         }
 
         const json = result?.body ? JSON.parse(result.body) : null;
         if (!json) {
-            return
+            return;
         }
 
         if (json.errors) {
@@ -76,7 +76,7 @@ export class GraphQLClient {
             // suggestion: errors can be pushed to a channel
             // and we can handle errors in a coroutine as well
             // we can have 1 global error channel that an Error Alert Component subscribes to
-            console.error(json.errors)
+            console.error(json.errors);
         }
 
         return json.data;

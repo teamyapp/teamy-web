@@ -27,7 +27,7 @@ export class InfiniteRetry implements Retry {
                 retries++;
                 const errorCategory = ERROR_CATEGORIES[err.errorCode];
                 if (errorCategory === 'ClientInteraction') {
-                    await this.beforeSkipRetry?.call(null)
+                    await this.beforeSkipRetry?.call(null);
                     resolve([retries, err]);
                     return;
                 }

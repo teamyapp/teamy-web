@@ -1,4 +1,4 @@
-import { InternalError, ERROR_CATEGORIES } from '@lib/error/errors';
+import { ERROR_CATEGORIES, InternalError } from '@lib/error/errors';
 import { Clock } from '@lib/runtime/clock';
 import { Runtime } from '@lib/runtime/runtime';
 
@@ -32,19 +32,18 @@ export class TimeoutRetry implements Retry {
                     return;
                 }
 
-                retries++
-                const errorCategory = ERROR_CATEGORIES[err.errorCode]
+                retries++;
+                const errorCategory = ERROR_CATEGORIES[err.errorCode];
                 if (errorCategory === 'ClientInteraction') {
-                    await this.beforeSkipRetry?.call(null)
+                    await this.beforeSkipRetry?.call(null);
                     resolve([retries, err]);
                     return;
                 }
 
                 this.backoff.onFailure();
-                const duration = this.backoff.delay()
+                const duration = this.backoff.delay();
                 if (
-                    this.clock.now().getTime() +
-                    duration.totalMilliSeconds >=
+                    this.clock.now().getTime() + duration.totalMilliSeconds >=
                     expiredAt
                 ) {
                     break;

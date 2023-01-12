@@ -1,4 +1,4 @@
-import { InternalError, ErrorCode } from '@lib/error/errors';
+import { ErrorCode, InternalError } from '@lib/error/errors';
 import { Optional } from '@lib/sugar/optional';
 
 import { HTTPClient, HTTPResponse } from './HTTP.client';
@@ -22,45 +22,47 @@ export class FetchHTTPClient implements HTTPClient {
             body?: string;
         },
     ): Promise<[Optional<HTTPResponse>, Optional<InternalError>]> {
-        return new Promise<[Optional<HTTPResponse>, Optional<InternalError>]>((resolve) => {
-            fetch(url, {
-                method: options?.method,
-                mode: 'cors',
-                cache: 'no-cache',
-                headers: options?.headers,
-                redirect: 'follow',
-                body: options?.body,
-            })
-                .then(async (response) => {
-                    const headers = Object.fromEntries(
-                        response.headers.entries(),
-                    );
-
-                    if (response.status >= 400) {
-                        resolve([
-                            {
-                                body: null,
-                                headers,
-                                statusCode: response.status,
-                            },
-                            {errorCode: getErrorCode(response.status)},
-                        ]);
-                        return null;
-                    } else {
-                        resolve([
-                            {
-                                body: await response.text(),
-                                headers,
-                                statusCode: response.status,
-                            },
-                            undefined,
-                        ]);
-                    }
+        return new Promise<[Optional<HTTPResponse>, Optional<InternalError>]>(
+            (resolve) => {
+                fetch(url, {
+                    method: options?.method,
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: options?.headers,
+                    redirect: 'follow',
+                    body: options?.body,
                 })
-                .catch(() => {
-                    resolve([undefined, {errorCode: 'Unhandled'}]);
-                });
-        });
+                    .then(async (response) => {
+                        const headers = Object.fromEntries(
+                            response.headers.entries(),
+                        );
+
+                        if (response.status >= 400) {
+                            resolve([
+                                {
+                                    body: null,
+                                    headers,
+                                    statusCode: response.status,
+                                },
+                                { errorCode: getErrorCode(response.status) },
+                            ]);
+                            return null;
+                        } else {
+                            resolve([
+                                {
+                                    body: await response.text(),
+                                    headers,
+                                    statusCode: response.status,
+                                },
+                                undefined,
+                            ]);
+                        }
+                    })
+                    .catch(() => {
+                        resolve([undefined, { errorCode: 'Unhandled' }]);
+                    });
+            },
+        );
     }
 }
 
