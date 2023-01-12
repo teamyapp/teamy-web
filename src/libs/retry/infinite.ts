@@ -9,7 +9,7 @@ export class InfiniteRetry implements Retry {
     constructor(
         private runtime: Runtime,
         private backoff: BackOff,
-        private beforeThreadSleep?: (duration?: Duration) => Promise<void>,
+        private beforeSkipRetry?: () => Promise<void>,
     ) {}
 
     public withRetry(
@@ -24,6 +24,7 @@ export class InfiniteRetry implements Retry {
                     resolve([retries, undefined]);
                     return;
                 }
+
                 retries++;
                 const errorCategory = ERROR_CATEGORIES[err.errorCode];
                 if (errorCategory === 'ClientInteraction') {

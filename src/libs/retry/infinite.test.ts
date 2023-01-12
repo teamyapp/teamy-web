@@ -9,7 +9,6 @@ import { ExponentialBackoff } from './backoff/exponential';
 import { InfiniteRetry } from './infinite';
 import { Executable } from './retry';
 
-
 describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();
     let testRuntime: TestRuntime;
