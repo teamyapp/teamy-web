@@ -26,6 +26,7 @@ export class MaxCountRetry implements Retry {
                     resolve([retries, undefined]);
                     return;
                 }
+
                 retries++
                 const errorCategory = ERROR_CATEGORIES[err.errorCode]
                 if (errorCategory === 'ClientInteraction') {

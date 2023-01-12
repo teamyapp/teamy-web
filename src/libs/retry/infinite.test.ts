@@ -13,7 +13,7 @@ describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();
     let testRuntime: TestRuntime;
     let executable: Executable;
-    let beforeSleepSemaphore: Semaphore;
+    let beforeRetrySemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let duration: Duration;
     let beforeSkipRetry: () => Promise<void>;
@@ -35,7 +35,9 @@ describe('InfiniteRetry', () => {
         };
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
         exitSemaphore = new Semaphore('Exit');
-        beforeSkipRetry = async () => {beforeSleepSemaphore.release()}
+        beforeSkipRetry = async () => {
+            beforeSleepSemaphore.release();
+        }
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
             duration = _duration;
