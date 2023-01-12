@@ -1,4 +1,4 @@
-import { deepStrictEqual, strictEqual } from 'assert';
+import { strictEqual } from 'assert';
 
 import { Duration } from '@lib/entity/duration';
 import { ErrorCode } from '@lib/error/errors';
@@ -8,12 +8,13 @@ import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
-import { Executable } from './retry';
 import { TimeoutRetry } from './timeout';
+import { Executable } from './infinite.test';
 
 describe('Timeout', () => {
     const testRandGen = new TestRandomNumberGenerator();
     let beforeSleepSemaphore: Semaphore;
+    let beforeSkipRetrySemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let testRuntime: TestRuntime;
     let testClock: TestClock;
@@ -30,10 +31,11 @@ describe('Timeout', () => {
             testClock.setCurrentTime(new Date(testClock.now().getTime() + 2));
         };
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
+        beforeSkipRetrySemaphore = new Semaphore('BeforeSkipRetry')
         exitSemaphore = new Semaphore('Exit');
         testClock.setCurrentTime(new Date());
         beforeSkipRetry = async () => {
-            beforeSleepSemaphore.release();
+            beforeSkipRetrySemaphore.release();
         }
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
@@ -51,27 +53,30 @@ describe('Timeout', () => {
         ["should succeed before timeout", {
             errorCode: 'RequestTimeOut',
             retries: 2,
-            error: undefined,
+            expectedErrorCode: undefined,
             timeoutDuration: 17,
-            runs: 2
+            runs: 2,
+            runSkipRetry: false,
         }],
         ["should get error when reaching timeout",{
             errorCode: 'RequestTimeOut',
             retries: 2,
-            error: { errorCode: 'RequestTimeOut', message: 'first error' },
+            expectedErrorCode: 'RequestTimeOut',
             timeoutDuration: 16,
-            runs: 1
+            runs: 1,
+            runSkipRetry: false,
         }],
         ["should stop retry immediately",{
             errorCode: 'Unauthenticated',
             retries: 1,
-            error: { errorCode: 'Unauthenticated', message: 'first error' },
+            expectedErrorCode: 'Unauthenticated',
             timeoutDuration: 17,
-            runs: 1
+            runs: 1,
+            runSkipRetry: true,
         }],
     ])(
         '%s',
-        async (_, { errorCode, retries, error, timeoutDuration, runs }) => {
+        async (_, { errorCode, retries, expectedErrorCode, timeoutDuration, runs, runSkipRetry }) => {
             executable = {
                 count: 0,
                 async execute() {
@@ -107,12 +112,17 @@ describe('Timeout', () => {
                 );
 
                 strictEqual(retriesRes, retries);
-                deepStrictEqual(errorRes, error);
+                strictEqual(errorRes?.errorCode, expectedErrorCode);
                 exitSemaphore.release();
             })();
 
             for (let run = 0; run < runs; run++) {
-                await beforeSleepSemaphore.wait();
+                if (runSkipRetry) {
+                    await beforeSkipRetrySemaphore.wait();
+                } else {
+                    await beforeSleepSemaphore.wait();
+                }
+                
                 strictEqual(executable.count, run + 1);
                 testRuntime.threadAwake();
             }

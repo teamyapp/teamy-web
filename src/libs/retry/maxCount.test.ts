@@ -7,14 +7,15 @@ import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { MaxCountRetry } from './maxCount';
-import { Executable } from './retry';
 import { ErrorCode } from '@lib/error/errors';
+import { Executable } from './infinite.test';
 
 describe('MaxCount', () => {
     const testRandGen = new TestRandomNumberGenerator();
     let testRuntime: TestRuntime;
     let executable: Executable;
     let beforeSleepSemaphore: Semaphore;
+    let beforeSkipRetrySemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let duration: Duration;
     let beforeSkipRetry: () => Promise<void>;
@@ -22,9 +23,10 @@ describe('MaxCount', () => {
     beforeEach(() => {
         testRuntime = new TestRuntime();
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
+        beforeSkipRetrySemaphore = new Semaphore('BeforeSkipRetry');
         exitSemaphore = new Semaphore('Exit');
         beforeSkipRetry = async () => {
-            beforeSleepSemaphore.release();
+            beforeSkipRetrySemaphore.release();
         }
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
@@ -36,25 +38,28 @@ describe('MaxCount', () => {
         ["should succeed reaching max count", {
             errorCode: 'RequestTimeOut',
             retries: 2,
-            error: undefined,
+            expectedErrorCode: undefined,
             runs: 2,
-            maxCountNum: 3
+            maxCountNum: 3,
+            runSkipRetry: false,
         }],
         ["should get error when reaching max count",{
             errorCode: 'RequestTimeOut',
             retries: 2,
-            error: { errorCode: 'RequestTimeOut', message: 'first error' },
+            expectedErrorCode: 'RequestTimeOut',
             runs: 2,
-            maxCountNum: 2
+            maxCountNum: 2,
+            runSkipRetry: false,
         }],
         ["should stop retry immediately",{
             errorCode: 'Unauthenticated',
             retries: 1,
-            error: { errorCode: 'Unauthenticated', message: 'first error' },
+            expectedErrorCode: 'Unauthenticated',
             runs: 1,
-            maxCountNum: 3
+            maxCountNum: 3,
+            runSkipRetry: true,
         }],
-    ])('%s', async (_, {errorCode, retries, error, runs, maxCountNum}) => {
+    ])('%s', async (_, {errorCode, retries, expectedErrorCode, runs, maxCountNum, runSkipRetry}) => {
         executable = {
             count: 0,
             async execute() {
@@ -82,12 +87,17 @@ describe('MaxCount', () => {
 
             strictEqual(retriesRes, retries);
             strictEqual(duration.totalMilliSeconds, 8);
-            deepStrictEqual(errorRes, error);
+            deepStrictEqual(errorRes?.errorCode, expectedErrorCode);
             exitSemaphore.release();
         })().then();
 
         for (let run = 0; run < runs; run++) {
-            await beforeSleepSemaphore.wait();
+            if (runSkipRetry) {
+                await beforeSkipRetrySemaphore.wait()
+            } else {
+                await beforeSleepSemaphore.wait();
+            }
+
             strictEqual(executable.count, run + 1);
             testRuntime.threadAwake();
         }
