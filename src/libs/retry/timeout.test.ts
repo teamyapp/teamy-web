@@ -20,7 +20,7 @@ describe('Timeout', () => {
     let executable: Executable;
     let duration: Duration;
     let beforeRetryDelay: () => Promise<void>;
-    let beforeThreadSleep: (duration?: Duration) => Promise<void>;
+    let beforeSkipRetry: () => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
@@ -32,17 +32,18 @@ describe('Timeout', () => {
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
         exitSemaphore = new Semaphore('Exit');
         testClock.setCurrentTime(new Date());
-
-        beforeThreadSleep = async (_duration?: Duration) => {
+        beforeSkipRetry = async () => {
             beforeSleepSemaphore.release();
-            if (_duration) {
-                duration = _duration;
-                testClock.setCurrentTime(
-                    new Date(
-                        testClock.now().getTime() + duration.totalMilliSeconds,
-                    ),
-                );
-            }
+        }
+        testRuntime.beforeThreadSleep = async (_duration: Duration) => {
+            beforeSleepSemaphore.release();
+            duration = _duration;
+            testClock.setCurrentTime(
+                new Date(
+                    testClock.now().getTime() + duration.totalMilliSeconds,
+                ),
+            );
+            
         };
     });
 
@@ -97,7 +98,7 @@ describe('Timeout', () => {
                 backoff,
                 timeoutDuration,
                 beforeRetryDelay,
-                beforeThreadSleep,
+                beforeSkipRetry,
             );
 
             (async () => {

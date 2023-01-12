@@ -16,7 +16,7 @@ describe('InfiniteRetry', () => {
     let beforeSleepSemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let duration: Duration;
-    let beforeThreadSleep: (duration?: Duration) => Promise<void>;
+    let beforeSkipRetry: () => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
@@ -35,11 +35,10 @@ describe('InfiniteRetry', () => {
         };
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
         exitSemaphore = new Semaphore('Exit');
-        beforeThreadSleep = async (_duration?: Duration) => {
+        beforeSkipRetry = async () => {beforeSleepSemaphore.release()}
+        testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
-            if (_duration) {
-                duration = _duration;
-            }
+            duration = _duration;
         };
     });
 
@@ -50,7 +49,7 @@ describe('InfiniteRetry', () => {
             scalingFactor: 2,
             maxDelay: 600,
         });
-        const infinite = new InfiniteRetry(testRuntime, backoff, beforeThreadSleep);
+        const infinite = new InfiniteRetry(testRuntime, backoff, beforeSkipRetry);
 
         (async () => {
             const [retries, error] = await infinite.withRetry(

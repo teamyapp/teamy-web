@@ -1,4 +1,3 @@
-import { Duration } from '@lib/entity/duration';
 import { ERROR_CATEGORIES, InternalError } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
 
@@ -28,15 +27,13 @@ export class InfiniteRetry implements Retry {
                 retries++;
                 const errorCategory = ERROR_CATEGORIES[err.errorCode];
                 if (errorCategory === 'ClientInteraction') {
-                    await this.beforeThreadSleep?.call(null)
+                    await this.beforeSkipRetry?.call(null)
                     resolve([retries, err]);
                     return;
                 }
 
                 this.backoff.onFailure();
-                const duration = this.backoff.delay()
-                await this.beforeThreadSleep?.call(null, duration)
-                await this.runtime.threadSleep(duration);
+                await this.runtime.threadSleep(this.backoff.delay());
             }
         });
     }

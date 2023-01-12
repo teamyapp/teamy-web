@@ -17,17 +17,18 @@ describe('MaxCount', () => {
     let beforeSleepSemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let duration: Duration;
-    let beforeThreadSleep: (duration?: Duration) => Promise<void>;
+    let beforeSkipRetry: () => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
         exitSemaphore = new Semaphore('Exit');
-        beforeThreadSleep = async (_duration?: Duration) => {
+        beforeSkipRetry = async () => {
             beforeSleepSemaphore.release();
-            if (_duration) {
-                duration = _duration;
-            }
+        }
+        testRuntime.beforeThreadSleep = async (_duration: Duration) => {
+            beforeSleepSemaphore.release();
+            duration = _duration;
         };
     });
 
@@ -73,7 +74,7 @@ describe('MaxCount', () => {
             randomOffset: 0,
             scalingFactor: 2,
         });
-        const maxCount = new MaxCountRetry(testRuntime, backoff, maxCountNum, beforeThreadSleep);
+        const maxCount = new MaxCountRetry(testRuntime, backoff, maxCountNum, beforeSkipRetry);
         (async () => {
             const [retriesRes, errorRes] = await maxCount.withRetry(
                 executable.execute.bind(executable),
