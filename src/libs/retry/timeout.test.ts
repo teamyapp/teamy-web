@@ -8,8 +8,8 @@ import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
-import { Executable } from './infinite.test';
 import { TimeoutRetry } from './timeout';
+import { Executable } from './testUtils';
 
 describe('Timeout', () => {
     const testRandGen = new TestRandomNumberGenerator();

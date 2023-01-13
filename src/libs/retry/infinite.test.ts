@@ -1,18 +1,15 @@
 import { strictEqual } from 'assert';
 
 import { Duration } from '@lib/entity/duration';
-import { ErrorCode, InternalError } from '@lib/error/errors';
+import { ErrorCode } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { InfiniteRetry } from './infinite';
+import { Executable } from './testUtils';
 
-export interface Executable {
-    count: number;
-    execute: () => Promise<InternalError | undefined>;
-}
 
 describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();

@@ -7,8 +7,8 @@ import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
-import { Executable } from './infinite.test';
 import { MaxCountRetry } from './maxCount';
+import { Executable } from './testUtils';
 
 describe('MaxCount', () => {
     const testRandGen = new TestRandomNumberGenerator();
