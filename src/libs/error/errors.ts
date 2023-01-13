@@ -1,17 +1,25 @@
-export enum Errors {
-    Unknown,
-    SessionIdInUse,
-    RequestTimeOut,
-    BadRequest,
-    Unauthenticated,
-    NotFound,
-    ServiceUnavailable,
-    ServerInternalError,
-    NotImplemented,
+export type ErrorCode =
+    | 'Unhandled'
+    | 'RequestTimeOut'
+    | 'BadRequest'
+    | 'Unauthenticated'
+    | 'NotFound'
+    | 'ServiceUnavailable'
+    | 'NotImplemented';
+
+export interface InternalError {
+    errorCode: ErrorCode;
+    message?: string;
 }
 
-export class InternalError extends Error {
-    constructor(public errors: Errors, public message: string = '') {
-        super(message);
-    }
-}
+export type ErrorCategory = 'Transient' | 'Outage' | 'ClientInteraction';
+
+export const ERROR_CATEGORIES: Record<ErrorCode, ErrorCategory> = {
+    RequestTimeOut: 'Transient',
+    Unhandled: 'Outage',
+    ServiceUnavailable: 'Outage',
+    NotImplemented: 'Outage',
+    BadRequest: 'ClientInteraction',
+    Unauthenticated: 'ClientInteraction',
+    NotFound: 'ClientInteraction',
+};

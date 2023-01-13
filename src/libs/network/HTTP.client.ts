@@ -1,5 +1,5 @@
 import { InternalError } from '@lib/error/errors';
-import { Result } from '@lib/error/result';
+import { Optional } from '@lib/sugar/optional';
 
 export interface HTTPResponse {
     body: string | null;
@@ -18,5 +18,5 @@ export interface HTTPClient {
         url: string,
         options?: HTTPRequestOptions,
         context?: Record<string, string>,
-    ): Promise<Result<HTTPResponse, InternalError>>;
+    ): Promise<[Optional<HTTPResponse>, Optional<InternalError>]>;
 }

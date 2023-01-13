@@ -173,11 +173,14 @@ export class SprintsComponent extends Component<Props, State> {
                     sprintTabIds.indexOf(defaultSprintTabId);
                 if (appState.currSprintId) {
                     if (appState.sprintTabReady)
-                        if (appState.currSprintId !== this.state.selectedSprintId ||
-                            appState.activeSprintTabIndex !== this.state.activeTabIndex
-                    ) {
-                        this.selectTab(activeSprintTabIndex, false);
-                    }
+                        if (
+                            appState.currSprintId !==
+                                this.state.selectedSprintId ||
+                            appState.activeSprintTabIndex !==
+                                this.state.activeTabIndex
+                        ) {
+                            this.selectTab(activeSprintTabIndex, false);
+                        }
                 } else {
                     this.router.navigateTo(sprintsPath(appState.currTeamId!));
                 }

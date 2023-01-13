@@ -1,46 +1,42 @@
 import { strictEqual } from 'assert';
 
 import { Duration } from '@lib/entity/duration';
-import { Errors, InternalError } from '@lib/error/errors';
+import { ErrorCode } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestClock } from '@lib/runtime/clock';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
-import { Executable } from './retry.test';
 import { TimeoutRetry } from './timeout';
+import { Executable } from './testUtils';
 
 describe('Timeout', () => {
     const testRandGen = new TestRandomNumberGenerator();
     let beforeSleepSemaphore: Semaphore;
+    let beforeSkipRetrySemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let testRuntime: TestRuntime;
     let testClock: TestClock;
     let executable: Executable;
     let duration: Duration;
     let beforeRetryDelay: () => Promise<void>;
+    let beforeSkipRetry: () => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
         testClock = new TestClock();
 
-        executable = {
-            count: 0,
-            async execute() {
-                const prevCount = this.count;
-                this.count++;
-                if (prevCount < 2) {
-                    return new InternalError(Errors.BadRequest, 'first error');
-                }
-            },
-        };
         beforeRetryDelay = async () => {
             testClock.setCurrentTime(new Date(testClock.now().getTime() + 2));
         };
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
+        beforeSkipRetrySemaphore = new Semaphore('BeforeSkipRetry');
         exitSemaphore = new Semaphore('Exit');
         testClock.setCurrentTime(new Date());
+        beforeSkipRetry = async () => {
+            beforeSkipRetrySemaphore.release();
+        };
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
             duration = _duration;
@@ -52,71 +48,104 @@ describe('Timeout', () => {
         };
     });
 
-    it('should succeed before timeout', async () => {
-        const backoff = new ExponentialBackoff(testRandGen, {
-            minDelay: 2,
-            randomOffset: 0,
-            scalingFactor: 2,
-        });
+    it.each([
+        [
+            'should succeed before timeout',
+            {
+                errorCode: 'RequestTimeOut',
+                retries: 2,
+                expectedErrorCode: undefined,
+                timeoutDuration: 17,
+                runs: 2,
+                runSkipRetry: false,
+            },
+        ],
+        [
+            'should get error when reaching timeout',
+            {
+                errorCode: 'RequestTimeOut',
+                retries: 2,
+                expectedErrorCode: 'RequestTimeOut',
+                timeoutDuration: 16,
+                runs: 1,
+                runSkipRetry: false,
+            },
+        ],
+        [
+            'should stop retry immediately',
+            {
+                errorCode: 'Unauthenticated',
+                retries: 1,
+                expectedErrorCode: 'Unauthenticated',
+                timeoutDuration: 17,
+                runs: 1,
+                runSkipRetry: true,
+            },
+        ],
+    ])(
+        '%s',
+        async (
+            _,
+            {
+                errorCode,
+                retries,
+                expectedErrorCode,
+                timeoutDuration,
+                runs,
+                runSkipRetry,
+            },
+        ) => {
+            executable = {
+                count: 0,
+                async execute() {
+                    const prevCount = this.count;
+                    this.count++;
+                    if (prevCount < 2) {
+                        return {
+                            errorCode: errorCode as ErrorCode,
+                            message: 'first error',
+                        };
+                    }
+                },
+            };
 
-        const timeout = new TimeoutRetry(
-            testClock,
-            testRuntime,
-            backoff,
-            17,
-            beforeRetryDelay,
-        );
+            const backoff = new ExponentialBackoff(testRandGen, {
+                minDelay: 2,
+                randomOffset: 0,
+                scalingFactor: 2,
+            });
 
-        (async () => {
-            const [retries, error] = await timeout.withRetry(
-                executable.execute.bind(executable),
+            const timeout = new TimeoutRetry(
+                testClock,
+                testRuntime,
+                backoff,
+                timeoutDuration,
+                beforeRetryDelay,
+                beforeSkipRetry,
             );
 
-            strictEqual(retries, 2);
-            strictEqual(error, undefined);
-            exitSemaphore.release();
-        })();
+            (async () => {
+                const [retriesRes, errorRes] = await timeout.withRetry(
+                    executable.execute.bind(executable),
+                );
 
-        await beforeSleepSemaphore.wait();
-        strictEqual(executable.count, 1);
-        testRuntime.threadAwake();
+                strictEqual(retriesRes, retries);
+                strictEqual(errorRes?.errorCode, expectedErrorCode);
+                exitSemaphore.release();
+            })();
 
-        await beforeSleepSemaphore.wait();
-        strictEqual(executable.count, 2);
-        testRuntime.threadAwake();
+            for (let run = 0; run < runs; run++) {
+                if (runSkipRetry) {
+                    await beforeSkipRetrySemaphore.wait();
+                } else {
+                    await beforeSleepSemaphore.wait();
+                }
 
-        await exitSemaphore.wait();
-    });
+                strictEqual(executable.count, run + 1);
+                testRuntime.threadAwake();
+            }
 
-    it('should get error when reaching timeout', async () => {
-        const backoff = new ExponentialBackoff(testRandGen, {
-            minDelay: 2,
-            randomOffset: 0,
-            scalingFactor: 2,
-        });
-
-        const timeout = new TimeoutRetry(
-            testClock,
-            testRuntime,
-            backoff,
-            16,
-            beforeRetryDelay,
-        );
-
-        (async () => {
-            const [retries, error] = await timeout.withRetry(
-                executable.execute.bind(executable),
-            );
-
-            strictEqual(retries, 2);
-            strictEqual(error?.message, 'first error');
-            exitSemaphore.release();
-        })();
-
-        await beforeSleepSemaphore.wait();
-        strictEqual(executable.count, 1);
-        testRuntime.threadAwake();
-
-        await exitSemaphore.wait();
-    });
+            await exitSemaphore.wait();
+        },
+    );
 });

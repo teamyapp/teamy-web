@@ -1,11 +1,15 @@
-import { InternalError } from '@lib/error/errors';
+import { ERROR_CATEGORIES, InternalError } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
 
 import { BackOff } from './backoff/backoff';
 import { Retry } from './retry';
 
 export class InfiniteRetry implements Retry {
-    constructor(private runtime: Runtime, private backoff: BackOff) {}
+    constructor(
+        private runtime: Runtime,
+        private backoff: BackOff,
+        private beforeSkipRetry?: () => Promise<void>,
+    ) {}
 
     public withRetry(
         execute: () => Promise<InternalError | undefined>,
@@ -20,9 +24,16 @@ export class InfiniteRetry implements Retry {
                     return;
                 }
 
+                retries++;
+                const errorCategory = ERROR_CATEGORIES[err.errorCode];
+                if (errorCategory === 'ClientInteraction') {
+                    await this.beforeSkipRetry?.call(null);
+                    resolve([retries, err]);
+                    return;
+                }
+
                 this.backoff.onFailure();
                 await this.runtime.threadSleep(this.backoff.delay());
-                retries++;
             }
         });
     }

@@ -1,67 +1,114 @@
 import { strictEqual } from 'assert';
 
 import { Duration } from '@lib/entity/duration';
-import { Errors, InternalError } from '@lib/error/errors';
+import { ErrorCode } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { InfiniteRetry } from './infinite';
-import { Executable } from './retry.test';
+import { Executable } from './testUtils';
+
 
 describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();
     let testRuntime: TestRuntime;
     let executable: Executable;
+    let beforeSkipRetrySemaphore: Semaphore;
     let beforeSleepSemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let duration: Duration;
+    let beforeSkipRetry: () => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
-        executable = {
-            count: 0,
-            async execute() {
-                const prevCount = this.count;
-                this.count++;
-                if (prevCount < 10) {
-                    return new InternalError(Errors.BadRequest, 'first error');
-                }
-            },
-        };
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
+        beforeSkipRetrySemaphore = new Semaphore('BeforeSkipRetry');
         exitSemaphore = new Semaphore('Exit');
+        beforeSkipRetry = async () => {
+            beforeSkipRetrySemaphore.release();
+        };
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
             duration = _duration;
         };
     });
 
-    it('retry until succeeded', async () => {
-        const backoff = new ExponentialBackoff(testRandGen, {
-            minDelay: 2,
-            randomOffset: 0,
-            scalingFactor: 2,
-            maxDelay: 600,
-        });
-        const infinite = new InfiniteRetry(testRuntime, backoff);
+    it.each([
+        [
+            'retry until succeeded',
+            {
+                errorCode: 'RequestTimeOut',
+                retries: 10,
+                expectedErrorCode: undefined,
+                runs: 10,
+                runSkipRetry: false,
+            },
+        ],
+        [
+            'should stop retry immediately',
+            {
+                errorCode: 'Unauthenticated',
+                retries: 1,
+                expectedErrorCode: 'Unauthenticated',
+                runs: 1,
+                runSkipRetry: true,
+            },
+        ],
+    ])(
+        '$s',
+        async (
+            _,
+            { errorCode, retries, expectedErrorCode, runs, runSkipRetry },
+        ) => {
+            executable = {
+                count: 0,
+                async execute() {
+                    const prevCount = this.count;
+                    this.count++;
+                    if (prevCount < retries) {
+                        return {
+                            errorCode: errorCode as ErrorCode,
+                            message: 'first error',
+                        };
+                    }
+                },
+            };
 
-        (async () => {
-            const [retries, error] = await infinite.withRetry(
-                executable.execute.bind(executable),
+            const backoff = new ExponentialBackoff(testRandGen, {
+                minDelay: 2,
+                randomOffset: 0,
+                scalingFactor: 2,
+                maxDelay: 600,
+            });
+            const infinite = new InfiniteRetry(
+                testRuntime,
+                backoff,
+                beforeSkipRetry,
             );
 
-            strictEqual(retries, 10);
-            strictEqual(duration.totalMilliSeconds, 600);
-            strictEqual(error, undefined);
-            exitSemaphore.release();
-        })().then();
+            (async () => {
+                const [retriesRes, errorRes] = await infinite.withRetry(
+                    executable.execute.bind(executable),
+                );
 
-        for (let retry = 1; retry <= 10; retry++) {
-            await beforeSleepSemaphore.wait();
-            strictEqual(executable.count, retry);
-            testRuntime.threadAwake();
-        }
-    });
+                strictEqual(retriesRes, retries);
+                strictEqual(duration.totalMilliSeconds, 600);
+                strictEqual(errorRes?.errorCode, expectedErrorCode);
+                exitSemaphore.release();
+            })().then();
+
+            for (let retry = 1; retry <= runs; retry++) {
+                if (runSkipRetry) {
+                    await beforeSkipRetrySemaphore.wait();
+                } else {
+                    await beforeSleepSemaphore.wait();
+                }
+
+                strictEqual(executable.count, retry);
+                testRuntime.threadAwake();
+            }
+        },
+    );
 });
