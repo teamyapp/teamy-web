@@ -30,7 +30,7 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotantialTaskOwnersToUpdateTask?: (
+    onShowPotentialTaskOwners?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
@@ -81,8 +81,8 @@ export class NeedAttentionSection extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotantialTaskOwnersToUpdateTask={
-                            this.props.onShowPotantialTaskOwnersToUpdateTask
+                        onShowPotentialTaskOwners={
+                            this.props.onShowPotentialTaskOwners
                         }
                     />
                 </div>

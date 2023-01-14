@@ -36,7 +36,6 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
     private onClose?: () => void;
 
-
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;

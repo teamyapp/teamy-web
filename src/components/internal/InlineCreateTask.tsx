@@ -17,10 +17,9 @@ import { getUserShortName } from './format';
 interface Props {
     deps: Deps;
     taskOwnerId?: number;
-    defaultToCurrentUser?: boolean;
     onCreateTask?: (task: CreateTaskInput) => void;
     onDiscardNewTask?: () => void;
-    onShowPotantialTaskOwnersToCreateTask?: (
+    onShowPotantialTaskOwners?: (
         findAlignTargetBoundBox: BoundingBoxFinder,
         onClose: () => void,
     ) => void;
@@ -28,7 +27,7 @@ interface Props {
 
 interface State {
     task: CreateTaskInput;
-    assignOwnerActive: boolean;
+    assigningOwner: boolean;
 }
 
 export class InlineCreateTaskUI extends Component<Props, State> {
@@ -62,9 +61,9 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                         <TooltipUI message={'Save'}>
                             <div
                                 className={styles.Action}
-                                onClick={this.onSaveTaskEditionClick}
+                                onClick={this.onSaveTaskClick}
                             >
-                                <div className={styles.SaveTaskEditionIcon}>
+                                <div className={styles.SaveTaskIcon}>
                                     <MaterialIconUI>done</MaterialIconUI>
                                 </div>
                             </div>
@@ -74,9 +73,9 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                         <TooltipUI message={'Cancel'}>
                             <div
                                 className={styles.Action}
-                                onClick={this.onCancelTaskEditionClick}
+                                onClick={this.onCancelTaskClick}
                             >
-                                <div className={styles.CancelTaskEditionIcon}>
+                                <div className={styles.CancelTaskIcon}>
                                     <MaterialIconUI>close</MaterialIconUI>
                                 </div>
                             </div>
@@ -116,11 +115,6 @@ export class InlineCreateTaskUI extends Component<Props, State> {
     }
 
     private owner = () => {
-        if (!this.props.taskOwnerId && !this.props.defaultToCurrentUser) {
-            return undefined;
-        } else if (!this.props.taskOwnerId) {
-            return this.graphSource.currentUser();
-        } else {
             return this.graphSource.user(this.props.taskOwnerId);
         }
     };

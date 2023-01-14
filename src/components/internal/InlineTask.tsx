@@ -50,7 +50,7 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotantialTaskOwnersToUpdateTask?: (
+    onShowPotantialTaskOwners?: (
         taskId: number,
         updateTaskInput: UpdateTaskInput,
         findAlignTargetBoundBox: BoundingBoxFinder,
@@ -420,7 +420,7 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
-        this.props.onShowPotantialTaskOwnersToUpdateTask?.call(
+        this.props.onShowPotantialTaskOwners?.call(
             null,
             this.props.task.id,
             this.getUpdatedTask(),

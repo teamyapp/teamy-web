@@ -130,7 +130,7 @@ export class UpcomingSection extends Component<Props, State> {
                                     taskOwnerId={this.props.selectedOwnerId}
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
-                                    onShowPotantialTaskOwnersToCreateTask={
+                                    onShowPotentialTaskOwners={
                                         this.props.onShowPotantialTaskOwnersToCreateTask
                                     }
                                     defaultToCurrentUser
@@ -168,7 +168,7 @@ export class UpcomingSection extends Component<Props, State> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotantialTaskOwnersToUpdateTask={
+                        onShowPotentialTaskOwners={
                             this.props.onShowPotantialTaskOwnersToUpdateTask
                         }
                     />

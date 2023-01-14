@@ -20,13 +20,13 @@
         grid-template-columns: repeat(3, 1fr)
     }
     
-    .SaveTaskEditionIcon {
+    .SaveTaskIcon {
         background-color: #00897b;
         @include actionIcon;
         --icon-size: #{$actionIconSize + 4px};
     }
 
-    .CancelTaskEditionIcon {
+    .CancelTaskIcon {
         background-color: #e53935;
         @include actionIcon;
         --icon-size: #{$actionIconSize - 6px};

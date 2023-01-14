@@ -105,7 +105,7 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotantialTaskOwnersToUpdateTask={
+                        onShowPotentialTaskOwners={
                             this.props.onShowPotantialTaskOwnersToUpdateTask
                         }
                     />
@@ -125,7 +125,7 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotantialTaskOwnersToUpdateTask={
+                        onShowPotentialTaskOwners={
                             this.props.onShowPotantialTaskOwnersToUpdateTask
                         }
                     />
@@ -145,7 +145,7 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotantialTaskOwnersToUpdateTask={
+                        onShowPotentialTaskOwners={
                             this.props.onShowPotantialTaskOwnersToUpdateTask
                         }
                     />

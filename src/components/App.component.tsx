@@ -346,7 +346,7 @@ export class AppComponent extends Component<Props, State> {
                     deps={this.props.deps}
                     selectOwnerTaskId={this.state.selectOwnerTaskId}
                     onClose={this.onTaskDetailModalClose}
-                    onShowPotantialTaskOwnersToUpdateTask={this.onShowPotantialTaskOwnersToUpdateTask}
+                    onShowPotantialTaskOwners={this.onShowPotantialTaskOwnersToUpdateTask}
                 />
                 <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
@@ -676,7 +676,6 @@ export class AppComponent extends Component<Props, State> {
             findAlignTargetBoundBox,
             onClose
         );
-
         this.onSelectOwner = (selectedOwnerId) => {
             this.setState({
                 selectedOwnerId

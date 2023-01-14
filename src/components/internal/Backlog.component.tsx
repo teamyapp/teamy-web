@@ -151,7 +151,7 @@ export class BacklogComponent extends Component<Props, State> {
                                     taskOwnerId={this.props.selectedOwnerId}
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
-                                    onShowPotantialTaskOwnersToCreateTask={
+                                    onShowPotantialTaskOwners={
                                         this.props.onShowPotantialTaskOwnersToCreateTask
                                     }
                                 />
@@ -174,8 +174,6 @@ export class BacklogComponent extends Component<Props, State> {
 
     private updateState() {
         let tasks = this.graphSource.currentTeam()?.tasks || [];
-
-
         tasks = tasks.filter(unplanned).sort(orderByStatusUrgencyAsc);
         this.setState({
             unplannedTasks: tasks,
@@ -204,7 +202,7 @@ export class BacklogComponent extends Component<Props, State> {
                     onUpdateTask={this.onUpdateTask}
                     onDeleteTask={this.onDeleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}
-                    onShowPotantialTaskOwnersToUpdateTask={
+                    onShowPotantialTaskOwners={
                         this.props.onShowPotantialTaskOwnersToUpdateTask
                     }
                 />

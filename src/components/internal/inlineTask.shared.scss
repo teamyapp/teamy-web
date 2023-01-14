@@ -51,14 +51,14 @@ $edgeSpace: 10px;
         border-left: 2px solid $dividerColor;
         
         .Action {
+            --icon-box-size: #{$actionIconSize};
+            --icon-size: #{$actionIconSize};
             align-items: center;
             border-radius: 4px;
-            --icon-box-size: #{$actionIconSize};
             display: flex;
             height: $actionIconSize;
             justify-content: center;
             padding: 4px;
-            --icon-size: #{$actionIconSize};
             user-select: none;
             width: $actionIconSize;
 
