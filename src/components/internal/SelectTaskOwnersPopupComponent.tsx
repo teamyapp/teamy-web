@@ -17,13 +17,13 @@ const taskOwnersListHorizontalOffset = 10;
 interface Props {
     deps: Deps;
     selectedOwnerId?: number;
+    findTaskOwnersAlignTargetBoundBox?: BoundingBoxFinder;
     onClose?: () => void;
     onSelectOwner?: (taskOwnerId?: number) => void;
 }
 
 interface State {
     showPotentialTaskOwnersList: boolean;
-    findTaskOwnersAlignTargetBoundBox?: BoundingBoxFinder;
     taskOwnersListVisible: boolean;
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
@@ -92,14 +92,14 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
         window.removeEventListener('resize', this.onWindowResize);
     }
 
-    public show = async (findAlignTargetBoundBox: BoundingBoxFinder) => {
+    public show = async () => {
+        // TODO: use relative layout library
         await this.stateSyncer.pullCurrentTeamMembers();
         const teamMembers = this.graphSource.currentTeam()!.members;
         this.setState({
             potentialTaskOwners: teamMembers.map(
                 (teamMember) => teamMember.user,
             ),
-            findTaskOwnersAlignTargetBoundBox: findAlignTargetBoundBox,
             showPotentialTaskOwnersList: true,
         });
 
@@ -118,11 +118,11 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
             return;
         }
 
-        if (!this.state.findTaskOwnersAlignTargetBoundBox) {
+        if (!this.props.findTaskOwnersAlignTargetBoundBox) {
             return;
         }
 
-        const boundingBox = this.state.findTaskOwnersAlignTargetBoundBox();
+        const boundingBox = this.props.findTaskOwnersAlignTargetBoundBox();
         const width = this.taskOwnersPopupRef.current?.offsetWidth || 0;
         const height = this.taskOwnersPopupRef.current?.offsetHeight || 0;
         const left = Math.min(

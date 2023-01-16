@@ -34,6 +34,7 @@ interface State {
 
 export class InlineCreateTaskUI extends Component<Props, State> {
     private readonly graphSource: GraphSource;
+    private getBoundingClientRect?: () => DOMRect
     private readonly selectTaskOwnersPopupRef =
         createRef<SelectTaskOwnersPopupComponent>();
 
@@ -93,6 +94,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                 <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
+                    findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
                     onClose={this.handleTaskOwnersPopupClose}
                     onSelectOwner={this.handleTaskOwnerSelected}
                     selectedOwnerId={this.state.task.ownerUserId}
@@ -161,9 +163,10 @@ export class InlineCreateTaskUI extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
-        this.selectTaskOwnersPopupRef.current?.show.call(null, () => {
+        this.getBoundingClientRect = () => {
             return element.getBoundingClientRect();
-        });
+        }
+        this.selectTaskOwnersPopupRef.current?.show.call(null);
 
         this.setState({ isSelectingOwner: true });
     };

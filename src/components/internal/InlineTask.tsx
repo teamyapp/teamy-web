@@ -13,7 +13,6 @@ import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
-import { Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
@@ -64,6 +63,7 @@ interface State {
 
 export class InlineTaskUI extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
+    private getBoundingClientRect?: () => DOMRect
     private readonly selectTaskOwnersPopupRef =
         createRef<SelectTaskOwnersPopupComponent>();
     constructor(props: Props) {
@@ -142,6 +142,7 @@ export class InlineTaskUI extends Component<Props, State> {
                 <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
+                    findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
                     onClose={this.handleTaskOwnersPopupClose}
                     onSelectOwner={this.handleTaskOwnerSelected}
                     selectedOwnerId={this.props.task.owner?.id}
@@ -451,9 +452,10 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
-        this.selectTaskOwnersPopupRef?.current?.show.call(null, (): Rect => {
+        this.getBoundingClientRect = () => {
             return element.getBoundingClientRect();
-        });
+        }
+        this.selectTaskOwnersPopupRef?.current?.show.call(null);
         this.setState({
             isSelectingOwner: true,
         });

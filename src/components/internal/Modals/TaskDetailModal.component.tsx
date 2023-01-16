@@ -16,7 +16,6 @@ import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 import { TextFieldUI } from '@lib/ui/TextField';
-import { Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
@@ -55,6 +54,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
     private readonly relativeLayout: RelativeLayout;
+    private getBoundingClientRect?: () => DOMRect
     private readonly modalRef = createRef<ModalUI>();
     private readonly selectTaskOwnersPopupRef =
         createRef<SelectTaskOwnersPopupComponent>();
@@ -257,6 +257,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                 </ModalUI>
                 <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
+                    findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
                     deps={this.props.deps}
                     onClose={this.handleTaskOwnersPopupClose}
                     onSelectOwner={this.handleTaskOwnerSelected}
@@ -414,10 +415,10 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
         const element = event.currentTarget as HTMLDivElement;
-
-        this.selectTaskOwnersPopupRef.current?.show.call(null, (): Rect => {
+        this.getBoundingClientRect = () => {
             return element.getBoundingClientRect();
-        });
+        }
+        this.selectTaskOwnersPopupRef.current?.show.call(null);
         this.setState({
             isSelectingOwner: true,
         });
