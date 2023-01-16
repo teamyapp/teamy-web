@@ -11,7 +11,6 @@ import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
@@ -25,7 +24,6 @@ import {
 } from '@core/config/sections';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
-import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
@@ -64,7 +62,6 @@ import {
 import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
 import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
-import { SelectTaskOwnersPopupComponent } from './internal/SelectTaskOwnersPopupComponent';
 import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/InviationLinkCopiedFeedback.component';
 import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
@@ -101,8 +98,6 @@ interface State {
     showBacklog: boolean;
     backlogDropReceiverLayer: number;
     taskFilters: TaskFilters;
-    selectOwnerTaskId?: number;
-    selectedOwnerId?: number;
 }
 
 export class AppComponent extends Component<Props, State> {
@@ -113,8 +108,6 @@ export class AppComponent extends Component<Props, State> {
     private readonly identityClient: IdentityClient;
 
     private readonly headerRef = createRef<HeaderComponent>();
-    private readonly selectTaskOwnersPopupRef =
-        createRef<SelectTaskOwnersPopupComponent>();
     private readonly taskDetailModalRef = createRef<TaskDetailModalComponent>();
     private readonly teamSettingsModalRef =
         createRef<TeamSettingsModalComponent>();
@@ -260,21 +253,8 @@ export class AppComponent extends Component<Props, State> {
                                                     this.state
                                                         .backlogDropReceiverLayer
                                                 }
-                                                selectOwnerTaskId={
-                                                    this.state.selectOwnerTaskId
-                                                }
                                                 taskFilters={
                                                     this.state.taskFilters
-                                                }
-                                                selectedOwnerId={
-                                                    this.state.selectedOwnerId
-                                                }
-                                                onShowPotantialTaskOwnersToUpdateTask={
-                                                    this
-                                                        .onShowPotantialTaskOwnersToUpdateTask
-                                                }
-                                                onShowPotantialTaskOwnersToCreateTask={
-                                                    this.onShowPotantialTaskOwnersToCreateTask
                                                 }
                                                 onViewTaskDetail={
                                                     this.onViewTaskDetail
@@ -289,21 +269,8 @@ export class AppComponent extends Component<Props, State> {
                                         >
                                             <SprintsComponent
                                                 deps={this.props.deps}
-                                                selectOwnerTaskId={
-                                                    this.state.selectOwnerTaskId
-                                                }
                                                 taskFilters={
                                                     this.state.taskFilters
-                                                }
-                                                selectedOwnerId={
-                                                    this.state.selectedOwnerId
-                                                }
-                                                onShowPotantialTaskOwnersToUpdateTask={
-                                                    this
-                                                        .onShowPotantialTaskOwnersToUpdateTask
-                                                }
-                                                onShowPotantialTaskOwnersToCreateTask={
-                                                    this.onShowPotantialTaskOwnersToCreateTask
                                                 }
                                                 onViewTaskDetail={
                                                     this.onViewTaskDetail
@@ -344,16 +311,7 @@ export class AppComponent extends Component<Props, State> {
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
-                    selectOwnerTaskId={this.state.selectOwnerTaskId}
                     onClose={this.onTaskDetailModalClose}
-                    onShowPotantialTaskOwners={this.onShowPotantialTaskOwnersToUpdateTask}
-                />
-                <SelectTaskOwnersPopupComponent
-                    ref={this.selectTaskOwnersPopupRef}
-                    deps={this.props.deps}
-                    onClose={this.onTaskOwnersPopupClose}
-                    onSelectOwner={this.onSelectOwner}
-                    selectedOwnerId={this.state.selectedOwnerId}
                 />
                 <CreateTeamModalComponent
                     ref={this.createTeamModalRef}
@@ -642,50 +600,6 @@ export class AppComponent extends Component<Props, State> {
 
         this.setState({
             showBacklog: !this.state.showBacklog,
-        });
-    };
-
-    private onShowPotantialTaskOwnersToUpdateTask = (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => {
-        this.selectTaskOwnersPopupRef.current?.show.call(
-            this,
-            findAlignTargetBoundBox
-        )
-        this.onSelectOwner = (ownerUserId) => {
-            this.stateSyncer.updateTask(taskId, {
-                ...updateTaskInput,
-                ownerUserId
-            })
-        }
-        this.setState({
-            selectedOwnerId,
-            selectOwnerTaskId: taskId,
-        });
-    }
-
-    private onShowPotantialTaskOwnersToCreateTask = (
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        onClose: () => void,
-    ) => {
-        this.selectTaskOwnersPopupRef.current?.show.call(
-            this,
-            findAlignTargetBoundBox,
-            onClose
-        );
-        this.onSelectOwner = (selectedOwnerId) => {
-            this.setState({
-                selectedOwnerId
-            });
-        }
-    }
-
-    private onTaskOwnersPopupClose = () => {
-        this.setState({
-            selectOwnerTaskId: undefined,
         });
     };
 

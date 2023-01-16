@@ -16,9 +16,9 @@ const taskOwnersListHorizontalOffset = 10;
 
 interface Props {
     deps: Deps;
-    selectedOwnerId?: number,
+    selectedOwnerId?: number;
     onClose?: () => void;
-    onSelectOwner?: (taskOwnerId?: number) => void,
+    onSelectOwner?: (taskOwnerId?: number) => void;
 }
 
 interface State {
@@ -34,7 +34,6 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
     private readonly taskOwnersPopupRef = createRef<HTMLDivElement>();
-    private onClose?: () => void;
 
     constructor(props: Props) {
         super(props);
@@ -93,11 +92,7 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
         window.removeEventListener('resize', this.onWindowResize);
     }
 
-    public show = async (
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        onClose?: () => void,
-    ) => {
-        this.onClose = onClose
+    public show = async (findAlignTargetBoundBox: BoundingBoxFinder) => {
         await this.stateSyncer.pullCurrentTeamMembers();
         const teamMembers = this.graphSource.currentTeam()!.members;
         this.setState({
@@ -152,7 +147,6 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
             taskOwnersListVisible: false,
             showPotentialTaskOwnersList: false,
         });
-        this.onClose?.call(null)
         this.props.onClose?.call(null);
     };
 

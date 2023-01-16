@@ -7,7 +7,6 @@ import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
-import { BoundingBoxFinder } from '@lib/ui/position';
 
 import {
     draggableTask,
@@ -33,20 +32,8 @@ interface Props {
     children?: React.ReactNode;
     deps: Deps;
     dropReceiverLayer?: number;
-    selectOwnerTaskId?: number;
-    selectedOwnerId?: number;
     taskFilters: TaskFilters;
     onViewTaskDetail?: (taskId: number) => void;
-    onShowPotantialTaskOwnersToUpdateTask?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
-    onShowPotantialTaskOwnersToCreateTask?: (
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        onClose: () => void,
-    ) => void;
 }
 
 interface State {
@@ -148,12 +135,8 @@ export class BacklogComponent extends Component<Props, State> {
                             {this.state.onEditingNewTask && (
                                 <InlineCreateTaskUI
                                     deps={this.props.deps}
-                                    taskOwnerId={this.props.selectedOwnerId}
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
-                                    onShowPotantialTaskOwners={
-                                        this.props.onShowPotantialTaskOwnersToCreateTask
-                                    }
                                 />
                             )}
                             {filteredTasks.map((task, index) =>
@@ -188,6 +171,7 @@ export class BacklogComponent extends Component<Props, State> {
         return (
             <div className={styles.ListItem} key={index}>
                 <TaskListItem
+                    deps={this.props.deps}
                     relativeLayout={this.relativeLayout}
                     sectionId={backlogSectionId}
                     dragAndDropController={
@@ -197,14 +181,10 @@ export class BacklogComponent extends Component<Props, State> {
                     task={task}
                     numActionColumns={1}
                     showStatus={true}
-                    isSelectingOwner={task.id === this.props.selectOwnerTaskId}
                     filterTaskAction={filterTaskAction}
                     onUpdateTask={this.onUpdateTask}
                     onDeleteTask={this.onDeleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}
-                    onShowPotantialTaskOwners={
-                        this.props.onShowPotantialTaskOwnersToUpdateTask
-                    }
                 />
             </div>
         );

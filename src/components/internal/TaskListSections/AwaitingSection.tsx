@@ -5,7 +5,6 @@ import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { SectionUI } from '@lib/ui/Section';
 import { SpacerUI } from '@lib/ui/Spacer';
-import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import {
@@ -13,6 +12,7 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { awaitingSectionId } from '@core/config/sections';
+import { Deps } from '@core/dep/deps';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 
@@ -20,10 +20,10 @@ import styles from './AwaitingSection.module.scss';
 import { TaskListItem } from './TaskListItem';
 
 interface Props {
+    deps: Deps;
     relativeLayout: RelativeLayout;
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
-    selectOwnerTaskId?: number;
     currentClientId?: number;
     isPersonal?: boolean;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
@@ -32,12 +32,6 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
 }
 
 export class AwaitingSection extends Component<Props> {
@@ -82,13 +76,11 @@ export class AwaitingSection extends Component<Props> {
             return (
                 <div key={task.id}>
                     <TaskListItem
+                        deps={this.props.deps}
                         relativeLayout={this.props.relativeLayout}
                         dragAndDropController={this.props.dragAndDropController}
                         sectionId={sectionId}
                         task={task}
-                        isSelectingOwner={
-                            this.props.selectOwnerTaskId === task.id
-                        }
                         currentClientId={this.props.currentClientId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
@@ -96,9 +88,6 @@ export class AwaitingSection extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
-                        }
                     />
                 </div>
             );

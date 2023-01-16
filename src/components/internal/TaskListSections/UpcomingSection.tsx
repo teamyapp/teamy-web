@@ -8,7 +8,6 @@ import { DropDownList } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SectionUI } from '@lib/ui/Section';
 import { SpacerUI } from '@lib/ui/Spacer';
-import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import {
@@ -34,13 +33,14 @@ import {
     orderByUrgency,
     orderByValue,
 } from '@core/data/task.order';
+import { Deps } from '@core/dep/deps';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
+import { GraphSource } from '@core/storage/graph/graphSource';
 
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
-import { Deps } from '@core/dep/deps';
 
 interface Props {
     deps: Deps;
@@ -48,8 +48,6 @@ interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
     sortOrder?: string;
-    selectOwnerTaskId?: number;
-    selectedOwnerId?: number;
     currentClientId?: number;
     isPersonal?: boolean;
     onCreateTask?: (task: CreateTaskInput) => void;
@@ -59,16 +57,6 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotantialTaskOwnersToUpdateTask?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
-    onShowPotantialTaskOwnersToCreateTask?: (
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        onClose: () => void,
-    ) => void;
     onSelectSortOrder?: (order: string) => void;
 }
 
@@ -77,8 +65,10 @@ interface State {
 }
 
 export class UpcomingSection extends Component<Props, State> {
+    private readonly graphSource: GraphSource;
     constructor(props: Props) {
         super(props);
+        this.graphSource = props.deps.graphSource;
         this.state = {
             onEditingNewTask: false,
         };
@@ -127,13 +117,11 @@ export class UpcomingSection extends Component<Props, State> {
                             {this.state.onEditingNewTask && (
                                 <InlineCreateTaskUI
                                     deps={this.props.deps}
-                                    taskOwnerId={this.props.selectedOwnerId}
+                                    initialTaskOwnerId={
+                                        this.graphSource.currentUser()?.id
+                                    }
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
-                                    onShowPotentialTaskOwners={
-                                        this.props.onShowPotantialTaskOwnersToCreateTask
-                                    }
-                                    defaultToCurrentUser
                                 />
                             )}
                             {flattenTasks.map(
@@ -153,14 +141,12 @@ export class UpcomingSection extends Component<Props, State> {
             return (
                 <div key={task.id}>
                     <TaskListItem
+                        deps={this.props.deps}
                         relativeLayout={this.props.relativeLayout}
                         dragAndDropController={this.props.dragAndDropController}
                         sectionId={sectionId}
                         task={task}
                         showStatus={true}
-                        isSelectingOwner={
-                            this.props.selectOwnerTaskId === task.id
-                        }
                         currentClientId={this.props.currentClientId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
@@ -168,9 +154,6 @@ export class UpcomingSection extends Component<Props, State> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotantialTaskOwnersToUpdateTask
-                        }
                     />
                 </div>
             );

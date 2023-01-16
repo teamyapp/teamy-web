@@ -1,4 +1,4 @@
-import { InternalError } from "@lib/error/errors";
+import { InternalError } from '@lib/error/errors';
 
 export interface Executable {
     count: number;

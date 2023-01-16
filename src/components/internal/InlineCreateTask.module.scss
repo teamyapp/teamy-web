@@ -17,9 +17,9 @@
     }
 
     .ActionsSection {
-        grid-template-columns: repeat(3, 1fr)
+        grid-template-columns: repeat(3, 1fr);
     }
-    
+
     .SaveTaskIcon {
         background-color: #00897b;
         @include actionIcon;
