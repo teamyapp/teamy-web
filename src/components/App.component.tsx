@@ -120,7 +120,6 @@ export class AppComponent extends Component<Props, State> {
     private readonly requiredActionsModalRef =
         createRef<RequiredActionsModalComponent>();
     private readonly backlogRef = createRef<BacklogComponent>();
-    private onSelectOwner?: (taskOwnerId?: number) => void;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
