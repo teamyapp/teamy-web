@@ -66,6 +66,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private getBoundingClientRect?: () => DOMRect
     private readonly selectTaskOwnersPopupRef =
         createRef<SelectTaskOwnersPopupComponent>();
+        
     constructor(props: Props) {
         super(props);
         this.stateSyncer = props.deps.stateSyncer;

@@ -65,10 +65,11 @@ interface State {
 }
 
 export class UpcomingSection extends Component<Props, State> {
-    private readonly graphSource: GraphSource;
+    private readonly localStore: LocalStore;
+    
     constructor(props: Props) {
         super(props);
-        this.graphSource = props.deps.graphSource;
+        this.localStore = props.deps.localStore;
         this.state = {
             onEditingNewTask: false,
         };
@@ -118,7 +119,7 @@ export class UpcomingSection extends Component<Props, State> {
                                 <InlineCreateTaskUI
                                     deps={this.props.deps}
                                     initialTaskOwnerId={
-                                        this.graphSource.currentUser()?.id
+                                        this.localStore.currUserId
                                     }
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}

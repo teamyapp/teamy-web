@@ -52,7 +52,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
 
     public render() {
         return (
-            <>
+            <Fragment>
                 <div className={styles.Task}>
                     <div className={styles.LeftSection}>
                         <textarea
@@ -80,9 +80,9 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                             <TooltipUI message={'Cancel'}>
                                 <div
                                     className={styles.Action}
-                                    onClick={this.onCancelTaskClick}
+                                    onClick={this.onCancelEditTaskClick}
                                 >
-                                    <div className={styles.CancelTaskIcon}>
+                                    <div className={styles.CancelEditTaskIcon}>
                                         <MaterialIconUI>close</MaterialIconUI>
                                     </div>
                                 </div>
@@ -95,11 +95,11 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
                     findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
-                    onClose={this.handleTaskOwnersPopupClose}
-                    onSelectOwner={this.handleTaskOwnerSelected}
+                    onClose={this.onTaskOwnersPopupClose}
+                    onSelectOwner={this.onSelectTaskOwner}
                     selectedOwnerId={this.state.task.ownerUserId}
                 />
-            </>
+            </Fragment>
         );
     }
 
@@ -147,7 +147,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
         });
     };
 
-    private handleTaskOwnerSelected = (ownerUserId?: number) => {
+    private onSelectTaskOwner = (ownerUserId?: number) => {
         this.setState({
             task: {
                 ...this.state.task,
@@ -157,7 +157,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
         });
     };
 
-    private handleTaskOwnersPopupClose = () => {
+    private onTaskOwnersPopupClose = () => {
         this.setState({ isSelectingOwner: false });
     };
 
@@ -179,7 +179,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
         }
     };
 
-    private onCancelTaskClick = () => {
+    private onCancelEditTaskClick = () => {
         this.props.onDiscardNewTask?.call(null);
     };
 }
