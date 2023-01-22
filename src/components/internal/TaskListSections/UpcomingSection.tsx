@@ -36,11 +36,11 @@ import {
 import { Deps } from '@core/dep/deps';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
-import { GraphSource } from '@core/storage/graph/graphSource';
 
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
+import { LocalStore } from '@core/storage/syncer/localStore';
 
 interface Props {
     deps: Deps;
@@ -119,7 +119,7 @@ export class UpcomingSection extends Component<Props, State> {
                                 <InlineCreateTaskUI
                                     deps={this.props.deps}
                                     initialTaskOwnerId={
-                                        this.localStore.currUserId
+                                        this.localStore.getState().currUserId
                                     }
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
