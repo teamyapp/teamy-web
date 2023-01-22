@@ -375,7 +375,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         });
     };
 
-    private handleTaskOwnersPopupClose = () => {
+    private onTaskOwnersPopupClose = () => {
         this.setState({
             isSelectingOwner: false,
         });
