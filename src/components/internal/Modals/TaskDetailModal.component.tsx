@@ -259,8 +259,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                     ref={this.selectTaskOwnersPopupRef}
                     findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
                     deps={this.props.deps}
-                    onClose={this.handleTaskOwnersPopupClose}
-                    onSelectOwner={this.handleTaskOwnerSelected}
+                    onClose={this.onTaskOwnersPopupClose}
+                    onSelectOwner={this.onTaskOwnerSelected}
                     selectedOwnerId={this.state.task?.owner?.id}
                 />
             </>
@@ -415,9 +415,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
         const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect = () => {
-            return element.getBoundingClientRect();
-        }
+        this.getBoundingClientRect = element.getBoundingClientRect.bind(element);
         this.selectTaskOwnersPopupRef.current?.show.call(null);
         this.setState({
             isSelectingOwner: true,

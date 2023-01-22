@@ -164,9 +164,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect = () => {
-            return element.getBoundingClientRect();
-        }
+        this.getBoundingClientRect = element.getBoundingClientRect.bind(element);
         this.selectTaskOwnersPopupRef.current?.show.call(null);
 
         this.setState({ isSelectingOwner: true });

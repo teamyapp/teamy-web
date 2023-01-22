@@ -144,8 +144,8 @@ export class InlineTaskUI extends Component<Props, State> {
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
                     findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
-                    onClose={this.handleTaskOwnersPopupClose}
-                    onSelectOwner={this.handleTaskOwnerSelected}
+                    onClose={this.onTaskOwnersPopupClose}
+                    onSelectOwner={this.onTaskOwnerSelected}
                     selectedOwnerId={this.props.task.owner?.id}
                 />
             </>
@@ -208,7 +208,7 @@ export class InlineTaskUI extends Component<Props, State> {
         });
     };
 
-    private handleTaskOwnerSelected = (ownerUserId?: number) => {
+    private onTaskOwnerSelected = (ownerUserId?: number) => {
         this.setState({
             isSelectingOwner: false,
         });
@@ -219,7 +219,7 @@ export class InlineTaskUI extends Component<Props, State> {
         });
     };
 
-    private handleTaskOwnersPopupClose = () => {
+    private onTaskOwnersPopupClose = () => {
         this.setState({
             isSelectingOwner: false,
         });
@@ -453,9 +453,7 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect = () => {
-            return element.getBoundingClientRect();
-        }
+        this.getBoundingClientRect = element.getBoundingClientRect.bind(element);
         this.selectTaskOwnersPopupRef?.current?.show.call(null);
         this.setState({
             isSelectingOwner: true,
