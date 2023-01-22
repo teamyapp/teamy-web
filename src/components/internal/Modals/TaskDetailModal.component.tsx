@@ -364,7 +364,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         }
     };
 
-    private handleTaskOwnerSelected = (ownerUserId?: number) => {
+    private onTaskOwnerSelected = (ownerUserId?: number) => {
         this.setState({
             isSelectingOwner: false,
         });
