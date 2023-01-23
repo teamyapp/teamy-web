@@ -3,10 +3,10 @@ import React, { Component } from 'react';
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { Draggable } from '@lib/dragAndDrop/Draggable';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
-import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
+import { Deps } from '@core/dep/deps';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
@@ -14,12 +14,12 @@ import { TaskAction } from '@core/entity/taskAction';
 import { InlineTaskUI } from '../InlineTask';
 
 interface Props {
+    deps: Deps;
     relativeLayout: RelativeLayout;
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     sectionId: string;
     task: Task;
     currentClientId?: number;
-    isSelectingOwner: boolean;
     filterTaskAction?: (action: TaskAction) => boolean;
     numActionColumns?: number;
     showStatus?: boolean;
@@ -29,12 +29,6 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
 }
 
 export class TaskListItem extends Component<Props> {
@@ -47,10 +41,10 @@ export class TaskListItem extends Component<Props> {
                 data={this.props.task}
             >
                 <InlineTaskUI
+                    deps={this.props.deps}
                     relativeLayout={this.props.relativeLayout}
                     task={this.props.task}
                     currentClientId={this.props.currentClientId}
-                    isSelectingOwner={this.props.isSelectingOwner}
                     filterTaskAction={this.props.filterTaskAction}
                     numActionColumns={this.props.numActionColumns}
                     showStatus={this.props.showStatus}
@@ -60,9 +54,6 @@ export class TaskListItem extends Component<Props> {
                     onCompleteTask={this.props.onCompleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}
                     onReportTaskBlocked={this.props.onReportTaskBlocked}
-                    onShowPotentialTaskOwners={
-                        this.props.onShowPotentialTaskOwners
-                    }
                     onStartEditingTask={this.onStartEditingTask}
                     onFinishEditingTask={this.onFinishEditingTask}
                 />

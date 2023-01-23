@@ -12,7 +12,6 @@ import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TooltipUI } from '@lib/ui/Tooltip';
-import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
@@ -57,13 +56,6 @@ const sectionIds = [
 interface Props {
     deps: Deps;
     taskFilters: TaskFilters;
-    selectOwnerTaskId?: number;
-    onShowPotentialTaskOwners?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onCreateSprintClick?: () => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
@@ -354,7 +346,6 @@ export class SprintsComponent extends Component<Props, State> {
                             personalTasksFilter,
                         )}
                         currentClientId={clientId}
-                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         sortOrders={this.state.sortOrders}
                         onCreateTask={this.onCreateTask}
                         onUpdateTask={this.onUpdateTask}
@@ -363,9 +354,6 @@ export class SprintsComponent extends Component<Props, State> {
                         onCompleteTask={this.moveTaskToDelivered}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
-                        }
                         onSelectUpcomingOrder={this.onSelectUpcomingOrder}
                     />
                 );
@@ -469,7 +457,6 @@ export class SprintsComponent extends Component<Props, State> {
                                 tasks={this.state.sprintTasks.filter(
                                     teamTasksFilter,
                                 )}
-                                selectOwnerTaskId={this.props.selectOwnerTaskId}
                                 currentClientId={clientId}
                                 sortOrders={this.state.sortOrders}
                                 onCreateTask={this.onCreateTask}
@@ -479,9 +466,6 @@ export class SprintsComponent extends Component<Props, State> {
                                 onCompleteTask={this.moveTaskToDelivered}
                                 onViewTaskDetail={this.props.onViewTaskDetail}
                                 onReportTaskBlocked={this.onReportTaskBlocked}
-                                onShowPotentialTaskOwners={
-                                    this.props.onShowPotentialTaskOwners
-                                }
                                 onSelectUpcomingOrder={
                                     this.onSelectUpcomingOrder
                                 }

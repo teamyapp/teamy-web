@@ -1,60 +1,144 @@
-import React, { ChangeEvent, Component } from 'react';
+import classNames from 'classnames';
+import React, {
+    Fragment,
+    ChangeEvent,
+    Component,
+    MouseEvent,
+    ReactNode,
+    createRef,
+} from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { taskGoalLengthLimit } from '@core/config/config';
+import { Deps } from '@core/dep/deps';
 import { CreateTaskInput } from '@core/entity/input';
-import { User } from '@core/entity/user';
+import { GraphSource } from '@core/storage/graph/graphSource';
 
 import styles from './InlineCreateTask.module.scss';
+import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
 import { UserProfileUI } from './UserProfile';
+import { getUserShortName } from './format';
 
 interface Props {
-    owner?: User;
+    deps: Deps;
+    initialTaskOwnerId?: number;
     onCreateTask?: (task: CreateTaskInput) => void;
     onDiscardNewTask?: () => void;
 }
 
 interface State {
     task: CreateTaskInput;
+    isSelectingOwner: boolean;
 }
 
 export class InlineCreateTaskUI extends Component<Props, State> {
+    private readonly graphSource: GraphSource;
+    private getBoundingClientRect?: () => DOMRect
+    private readonly selectTaskOwnersPopupRef =
+        createRef<SelectTaskOwnersPopupComponent>();
+
     constructor(props: Props) {
         super(props);
+        this.graphSource = props.deps.graphSource;
         this.state = {
             task: {
                 goal: '',
-                ownerUserId: props.owner?.id,
+                ownerUserId: props.initialTaskOwnerId,
             },
+            isSelectingOwner: false,
         };
     }
 
     public render() {
         return (
-            <div className={styles.Task}>
-                <div className={styles.LeftSection}>
-                    <textarea
-                        autoFocus
-                        maxLength={taskGoalLengthLimit}
-                        className={styles.GoalTextField}
-                        value={this.state.task.goal || ''}
-                        onChange={this.onGoalChange}
-                        onBlur={this.onGoalBlur}
-                    />
-                </div>
-                <div className={styles.Owner}>
-                    <div className={`${styles.Action} ${styles.OwnerIcon}`}>
-                        {this.props.owner ? (
-                            <UserProfileUI user={this.props.owner} />
-                        ) : (
-                            <MaterialIconUI>face</MaterialIconUI>
-                        )}
+            <Fragment>
+                <div className={styles.Task}>
+                    <div className={styles.LeftSection}>
+                        <textarea
+                            autoFocus
+                            maxLength={taskGoalLengthLimit}
+                            className={styles.GoalTextField}
+                            value={this.state.task.goal || ''}
+                            onChange={this.onGoalChange}
+                        />
+                    </div>
+                    <div className={styles.ActionsSection}>
+                        <div>
+                            <TooltipUI message={'Save'}>
+                                <div
+                                    className={styles.Action}
+                                    onClick={this.onSaveTaskClick}
+                                >
+                                    <div className={styles.SaveTaskIcon}>
+                                        <MaterialIconUI>done</MaterialIconUI>
+                                    </div>
+                                </div>
+                            </TooltipUI>
+                        </div>
+                        <div>
+                            <TooltipUI message={'Cancel'}>
+                                <div
+                                    className={styles.Action}
+                                    onClick={this.onCancelEditTaskClick}
+                                >
+                                    <div className={styles.CancelEditTaskIcon}>
+                                        <MaterialIconUI>close</MaterialIconUI>
+                                    </div>
+                                </div>
+                            </TooltipUI>
+                        </div>
+                        {this.renderAssignOwner()}
                     </div>
                 </div>
+                <SelectTaskOwnersPopupComponent
+                    ref={this.selectTaskOwnersPopupRef}
+                    deps={this.props.deps}
+                    findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
+                    onClose={this.onTaskOwnersPopupClose}
+                    onSelectOwner={this.onSelectTaskOwner}
+                    selectedOwnerId={this.state.task.ownerUserId}
+                />
+            </Fragment>
+        );
+    }
+
+    private renderAssignOwner(): ReactNode {
+        const owner = this.owner();
+        const name = owner
+            ? getUserShortName(owner.firstName, owner.lastName)
+            : 'Unassigned';
+        return (
+            <div className={styles.AssignOwner}>
+                <TooltipUI message={name}>
+                    <div
+                        className={`${styles.Action} ${classNames({
+                            [styles.Active]: this.state.isSelectingOwner,
+                        })}`}
+                        onClick={this.onAssignOwnerClick}
+                    >
+                        <div className={` ${styles.AssignOwnerIcon}`}>
+                            {this.state.task.ownerUserId ? (
+                                <UserProfileUI user={this.owner()!} />
+                            ) : (
+                                <MaterialIconUI>face</MaterialIconUI>
+                            )}
+                        </div>
+                    </div>
+                </TooltipUI>
             </div>
         );
     }
+
+    private owner = () => {
+        const taskOwnerId = this.state.task.ownerUserId;
+        if (!taskOwnerId) {
+            return undefined;
+        }
+
+        return this.graphSource.user(taskOwnerId);
+    };
 
     private onGoalChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({
@@ -64,11 +148,37 @@ export class InlineCreateTaskUI extends Component<Props, State> {
         });
     };
 
-    private onGoalBlur = () => {
+    private onSelectTaskOwner = (ownerUserId?: number) => {
+        this.setState({
+            task: {
+                ...this.state.task,
+                ownerUserId,
+            },
+            isSelectingOwner: false,
+        });
+    };
+
+    private onTaskOwnersPopupClose = () => {
+        this.setState({ isSelectingOwner: false });
+    };
+
+    private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
+        const element = event.currentTarget as HTMLDivElement;
+        this.getBoundingClientRect = element.getBoundingClientRect.bind(element);
+        this.selectTaskOwnersPopupRef.current?.show.call(null);
+
+        this.setState({ isSelectingOwner: true });
+    };
+
+    private onSaveTaskClick = () => {
         if (this.state.task.goal) {
             this.props.onCreateTask?.call(null, this.state.task);
         } else {
             this.props.onDiscardNewTask?.call(null);
         }
+    };
+
+    private onCancelEditTaskClick = () => {
+        this.props.onDiscardNewTask?.call(null);
     };
 }

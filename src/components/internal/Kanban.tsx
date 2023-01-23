@@ -1,7 +1,6 @@
 import React, { Component, ReactNode } from 'react';
 
 import { or } from '@lib/data/filter';
-import { BoundingBoxFinder } from '@lib/ui/position';
 
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
@@ -26,7 +25,6 @@ interface Props {
     tasks: Task[];
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     sortOrders: SortOrders;
-    selectOwnerTaskId?: number;
     currentClientId?: number;
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
@@ -35,12 +33,6 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
     onSelectUpcomingOrder?: (order: string) => void;
 }
 
@@ -59,13 +51,13 @@ export class KanbanUI extends Component<Props> {
             <div className={styles.TaskLists}>
                 <div className={`${styles.TaskListSection}`}>
                     <UpcomingSection
+                        deps={this.props.deps}
                         relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
                         currentClientId={this.props.currentClientId}
                         tasks={upcomingTasks}
-                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         sortOrder={this.props.sortOrders.upcoming}
                         onCreateTask={this.props.onCreateTask}
                         onUpdateTask={this.props.onUpdateTask}
@@ -74,70 +66,58 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
-                        }
                         onSelectSortOrder={this.props.onSelectUpcomingOrder}
                     />
                 </div>
                 <div className={`${styles.TaskListSection}`}>
                     <InProgressSection
+                        deps={this.props.deps}
                         relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
                         tasks={inProgressTasks}
                         currentClientId={this.props.currentClientId}
-                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
-                        }
                     />
                 </div>
                 <div className={`${styles.TaskListSection}`}>
                     <AwaitingSection
+                        deps={this.props.deps}
                         relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
                         currentClientId={this.props.currentClientId}
                         tasks={awaitingTasks}
-                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
-                        }
                     />
                 </div>
                 <div className={`${styles.TaskListSection}`}>
                     <DeliveredSection
+                        deps={this.props.deps}
                         relativeLayout={this.props.deps.relativeLayout}
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
                         tasks={deliveredTasks}
                         currentClientId={this.props.currentClientId}
-                        selectOwnerTaskId={this.props.selectOwnerTaskId}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
-                        }
                     />
                 </div>
             </div>

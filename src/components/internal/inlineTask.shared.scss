@@ -1,7 +1,15 @@
 @import '../../libs/ui/styleguide/elevation';
+@import '../../libs/ui/styleguide/divider';
 
 $actionIconSize: 28px;
 $edgeSpace: 10px;
+
+@mixin actionIcon {
+    border-radius: 50%;
+    align-items: center;
+    display: flex;
+    --icon-color: white;
+}
 
 @mixin goalText {
     font-family: inherit;
@@ -25,5 +33,44 @@ $edgeSpace: 10px;
     .LeftSection {
         flex: 1;
         padding-right: $edgeSpace;
+    }
+
+    .AssignOwnerIcon {
+        align-items: center;
+        border-radius: 50%;
+        --icon-color: #3d7bf6;
+        display: flex;
+        --icon-size: #{$actionIconSize + 4px};
+    }
+
+    .ActionsSection {
+        display: grid;
+        gap: 2px;
+        grid-auto-rows: min-content;
+        padding-left: $edgeSpace;
+        border-left: 2px solid $dividerColor;
+
+        .Action {
+            --icon-box-size: #{$actionIconSize};
+            --icon-size: #{$actionIconSize};
+            align-items: center;
+            border-radius: 4px;
+            display: flex;
+            height: $actionIconSize;
+            justify-content: center;
+            padding: 4px;
+            user-select: none;
+            width: $actionIconSize;
+
+            &.Active,
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.07);
+            }
+        }
+
+        .AssignOwner {
+            --profile-height: #{$actionIconSize};
+            --profile-width: #{$actionIconSize};
+        }
     }
 }

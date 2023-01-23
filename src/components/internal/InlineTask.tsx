@@ -5,6 +5,7 @@ import React, {
     KeyboardEvent,
     MouseEvent,
     ReactNode,
+    createRef,
 } from 'react';
 
 import { Duration } from '@lib/entity/duration';
@@ -12,16 +13,18 @@ import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
-import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
+import { Deps } from '@core/dep/deps';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
+import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
 import { UserProfileUI } from './UserProfile';
 import { dueDate, getUserShortName } from './format';
 
@@ -35,13 +38,13 @@ const statusNames: Record<TaskStatus, string> = {
 };
 
 interface Props {
+    deps: Deps;
     relativeLayout: RelativeLayout;
     task: Task;
     filterTaskAction?: (action: TaskAction) => boolean;
     showStatus?: boolean;
     numActionColumns?: number;
     currentClientId?: number;
-    isSelectingOwner?: boolean;
     onStartEditingTask?: () => void;
     onFinishEditingTask?: () => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
@@ -50,23 +53,25 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
 }
 
 interface State {
     isEditingGoal: boolean;
+    isSelectingOwner: boolean;
     updatedGoal?: string;
 }
 
 export class InlineTaskUI extends Component<Props, State> {
+    private readonly stateSyncer: StateSyncer;
+    private getBoundingClientRect?: () => DOMRect
+    private readonly selectTaskOwnersPopupRef =
+        createRef<SelectTaskOwnersPopupComponent>();
+        
     constructor(props: Props) {
         super(props);
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
+            isSelectingOwner: false,
             isEditingGoal: false,
         };
     }
@@ -78,60 +83,72 @@ export class InlineTaskUI extends Component<Props, State> {
             draggingBy && draggingBy.id !== this.props.currentClientId;
 
         return (
-            <div className={styles.InlineTask}>
-                <div
-                    className={`${styles.Task} ${classNames({
-                        [styles.Dragging]: showDraggingBy,
-                    })}`}
-                >
-                    <div className={styles.LeftSection}>
-                        <div className={styles.TopRow}>
-                            <div className={`${styles.Attribute} ${styles.Id}`}>
-                                {this.props.task.id}
-                            </div>
-                            {this.props.showStatus && (
-                                <div
-                                    className={`${styles.Attribute} ${
-                                        styles.Status
-                                    } ${styles[this.props.task.status]}`}
-                                >
-                                    {statusNames[this.props.task.status]}
-                                </div>
-                            )}
-                        </div>
-                        {this.renderGoal()}
-                        <div className={styles.BottomRow}>
-                            <div className={styles.Attribute}>
-                                {this.renderDueAt()}
-                            </div>
-                            <div className={styles.Attribute}>
-                                {this.renderEffort()}
-                            </div>
-                        </div>
-                        {this.props.task.awaitForTasks?.length > 0 &&
-                            this.renderAwaitForTasks()}
-                    </div>
+            <>
+                <div className={styles.InlineTask}>
                     <div
-                        className={styles.ActionsSection}
-                        style={{
-                            gridTemplateColumns: `repeat(${
-                                this.props.numActionColumns || 3
-                            }, 1fr)`,
-                        }}
+                        className={`${styles.Task} ${classNames({
+                            [styles.Dragging]: showDraggingBy,
+                        })}`}
                     >
-                        {this.renderActions()}
+                        <div className={styles.LeftSection}>
+                            <div className={styles.TopRow}>
+                                <div
+                                    className={`${styles.Attribute} ${styles.Id}`}
+                                >
+                                    {this.props.task.id}
+                                </div>
+                                {this.props.showStatus && (
+                                    <div
+                                        className={`${styles.Attribute} ${
+                                            styles.Status
+                                        } ${styles[this.props.task.status]}`}
+                                    >
+                                        {statusNames[this.props.task.status]}
+                                    </div>
+                                )}
+                            </div>
+                            {this.renderGoal()}
+                            <div className={styles.BottomRow}>
+                                <div className={styles.Attribute}>
+                                    {this.renderDueAt()}
+                                </div>
+                                <div className={styles.Attribute}>
+                                    {this.renderEffort()}
+                                </div>
+                            </div>
+                            {this.props.task.awaitForTasks?.length > 0 &&
+                                this.renderAwaitForTasks()}
+                        </div>
+                        <div
+                            className={styles.ActionsSection}
+                            style={{
+                                gridTemplateColumns: `repeat(${
+                                    this.props.numActionColumns || 3
+                                }, 1fr)`,
+                            }}
+                        >
+                            {this.renderActions()}
+                        </div>
                     </div>
+                    {showDraggingBy && (
+                        <div className={styles.DraggingBySection}>
+                            {getUserShortName(
+                                draggingBy.user.firstName,
+                                draggingBy.user.lastName,
+                            )}{' '}
+                            is dragging
+                        </div>
+                    )}
                 </div>
-                {showDraggingBy && (
-                    <div className={styles.DraggingBySection}>
-                        {getUserShortName(
-                            draggingBy.user.firstName,
-                            draggingBy.user.lastName,
-                        )}{' '}
-                        is dragging
-                    </div>
-                )}
-            </div>
+                <SelectTaskOwnersPopupComponent
+                    ref={this.selectTaskOwnersPopupRef}
+                    deps={this.props.deps}
+                    findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
+                    onClose={this.onTaskOwnersPopupClose}
+                    onSelectOwner={this.onTaskOwnerSelected}
+                    selectedOwnerId={this.props.task.owner?.id}
+                />
+            </>
         );
     }
 
@@ -188,6 +205,23 @@ export class InlineTaskUI extends Component<Props, State> {
         this.props.onUpdateTask?.call(this, this.props.task.id, {
             ...this.getUpdatedTask(),
             dueAt: date,
+        });
+    };
+
+    private onTaskOwnerSelected = (ownerUserId?: number) => {
+        this.setState({
+            isSelectingOwner: false,
+        });
+
+        this.stateSyncer.updateTask(this.props.task.id, {
+            ...this.getUpdatedTask(),
+            ownerUserId,
+        });
+    };
+
+    private onTaskOwnersPopupClose = () => {
+        this.setState({
+            isSelectingOwner: false,
         });
     };
 
@@ -328,7 +362,7 @@ export class InlineTaskUI extends Component<Props, State> {
                         onClick={this.onCompleteTaskClick}
                     >
                         <div className={` ${styles.CompleteTaskIcon}`}>
-                            <MaterialIconUI>check</MaterialIconUI>
+                            <MaterialIconUI>task_alt</MaterialIconUI>
                         </div>
                     </div>
                 </TooltipUI>
@@ -363,8 +397,7 @@ export class InlineTaskUI extends Component<Props, State> {
                 <TooltipUI message={name}>
                     <div
                         className={`${styles.Action} ${classNames({
-                            [styles.Active]:
-                                this.props.isSelectingOwner || false,
+                            [styles.Active]: this.state.isSelectingOwner,
                         })}`}
                         onClick={this.onAssignOwnerClick}
                     >
@@ -420,15 +453,11 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
-        this.props.onShowPotentialTaskOwners?.call(
-            null,
-            this.props.task.id,
-            this.getUpdatedTask(),
-            (): Rect => {
-                return element.getBoundingClientRect();
-            },
-            this.props.task.owner?.id,
-        );
+        this.getBoundingClientRect = element.getBoundingClientRect.bind(element);
+        this.selectTaskOwnersPopupRef?.current?.show.call(null);
+        this.setState({
+            isSelectingOwner: true,
+        });
     };
 
     private onAddAwaitForTaskClick = (event: MouseEvent<HTMLDivElement>) => {
