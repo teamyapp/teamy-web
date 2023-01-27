@@ -23,7 +23,7 @@
     .SaveTaskIcon {
         background-color: #00897b;
         @include actionIcon;
-        --icon-size: #{$actionIconSize + 4px};
+        --icon-size: #{$actionIconSize - 5px};
     }
 
     .CancelEditTaskIcon {
