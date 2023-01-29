@@ -5,7 +5,7 @@ import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { TaskLink } from '@core/entity/taskLink';
 
-import styles from './TaskLink.module.scss';
+import styles from './TaskLinkIcon.module.scss';
 
 interface Props {
     link: TaskLink;
