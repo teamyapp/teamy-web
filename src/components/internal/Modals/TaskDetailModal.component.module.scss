@@ -111,8 +111,10 @@ $divider: 2px solid #eeeeee;
                     margin-bottom: 10px;
                 }
                 .Link {
+                    font-weight: bold;
                     display: flex;
-                    gap: 6px;
+                    align-items: center;
+                    gap: 10px;
                 }
             }
         }

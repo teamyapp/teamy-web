@@ -116,6 +116,12 @@ export class InlineTaskUI extends Component<Props, State> {
                                 <div className={styles.Attribute}>
                                     {this.renderEffort()}
                                 </div>
+
+                                {this.props.task.links.map((link) => (
+                                    <div className={styles.Attribute}>
+                                        <TaskLinkIconUI link={link} />
+                                    </div>
+                                ))}
                             </div>
                             {this.props.task.awaitForTasks?.length > 0 &&
                                 this.renderAwaitForTasks()}
@@ -129,9 +135,6 @@ export class InlineTaskUI extends Component<Props, State> {
                             }}
                         >
                             {this.renderActions()}
-                            {this.props.task.links.map((link) => (
-                                <TaskLinkIconUI link={link} />
-                            ))}
                         </div>
                     </div>
                     {showDraggingBy && (

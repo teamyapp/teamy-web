@@ -29,34 +29,31 @@ export class TaskLinkIconUI extends Component<Props, State> {
             : this.props.link.iconUrl;
 
         return (
-            <div>
-                <TooltipUI message={this.props.link.title}>
-                    <div
-                        className={`${styles.Action}`}
-                        onMouseEnter={this.onMouseEnterTaskLink}
-                        onMouseLeave={this.onMouseLeaveTaskLink}
+            <TooltipUI message={this.props.link.title}>
+                <div
+                    className={styles.TaskLink}
+                    onMouseEnter={this.onMouseEnterTaskLink}
+                    onMouseLeave={this.onMouseLeaveTaskLink}
+                >
+                    <a
+                        href={this.props.link.url}
+                        rel='noreferrer'
+                        target='_blank'
                     >
-                        <a
-                            href={this.props.link.url}
-                            rel='noreferrer'
-                            target='_blank'
-                            className={styles.TaskLink}
-                        >
-                            {this.props.link.iconUrl ? (
-                                <img
-                                    className={styles.TaskLinkImg}
-                                    src={taskLink}
-                                    alt={this.props.link.title}
-                                />
-                            ) : (
-                                <div className={styles.TaskLinkIcon}>
-                                    <MaterialIconUI>link</MaterialIconUI>
-                                </div>
-                            )}
-                        </a>
-                    </div>
-                </TooltipUI>
-            </div>
+                        {this.props.link.iconUrl ? (
+                            <img
+                                className={styles.TaskLinkImg}
+                                src={taskLink}
+                                alt={this.props.link.title}
+                            />
+                        ) : (
+                            <div className={styles.TaskLinkIcon}>
+                                <MaterialIconUI>link</MaterialIconUI>
+                            </div>
+                        )}
+                    </a>
+                </div>
+            </TooltipUI>
         );
     }
 

@@ -171,6 +171,24 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             ref={this.markdownEditorRef}
                                         />
                                     </div>
+                                    <div className={styles.LinksSection}>
+                                        <div className={styles.Title}>
+                                            Links&nbsp;(
+                                            {this.state.task.links.length})
+                                        </div>
+                                        {this.state.task.links.map((link) => (
+                                            <div className={styles.Link}>
+                                                <TaskLinkIconUI link={link} />
+                                                <a
+                                                    href={link.url}
+                                                    target='_blank'
+                                                    rel='noreferrer'
+                                                >
+                                                    {link.title}
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
                                     <div className={styles.CommentsSection}>
                                         <div className={styles.Title}>
                                             Comments&nbsp;(
@@ -203,30 +221,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                     this.onUpdateMessage
                                                 }
                                             />
-                                        </div>
-                                        <div className={styles.LinksSection}>
-                                            <div className={styles.Title}>
-                                                Links&nbsp;(
-                                                {this.state.task.links.length})
-                                            </div>
-                                            {this.state.task.links.map(
-                                                (link) => (
-                                                    <div
-                                                        className={styles.Link}
-                                                    >
-                                                        <TaskLinkIconUI
-                                                            link={link}
-                                                        />
-                                                        <a
-                                                            href={link.url}
-                                                            target='_blank'
-                                                            rel='noreferrer'
-                                                        >
-                                                            {link.title}
-                                                        </a>
-                                                    </div>
-                                                ),
-                                            )}
                                         </div>
                                     </div>
                                 </div>
