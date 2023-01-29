@@ -32,7 +32,6 @@ import wechat from './accountProviders/wechat.svg';
 const accountProvidersComingSoon: AuthProvider[] = [
     'wechat',
     'microsoft',
-    'slack',
 ];
 
 interface Props {
