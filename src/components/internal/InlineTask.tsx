@@ -25,6 +25,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
 import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
+import { TaskLinkIconUI } from './TaskLinkIcon';
 import { UserProfileUI } from './UserProfile';
 import { dueDate, getUserShortName } from './format';
 
@@ -63,10 +64,10 @@ interface State {
 
 export class InlineTaskUI extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
-    private getBoundingClientRect?: () => DOMRect
+    private getBoundingClientRect?: () => DOMRect;
     private readonly selectTaskOwnersPopupRef =
         createRef<SelectTaskOwnersPopupComponent>();
-        
+
     constructor(props: Props) {
         super(props);
         this.stateSyncer = props.deps.stateSyncer;
@@ -115,6 +116,12 @@ export class InlineTaskUI extends Component<Props, State> {
                                 <div className={styles.Attribute}>
                                     {this.renderEffort()}
                                 </div>
+
+                                {this.props.task.links.map((link) => (
+                                    <div className={styles.Attribute}>
+                                        <TaskLinkIconUI link={link} />
+                                    </div>
+                                ))}
                             </div>
                             {this.props.task.awaitForTasks?.length > 0 &&
                                 this.renderAwaitForTasks()}
@@ -143,7 +150,9 @@ export class InlineTaskUI extends Component<Props, State> {
                 <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
-                    findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
+                    findTaskOwnersAlignTargetBoundBox={
+                        this.getBoundingClientRect
+                    }
                     onClose={this.onTaskOwnersPopupClose}
                     onSelectOwner={this.onTaskOwnerSelected}
                     selectedOwnerId={this.props.task.owner?.id}
@@ -453,7 +462,8 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect = element.getBoundingClientRect.bind(element);
+        this.getBoundingClientRect =
+            element.getBoundingClientRect.bind(element);
         this.selectTaskOwnersPopupRef?.current?.show.call(null);
         this.setState({
             isSelectingOwner: true,

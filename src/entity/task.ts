@@ -5,6 +5,7 @@ import { Thread } from '@core/entity/thread';
 
 import { Client } from './client';
 import { TaskAction } from './taskAction';
+import { TaskLink } from './taskLink';
 import { TaskStatus } from './taskStatus';
 import { User } from './user';
 
@@ -23,4 +24,5 @@ export interface Task {
     isPlanned: boolean;
     awaitForTasks: Task[];
     draggingBy?: Client;
+    links: TaskLink[];
 }

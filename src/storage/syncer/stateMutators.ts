@@ -7,6 +7,7 @@ import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteSprintParticipant } from '@core/client/entity/remoteSprintParticipant';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTaskActivity } from '@core/client/entity/remoteTaskActivity';
+import { RemoteTaskLink } from '@core/client/entity/remoteTaskLink';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 import { RemoteThread } from '@core/client/entity/remoteThread';
@@ -32,6 +33,7 @@ import {
 import { ClientState } from '../states/client.state';
 import { DragTaskActivityState } from '../states/dragTaskActivity.state';
 import { TaskActivityState } from '../states/taskActivity.state';
+import { TaskLinkState } from '../states/taskLink.state';
 import { Mutation } from './mutation';
 
 export function applyTaskMutation(
@@ -48,6 +50,23 @@ export function applyTaskMutation(
         case 'Delete': {
             const taskId = mutation.payload;
             delete currState.tasks[taskId];
+            break;
+        }
+    }
+
+    return currState;
+}
+
+export function applyTaskLinkMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create': {
+            const taskLink = TaskLinkState.fromMutationPayload(
+                mutation.payload,
+            );
+            currState.taskLinks[taskLink.id] = taskLink;
             break;
         }
     }
@@ -617,6 +636,7 @@ export function mergeSprint(
 
     remoteSprint.tasks?.forEach((task) => {
         currAppState = mergeTask(currAppState, task);
+        currAppState = mergeTaskLinks(currAppState, task.links);
     });
     if (remoteSprint.tasks) {
         const remainRelations = currAppState.sprintTaskRelations.filter(
@@ -640,6 +660,30 @@ export function mergeSprint(
     }
 
     currAppState.sprints[remoteSprintId] = localNewSprint;
+    return currAppState;
+}
+
+export function mergeTaskLinks(
+    currAppState: AppState,
+    taskLinks: RemoteTaskLink[],
+): AppState {
+    taskLinks.forEach((remoteTaskLink) => {
+        const remoteTaskLinkId = toInt(remoteTaskLink.id)!;
+        const remoteTaskId = toInt(remoteTaskLink.taskId)!;
+        const localOldTaskLink = currAppState.taskLinks[remoteTaskLinkId] || {};
+        const localNewTaskLink: TaskLinkState = {
+            id: remoteTaskLinkId,
+            taskId: remoteTaskId,
+            title: remoteTaskLink.title || localOldTaskLink.title,
+            url: remoteTaskLink.url || localOldTaskLink.url,
+            iconUrl: remoteTaskLink.iconUrl || localOldTaskLink.iconUrl,
+            iconHoverUrl:
+                remoteTaskLink.iconHoverUrl || localOldTaskLink.iconHoverUrl,
+        };
+
+        currAppState.taskLinks[remoteTaskLinkId] = localNewTaskLink;
+    });
+
     return currAppState;
 }
 

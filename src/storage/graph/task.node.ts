@@ -8,6 +8,7 @@ import { TaskStatus } from '@core/storage/states/taskStatus';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { ClientNode } from './client.node';
+import { TaskLinkNode } from './taskLink.node';
 import { TeamNode } from './team.node';
 import { ThreadNode } from './thread.node';
 import { UserNode } from './user.node';
@@ -146,5 +147,21 @@ export class TaskNode implements Task {
         const clientState =
             currentState.clients[taskActivity.dragTaskActivity.clientId];
         return new ClientNode(this.localStore, clientState);
+    }
+
+    public get links(): TaskLinkNode[] {
+        const currentState = this.localStore.getState();
+        const taskLinks = currentState.taskLinks;
+        const links = [];
+        for (let taskLinkId in taskLinks) {
+            const taskLink = taskLinks[taskLinkId];
+            if (taskLink.taskId !== this.id) {
+                continue;
+            }
+
+            links.push(new TaskLinkNode(taskLink));
+        }
+
+        return links;
     }
 }

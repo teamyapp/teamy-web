@@ -55,6 +55,14 @@ export class TaskClient {
                                 }
                             }
                             status
+                            links {
+                                id
+                                taskId
+                                title
+                                url
+                                iconUrl
+                                iconHoverUrl
+                            }
                         }
                     }
                 `,

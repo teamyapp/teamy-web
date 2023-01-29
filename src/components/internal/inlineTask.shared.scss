@@ -1,14 +1,33 @@
+@import '../../libs/ui/styleguide/divider';
 @import '../../libs/ui/styleguide/elevation';
 @import '../../libs/ui/styleguide/divider';
 
-$actionIconSize: 28px;
 $edgeSpace: 10px;
+$actionIconSize: 28px;
 
 @mixin actionIcon {
     border-radius: 50%;
     align-items: center;
     display: flex;
     --icon-color: white;
+}
+
+.Action {
+    --icon-box-size: #{$actionIconSize};
+    --icon-size: #{$actionIconSize};
+    align-items: center;
+    border-radius: 4px;
+    display: flex;
+    height: $actionIconSize;
+    justify-content: center;
+    padding: 4px;
+    user-select: none;
+    width: $actionIconSize;
+
+    &.Active,
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.07);
+    }
 }
 
 @mixin goalText {
@@ -49,24 +68,6 @@ $edgeSpace: 10px;
         grid-auto-rows: min-content;
         padding-left: $edgeSpace;
         border-left: 2px solid $dividerColor;
-
-        .Action {
-            --icon-box-size: #{$actionIconSize};
-            --icon-size: #{$actionIconSize};
-            align-items: center;
-            border-radius: 4px;
-            display: flex;
-            height: $actionIconSize;
-            justify-content: center;
-            padding: 4px;
-            user-select: none;
-            width: $actionIconSize;
-
-            &.Active,
-            &:hover {
-                background-color: rgba(0, 0, 0, 0.07);
-            }
-        }
 
         .AssignOwner {
             --profile-height: #{$actionIconSize};

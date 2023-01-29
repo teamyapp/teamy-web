@@ -36,11 +36,11 @@ import {
 import { Deps } from '@core/dep/deps';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
+import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
-import { LocalStore } from '@core/storage/syncer/localStore';
 
 interface Props {
     deps: Deps;
@@ -66,7 +66,7 @@ interface State {
 
 export class UpcomingSection extends Component<Props, State> {
     private readonly localStore: LocalStore;
-    
+
     constructor(props: Props) {
         super(props);
         this.localStore = props.deps.localStore;

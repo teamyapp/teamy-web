@@ -88,6 +88,14 @@ export class TeamClient {
                                         id
                                     }
                                 }
+                                links {
+                                    id
+                                    taskId
+                                    title
+                                    url
+                                    iconUrl
+                                    iconHoverUrl
+                                }
                             }
                         }
                     }

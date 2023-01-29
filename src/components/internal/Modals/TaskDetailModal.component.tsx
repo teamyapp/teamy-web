@@ -27,6 +27,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { DurationInputUI } from '../DurationInput.ui';
 import { SelectTaskOwnersPopupComponent } from '../SelectTaskOwnersPopupComponent';
+import { TaskLinkIconUI } from '../TaskLinkIcon';
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
 import { getUserShortName } from '../format';
@@ -54,7 +55,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
     private readonly relativeLayout: RelativeLayout;
-    private getBoundingClientRect?: () => DOMRect
+    private getBoundingClientRect?: () => DOMRect;
     private readonly modalRef = createRef<ModalUI>();
     private readonly selectTaskOwnersPopupRef =
         createRef<SelectTaskOwnersPopupComponent>();
@@ -170,6 +171,24 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             ref={this.markdownEditorRef}
                                         />
                                     </div>
+                                    <div className={styles.LinksSection}>
+                                        <div className={styles.Title}>
+                                            Links&nbsp;(
+                                            {this.state.task.links.length})
+                                        </div>
+                                        {this.state.task.links.map((link) => (
+                                            <div className={styles.Link}>
+                                                <TaskLinkIconUI link={link} />
+                                                <a
+                                                    href={link.url}
+                                                    target='_blank'
+                                                    rel='noreferrer'
+                                                >
+                                                    {link.title}
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
                                     <div className={styles.CommentsSection}>
                                         <div className={styles.Title}>
                                             Comments&nbsp;(
@@ -257,7 +276,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                 </ModalUI>
                 <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
-                    findTaskOwnersAlignTargetBoundBox={this.getBoundingClientRect}
+                    findTaskOwnersAlignTargetBoundBox={
+                        this.getBoundingClientRect
+                    }
                     deps={this.props.deps}
                     onClose={this.onTaskOwnersPopupClose}
                     onSelectOwner={this.onTaskOwnerSelected}
@@ -415,7 +436,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
         const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect = element.getBoundingClientRect.bind(element);
+        this.getBoundingClientRect =
+            element.getBoundingClientRect.bind(element);
         this.selectTaskOwnersPopupRef.current?.show.call(null);
         this.setState({
             isSelectingOwner: true,
