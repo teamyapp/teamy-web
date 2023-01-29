@@ -503,6 +503,10 @@ export function mergeTask(
                 : toDuration(remoteTask.effort),
     };
 
+    if (remoteTask.links) {
+        currAppState = mergeTaskLinks(currAppState, remoteTask.links)
+    }
+
     if (remoteTask.creator) {
         currAppState = mergeUser(currAppState, remoteTask.creator);
     }
@@ -636,7 +640,6 @@ export function mergeSprint(
 
     remoteSprint.tasks?.forEach((task) => {
         currAppState = mergeTask(currAppState, task);
-        currAppState = mergeTaskLinks(currAppState, task.links);
     });
     if (remoteSprint.tasks) {
         const remainRelations = currAppState.sprintTaskRelations.filter(
