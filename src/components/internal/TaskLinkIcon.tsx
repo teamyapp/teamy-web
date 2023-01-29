@@ -19,12 +19,12 @@ export class TaskLinkIconUI extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            isHoverLink: false,
+            isHover: false,
         };
     }
 
     public render() {
-        const taskLink = this.state.isHoverLink
+        const taskLink = this.state.isHover
             ? this.props.link.iconHoverUrl
             : this.props.link.iconUrl;
         return (
@@ -58,13 +58,13 @@ export class TaskLinkIconUI extends Component<Props, State> {
 
     private onMouseEnterTaskLink = () => {
         this.setState({
-            isHoverLink: true,
+            isHover: true,
         });
     };
 
     private onMouseLeaveTaskLink = () => {
         this.setState({
-            isHoverLink: false,
+            isHover: false,
         });
     };
 }
