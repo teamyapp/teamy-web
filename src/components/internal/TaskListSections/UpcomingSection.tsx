@@ -79,6 +79,10 @@ export class UpcomingSection extends Component<Props, State> {
         const flattenTasks = flattenGroupedTasksByOwner(
             groupByOwners(this.props.tasks),
         );
+        const initialTaskOwnerId = this.props.isPersonal
+        ? this.localStore.getState()
+              .currUserId
+        : undefined
         return (
             <div className={styles.TaskListSection}>
                 <DragAndDropContainer
@@ -118,9 +122,7 @@ export class UpcomingSection extends Component<Props, State> {
                             {this.state.onEditingNewTask && (
                                 <InlineCreateTaskUI
                                     deps={this.props.deps}
-                                    initialTaskOwnerId={
-                                        this.localStore.getState().currUserId
-                                    }
+                                    initialTaskOwnerId={initialTaskOwnerId}
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
                                 />
