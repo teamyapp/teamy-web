@@ -25,8 +25,8 @@ export class TaskLinkState {
             json.taskId,
             json.title,
             json.url,
-            json.iconURL,
-            json.iconHoverURL,
+            json.iconUrl,
+            json.iconHoverUrl,
         );
     }
 }

@@ -12,7 +12,7 @@ interface Props {
 }
 
 interface State {
-    isHoverLink: boolean;
+    isHover: boolean;
 }
 
 export class TaskLinkIconUI extends Component<Props, State> {
@@ -27,7 +27,6 @@ export class TaskLinkIconUI extends Component<Props, State> {
         const taskLink = this.state.isHoverLink
             ? this.props.link.iconHoverUrl
             : this.props.link.iconUrl;
-
         return (
             <TooltipUI message={this.props.link.title}>
                 <div
