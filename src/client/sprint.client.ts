@@ -48,6 +48,14 @@ export class SprintClient {
                                     }
                                 }
                                 deliveredAt
+                                links {
+                                    id
+                                    taskId
+                                    title
+                                    url
+                                    iconUrl
+                                    iconHoverUrl
+                                }
                             }
                             createdAt
                             participants {

@@ -104,6 +104,17 @@ $divider: 2px solid #eeeeee;
                     overflow-y: auto;
                 }
             }
+
+            .LinksSection {
+                margin-top: 20px;
+                .Title {
+                    margin-bottom: 10px;
+                }
+                .Link {
+                    display: flex;
+                    gap: 6px;
+                }
+            }
         }
 
         .RightSection {

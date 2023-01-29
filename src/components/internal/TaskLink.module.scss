@@ -1,0 +1,16 @@
+@import 'taskIcon.shared';
+
+.TaskLink {
+    text-decoration: none;
+    .TaskLinkImg {
+        width: #{$actionIconSize};
+        height: #{$actionIconSize};
+        border-radius: 50%;
+    }
+
+    .TaskLinkIcon {
+        background-color: #00897b;
+        @include actionIcon;
+        --icon-size: #{$actionIconSize - 6px};
+    }
+}

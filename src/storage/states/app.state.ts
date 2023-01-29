@@ -12,12 +12,15 @@ import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserState } from '@core/storage/states/user.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
+import { TaskLinkState } from './taskLink.state';
+
 export class AppState {
     public constructor(
         public users: Record<number, UserState>,
         public clients: Record<number, ClientState>,
         public teams: Record<number, TeamState>,
         public tasks: Record<number, TaskState>,
+        public taskLinks: Record<number, TaskLinkState>,
         public messages: Record<number, MessageState>,
         public invitations: Record<number, InvitationState>,
         public sprints: Record<number, SprintState>,
@@ -40,6 +43,7 @@ export class AppState {
 
     public static fromJson(json: any): AppState {
         return new AppState(
+            {},
             {},
             {},
             {},
