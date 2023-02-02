@@ -44,6 +44,7 @@ $actionIconSize: 28px;
     display: flex;
     min-height: 80px;
     padding: $edgeSpace;
+    word-break: break-word;
 
     &:hover {
         cursor: pointer;
