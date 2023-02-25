@@ -116,8 +116,7 @@ export class SprintsComponent extends Component<Props, State> {
         // TODO: will change when PersonalStatus is merged with Kanban
         return (
             this.state.isPageReady &&
-            (this.state.selectedSprintId
-                ? this.state.isPageReady && (
+            (this.state.selectedSprintId ? (
                       <div className={styles.Sprint}>
                           <div className={styles.Tabs}>
                               <div className={styles.Container}>

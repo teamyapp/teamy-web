@@ -349,7 +349,6 @@ export class AppComponent extends Component<Props, State> {
         console.log(`[AppComponent]componentDidMount`);
         this.monitorStateChanges();
         this.router.initBrowserUri();
-        // this.monitorRouteChanges();
         this.monitorUserActions();
         this.dragAndDropEventChan =
             this.props.deps.dragAndDropController.subscribeDragAndDropEvent();
@@ -556,17 +555,6 @@ export class AppComponent extends Component<Props, State> {
         });
     }
 
-    // private tryRedirect(activeTeamId?: number) {
-    //     if (activeTeamId) {
-    //         this.router.navigateTo(sprintsPath(activeTeamId));
-    //     } else {
-    //         this.router.navigateTo(rootRoutePattern);
-    //         this.setState({
-    //             showMainContent: true,
-    //         });
-    //     }
-    // }
-
     private processUserAction(userAction: UserActionEvent) {
         switch (userAction) {
             case 'findKeyword':
@@ -574,16 +562,6 @@ export class AppComponent extends Component<Props, State> {
                 break;
         }
     }
-
-    // private trySignUp(currRoutePattern: string) {
-    //     if (currRoutePattern === signUpRoutePattern) {
-    //         return;
-    //     }
-    //
-    //     const currUrl = window.location.href;
-    //     localStorage.setItem(signUpRedirectKey, currUrl);
-    //     this.props.deps.router.navigateTo(signUpRoutePattern);
-    // }
 
     private onBacklogToggle = () => {
         if (!this.state.showBacklog) {

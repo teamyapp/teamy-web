@@ -167,6 +167,8 @@ export class StateSyncer {
                 teamMember.teamId === currTeamId,
         );
         if (match.length === 0) {
+            appState.currTeamId = undefined;
+            this.localStore.updateState(appState);
             return false;
         }
 

@@ -152,17 +152,15 @@ const teamsRoutesInterceptor = (
         }
 
         const appState = localStore.getState();
-        if (teamId !== appState.currTeamId) {
-            if (!stateSyncer.trySetCurrentTeam(teamId)) {
-                redirectToTeamsFallback(router, localStore);
-                return {
-                    isRedirected: true,
-                };
-            }
+        if (!appState.fetchedTeamData || teamId !== appState.currTeamId) {
+            await initTeam(stateSyncer, localStore, appRef);
+        }
 
-            await initTeam(stateSyncer, localStore, appRef);
-        } else if (!appState.fetchedTeamData) {
-            await initTeam(stateSyncer, localStore, appRef);
+        if (!stateSyncer.trySetCurrentTeam(teamId)) {
+            redirectToTeamsFallback(router, localStore);
+            return {
+                isRedirected: true,
+            };
         }
 
         if (routeUpdate.routePattern.startsWith(taskRoutePattern)) {
@@ -198,6 +196,8 @@ const sprintsRouteInterceptor = (
         const appState = localStore.getState();
         if (exactMatch(routeUpdate, sprintsRoutePattern)) {
             if (!appState.currSprintId) {
+                appState.sprintTabReady = true;
+                localStore.updateState(appState);
                 return {};
             }
 
