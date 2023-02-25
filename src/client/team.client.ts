@@ -161,6 +161,23 @@ export class TeamClient {
             .then((payload: any) => payload?.updateTeam);
     }
 
+    public deleteTeam(teamId: string): Promise<RemoteTeam> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation deleteTeam($teamId: ID!) {
+                        deleteTeam(teamId: $teamId) {
+                            id
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                },
+            })
+            .then((payload: any) => payload?.deleteTeam);
+    }
+
     public createTeamIconUploadSession(teamId: string): Promise<string> {
         return this.graphQLClient
             .mutate({

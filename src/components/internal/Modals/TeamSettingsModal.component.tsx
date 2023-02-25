@@ -18,7 +18,10 @@ import { Deps } from '@core/dep/deps';
 import { Invitation } from '@core/entity/invitation';
 import { Team } from '@core/entity/team';
 import { TeamMember } from '@core/entity/teamMember';
-import { invitationLink } from '@core/routing/routes';
+import {
+    invitationLink,
+    teamsRoutePattern,
+} from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -27,6 +30,7 @@ import { DurationInputUI } from '../DurationInput.ui';
 import { ImageUploaderComponent } from '../ImageUploader.component';
 import { UserProfileUI } from '../UserProfile';
 import styles from './TeamSettingsModal.component.module.scss';
+import { Router } from '@lib/router/router';
 
 interface Props {
     deps: Deps;
@@ -44,6 +48,7 @@ interface State {
 }
 
 export class TeamSettingsModalComponent extends Component<Props, State> {
+    private readonly router: Router;
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
@@ -54,6 +59,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     constructor(props: any) {
         super(props);
+        this.router = props.deps.router;
         this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
@@ -132,6 +138,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private async updateState(teamId: number, defaultTabIndex: number) {
         const team = await this.graphSource.team(teamId);
+        if (!team) {
+            return;
+        }
+
         let invitations = team!.invitations.map((invitation) => invitation);
         invitations = invitations.sort(
             (invitation1: Invitation, invitation2: Invitation) =>
@@ -470,8 +480,11 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         });
     };
 
-    private onDeleteTeamClick = () => {
-        console.log('onDeleteTeamClick');
+    private onDeleteTeamClick = async () => {
+        const team = this.state.team!;
+        await this.stateSyncer.deleteTeam(team.id);
+        this.modalRef.current?.close();
+        this.router.navigateTo(teamsRoutePattern);
     };
 
     private onAddTeamMemberClick = async () => {

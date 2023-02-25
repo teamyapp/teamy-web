@@ -398,6 +398,10 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async deleteTeam(teamId: number) {
+        await this.teamClient.deleteTeam(`${teamId}`);
+    }
+
     public async startDraggingTask(
         taskId: number,
     ): Promise<string | undefined> {
