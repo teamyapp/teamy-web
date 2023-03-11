@@ -464,7 +464,7 @@ export class StateSyncer {
         task: CreateTaskInput,
         sprintId?: number,
     ): Promise<void> {
-        let isPlanned: boolean | undefined;
+        let isPlanned = false;
         if (sprintId) {
             isPlanned = true;
         }
