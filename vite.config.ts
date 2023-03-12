@@ -24,9 +24,11 @@ export default defineConfig({
     build: {
         outDir: 'build',
         rollupOptions: {
-            manualChunks: (id) => {
-                if (id.includes('node_modules')) {
-                    return 'vendor';
+            output: {
+                manualChunks: (id) => {
+                    if (id.includes('node_modules')) {
+                        return 'vendor';
+                    }
                 }
             }
         }
