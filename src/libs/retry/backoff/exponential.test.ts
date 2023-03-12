@@ -1,4 +1,5 @@
 import { strictEqual } from 'assert';
+import { afterAll, beforeEach, describe, it } from 'vitest';
 
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 

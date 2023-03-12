@@ -80,9 +80,8 @@ export class UpcomingSection extends Component<Props, State> {
             groupByOwners(this.props.tasks),
         );
         const initialTaskOwnerId = this.props.isPersonal
-        ? this.localStore.getState()
-              .currUserId
-        : undefined
+            ? this.localStore.getState().currUserId
+            : undefined;
         return (
             <div className={styles.TaskListSection}>
                 <DragAndDropContainer

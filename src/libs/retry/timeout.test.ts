@@ -1,4 +1,5 @@
 import { strictEqual } from 'assert';
+import { beforeEach, describe, it } from 'vitest';
 
 import { Duration } from '@lib/entity/duration';
 import { ErrorCode } from '@lib/error/errors';

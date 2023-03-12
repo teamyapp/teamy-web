@@ -117,28 +117,27 @@ export class SprintsComponent extends Component<Props, State> {
         return (
             this.state.isPageReady &&
             (this.state.selectedSprintId ? (
-                      <div className={styles.Sprint}>
-                          <div className={styles.Tabs}>
-                              <div className={styles.Container}>
-                                  <TabsUI
-                                      ref={this.tabsRef}
-                                      defaultSelectedIndex={
-                                          this.state.activeTabIndex
-                                      }
-                                      tabNames={['Me', 'Team']}
-                                      onTabClick={this.onTabClick}
-                                  />
-                              </div>
-                          </div>
-                          <div className={styles.Content}>
-                              {this.renderTabContent(
-                                  sprintTabIds[this.state.activeTabIndex],
-                                  clientId,
-                              )}
-                          </div>
-                      </div>
-                  )
-                : this.renderSelectSprint())
+                <div className={styles.Sprint}>
+                    <div className={styles.Tabs}>
+                        <div className={styles.Container}>
+                            <TabsUI
+                                ref={this.tabsRef}
+                                defaultSelectedIndex={this.state.activeTabIndex}
+                                tabNames={['Me', 'Team']}
+                                onTabClick={this.onTabClick}
+                            />
+                        </div>
+                    </div>
+                    <div className={styles.Content}>
+                        {this.renderTabContent(
+                            sprintTabIds[this.state.activeTabIndex],
+                            clientId,
+                        )}
+                    </div>
+                </div>
+            ) : (
+                this.renderSelectSprint()
+            ))
         );
     }
 

@@ -36,7 +36,7 @@ interface State {
 export class InlineCreateTaskUI extends Component<Props, State> {
     private readonly graphSource: GraphSource;
     private getBoundingClientRect?: () => DOMRect;
-    
+
     private readonly selectTaskOwnersPopupRef =
         createRef<SelectTaskOwnersPopupComponent>();
 

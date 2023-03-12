@@ -29,10 +29,7 @@ import microsoft from './accountProviders/microsoft.svg';
 import slack from './accountProviders/slack.svg';
 import wechat from './accountProviders/wechat.svg';
 
-const accountProvidersComingSoon: AuthProvider[] = [
-    'wechat',
-    'microsoft',
-];
+const accountProvidersComingSoon: AuthProvider[] = ['wechat', 'microsoft'];
 
 interface Props {
     deps: Deps;
@@ -79,7 +76,9 @@ export class UserSettingsModalComponent extends Component<Props, State> {
 
                 if (this.state.user) {
                     const user = this.graphSource.user(this.state.user.id);
-                    await this.updateState(user!);
+                    if (user) {
+                        await this.updateState(user);
+                    }
                 }
             }
         })();

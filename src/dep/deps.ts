@@ -92,7 +92,7 @@ export function initDeps(): Deps {
         [
             logWithRequestId,
             logWithServiceName('teamy/web-browser'),
-            logWithCommit(getEnvVar('GIT_LONG_COMMIT_HASH')),
+            logWithCommit(GIT_LONG_COMMIT_HASH),
         ],
     );
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [

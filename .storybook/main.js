@@ -1,4 +1,16 @@
-const TsConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const viteTsconfig = require('vite-tsconfig-paths').default;
+const { mergeConfig } = require('vite');
+const childProcess = require('child_process');
+
+const gitShortCommitHash = childProcess
+    .execSync('git rev-parse --short HEAD')
+    .toString()
+    .trim();
+
+const gitLongCommitHash = childProcess
+    .execSync('git rev-parse HEAD')
+    .toString()
+    .trim();
 
 module.exports = {
     stories: [
@@ -11,8 +23,16 @@ module.exports = {
         '@storybook/preset-create-react-app',
     ],
     staticDirs: ['../public'],
-    webpackFinal: async (config) => {
-        config.resolve.plugins = [new TsConfigPathsPlugin()];
-        return config;
+    core: {
+        builder: '@storybook/builder-vite', // 👈 The builder enabled here.
+    },
+    async viteFinal(config) {
+        return mergeConfig(config, {
+            plugins: [viteTsconfig()],
+            define: {
+                GIT_SHORT_COMMIT_HASH: JSON.stringify(gitShortCommitHash),
+                GIT_LONG_COMMIT_HASH: JSON.stringify(gitLongCommitHash),
+            },
+        });
     },
 };

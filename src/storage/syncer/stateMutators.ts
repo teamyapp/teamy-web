@@ -504,7 +504,7 @@ export function mergeTask(
     };
 
     if (remoteTask.links) {
-        currAppState = mergeTaskLinks(currAppState, remoteTask.links)
+        currAppState = mergeTaskLinks(currAppState, remoteTask.links);
     }
 
     if (remoteTask.creator) {

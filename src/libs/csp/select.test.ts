@@ -1,4 +1,5 @@
 import { strictEqual } from 'assert';
+import { describe, it } from 'vitest';
 
 import { throwsAsync } from '@lib/testing/assert';
 
@@ -106,7 +107,7 @@ describe('select on read/receive/pop operation', () => {
         strictEqual('put after unblock', x);
     });
 
-    xit('favors channels with values ready to be received over closed channels', async () => {
+    it.skip('favors channels with values ready to be received over closed channels', async () => {
         // Currently does not support, but
         // Is this even a good design decision?
         let unblock = chan<null>();
@@ -130,7 +131,7 @@ describe('select on read/receive/pop operation', () => {
         strictEqual('sec1', x);
     });
 
-    xit('fair selections --> no starvation', async () => {
+    it.skip('fair selections --> no starvation', async () => {
         // Currently does not support, but
         // Is this even a good design decision?
         let unblock = chan<null>();
