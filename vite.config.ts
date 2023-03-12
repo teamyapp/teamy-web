@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import * as childProcess from 'child_process';
 // @ts-ignore
 import dns from 'dns';
@@ -33,7 +33,7 @@ export default defineConfig({
             }
         }
     },
-    plugins: [react(), tsconfigPaths()],
+    plugins: [tsconfigPaths(), react()],
     define: {
         GIT_SHORT_COMMIT_HASH: JSON.stringify(gitShortCommitHash),
         GIT_LONG_COMMIT_HASH: JSON.stringify(gitLongCommitHash),
