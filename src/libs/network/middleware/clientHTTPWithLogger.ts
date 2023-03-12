@@ -39,8 +39,8 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                         [BodyProp]: options?.body
                             ? JSON.stringify(options?.body)
                             : '',
-                        [FileNameProp]: 'COMPILE_TIME_INJECT_FILE_PATH',
-                        [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
+                        [FileNameProp]: BUILD_INJECT_FILE_PATH,
+                        [LineNumberProp]: BUILD_INJECT_LINE_NUMBER,
                     },
                     context,
                 );
@@ -72,8 +72,8 @@ export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
                             ? JSON.stringify(result.headers)
                             : '',
                         [BodyProp]: result?.body,
-                        [FileNameProp]: 'COMPILE_TIME_INJECT_FILE_PATH',
-                        [LineNumberProp]: 'COMPILE_TIME_INJECT_LINE_NUMBER',
+                        [FileNameProp]: BUILD_INJECT_FILE_PATH,
+                        [LineNumberProp]: BUILD_INJECT_LINE_NUMBER,
                     },
                     context,
                 );
