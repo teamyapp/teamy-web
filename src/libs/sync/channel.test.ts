@@ -1,4 +1,5 @@
 import { strictEqual } from 'assert';
+import { describe, test } from 'vitest';
 
 import { Channel } from '@lib/sync/channel';
 

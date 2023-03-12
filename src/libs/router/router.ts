@@ -272,9 +272,9 @@ export class Router {
     }
 
     public subscribeRouteChange(): PopChannel<RouteUpdate | undefined> {
-        const notifyChan = this.notifyRouteChangeChanMultiCaster.copy()
+        const notifyChan = this.notifyRouteChangeChanMultiCaster.copy();
         if (this.currentRouteUpdate) {
-            notifyChan.put(this.currentRouteUpdate)
+            notifyChan.put(this.currentRouteUpdate);
         }
 
         return notifyChan;

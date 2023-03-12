@@ -5,6 +5,7 @@ import { PopChannel } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout';
+import { Router } from '@lib/router/router';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
@@ -18,10 +19,7 @@ import { Deps } from '@core/dep/deps';
 import { Invitation } from '@core/entity/invitation';
 import { Team } from '@core/entity/team';
 import { TeamMember } from '@core/entity/teamMember';
-import {
-    invitationLink,
-    teamsRoutePattern,
-} from '@core/routing/routes';
+import { invitationLink, teamsRoutePattern } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -30,7 +28,6 @@ import { DurationInputUI } from '../DurationInput.ui';
 import { ImageUploaderComponent } from '../ImageUploader.component';
 import { UserProfileUI } from '../UserProfile';
 import styles from './TeamSettingsModal.component.module.scss';
-import { Router } from '@lib/router/router';
 
 interface Props {
     deps: Deps;

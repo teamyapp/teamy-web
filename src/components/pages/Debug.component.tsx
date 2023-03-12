@@ -4,7 +4,7 @@ import React, { Component, ReactNode } from 'react';
 import { getConfig as getIdentityConfig } from '@lib/identity/config';
 
 import { getConfig } from '@core/config/config';
-import { getEnvVar, getEnvironment } from '@core/env/environment';
+import { getEnvironment } from '@core/env/environment';
 
 import styles from './Debug.component.module.scss';
 
@@ -41,10 +41,8 @@ export class DebugComponent extends Component<Props, State> {
                 },
                 {
                     name: 'Git commit',
-                    value: getEnvVar('GIT_SHORT_COMMIT_HASH'),
-                    link: `https://github.com/${this.props.repoOwner}/${
-                        this.props.repoName
-                    }/commit/${getEnvVar('GIT_LONG_COMMIT_HASH')}`,
+                    value: GIT_SHORT_COMMIT_HASH,
+                    link: `https://github.com/${this.props.repoOwner}/${this.props.repoName}/commit/${GIT_LONG_COMMIT_HASH}`,
                 },
                 {
                     name: 'Teamy Web API',
