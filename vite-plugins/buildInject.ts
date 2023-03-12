@@ -2,7 +2,7 @@ import * as path from 'path';
 
 const tsFileRegex = /\.(tsx?)$/;
 
-export default function compileTimeInject() {
+export default function buildInject() {
     return {
         name: 'compile-time-inject',
         transform(src: string, id: string) {
@@ -20,7 +20,7 @@ export default function compileTimeInject() {
 
 function injectFileName(absFilePath: string, fileContent: string): string {
     const filePath = path.relative(process.cwd(), absFilePath);
-    return fileContent.replace(/COMPILE_TIME_INJECT_FILE_PATH/g, filePath);
+    return fileContent.replace(/BUILD_INJECT_FILE_PATH/g, `'${filePath}'`);
 }
 
 function injectLineNumber(fileContent: string): string {
@@ -29,7 +29,7 @@ function injectLineNumber(fileContent: string): string {
     for (let index = 0; index < lines.length; index++) {
         const lineNumber = index + 1;
         const line = lines[index]
-            .replace(/COMPILE_TIME_INJECT_LINE_NUMBER/g, `${lineNumber}`);
+            .replace(/BUILD_INJECT_LINE_NUMBER/g, `${lineNumber}`);
         newLines.push(line);
     }
 
