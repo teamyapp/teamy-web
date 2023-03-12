@@ -23,6 +23,13 @@ console.log(gitLongCommitHash, gitShortCommitHash);
 export default defineConfig({
     build: {
         outDir: 'build',
+        rollupOptions: {
+            manualChunks: (id) => {
+                if (id.includes('node_modules')) {
+                    return 'vendor';
+                }
+            }
+        }
     },
     plugins: [react(), tsconfigPaths()],
     define: {
