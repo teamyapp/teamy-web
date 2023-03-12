@@ -1,0 +1,1 @@
+declare function importModule(moduleUrl: string): Promise<any>;
