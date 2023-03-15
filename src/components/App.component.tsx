@@ -1,7 +1,7 @@
 import { CloudComponent } from '@cloud/Cloud.component';
 import { Extension, ExtensionRuntime } from '@teamyapp/ext';
 import classNames from 'classnames';
-import React, { Component, , createRef } from 'react';
+import React, { Component, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
