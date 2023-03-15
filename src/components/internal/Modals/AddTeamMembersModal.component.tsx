@@ -43,7 +43,6 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
 
     private readonly modalRef = createRef<ModalUI>();
-    private readonly userIDTextAreaRef = createRef<TextAreaUI>();
     private readonly firstNameTextFieldRef = createRef<TextFieldUI>();
     private readonly lastNameTextFieldRef = createRef<TextFieldUI>();
     private readonly dropDownListRef = createRef<DropDownList>();

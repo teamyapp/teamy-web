@@ -51,6 +51,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
     render(): ReactNode {
         return (
             <div
+                aria-label={'markdown editor'}
                 className={`${styles.MarkdownEditor} ${classNames({
                     [styles.Focus]: this.state.focus,
                 })}`}

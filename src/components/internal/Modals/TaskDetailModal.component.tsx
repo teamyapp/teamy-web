@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import React, {
     Component,
-    Fragment,
     MouseEvent,
     ReactNode,
     createRef,
@@ -112,7 +111,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                     onClick={this.onAssignOwnerClick}
                                 >
                                     {this.state.task?.owner ? (
-                                        <Fragment>
+                                        <>
                                             <UserProfileUI
                                                 user={this.state.task.owner}
                                             />
@@ -126,9 +125,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                         .lastName,
                                                 )}`}
                                             </div>
-                                        </Fragment>
+                                        </>
                                     ) : (
-                                        <Fragment>
+                                        <>
                                             <MaterialIconUI>
                                                 face
                                             </MaterialIconUI>
@@ -137,7 +136,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             >
                                                 Unassigned
                                             </div>
-                                        </Fragment>
+                                        </>
                                     )}
                                 </div>
                                 <div className={styles.SaveAction}>

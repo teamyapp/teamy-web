@@ -93,6 +93,7 @@ export class HeaderComponent extends Component<Props, State> {
                     <div className={styles.MenuButtonPlaceHolder}>
                         {!this.props.isDrawerOpen && (
                             <div
+                                role={'button'}
                                 className={styles.MenuButton}
                                 onClick={this.props.onMenuToggle}
                             >
@@ -102,6 +103,7 @@ export class HeaderComponent extends Component<Props, State> {
                     </div>
                     {this.props.currentTeam && (
                         <div
+                            role={'button'}
                             className={styles.TeamName}
                             onClick={this.onViewTeamSettingsClick}
                             onContextMenu={this.onTeamContextMenu}

@@ -15,6 +15,7 @@ export class MaterialIconUI extends Component<Props> {
         const iconStyle = this.props.iconStyle || 'outlined';
         return (
             <i
+                role={'figure'}
                 className={`${styles.Icon} ${
                     styles[`material-symbols-${iconStyle}`]
                 }`}

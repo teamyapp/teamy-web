@@ -32,7 +32,11 @@ export class TabsUI extends Component<Props, State> {
     public render(): ReactNode {
         let indicatorLeft = this.getActiveTabIndicatorLeft();
         return (
-            <div ref={this.containerRef} className={styles.Tabs}>
+            <div
+                role={'tablist'}
+                ref={this.containerRef}
+                className={styles.Tabs}
+            >
                 {this.props.tabNames.map(this.renderTab)}
                 {this.props.tabNames && (
                     <div
@@ -51,6 +55,8 @@ export class TabsUI extends Component<Props, State> {
     renderTab = (name: string, index: number): ReactNode => {
         return (
             <div
+                role={'tab'}
+                lang={name}
                 ref={this.tabsRef[index]}
                 className={styles.Tab}
                 key={index}
@@ -84,7 +90,7 @@ export class TabsUI extends Component<Props, State> {
             this.containerRef.current == null
                 ? 0
                 : this.containerRef.current.offsetWidth /
-                  this.props.tabNames.length;
+                this.props.tabNames.length;
         this.setState({
             activateTabIndicatorWidth: width,
         });

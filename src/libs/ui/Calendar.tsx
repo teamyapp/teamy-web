@@ -88,6 +88,8 @@ export class CalendarUI extends Component<Props, State> {
                     {monthNames[month]} {year}
                 </div>
                 <div
+                    role={'button'}
+                    aria-label={'show years'}
                     className={`${styles.Button} ${styles.ShowYears}`}
                     onClick={this.onToggleSelectYear}
                 >
@@ -98,10 +100,18 @@ export class CalendarUI extends Component<Props, State> {
                     </MaterialIconUI>
                 </div>
                 <div className={styles.Spacer} />
-                <div className={styles.Button} onClick={this.onPrevMonthClick}>
+                <div
+                    role={'button'}
+                    aria-label={'previous month'}
+                    className={styles.Button}
+                    onClick={this.onPrevMonthClick}>
                     <MaterialIconUI>navigate_before</MaterialIconUI>
                 </div>
-                <div className={styles.Button} onClick={this.onNextMonthClick}>
+                <div
+                    role={'button'}
+                    aria-label={'next month'}
+                    className={styles.Button}
+                    onClick={this.onNextMonthClick}>
                     <MaterialIconUI>navigate_next</MaterialIconUI>
                 </div>
             </div>
@@ -111,6 +121,7 @@ export class CalendarUI extends Component<Props, State> {
     private renderYear = (year: number, index: number): ReactNode => {
         return (
             <div
+                role={'button'}
                 key={index}
                 className={`${styles.Year} ${classNames({
                     [styles.Selected]: this.showingSelectedYear(year),
@@ -141,6 +152,8 @@ export class CalendarUI extends Component<Props, State> {
     ): ReactNode => {
         return monthDay ? (
             <div
+                role={'button'}
+                aria-label={`${monthDay}`}
                 key={index}
                 className={`${styles.Cell} ${styles.Day} ${classNames({
                     [styles.Selected]: this.showingSelectedDate(monthDay),
@@ -205,6 +218,7 @@ export class CalendarUI extends Component<Props, State> {
     ): ReactNode => {
         return (
             <div
+                aria-label={weekDayTitle}
                 key={index}
                 className={`${styles.Cell} ${styles.WeekDayTitle}`}
             >

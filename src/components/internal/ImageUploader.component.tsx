@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component, Fragment } from 'react';
+import React, { ChangeEvent, Component,  } from 'react';
 
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { Progress } from '@lib/fileUpload/progress';
@@ -49,7 +49,7 @@ export class ImageUploaderComponent extends Component<Props, State> {
 
     private renderPreview() {
         return (
-            <Fragment>
+            <>
                 <img
                     alt={this.props.imageAlt}
                     className={styles.ActiveImg}
@@ -61,13 +61,13 @@ export class ImageUploaderComponent extends Component<Props, State> {
                         top: `${this.state.uploadProgress.totalPercentage}%`,
                     }}
                 />
-            </Fragment>
+            </>
         );
     }
 
     private renderActiveImage() {
         return (
-            <Fragment>
+            <>
                 {this.props.activeImageUrl ? (
                     <img
                         alt={this.props.imageAlt}
@@ -91,7 +91,7 @@ export class ImageUploaderComponent extends Component<Props, State> {
                         {this.props.uploadButtonLabel}
                     </div>
                 </div>
-            </Fragment>
+            </>
         );
     }
 

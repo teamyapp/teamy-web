@@ -31,6 +31,7 @@ export class FeedbackUI extends Component<Props, State> {
     public render() {
         return (
             <div
+                role={'alert'}
                 className={`${styles.Feedback} ${classNames({
                     [styles.Show]: this.state.show,
                     [styles.Visible]: this.state.visible,

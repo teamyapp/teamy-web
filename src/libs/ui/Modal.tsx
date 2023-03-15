@@ -36,7 +36,7 @@ export class ModalUI extends Component<Props, State> {
     public render(): ReactNode {
         const elevation = (this.props.level || 0) + baseElevation;
         return (
-            <div className={styles.Modal}>
+            <div role={'dialog'} className={styles.Modal}>
                 {this.state.isVisible && (
                     <Fragment>
                         <div

@@ -53,6 +53,8 @@ export class TooltipUI extends Component<Props, State> {
                     {this.props.children}
                 </div>
                 <div
+                    role={'tooltip'}
+                    aria-label={this.props.message}
                     ref={this.tooltipRef}
                     className={`${styles.Tooltip} ${classNames({
                         [styles.Show]: this.state.showTooltip,
