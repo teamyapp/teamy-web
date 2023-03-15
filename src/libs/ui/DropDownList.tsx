@@ -45,6 +45,7 @@ export class DropDownList extends Component<Props, State> {
     public render() {
         return (
             <div
+                role={'listbox'}
                 ref={this.ref}
                 className={styles.DropDownList}
                 tabIndex={-1}
@@ -54,11 +55,15 @@ export class DropDownList extends Component<Props, State> {
                     className={styles.SelectedOption}
                     onClick={this.onSelectedOptionClick}
                 >
-                    <div className={styles.Option}>
+                    <div
+                        role={'listitem'}
+                        className={styles.Option}>
                         {this.state.selectedOption &&
                             this.state.selectedOption.description}
                     </div>
-                    <div className={styles.DropDownButton}>
+                    <div
+                        role={'button'}
+                        className={styles.DropDownButton}>
                         <MaterialIconUI>arrow_drop_down</MaterialIconUI>
                     </div>
                 </div>
@@ -74,6 +79,8 @@ export class DropDownList extends Component<Props, State> {
     private renderOption = (option: Option, index: number) => {
         return (
             <div
+                role={'listitem'}
+                aria-label={option.description}
                 key={index}
                 className={styles.Option}
                 onClick={this.onOptionClick(option)}

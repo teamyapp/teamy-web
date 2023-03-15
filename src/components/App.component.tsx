@@ -1,7 +1,7 @@
 import { CloudComponent } from '@cloud/Cloud.component';
 import { Extension, ExtensionRuntime } from '@teamyapp/ext';
 import classNames from 'classnames';
-import React, { Component, Fragment, createRef } from 'react';
+import React, { Component, , createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
@@ -170,8 +170,8 @@ export class AppComponent extends Component<Props, State> {
                     <SignUpComponent deps={this.props.deps} />
                 </Route>
                 {this.state.me && (
-                    <Fragment>
-                        <div className={styles.Drawer}>
+                    <>
+                        <main className={styles.Drawer}>
                             <DrawerUI
                                 activeTeamId={this.state.activeTeamId}
                                 teams={this.state.teams}
@@ -192,7 +192,7 @@ export class AppComponent extends Component<Props, State> {
                                 }
                                 onCreateTeamClick={this.onCreateTeamClick}
                             />
-                        </div>
+                        </main>
                         <div className={styles.Content}>
                             <HeaderComponent
                                 deps={this.props.deps}
@@ -302,7 +302,7 @@ export class AppComponent extends Component<Props, State> {
                                 this.renderSelectActiveTeam()
                             )}
                         </div>
-                    </Fragment>
+                    </>
                 )}
                 <Route router={this.router} pattern={invitationRoutePattern}>
                     <InvitationComponent deps={this.props.deps} />

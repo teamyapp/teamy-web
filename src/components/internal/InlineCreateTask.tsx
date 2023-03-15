@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, {
     ChangeEvent,
     Component,
-    Fragment,
+    ,
     MouseEvent,
     ReactNode,
     createRef,
@@ -54,7 +54,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
 
     public render() {
         return (
-            <Fragment>
+            <>
                 <div className={styles.Task}>
                     <div className={styles.LeftSection}>
                         <textarea
@@ -103,7 +103,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                     onSelectOwner={this.onSelectTaskOwner}
                     selectedOwnerId={this.state.task.ownerUserId}
                 />
-            </Fragment>
+            </>
         );
     }
 

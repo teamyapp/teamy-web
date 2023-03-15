@@ -37,7 +37,10 @@ export class TextAreaUI extends Component<Props, State> {
 
     public render() {
         return (
-            <div className={`${styles.TextArea}`}>
+            <div
+                role={'textbox'}
+                aria-label={this.props.label}
+                className={`${styles.TextArea}`}>
                 {this.props.label && (
                     <div className={styles.Label}>{this.props.label}</div>
                 )}

@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component,  } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 
@@ -84,7 +84,7 @@ export class InvitationComponent extends Component<Props, State> {
             <div className={styles.Invitation}>
                 <div className={styles.Content}>
                     {this.state.hasError ? (
-                        <Fragment>
+                        <>
                             <div className={styles.Error}>
                                 {this.state.invitation
                                     ? renderInvitationStateError(
@@ -99,10 +99,10 @@ export class InvitationComponent extends Component<Props, State> {
                                     onClick={this.onGoHomePageClick}
                                 />
                             </div>
-                        </Fragment>
+                        </>
                     ) : (
                         this.state.invitation && (
-                            <Fragment>
+                            <>
                                 <div className={styles.Intro}>
                                     <div>
                                         <div className={styles.Greeting}>
@@ -177,7 +177,7 @@ export class InvitationComponent extends Component<Props, State> {
                                         />
                                     </div>
                                 </div>
-                            </Fragment>
+                            </>
                         )
                     )}
                 </div>

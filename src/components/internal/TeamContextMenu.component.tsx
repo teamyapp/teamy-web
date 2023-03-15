@@ -31,6 +31,7 @@ export class TeamContextMenuComponent extends Component<Props, State> {
         return (
             this.state.show && (
                 <ul
+                    role={'menu'}
                     ref={this.contextMenuRef}
                     className={styles.TeamContextMenu}
                     tabIndex={-1}
@@ -41,24 +42,28 @@ export class TeamContextMenuComponent extends Component<Props, State> {
                     onBlur={this.onTeamContextMenuBlur}
                 >
                     <li
+                        role={'menuitem'}
                         className={styles.ContextMenuItem}
                         onClick={this.onAddMembersClick}
                     >
                         Add members
                     </li>
                     <li
+                        role={'menuitem'}
                         className={styles.ContextMenuItem}
                         onClick={this.onShowMembersClick}
                     >
                         Show members
                     </li>
                     <li
+                        role={'menuitem'}
                         className={styles.ContextMenuItem}
                         onClick={this.onShowInvitationsClick}
                     >
                         Show invitations
                     </li>
                     <li
+                        role={'menuitem'}
                         className={styles.ContextMenuItem}
                         onClick={this.onViewTeamSettingsClick}
                     >
