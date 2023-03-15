@@ -171,7 +171,7 @@ export class AppComponent extends Component<Props, State> {
                 </Route>
                 {this.state.me && (
                     <>
-                        <main className={styles.Drawer}>
+                        <div className={styles.Drawer}>
                             <DrawerUI
                                 activeTeamId={this.state.activeTeamId}
                                 teams={this.state.teams}
@@ -192,8 +192,9 @@ export class AppComponent extends Component<Props, State> {
                                 }
                                 onCreateTeamClick={this.onCreateTeamClick}
                             />
-                        </main>
-                        <div className={styles.Content}>
+
+                        </div>
+                        <main className={styles.Content}>
                             <HeaderComponent
                                 deps={this.props.deps}
                                 ref={this.headerRef}
@@ -301,7 +302,7 @@ export class AppComponent extends Component<Props, State> {
                             ) : (
                                 this.renderSelectActiveTeam()
                             )}
-                        </div>
+                        </main>
                     </>
                 )}
                 <Route router={this.router} pattern={invitationRoutePattern}>
