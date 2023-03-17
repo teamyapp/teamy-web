@@ -74,9 +74,9 @@ export class CreateTeamModalComponent extends Component<Props> {
             return;
         }
 
-        this.modalRef.current?.close();
         await this.stateSyncer.createTeam({
             name: teamName,
         });
+        this.modalRef.current?.close();
     };
 }
