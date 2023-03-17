@@ -1,4 +1,4 @@
-import React, { Component,  } from 'react';
+import React, { Component } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 

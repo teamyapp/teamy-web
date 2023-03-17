@@ -88,11 +88,12 @@ export class HeaderComponent extends Component<Props, State> {
 
     render() {
         return (
-            <header aria-label={'header'}
-                    className={styles.Header}>
-                <div role={'region'}
-                     aria-label={'leftSection'}
-                     className={styles.LeftSection}>
+            <header aria-label={'header'} className={styles.Header}>
+                <div
+                    role={'region'}
+                    aria-label={'leftSection'}
+                    className={styles.LeftSection}
+                >
                     <div className={styles.MenuButtonPlaceHolder}>
                         {!this.props.isDrawerOpen && (
                             <div
@@ -188,7 +189,8 @@ export class HeaderComponent extends Component<Props, State> {
                 <div
                     role={'region'}
                     aria-label={'rightSection'}
-                    className={styles.RightSection}>
+                    className={styles.RightSection}
+                >
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.ButtonsSection}>
                             <div

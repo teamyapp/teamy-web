@@ -1,4 +1,4 @@
-import React, { ChangeEvent, Component,  } from 'react';
+import React, { ChangeEvent, Component } from 'react';
 
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { Progress } from '@lib/fileUpload/progress';

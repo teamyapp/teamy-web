@@ -26,10 +26,7 @@ export class CreateTeamModalComponent extends Component<Props> {
 
     public render() {
         return (
-            <ModalUI
-                ariaLabel={'Create Team'}
-                ref={this.modalRef}
-                level={1}>
+            <ModalUI ariaLabel={'Create Team'} ref={this.modalRef} level={1}>
                 <div className={styles.Header}>
                     Create Team
                     <div

@@ -1,10 +1,5 @@
 import classNames from 'classnames';
-import React, {
-    Component,
-    MouseEvent,
-    ReactNode,
-    createRef,
-} from 'react';
+import React, { Component, MouseEvent, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';

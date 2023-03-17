@@ -34,7 +34,7 @@ export class ModalUI extends Component<Props, State> {
             isOpen: false,
             isAnimating: false,
             fullyOpened: false,
-            fullyClosed: true
+            fullyClosed: true,
         };
     }
 
@@ -47,7 +47,8 @@ export class ModalUI extends Component<Props, State> {
                 aria-modal='true'
                 data-fully-opened={this.state.fullyOpened}
                 data-fully-closed={this.state.fullyOpened}
-                className={styles.Modal}>
+                className={styles.Modal}
+            >
                 {this.state.isVisible && (
                     <>
                         <div

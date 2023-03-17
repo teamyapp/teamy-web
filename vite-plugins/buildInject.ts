@@ -8,7 +8,7 @@ export default function buildInject() {
         transform(src: string, id: string) {
             if (tsFileRegex.test(id)) {
                 let output = injectFileName(id, src);
-                output = injectLineNumber(output)
+                output = injectLineNumber(output);
                 return {
                     code: output,
                     map: null,
@@ -28,8 +28,10 @@ function injectLineNumber(fileContent: string): string {
     const newLines: string[] = [];
     for (let index = 0; index < lines.length; index++) {
         const lineNumber = index + 1;
-        const line = lines[index]
-            .replace(/BUILD_INJECT_LINE_NUMBER/g, `${lineNumber}`);
+        const line = lines[index].replace(
+            /BUILD_INJECT_LINE_NUMBER/g,
+            `${lineNumber}`,
+        );
         newLines.push(line);
     }
 
