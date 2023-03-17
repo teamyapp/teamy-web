@@ -13,7 +13,9 @@ export class ButtonUI extends Component<Props> {
             <div
                 role={'button'}
                 aria-label={this.props.label}
-                className={styles.Button} onClick={this.props.onClick}>
+                className={styles.Button}
+                onClick={this.props.onClick}
+            >
                 {this.props.label}
             </div>
         );

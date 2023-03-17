@@ -4,6 +4,7 @@ import * as childProcess from 'child_process';
 import dns from 'dns';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+
 import buildInject from './vite-plugins/buildInject';
 
 dns.setDefaultResultOrder('verbatim');
@@ -20,6 +21,9 @@ const gitLongCommitHash = childProcess
 
 // https://vitejs.dev/config/
 export default defineConfig({
+    server: {
+        port: 3000,
+    },
     build: {
         outDir: 'build',
         rollupOptions: {
@@ -28,9 +32,9 @@ export default defineConfig({
                     if (id.includes('node_modules')) {
                         return 'vendor';
                     }
-                }
-            }
-        }
+                },
+            },
+        },
     },
     plugins: [buildInject(), tsconfigPaths(), react()],
     define: {

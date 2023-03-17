@@ -104,14 +104,16 @@ export class CalendarUI extends Component<Props, State> {
                     role={'button'}
                     aria-label={'previous month'}
                     className={styles.Button}
-                    onClick={this.onPrevMonthClick}>
+                    onClick={this.onPrevMonthClick}
+                >
                     <MaterialIconUI>navigate_before</MaterialIconUI>
                 </div>
                 <div
                     role={'button'}
                     aria-label={'next month'}
                     className={styles.Button}
-                    onClick={this.onNextMonthClick}>
+                    onClick={this.onNextMonthClick}
+                >
                     <MaterialIconUI>navigate_next</MaterialIconUI>
                 </div>
             </div>

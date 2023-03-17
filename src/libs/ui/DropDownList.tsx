@@ -55,15 +55,11 @@ export class DropDownList extends Component<Props, State> {
                     className={styles.SelectedOption}
                     onClick={this.onSelectedOptionClick}
                 >
-                    <div
-                        role={'listitem'}
-                        className={styles.Option}>
+                    <div role={'listitem'} className={styles.Option}>
                         {this.state.selectedOption &&
                             this.state.selectedOption.description}
                     </div>
-                    <div
-                        role={'button'}
-                        className={styles.DropDownButton}>
+                    <div role={'button'} className={styles.DropDownButton}>
                         <MaterialIconUI>arrow_drop_down</MaterialIconUI>
                     </div>
                 </div>

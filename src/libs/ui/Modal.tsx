@@ -11,6 +11,7 @@ const baseElevation = 1000;
 interface Props {
     children?: React.ReactNode;
     level?: number;
+    ariaLabel?: string;
     disableClose?: boolean;
     onClose?: () => void;
 }
@@ -19,6 +20,8 @@ interface State {
     isVisible: boolean;
     isOpen: boolean;
     isAnimating: boolean;
+    fullyOpened: boolean;
+    fullyClosed: boolean;
 }
 
 export class ModalUI extends Component<Props, State> {
@@ -30,15 +33,24 @@ export class ModalUI extends Component<Props, State> {
             isVisible: false,
             isOpen: false,
             isAnimating: false,
+            fullyOpened: false,
+            fullyClosed: true,
         };
     }
 
     public render(): ReactNode {
         const elevation = (this.props.level || 0) + baseElevation;
         return (
-            <div role={'dialog'} className={styles.Modal}>
+            <div
+                role={'dialog'}
+                aria-label={this.props.ariaLabel}
+                aria-modal='true'
+                data-fully-opened={this.state.fullyOpened}
+                data-fully-closed={this.state.fullyOpened}
+                className={styles.Modal}
+            >
                 {this.state.isVisible && (
-                    <Fragment>
+                    <>
                         <div
                             ref={this.contentRef}
                             className={`${styles.Content} ${classNames({
@@ -61,7 +73,7 @@ export class ModalUI extends Component<Props, State> {
                             }}
                             onClick={this.onOverlayClick}
                         />
-                    </Fragment>
+                    </>
                 )}
             </div>
         );
@@ -73,6 +85,7 @@ export class ModalUI extends Component<Props, State> {
         }
 
         this.setState({
+            fullyClosed: false,
             isVisible: true,
         });
         setTimeout(() => {
@@ -84,6 +97,7 @@ export class ModalUI extends Component<Props, State> {
         setTimeout(() => {
             this.setState({
                 isAnimating: false,
+                fullyOpened: true,
             });
         }, transitionDurationMilliseconds);
     }
@@ -95,6 +109,7 @@ export class ModalUI extends Component<Props, State> {
 
         this.setState({
             isOpen: false,
+            fullyClosed: false,
             isAnimating: true,
         });
         this.props.onClose?.call(null);
@@ -103,6 +118,7 @@ export class ModalUI extends Component<Props, State> {
             this.setState({
                 isVisible: false,
                 isAnimating: false,
+                fullyClosed: true,
             });
         }, transitionDurationMilliseconds);
     }

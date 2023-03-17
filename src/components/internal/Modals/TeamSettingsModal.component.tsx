@@ -69,7 +69,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     public render() {
         return (
-            <ModalUI ref={this.modalRef}>
+            <ModalUI ariaLabel={'Team Setting'} ref={this.modalRef}>
                 {this.state.team && (
                     <div className={styles.TeamSettingsModal}>
                         <div className={styles.Header}>

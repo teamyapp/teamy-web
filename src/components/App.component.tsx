@@ -192,7 +192,6 @@ export class AppComponent extends Component<Props, State> {
                                 }
                                 onCreateTeamClick={this.onCreateTeamClick}
                             />
-
                         </div>
                         <main className={styles.Content}>
                             <HeaderComponent
@@ -442,10 +441,16 @@ export class AppComponent extends Component<Props, State> {
         const teams = this.state.teams;
         return (
             <div className={styles.SelectActiveTeam}>
-                <div className={styles.Content}>
+                <div
+                    role={'region'}
+                    aria-label={'Select Active Team'}
+                    className={styles.Content}
+                >
                     <div className={styles.Title}>Select Active Team</div>
                     <div className={styles.AddTeam}>
                         <div
+                            role={'button'}
+                            aria-label={'add'}
                             className={styles.Button}
                             onClick={this.onCreateTeamClick}
                         >
@@ -453,7 +458,7 @@ export class AppComponent extends Component<Props, State> {
                         </div>
                     </div>
                     {teams.length > 0 && (
-                        <div className={styles.Teams}>
+                        <div role={'list'} className={styles.Teams}>
                             {teams.map(this.renderTeamRow)}
                         </div>
                     )}
@@ -465,6 +470,8 @@ export class AppComponent extends Component<Props, State> {
     private renderTeamRow = (team: Team, index: number) => {
         return (
             <div
+                role={'listitem'}
+                aria-label={team.name}
                 key={index}
                 className={styles.TeamRow}
                 onClick={this.onActiveTeamSelectHandler(team.id)}

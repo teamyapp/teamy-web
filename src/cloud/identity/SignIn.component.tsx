@@ -29,12 +29,16 @@ export class SignInComponent extends Component<Props, State> {
                     <div className={styles.SignInOptionsCard}>
                         <div className={styles.Title}>Sign In</div>
                         <div
+                            role={'button'}
+                            aria-label={'Sign in with Google'}
                             className={`${styles.Button} ${styles.Google}`}
                             onClick={this.onOAuthSignInButtonClick('google')}
                         >
                             Sign in with Google
                         </div>
                         <div
+                            role={'button'}
+                            aria-label={'Sign in with Github'}
                             className={`${styles.Button} ${styles.Github}`}
                             onClick={this.onOAuthSignInButtonClick('github')}
                         >

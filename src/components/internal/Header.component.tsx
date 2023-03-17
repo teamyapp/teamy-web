@@ -88,8 +88,12 @@ export class HeaderComponent extends Component<Props, State> {
 
     render() {
         return (
-            <header className={styles.Header}>
-                <div className={styles.LeftSection}>
+            <header aria-label={'header'} className={styles.Header}>
+                <div
+                    role={'region'}
+                    aria-label={'leftSection'}
+                    className={styles.LeftSection}
+                >
                     <div className={styles.MenuButtonPlaceHolder}>
                         {!this.props.isDrawerOpen && (
                             <div
@@ -104,6 +108,7 @@ export class HeaderComponent extends Component<Props, State> {
                     {this.props.currentTeam && (
                         <div
                             role={'button'}
+                            aria-label={this.props.currentTeam.name}
                             className={styles.TeamName}
                             onClick={this.onViewTeamSettingsClick}
                             onContextMenu={this.onTeamContextMenu}
@@ -181,7 +186,11 @@ export class HeaderComponent extends Component<Props, State> {
                     )}
                 </div>
                 <SpacerUI />
-                <div className={styles.RightSection}>
+                <div
+                    role={'region'}
+                    aria-label={'rightSection'}
+                    className={styles.RightSection}
+                >
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.ButtonsSection}>
                             <div
