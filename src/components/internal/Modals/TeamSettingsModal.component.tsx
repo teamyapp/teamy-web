@@ -69,7 +69,9 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     public render() {
         return (
-            <ModalUI ref={this.modalRef}>
+            <ModalUI
+                ariaLabel={'Team Setting'}
+                ref={this.modalRef}>
                 {this.state.team && (
                     <div className={styles.TeamSettingsModal}>
                         <div className={styles.Header}>
@@ -170,7 +172,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                             fileUploadSessionFactory={
                                 this.props.deps.fileUploadSessionFactory
                             }
-                            uploadButtonLabel='Upload icon'
+                            uploadButtonLabel="Upload icon"
                             createRemoteFileUploadSession={
                                 this.createRemoteFileUploadSession
                             }
@@ -241,18 +243,18 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 <div className={styles.Scrollable}>
                     <table className={styles.Table}>
                         <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>First Name</th>
-                                <th>Last Name</th>
-                                <th>Status</th>
-                                <th>Created At</th>
-                                <th>Expire At</th>
-                                <th>Action</th>
-                            </tr>
+                        <tr>
+                            <th>User ID</th>
+                            <th>First Name</th>
+                            <th>Last Name</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Expire At</th>
+                            <th>Action</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {sortedInvitations.map(this.renderInvitation)}
+                        {sortedInvitations.map(this.renderInvitation)}
                         </tbody>
                     </table>
                 </div>
@@ -270,15 +272,15 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 <div className={styles.Scrollable}>
                     <table className={styles.Table}>
                         <thead>
-                            <tr>
-                                <th>User ID</th>
-                                <th>Profile</th>
-                                <th>Name</th>
-                                <th>Weekly Bandwidth</th>
-                            </tr>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Profile</th>
+                            <th>Name</th>
+                            <th>Weekly Bandwidth</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {teamMembers.map(this.renderMemberBandwidth)}
+                        {teamMembers.map(this.renderMemberBandwidth)}
                         </tbody>
                     </table>
                 </div>
@@ -290,7 +292,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         member: TeamMember,
         index: number,
     ): ReactNode => {
-        const { user } = member;
+        const {user} = member;
         const bandwidthDuration =
             member.weeklyBandwidth.totalMilliSeconds === 0
                 ? undefined
@@ -300,7 +302,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 <td>{user.id}</td>
                 <td className={styles.ProfileColumn}>
                     <div className={styles.Profile}>
-                        <UserProfileUI user={user} />
+                        <UserProfileUI user={user}/>
                     </div>
                 </td>
                 <td>
@@ -332,7 +334,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         const user = teamMember.user;
         return (
             <div key={index} className={styles.Cell}>
-                <UserProfileUI user={user} />
+                <UserProfileUI user={user}/>
                 <div className={styles.MemberName}>
                     <span>{user.firstName}</span>
                     &nbsp;

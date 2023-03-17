@@ -26,10 +26,15 @@ export class CreateTeamModalComponent extends Component<Props> {
 
     public render() {
         return (
-            <ModalUI ref={this.modalRef} level={1}>
+            <ModalUI
+                ariaLabel={'Create Team'}
+                ref={this.modalRef}
+                level={1}>
                 <div className={styles.Header}>
                     Create Team
                     <div
+                        role={'button'}
+                        aria-label={'Close'}
                         className={styles.CloseButton}
                         onClick={this.onCloseButtonClick}
                     >
@@ -72,9 +77,9 @@ export class CreateTeamModalComponent extends Component<Props> {
             return;
         }
 
+        this.modalRef.current?.close();
         await this.stateSyncer.createTeam({
             name: teamName,
         });
-        this.modalRef.current?.close();
     };
 }
