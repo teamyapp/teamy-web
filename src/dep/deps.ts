@@ -67,13 +67,13 @@ export function initDeps(): Deps {
     const httpMiddlewares = [
         clientHTTPWithRequestId,
         clientHTTPWithIdentity,
-        clientHTTPWithRetry(
-            new MaxCountRetry(
+        clientHTTPWithRetry(()=>{
+            return new MaxCountRetry(
                 new BuiltInRuntime(),
                 new ExponentialBackoff(new BuiltInRandomNumberGenerator()),
                 config.maxAPIRetryTimes,
-            ),
-        ),
+            )
+        }),
     ];
     const httpClient = WithMiddlewares<HTTPClient>(
         new FetchHTTPClient(),
