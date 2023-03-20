@@ -38,7 +38,7 @@ import { getConfig } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
-import { getEnvVar, getEnvironment } from '@core/env/environment';
+import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
 import { absoluteRootPath, signInFinishPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
