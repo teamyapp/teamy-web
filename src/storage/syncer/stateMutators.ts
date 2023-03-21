@@ -69,6 +69,11 @@ export function applyTaskLinkMutation(
             currState.taskLinks[taskLink.id] = taskLink;
             break;
         }
+        case 'Delete': {
+            const taskLinkId = mutation.payload;
+            delete currState.taskLinks[taskLinkId];
+            break;
+        }
     }
 
     return currState;
