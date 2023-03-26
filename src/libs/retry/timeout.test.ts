@@ -7,36 +7,43 @@ import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestClock } from '@lib/runtime/clock';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
+import { Logger } from '@lib/telemetry/Logger';
+import { RawLogger } from '@lib/telemetry/RawLogger';
+import { TestTelemetryClient } from '@lib/telemetry/TelemetryClient';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { Executable } from './testUtils';
+import {
+    CLIENT_INTERACTION_ERR,
+    LONG_DELAY,
+    OUTAGE_ERR,
+    RANDOM_OFFSET,
+    SHORT_DELAY,
+    TRANSIENT_ERR,
+} from './testing';
 import { TimeoutRetry } from './timeout';
 
 describe('Timeout', () => {
     const testRandGen = new TestRandomNumberGenerator();
+    testRandGen.setRandomFloats([1]);
     let beforeSleepSemaphore: Semaphore;
-    let beforeSkipRetrySemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let testRuntime: TestRuntime;
     let testClock: TestClock;
     let executable: Executable;
     let duration: Duration;
+    let testLogger: Logger;
     let beforeRetryDelay: () => Promise<void>;
     let beforeSkipRetry: () => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
         testClock = new TestClock();
-
-        beforeRetryDelay = async () => {
-            testClock.setCurrentTime(new Date(testClock.now().getTime() + 2));
-        };
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
-        beforeSkipRetrySemaphore = new Semaphore('BeforeSkipRetry');
         exitSemaphore = new Semaphore('Exit');
         testClock.setCurrentTime(new Date());
         beforeSkipRetry = async () => {
-            beforeSkipRetrySemaphore.release();
+            beforeSleepSemaphore.release();
         };
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
@@ -47,53 +54,99 @@ describe('Timeout', () => {
                 ),
             );
         };
+        const telemetryClient = new TestTelemetryClient();
+        testLogger = new RawLogger('Debug', new TestRuntime(), telemetryClient);
     });
 
     it.each([
         [
-            'should succeed before timeout',
+            'Stop retry with ClientInteraction err category',
             {
-                errorCode: 'RequestTimeOut',
-                retries: 2,
-                expectedErrorCode: undefined,
-                timeoutDuration: 17,
-                runs: 2,
-                runSkipRetry: false,
+                errCodes: [TRANSIENT_ERR, OUTAGE_ERR, CLIENT_INTERACTION_ERR],
+                durations: [
+                    SHORT_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                ],
+                timeout: 10000,
+                executeDuration: [2000, 3000, 4000],
+                expectRetries: 3,
+                expectErr: {
+                    code: CLIENT_INTERACTION_ERR,
+                },
+                sleepAwakeCount: 2,
             },
         ],
         [
-            'should get error when reaching timeout',
+            'Stop retry with ClientInteraction err category',
             {
-                errorCode: 'RequestTimeOut',
-                retries: 2,
-                expectedErrorCode: 'RequestTimeOut',
-                timeoutDuration: 16,
-                runs: 1,
-                runSkipRetry: false,
+                errCodes: [TRANSIENT_ERR, OUTAGE_ERR, null],
+
+                durations: [
+                    SHORT_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                ],
+                timeout: 10000,
+
+                executeDuration: [2000, 3000, 4000],
+                expectRetries: 3,
+                expectErr: undefined,
+                sleepAwakeCount: 2,
             },
         ],
         [
-            'should stop retry immediately',
+            'Not Succeed, max timeout reached',
             {
-                errorCode: 'Unauthenticated',
-                retries: 1,
-                expectedErrorCode: 'Unauthenticated',
-                timeoutDuration: 17,
-                runs: 1,
-                runSkipRetry: true,
+                errCodes: [TRANSIENT_ERR, OUTAGE_ERR, TRANSIENT_ERR],
+                durations: [
+                    SHORT_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                ],
+                timeout: 10000,
+                executeDuration: [2000, 3000, 4000],
+                expectRetries: 3,
+                expectErr: {
+                    code: TRANSIENT_ERR,
+                },
+                sleepAwakeCount: 2,
             },
         ],
+        // [
+        //     'should get error when reaching timeout',
+        //     {
+        //         errorCode: 'RequestTimeOut',
+        //         retries: 2,
+        //         expectedErrorCode: 'RequestTimeOut',
+        //         timeoutDuration: 16,
+        //         runs: 1,
+        //         runSkipRetry: false,
+        //     },
+        // ],
+        // [
+        //     'should stop retry immediately',
+        //     {
+        //         errorCode: 'Unauthenticated',
+        //         retries: 1,
+        //         expectedErrorCode: 'Unauthenticated',
+        //         timeoutDuration: 17,
+        //         runs: 1,
+        //         runSkipRetry: true,
+        //     },
+        // ],
     ])(
         '%s',
         async (
             _,
             {
-                errorCode,
-                retries,
-                expectedErrorCode,
-                timeoutDuration,
-                runs,
-                runSkipRetry,
+                errCodes,
+                durations,
+                timeout,
+                executeDuration,
+                expectRetries,
+                expectErr,
+                sleepAwakeCount,
             },
         ) => {
             executable = {
@@ -101,52 +154,66 @@ describe('Timeout', () => {
                 async execute() {
                     const prevCount = this.count;
                     this.count++;
-                    if (prevCount < 2) {
+                    if (prevCount < expectRetries) {
+                        if (!errCodes[prevCount]) {
+                            return undefined;
+                        }
+
                         return {
-                            errorCode: errorCode as ErrorCode,
+                            errorCode: errCodes[prevCount] as ErrorCode,
                             message: 'first error',
                         };
                     }
                 },
             };
 
-            const backoff = new ExponentialBackoff(testRandGen, {
-                minDelay: 2,
-                randomOffset: 0,
-                scalingFactor: 2,
+            const shortBackOff = new ExponentialBackoff(testRandGen, {
+                minDelay: SHORT_DELAY,
+                randomOffset: 1,
+            });
+            const longBackOff = new ExponentialBackoff(testRandGen, {
+                minDelay: LONG_DELAY,
+                randomOffset: 1,
+                resetOnSuccess: true,
             });
 
-            const timeout = new TimeoutRetry(
+            beforeRetryDelay = async () => {
+                testClock.setCurrentTime(
+                    new Date(
+                        testClock.now().getTime() +
+                            executeDuration[executable.count - 1],
+                    ),
+                );
+            };
+
+            const timeoutRetry = new TimeoutRetry(
                 testClock,
                 testRuntime,
-                backoff,
-                timeoutDuration,
+                testLogger,
+                shortBackOff,
+                longBackOff,
+                timeout,
                 beforeRetryDelay,
                 beforeSkipRetry,
             );
 
             (async () => {
-                const [retriesRes, errorRes] = await timeout.withRetry(
+                const [retriesRes, errorRes] = await timeoutRetry.withRetry(
                     executable.execute.bind(executable),
                 );
 
-                strictEqual(retriesRes, retries);
-                strictEqual(errorRes?.errorCode, expectedErrorCode);
+                strictEqual(retriesRes, expectRetries);
+                strictEqual(errorRes?.errorCode, expectErr?.code);
                 exitSemaphore.release();
             })();
 
-            for (let run = 0; run < runs; run++) {
-                if (runSkipRetry) {
-                    await beforeSkipRetrySemaphore.wait();
-                } else {
-                    await beforeSleepSemaphore.wait();
-                }
+            for (let retry = 1; retry <= sleepAwakeCount; retry++) {
+                await beforeSleepSemaphore.wait();
 
-                strictEqual(executable.count, run + 1);
+                strictEqual(executable.count, retry);
+                strictEqual(duration.totalMilliSeconds, durations[retry - 1]);
                 testRuntime.threadAwake();
             }
-
-            await exitSemaphore.wait();
         },
     );
 });

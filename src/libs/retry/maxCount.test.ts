@@ -6,67 +6,101 @@ import { ErrorCode } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
+import { Logger } from '@lib/telemetry/Logger';
+import { RawLogger } from '@lib/telemetry/RawLogger';
+import { TestTelemetryClient } from '@lib/telemetry/TelemetryClient';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { MaxCountRetry } from './maxCount';
 import { Executable } from './testUtils';
+import {
+    CLIENT_INTERACTION_ERR,
+    LONG_DELAY,
+    OUTAGE_ERR,
+    RANDOM_OFFSET,
+    SHORT_DELAY,
+    TRANSIENT_ERR,
+} from './testing';
 
 describe('MaxCount', () => {
     const testRandGen = new TestRandomNumberGenerator();
+    testRandGen.setRandomFloats([1]);
     let testRuntime: TestRuntime;
     let executable: Executable;
     let beforeSleepSemaphore: Semaphore;
-    let beforeSkipRetrySemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let duration: Duration;
+    let testLogger: Logger;
     let beforeSkipRetry: () => Promise<void>;
 
     beforeEach(() => {
         testRuntime = new TestRuntime();
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
-        beforeSkipRetrySemaphore = new Semaphore('BeforeSkipRetry');
         exitSemaphore = new Semaphore('Exit');
         beforeSkipRetry = async () => {
-            beforeSkipRetrySemaphore.release();
+            beforeSleepSemaphore.release();
         };
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
             duration = _duration;
         };
+
+        const telemetryClient = new TestTelemetryClient();
+        testLogger = new RawLogger('Debug', new TestRuntime(), telemetryClient);
     });
 
     it.each([
         [
-            'should succeed reaching max count',
+            'Stop retry with ClientInteraction err category',
             {
-                errorCode: 'RequestTimeOut',
-                retries: 2,
-                expectedErrorCode: undefined,
-                runs: 2,
-                maxCountNum: 3,
-                runSkipRetry: false,
+                errCodes: [TRANSIENT_ERR, OUTAGE_ERR, CLIENT_INTERACTION_ERR],
+                durations: [
+                    SHORT_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                ],
+                maxCount: 10,
+                expectRetries: 3,
+                expectErr: { code: CLIENT_INTERACTION_ERR },
+                sleepAwakeCount: 2,
             },
         ],
         [
-            'should get error when reaching max count',
+            'Succeed before reaching max count',
             {
-                errorCode: 'RequestTimeOut',
-                retries: 2,
-                expectedErrorCode: 'RequestTimeOut',
-                runs: 2,
-                maxCountNum: 2,
-                runSkipRetry: false,
+                errCodes: [TRANSIENT_ERR, OUTAGE_ERR, null],
+                durations: [
+                    SHORT_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                ],
+                maxCount: 10,
+                expectRetries: 3,
+                expectErr: undefined,
+                sleepAwakeCount: 2,
             },
         ],
         [
-            'should stop retry immediately',
+            'Not Succeed, max count retries reached',
             {
-                errorCode: 'Unauthenticated',
-                retries: 1,
-                expectedErrorCode: 'Unauthenticated',
-                runs: 1,
-                maxCountNum: 3,
-                runSkipRetry: true,
+                errCodes: [
+                    TRANSIENT_ERR,
+                    OUTAGE_ERR,
+                    TRANSIENT_ERR,
+                    OUTAGE_ERR,
+                    OUTAGE_ERR,
+                ],
+                durations: [
+                    SHORT_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                    SHORT_DELAY * 4 + RANDOM_OFFSET,
+                    LONG_DELAY * 4 + RANDOM_OFFSET,
+                    LONG_DELAY * 8 + RANDOM_OFFSET,
+                ],
+                maxCount: 5,
+                expectRetries: 5,
+                expectErr: { code: OUTAGE_ERR },
+                sleepAwakeCount: 5,
             },
         ],
     ])(
@@ -74,12 +108,12 @@ describe('MaxCount', () => {
         async (
             _,
             {
-                errorCode,
-                retries,
-                expectedErrorCode,
-                runs,
-                maxCountNum,
-                runSkipRetry,
+                errCodes,
+                durations,
+                maxCount,
+                expectRetries,
+                expectErr,
+                sleepAwakeCount,
             },
         ) => {
             executable = {
@@ -87,49 +121,54 @@ describe('MaxCount', () => {
                 async execute() {
                     const prevCount = this.count;
                     this.count++;
-                    if (prevCount < 2) {
+                    if (prevCount < expectRetries) {
+                        if (!errCodes[prevCount]) {
+                            return undefined;
+                        }
+
                         return {
-                            errorCode: errorCode as ErrorCode,
+                            errorCode: errCodes[prevCount] as ErrorCode,
                             message: 'first error',
                         };
                     }
                 },
             };
 
-            const backoff = new ExponentialBackoff(testRandGen, {
-                minDelay: 2,
-                randomOffset: 0,
-                scalingFactor: 2,
+            const shortBackOff = new ExponentialBackoff(testRandGen, {
+                minDelay: SHORT_DELAY,
+                randomOffset: 1,
             });
-            const maxCount = new MaxCountRetry(
+            const longBackOff = new ExponentialBackoff(testRandGen, {
+                minDelay: LONG_DELAY,
+                randomOffset: 1,
+                resetOnSuccess: true,
+            });
+
+            const maxCountRetry = new MaxCountRetry(
                 testRuntime,
-                backoff,
-                maxCountNum,
+                testLogger,
+                shortBackOff,
+                longBackOff,
+                maxCount,
                 beforeSkipRetry,
             );
             (async () => {
-                const [retriesRes, errorRes] = await maxCount.withRetry(
+                const [retriesRes, errorRes] = await maxCountRetry.withRetry(
                     executable.execute.bind(executable),
                 );
 
-                strictEqual(retriesRes, retries);
-                strictEqual(duration.totalMilliSeconds, 8);
-                deepStrictEqual(errorRes?.errorCode, expectedErrorCode);
+                strictEqual(retriesRes, expectRetries);
+                deepStrictEqual(errorRes?.errorCode, expectErr?.code);
                 exitSemaphore.release();
             })().then();
 
-            for (let run = 0; run < runs; run++) {
-                if (runSkipRetry) {
-                    await beforeSkipRetrySemaphore.wait();
-                } else {
-                    await beforeSleepSemaphore.wait();
-                }
+            for (let retry = 1; retry <= sleepAwakeCount; retry++) {
+                await beforeSleepSemaphore.wait();
 
-                strictEqual(executable.count, run + 1);
+                strictEqual(executable.count, retry);
+                strictEqual(duration.totalMilliSeconds, durations[retry - 1]);
                 testRuntime.threadAwake();
             }
-
-            await exitSemaphore.wait();
         },
     );
 });

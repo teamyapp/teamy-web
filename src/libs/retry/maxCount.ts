@@ -1,19 +1,24 @@
-import { ERROR_CATEGORIES, InternalError } from '@lib/error/errors';
+import { getErrCategory, InternalError } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
 
 import { BackOff } from './backoff/backoff';
 import { Retry } from './retry';
+import { Logger } from '@lib/telemetry/Logger';
+import { BodyProp, ErrCategoryProp, ErrCodeProp } from '@lib/telemetry/Props';
 
 export class MaxCountRetry implements Retry {
     constructor(
         private runtime: Runtime,
-        private backoff: BackOff,
+        private logger: Logger,
+        private shortBackOff: BackOff,
+        private longBackOff: BackOff,
         private maxCount: number,
         private beforeSkipRetry?: () => Promise<void>,
     ) {}
 
     public withRetry(
         execute: () => Promise<InternalError | undefined>,
+        context?: Record<string, string>,
     ): Promise<[number, InternalError | undefined]> {
         return new Promise(async (resolve) => {
             let retries = 0;
@@ -21,22 +26,44 @@ export class MaxCountRetry implements Retry {
 
             while (retries < this.maxCount) {
                 err = await execute();
+                retries++;
                 if (err === undefined) {
-                    this.backoff.onSuccess();
+                    this.shortBackOff.onSuccess();
+                    this.longBackOff.onSuccess();
                     resolve([retries, undefined]);
                     return;
                 }
 
-                retries++;
-                const errorCategory = ERROR_CATEGORIES[err.errorCode];
-                if (errorCategory === 'ClientInteraction') {
-                    await this.beforeSkipRetry?.call(null);
-                    resolve([retries, err]);
-                    return;
-                }
+                this.logger.logWithContext('Error', {
+                    [ErrCodeProp]: err.errorCode,
+                    [BodyProp]: err.message,
+                }, context)
+                const errorCategory = getErrCategory(err);
+                this.logger.logWithContext('Warning', {
+                    [ErrCategoryProp]: errorCategory,
+                }, context);
 
-                this.backoff.onFailure();
-                await this.runtime.threadSleep(this.backoff.delay());
+                switch (errorCategory) {
+                    case 'ClientInteraction':
+                        await this.beforeSkipRetry?.call(null);
+                        resolve([retries, err]);
+
+                        return;
+                    case 'Transient':
+                        this.shortBackOff.onFailure();
+                        await this.runtime.threadSleep(
+                            this.shortBackOff.delay(),
+                        );
+
+                        break;
+                    case 'Outage':
+                        this.longBackOff.onFailure();
+                        await this.runtime.threadSleep(
+                            this.longBackOff.delay(),
+                        );
+
+                        break;
+                }
             }
 
             resolve([retries, err]);
