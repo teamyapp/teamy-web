@@ -113,28 +113,6 @@ describe('Timeout', () => {
                 sleepAwakeCount: 2,
             },
         ],
-        // [
-        //     'should get error when reaching timeout',
-        //     {
-        //         errorCode: 'RequestTimeOut',
-        //         retries: 2,
-        //         expectedErrorCode: 'RequestTimeOut',
-        //         timeoutDuration: 16,
-        //         runs: 1,
-        //         runSkipRetry: false,
-        //     },
-        // ],
-        // [
-        //     'should stop retry immediately',
-        //     {
-        //         errorCode: 'Unauthenticated',
-        //         retries: 1,
-        //         expectedErrorCode: 'Unauthenticated',
-        //         timeoutDuration: 17,
-        //         runs: 1,
-        //         runSkipRetry: true,
-        //     },
-        // ],
     ])(
         '%s',
         async (
