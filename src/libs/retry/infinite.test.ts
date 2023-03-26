@@ -22,7 +22,7 @@ import {
     TRANSIENT_ERR,
 } from './testing';
 
-describe.only('InfiniteRetry', () => {
+describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();
     testRandGen.setRandomFloats([1]);
     let testRuntime: TestRuntime;
