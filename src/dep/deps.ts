@@ -93,7 +93,8 @@ export function initDeps(): Deps {
     const shortBackOff = new ExponentialBackoff(new BuiltInRandomNumberGenerator());
     const longBackOff = new ExponentialBackoff(new BuiltInRandomNumberGenerator(),
     {
-        // TODO: set long backoff options
+        minDelay: config.longBackOffMinDelay,
+        maxDelay: config.longBackOffMaxDelay,
     });
 
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [

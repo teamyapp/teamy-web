@@ -10,6 +10,8 @@ export interface Config {
     cloudWebAPIEndpoint: string;
     defaultLogLevel: LogLevel;
     maxAPIRetryTimes: number;
+    longBackOffMinDelay: number;
+    longBackOffMaxDelay: number;
 }
 
 const developmentConfig: Config = {
@@ -18,6 +20,8 @@ const developmentConfig: Config = {
     cloudWebAPIEndpoint: 'http://localhost:9011',
     defaultLogLevel: 'Debug',
     maxAPIRetryTimes: 10,
+    longBackOffMinDelay: 10 * 60 * 1000,
+    longBackOffMaxDelay: 60 * 60 * 1000,
 };
 
 const testingConfig: Config = {
@@ -26,6 +30,8 @@ const testingConfig: Config = {
     cloudWebAPIEndpoint: 'https://cloud.testing.teamyapp.com',
     defaultLogLevel: 'Debug',
     maxAPIRetryTimes: 10,
+    longBackOffMinDelay: 10 * 60 * 1000,
+    longBackOffMaxDelay: 60 * 60 * 1000,
 };
 
 const stagingConfig: Config = {
@@ -34,6 +40,8 @@ const stagingConfig: Config = {
     cloudWebAPIEndpoint: 'https://cloud.staging.teamyapp.com',
     defaultLogLevel: 'Info',
     maxAPIRetryTimes: 10,
+    longBackOffMinDelay: 10 * 60 * 1000,
+    longBackOffMaxDelay: 60 * 60 * 1000,
 };
 
 const productionConfig: Config = {
@@ -42,6 +50,8 @@ const productionConfig: Config = {
     cloudWebAPIEndpoint: 'https://cloud.teamyapp.com',
     defaultLogLevel: 'Info',
     maxAPIRetryTimes: 10,
+    longBackOffMinDelay: 10 * 60 * 1000,
+    longBackOffMaxDelay: 60 * 60 * 1000,
 };
 
 export function getConfig(env: Environment): Config {
