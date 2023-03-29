@@ -1,0 +1,13 @@
+@import 'Modal.shared.module';
+
+.ActionFooter {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 0 16px 16px 16px;
+    column-gap: 16px;
+}
+
+.Content {
+    padding: 16px;
+}
