@@ -21,11 +21,15 @@ import {
     TRANSIENT_ERR,
 } from './testing';
 import { TimeoutRetry } from './timeout';
+import { HTTPClient, HTTPRequestOptions } from '@lib/network/HTTP.client';
+import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
+
 
 describe('Timeout', () => {
     const testRandGen = new TestRandomNumberGenerator();
     testRandGen.setRandomFloats([1]);
     let beforeSleepSemaphore: Semaphore;
+    let beforeSkipRetrySemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let testRuntime: TestRuntime;
     let testClock: TestClock;
@@ -39,10 +43,11 @@ describe('Timeout', () => {
         testRuntime = new TestRuntime();
         testClock = new TestClock();
         beforeSleepSemaphore = new Semaphore('BeforeSleep');
+        beforeSkipRetrySemaphore = new Semaphore('BeforeSkipRetry');
         exitSemaphore = new Semaphore('Exit');
         testClock.setCurrentTime(new Date());
         beforeSkipRetry = async () => {
-            beforeSleepSemaphore.release();
+            beforeSkipRetrySemaphore.release();
         };
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
@@ -54,7 +59,13 @@ describe('Timeout', () => {
             );
         };
         
-        testLogger = new RawLogger('Debug', new TestRuntime(), {});
+        const fakeHTTPClient: HTTPClient = {
+            request: (url: string, options?: HTTPRequestOptions) => {
+                return Promise.resolve([undefined, undefined])
+            }
+        };
+        const fakeTelemetryClient = new TelemetryClient("test", fakeHTTPClient)
+        testLogger = new RawLogger('Debug', new TestRuntime(), fakeTelemetryClient);
     });
 
     it.each([
@@ -185,7 +196,7 @@ describe('Timeout', () => {
             })();
 
             for (let retry = 1; retry <= sleepAwakeCount; retry++) {
-                await beforeSleepSemaphore.wait();
+                await Promise.race([beforeSleepSemaphore.wait(), beforeSkipRetrySemaphore.wait()])
 
                 strictEqual(executable.count, retry);
                 strictEqual(duration.totalMilliSeconds, durations[retry - 1]);
