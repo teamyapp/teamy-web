@@ -23,8 +23,8 @@ export class TimeoutRetry implements Retry {
     ) {}
 
     public withRetry(
+        context: Record<string, string>,
         execute: () => Promise<InternalError | undefined>,
-        context?: Record<string, string>,
     ): Promise<[number, InternalError | undefined]> {
         return new Promise(async (resolve) => {
             let retries = 0;

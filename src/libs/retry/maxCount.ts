@@ -17,8 +17,8 @@ export class MaxCountRetry implements Retry {
     ) {}
 
     public withRetry(
+        context: Record<string, string>,
         execute: () => Promise<InternalError | undefined>,
-        context?: Record<string, string>,
     ): Promise<[number, InternalError | undefined]> {
         return new Promise(async (resolve) => {
             let retries = 0;
@@ -47,21 +47,18 @@ export class MaxCountRetry implements Retry {
                     case 'ClientInteraction':
                         await this.beforeSkipRetry?.call(null);
                         resolve([retries, err]);
-
                         return;
                     case 'Transient':
                         this.shortBackOff.onFailure();
                         await this.runtime.threadSleep(
                             this.shortBackOff.delay(),
                         );
-
                         break;
                     case 'Outage':
                         this.longBackOff.onFailure();
                         await this.runtime.threadSleep(
                             this.longBackOff.delay(),
                         );
-
                         break;
                 }
             }

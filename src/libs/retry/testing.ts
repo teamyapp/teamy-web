@@ -1,4 +1,3 @@
-
 export const TRANSIENT_ERR = 'RequestTimeOut'
 export const CLIENT_INTERACTION_ERR = 'BadRequest'
 export const OUTAGE_ERR = 'NotImplemented'

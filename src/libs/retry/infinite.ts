@@ -15,8 +15,8 @@ export class InfiniteRetry implements Retry {
     ) {}
 
     public withRetry(
+        context: Record<string, string>,
         execute: () => Promise<InternalError | undefined>,
-        context?: Record<string, string>,
     ): Promise<[number, InternalError | undefined]> {
         return new Promise(async (resolve) => {
             let retries = 0;
@@ -42,7 +42,6 @@ export class InfiniteRetry implements Retry {
                     case 'ClientInteraction':
                         await this.beforeSkipRetry?.call(null);
                         resolve([retries, err]);
-
                         return;
                     case 'Transient':
                         this.shortBackOff.onFailure();
