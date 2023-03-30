@@ -60,7 +60,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                     <div className={styles.MoveSection}>
                         <div
                             className={styles.Button}
-                            onClick={this.openConfirmModal}
+                            onClick={this.onCopyUnfinishedTasksClick}
                         >
                             <MaterialIconUI>outbound</MaterialIconUI>
                         </div>
@@ -111,7 +111,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 <ConfirmActionsModalComponent
                     ref={this.confirmModalRef}
                     message='Do you want to copy unfinished tasks to the next sprint?'
-                    onConfirm={this.onCopyUnfinishedTasksClick}
+                    onConfirm={this.copyUnfinishedTasksToNextSprint}
                 />
             </div>
         );
@@ -185,7 +185,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         });
     };
 
-    private openConfirmModal = () => {
+    private onCopyUnfinishedTasksClick = () => {
         this.confirmModalRef.current?.open();
     };
 
@@ -204,7 +204,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         return true;
     };
 
-    private onCopyUnfinishedTasksClick = async () => {
+    private copyUnfinishedTasksToNextSprint = async () => {
         if (!this.canCopyTasksToNextSprint()) {
             alert('can not copy tasks to next sprint');
             return;
