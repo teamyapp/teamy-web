@@ -141,7 +141,6 @@ describe('MaxCount', () => {
                 randomOffset: 1,
                 resetOnSuccess: true,
             });
-
             const maxCountRetry = new MaxCountRetry(
                 testRuntime,
                 testLogger,

@@ -57,11 +57,11 @@ describe('InfiniteRetry', () => {
                     LONG_DELAY * 2 + RANDOM_OFFSET,
                     LONG_DELAY * 2 + RANDOM_OFFSET,
                 ],
+                sleepAwakeCount: 2,
                 expectRetries: 3,
                 expectErr: {
                     errorCode: CLIENT_INTERACTION_ERR,
                 },
-                sleepAwakeCount: 2,
             },
         ],
         [
@@ -81,9 +81,9 @@ describe('InfiniteRetry', () => {
                     LONG_DELAY * 4 + RANDOM_OFFSET,
                     LONG_DELAY * 4 + RANDOM_OFFSET,
                 ],
+                sleepAwakeCount: 4,
                 expectRetries: 5,
                 expectErr: undefined,
-                sleepAwakeCount: 4,
             },
         ],
     ])(
@@ -139,8 +139,8 @@ describe('InfiniteRetry', () => {
                     executable.execute.bind(executable),
                 );
 
-                strictEqual(retriesRes, expectRetries);
-                strictEqual(errorRes?.errorCode, expectErr?.errorCode);
+                strictEqual(expectRetries, retriesRes);
+                strictEqual(expectErr?.errorCode, errorRes?.errorCode);
                 exitSemaphore.release();
             })().then();
 
