@@ -9,7 +9,6 @@ import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 import { Logger } from '@lib/telemetry/Logger';
 import { RawLogger } from '@lib/telemetry/RawLogger';
-import { TestTelemetryClient } from '@lib/telemetry/TelemetryClient';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { Executable } from './testUtils';
@@ -54,8 +53,8 @@ describe('Timeout', () => {
                 ),
             );
         };
-        const telemetryClient = new TestTelemetryClient();
-        testLogger = new RawLogger('Debug', new TestRuntime(), telemetryClient);
+        
+        testLogger = new RawLogger('Debug', new TestRuntime(), {});
     });
 
     it.each([
@@ -176,7 +175,7 @@ describe('Timeout', () => {
             );
 
             (async () => {
-                const [retriesRes, errorRes] = await timeoutRetry.withRetry(
+                const [retriesRes, errorRes] = await timeoutRetry.withRetry({},
                     executable.execute.bind(executable),
                 );
 
