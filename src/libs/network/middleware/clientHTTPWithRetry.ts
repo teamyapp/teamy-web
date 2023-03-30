@@ -16,6 +16,7 @@ export function clientHTTPWithRetry(makeRetry: ()=>Retry): Middleware<HTTPClient
                 let result: [Optional<HTTPResponse>, Optional<InternalError>];
                 const retry = makeRetry();
                 await retry.withRetry(
+                    context,
                     () =>
                         new Promise<Optional<InternalError>>(
                             async (resolve) => {
