@@ -7,7 +7,7 @@ import { ModalUI } from '@lib/ui/Modal';
 import styles from './ConfirmActionsModal.component.module.scss';
 
 interface Props {
-    alert: string;
+    message: string;
     onConfirm: () => any;
 }
 
@@ -23,10 +23,20 @@ export class ConfirmActionsModalComponent extends Component<Props> {
                         <MaterialIconUI>cancel</MaterialIconUI>
                     </div>
                 </div>
-                <div className={styles.Content}>{this.props.alert}</div>
-                <div className={styles.ActionFooter}>
-                    <ButtonUI label={'Yes'} onClick={this.onConfirm} />
-                    <ButtonUI label={'No'} onClick={this.onCancel} />
+                <div className={styles.Content}>
+                    <div className={styles.Message}>{this.props.message}</div>
+                    <div className={styles.Actions}>
+                        <ButtonUI
+                            label={'Yes'}
+                            className={styles.ConfirmAction}
+                            onClick={this.onConfirm}
+                        />
+                        <ButtonUI
+                            label={'No'}
+                            className={styles.CancelAction}
+                            onClick={this.onCancel}
+                        />
+                    </div>
                 </div>
             </ModalUI>
         );
