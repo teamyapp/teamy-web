@@ -204,11 +204,13 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         let nextSprintId = this.getNextSprint(currentSprint)?.id;
         if (!nextSprintId) {
             const startAt = new Date();
+            const endAt = getEndAt(startAt, '1week');
+
             nextSprintId = await this.stateSyncer.createSprint(
                 this.graphSource.currentTeam()!.id, 
                 {
                     startAt,
-                    endAt: getEndAt(startAt, '1week'),
+                    endAt,
                 },
             );
         }
