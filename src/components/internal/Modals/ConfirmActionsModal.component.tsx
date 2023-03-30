@@ -26,16 +26,12 @@ export class ConfirmActionsModalComponent extends Component<Props> {
                 <div className={styles.Content}>
                     <div className={styles.Message}>{this.props.message}</div>
                     <div className={styles.Actions}>
-                        <ButtonUI
-                            label={'Yes'}
-                            className={styles.ConfirmAction}
-                            onClick={this.onConfirm}
-                        />
-                        <ButtonUI
-                            label={'No'}
-                            className={styles.CancelAction}
-                            onClick={this.onCancel}
-                        />
+                        <div className={styles.ConfirmAction}>
+                            <ButtonUI label={'Yes'} onClick={this.onConfirm} />
+                        </div>
+                        <div className={styles.CancelAction}>
+                            <ButtonUI label={'No'} onClick={this.onCancel} />
+                        </div>
                     </div>
                 </div>
             </ModalUI>

@@ -4,7 +4,6 @@ import styles from './Button.module.scss';
 
 interface Props {
     label: string;
-    className?: string;
     onClick?: () => void;
 }
 
@@ -14,7 +13,7 @@ export class ButtonUI extends Component<Props> {
             <div
                 role={'button'}
                 aria-label={this.props.label}
-                className={`${styles.Button} ${this.props.className}`}
+                className={styles.Button}
                 onClick={this.props.onClick}
             >
                 {this.props.label}
