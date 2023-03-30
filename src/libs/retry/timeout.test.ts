@@ -4,11 +4,13 @@ import { beforeEach, describe, it } from 'vitest';
 import { Duration } from '@lib/entity/duration';
 import { ErrorCode } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
+import { HTTPClient, HTTPRequestOptions } from '@lib/network/HTTP.client';
 import { TestClock } from '@lib/runtime/clock';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 import { Logger } from '@lib/telemetry/Logger';
 import { RawLogger } from '@lib/telemetry/RawLogger';
+import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { Executable } from './testUtils';
@@ -21,9 +23,6 @@ import {
     TRANSIENT_ERR,
 } from './testing';
 import { TimeoutRetry } from './timeout';
-import { HTTPClient, HTTPRequestOptions } from '@lib/network/HTTP.client';
-import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
-
 
 describe('Timeout', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -52,20 +51,23 @@ describe('Timeout', () => {
         testRuntime.beforeThreadSleep = async (_duration: Duration) => {
             beforeSleepSemaphore.release();
             duration = _duration;
-            testClock.setCurrentTime(
-                new Date(
-                    testClock.now().getTime() + duration.totalMilliSeconds,
-                ),
+            const newDate = new Date(
+                testClock.now().getTime() + duration.totalMilliSeconds,
             );
+            testClock.setCurrentTime(newDate);
         };
-        
+
         const fakeHTTPClient: HTTPClient = {
             request: (url: string, options?: HTTPRequestOptions) => {
-                return Promise.resolve([undefined, undefined])
-            }
+                return Promise.resolve([undefined, undefined]);
+            },
         };
-        const fakeTelemetryClient = new TelemetryClient("test", fakeHTTPClient)
-        testLogger = new RawLogger('Debug', new TestRuntime(), fakeTelemetryClient);
+        const fakeTelemetryClient = new TelemetryClient('test', fakeHTTPClient);
+        testLogger = new RawLogger(
+            'Debug',
+            new TestRuntime(),
+            fakeTelemetryClient,
+        );
     });
 
     it.each([
@@ -166,12 +168,12 @@ describe('Timeout', () => {
             });
 
             beforeRetryDelay = async () => {
-                testClock.setCurrentTime(
-                    new Date(
-                        testClock.now().getTime() +
-                            executeDuration[executable.count - 1],
-                    ),
+                const newDate = new Date(
+                    testClock.now().getTime() +
+                        executeDuration[executable.count - 1],
                 );
+
+                testClock.setCurrentTime(newDate);
             };
 
             const timeoutRetry = new TimeoutRetry(
@@ -186,7 +188,8 @@ describe('Timeout', () => {
             );
 
             (async () => {
-                const [retriesRes, errorRes] = await timeoutRetry.withRetry({},
+                const [retriesRes, errorRes] = await timeoutRetry.withRetry(
+                    {},
                     executable.execute.bind(executable),
                 );
 
@@ -196,7 +199,10 @@ describe('Timeout', () => {
             })();
 
             for (let retry = 1; retry <= sleepAwakeCount; retry++) {
-                await Promise.race([beforeSleepSemaphore.wait(), beforeSkipRetrySemaphore.wait()])
+                await Promise.race([
+                    beforeSleepSemaphore.wait(),
+                    beforeSkipRetrySemaphore.wait(),
+                ]);
 
                 strictEqual(executable.count, retry);
                 strictEqual(duration.totalMilliSeconds, durations[retry - 1]);
