@@ -16,6 +16,7 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { getEndAt } from './format';
 
+import { ConfirmActionsModalComponent } from './Modals/ConfirmActionsModal.component';
 import styles from './SprintsHeaderSection.component.module.scss';
 import { getSprintName } from './format';
 
@@ -34,7 +35,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
-    private readonly router: Router;
+    private readonly confirmModalRef: React.RefObject<ConfirmActionsModalComponent> =
+        React.createRef();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
     constructor(props: Props) {
@@ -42,7 +44,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         this.graphSource = props.deps.graphSource;
         this.localStore = props.deps.localStore;
         this.stateSyncer = props.deps.stateSyncer;
-        this.router = props.deps.router;
         this.state = {
             sprints: [],
             showDetail: false,
@@ -107,6 +108,11 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         )}
                     </div>
                 </div>
+                <ConfirmActionsModalComponent
+                    ref={this.confirmModalRef}
+                    message='Do you want to copy unfinished tasks to the next sprint?'
+                    onConfirm={this.copyUnfinishedTasksToNextSprint}
+                />
             </div>
         );
     }
@@ -179,6 +185,10 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         });
     };
 
+    private onCopyUnfinishedTasksClick = () => {
+        this.confirmModalRef.current?.open();
+    };
+
     private canCopyTasksToNextSprint = () => {
         const currentSprint = this.graphSource.currentSprint();
         if (!currentSprint) {
@@ -194,7 +204,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         return true;
     };
 
-    private onCopyUnfinishedTasksClick = async () => {
+    private copyUnfinishedTasksToNextSprint = async () => {
         if (!this.canCopyTasksToNextSprint()) {
             alert('can not copy tasks to next sprint');
             return;
