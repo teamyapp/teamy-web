@@ -4,7 +4,7 @@ import { Runtime } from '@lib/runtime/runtime';
 import { LOG_LEVEL_RANKS, LogLevel } from './LogLevel';
 import { Logger } from './Logger';
 import { HappenAtProp, Props, SeverityProp } from './Props';
-import { TelemetryClient, TelemetryClientInterface } from './TelemetryClient';
+import { TelemetryClient } from './TelemetryClient';
 
 const LOG_UPLOAD_INTERVAL = Duration.fromString('T2S');
 
@@ -14,7 +14,7 @@ export class RawLogger implements Logger {
     constructor(
         private visibleLevel: LogLevel,
         private runtime: Runtime,
-        telemetryClient: TelemetryClientInterface,
+        telemetryClient: TelemetryClient,
     ) {
         this.visibleLevel = visibleLevel;
 

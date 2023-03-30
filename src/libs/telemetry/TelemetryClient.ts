@@ -4,12 +4,11 @@ import { Optional } from '@lib/sugar/optional';
 
 import { Props } from './Props';
 
-
 export interface TelemetryClientInterface {
     uploadLog(logEntries: Props[]): Promise<[Optional<HTTPResponse>, Optional<InternalError>]>;
 }
 
-export class TelemetryClient implements TelemetryClientInterface {
+export class TelemetryClient {
     constructor(
         private readonly telemetryApiEndpoint: string,
         private readonly httpClient: HTTPClient,
@@ -30,8 +29,3 @@ export class TelemetryClient implements TelemetryClientInterface {
     }
 }
 
-export class TestTelemetryClient implements TelemetryClientInterface{
-    public uploadLog(logEntries: Props[]): Promise<[Optional<HTTPResponse>, Optional<InternalError>]> {
-        return Promise.resolve([undefined, undefined]);
-    }
-}

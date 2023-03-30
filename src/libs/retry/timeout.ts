@@ -45,14 +45,13 @@ export class TimeoutRetry implements Retry {
                     [ErrCodeProp]: err.errorCode,
                     [BodyProp]: err.message,
                 }, context)
-                await this.beforeRetryDelay?.call(null);
                 const errorCategory = getErrCategory(err);
                 this.logger.logWithContext('Warning', {
                     [ErrCategoryProp]: errorCategory,
                 }, context);
+                await this.beforeRetryDelay?.call(null);
 
                 let duration;
-
                 switch (errorCategory) {
                     case 'ClientInteraction':
                         await this.beforeSkipRetry?.call(null);

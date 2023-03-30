@@ -14,7 +14,7 @@ export const PathProp = 'Path';
 export const ProtocolProp = 'Protocol';
 export const CommitProp = 'Commit';
 export const HostProp = 'Host';
-export const ErrCodeProp = 'ErrCode';
-export const ErrCategoryProp = 'ErrCategory';
+export const ErrCodeProp = 'ErrorCode';
+export const ErrCategoryProp = 'ErrorCategory';
 
 export type Props = Record<string, any>;
