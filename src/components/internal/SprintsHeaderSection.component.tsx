@@ -14,6 +14,7 @@ import { Sprint } from '@core/entity/sprint';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { getEndAt } from './format';
 
 import styles from './SprintsHeaderSection.component.module.scss';
 import { getSprintName } from './format';
@@ -190,25 +191,33 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             return false;
         }
 
-        const nextSprint = this.getNextSprint(currentSprint);
-        if (!nextSprint) {
-            return false;
-        }
-
         return true;
     };
 
-    private onCopyUnfinishedTasksClick = () => {
+    private onCopyUnfinishedTasksClick = async () => {
         if (!this.canCopyTasksToNextSprint()) {
             alert('can not copy tasks to next sprint');
             return;
         }
 
         const currentSprint = this.graphSource.currentSprint()!;
-        const nextSprint = this.getNextSprint(currentSprint)!;
+        let nextSprintId = this.getNextSprint(currentSprint)?.id;
+        if (!nextSprintId) {
+            const startAt = new Date();
+            const endAt = getEndAt(startAt, '1week');
+
+            nextSprintId = await this.stateSyncer.createSprint(
+                this.graphSource.currentTeam()!.id, 
+                {
+                    startAt,
+                    endAt,
+                },
+            );
+        }
+        
         const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
         const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
-        this.stateSyncer.copyTasksToSprint(nextSprint.id, unfinishedTaskIds);
+        this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds);
     };
 
     private getNextSprint(currentSprint: Sprint) {
