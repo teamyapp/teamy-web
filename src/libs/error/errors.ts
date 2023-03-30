@@ -14,7 +14,7 @@ export interface InternalError {
 
 export type ErrorCategory = 'Transient' | 'Outage' | 'ClientInteraction';
 
-export const ERROR_CATEGORIES: Record<ErrorCode, ErrorCategory> = {
+const ERROR_CATEGORIES: Record<ErrorCode, ErrorCategory> = {
     RequestTimeOut: 'Transient',
     Unhandled: 'Outage',
     ServiceUnavailable: 'Outage',
@@ -23,3 +23,8 @@ export const ERROR_CATEGORIES: Record<ErrorCode, ErrorCategory> = {
     Unauthenticated: 'ClientInteraction',
     NotFound: 'ClientInteraction',
 };
+
+
+export const getErrCategory = (err: InternalError): ErrorCategory => {
+    return ERROR_CATEGORIES[err.errorCode] || 'Outage';
+}

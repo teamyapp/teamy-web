@@ -6,19 +6,33 @@ import { ErrorCode } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
+import { Logger } from '@lib/telemetry/Logger';
+import { RawLogger } from '@lib/telemetry/RawLogger';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { InfiniteRetry } from './infinite';
 import { Executable } from './testUtils';
+import {
+    CLIENT_INTERACTION_ERR,
+    LONG_DELAY,
+    OUTAGE_ERR,
+    RANDOM_OFFSET,
+    SHORT_DELAY,
+    TRANSIENT_ERR,
+} from './testing';
+import { HTTPClient, HTTPRequestOptions } from '@lib/network/HTTP.client';
+import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
 
 describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();
+    testRandGen.setRandomFloats([1]);
     let testRuntime: TestRuntime;
     let executable: Executable;
-    let beforeSkipRetrySemaphore: Semaphore;
     let beforeSleepSemaphore: Semaphore;
+    let beforeSkipRetrySemaphore: Semaphore;
     let exitSemaphore: Semaphore;
     let duration: Duration;
+    let testLogger: Logger;
     let beforeSkipRetry: () => Promise<void>;
 
     beforeEach(() => {
@@ -33,80 +47,117 @@ describe('InfiniteRetry', () => {
             beforeSleepSemaphore.release();
             duration = _duration;
         };
+        const fakeHTTPClient: HTTPClient = {
+            request: (url: string, options?: HTTPRequestOptions) => {
+                return Promise.resolve([undefined, undefined])
+            }
+        };
+        const fakeTelemetryClient = new TelemetryClient("test", fakeHTTPClient)
+        testLogger = new RawLogger('Debug', new TestRuntime(), fakeTelemetryClient);
     });
 
     it.each([
         [
-            'retry until succeeded',
+            'Stop retry with ClientInteraction err category',
             {
-                errorCode: 'RequestTimeOut',
-                retries: 10,
-                expectedErrorCode: undefined,
-                runs: 10,
-                runSkipRetry: false,
+                errorCodes: [TRANSIENT_ERR, OUTAGE_ERR, CLIENT_INTERACTION_ERR],
+                durations: [
+                    SHORT_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                ],
+                sleepAwakeCount: 2,
+                expectRetries: 3,
+                expectErr: {
+                    errorCode: CLIENT_INTERACTION_ERR,
+                },
             },
         ],
         [
-            'should stop retry immediately',
+            'Should retry until succeed with Transient and Outage err categories',
             {
-                errorCode: 'Unauthenticated',
-                retries: 1,
-                expectedErrorCode: 'Unauthenticated',
-                runs: 1,
-                runSkipRetry: true,
+                errorCodes: [
+                    TRANSIENT_ERR,
+                    OUTAGE_ERR,
+                    TRANSIENT_ERR,
+                    OUTAGE_ERR,
+                    undefined,
+                ],
+                durations: [
+                    SHORT_DELAY * 2 + RANDOM_OFFSET,
+                    LONG_DELAY * 2 + RANDOM_OFFSET,
+                    SHORT_DELAY * 4 + RANDOM_OFFSET,
+                    LONG_DELAY * 4 + RANDOM_OFFSET,
+                    LONG_DELAY * 4 + RANDOM_OFFSET,
+                ],
+                sleepAwakeCount: 4,
+                expectRetries: 5,
+                expectErr: undefined,
             },
         ],
     ])(
         '$s',
         async (
             _,
-            { errorCode, retries, expectedErrorCode, runs, runSkipRetry },
+            {
+                errorCodes,
+                durations,
+                expectRetries,
+                expectErr,
+                sleepAwakeCount,
+            },
         ) => {
             executable = {
                 count: 0,
                 async execute() {
                     const prevCount = this.count;
                     this.count++;
-                    if (prevCount < retries) {
+                    if (prevCount < expectRetries) {
+                        if (!errorCodes[prevCount]) {
+                            return undefined;
+                        }
+
                         return {
-                            errorCode: errorCode as ErrorCode,
+                            errorCode: errorCodes[prevCount] as ErrorCode,
                             message: 'first error',
                         };
                     }
                 },
             };
 
-            const backoff = new ExponentialBackoff(testRandGen, {
-                minDelay: 2,
-                randomOffset: 0,
-                scalingFactor: 2,
-                maxDelay: 600,
+            const shortBackOff = new ExponentialBackoff(testRandGen, {
+                minDelay: SHORT_DELAY,
+                randomOffset: 1,
             });
+            const longBackOff = new ExponentialBackoff(testRandGen, {
+                minDelay: LONG_DELAY,
+                randomOffset: 1,
+                resetOnSuccess: true,
+            });
+
             const infinite = new InfiniteRetry(
                 testRuntime,
-                backoff,
+                testLogger,
+                shortBackOff,
+                longBackOff,
                 beforeSkipRetry,
             );
 
             (async () => {
-                const [retriesRes, errorRes] = await infinite.withRetry(
+                const [retriesRes, errorRes] = await infinite.withRetry({},
                     executable.execute.bind(executable),
                 );
 
-                strictEqual(retriesRes, retries);
-                strictEqual(duration.totalMilliSeconds, 600);
-                strictEqual(errorRes?.errorCode, expectedErrorCode);
+                strictEqual(expectRetries, retriesRes);
+                strictEqual(expectErr?.errorCode, errorRes?.errorCode);
                 exitSemaphore.release();
             })().then();
 
-            for (let retry = 1; retry <= runs; retry++) {
-                if (runSkipRetry) {
-                    await beforeSkipRetrySemaphore.wait();
-                } else {
-                    await beforeSleepSemaphore.wait();
-                }
+            for (let retry = 1; retry <= sleepAwakeCount; retry++) {
+                await Promise.race([beforeSleepSemaphore.wait(), beforeSkipRetrySemaphore.wait()])
 
                 strictEqual(executable.count, retry);
+                strictEqual(duration.totalMilliSeconds, durations[retry - 1]);
                 testRuntime.threadAwake();
             }
         },

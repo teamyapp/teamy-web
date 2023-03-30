@@ -64,16 +64,11 @@ export interface Deps {
 export function initDeps(): Deps {
     const env = getEnvironment();
     const config = getConfig(env);
+
+    //  can not set retry for telemetry, because retry requires logger
     const httpMiddlewares = [
         clientHTTPWithRequestId,
         clientHTTPWithIdentity,
-        clientHTTPWithRetry(()=>{
-            return new MaxCountRetry(
-                new BuiltInRuntime(),
-                new ExponentialBackoff(new BuiltInRandomNumberGenerator()),
-                config.maxAPIRetryTimes,
-            )
-        }),
     ];
     const httpClient = WithMiddlewares<HTTPClient>(
         new FetchHTTPClient(),
@@ -95,9 +90,25 @@ export function initDeps(): Deps {
             logWithCommit(GIT_LONG_COMMIT_HASH),
         ],
     );
+    const shortBackOff = new ExponentialBackoff(new BuiltInRandomNumberGenerator());
+    const longBackOff = new ExponentialBackoff(new BuiltInRandomNumberGenerator(),
+    {
+        minDelay: config.longBackOffMinDelay,
+        maxDelay: config.longBackOffMaxDelay,
+    });
+
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,
         clientHTTPWithLogger(logger),
+        clientHTTPWithRetry(()=>{
+            return new MaxCountRetry(
+                new BuiltInRuntime(),
+                logger,
+                shortBackOff,
+                longBackOff,
+                config.maxAPIRetryTimes,
+            )
+        }),
     ]);
     const identityClient = new IdentityClient(
         env,
