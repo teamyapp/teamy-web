@@ -202,10 +202,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
         const currentSprint = this.graphSource.currentSprint()!;
         let nextSprintId = this.getNextSprint(currentSprint)?.id;
-
         if (!nextSprintId) {
             const startAt = new Date();
-
             nextSprintId = await this.stateSyncer.createSprint(
                 this.graphSource.currentTeam()!.id, 
                 {
