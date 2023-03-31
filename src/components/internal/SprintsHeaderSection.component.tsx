@@ -3,7 +3,6 @@ import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
@@ -14,10 +13,10 @@ import { Sprint } from '@core/entity/sprint';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { getEndAt } from './format';
 
 import { ConfirmActionsModalComponent } from './Modals/ConfirmActionsModal.component';
 import styles from './SprintsHeaderSection.component.module.scss';
+import { getEndAt } from './format';
 import { getSprintName } from './format';
 
 interface Props {
@@ -29,14 +28,16 @@ interface State {
     currentSprint?: Sprint;
     showDetail: boolean;
     sprints: Sprint[];
+    sprintToDelete?: number;
 }
 
 export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
-    private readonly confirmModalRef: React.RefObject<ConfirmActionsModalComponent> =
+    private readonly moveUnfinishedTasksConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
         React.createRef();
+    private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> = React.createRef();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
     constructor(props: Props) {
@@ -109,9 +110,14 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <ConfirmActionsModalComponent
-                    ref={this.confirmModalRef}
-                    message='Do you want to copy unfinished tasks to the next sprint?'
+                    ref={this.moveUnfinishedTasksConfirmTaskRef}
+                    message="Are you sure you want to move unfinished tasks to next sprint?"
                     onConfirm={this.copyUnfinishedTasksToNextSprint}
+                />
+                <ConfirmActionsModalComponent
+                    ref={this.deleteSprintConfirmTaskRef}
+                    message="Are you sure you want to delete this sprint?"
+                    onConfirm={this.deleteSprint}
                 />
             </div>
         );
@@ -186,7 +192,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     };
 
     private onCopyUnfinishedTasksClick = () => {
-        this.confirmModalRef.current?.open();
+        this.moveUnfinishedTasksConfirmTaskRef.current?.open();
     };
 
     private canCopyTasksToNextSprint = () => {
@@ -204,6 +210,17 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         return true;
     };
 
+    private deleteSprint = async () => {
+        if (!this.state.sprintToDelete) {
+            return;
+        }
+
+        await this.stateSyncer.deleteSprint(this.state.sprintToDelete);
+        this.setState({
+            sprintToDelete: undefined,
+        });
+    };
+
     private copyUnfinishedTasksToNextSprint = async () => {
         if (!this.canCopyTasksToNextSprint()) {
             alert('can not copy tasks to next sprint');
@@ -217,7 +234,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             const endAt = getEndAt(startAt, '1week');
 
             nextSprintId = await this.stateSyncer.createSprint(
-                this.graphSource.currentTeam()!.id, 
+                this.graphSource.currentTeam()!.id,
                 {
                     startAt,
                     endAt,
@@ -263,9 +280,13 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         };
     };
 
-    private onDeleteSprintClick = (sprintId: number) => {
+    private onDeleteSprintClick = (sprintToDelete: number) => {
         return () => {
-            this.stateSyncer.deleteSprint(sprintId);
+            this.setState({
+                sprintToDelete,
+            });
+
+            this.deleteSprintConfirmTaskRef.current?.open();
         };
     };
 
