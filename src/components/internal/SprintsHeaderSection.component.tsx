@@ -242,16 +242,16 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             );
         }
         
-        const actions = [];
         const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
         const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
 
+        const promises = [];
         if (this.stateSyncer.trySetCurrentSprint(nextSprintId)) {
-            actions.push(this.stateSyncer.pullCurrentSprint());
+            promises.push(this.stateSyncer.pullCurrentSprint());
         }
 
-        actions.push(this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds));
-        await Promise.all(actions);
+        promises.push(this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds));
+        await Promise.all(promises);
     };
 
     private getNextSprint(currentSprint: Sprint) {
