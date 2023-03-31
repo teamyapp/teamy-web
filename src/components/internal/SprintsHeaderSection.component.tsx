@@ -116,7 +116,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 />
                 <ConfirmActionsModalComponent
                     ref={this.deleteSprintConfirmTaskRef}
-                    message="Are you sure you want to delete this sprint?"
+                    message="Do you want to delete this sprint?"
                     onConfirm={this.deleteSprint}
                 />
             </div>
@@ -285,7 +285,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             this.setState({
                 sprintToDelete,
             });
-
             this.deleteSprintConfirmTaskRef.current?.open();
         };
     };
