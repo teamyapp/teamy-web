@@ -35,7 +35,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
-    private readonly moveUnfinishedTasksConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
+    private readonly copyUnfinishedTasksConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
         React.createRef();
     private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> = React.createRef();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
@@ -55,10 +55,10 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         return (
             <div className={styles.SprintHeaderSectionContainer}>
                 <TooltipUI
-                    message={'Move Unfinished Tasks To Next Sprint'}
+                    message={'Copy Unfinished Tasks To Next Sprint'}
                     position={'Bottom'}
                 >
-                    <div className={styles.MoveSection}>
+                    <div className={styles.CopySection}>
                         <div
                             className={styles.Button}
                             onClick={this.onCopyUnfinishedTasksClick}
@@ -110,7 +110,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <ConfirmActionsModalComponent
-                    ref={this.moveUnfinishedTasksConfirmTaskRef}
+                    ref={this.copyUnfinishedTasksConfirmTaskRef}
                     message="Do you want to move unfinished tasks to next sprint?"
                     onConfirm={this.copyUnfinishedTasksToNextSprint}
                 />
@@ -192,7 +192,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     };
 
     private onCopyUnfinishedTasksClick = () => {
-        this.moveUnfinishedTasksConfirmTaskRef.current?.open();
+        this.copyUnfinishedTasksConfirmTaskRef.current?.open();
     };
 
     private canCopyTasksToNextSprint = () => {
