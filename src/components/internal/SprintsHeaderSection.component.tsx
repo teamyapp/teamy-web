@@ -111,7 +111,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 </div>
                 <ConfirmActionsModalComponent
                     ref={this.copyUnfinishedTasksConfirmTaskRef}
-                    message="Do you want to move unfinished tasks to next sprint?"
+                    message="Do you want to copy unfinished tasks to next sprint?"
                     onConfirm={this.copyUnfinishedTasksToNextSprint}
                 />
                 <ConfirmActionsModalComponent
