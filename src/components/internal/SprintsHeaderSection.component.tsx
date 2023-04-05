@@ -26,6 +26,7 @@ interface Props {
 
 interface State {
     currentSprint?: Sprint;
+    currentTimestampSprint?: Sprint;
     showDetail: boolean;
     sprints: Sprint[];
     sprintToDelete?: number;
@@ -37,7 +38,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
     private readonly copyUnfinishedTasksConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
         React.createRef();
-    private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> = React.createRef();
+    private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
+        React.createRef();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
     constructor(props: Props) {
@@ -109,14 +111,29 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         )}
                     </div>
                 </div>
+                <TooltipUI message={'Go to current sprint'} position={'Bottom'}>
+                    <div className={styles.JumpSection}>
+                        <div
+                            className={`${styles.Button} ${classNames({
+                                [styles.Active]:
+                                    this.state.currentTimestampSprint &&
+                                    this.state.currentTimestampSprint.id ===
+                                        this.state.currentSprint?.id,
+                            })}`}
+                            onClick={this.goToCurrentTimestampSprint}
+                        >
+                            <MaterialIconUI>today</MaterialIconUI>
+                        </div>
+                    </div>
+                </TooltipUI>
                 <ConfirmActionsModalComponent
                     ref={this.copyUnfinishedTasksConfirmTaskRef}
-                    message="Do you want to copy unfinished tasks to next sprint?"
+                    message='Do you want to copy unfinished tasks to next sprint?'
                     onConfirm={this.copyUnfinishedTasksToNextSprint}
                 />
                 <ConfirmActionsModalComponent
                     ref={this.deleteSprintConfirmTaskRef}
-                    message="Do you want to delete this sprint?"
+                    message='Do you want to delete this sprint?'
                     onConfirm={this.deleteSprint}
                 />
             </div>
@@ -142,6 +159,22 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 </div>
             </div>
         );
+    };
+
+    goToCurrentTimestampSprint = async () => {
+        if (
+            this.state.currentTimestampSprint &&
+            this.state.currentTimestampSprint.id !==
+                this.state.currentSprint?.id
+        ) {
+            if (
+                this.stateSyncer.trySetCurrentSprint(
+                    this.state.currentTimestampSprint?.id,
+                )
+            ) {
+                this.stateSyncer.pullCurrentSprint();
+            }
+        }
     };
 
     renderSprintName() {
@@ -177,9 +210,12 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     private updateState = () => {
         const currentSprint = this.graphSource.currentSprint();
-        let sprints: Sprint[] = this.graphSource.currentTeam()?.sprints || [];
+        const currentTeam = this.graphSource.currentTeam();
+        let sprints: Sprint[] = currentTeam?.sprints || [];
         sprints = orderByStartTimeDesc(sprints);
+        const currentTimestampSprint = currentTeam?.currentSprint;
         this.setState({
+            currentTimestampSprint,
             currentSprint,
             sprints,
         });
@@ -241,7 +277,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 },
             );
         }
-        
+
         const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
         const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
 
@@ -250,7 +286,9 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             promises.push(this.stateSyncer.pullCurrentSprint());
         }
 
-        promises.push(this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds));
+        promises.push(
+            this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds),
+        );
         await Promise.all(promises);
     };
 

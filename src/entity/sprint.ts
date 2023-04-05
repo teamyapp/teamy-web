@@ -8,4 +8,5 @@ export interface Sprint {
     createdAt: Date;
     owningTeam: Team;
     tasks: Task[];
+    isCurrent: boolean;
 }

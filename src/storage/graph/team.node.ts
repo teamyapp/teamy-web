@@ -90,4 +90,15 @@ export class TeamNode implements Team {
 
         return sprints;
     }
+
+    public get currentSprint(): SprintNode | undefined {
+        let currentSprint: SprintNode | undefined;
+        for (let sprint of this.sprints) {
+            if (sprint.isCurrent && (!currentSprint || sprint.startAt > currentSprint.startAt)) {
+                currentSprint = sprint
+            }
+        }
+        
+        return currentSprint;
+    }
 }

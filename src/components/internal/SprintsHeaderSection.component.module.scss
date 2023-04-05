@@ -11,6 +11,11 @@
         @include headerIconButton;
     }
 
+    .JumpSection {
+        margin-left: 6px;
+        @include headerIconButton;
+    }
+
     .SprintHeaderSection {
         height: 30px;
         position: relative;

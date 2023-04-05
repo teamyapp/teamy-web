@@ -57,4 +57,9 @@ export class SprintNode implements Sprint {
                     new SprintParticipantNode(this.localStore, participant),
             );
     }
+
+    public get isCurrent(): boolean {
+        const date = new Date();
+        return this.startAt <= date && date <= this.endAt;
+    }
 }
