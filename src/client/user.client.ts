@@ -29,6 +29,9 @@ export class UserClient {
                                 owner {
                                     id
                                 }
+                                activeSprint {
+                                    id
+                                }
                                 members {
                                     user {
                                         id

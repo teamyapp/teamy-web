@@ -277,6 +277,7 @@ export class HeaderComponent extends Component<Props, State> {
                 }
 
                 this.resetViewButtons();
+                debugger
                 if (routeUpdate.routePattern.startsWith(sprintsRoutePattern)) {
                     this.setState({
                         showSprintsView: true,

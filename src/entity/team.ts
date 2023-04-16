@@ -11,4 +11,5 @@ export interface Team {
     owner: User;
     members?: TeamMember[];
     sprints?: Sprint[];
+    activeSprint?: Sprint;
 }

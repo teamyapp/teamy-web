@@ -41,6 +41,7 @@ import {
     rootRoutePattern,
     signUpRoutePattern,
     sprintsPath,
+    sprintTabPath,
     sprintsRoutePattern,
     taskPath,
 } from '@core/routing/routes';
@@ -72,6 +73,9 @@ import { InvitationComponent } from './pages/Invitation.component';
 import { PlanningComponent } from './pages/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
+import { BannerUI } from '@lib/ui/Banner';
+import { ButtonUI } from '@lib/ui/Button';
+import { defaultSprintTabId } from '@core/config/sprints';
 
 const sectionIds = [
     backlogSectionId,
@@ -98,6 +102,7 @@ interface State {
     showBacklog: boolean;
     backlogDropReceiverLayer: number;
     taskFilters: TaskFilters;
+    showActiveSprintBanner?: boolean;
 }
 
 export class AppComponent extends Component<Props, State> {
@@ -194,6 +199,13 @@ export class AppComponent extends Component<Props, State> {
                             />
                         </div>
                         <main className={styles.Content}>
+                            {this.state.showActiveSprintBanner && <BannerUI content={
+                                <div className={styles.BannerContent}>
+                                    <div className={styles.BannerText}>you are not viewing the active sprint.</div>
+                                    <div className={styles.BannerAction}><ButtonUI label='View' onClick={this.onActiveSprintSelect}/></div>
+                                    
+                                </div>
+                            }/>}
                             <HeaderComponent
                                 deps={this.props.deps}
                                 ref={this.headerRef}
@@ -489,6 +501,18 @@ export class AppComponent extends Component<Props, State> {
         };
     };
 
+    private onActiveSprintSelect = () => {
+        const currTeam = this.graphSource.currentTeam();
+        const activeSprint = currTeam?.activeSprint;
+        if (!currTeam || !activeSprint) {
+            return
+        }
+
+        if (this.stateSyncer.trySetCurrentSprint(activeSprint.id)) {
+            this.stateSyncer.pullCurrentSprint()
+        }
+    }
+
     private onActiveTeamSelect = async (teamId: number) => {
         await this.showActiveTeam(teamId);
     };
@@ -555,11 +579,15 @@ export class AppComponent extends Component<Props, State> {
     private updateState() {
         const currentUser = this.graphSource.currentUser();
         const currTeam = this.graphSource.currentTeam();
+        const activeSprint = currTeam?.activeSprint;
+        const currentSprintId = this.graphSource.currentSprint()?.id;
+
         this.setState({
             me: currentUser,
             currentTeam: currTeam,
             teams: currentUser?.teams || [],
             activeTeamId: currTeam?.id,
+            showActiveSprintBanner: !!(activeSprint && currentSprintId && activeSprint.id !== currentSprintId),
         });
     }
 

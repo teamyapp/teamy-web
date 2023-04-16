@@ -46,6 +46,7 @@ import {
     applySprintTaskMutation,
     applyTaskActivityMutation,
     applyTaskAwaitingForRelationMutation,
+    applyTeamActiveSprintMutation,
     applyTaskLinkMutation,
     applyTaskMutation,
     applyTeamMemberMutation,
@@ -397,6 +398,18 @@ export class StateSyncer {
         appState = mergeTeam(appState, remoteTeam);
         this.localStore.updateState(appState);
     }
+
+    public async updateTeamActiveSprint(teamId: number, sprintId: number) {
+        const remoteTeam = await this.teamClient.updateTeamActiveSprint(
+            `${teamId}`,
+            `${sprintId}`,
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeTeam(appState, remoteTeam);
+        this.localStore.updateState(appState);
+    }
+
 
     public async deleteTeam(teamId: number) {
         await this.teamClient.deleteTeam(`${teamId}`);
@@ -940,6 +953,13 @@ export class StateSyncer {
                 }
                 case 'SprintParticipant': {
                     appState = applySprintParticipantMutation(
+                        appState,
+                        mutation,
+                    );
+                    break;
+                }
+                case 'TeamActiveSprint': {
+                    appState = applyTeamActiveSprintMutation(
                         appState,
                         mutation,
                     );

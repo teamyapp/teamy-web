@@ -11,7 +11,8 @@ export type CollectionType =
     | 'SprintTaskRelation'
     | 'Client'
     | 'TaskActivity'
-    | 'SprintParticipant';
+    | 'SprintParticipant'
+    | 'TeamActiveSprint';
 
 export type MutationType = 'Create' | 'Update' | 'Delete';
 

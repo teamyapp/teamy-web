@@ -81,7 +81,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                             onClick={this.onHeaderSectionClick}
                         >
                             <div className={styles.Icon}>
-                                <MaterialIconUI>directions_run</MaterialIconUI>
+                                <MaterialIconUI>{!this.isActiveSprint() ? 'directions_run' : 'radio_button_checked'}</MaterialIconUI>
                             </div>
                             {
                                 <div className={styles.Name}>
@@ -109,6 +109,20 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         )}
                     </div>
                 </div>
+                <TooltipUI
+                    message={'Set current sprint to active sprint'}
+                    position={'Bottom'}
+                >
+                    <div className={styles.SetActiveSprintSection}>
+                        <div
+                            className={styles.Button}
+                            onClick={this.onSetCurrentSprintClick}
+                        >
+                            <MaterialIconUI>start</MaterialIconUI>
+                        </div>
+                    </div>
+                </TooltipUI>
+
                 <ConfirmActionsModalComponent
                     ref={this.copyUnfinishedTasksConfirmTaskRef}
                     message="Do you want to copy unfinished tasks to next sprint?"
@@ -195,6 +209,21 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         this.copyUnfinishedTasksConfirmTaskRef.current?.open();
     };
 
+    private isActiveSprint = () => {
+        const currentTeam = this.graphSource.currentTeam();
+        return currentTeam?.activeSprint && currentTeam.activeSprint.id === this.state.currentSprint?.id;
+    }
+
+    private onSetCurrentSprintClick = () => {
+        const currentSprint = this.graphSource.currentSprint();
+        const currentTeam = this.graphSource.currentTeam();
+        if (!currentSprint || !currentTeam || currentSprint.id === currentTeam.activeSprint?.id) {
+            return
+        }
+
+        this.stateSyncer.updateTeamActiveSprint(currentTeam.id, currentSprint.id);
+    }
+
     private canCopyTasksToNextSprint = () => {
         const currentSprint = this.graphSource.currentSprint();
         if (!currentSprint) {
@@ -228,13 +257,14 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         }
 
         const currentSprint = this.graphSource.currentSprint()!;
+        const currentTeam = this.graphSource.currentTeam()
         let nextSprintId = this.getNextSprint(currentSprint)?.id;
         if (!nextSprintId) {
             const startAt = new Date();
             const endAt = getEndAt(startAt, '1week');
 
             nextSprintId = await this.stateSyncer.createSprint(
-                this.graphSource.currentTeam()!.id,
+                currentTeam!.id,
                 {
                     startAt,
                     endAt,
@@ -248,6 +278,10 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         const promises = [];
         if (this.stateSyncer.trySetCurrentSprint(nextSprintId)) {
             promises.push(this.stateSyncer.pullCurrentSprint());
+        }
+
+        if (currentTeam?.activeSprint?.id !== nextSprintId) {
+            promises.push(this.stateSyncer.updateTeamActiveSprint(currentTeam!.id, nextSprintId));
         }
 
         promises.push(this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds));

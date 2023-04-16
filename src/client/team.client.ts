@@ -22,6 +22,9 @@ export class TeamClient {
                         teams(filter: { teamId: $teamId }) {
                             id
                             iconUrl
+                            activeSprint {
+                                id
+                            }
                             taskActivities {
                                 taskId
                                 dragTaskActivity {
@@ -42,6 +45,9 @@ export class TeamClient {
                                 endAt
                                 owningTeam {
                                     id
+                                    activeSprint {
+                                        id
+                                    }
                                 }
                             }
                         }
@@ -79,6 +85,9 @@ export class TeamClient {
                                 }
                                 owningTeam {
                                     id
+                                    activeSprint {
+                                        id
+                                    }
                                 }
                                 awaitForTasks {
                                     id
@@ -86,6 +95,9 @@ export class TeamClient {
                                     isPlanned
                                     owningTeam {
                                         id
+                                        activeSprint {
+                                            id
+                                        }
                                     }
                                 }
                                 links {
@@ -125,6 +137,9 @@ export class TeamClient {
                                     id
                                 }
                             }
+                            activeSprint {
+                                id
+                            }
                         }
                     }
                 `,
@@ -150,6 +165,9 @@ export class TeamClient {
                             id
                             name
                             iconUrl
+                            activeSprint {
+                                id
+                            }
                         }
                     }
                 `,
@@ -160,6 +178,40 @@ export class TeamClient {
             })
             .then((payload: any) => payload?.updateTeam);
     }
+
+    public updateTeamActiveSprint(
+        teamId: string,
+        sprintId: string,
+    ) {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation updateTeamActiveSprint(
+                        $teamId: ID!
+                        $sprintId: ID!
+                    ) {
+                        updateTeamActiveSprint(
+                            teamId: $teamId
+                            sprintId: $sprintId
+                        ) {
+                            id
+                            name
+                            iconUrl
+                            activeSprint {
+                                id
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                    sprintId,
+                },
+            })
+            .then((payload: any) => payload?.updateTeamActiveSprint);
+    }
+
+
 
     public deleteTeam(teamId: string): Promise<RemoteTeam> {
         return this.graphQLClient

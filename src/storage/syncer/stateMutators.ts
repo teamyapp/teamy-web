@@ -28,6 +28,7 @@ import { UserState } from '@core/storage/states/user.state';
 import {
     DeleteSprintParticipantPayload,
     DeleteTaskAwaitForRelationPayload,
+    UpdateTeamActiveSprintPayload,
 } from '@core/storage/syncer/payload';
 
 import { ClientState } from '../states/client.state';
@@ -50,6 +51,21 @@ export function applyTaskMutation(
         case 'Delete': {
             const taskId = mutation.payload;
             delete currState.tasks[taskId];
+            break;
+        }
+    }
+
+    return currState;
+}
+
+export function applyTeamActiveSprintMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Update': {
+            const {teamId, sprintId} = UpdateTeamActiveSprintPayload.fromMutationPayload(mutation.payload);
+            currState.teams[teamId].activeSprintId = sprintId;
             break;
         }
     }
@@ -620,6 +636,11 @@ export function mergeTeam(
             remoteTeam.sprints,
         );
     }
+
+    if (remoteTeam.activeSprint) {
+        localNewTeam.activeSprintId = toInt(remoteTeam.activeSprint.id);
+    }
+    
     currAppState.teams[remoteTeamId] = localNewTeam;
     return currAppState;
 }
