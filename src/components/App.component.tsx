@@ -41,7 +41,6 @@ import {
     rootRoutePattern,
     signUpRoutePattern,
     sprintsPath,
-    sprintTabPath,
     sprintsRoutePattern,
     taskPath,
 } from '@core/routing/routes';
@@ -75,7 +74,6 @@ import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
 import { BannerUI } from '@lib/ui/Banner';
 import { ButtonUI } from '@lib/ui/Button';
-import { defaultSprintTabId } from '@core/config/sprints';
 
 const sectionIds = [
     backlogSectionId,
