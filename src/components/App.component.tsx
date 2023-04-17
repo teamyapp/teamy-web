@@ -10,6 +10,8 @@ import { TeamyExtensionRuntime } from '@lib/ext/runtime';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
+import { BannerUI } from '@lib/ui/Banner';
+import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
@@ -72,8 +74,6 @@ import { InvitationComponent } from './pages/Invitation.component';
 import { PlanningComponent } from './pages/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
-import { BannerUI } from '@lib/ui/Banner';
-import { ButtonUI } from '@lib/ui/Button';
 
 const sectionIds = [
     backlogSectionId,
@@ -197,13 +197,28 @@ export class AppComponent extends Component<Props, State> {
                             />
                         </div>
                         <main className={styles.Content}>
-                            {this.state.showActiveSprintBanner && <BannerUI content={
-                                <div className={styles.BannerContent}>
-                                    <div className={styles.BannerText}>you are not viewing the active sprint.</div>
-                                    <div className={styles.BannerAction}><ButtonUI label='View' onClick={this.onActiveSprintSelect}/></div>
-                                    
-                                </div>
-                            }/>}
+                            {this.state.showActiveSprintBanner && (
+                                <BannerUI
+                                    content={
+                                        <div className={styles.BannerContent}>
+                                            <div className={styles.BannerText}>
+                                                You are viewing inactive sprint.{' '}
+                                                <span
+                                                    className={
+                                                        styles.BannerAction
+                                                    }
+                                                    onClick={
+                                                        this
+                                                            .onActiveSprintSelect
+                                                    }
+                                                >
+                                                    Go to active sprint
+                                                </span>
+                                            </div>
+                                        </div>
+                                    }
+                                />
+                            )}
                             <HeaderComponent
                                 deps={this.props.deps}
                                 ref={this.headerRef}
@@ -503,13 +518,13 @@ export class AppComponent extends Component<Props, State> {
         const currTeam = this.graphSource.currentTeam();
         const activeSprint = currTeam?.activeSprint;
         if (!currTeam || !activeSprint) {
-            return
+            return;
         }
 
         if (this.stateSyncer.trySetCurrentSprint(activeSprint.id)) {
-            this.stateSyncer.pullCurrentSprint()
+            this.stateSyncer.pullCurrentSprint();
         }
-    }
+    };
 
     private onActiveTeamSelect = async (teamId: number) => {
         await this.showActiveTeam(teamId);
@@ -585,7 +600,11 @@ export class AppComponent extends Component<Props, State> {
             currentTeam: currTeam,
             teams: currentUser?.teams || [],
             activeTeamId: currTeam?.id,
-            showActiveSprintBanner: !!(activeSprint && currentSprintId && activeSprint.id !== currentSprintId),
+            showActiveSprintBanner: !!(
+                activeSprint &&
+                currentSprintId &&
+                activeSprint.id !== currentSprintId
+            ),
         });
     }
 

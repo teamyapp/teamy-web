@@ -281,7 +281,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         }
 
         if (currentTeam?.activeSprint?.id !== nextSprintId) {
-            promises.push(this.stateSyncer.updateTeamActiveSprint(currentTeam!.id, nextSprintId));
+            this.stateSyncer.updateTeamActiveSprint(currentTeam!.id, nextSprintId);
         }
 
         promises.push(this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds));

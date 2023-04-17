@@ -1,5 +1,5 @@
 .Banner {
-    background-color: #3d7bf6;
+    background-color: white;
     padding: 8px 16px;
     display: flex;
     align-items: center;
@@ -7,7 +7,7 @@
 
 
     .Close {
-        --icon-color: white;
+        --icon-color: black;
         --icon-size: 20px;
         cursor: pointer;
     }
