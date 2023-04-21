@@ -1,5 +1,6 @@
 export type CollectionType =
     | 'Task'
+    | 'Sprint'
     | 'TaskLink'
     | 'Invitation'
     | 'Message'
