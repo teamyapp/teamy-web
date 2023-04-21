@@ -12,7 +12,6 @@ export type CollectionType =
     | 'Client'
     | 'TaskActivity'
     | 'SprintParticipant'
-    | 'TeamActiveSprint';
 
 export type MutationType = 'Create' | 'Update' | 'Delete';
 

@@ -46,7 +46,6 @@ import {
     applySprintTaskMutation,
     applyTaskActivityMutation,
     applyTaskAwaitingForRelationMutation,
-    applyTeamActiveSprintMutation,
     applyTaskLinkMutation,
     applyTaskMutation,
     applyTeamMemberMutation,
@@ -957,12 +956,6 @@ export class StateSyncer {
                         mutation,
                     );
                     break;
-                }
-                case 'TeamActiveSprint': {
-                    appState = applyTeamActiveSprintMutation(
-                        appState,
-                        mutation,
-                    );
                 }
             }
         }

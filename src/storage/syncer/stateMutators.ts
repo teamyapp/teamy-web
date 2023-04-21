@@ -58,21 +58,6 @@ export function applyTaskMutation(
     return currState;
 }
 
-export function applyTeamActiveSprintMutation(
-    currState: AppState,
-    mutation: Mutation,
-): AppState {
-    switch (mutation.mutationType) {
-        case 'Update': {
-            const {teamId, sprintId} = UpdateTeamActiveSprintPayload.fromMutationPayload(mutation.payload);
-            currState.teams[teamId].activeSprintId = sprintId;
-            break;
-        }
-    }
-
-    return currState;
-}
-
 export function applyTaskLinkMutation(
     currState: AppState,
     mutation: Mutation,
