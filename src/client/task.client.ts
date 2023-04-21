@@ -32,9 +32,6 @@ export class TaskClient {
                             effort
                             owningTeam {
                                 id
-                                activeSprint {
-                                    id
-                                }
                             }
                             isPlanned
                             createdAt
@@ -102,9 +99,6 @@ export class TaskClient {
                             }
                             owningTeam {
                                 id
-                                activeSprint {
-                                    id
-                                }
                             }
                             status
                             createdAt
@@ -140,9 +134,6 @@ export class TaskClient {
                             effort
                             owningTeam {
                                 id
-                                activeSprint {
-                                    id
-                                }
                             }
                             effort
                             dueAt

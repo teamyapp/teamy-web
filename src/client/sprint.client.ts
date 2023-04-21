@@ -41,9 +41,6 @@ export class SprintClient {
                                 }
                                 owningTeam {
                                     id
-                                    activeSprint {
-                                        id
-                                    }
                                 }
                                 awaitForTasks {
                                     id
@@ -51,9 +48,6 @@ export class SprintClient {
                                     isPlanned
                                     owningTeam {
                                         id
-                                        activeSprint {
-                                            id
-                                        }
                                     }
                                 }
                                 deliveredAt
@@ -106,9 +100,6 @@ export class SprintClient {
                             endAt
                             owningTeam {
                                 id
-                                activeSprint {
-                                    id
-                                }
                             }
                             createdAt
                             participants {

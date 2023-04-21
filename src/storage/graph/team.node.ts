@@ -94,7 +94,6 @@ export class TeamNode implements Team {
 
     public get activeSprint(): SprintNode | undefined {
         const appState = this.localStore.getState();
-
         if (!this.teamState.activeSprintId) {
             return;
         }

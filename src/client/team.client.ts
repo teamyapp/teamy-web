@@ -45,9 +45,6 @@ export class TeamClient {
                                 endAt
                                 owningTeam {
                                     id
-                                    activeSprint {
-                                        id
-                                    }
                                 }
                             }
                         }
@@ -85,9 +82,6 @@ export class TeamClient {
                                 }
                                 owningTeam {
                                     id
-                                    activeSprint {
-                                        id
-                                    }
                                 }
                                 awaitForTasks {
                                     id
@@ -95,9 +89,6 @@ export class TeamClient {
                                     isPlanned
                                     owningTeam {
                                         id
-                                        activeSprint {
-                                            id
-                                        }
                                     }
                                 }
                                 links {

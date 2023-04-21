@@ -38,7 +38,7 @@ export class BannerUI extends Component<Props, State> {
         );
     }
 
-    private handleClose = () => {
+    private onCloseClick = () => {
         this.setState({ closed: true });
     };
 }
