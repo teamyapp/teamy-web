@@ -205,7 +205,7 @@ export class AppComponent extends Component<Props, State> {
                                                 You are viewing inactive sprint.{' '}
                                                 <span
                                                     className={
-                                                        styles.BannerAction
+                                                        styles.BannerLink
                                                     }
                                                     onClick={
                                                         this
