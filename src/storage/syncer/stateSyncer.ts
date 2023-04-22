@@ -48,6 +48,7 @@ import {
     applyTaskAwaitingForRelationMutation,
     applyTaskLinkMutation,
     applyTaskMutation,
+    applySprintMutation,
     applyTeamMemberMutation,
     applyTeamMutation,
     applyUserMutation,
@@ -888,6 +889,10 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         for (const mutation of transaction.mutations) {
             switch (mutation.collectionType) {
+                case 'Sprint': {
+                    appState = applySprintMutation(appState, mutation);
+                    break;
+                }
                 case 'Task': {
                     appState = applyTaskMutation(appState, mutation);
                     break;

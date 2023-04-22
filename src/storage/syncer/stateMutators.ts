@@ -57,6 +57,27 @@ export function applyTaskMutation(
     return currState;
 }
 
+export function applySprintMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create':
+        case 'Update': {
+            const sprint = SprintState.fromMutationPayload(mutation.payload);
+            currState.sprints[sprint.id] = sprint;
+            break;
+        }
+        case 'Delete': {
+            const sprintId = mutation.payload;
+            delete currState.sprints[sprintId];
+            break;
+        }
+    }
+
+    return currState;
+}
+
 export function applyTaskLinkMutation(
     currState: AppState,
     mutation: Mutation,
