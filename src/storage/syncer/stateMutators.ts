@@ -589,6 +589,7 @@ export function mergeTeam(
         creatorUserId:
             toInt(remoteTeam.creator?.id) || localOldTeam.creatorUserId,
         ownerUserId: toInt(remoteTeam.owner?.id) || localOldTeam.ownerUserId,
+        activeSprintId: toInt(remoteTeam.activeSprint?.id) || localOldTeam.activeSprintId,
     };
 
     if (remoteTeam.creator) {
@@ -634,6 +635,7 @@ export function mergeSprint(
     currAppState: AppState,
     remoteSprint: RemoteSprint,
 ): AppState {
+    debugger
     const remoteSprintId = toInt(remoteSprint.id)!;
     const localOldSprint = currAppState.sprints[remoteSprintId] || {};
     const localNewSprint: SprintState = {
