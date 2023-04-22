@@ -202,8 +202,6 @@ export class TeamClient {
             .then((payload: any) => payload?.updateTeamActiveSprint);
     }
 
-
-
     public deleteTeam(teamId: string): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
