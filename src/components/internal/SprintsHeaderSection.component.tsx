@@ -81,7 +81,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                             onClick={this.onHeaderSectionClick}
                         >
                             <div className={styles.Icon}>
-                                <MaterialIconUI>{!this.isActiveSprint() ? 'directions_run' : 'radio_button_checked'}</MaterialIconUI>
+                                <MaterialIconUI>{!this.isActiveSprint() ? 'directions_run' : 'star_rate'}</MaterialIconUI>
                             </div>
                             {
                                 <div className={styles.Name}>
@@ -118,7 +118,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                             className={styles.Button}
                             onClick={this.onSetCurrentSprintClick}
                         >
-                            <MaterialIconUI>start</MaterialIconUI>
+                            <MaterialIconUI>star_rate</MaterialIconUI>
                         </div>
                     </div>
                 </TooltipUI>
