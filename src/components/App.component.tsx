@@ -594,17 +594,18 @@ export class AppComponent extends Component<Props, State> {
         const currTeam = this.graphSource.currentTeam();
         const activeSprint = currTeam?.activeSprint;
         const currentSprintId = this.graphSource.currentSprint()?.id;
+        const showActiveSprintBanner = !!(
+            activeSprint &&
+            currentSprintId &&
+            activeSprint.id !== currentSprintId
+        )
 
         this.setState({
             me: currentUser,
             currentTeam: currTeam,
             teams: currentUser?.teams || [],
             activeTeamId: currTeam?.id,
-            showActiveSprintBanner: !!(
-                activeSprint &&
-                currentSprintId &&
-                activeSprint.id !== currentSprintId
-            ),
+            showActiveSprintBanner,
         });
     }
 
