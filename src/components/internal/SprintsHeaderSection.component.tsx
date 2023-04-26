@@ -54,7 +54,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     render() {
         const isActiveSprint = this.isActiveSprint();
-
         return (
             <div className={styles.SprintHeaderSectionContainer}>
                 <TooltipUI
