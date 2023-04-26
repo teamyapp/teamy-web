@@ -15,7 +15,6 @@ interface State {
 export class BannerUI extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
-
         this.state = {
             closed: false,
         };
@@ -30,7 +29,7 @@ export class BannerUI extends Component<Props, State> {
             <div className={styles.Banner}>
                 {this.props.content}
                 {this.props.closable && (
-                    <div className={styles.Close} onClick={this.handleClose}>
+                    <div className={styles.Close} onClick={this.onCloseClick}>
                         <MaterialIconUI>close</MaterialIconUI>
                     </div>
                 )}

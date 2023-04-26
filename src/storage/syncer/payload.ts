@@ -20,13 +20,3 @@ export class DeleteSprintParticipantPayload {
         return new DeleteSprintParticipantPayload(json.SprintID, json.UserID);
     }
 }
-
-export class UpdateTeamActiveSprintPayload {
-    constructor(public teamId: number, public sprintId: number) {}
-
-    public static fromMutationPayload(
-        json: any,
-    ): UpdateTeamActiveSprintPayload {
-        return new UpdateTeamActiveSprintPayload(json.TeamID, json.SprintID);
-    }
-}

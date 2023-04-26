@@ -11,7 +11,6 @@ import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
 import { BannerUI } from '@lib/ui/Banner';
-import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
@@ -209,7 +208,7 @@ export class AppComponent extends Component<Props, State> {
                                                     }
                                                     onClick={
                                                         this
-                                                            .onActiveSprintSelect
+                                                            .OnGotoActiveSprintClick
                                                     }
                                                 >
                                                     Go to active sprint
@@ -514,7 +513,7 @@ export class AppComponent extends Component<Props, State> {
         };
     };
 
-    private onActiveSprintSelect = () => {
+    private OnGotoActiveSprintClick = () => {
         const currTeam = this.graphSource.currentTeam();
         const activeSprint = currTeam?.activeSprint;
         if (!currTeam || !activeSprint) {
@@ -594,9 +593,8 @@ export class AppComponent extends Component<Props, State> {
         const currTeam = this.graphSource.currentTeam();
         const activeSprint = currTeam?.activeSprint;
         const currentSprintId = this.graphSource.currentSprint()?.id;
-        const showActiveSprintBanner = !!(
+        const showActiveSprintBanner = Boolean(
             activeSprint &&
-            currentSprintId &&
             activeSprint.id !== currentSprintId
         )
 

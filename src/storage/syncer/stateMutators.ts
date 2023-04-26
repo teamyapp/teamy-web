@@ -28,7 +28,6 @@ import { UserState } from '@core/storage/states/user.state';
 import {
     DeleteSprintParticipantPayload,
     DeleteTaskAwaitForRelationPayload,
-    UpdateTeamActiveSprintPayload,
 } from '@core/storage/syncer/payload';
 
 import { ClientState } from '../states/client.state';
@@ -589,7 +588,8 @@ export function mergeTeam(
         creatorUserId:
             toInt(remoteTeam.creator?.id) || localOldTeam.creatorUserId,
         ownerUserId: toInt(remoteTeam.owner?.id) || localOldTeam.ownerUserId,
-        activeSprintId: toInt(remoteTeam.activeSprint?.id) || localOldTeam.activeSprintId,
+        activeSprintId:
+            toInt(remoteTeam.activeSprint?.id) || localOldTeam.activeSprintId,
     };
 
     if (remoteTeam.creator) {
@@ -626,7 +626,7 @@ export function mergeTeam(
     if (remoteTeam.activeSprint) {
         localNewTeam.activeSprintId = toInt(remoteTeam.activeSprint.id);
     }
-    
+
     currAppState.teams[remoteTeamId] = localNewTeam;
     return currAppState;
 }
@@ -635,7 +635,6 @@ export function mergeSprint(
     currAppState: AppState,
     remoteSprint: RemoteSprint,
 ): AppState {
-    debugger
     const remoteSprintId = toInt(remoteSprint.id)!;
     const localOldSprint = currAppState.sprints[remoteSprintId] || {};
     const localNewSprint: SprintState = {

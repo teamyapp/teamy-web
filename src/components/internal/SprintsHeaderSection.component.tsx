@@ -37,7 +37,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
     private readonly copyUnfinishedTasksConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
         React.createRef();
-    private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> = React.createRef();
+    private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
+        React.createRef();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
     constructor(props: Props) {
@@ -81,7 +82,11 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                             onClick={this.onHeaderSectionClick}
                         >
                             <div className={styles.Icon}>
-                                <MaterialIconUI>{!this.isActiveSprint() ? 'directions_run' : 'star_rate'}</MaterialIconUI>
+                                <MaterialIconUI>
+                                    {!this.isActiveSprint()
+                                        ? 'directions_run'
+                                        : 'star_rate'}
+                                </MaterialIconUI>
                             </div>
                             {
                                 <div className={styles.Name}>
@@ -109,14 +114,11 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         )}
                     </div>
                 </div>
-                <TooltipUI
-                    message={'Set current sprint to active sprint'}
-                    position={'Bottom'}
-                >
+                <TooltipUI message={'Set as active sprint'} position={'Bottom'}>
                     <div className={styles.SetActiveSprintSection}>
                         <div
                             className={styles.Button}
-                            onClick={this.onSetCurrentSprintClick}
+                            onClick={this.OnSetActiveSprintClick}
                         >
                             <MaterialIconUI>star_rate</MaterialIconUI>
                         </div>
@@ -125,12 +127,12 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
                 <ConfirmActionsModalComponent
                     ref={this.copyUnfinishedTasksConfirmTaskRef}
-                    message="Do you want to copy unfinished tasks to next sprint?"
+                    message='Do you want to copy unfinished tasks to next sprint?'
                     onConfirm={this.copyUnfinishedTasksToNextSprint}
                 />
                 <ConfirmActionsModalComponent
                     ref={this.deleteSprintConfirmTaskRef}
-                    message="Do you want to delete this sprint?"
+                    message='Do you want to delete this sprint?'
                     onConfirm={this.deleteSprint}
                 />
             </div>
@@ -211,18 +213,28 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     private isActiveSprint = () => {
         const currentTeam = this.graphSource.currentTeam();
-        return currentTeam?.activeSprint && currentTeam.activeSprint.id === this.state.currentSprint?.id;
-    }
+        return (
+            currentTeam?.activeSprint &&
+            currentTeam.activeSprint.id === this.state.currentSprint?.id
+        );
+    };
 
-    private onSetCurrentSprintClick = () => {
+    private OnSetActiveSprintClick = () => {
         const currentSprint = this.graphSource.currentSprint();
         const currentTeam = this.graphSource.currentTeam();
-        if (!currentSprint || !currentTeam || currentSprint.id === currentTeam.activeSprint?.id) {
-            return
+        if (
+            !currentSprint ||
+            !currentTeam ||
+            currentSprint.id === currentTeam.activeSprint?.id
+        ) {
+            return;
         }
 
-        this.stateSyncer.updateTeamActiveSprint(currentTeam.id, currentSprint.id);
-    }
+        this.stateSyncer.updateTeamActiveSprint(
+            currentTeam.id,
+            currentSprint.id,
+        );
+    };
 
     private canCopyTasksToNextSprint = () => {
         const currentSprint = this.graphSource.currentSprint();
@@ -257,7 +269,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         }
 
         const currentSprint = this.graphSource.currentSprint()!;
-        const currentTeam = this.graphSource.currentTeam()
+        const currentTeam = this.graphSource.currentTeam();
         let nextSprintId = this.getNextSprint(currentSprint)?.id;
         if (!nextSprintId) {
             const startAt = new Date();
@@ -271,7 +283,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 },
             );
         }
-        
+
         const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
         const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
 
@@ -281,10 +293,15 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         }
 
         if (currentTeam?.activeSprint?.id !== nextSprintId) {
-            this.stateSyncer.updateTeamActiveSprint(currentTeam!.id, nextSprintId);
+            this.stateSyncer.updateTeamActiveSprint(
+                currentTeam!.id,
+                nextSprintId,
+            );
         }
 
-        promises.push(this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds));
+        promises.push(
+            this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds),
+        );
         await Promise.all(promises);
     };
 
