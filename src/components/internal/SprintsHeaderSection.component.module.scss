@@ -107,7 +107,7 @@
                     padding: 8px 0;
                     position: relative;
 
-                    .Selected {
+                    .Active {
                         background-color: #3d7bf6;
                         border-radius: 50%;
                         height: 6px;
@@ -134,18 +134,25 @@
                         }
                     }
 
-                    &:hover {
-                        background-color: #3d7bf6;
+                    &:hover,&.Selected {
                         color: white;
                         cursor: pointer;
 
-                        .Selected {
+                        .Active {
                             background-color: white;
                         }
 
                         .Delete {
                             display: block;
                         }
+                    }
+
+                    &:hover {
+                        background-color: #3d7bf6;
+                    }
+
+                    &.Selected {
+                        background-color: $primaryColor;
                     }
                 }
             }

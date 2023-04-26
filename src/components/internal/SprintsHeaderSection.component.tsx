@@ -53,7 +53,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     }
 
     render() {
-        const isActiveSprint = this.isActiveSprint();
+        const isOnActiveSprint = this.isOnActiveSprint();
         return (
             <div className={styles.SprintHeaderSectionContainer}>
                 <TooltipUI
@@ -114,13 +114,13 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 <TooltipUI
                     message={'Set as active sprint'}
                     position={'Bottom'}
-                    disabled={isActiveSprint}
+                    disabled={isOnActiveSprint}
                 >
                     <div className={styles.SetActiveSprintSection}>
                         <div
                             className={`${styles.Button} ${classNames({
-                                [styles.Active]: isActiveSprint,
-                                [styles.Disabled]: isActiveSprint,
+                                [styles.Active]: isOnActiveSprint,
+                                [styles.Disabled]: isOnActiveSprint,
                             })}`}
                             onClick={this.onSetActiveSprintClick}
                         >
@@ -147,11 +147,13 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         return (
             <div
                 key={sprint.id}
-                className={styles.Sprint}
+                className={`${styles.Sprint} ${classNames({
+                    [styles.Selected]: sprint.id === this.state.currentSprint?.id,
+                })}`}
                 onClick={this.onSprintClick(sprint.id)}
             >
-                {sprint.id === this.state.currentSprint?.id && (
-                    <div className={styles.Selected} />
+                {sprint.id === this.getActiveSprint()?.id && (
+                    <div className={styles.Active} />
                 )}
                 <div>{getSprintName(sprint.startAt)}</div>
                 <div
@@ -215,18 +217,23 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         this.copyUnfinishedTasksConfirmTaskRef.current?.open();
     };
 
-    private isActiveSprint = () => {
+    private isOnActiveSprint = () => {
         const currentTeam = this.graphSource.currentTeam();
         return (
             currentTeam?.activeSprint &&
-            currentTeam.activeSprint.id === this.state.currentSprint?.id
+            this.getActiveSprint()?.id === this.state.currentSprint?.id
         );
     };
+
+    private getActiveSprint = () => {
+        const currentTeam = this.graphSource.currentTeam();
+        return currentTeam?.activeSprint;
+    }
 
     private onSetActiveSprintClick = () => {
         const currentSprint = this.graphSource.currentSprint();
         const currentTeam = this.graphSource.currentTeam();
-        if (this.isActiveSprint()) {
+        if (this.isOnActiveSprint()) {
             return;
         }
 
