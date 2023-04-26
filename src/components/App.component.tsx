@@ -593,9 +593,9 @@ export class AppComponent extends Component<Props, State> {
         const currTeam = this.graphSource.currentTeam();
         const activeSprint = currTeam?.activeSprint;
         const currentSprintId = this.graphSource.currentSprint()?.id;
-        const showActiveSprintBanner = Boolean(
+        const showActiveSprintBanner = (
             activeSprint &&
-            currentSprintId &&
+            currentSprintId !== undefined &&
             activeSprint.id !== currentSprintId
         )
 
