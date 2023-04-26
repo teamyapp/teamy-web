@@ -37,7 +37,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
     private readonly copyUnfinishedTasksConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
         React.createRef();
-    private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> = React.createRef();
+    private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
+        React.createRef();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
     constructor(props: Props) {
@@ -52,6 +53,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     }
 
     render() {
+        const isActiveSprint = this.isActiveSprint();
         return (
             <div className={styles.SprintHeaderSectionContainer}>
                 <TooltipUI
@@ -109,14 +111,32 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         )}
                     </div>
                 </div>
+                <TooltipUI
+                    message={'Set as active sprint'}
+                    position={'Bottom'}
+                    disabled={isActiveSprint}
+                >
+                    <div className={styles.SetActiveSprintSection}>
+                        <div
+                            className={`${styles.Button} ${classNames({
+                                [styles.Active]: isActiveSprint,
+                                [styles.Disabled]: isActiveSprint,
+                            })}`}
+                            onClick={this.onSetActiveSprintClick}
+                        >
+                            <MaterialIconUI>star_rate</MaterialIconUI>
+                        </div>
+                    </div>
+                </TooltipUI>
+
                 <ConfirmActionsModalComponent
                     ref={this.copyUnfinishedTasksConfirmTaskRef}
-                    message="Do you want to copy unfinished tasks to next sprint?"
+                    message='Do you want to copy unfinished tasks to next sprint?'
                     onConfirm={this.copyUnfinishedTasksToNextSprint}
                 />
                 <ConfirmActionsModalComponent
                     ref={this.deleteSprintConfirmTaskRef}
-                    message="Do you want to delete this sprint?"
+                    message='Do you want to delete this sprint?'
                     onConfirm={this.deleteSprint}
                 />
             </div>
@@ -195,6 +215,27 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         this.copyUnfinishedTasksConfirmTaskRef.current?.open();
     };
 
+    private isActiveSprint = () => {
+        const currentTeam = this.graphSource.currentTeam();
+        return (
+            currentTeam?.activeSprint &&
+            currentTeam.activeSprint.id === this.state.currentSprint?.id
+        );
+    };
+
+    private onSetActiveSprintClick = () => {
+        const currentSprint = this.graphSource.currentSprint();
+        const currentTeam = this.graphSource.currentTeam();
+        if (this.isActiveSprint()) {
+            return;
+        }
+
+        this.stateSyncer.updateTeamActiveSprint(
+            currentTeam!.id,
+            currentSprint!.id,
+        );
+    };
+
     private canCopyTasksToNextSprint = () => {
         const currentSprint = this.graphSource.currentSprint();
         if (!currentSprint) {
@@ -228,20 +269,21 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         }
 
         const currentSprint = this.graphSource.currentSprint()!;
+        const currentTeam = this.graphSource.currentTeam();
         let nextSprintId = this.getNextSprint(currentSprint)?.id;
         if (!nextSprintId) {
             const startAt = new Date();
             const endAt = getEndAt(startAt, '1week');
 
             nextSprintId = await this.stateSyncer.createSprint(
-                this.graphSource.currentTeam()!.id,
+                currentTeam!.id,
                 {
                     startAt,
                     endAt,
                 },
             );
         }
-        
+
         const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
         const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
 
@@ -250,7 +292,16 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             promises.push(this.stateSyncer.pullCurrentSprint());
         }
 
-        promises.push(this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds));
+        if (currentTeam?.activeSprint?.id !== nextSprintId) {
+            this.stateSyncer.updateTeamActiveSprint(
+                currentTeam!.id,
+                nextSprintId,
+            );
+        }
+
+        promises.push(
+            this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds),
+        );
         await Promise.all(promises);
     };
 

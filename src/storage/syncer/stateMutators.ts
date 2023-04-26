@@ -609,6 +609,8 @@ export function mergeTeam(
         creatorUserId:
             toInt(remoteTeam.creator?.id) || localOldTeam.creatorUserId,
         ownerUserId: toInt(remoteTeam.owner?.id) || localOldTeam.ownerUserId,
+        activeSprintId:
+            toInt(remoteTeam.activeSprint?.id) || localOldTeam.activeSprintId,
     };
 
     if (remoteTeam.creator) {
@@ -641,6 +643,11 @@ export function mergeTeam(
             remoteTeam.sprints,
         );
     }
+
+    if (remoteTeam.activeSprint) {
+        localNewTeam.activeSprintId = toInt(remoteTeam.activeSprint.id);
+    }
+
     currAppState.teams[remoteTeamId] = localNewTeam;
     return currAppState;
 }

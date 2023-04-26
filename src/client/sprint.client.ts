@@ -22,6 +22,9 @@ export class SprintClient {
                             endAt
                             owningTeam {
                                 id
+                                activeSprint {
+                                    id
+                                }
                             }
                             tasks {
                                 id

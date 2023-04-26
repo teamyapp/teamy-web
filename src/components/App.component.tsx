@@ -10,6 +10,7 @@ import { TeamyExtensionRuntime } from '@lib/ext/runtime';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
+import { BannerUI } from '@lib/ui/Banner';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
@@ -98,6 +99,7 @@ interface State {
     showBacklog: boolean;
     backlogDropReceiverLayer: number;
     taskFilters: TaskFilters;
+    showActiveSprintBanner?: boolean;
 }
 
 export class AppComponent extends Component<Props, State> {
@@ -194,6 +196,28 @@ export class AppComponent extends Component<Props, State> {
                             />
                         </div>
                         <main className={styles.Content}>
+                            {this.state.showActiveSprintBanner && (
+                                <BannerUI
+                                    content={
+                                        <div className={styles.BannerContent}>
+                                            <div className={styles.BannerText}>
+                                                You are viewing inactive sprint.{' '}
+                                                <span
+                                                    className={
+                                                        styles.BannerLink
+                                                    }
+                                                    onClick={
+                                                        this
+                                                            .onGotoActiveSprintClick
+                                                    }
+                                                >
+                                                    Go to active sprint
+                                                </span>
+                                            </div>
+                                        </div>
+                                    }
+                                />
+                            )}
                             <HeaderComponent
                                 deps={this.props.deps}
                                 ref={this.headerRef}
@@ -489,6 +513,18 @@ export class AppComponent extends Component<Props, State> {
         };
     };
 
+    private onGotoActiveSprintClick = () => {
+        const currTeam = this.graphSource.currentTeam();
+        const activeSprint = currTeam?.activeSprint;
+        if (!currTeam || !activeSprint) {
+            return;
+        }
+
+        if (this.stateSyncer.trySetCurrentSprint(activeSprint.id)) {
+            this.stateSyncer.pullCurrentSprint();
+        }
+    };
+
     private onActiveTeamSelect = async (teamId: number) => {
         await this.showActiveTeam(teamId);
     };
@@ -555,11 +591,20 @@ export class AppComponent extends Component<Props, State> {
     private updateState() {
         const currentUser = this.graphSource.currentUser();
         const currTeam = this.graphSource.currentTeam();
+        const activeSprint = currTeam?.activeSprint;
+        const currentSprintId = this.graphSource.currentSprint()?.id;
+        const showActiveSprintBanner = (
+            activeSprint &&
+            currentSprintId !== undefined &&
+            activeSprint.id !== currentSprintId
+        )
+
         this.setState({
             me: currentUser,
             currentTeam: currTeam,
             teams: currentUser?.teams || [],
             activeTeamId: currTeam?.id,
+            showActiveSprintBanner,
         });
     }
 

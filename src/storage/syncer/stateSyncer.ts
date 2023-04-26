@@ -399,6 +399,18 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async updateTeamActiveSprint(teamId: number, sprintId: number) {
+        const remoteTeam = await this.teamClient.updateTeamActiveSprint(
+            `${teamId}`,
+            `${sprintId}`,
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeTeam(appState, remoteTeam);
+        this.localStore.updateState(appState);
+    }
+
+
     public async deleteTeam(teamId: number) {
         await this.teamClient.deleteTeam(`${teamId}`);
     }
@@ -948,6 +960,7 @@ export class StateSyncer {
                         appState,
                         mutation,
                     );
+                    break;
                 }
             }
         }

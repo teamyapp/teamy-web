@@ -1,0 +1,12 @@
+.Banner {
+    background-color: white;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .Close {
+        --icon-color: black;
+        --icon-size: 20px;
+        cursor: pointer;
+    }
+}

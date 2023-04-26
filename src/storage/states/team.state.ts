@@ -9,6 +9,7 @@ export class TeamState {
         public createdAt: Date,
         public iconUrl?: string,
         public updatedAt?: Date,
+        public activeSprintId?: number,
     ) {}
 
     public static fromMutationPayload(json: any): TeamState {
@@ -20,6 +21,7 @@ export class TeamState {
             toDate(json.CreatedAt)!,
             json.IconURL,
             toDate(json.UpdatedAt),
+            json.ActiveSprintID,
         );
     }
 
@@ -32,6 +34,7 @@ export class TeamState {
             toDate(json.createdAt)!,
             json.iconUrl,
             toDate(json.updatedAt),
+            json.activeSprintId,
         );
     }
 }
