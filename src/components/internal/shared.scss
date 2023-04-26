@@ -49,7 +49,9 @@ $sectionSpace: 10px;
         &:hover {
             background-color: white;
             --icon-color: #{$primaryColor};
-            cursor: pointer;
+            &:not(.Disabled) {
+                cursor: pointer;
+            }
         }
     }
 }

@@ -14,6 +14,7 @@ interface Props {
     message: string;
     position?: Position;
     parentOffset?: Point;
+    disabled?: boolean;
 }
 
 interface State {
@@ -40,6 +41,10 @@ export class TooltipUI extends Component<Props, State> {
     }
 
     render(): ReactNode {
+        if (this.props.disabled) {
+            return this.props.children;
+        }
+
         return (
             <div className={styles.Box}>
                 <div

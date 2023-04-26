@@ -53,6 +53,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     }
 
     render() {
+        const isActiveSprint = this.isActiveSprint();
+
         return (
             <div className={styles.SprintHeaderSectionContainer}>
                 <TooltipUI
@@ -82,11 +84,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                             onClick={this.onHeaderSectionClick}
                         >
                             <div className={styles.Icon}>
-                                <MaterialIconUI>
-                                    {!this.isActiveSprint()
-                                        ? 'directions_run'
-                                        : 'star_rate'}
-                                </MaterialIconUI>
+                                <MaterialIconUI>directions_run</MaterialIconUI>
                             </div>
                             {
                                 <div className={styles.Name}>
@@ -114,11 +112,18 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         )}
                     </div>
                 </div>
-                <TooltipUI message={'Set as active sprint'} position={'Bottom'}>
+                <TooltipUI
+                    message={'Set as active sprint'}
+                    position={'Bottom'}
+                    disabled={isActiveSprint}
+                >
                     <div className={styles.SetActiveSprintSection}>
                         <div
-                            className={styles.Button}
-                            onClick={this.OnSetActiveSprintClick}
+                            className={`${styles.Button} ${classNames({
+                                [styles.Active]: isActiveSprint,
+                                [styles.Disabled]: isActiveSprint,
+                            })}`}
+                            onClick={this.onSetActiveSprintClick}
                         >
                             <MaterialIconUI>star_rate</MaterialIconUI>
                         </div>
@@ -219,20 +224,16 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         );
     };
 
-    private OnSetActiveSprintClick = () => {
+    private onSetActiveSprintClick = () => {
         const currentSprint = this.graphSource.currentSprint();
         const currentTeam = this.graphSource.currentTeam();
-        if (
-            !currentSprint ||
-            !currentTeam ||
-            currentSprint.id === currentTeam.activeSprint?.id
-        ) {
+        if (this.isActiveSprint()) {
             return;
         }
 
         this.stateSyncer.updateTeamActiveSprint(
-            currentTeam.id,
-            currentSprint.id,
+            currentTeam!.id,
+            currentSprint!.id,
         );
     };
 

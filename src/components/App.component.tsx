@@ -208,7 +208,7 @@ export class AppComponent extends Component<Props, State> {
                                                     }
                                                     onClick={
                                                         this
-                                                            .OnGotoActiveSprintClick
+                                                            .onGotoActiveSprintClick
                                                     }
                                                 >
                                                     Go to active sprint
@@ -513,7 +513,7 @@ export class AppComponent extends Component<Props, State> {
         };
     };
 
-    private OnGotoActiveSprintClick = () => {
+    private onGotoActiveSprintClick = () => {
         const currTeam = this.graphSource.currentTeam();
         const activeSprint = currTeam?.activeSprint;
         if (!currTeam || !activeSprint) {
@@ -595,6 +595,7 @@ export class AppComponent extends Component<Props, State> {
         const currentSprintId = this.graphSource.currentSprint()?.id;
         const showActiveSprintBanner = Boolean(
             activeSprint &&
+            currentSprintId &&
             activeSprint.id !== currentSprintId
         )
 
