@@ -26,13 +26,14 @@
         }
 
         .HeaderSection {
-            align-items: center;
             background-color: rgba(0, 0, 0, 0.2);
             border-radius: 4px;
             color: white;
             display: flex;
+            align-items: center;
+            justify-content: center;
             height: 30px;
-            padding: 0 14px;
+            width: 158px;
 
             .Icon {
                 --icon-color: white;
