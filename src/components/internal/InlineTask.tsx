@@ -118,7 +118,7 @@ export class InlineTaskUI extends Component<Props, State> {
                                 </div>
 
                                 {this.props.task.links.map((link) => (
-                                    <div className={styles.Attribute}>
+                                    <div className={styles.Attribute} key={link.id}>
                                         <TaskLinkIconUI link={link} />
                                     </div>
                                 ))}
