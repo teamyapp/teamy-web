@@ -93,11 +93,14 @@ export class InlineTaskUI extends Component<Props, State> {
                     >
                         <div className={styles.LeftSection}>
                             <div className={styles.TopRow}>
-                                <div
-                                    className={`${styles.Attribute} ${styles.Id}`}
-                                >
-                                    {this.props.task.id}
-                                </div>
+                                <TooltipUI message='Click to copy task id'>
+                                    <div
+                                        className={`${styles.Attribute} ${styles.Id}`}
+                                        onClick={this.onTaskIdClicked}
+                                    >
+                                        {this.props.task.id}
+                                    </div>
+                                </TooltipUI>
                                 {this.props.showStatus && (
                                     <div
                                         className={`${styles.Attribute} ${
@@ -216,6 +219,10 @@ export class InlineTaskUI extends Component<Props, State> {
             dueAt: date,
         });
     };
+
+    private onTaskIdClicked = () => {
+        navigator.clipboard.writeText(`(task:${this.props.task.id})`);
+    }
 
     private onTaskOwnerSelected = (ownerUserId?: number) => {
         this.setState({

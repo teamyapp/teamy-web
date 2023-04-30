@@ -1,7 +1,9 @@
 $backgroundColor: #424242;
 
 .Box {
+    height: 100%;
     .Component {
+        height: 100%;
         &:focus {
             outline: none;
         }
@@ -32,8 +34,6 @@ $backgroundColor: #424242;
             .Triangle {
                 border-left: transparent solid 8px;
                 border-right: transparent solid 8px;
-                left: 50%;
-                transform: translateX(-50%);
             }
         }
 
@@ -60,8 +60,6 @@ $backgroundColor: #424242;
             .Triangle {
                 border-bottom: transparent solid 8px;
                 border-top: transparent solid 8px;
-                top: 50%;
-                transform: translateY(-50%);
             }
         }
 

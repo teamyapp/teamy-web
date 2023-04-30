@@ -22,6 +22,9 @@ interface State {
     tooltipVisible: boolean;
     tooltipTop: number;
     tooltipLeft: number;
+    tooltipPosition: Position;
+    tooltipTriangleTop?: number;
+    tooltipTriangleLeft?: number;
 }
 
 export class TooltipUI extends Component<Props, State> {
@@ -37,6 +40,7 @@ export class TooltipUI extends Component<Props, State> {
             tooltipVisible: false,
             tooltipTop: 0,
             tooltipLeft: 0,
+            tooltipPosition: this.props.position || 'Bottom',
         };
     }
 
@@ -63,12 +67,11 @@ export class TooltipUI extends Component<Props, State> {
                     ref={this.tooltipRef}
                     className={`${styles.Tooltip} ${classNames({
                         [styles.Show]: this.state.showTooltip,
-                        [styles.Top]: this.props.position === 'Top',
-                        [styles.Right]: this.props.position === 'Right',
+                        [styles.Top]: this.state.tooltipPosition === 'Top',
+                        [styles.Right]: this.state.tooltipPosition === 'Right',
                         [styles.Bottom]:
-                            !this.props.position ||
-                            this.props.position === 'Bottom',
-                        [styles.Left]: this.props.position === 'Left',
+                            this.state.tooltipPosition === 'Bottom',
+                        [styles.Left]: this.state.tooltipPosition === 'Left',
                     })}`}
                     style={{
                         top: this.state.tooltipTop,
@@ -78,7 +81,13 @@ export class TooltipUI extends Component<Props, State> {
                             : 'hidden',
                     }}
                 >
-                    <div className={styles.Triangle} />
+                    <div
+                        className={styles.Triangle}
+                        style={{
+                            top: this.state.tooltipTriangleTop,
+                            left: this.state.tooltipTriangleLeft,
+                        }}
+                    />
                     {this.props.message}
                 </div>
             </div>
@@ -102,13 +111,23 @@ export class TooltipUI extends Component<Props, State> {
                     return;
                 }
 
-                const { tooltipLeft, tooltipTop } = this.getPosition(
+                const {
+                    tooltipLeft,
+                    tooltipTop,
+                    position,
+                    tooltipTriangleLeft,
+                    tooltipTriangleTop,
+                } = this.getPosition(
                     this.componentRef.current!,
+                    this.props.position,
                 );
                 this.setState({
                     tooltipVisible: true,
                     tooltipTop,
                     tooltipLeft,
+                    tooltipPosition: position || 'Bottom',
+                    tooltipTriangleLeft,
+                    tooltipTriangleTop,
                 });
             });
         }, minHoverMilliseconds);
@@ -131,7 +150,16 @@ export class TooltipUI extends Component<Props, State> {
         this.dispose();
     }
 
-    private getPosition(component: HTMLDivElement) {
+    private getPosition(
+        component: HTMLDivElement,
+        position?: Position,
+    ): {
+        tooltipLeft: number;
+        tooltipTop: number;
+        position?: Position;
+        tooltipTriangleTop?: number;
+        tooltipTriangleLeft?: number;
+    } {
         const rect = component.getBoundingClientRect();
         const componentLeft = rect.left - (this.props.parentOffset?.left || 0);
         const componentTop = rect.top - (this.props.parentOffset?.top || 0);
@@ -140,39 +168,78 @@ export class TooltipUI extends Component<Props, State> {
         const tooltipWidth = this.tooltipRef.current?.offsetWidth || 0;
         const tooltipHeight = this.tooltipRef.current?.offsetHeight || 0;
 
-        let tooltipLeft;
-        let tooltipTop;
+        let tooltipLeft = 0;
+        let tooltipTop = 0;
+        let tooltipTriangleTop;
+        let tooltipTriangleLeft;
 
-        switch (this.props.position) {
+        switch (position) {
             case 'Top': {
-                tooltipLeft =
-                    componentLeft + componentWidth / 2 - tooltipWidth / 2;
+                if (componentTop - tooltipHeight < 0) {
+                    return this.getPosition(component, 'Bottom');
+                }
+
                 tooltipTop = componentTop - tooltipHeight;
-                break;
+                break; 
             }
             case 'Left': {
+                if (componentLeft - tooltipWidth < 0) {
+                    return this.getPosition(component, 'Right');
+                }
+
                 tooltipLeft = componentLeft - tooltipWidth;
-                tooltipTop =
-                    componentTop + componentHeight / 2 - tooltipHeight / 2;
                 break;
             }
             case 'Right': {
+                if (
+                    componentLeft + componentWidth + tooltipWidth >
+                    window.innerWidth
+                ) {
+                    return this.getPosition(component, 'Left');
+                }
+
                 tooltipLeft = componentLeft + componentWidth;
-                tooltipTop =
-                    componentTop + componentHeight / 2 - tooltipHeight / 2;
                 break;
             }
             default: {
-                tooltipLeft =
-                    componentLeft + componentWidth / 2 - tooltipWidth / 2;
+                if (
+                    componentTop + componentHeight + tooltipHeight >
+                    window.innerHeight
+                ) {
+                    return this.getPosition(component, 'Top');
+                }
+
                 tooltipTop = componentTop + componentHeight;
                 break;
             }
         }
 
+        if (!position || position === 'Top' || position === 'Bottom') {
+            if (componentLeft + componentWidth / 2 - tooltipWidth / 2 >= 0) {
+                tooltipLeft =
+                    componentLeft + componentWidth / 2 - tooltipWidth / 2;
+                tooltipTriangleLeft = tooltipWidth / 2 - 6;
+            } else {
+                tooltipLeft = 0;
+                tooltipTriangleLeft = componentLeft + componentWidth / 2 - 6;
+            }
+        } else {
+            if (componentTop + componentHeight / 2 - tooltipHeight / 2 >= 0) {
+                tooltipTop =
+                    componentTop + componentHeight / 2 - tooltipHeight / 2;
+                tooltipTriangleTop = tooltipHeight / 2 - 6;
+            } else {
+                tooltipTop = 0;
+                tooltipTriangleTop = componentTop + componentHeight / 2 - 6;
+            }
+        }
+        
         return {
             tooltipLeft,
             tooltipTop,
+            position,
+            tooltipTriangleTop,
+            tooltipTriangleLeft,
         };
     }
 
