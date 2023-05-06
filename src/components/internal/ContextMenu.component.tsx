@@ -61,7 +61,7 @@ export class ContextMenuComponent extends Component<Props, State> {
         );
     }
 
-    public open(top: number, left: number) {
+    public open = (top: number, left: number) => {
         this.setState(
             {
                 show: true,
@@ -70,18 +70,18 @@ export class ContextMenuComponent extends Component<Props, State> {
             },
             () => this.contextMenuRef.current?.focus(),
         );
-    }
+    };
 
-    private close() {
+    private close = () => {
         this.setState({
             show: false,
             top: 0,
             left: 0,
         });
-    }
+    };
 
     private onItemClick = (action: () => void) => () => {
         action();
         this.close();
-    }
+    };
 }

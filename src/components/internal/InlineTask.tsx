@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 
 import { Duration } from '@lib/entity/duration';
+import { RelativeLayoutContainerUI } from '@lib/layout';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -22,6 +23,7 @@ import { TaskAction } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { ContextMenuComponent } from './ContextMenu.component';
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
 import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
@@ -67,6 +69,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private getBoundingClientRect?: () => DOMRect;
     private readonly selectTaskOwnersPopupRef =
         createRef<SelectTaskOwnersPopupComponent>();
+    private readonly taskIdContextMenuRef = createRef<ContextMenuComponent>();
 
     constructor(props: Props) {
         super(props);
@@ -95,9 +98,11 @@ export class InlineTaskUI extends Component<Props, State> {
                             <div className={styles.TopRow}>
                                 <div
                                     className={`${styles.Attribute} ${styles.Id}`}
+                                    onContextMenu={this.onTaskIdContextMenu}
                                 >
                                     {this.props.task.id}
                                 </div>
+
                                 {this.props.showStatus && (
                                     <div
                                         className={`${styles.Attribute} ${
@@ -118,7 +123,10 @@ export class InlineTaskUI extends Component<Props, State> {
                                 </div>
 
                                 {this.props.task.links.map((link) => (
-                                    <div className={styles.Attribute} key={link.id}>
+                                    <div
+                                        className={styles.Attribute}
+                                        key={link.id}
+                                    >
                                         <TaskLinkIconUI link={link} />
                                     </div>
                                 ))}
@@ -157,6 +165,16 @@ export class InlineTaskUI extends Component<Props, State> {
                     onSelectOwner={this.onTaskOwnerSelected}
                     selectedOwnerId={this.props.task.owner?.id}
                 />
+                <ContextMenuComponent
+                    ref={this.taskIdContextMenuRef}
+                    menuItems={Object.entries(
+                        this.props.deps.uiRegistry.taskIdActions,
+                    ).map(([key, value]) => ({
+                        key,
+                        label: value.readableName,
+                        action: () => value.execute(this.props.task.id),
+                    }))}
+                />
             </>
         );
     }
@@ -182,6 +200,11 @@ export class InlineTaskUI extends Component<Props, State> {
             </div>
         );
     }
+
+    private onTaskIdContextMenu = (event: MouseEvent) => {
+        event.preventDefault();
+        this.taskIdContextMenuRef.current?.open(event.clientY, event.clientX);
+    };
 
     private renderDueAt = () => {
         const { dueAt, deliveredAt } = this.props.task;

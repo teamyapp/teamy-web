@@ -73,6 +73,7 @@ import { InvitationComponent } from './pages/Invitation.component';
 import { PlanningComponent } from './pages/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
+import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
 
 const sectionIds = [
     backlogSectionId,
@@ -122,6 +123,7 @@ export class AppComponent extends Component<Props, State> {
     private readonly requiredActionsModalRef =
         createRef<RequiredActionsModalComponent>();
     private readonly backlogRef = createRef<BacklogComponent>();
+    private readonly dynamicFeedbackRef = createRef<DynamicFeedbackUI>();
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
@@ -362,6 +364,7 @@ export class AppComponent extends Component<Props, State> {
                 <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <TaskUpdatedFeedbackComponent deps={this.props.deps} />
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
+                <DynamicFeedbackUI ref={this.dynamicFeedbackRef}/>
                 <RequiredActionsModalComponent
                     ref={this.requiredActionsModalRef}
                 />
@@ -793,6 +796,8 @@ export class AppComponent extends Component<Props, State> {
     private loadExtensions(): Promise<Extension[]> {
         // TODO(magicoder10): load extension from backend
         // TODO(magicoder10): error handling when failed to load script
+        this.registerGithubExtensionUI();
+
         return Promise.all(
             ['http://localhost:8082/app/app.js'].map(
                 async (extensionEntryPoint) => {
@@ -805,6 +810,22 @@ export class AppComponent extends Component<Props, State> {
                 },
             ),
         );
+    }
+
+    private registerGithubExtensionUI() {
+        // simulate ui extension to register configs and actions, 
+        // remove once ui extension is fully implemented
+        this.props.deps.uiRegistry.registerTaskIdAction({
+            key: "GitHubCopyMentionTask",
+            readableName: "Copy mention task",
+            execute: async (taskId: number) => {
+                const mentionTask = `(task:${taskId})`;
+                navigator.clipboard.writeText(mentionTask);
+                this.dynamicFeedbackRef.current?.show(
+                    `${mentionTask} is copied to clipboard`,
+                )
+            }
+        });
     }
 
     private getExtensionRuntime(extensionVersion: number): ExtensionRuntime {
