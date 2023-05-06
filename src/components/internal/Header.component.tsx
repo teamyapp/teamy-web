@@ -23,10 +23,10 @@ import {
     teamRoutePattern,
 } from '@core/routing/routes';
 
+import { ContextMenuComponent } from './ContextMenu.component';
 import { FilterListComponent } from './FilterList.component';
 import styles from './Header.component.module.scss';
 import { SprintsHeaderSectionComponent } from './SprintsHeaderSection.component';
-import { TeamContextMenuComponent } from './TeamContextMenu.component';
 import { UserProfileUI } from './UserProfile';
 
 interface Props {
@@ -66,7 +66,7 @@ export class HeaderComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly searchBarRef = createRef<HTMLDivElement>();
     private readonly searchInputRef = createRef<HTMLInputElement>();
-    private readonly teamContextMenuRef = createRef<TeamContextMenuComponent>();
+    private readonly teamContextMenuRef = createRef<ContextMenuComponent>();
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
 
     constructor(props: Props) {
@@ -116,12 +116,30 @@ export class HeaderComponent extends Component<Props, State> {
                             {this.props.currentTeam.name}
                         </div>
                     )}
-                    <TeamContextMenuComponent
+                    <ContextMenuComponent
                         ref={this.teamContextMenuRef}
-                        onAddMembersClick={this.onAddMembersClick}
-                        onShowMembersClick={this.onShowMembersClick}
-                        onShowInvitationsClick={this.onShowInvitationsClick}
-                        onViewTeamSettingsClick={this.onViewTeamSettingsClick}
+                        menuItems={[
+                            {
+                                key: 'addMembers',
+                                action: this.onAddMembersClick,
+                                label: 'Add Members',
+                            },
+                            {
+                                key: 'showMembers',
+                                action: this.onShowMembersClick,
+                                label: 'Show Members',
+                            },
+                            {
+                                key: 'showInvitations',
+                                action: this.onShowInvitationsClick,
+                                label: 'Show Invitations',
+                            },
+                            {
+                                key: 'viewTeamSettings',
+                                action: this.onViewTeamSettingsClick,
+                                label: 'View Team Settings',
+                            },
+                        ]}
                     />
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.BacklogSection}>
@@ -276,7 +294,7 @@ export class HeaderComponent extends Component<Props, State> {
                     return;
                 }
 
-                this.resetViewButtons();         
+                this.resetViewButtons();
                 if (routeUpdate.routePattern.startsWith(sprintsRoutePattern)) {
                     this.setState({
                         showSprintsView: true,

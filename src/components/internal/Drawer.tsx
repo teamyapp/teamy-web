@@ -8,7 +8,7 @@ import { orderByName } from '@core/data/team.order';
 import { Team } from '@core/entity/team';
 
 import styles from './Drawer.module.scss';
-import { TeamContextMenuComponent } from './TeamContextMenu.component';
+import { ContextMenuComponent } from './ContextMenu.component';
 
 interface Props {
     teams: Team[];
@@ -24,7 +24,7 @@ interface Props {
 }
 
 export class DrawerUI extends Component<Props> {
-    private readonly teamContextMenuRef = createRef<TeamContextMenuComponent>();
+    private readonly teamContextMenuRef = createRef<ContextMenuComponent>();
     private selectedTeamId?: number;
 
     render = () => {
@@ -61,12 +61,30 @@ export class DrawerUI extends Component<Props> {
                         </TooltipUI>
                     </div>
                 </div>
-                <TeamContextMenuComponent
+                <ContextMenuComponent
                     ref={this.teamContextMenuRef}
-                    onAddMembersClick={this.onAddMembersClick}
-                    onShowMembersClick={this.onShowMembersClick}
-                    onShowInvitationsClick={this.onShowInvitationsClick}
-                    onViewTeamSettingsClick={this.onViewTeamSettingsClick}
+                    menuItems={[
+                        {
+                            key: 'addMembers',
+                            action: this.onAddMembersClick,
+                            label: 'Add Members',
+                        },
+                        {
+                            key: 'showMembers',
+                            action: this.onShowMembersClick,
+                            label: 'Show Members',
+                        },
+                        {
+                            key: 'showInvitations',
+                            action: this.onShowInvitationsClick,
+                            label: 'Show Invitations',
+                        },
+                        {
+                            key: 'viewTeamSettings',
+                            action: this.onViewTeamSettingsClick,
+                            label: 'View Team Settings',
+                        },
+                    ]}
                 />
             </div>
         );
