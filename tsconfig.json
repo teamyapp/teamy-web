@@ -28,6 +28,7 @@
             "@core/storage/*": ["storage/*"],
             "@core/event/*": ["event/*"],
             "@core/data/*": ["data/*"],
+            "@core/ext/*": ["ext/*"],
             "@core/dep/*": ["dep/*"],
             "@cloud/*": ["cloud/*"],
             "@lib/*": ["libs/*"]
