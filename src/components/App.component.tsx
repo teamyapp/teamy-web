@@ -796,20 +796,7 @@ export class AppComponent extends Component<Props, State> {
     private loadExtensions(): Promise<Extension[]> {
         // TODO(magicoder10): load extension from backend
         // TODO(magicoder10): error handling when failed to load script
-
-        // simulate ui extension to register configs and actions, 
-        // remove once ui extension is fully implemented
-        this.props.deps.uiRegistry.registerTaskIdAction({
-            key: "GitHubCopyMentionTask",
-            readableName: "Copy mention task",
-            execute: async (taskId: number) => {
-                const mentionTask = `(task:${taskId})`;
-                navigator.clipboard.writeText(mentionTask);
-                this.dynamicFeedbackRef.current?.show(
-                    `${mentionTask} is copied to clipboard`,
-                )
-            }
-        });
+        this.registerGithubExtensionUI();
 
         return Promise.all(
             ['http://localhost:8082/app/app.js'].map(
@@ -823,6 +810,22 @@ export class AppComponent extends Component<Props, State> {
                 },
             ),
         );
+    }
+
+    private registerGithubExtensionUI() {
+        // simulate ui extension to register configs and actions, 
+        // remove once ui extension is fully implemented
+        this.props.deps.uiRegistry.registerTaskIdAction({
+            key: "GitHubCopyMentionTask",
+            readableName: "Copy mention task",
+            execute: async (taskId: number) => {
+                const mentionTask = `(task:${taskId})`;
+                navigator.clipboard.writeText(mentionTask);
+                this.dynamicFeedbackRef.current?.show(
+                    `${mentionTask} is copied to clipboard`,
+                )
+            }
+        });
     }
 
     private getExtensionRuntime(extensionVersion: number): ExtensionRuntime {
