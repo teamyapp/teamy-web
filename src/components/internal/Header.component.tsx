@@ -17,7 +17,8 @@ import { User } from '@core/entity/user';
 import {
     helpCenterRoutePattern,
     insightsRoutePattern,
-    knowledgeRoutePattern, marketplaceRoutePattern,
+    knowledgeRoutePattern,
+    marketplaceRoutePattern,
     planningRoutePattern,
     sprintsRoutePattern,
     teamRoutePattern,

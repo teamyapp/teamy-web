@@ -36,7 +36,9 @@ import {
     insightsPath,
     insightsRoutePattern,
     invitationRoutePattern,
-    knowledgePath, marketplacePath, marketplaceRoutePattern,
+    knowledgePath,
+    marketplacePath,
+    marketplaceRoutePattern,
     planningPath,
     planningRoutePattern,
     rootRoutePattern,
@@ -53,20 +55,40 @@ import styles from './App.component.module.scss';
 import { BacklogComponent } from './internal/Backlog.component';
 import { DrawerUI } from './internal/Drawer';
 import { HeaderComponent } from './internal/Header.component';
-import { AddTeamMembersModalComponent } from './internal/Modals/AddTeamMembersModal.component';
-import { CreateSprintModalComponent } from './internal/Modals/CreateSprintModal.component';
-import { CreateTeamModalComponent } from './internal/Modals/CreateTeamModal.component';
+import {
+    AddTeamMembersModalComponent
+} from './internal/Modals/AddTeamMembersModal.component';
+import {
+    CreateSprintModalComponent
+} from './internal/Modals/CreateSprintModal.component';
+import {
+    CreateTeamModalComponent
+} from './internal/Modals/CreateTeamModal.component';
 import {
     RequiredAction,
     RequiredActionsModalComponent,
 } from './internal/Modals/RequiredActionsModal.component';
-import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
-import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
-import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
-import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/InviationLinkCopiedFeedback.component';
-import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
-import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
-import { UserProfileUpdatedFeedbackComponent } from './internal/feedbacks/UserProfileUpdatedFeedback.component';
+import {
+    TaskDetailModalComponent
+} from './internal/Modals/TaskDetailModal.component';
+import {
+    TeamSettingsModalComponent
+} from './internal/Modals/TeamSettingsModal.component';
+import {
+    UserSettingsModalComponent
+} from './internal/Modals/UserSettingsModal.component';
+import {
+    InvitationLinkCopiedFeedbackComponent
+} from './internal/feedbacks/InviationLinkCopiedFeedback.component';
+import {
+    TaskUpdatedFeedbackComponent
+} from './internal/feedbacks/TaskUpdatedFeedback.component';
+import {
+    TeamProfileUpdatedFeedbackComponent
+} from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
+import {
+    UserProfileUpdatedFeedbackComponent
+} from './internal/feedbacks/UserProfileUpdatedFeedback.component';
 import { DebugComponent } from './pages/Debug.component';
 import { InsightsComponent } from './pages/Insights.component';
 import { InvitationComponent } from './pages/Invitation.component';
@@ -170,9 +192,9 @@ export class AppComponent extends Component<Props, State> {
                         repoName={'teamy-web'}
                     />
                 </Route>
-                <CloudComponent deps={this.props.deps} />
+                <CloudComponent deps={this.props.deps}/>
                 <Route router={this.router} pattern={signUpRoutePattern}>
-                    <SignUpComponent deps={this.props.deps} />
+                    <SignUpComponent deps={this.props.deps}/>
                 </Route>
                 {this.state.me && (
                     <>
@@ -204,7 +226,8 @@ export class AppComponent extends Component<Props, State> {
                                     content={
                                         <div className={styles.BannerContent}>
                                             <div className={styles.BannerText}>
-                                                You are viewing inactive sprint.{' '}
+                                                You are viewing inactive
+                                                sprint.{' '}
                                                 <span
                                                     className={
                                                         styles.BannerLink
@@ -271,7 +294,7 @@ export class AppComponent extends Component<Props, State> {
                                             styles.Sidebar
                                         } ${classNames({
                                             [styles.Shown]:
-                                                this.state.showBacklog,
+                                            this.state.showBacklog,
                                         })}`}
                                     >
                                         <div className={styles.Backlog}>
@@ -324,13 +347,13 @@ export class AppComponent extends Component<Props, State> {
                                             router={this.router}
                                             pattern={planningRoutePattern}
                                         >
-                                            <PlanningComponent />
+                                            <PlanningComponent/>
                                         </Route>
                                         <Route
                                             router={this.router}
                                             pattern={marketplaceRoutePattern}
                                         >
-                                            <MarketplaceComponent />
+                                            <MarketplaceComponent/>
                                         </Route>
                                     </div>
                                 </div>
@@ -341,7 +364,7 @@ export class AppComponent extends Component<Props, State> {
                     </>
                 )}
                 <Route router={this.router} pattern={invitationRoutePattern}>
-                    <InvitationComponent deps={this.props.deps} />
+                    <InvitationComponent deps={this.props.deps}/>
                 </Route>
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
@@ -357,7 +380,7 @@ export class AppComponent extends Component<Props, State> {
                     ref={this.teamSettingsModalRef}
                     onAddTeamMemberClick={this.onAddTeamMembersClick}
                 />
-                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps} />
+                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps}/>
                 <AddTeamMembersModalComponent
                     deps={this.props.deps}
                     ref={this.addTeamMembersModalRef}
@@ -371,9 +394,9 @@ export class AppComponent extends Component<Props, State> {
                     ref={this.createSprintModalRef}
                     deps={this.props.deps}
                 />
-                <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
-                <TaskUpdatedFeedbackComponent deps={this.props.deps} />
-                <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
+                <UserProfileUpdatedFeedbackComponent deps={this.props.deps}/>
+                <TaskUpdatedFeedbackComponent deps={this.props.deps}/>
+                <InvitationLinkCopiedFeedbackComponent deps={this.props.deps}/>
                 <DynamicFeedbackUI ref={this.dynamicFeedbackRef}/>
                 <RequiredActionsModalComponent
                     ref={this.requiredActionsModalRef}
@@ -610,7 +633,7 @@ export class AppComponent extends Component<Props, State> {
             activeSprint &&
             currentSprintId !== undefined &&
             activeSprint.id !== currentSprintId
-        )
+        );
 
         this.setState({
             me: currentUser,
@@ -701,7 +724,7 @@ export class AppComponent extends Component<Props, State> {
         this.router.navigateTo(marketplacePath(this.state.activeTeamId!), {
             notifyRouteChange: true,
         });
-    }
+    };
 
     private processTaskDrop(
         srcSectionId: string,
@@ -817,7 +840,7 @@ export class AppComponent extends Component<Props, State> {
         return Promise.all(
             ['http://localhost:8082/app/app.js'].map(
                 async (extensionEntryPoint) => {
-                    let { App } = await importModule(extensionEntryPoint);
+                    let {App} = await importModule(extensionEntryPoint);
                     const app: Extension = new App();
                     const runtime = this.getExtensionRuntime(0);
                     app.init(runtime);
@@ -832,14 +855,14 @@ export class AppComponent extends Component<Props, State> {
         // simulate ui extension to register configs and actions, 
         // remove once ui extension is fully implemented
         this.props.deps.uiRegistry.registerTaskIdAction({
-            key: "GitHubCopyMentionTask",
-            readableName: "Copy mention task",
+            key: 'GitHubCopyMentionTask',
+            readableName: 'Copy mention task',
             execute: async (taskId: number) => {
                 const mentionTask = `(task:${taskId})`;
                 navigator.clipboard.writeText(mentionTask);
                 this.dynamicFeedbackRef.current?.show(
                     `${mentionTask} is copied to clipboard`,
-                )
+                );
             }
         });
     }
