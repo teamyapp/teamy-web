@@ -32,6 +32,7 @@ export const insightsRoutePattern = `${teamRoutePattern}/insights`;
 export const planningRoutePattern = `${teamRoutePattern}/planning`;
 export const knowledgeRoutePattern = `${teamRoutePattern}/knowledge`;
 export const helpCenterRoutePattern = `${teamRoutePattern}/help-center`;
+export const marketplaceRoutePattern = `${teamRoutePattern}/marketplace`;
 export const cloudRoutePattern = `${rootRoutePattern}cloud`;
 export const signUpRoutePattern = `${rootRoutePattern}sign-up`;
 export const signInRoutePattern = `${cloudRoutePattern}/identity/sign-in`;
@@ -51,6 +52,8 @@ export const planningPath = (teamId: number) => `/teams/${teamId}/planning`;
 export const knowledgePath = (teamId: number) => `/teams/${teamId}/knowledge`;
 export const helpCenterPath = (teamId: number) =>
     `/teams/${teamId}/help-center`;
+export const marketplacePath = (teamId: number) =>
+    `/teams/${teamId}/marketplace`;
 
 export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`;
 
@@ -78,6 +81,7 @@ export const teamsRoutes = [
     planningRoutePattern,
     knowledgeRoutePattern,
     helpCenterRoutePattern,
+    marketplaceRoutePattern,
     invitationRoutePattern,
     taskRoutePattern,
 ];

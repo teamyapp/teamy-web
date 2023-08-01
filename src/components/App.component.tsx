@@ -36,7 +36,7 @@ import {
     insightsPath,
     insightsRoutePattern,
     invitationRoutePattern,
-    knowledgePath,
+    knowledgePath, marketplacePath, marketplaceRoutePattern,
     planningPath,
     planningRoutePattern,
     rootRoutePattern,
@@ -74,6 +74,7 @@ import { PlanningComponent } from './pages/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
 import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
+import { MarketplaceComponent } from './pages/Marketplace.component';
 
 const sectionIds = [
     backlogSectionId,
@@ -259,6 +260,9 @@ export class AppComponent extends Component<Props, State> {
                                 onShowHelpCenterViewClick={
                                     this.onShowHelpCenterViewClick
                                 }
+                                onShowMarketplaceViewClick={
+                                    this.onShowMarketplaceViewClick
+                                }
                             />
                             {this.state.activeTeamId ? (
                                 <div className={styles.Team}>
@@ -321,6 +325,12 @@ export class AppComponent extends Component<Props, State> {
                                             pattern={planningRoutePattern}
                                         >
                                             <PlanningComponent />
+                                        </Route>
+                                        <Route
+                                            router={this.router}
+                                            pattern={marketplaceRoutePattern}
+                                        >
+                                            <MarketplaceComponent />
                                         </Route>
                                     </div>
                                 </div>
@@ -686,6 +696,12 @@ export class AppComponent extends Component<Props, State> {
             notifyRouteChange: true,
         });
     };
+
+    private onShowMarketplaceViewClick = () => {
+        this.router.navigateTo(marketplacePath(this.state.activeTeamId!), {
+            notifyRouteChange: true,
+        });
+    }
 
     private processTaskDrop(
         srcSectionId: string,

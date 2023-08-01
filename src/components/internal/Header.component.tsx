@@ -17,7 +17,7 @@ import { User } from '@core/entity/user';
 import {
     helpCenterRoutePattern,
     insightsRoutePattern,
-    knowledgeRoutePattern,
+    knowledgeRoutePattern, marketplaceRoutePattern,
     planningRoutePattern,
     sprintsRoutePattern,
     teamRoutePattern,
@@ -49,6 +49,7 @@ interface Props {
     onShowPlanningViewClick?: () => void;
     onShowKnowledgeViewClick?: () => void;
     onShowHelpCenterViewClick?: () => void;
+    onShowMarketplaceViewClick?: () => void;
 }
 
 interface State {
@@ -60,6 +61,7 @@ interface State {
     showPlanningView: boolean;
     showKnowledgeView: boolean;
     showHelpCenterView: boolean;
+    showMarketplaceView: boolean;
 }
 
 export class HeaderComponent extends Component<Props, State> {
@@ -83,6 +85,7 @@ export class HeaderComponent extends Component<Props, State> {
             showPlanningView: false,
             showKnowledgeView: false,
             showHelpCenterView: false,
+            showMarketplaceView: false,
         };
     }
 
@@ -255,6 +258,15 @@ export class HeaderComponent extends Component<Props, State> {
                             >
                                 <MaterialIconUI>forum</MaterialIconUI>
                             </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                    this.state.showMarketplaceView,
+                                })}`}
+                                onClick={this.onShowMarketplaceViewClick}
+                            >
+                                <MaterialIconUI>shopping_cart</MaterialIconUI>
+                            </div>
                         </div>
                     </Route>
                     <div className={styles.UserActionSection}></div>
@@ -322,6 +334,12 @@ export class HeaderComponent extends Component<Props, State> {
                 ) {
                     this.setState({
                         showHelpCenterView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(marketplaceRoutePattern)
+                ) {
+                    this.setState({
+                        showMarketplaceView: true,
                     });
                 }
             }
@@ -461,6 +479,14 @@ export class HeaderComponent extends Component<Props, State> {
         this.props.onShowHelpCenterViewClick?.call(null);
     };
 
+    private onShowMarketplaceViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showMarketplaceView: true,
+        });
+        this.props.onShowMarketplaceViewClick?.call(null);
+    }
+
     private resetViewButtons() {
         this.setState({
             showSprintsView: false,
@@ -468,6 +494,7 @@ export class HeaderComponent extends Component<Props, State> {
             showPlanningView: false,
             showKnowledgeView: false,
             showHelpCenterView: false,
+            showMarketplaceView: false
         });
     }
 }
