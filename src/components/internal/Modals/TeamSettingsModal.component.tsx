@@ -91,24 +91,33 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     'Bandwidth',
                                     'Members',
                                     'Invitations',
+                                    'Apps'
                                 ]}
                                 onTabClick={this.onTabClick}
                             />
                         </div>
                         <div className={styles.TabContent}>
-                            {this.state.currentTabIndex === 0 &&
-                                this.renderTeamProfileTab()}
-                            {this.state.currentTabIndex === 1 &&
-                                this.renderBandwidthTab()}
-                            {this.state.currentTabIndex === 2 &&
-                                this.renderTeamMembersTab()}
-                            {this.state.currentTabIndex === 3 &&
-                                this.renderInvitationsTab()}
+                            {this.renderTab()}
                         </div>
                     </div>
                 )}
             </ModalUI>
         );
+    }
+
+    private renderTab = (): ReactNode => {
+        switch (this.state.currentTabIndex) {
+            case 0:
+                return this.renderTeamProfileTab();
+            case 1:
+                return this.renderBandwidthTab();
+            case 2:
+                return this.renderTeamMembersTab();
+            case 3:
+                return this.renderInvitationsTab();
+            case 4:
+                return this.renderAppsTab();
+        }
     }
 
     public open = async (teamId: number, defaultTabIndex: number = 0) => {
@@ -285,6 +294,17 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             </div>
         );
     };
+
+    private renderAppsTab = () => {
+        return (
+            <div className={styles.AppsTab}>
+                <div className={styles.Marketplace}>
+                </div>
+                <div className={styles.Installed}>
+                </div>
+            </div>
+        )
+    }
 
     private renderMemberBandwidth = (
         member: TeamMember,
