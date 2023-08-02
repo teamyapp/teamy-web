@@ -22,7 +22,6 @@ import wechatIconImg from './assets/wechat.png';
 import instagramIconImg from './assets/instagram.png';
 
 import githubBannerImg from './assets/github_ads.png';
-import classNames from 'classnames';
 
 interface Item {
     id: number;
@@ -182,6 +181,10 @@ export class MarketplaceComponent extends Component<Props, State> {
                     </div>
                     <div className={styles.Tabs}>
                         <div className={styles.Tab}>Installed</div>
+                        <div className={styles.Tab}>Managed</div>
+                    </div>
+                    <div className={styles.Divider}/>
+                    <div className={styles.Tabs}>
                         <div
                             className={`${styles.Tab} ${styles.Active}`}>Discover
                         </div>
