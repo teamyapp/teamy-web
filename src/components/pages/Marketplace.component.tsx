@@ -1,4 +1,4 @@
-import { Component, Fragment, ReactNode } from 'react';
+import { Component, ReactNode } from 'react';
 
 import styles from './Marketplace.component.module.scss';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
