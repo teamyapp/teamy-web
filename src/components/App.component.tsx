@@ -96,7 +96,7 @@ import { PlanningComponent } from './pages/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
 import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
-import { MarketplaceComponent } from './pages/Marketplace.component';
+import { MarketplaceComponent } from './pages/Marketplace/Marketplace.component';
 
 const sectionIds = [
     backlogSectionId,
