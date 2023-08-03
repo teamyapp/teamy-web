@@ -42,8 +42,8 @@ $tableRowGap: 12px;
             padding: 40px;
 
             .TeamIconUploader {
-                --image-uploader-width: 150px;
                 --image-uploader-height: 150px;
+                --image-uploader-width: 150px;
             }
 
             .TeamNameSection {
@@ -247,19 +247,19 @@ $tableRowGap: 12px;
             .Table {
                 .ProfileColumn {
                     .Profile {
-                        display: flex;
                         align-items: center;
+                        display: flex;
+                        --profile-height: 40px;
                         justify-content: center;
                         --profile-width: 40px;
-                        --profile-height: 40px;
                     }
                 }
 
                 .BandwidthColumn {
                     .Duration {
-                        justify-content: center;
-                        display: flex;
                         --duration-background-color: #1565c0;
+                        display: flex;
+                        justify-content: center;
                     }
                 }
             }

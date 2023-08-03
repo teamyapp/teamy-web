@@ -9,5 +9,6 @@ export interface Drawable {
     position: Point;
     size: Size;
     rotationAngle: number;
+
     draw(ctx: CanvasRenderingContext2D, dpi: number): void;
 }

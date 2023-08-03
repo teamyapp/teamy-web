@@ -2,10 +2,6 @@ import { Drawable, Size } from '@lib/draw/drawables/drawable';
 import { Point } from '@lib/ui/position';
 
 export class Group implements Drawable {
-    private _position: Point;
-    private _size: Size;
-    private _rotationAngle: number;
-
     constructor(private readonly drawables: Drawable[]) {
         // TODO: pass in position
         // TODO: compute size based on drawables
@@ -13,6 +9,8 @@ export class Group implements Drawable {
         this._size = { width: 0, height: 0 };
         this._rotationAngle = 0;
     }
+
+    private _position: Point;
 
     get position(): Point {
         return this._position;
@@ -22,6 +20,8 @@ export class Group implements Drawable {
         this._position = val;
     }
 
+    private _size: Size;
+
     get size(): Size {
         return this._size;
     }
@@ -29,6 +29,8 @@ export class Group implements Drawable {
     set size(val: Size) {
         this._size = val;
     }
+
+    private _rotationAngle: number;
 
     get rotationAngle(): number {
         return this._rotationAngle;

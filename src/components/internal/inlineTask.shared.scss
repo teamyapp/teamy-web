@@ -13,14 +13,14 @@ $actionIconSize: 28px;
 }
 
 .Action {
-    --icon-box-size: #{$actionIconSize};
-    --icon-size: #{$actionIconSize};
     align-items: center;
     border-radius: 4px;
+    --icon-box-size: #{$actionIconSize};
     display: flex;
     height: $actionIconSize;
     justify-content: center;
     padding: 4px;
+    --icon-size: #{$actionIconSize};
     user-select: none;
     width: $actionIconSize;
 
@@ -64,11 +64,11 @@ $actionIconSize: 28px;
     }
 
     .ActionsSection {
+        border-left: 2px solid $dividerColor;
         display: grid;
         gap: 2px;
         grid-auto-rows: min-content;
         padding-left: $edgeSpace;
-        border-left: 2px solid $dividerColor;
 
         .AssignOwner {
             --profile-height: #{$actionIconSize};

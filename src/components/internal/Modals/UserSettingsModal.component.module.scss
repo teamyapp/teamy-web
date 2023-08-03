@@ -34,8 +34,8 @@
             padding: 40px;
 
             .UserProfileUploader {
-                --image-uploader-width: 150px;
                 --image-uploader-height: 150px;
+                --image-uploader-width: 150px;
             }
 
             .UserNameSection {
@@ -120,10 +120,10 @@
                 }
 
                 .ComingSoon {
-                    margin-bottom: 20px;
-                    font-size: 14px;
                     color: #616161;
+                    font-size: 14px;
                     font-weight: 600;
+                    margin-bottom: 20px;
                 }
 
                 .Action {

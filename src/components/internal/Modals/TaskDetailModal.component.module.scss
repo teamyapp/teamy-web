@@ -4,9 +4,9 @@
 $divider: 2px solid #eeeeee;
 
 .ModalContent {
-    width: 1000px;
     display: flex;
     flex-direction: column;
+    width: 1000px;
 
     .Title {
         font-size: 20px;
@@ -74,22 +74,22 @@ $divider: 2px solid #eeeeee;
     .TaskDetailSection {
         --border: 2px solid #{$secondaryColor};
         --outline-color: #1976d2;
+        display: flex;
+        flex: 1;
+        overflow: hidden;
         --font-size: 18px;
         width: 100%;
-        flex: 1;
-        display: flex;
-        overflow: hidden;
 
         .LeftSection {
             box-sizing: border-box;
             flex: 1;
             height: 100%;
-            padding: 20px 14px 20px 20px;
             overflow-y: auto;
+            padding: 20px 14px 20px 20px;
 
             .Context {
-                margin-top: 20px;
                 height: 200px;
+                margin-top: 20px;
             }
 
             .CommentsSection {
@@ -113,20 +113,20 @@ $divider: 2px solid #eeeeee;
                 }
 
                 .Link {
-                    font-weight: bold;
-                    display: flex;
                     align-items: center;
+                    display: flex;
+                    font-weight: bold;
                     gap: 10px;
                 }
             }
         }
 
         .RightSection {
+            border-left: 3px solid #f5f5f5;
+            box-sizing: border-box;
+            height: 100%;
             padding: 20px 20px 20px 20px;
             width: 240px;
-            height: 100%;
-            box-sizing: border-box;
-            border-left: 3px solid #f5f5f5;
 
             .Attributes {
                 align-items: flex-end;
@@ -134,9 +134,9 @@ $divider: 2px solid #eeeeee;
                 flex-direction: column;
 
                 .Row {
+                    align-items: flex-start;
                     display: flex;
                     width: 100%;
-                    align-items: flex-start;
 
                     &:not(:first-child) {
                         margin-top: 20px;

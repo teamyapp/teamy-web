@@ -5,9 +5,9 @@ body {
     margin: 0;
 
     ::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
         border-radius: 4px;
+        height: 6px;
+        width: 6px;
     }
 
     ::-webkit-scrollbar-track {

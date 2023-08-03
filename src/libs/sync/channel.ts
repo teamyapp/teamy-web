@@ -9,13 +9,17 @@ interface PausedReceiveTask<Item> {
 
 export interface SendChannel<Item> {
     send(item: Item): Promise<boolean>;
+
     isClosed(): boolean;
+
     length(): number;
 }
 
 export interface ReceiveChannel<Item> extends AsyncIterable<Item> {
     receive(): Promise<[Item | undefined, boolean]>;
+
     isClosed(): boolean;
+
     length(): number;
 }
 

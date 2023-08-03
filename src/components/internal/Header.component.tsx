@@ -297,6 +297,17 @@ export class HeaderComponent extends Component<Props, State> {
         closeIfNot(this.routeChangeChan);
     }
 
+    public toggleSearchInputFocus = () => {
+        if (!this.state.isSearchBarFocused) {
+            this.searchInputRef.current?.focus();
+        } else {
+            this.searchInputRef.current?.blur();
+            this.setState({
+                isSearchBarFocused: false,
+            });
+        }
+    };
+
     private monitorRouteChanges() {
         this.routeChangeChan = this.router.subscribeRouteChange();
         console.log('[HeaderComponent] subscribing route changes');
@@ -346,17 +357,6 @@ export class HeaderComponent extends Component<Props, State> {
             }
         })().then();
     }
-
-    public toggleSearchInputFocus = () => {
-        if (!this.state.isSearchBarFocused) {
-            this.searchInputRef.current?.focus();
-        } else {
-            this.searchInputRef.current?.blur();
-            this.setState({
-                isSearchBarFocused: false,
-            });
-        }
-    };
 
     private onSearchBarFocus = () => {
         this.setState({

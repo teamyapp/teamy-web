@@ -444,6 +444,24 @@ export class AppComponent extends Component<Props, State> {
         this.props.deps.shortcutMonitor.dispose();
     }
 
+    public onViewTaskDetail = (taskId: number) => {
+        this.taskDetailModalRef.current?.open(taskId);
+        if (this.state.activeTeamId) {
+            this.router.navigateTo(taskPath(this.state.activeTeamId, taskId), {
+                notifyRouteChange: false,
+            });
+        }
+    };
+
+    public async onTeamInit() {
+        try {
+            this.extensions = await this.loadExtensions();
+            await this.showRequiredActionsIfAny();
+        } catch (err) {
+            console.log(`Fail to load extensions: ${err}`);
+        }
+    }
+
     private monitorStateChanges() {
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
@@ -647,15 +665,6 @@ export class AppComponent extends Component<Props, State> {
         });
     };
 
-    public onViewTaskDetail = (taskId: number) => {
-        this.taskDetailModalRef.current?.open(taskId);
-        if (this.state.activeTeamId) {
-            this.router.navigateTo(taskPath(this.state.activeTeamId, taskId), {
-                notifyRouteChange: false,
-            });
-        }
-    };
-
     private onTaskDetailModalClose = () => {
         const teamIdParam = getTeamId(this.router.currentRouteUpdate.params);
         if (teamIdParam) {
@@ -800,15 +809,6 @@ export class AppComponent extends Component<Props, State> {
     private onRequireActionComplete = () => {
         this.requiredActionsModalRef.current?.completeCurrentStep();
     };
-
-    public async onTeamInit() {
-        try {
-            this.extensions = await this.loadExtensions();
-            await this.showRequiredActionsIfAny();
-        } catch (err) {
-            console.log(`Fail to load extensions: ${err}`);
-        }
-    }
 
     private loadExtensions(): Promise<Extension[]> {
         // TODO(magicoder10): load extension from backend

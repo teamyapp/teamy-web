@@ -13,8 +13,8 @@
     .RightSection {
         align-items: center;
         display: flex;
-        width: 550px;
         height: 100%;
+        width: 550px;
     }
 
     .MenuButtonPlaceHolder {
@@ -22,23 +22,23 @@
     }
 
     .TeamName {
-        display: flex;
         align-items: center;
-        line-height: 22px;
         color: $onPrimaryColor;
+        display: flex;
         font-size: 22px;
         font-weight: 500;
-        letter-spacing: 1px;
         height: 100%;
-        white-space: nowrap;
+        letter-spacing: 1px;
+        line-height: 22px;
         overflow: hidden;
+        padding: 0 20px;
         text-overflow: ellipsis;
         transition: left 400ms $easeOutExpo;
-        padding: 0 20px;
+        white-space: nowrap;
 
         &:hover {
-            cursor: pointer;
             background-color: rgba(0, 0, 0, 0.2);
+            cursor: pointer;
         }
     }
 

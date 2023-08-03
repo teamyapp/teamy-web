@@ -11,15 +11,15 @@ $iconHeight: var(--icon-box-height, $iconBoxSize);
     color: $iconColor;
     direction: ltr;
     display: flex;
-    font-variation-settings: 'FILL' 1;
     font-feature-settings: 'liga';
-    font-weight: 600;
     font-size: $iconSize;
     -webkit-font-smoothing: antialiased;
     font-style: normal;
-    width: $iconWidth;
+    font-variation-settings: 'FILL' 1;
+    font-weight: 600;
     height: $iconHeight;
     justify-content: center;
     letter-spacing: normal;
     overflow: hidden;
+    width: $iconWidth;
 }

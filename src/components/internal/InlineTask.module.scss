@@ -7,12 +7,12 @@ $draggingColor: #00897b;
 
 .InlineTask {
     .DraggingBySection {
-        float: right;
         background-color: $draggingColor;
         border-radius: 0px 0 6px 6px;
-        height: 28px;
         color: white;
+        float: right;
         font-weight: 500;
+        height: 28px;
         padding: 5px 8px;
     }
 
@@ -52,20 +52,20 @@ $draggingColor: #00897b;
         }
 
         .TopRow {
-            margin-bottom: 10px;
-            display: flex;
             align-items: center;
+            display: flex;
             gap: 6px;
             height: 22px;
+            margin-bottom: 10px;
 
             .Attribute {
-                height: 100%;
-                font-size: 14px;
-                border-radius: 4px;
-                font-weight: 600;
-                padding: 0 6px;
-                display: flex;
                 align-items: center;
+                border-radius: 4px;
+                display: flex;
+                font-size: 14px;
+                font-weight: 600;
+                height: 100%;
+                padding: 0 6px;
             }
 
             .Id {
@@ -100,8 +100,8 @@ $draggingColor: #00897b;
 
         .BottomRow {
             display: flex;
-            margin-top: 10px;
             gap: 6px;
+            margin-top: 10px;
 
             .Attribute {
                 height: 25px;
@@ -163,13 +163,13 @@ $draggingColor: #00897b;
     }
 
     .AwaitForTask {
-        height: 24px;
+        align-items: center;
         background-color: #eeeeee;
         border-radius: 4px;
         color: #313131;
         display: flex;
-        align-items: center;
         font-weight: 600;
+        height: 24px;
         padding: 0 8px;
 
         &.Delivered {

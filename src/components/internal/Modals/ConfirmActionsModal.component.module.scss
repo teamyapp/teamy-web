@@ -2,8 +2,8 @@
 
 .Content {
     padding: 32px;
-    width: 300px;
     text-align: center;
+    width: 300px;
 
     .Message {
         font-size: 20px;
@@ -11,11 +11,11 @@
     }
 
     .Actions {
+        column-gap: 16px;
         display: flex;
         flex-direction: row;
         justify-content: center;
         margin-top: 32px;
-        column-gap: 16px;
 
         .ConfirmAction {
             --background-color: #388e3c;

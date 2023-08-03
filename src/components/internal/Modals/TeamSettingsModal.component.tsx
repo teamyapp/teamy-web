@@ -105,6 +105,14 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         );
     }
 
+    public open = async (teamId: number, defaultTabIndex: number = 0) => {
+        await this.stateSyncer.pullTeamMembers(teamId);
+        await this.stateSyncer.pullTeamInvitations(teamId);
+        await this.updateState(teamId, defaultTabIndex);
+        this.init(teamId);
+        this.modalRef.current?.open();
+    };
+
     private renderTab = (): ReactNode => {
         switch (this.state.currentTabIndex) {
             case 0:
@@ -118,14 +126,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             case 4:
                 return this.renderAppsTab();
         }
-    };
-
-    public open = async (teamId: number, defaultTabIndex: number = 0) => {
-        await this.stateSyncer.pullTeamMembers(teamId);
-        await this.stateSyncer.pullTeamInvitations(teamId);
-        await this.updateState(teamId, defaultTabIndex);
-        this.init(teamId);
-        this.modalRef.current?.open();
     };
 
     private init(teamID: number) {

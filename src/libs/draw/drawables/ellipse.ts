@@ -3,12 +3,6 @@ import { Drawable, Size } from '@lib/draw/drawables/drawable';
 import { Point } from '@lib/ui/position';
 
 export class Ellipse implements Drawable {
-    private _size: Size;
-    private _rotationAngle: number;
-    private _strokeColor?: string;
-    private _strokeWidth: number = 1;
-    private _fillColor?: string;
-
     constructor(private _position: Point) {
         this._size = {
             width: 0,
@@ -19,13 +13,7 @@ export class Ellipse implements Drawable {
         this._fillColor = '#f5f5f5';
     }
 
-    get position(): Point {
-        return this._position;
-    }
-
-    set position(val: Point) {
-        this._position = val;
-    }
+    private _size: Size;
 
     get size(): Size {
         return this._size;
@@ -35,6 +23,8 @@ export class Ellipse implements Drawable {
         this._size = val;
     }
 
+    private _rotationAngle: number;
+
     get rotationAngle(): number {
         return this._rotationAngle;
     }
@@ -43,16 +33,30 @@ export class Ellipse implements Drawable {
         this._rotationAngle = val;
     }
 
-    set fillColor(val: string | undefined) {
-        this._fillColor = val;
-    }
+    private _strokeColor?: string;
 
     set strokeColor(val: string | undefined) {
         this._strokeColor = val;
     }
 
+    private _strokeWidth: number = 1;
+
     set strokeWidth(val: number) {
         this._strokeWidth = val;
+    }
+
+    private _fillColor?: string;
+
+    set fillColor(val: string | undefined) {
+        this._fillColor = val;
+    }
+
+    get position(): Point {
+        return this._position;
+    }
+
+    set position(val: Point) {
+        this._position = val;
     }
 
     draw(ctx: CanvasRenderingContext2D, dpi: number): void {

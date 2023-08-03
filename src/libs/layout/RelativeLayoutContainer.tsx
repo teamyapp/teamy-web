@@ -58,6 +58,35 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
         document.body.removeChild(this.followerContainer);
     }
 
+    render() {
+        return (
+            <Fragment>
+                <span ref={this.referenceElementRef}>
+                    {this.props.renderReferenceElement({
+                        onToggle: this.handleToggle,
+                    })}
+                </span>
+                {this.state.showFollower &&
+                    this.followerRef &&
+                    createPortal(
+                        <div
+                            ref={this.followerRef}
+                            style={{
+                                position: 'absolute',
+                                zIndex: (this.props.zOffset || 0) + 1,
+                            }}
+                        >
+                            {this.props.renderFollower({
+                                onClose: this.onClose,
+                                onOpen: this.onOpen,
+                            })}
+                        </div>,
+                        this.followerContainer,
+                    )}
+            </Fragment>
+        );
+    }
+
     private onClose = () => {
         this.layoutAttachment?.detach();
         this.setState({
@@ -100,33 +129,4 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
             this.onOpen();
         }
     };
-
-    render() {
-        return (
-            <Fragment>
-                <span ref={this.referenceElementRef}>
-                    {this.props.renderReferenceElement({
-                        onToggle: this.handleToggle,
-                    })}
-                </span>
-                {this.state.showFollower &&
-                    this.followerRef &&
-                    createPortal(
-                        <div
-                            ref={this.followerRef}
-                            style={{
-                                position: 'absolute',
-                                zIndex: (this.props.zOffset || 0) + 1,
-                            }}
-                        >
-                            {this.props.renderFollower({
-                                onClose: this.onClose,
-                                onOpen: this.onOpen,
-                            })}
-                        </div>,
-                        this.followerContainer,
-                    )}
-            </Fragment>
-        );
-    }
 }
