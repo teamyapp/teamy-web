@@ -7,8 +7,8 @@ import { TooltipUI } from '@lib/ui/Tooltip';
 import { orderByName } from '@core/data/team.order';
 import { Team } from '@core/entity/team';
 
-import styles from './Drawer.module.scss';
 import { ContextMenuComponent } from './ContextMenu.component';
+import styles from './Drawer.module.scss';
 
 interface Props {
     teams: Team[];

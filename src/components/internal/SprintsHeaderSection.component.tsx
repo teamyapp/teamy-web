@@ -148,7 +148,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             <div
                 key={sprint.id}
                 className={`${styles.Sprint} ${classNames({
-                    [styles.Selected]: sprint.id === this.state.currentSprint?.id,
+                    [styles.Selected]:
+                        sprint.id === this.state.currentSprint?.id,
                 })}`}
                 onClick={this.onSprintClick(sprint.id)}
             >
@@ -228,7 +229,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private getActiveSprint = () => {
         const currentTeam = this.graphSource.currentTeam();
         return currentTeam?.activeSprint;
-    }
+    };
 
     private onSetActiveSprintClick = () => {
         const currentSprint = this.graphSource.currentSprint();

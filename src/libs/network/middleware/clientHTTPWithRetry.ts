@@ -5,7 +5,9 @@ import { Optional } from '@lib/sugar/optional';
 
 import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
 
-export function clientHTTPWithRetry(makeRetry: ()=>Retry): Middleware<HTTPClient> {
+export function clientHTTPWithRetry(
+    makeRetry: () => Retry,
+): Middleware<HTTPClient> {
     return (httpClient: HTTPClient): HTTPClient => {
         return {
             request: async (

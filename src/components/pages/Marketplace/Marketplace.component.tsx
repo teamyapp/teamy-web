@@ -1,27 +1,26 @@
 import { Component, ReactNode } from 'react';
 
-import styles from './Marketplace.component.module.scss';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
-import githubIconImg from './assets/github.png';
-import wordIconImg from './assets/word.png';
-import excelIconImg from './assets/excel.png';
-import powerpointIconImg from './assets/powerPoint.png';
+import styles from './Marketplace.component.module.scss';
 import googleCalendarIconImg from './assets/calendar.png';
+import excelIconImg from './assets/excel.png';
+import figmaIconImg from './assets/figma.png';
+import githubIconImg from './assets/github.png';
+import githubBannerImg from './assets/github_ads.png';
 import gmailIconImg from './assets/gmail.png';
-import googleTranslateIconImg from './assets/translate.png';
-import zoomIconImg from './assets/zoom.png';
+import instagramIconImg from './assets/instagram.png';
+import miro from './assets/miro.png';
+import notionIconImg from './assets/notion.png';
+import onePasswordIconImg from './assets/onePassword.png';
+import powerpointIconImg from './assets/powerPoint.png';
+import salesforce from './assets/salesforce.png';
 import slackIconImg from './assets/slack.png';
 import teamsIconImg from './assets/teams.png';
-import figmaIconImg from './assets/figma.png';
-import notionIconImg from './assets/notion.png';
-import miro from './assets/miro.png';
-import salesforce from './assets/salesforce.png';
-import onePasswordIconImg from './assets/onePassword.png';
+import googleTranslateIconImg from './assets/translate.png';
 import wechatIconImg from './assets/wechat.png';
-import instagramIconImg from './assets/instagram.png';
-
-import githubBannerImg from './assets/github_ads.png';
+import wordIconImg from './assets/word.png';
+import zoomIconImg from './assets/zoom.png';
 
 interface Item {
     id: number;
@@ -155,11 +154,9 @@ const items: Item[] = [
     },
 ];
 
-interface Props {
-}
+interface Props {}
 
-interface State {
-}
+interface State {}
 
 export class MarketplaceComponent extends Component<Props, State> {
     constructor(props: Props) {
@@ -173,7 +170,7 @@ export class MarketplaceComponent extends Component<Props, State> {
                 <div className={styles.LeftSection}>
                     <div className={styles.SearchBox}>
                         <div className={styles.Input}>
-                            <input type="text" placeholder="Search"/>
+                            <input type='text' placeholder='Search' />
                         </div>
                         <div className={styles.Icon}>
                             <MaterialIconUI>search</MaterialIconUI>
@@ -183,10 +180,10 @@ export class MarketplaceComponent extends Component<Props, State> {
                         <div className={styles.Tab}>Installed</div>
                         <div className={styles.Tab}>Managed</div>
                     </div>
-                    <div className={styles.Divider}/>
+                    <div className={styles.Divider} />
                     <div className={styles.Tabs}>
-                        <div
-                            className={`${styles.Tab} ${styles.Active}`}>Discover
+                        <div className={`${styles.Tab} ${styles.Active}`}>
+                            Discover
                         </div>
                         <div className={styles.Tab}>Developer Tools</div>
                         <div className={styles.Tab}>Automation</div>
@@ -202,58 +199,60 @@ export class MarketplaceComponent extends Component<Props, State> {
                         <div className={styles.Banner}>
                             <div className={styles.Controls}>
                                 <div
-                                    className={`${styles.Control} ${styles.Active}`}/>
-                                <div className={styles.Control}/>
-                                <div className={styles.Control}/>
-                                <div className={styles.Control}/>
+                                    className={`${styles.Control} ${styles.Active}`}
+                                />
+                                <div className={styles.Control} />
+                                <div className={styles.Control} />
+                                <div className={styles.Control} />
                             </div>
-                            <img src={githubBannerImg}/>
+                            <img src={githubBannerImg} />
                         </div>
                     </div>
                     <div className={styles.ItemList}>
-                        {
-                            items.map((item) => (
-                                <div className={styles.InlineItem}>
-                                    <div className={styles.LeftSection}>
-                                        <div className={styles.Icon}>
-                                            <img src={item.iconUrl}/>
-                                        </div>
-                                    </div>
-                                    <div className={styles.MiddleSection}>
-                                        <div className={styles.Name}>
-                                            {item.name}
-                                        </div>
-                                        <div className={styles.Installations}>
-                                            {formatCount(item.installations)} installed
-                                        </div>
-                                    </div>
-                                    <div className={styles.RightSection}>
-
-                                        {item.isInstalled && (
-                                            <>
-                                                <div
-                                                    className={`${styles.Button} ${styles.Setting}`}>
-                                                    Setting
-                                                </div>
-                                                <div
-                                                    className={`${styles.Button}  ${styles.Remove}`}>
-                                                    Remove
-                                                </div>
-                                            </>)}
-                                        {!item.isInstalled &&
-                                            <>
-                                                <div className={styles.Price}>
-                                                    {formatPrice(item.price)}
-                                                </div>
-                                                <div
-                                                    className={`${styles.Button}`}>
-                                                    Install
-                                                </div>
-                                            </>}
+                        {items.map((item) => (
+                            <div className={styles.InlineItem}>
+                                <div className={styles.LeftSection}>
+                                    <div className={styles.Icon}>
+                                        <img src={item.iconUrl} />
                                     </div>
                                 </div>
-                            ))
-                        }
+                                <div className={styles.MiddleSection}>
+                                    <div className={styles.Name}>
+                                        {item.name}
+                                    </div>
+                                    <div className={styles.Installations}>
+                                        {formatCount(item.installations)}{' '}
+                                        installed
+                                    </div>
+                                </div>
+                                <div className={styles.RightSection}>
+                                    {item.isInstalled && (
+                                        <>
+                                            <div
+                                                className={`${styles.Button} ${styles.Setting}`}
+                                            >
+                                                Setting
+                                            </div>
+                                            <div
+                                                className={`${styles.Button}  ${styles.Remove}`}
+                                            >
+                                                Remove
+                                            </div>
+                                        </>
+                                    )}
+                                    {!item.isInstalled && (
+                                        <>
+                                            <div className={styles.Price}>
+                                                {formatPrice(item.price)}
+                                            </div>
+                                            <div className={`${styles.Button}`}>
+                                                Install
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>

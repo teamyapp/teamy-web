@@ -40,12 +40,12 @@ import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
 import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
+import { UIRegistry } from '@core/ext/UIRegistry';
 import { absoluteRootPath, signInFinishPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { UIRegistry } from '@core/ext/UIRegistry';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -68,10 +68,7 @@ export function initDeps(): Deps {
     const config = getConfig(env);
 
     //  can not set retry for telemetry, because retry requires logger
-    const httpMiddlewares = [
-        clientHTTPWithRequestId,
-        clientHTTPWithIdentity,
-    ];
+    const httpMiddlewares = [clientHTTPWithRequestId, clientHTTPWithIdentity];
     const httpClient = WithMiddlewares<HTTPClient>(
         new FetchHTTPClient(),
         httpMiddlewares,
@@ -92,24 +89,28 @@ export function initDeps(): Deps {
             logWithCommit(GIT_LONG_COMMIT_HASH),
         ],
     );
-    const shortBackOff = new ExponentialBackoff(new BuiltInRandomNumberGenerator());
-    const longBackOff = new ExponentialBackoff(new BuiltInRandomNumberGenerator(),
-    {
-        minDelay: config.longBackOffMinDelay,
-        maxDelay: config.longBackOffMaxDelay,
-    });
+    const shortBackOff = new ExponentialBackoff(
+        new BuiltInRandomNumberGenerator(),
+    );
+    const longBackOff = new ExponentialBackoff(
+        new BuiltInRandomNumberGenerator(),
+        {
+            minDelay: config.longBackOffMinDelay,
+            maxDelay: config.longBackOffMaxDelay,
+        },
+    );
 
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,
         clientHTTPWithLogger(logger),
-        clientHTTPWithRetry(()=>{
+        clientHTTPWithRetry(() => {
             return new MaxCountRetry(
                 new BuiltInRuntime(),
                 logger,
                 shortBackOff,
                 longBackOff,
                 config.maxAPIRetryTimes,
-            )
+            );
         }),
     ]);
     const identityClient = new IdentityClient(

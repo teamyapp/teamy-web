@@ -24,7 +24,6 @@ const ERROR_CATEGORIES: Record<ErrorCode, ErrorCategory> = {
     NotFound: 'ClientInteraction',
 };
 
-
 export const getErrCategory = (err: InternalError): ErrorCategory => {
     return ERROR_CATEGORIES[err.errorCode] || 'Outage';
-}
+};

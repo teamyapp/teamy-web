@@ -91,7 +91,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     'Bandwidth',
                                     'Members',
                                     'Invitations',
-                                    'Apps'
+                                    'Apps',
                                 ]}
                                 onTabClick={this.onTabClick}
                             />
@@ -118,7 +118,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             case 4:
                 return this.renderAppsTab();
         }
-    }
+    };
 
     public open = async (teamId: number, defaultTabIndex: number = 0) => {
         await this.stateSyncer.pullTeamMembers(teamId);
@@ -298,13 +298,11 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     private renderAppsTab = () => {
         return (
             <div className={styles.AppsTab}>
-                <div className={styles.Marketplace}>
-                </div>
-                <div className={styles.Installed}>
-                </div>
+                <div className={styles.Marketplace}></div>
+                <div className={styles.Installed}></div>
             </div>
-        )
-    }
+        );
+    };
 
     private renderMemberBandwidth = (
         member: TeamMember,

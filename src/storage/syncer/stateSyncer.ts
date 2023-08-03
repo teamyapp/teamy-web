@@ -42,13 +42,13 @@ import { Metadata } from './metadata';
 import {
     applyInvitationMutation,
     applyMessageMutation,
+    applySprintMutation,
     applySprintParticipantMutation,
     applySprintTaskMutation,
     applyTaskActivityMutation,
     applyTaskAwaitingForRelationMutation,
     applyTaskLinkMutation,
     applyTaskMutation,
-    applySprintMutation,
     applyTeamMemberMutation,
     applyTeamMutation,
     applyUserMutation,
@@ -409,7 +409,6 @@ export class StateSyncer {
         appState = mergeTeam(appState, remoteTeam);
         this.localStore.updateState(appState);
     }
-
 
     public async deleteTeam(teamId: number) {
         await this.teamClient.deleteTeam(`${teamId}`);

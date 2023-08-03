@@ -262,7 +262,7 @@ export class HeaderComponent extends Component<Props, State> {
                             <div
                                 className={`${styles.Button} ${classNames({
                                     [styles.Active]:
-                                    this.state.showMarketplaceView,
+                                        this.state.showMarketplaceView,
                                 })}`}
                                 onClick={this.onShowMarketplaceViewClick}
                             >
@@ -486,7 +486,7 @@ export class HeaderComponent extends Component<Props, State> {
             showMarketplaceView: true,
         });
         this.props.onShowMarketplaceViewClick?.call(null);
-    }
+    };
 
     private resetViewButtons() {
         this.setState({
@@ -495,7 +495,7 @@ export class HeaderComponent extends Component<Props, State> {
             showPlanningView: false,
             showKnowledgeView: false,
             showHelpCenterView: false,
-            showMarketplaceView: false
+            showMarketplaceView: false,
         });
     }
 }
