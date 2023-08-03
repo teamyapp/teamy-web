@@ -170,10 +170,7 @@ export class TeamClient {
             .then((payload: any) => payload?.updateTeam);
     }
 
-    public updateTeamActiveSprint(
-        teamId: string,
-        sprintId: string,
-    ) {
+    public updateTeamActiveSprint(teamId: string, sprintId: string) {
         return this.graphQLClient
             .mutate({
                 mutation: `

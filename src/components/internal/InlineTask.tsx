@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 
 import { Duration } from '@lib/entity/duration';
-import { RelativeLayoutContainerUI } from '@lib/layout';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';

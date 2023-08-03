@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import {marked} from 'marked';
+import { marked } from 'marked';
 import prismjs from 'prismjs';
 import React, { Component, FormEvent, ReactNode } from 'react';
 

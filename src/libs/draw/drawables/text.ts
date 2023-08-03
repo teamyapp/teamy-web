@@ -9,18 +9,6 @@ type FontWeight = 'lighter' | 'normal' | 'bold' | 'bolder';
 const RENDER_OFFSET = 1;
 
 export class Text implements Drawable {
-    private _size: Size;
-    private _rotationAngle: number;
-    private _strokeColor?: string;
-    private _strokeWidth: number = 1;
-    private _fillColor?: string;
-    private _fontFamily: string;
-    private _fontSize: number;
-    private _fontWeight: FontWeight;
-    private _horizontalAlign: HorizontalAlignment;
-    private _backgroundColor?: string;
-    private _showCenter: boolean = false;
-
     constructor(private _position: Point, private content: string) {
         this._size = {
             width: 0,
@@ -32,6 +20,112 @@ export class Text implements Drawable {
         this._fontSize = 16;
         this._fontWeight = 'normal';
         this._horizontalAlign = 'left';
+    }
+
+    private _size: Size;
+
+    get size(): Size {
+        return this._size;
+    }
+
+    set size(val: Size) {
+        this._size = val;
+    }
+
+    private _rotationAngle: number;
+
+    get rotationAngle(): number {
+        return this._rotationAngle;
+    }
+
+    set rotationAngle(val: number) {
+        this._rotationAngle = val;
+    }
+
+    private _strokeColor?: string;
+
+    set strokeColor(val: string | undefined) {
+        this._strokeColor = val;
+    }
+
+    private _strokeWidth: number = 1;
+
+    set strokeWidth(val: number) {
+        this._strokeWidth = val;
+    }
+
+    private _fillColor?: string;
+
+    set fillColor(val: string | undefined) {
+        this._fillColor = val;
+    }
+
+    private _fontFamily: string;
+
+    get fontFamily(): string {
+        return this._fontFamily;
+    }
+
+    set fontFamily(val: string) {
+        this._fontFamily = val;
+    }
+
+    private _fontSize: number;
+
+    get fontSize(): number {
+        return this._fontSize;
+    }
+
+    set fontSize(val: number) {
+        this._fontSize = val;
+    }
+
+    private _fontWeight: FontWeight;
+
+    get fontWeight(): FontWeight {
+        return this._fontWeight;
+    }
+
+    set fontWeight(val: FontWeight) {
+        this._fontWeight = val;
+    }
+
+    private _horizontalAlign: HorizontalAlignment;
+
+    get horizontalAlign(): HorizontalAlignment {
+        return this._horizontalAlign;
+    }
+
+    set horizontalAlign(val: HorizontalAlignment) {
+        this._horizontalAlign = val;
+    }
+
+    private _backgroundColor?: string;
+
+    get backgroundColor(): string | undefined {
+        return this._backgroundColor;
+    }
+
+    set backgroundColor(val: string | undefined) {
+        this._backgroundColor = val;
+    }
+
+    private _showCenter: boolean = false;
+
+    get showCenter(): boolean {
+        return this._showCenter;
+    }
+
+    set showCenter(val: boolean) {
+        this._showCenter = val;
+    }
+
+    get position(): Point {
+        return this._position;
+    }
+
+    set position(val: Point) {
+        this._position = val;
     }
 
     draw(ctx: CanvasRenderingContext2D, dpi: number): void {
@@ -101,89 +195,5 @@ export class Text implements Drawable {
         }
 
         ctx.restore();
-    }
-
-    get position(): Point {
-        return this._position;
-    }
-
-    set position(val: Point) {
-        this._position = val;
-    }
-
-    get size(): Size {
-        return this._size;
-    }
-
-    set size(val: Size) {
-        this._size = val;
-    }
-
-    set fillColor(val: string | undefined) {
-        this._fillColor = val;
-    }
-
-    set strokeColor(val: string | undefined) {
-        this._strokeColor = val;
-    }
-
-    set strokeWidth(val: number) {
-        this._strokeWidth = val;
-    }
-
-    get rotationAngle(): number {
-        return this._rotationAngle;
-    }
-
-    set rotationAngle(val: number) {
-        this._rotationAngle = val;
-    }
-
-    get fontFamily(): string {
-        return this._fontFamily;
-    }
-
-    set fontFamily(val: string) {
-        this._fontFamily = val;
-    }
-
-    get fontSize(): number {
-        return this._fontSize;
-    }
-
-    set fontSize(val: number) {
-        this._fontSize = val;
-    }
-
-    get fontWeight(): FontWeight {
-        return this._fontWeight;
-    }
-
-    set fontWeight(val: FontWeight) {
-        this._fontWeight = val;
-    }
-
-    get horizontalAlign(): HorizontalAlignment {
-        return this._horizontalAlign;
-    }
-
-    set horizontalAlign(val: HorizontalAlignment) {
-        this._horizontalAlign = val;
-    }
-
-    get backgroundColor(): string | undefined {
-        return this._backgroundColor;
-    }
-
-    set backgroundColor(val: string | undefined) {
-        this._backgroundColor = val;
-    }
-
-    get showCenter(): boolean {
-        return this._showCenter;
-    }
-
-    set showCenter(val: boolean) {
-        this._showCenter = val;
     }
 }

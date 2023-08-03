@@ -76,19 +76,12 @@ export class Router {
         })();
     }
 
-    private async processRouteChange(routeUpdate: RouteUpdate) {
-        for (const interceptor of this.routeInterceptors) {
-            const result = await interceptor(this, routeUpdate);
-            if (result.isRedirected) {
-                return;
-            }
+    public get currentRouteUpdate(): RouteUpdate {
+        return this.currRouteUpdate;
+    }
 
-            if (result.stopPipeline) {
-                break;
-            }
-        }
-
-        this.notifyRouteChangeChan.put(routeUpdate);
+    public get currentUri(): string | undefined {
+        return this.currUri;
     }
 
     public addRouteInterceptor(interceptor: RouteInterceptor) {
@@ -100,14 +93,6 @@ export class Router {
         this.routeInterceptors = this.routeInterceptors.filter(
             (currInterceptor) => currInterceptor !== interceptor,
         );
-    }
-
-    public get currentRouteUpdate(): RouteUpdate {
-        return this.currRouteUpdate;
-    }
-
-    public get currentUri(): string | undefined {
-        return this.currUri;
     }
 
     public initBrowserUri() {
@@ -288,6 +273,21 @@ export class Router {
         if (this.currUri) {
             this.navigateTo(this.currUri, { skipDuplicate: false });
         }
+    }
+
+    private async processRouteChange(routeUpdate: RouteUpdate) {
+        for (const interceptor of this.routeInterceptors) {
+            const result = await interceptor(this, routeUpdate);
+            if (result.isRedirected) {
+                return;
+            }
+
+            if (result.stopPipeline) {
+                break;
+            }
+        }
+
+        this.notifyRouteChangeChan.put(routeUpdate);
     }
 
     private onPopState = () => {

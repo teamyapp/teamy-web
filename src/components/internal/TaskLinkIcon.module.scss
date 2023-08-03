@@ -2,8 +2,8 @@
     width: 34px;
     height: 25px;
     border-radius: 4px;
-    overflow: hidden;
     text-decoration: none;
+    overflow: hidden;
 
     .TaskLinkImg {
         width: 100%;
@@ -11,12 +11,12 @@
     }
 
     .TaskLinkIcon {
+        display: flex;
+        border-radius: 4px;
         background-color: #00897b;
         align-items: center;
-        display: flex;
-        justify-content: center;
-        border-radius: 4px;
         --icon-color: white;
+        justify-content: center;
         --icon-size: 25px;
     }
 }

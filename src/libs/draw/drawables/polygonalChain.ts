@@ -3,12 +3,6 @@ import { Drawable, Size } from '@lib/draw/drawables/drawable';
 import { Point } from '@lib/ui/position';
 
 export class PolygonalChain implements Drawable {
-    private _position: Point;
-    private _size: Size;
-    private _rotationAngle: number;
-    private _thickness: number;
-    private _strokeColor?: string;
-
     constructor(private readonly points: Point[]) {
         this._position = {
             left: 0,
@@ -47,6 +41,8 @@ export class PolygonalChain implements Drawable {
         this._strokeColor = 'black';
     }
 
+    private _position: Point;
+
     get position(): Point {
         return this._position;
     }
@@ -55,9 +51,13 @@ export class PolygonalChain implements Drawable {
         this._position = val;
     }
 
+    private _size: Size;
+
     get size(): Size {
         return this._size;
     }
+
+    private _rotationAngle: number;
 
     get rotationAngle(): number {
         return this._rotationAngle;
@@ -67,6 +67,8 @@ export class PolygonalChain implements Drawable {
         this._rotationAngle = val;
     }
 
+    private _thickness: number;
+
     get thickness(): number {
         return this._thickness;
     }
@@ -74,6 +76,8 @@ export class PolygonalChain implements Drawable {
     set thickness(val: number) {
         this._thickness = val;
     }
+
+    private _strokeColor?: string;
 
     set strokeColor(val: string | undefined) {
         this._strokeColor = val;

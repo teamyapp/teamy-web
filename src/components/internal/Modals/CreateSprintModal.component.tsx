@@ -57,7 +57,7 @@ export class CreateSprintModalComponent extends Component<Props> {
                         />
                     </div>
                     <div className={styles.SprintLength}>
-                        <div className={styles.Label}>Sprint length: </div>
+                        <div className={styles.Label}>Sprint length:</div>
                         <DropDownList
                             selectOptionKey={'1week'}
                             ref={this.sprintLengthInputRef}

@@ -1,8 +1,8 @@
 @import 'Modal.shared.module';
 
 .Content {
-    padding: 32px;
     width: 300px;
+    padding: 32px;
     text-align: center;
 
     .Message {
@@ -12,21 +12,21 @@
 
     .Actions {
         display: flex;
-        flex-direction: row;
-        justify-content: center;
         margin-top: 32px;
         column-gap: 16px;
-        
+        flex-direction: row;
+        justify-content: center;
+
         .ConfirmAction {
+            width: 200px;
             --background-color: #388e3c;
             --border-color: #2e7d32;
-            width: 200px;
         }
 
         .CancelAction {
+            width: 200px;
             --background-color: #d32f2f;
             --border-color: #c62828;
-            width: 200px;
         }
     }
 }

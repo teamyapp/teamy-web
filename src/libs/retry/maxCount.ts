@@ -1,10 +1,10 @@
-import { getErrCategory, InternalError } from '@lib/error/errors';
+import { InternalError, getErrCategory } from '@lib/error/errors';
 import { Runtime } from '@lib/runtime/runtime';
+import { Logger } from '@lib/telemetry/Logger';
+import { BodyProp, ErrCategoryProp, ErrCodeProp } from '@lib/telemetry/Props';
 
 import { BackOff } from './backoff/backoff';
 import { Retry } from './retry';
-import { Logger } from '@lib/telemetry/Logger';
-import { BodyProp, ErrCategoryProp, ErrCodeProp } from '@lib/telemetry/Props';
 
 export class MaxCountRetry implements Retry {
     constructor(
@@ -34,14 +34,22 @@ export class MaxCountRetry implements Retry {
                     return;
                 }
 
-                this.logger.logWithContext('Error', {
-                    [ErrCodeProp]: err.errorCode,
-                    [BodyProp]: err.message,
-                }, context)
+                this.logger.logWithContext(
+                    'Error',
+                    {
+                        [ErrCodeProp]: err.errorCode,
+                        [BodyProp]: err.message,
+                    },
+                    context,
+                );
                 const errorCategory = getErrCategory(err);
-                this.logger.logWithContext('Warning', {
-                    [ErrCategoryProp]: errorCategory,
-                }, context);
+                this.logger.logWithContext(
+                    'Warning',
+                    {
+                        [ErrCategoryProp]: errorCategory,
+                    },
+                    context,
+                );
 
                 switch (errorCategory) {
                     case 'ClientInteraction':

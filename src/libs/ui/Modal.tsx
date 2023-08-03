@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { Component, Fragment, ReactNode, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import { Point } from '@lib/ui/position';
 

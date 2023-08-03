@@ -18,6 +18,24 @@ export class KeyBoardEventMonitor {
     private keyEventMultiChan = multi<InternalKeyboardEvent>(this.keyEventChan);
     private holdKeySet = new Set<KeyboardKey>();
 
+    public subscribe(): PopChannel<InternalKeyboardEvent | undefined> {
+        return this.keyEventMultiChan.copy();
+    }
+
+    public start() {
+        document.addEventListener('keydown', this.onKeyDown);
+        document.addEventListener('keyup', this.onKeyUp);
+    }
+
+    public stop() {
+        document.removeEventListener('keydown', this.onKeyDown);
+        document.removeEventListener('keyup', this.onKeyUp);
+    }
+
+    public isKeyHold(key: KeyboardKey): boolean {
+        return this.holdKeySet.has(key);
+    }
+
     private onKeyUp = (event: KeyboardEvent) => {
         let keyboardKey: KeyboardKey;
         if (!event.metaKey && this.isKeyHold('Meta')) {
@@ -53,22 +71,4 @@ export class KeyBoardEventMonitor {
             eventType: 'keydown',
         });
     };
-
-    public subscribe(): PopChannel<InternalKeyboardEvent | undefined> {
-        return this.keyEventMultiChan.copy();
-    }
-
-    public start() {
-        document.addEventListener('keydown', this.onKeyDown);
-        document.addEventListener('keyup', this.onKeyUp);
-    }
-
-    public stop() {
-        document.removeEventListener('keydown', this.onKeyDown);
-        document.removeEventListener('keyup', this.onKeyUp);
-    }
-
-    public isKeyHold(key: KeyboardKey): boolean {
-        return this.holdKeySet.has(key);
-    }
 }

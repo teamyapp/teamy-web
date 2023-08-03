@@ -262,7 +262,7 @@ export class HeaderComponent extends Component<Props, State> {
                             <div
                                 className={`${styles.Button} ${classNames({
                                     [styles.Active]:
-                                    this.state.showMarketplaceView,
+                                        this.state.showMarketplaceView,
                                 })}`}
                                 onClick={this.onShowMarketplaceViewClick}
                             >
@@ -296,6 +296,17 @@ export class HeaderComponent extends Component<Props, State> {
     componentWillUnmount() {
         closeIfNot(this.routeChangeChan);
     }
+
+    public toggleSearchInputFocus = () => {
+        if (!this.state.isSearchBarFocused) {
+            this.searchInputRef.current?.focus();
+        } else {
+            this.searchInputRef.current?.blur();
+            this.setState({
+                isSearchBarFocused: false,
+            });
+        }
+    };
 
     private monitorRouteChanges() {
         this.routeChangeChan = this.router.subscribeRouteChange();
@@ -346,17 +357,6 @@ export class HeaderComponent extends Component<Props, State> {
             }
         })().then();
     }
-
-    public toggleSearchInputFocus = () => {
-        if (!this.state.isSearchBarFocused) {
-            this.searchInputRef.current?.focus();
-        } else {
-            this.searchInputRef.current?.blur();
-            this.setState({
-                isSearchBarFocused: false,
-            });
-        }
-    };
 
     private onSearchBarFocus = () => {
         this.setState({
@@ -486,7 +486,7 @@ export class HeaderComponent extends Component<Props, State> {
             showMarketplaceView: true,
         });
         this.props.onShowMarketplaceViewClick?.call(null);
-    }
+    };
 
     private resetViewButtons() {
         this.setState({
@@ -495,7 +495,7 @@ export class HeaderComponent extends Component<Props, State> {
             showPlanningView: false,
             showKnowledgeView: false,
             showHelpCenterView: false,
-            showMarketplaceView: false
+            showMarketplaceView: false,
         });
     }
 }

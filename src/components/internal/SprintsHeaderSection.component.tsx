@@ -16,8 +16,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { ConfirmActionsModalComponent } from './Modals/ConfirmActionsModal.component';
 import styles from './SprintsHeaderSection.component.module.scss';
-import { getEndAt } from './format';
-import { getSprintName } from './format';
+import { getEndAt, getSprintName } from './format';
 
 interface Props {
     deps: Deps;
@@ -148,7 +147,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             <div
                 key={sprint.id}
                 className={`${styles.Sprint} ${classNames({
-                    [styles.Selected]: sprint.id === this.state.currentSprint?.id,
+                    [styles.Selected]:
+                        sprint.id === this.state.currentSprint?.id,
                 })}`}
                 onClick={this.onSprintClick(sprint.id)}
             >
@@ -228,7 +228,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private getActiveSprint = () => {
         const currentTeam = this.graphSource.currentTeam();
         return currentTeam?.activeSprint;
-    }
+    };
 
     private onSetActiveSprintClick = () => {
         const currentSprint = this.graphSource.currentSprint();

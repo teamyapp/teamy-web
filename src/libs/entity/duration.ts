@@ -46,27 +46,6 @@ export class Duration {
         this._seconds = Math.floor(tmpTotalMillis / SECOND_IN_MILLIS);
     }
 
-    public static fromJson(json: DurationJson): Duration {
-        const sign = json.sign || 1;
-        let totalMillis = (json.years || 0) * YEAR_IN_MILLIS;
-        totalMillis += (json.months || 0) * MONTH_IN_MILLIS;
-        totalMillis += (json.weeks || 0) * WEEK_IN_MILLIS;
-        totalMillis += (json.days || 0) * DAY_IN_MILLIS;
-        totalMillis += (json.hours || 0) * HOUR_IN_MILLIS;
-        totalMillis += (json.minutes || 0) * MINUTE_IN_MILLIS;
-        totalMillis += (json.seconds || 0) * SECOND_IN_MILLIS;
-        return new Duration(sign * totalMillis);
-    }
-
-    public static fromString(durationText: string): Duration {
-        const totalMillis = moment.duration(durationText).asMilliseconds();
-        return new Duration(totalMillis);
-    }
-
-    public static fromMicroSeconds(microSeconds: number): Duration {
-        return new Duration(microSeconds / 1000);
-    }
-
     public get years(): number {
         return this._years;
     }
@@ -97,6 +76,27 @@ export class Duration {
 
     public get totalMilliSeconds(): number {
         return this._totalMilliSeconds;
+    }
+
+    public static fromJson(json: DurationJson): Duration {
+        const sign = json.sign || 1;
+        let totalMillis = (json.years || 0) * YEAR_IN_MILLIS;
+        totalMillis += (json.months || 0) * MONTH_IN_MILLIS;
+        totalMillis += (json.weeks || 0) * WEEK_IN_MILLIS;
+        totalMillis += (json.days || 0) * DAY_IN_MILLIS;
+        totalMillis += (json.hours || 0) * HOUR_IN_MILLIS;
+        totalMillis += (json.minutes || 0) * MINUTE_IN_MILLIS;
+        totalMillis += (json.seconds || 0) * SECOND_IN_MILLIS;
+        return new Duration(sign * totalMillis);
+    }
+
+    public static fromString(durationText: string): Duration {
+        const totalMillis = moment.duration(durationText).asMilliseconds();
+        return new Duration(totalMillis);
+    }
+
+    public static fromMicroSeconds(microSeconds: number): Duration {
+        return new Duration(microSeconds / 1000);
     }
 
     public add(other: Duration): Duration {

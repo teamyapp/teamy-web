@@ -3,16 +3,43 @@ import { Drawable, Size } from '@lib/draw/drawables/drawable';
 import { Point } from '@lib/ui/position';
 
 export class Line implements Drawable {
-    private _width: number;
-    private _rotationAngle: number;
-    private _thickness: number;
-    private _strokeColor?: string;
-
     constructor(private _position: Point) {
         this._width = 0;
         this._rotationAngle = 0;
         this._thickness = 1;
         this._strokeColor = 'black';
+    }
+
+    private _width: number;
+
+    set width(val: number) {
+        this._width = val;
+    }
+
+    private _rotationAngle: number;
+
+    get rotationAngle(): number {
+        return this._rotationAngle;
+    }
+
+    set rotationAngle(val: number) {
+        this._rotationAngle = val;
+    }
+
+    private _thickness: number;
+
+    get thickness(): number {
+        return this._thickness;
+    }
+
+    set thickness(val: number) {
+        this._thickness = val;
+    }
+
+    private _strokeColor?: string;
+
+    set strokeColor(val: string | undefined) {
+        this._strokeColor = val;
     }
 
     get position(): Point {
@@ -28,30 +55,6 @@ export class Line implements Drawable {
             width: this._width,
             height: 0,
         };
-    }
-
-    set width(val: number) {
-        this._width = val;
-    }
-
-    get rotationAngle(): number {
-        return this._rotationAngle;
-    }
-
-    set rotationAngle(val: number) {
-        this._rotationAngle = val;
-    }
-
-    get thickness(): number {
-        return this._thickness;
-    }
-
-    set thickness(val: number) {
-        this._thickness = val;
-    }
-
-    set strokeColor(val: string | undefined) {
-        this._strokeColor = val;
     }
 
     draw(ctx: CanvasRenderingContext2D, dpi: number): void {

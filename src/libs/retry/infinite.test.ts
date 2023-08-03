@@ -4,10 +4,12 @@ import { beforeEach, describe, it } from 'vitest';
 import { Duration } from '@lib/entity/duration';
 import { ErrorCode } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
+import { HTTPClient, HTTPRequestOptions } from '@lib/network/HTTP.client';
 import { TestRuntime } from '@lib/runtime/runtime';
 import { Semaphore } from '@lib/sync/semaphore';
 import { Logger } from '@lib/telemetry/Logger';
 import { RawLogger } from '@lib/telemetry/RawLogger';
+import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { InfiniteRetry } from './infinite';
@@ -20,8 +22,6 @@ import {
     SHORT_DELAY,
     TRANSIENT_ERR,
 } from './testing';
-import { HTTPClient, HTTPRequestOptions } from '@lib/network/HTTP.client';
-import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
 
 describe('InfiniteRetry', () => {
     const testRandGen = new TestRandomNumberGenerator();
@@ -49,11 +49,15 @@ describe('InfiniteRetry', () => {
         };
         const fakeHTTPClient: HTTPClient = {
             request: (url: string, options?: HTTPRequestOptions) => {
-                return Promise.resolve([undefined, undefined])
-            }
+                return Promise.resolve([undefined, undefined]);
+            },
         };
-        const fakeTelemetryClient = new TelemetryClient("test", fakeHTTPClient)
-        testLogger = new RawLogger('Debug', new TestRuntime(), fakeTelemetryClient);
+        const fakeTelemetryClient = new TelemetryClient('test', fakeHTTPClient);
+        testLogger = new RawLogger(
+            'Debug',
+            new TestRuntime(),
+            fakeTelemetryClient,
+        );
     });
 
     it.each([
@@ -144,7 +148,8 @@ describe('InfiniteRetry', () => {
             );
 
             (async () => {
-                const [retriesRes, errorRes] = await infinite.withRetry({},
+                const [retriesRes, errorRes] = await infinite.withRetry(
+                    {},
                     executable.execute.bind(executable),
                 );
 
@@ -154,7 +159,10 @@ describe('InfiniteRetry', () => {
             })().then();
 
             for (let retry = 1; retry <= sleepAwakeCount; retry++) {
-                await Promise.race([beforeSleepSemaphore.wait(), beforeSkipRetrySemaphore.wait()])
+                await Promise.race([
+                    beforeSleepSemaphore.wait(),
+                    beforeSkipRetrySemaphore.wait(),
+                ]);
 
                 strictEqual(executable.count, retry);
                 strictEqual(duration.totalMilliSeconds, durations[retry - 1]);

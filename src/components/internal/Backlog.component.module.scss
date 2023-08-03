@@ -1,25 +1,25 @@
 .Backlog {
-    background-color: #f5f5f5;
-    height: 100%;
     width: 100%;
+    height: 100%;
+    padding: 2px;
+    background-color: #f5f5f5;
     overflow: hidden;
     box-sizing: border-box;
-    padding: 2px;
 
     .Content {
+        display: flex;
         height: 100%;
         overflow: auto;
-        display: flex;
         flex-direction: column;
 
         .Header {
             display: flex;
-            background-color: #424242;
+            height: 26px;
+            padding: 8px 18px;
             border-radius: 4px;
+            background-color: #424242;
             color: white;
             font-weight: 500;
-            padding: 8px 18px;
-            height: 26px;
             align-items: center;
 
             .Title {
@@ -28,43 +28,43 @@
             }
 
             .Counter {
-                height: 26px;
-                align-items: center;
-                background-color: rgba(0, 0, 0, 0.4);
-                border-radius: 4px;
                 display: flex;
-                font-size: 18px;
-                justify-content: center;
                 min-width: 14px;
-                padding: 0 6px;
+                height: 26px;
                 margin-left: 12px;
+                padding: 0 6px;
+                border-radius: 4px;
+                background-color: rgba(0, 0, 0, 0.4);
+                font-size: 18px;
+                align-items: center;
+                justify-content: center;
             }
 
             .CreateTask {
-                overflow: hidden;
-                --icon-color: white;
-                --icon-size: 24px;
-                font-weight: 600;
                 display: flex;
-                align-items: center;
-                justify-content: center;
-                height: 26px;
                 width: 26px;
+                height: 26px;
                 border-radius: 4px;
+                font-weight: 600;
+                overflow: hidden;
+                align-items: center;
+                --icon-color: white;
+                justify-content: center;
+                --icon-size: 24px;
 
                 &:hover {
-                    cursor: pointer;
                     background-color: rgba(255, 255, 255, 0.1);
+                    cursor: pointer;
                 }
             }
         }
 
         .TaskList {
+            margin-top: 10px;
+            padding: 0 4px 4px 4px;
             box-sizing: border-box;
             flex: 1;
-            margin-top: 10px;
             overflow-y: scroll;
-            padding: 0 4px 4px 4px;
 
             .ListItem:not(:first-child) {
                 margin-top: 10px;
