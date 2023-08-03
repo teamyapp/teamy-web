@@ -7,19 +7,19 @@ $iconWidth: var(--icon-box-width, $iconBoxSize);
 $iconHeight: var(--icon-box-height, $iconBoxSize);
 
 .Icon {
-    align-items: center;
-    color: $iconColor;
-    direction: ltr;
     display: flex;
-    font-feature-settings: 'liga';
+    width: $iconWidth;
+    height: $iconHeight;
+    color: $iconColor;
     font-size: $iconSize;
     -webkit-font-smoothing: antialiased;
     font-style: normal;
-    font-variation-settings: 'FILL' 1;
     font-weight: 600;
-    height: $iconHeight;
-    justify-content: center;
     letter-spacing: normal;
     overflow: hidden;
-    width: $iconWidth;
+    align-items: center;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    font-variation-settings: 'FILL' 1;
+    justify-content: center;
 }

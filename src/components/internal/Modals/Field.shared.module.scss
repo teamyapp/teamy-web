@@ -1,14 +1,14 @@
 .IdSection {
-    align-items: center;
-    background-color: #eeeeee;
-    border-radius: 4px;
     display: flex;
-    font-size: 24px;
-    font-weight: bold;
-    justify-content: center;
+    width: 120px;
     margin-top: 20px;
     padding: 2px 0;
-    width: 120px;
+    border-radius: 4px;
+    background-color: #eeeeee;
+    font-size: 24px;
+    font-weight: bold;
+    align-items: center;
+    justify-content: center;
 
     .Id {
         margin-left: 10px;

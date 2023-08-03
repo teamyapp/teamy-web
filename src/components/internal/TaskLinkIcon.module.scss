@@ -1,21 +1,21 @@
 .TaskLink {
-    border-radius: 4px;
-    height: 25px;
-    overflow: hidden;
-    text-decoration: none;
     width: 34px;
+    height: 25px;
+    border-radius: 4px;
+    text-decoration: none;
+    overflow: hidden;
 
     .TaskLinkImg {
-        height: 100%;
         width: 100%;
+        height: 100%;
     }
 
     .TaskLinkIcon {
-        align-items: center;
-        background-color: #00897b;
-        border-radius: 4px;
-        --icon-color: white;
         display: flex;
+        border-radius: 4px;
+        background-color: #00897b;
+        align-items: center;
+        --icon-color: white;
         justify-content: center;
         --icon-size: 25px;
     }

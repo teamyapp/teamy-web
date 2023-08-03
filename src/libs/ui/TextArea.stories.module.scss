@@ -3,7 +3,7 @@
 .Box {
     @include primaryFont;
     display: flex;
+    width: 700px;
     height: 400px;
     margin: 20px 0 0 20px;
-    width: 700px;
 }

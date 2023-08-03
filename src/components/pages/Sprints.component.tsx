@@ -25,8 +25,8 @@ import {
 import { taskUrgencyOrder } from '@core/config/sortOrder';
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
-import { allTasks, ownedBy } from '@core/data/task.filter';
 import * as filters from '@core/data/task.filter';
+import { allTasks, ownedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';

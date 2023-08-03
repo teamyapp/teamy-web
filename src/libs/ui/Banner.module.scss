@@ -1,13 +1,13 @@
 .Banner {
-    align-items: center;
-    background-color: white;
     display: flex;
-    justify-content: space-between;
     padding: 8px 16px;
+    background-color: white;
+    align-items: center;
+    justify-content: space-between;
 
     .Close {
-        --icon-color: black;
         cursor: pointer;
+        --icon-color: black;
         --icon-size: 20px;
     }
 }

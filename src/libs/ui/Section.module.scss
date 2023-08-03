@@ -1,21 +1,21 @@
 .Section {
-    background-color: var(--background-color, white);
-    border-radius: 6px;
-    box-sizing: border-box;
     display: flex;
-    flex-direction: column;
     height: 100%;
     padding: 0 10px 10px 10px;
+    border-radius: 6px;
+    background-color: var(--background-color, white);
+    box-sizing: border-box;
+    flex-direction: column;
 
     .Header {
-        align-items: center;
-        color: var(--title-color, black);
         display: flex;
-        font-size: 22px;
-        font-weight: bolder;
         height: 40px;
         margin-top: 5px;
         padding: 0 20px;
+        color: var(--title-color, black);
+        font-size: 22px;
+        font-weight: bolder;
+        align-items: center;
 
         .Actions {
             flex: 1;
@@ -23,8 +23,8 @@
     }
 
     .Content {
+        padding: 5px;
         flex: 1;
         overflow-y: scroll;
-        padding: 5px;
     }
 }

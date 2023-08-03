@@ -11,10 +11,10 @@
 
     .LeftSection,
     .RightSection {
-        align-items: center;
         display: flex;
-        height: 100%;
         width: 550px;
+        height: 100%;
+        align-items: center;
     }
 
     .MenuButtonPlaceHolder {
@@ -22,19 +22,19 @@
     }
 
     .TeamName {
-        align-items: center;
-        color: $onPrimaryColor;
         display: flex;
+        height: 100%;
+        padding: 0 20px;
+        transition: left 400ms $easeOutExpo;
+        color: $onPrimaryColor;
         font-size: 22px;
         font-weight: 500;
-        height: 100%;
         letter-spacing: 1px;
         line-height: 22px;
-        overflow: hidden;
-        padding: 0 20px;
         text-overflow: ellipsis;
-        transition: left 400ms $easeOutExpo;
         white-space: nowrap;
+        overflow: hidden;
+        align-items: center;
 
         &:hover {
             background-color: rgba(0, 0, 0, 0.2);
@@ -43,8 +43,11 @@
     }
 
     .Tools {
-        background-color: white;
+        width: 110px;
+        margin-left: 30px;
+        padding: 2px;
         border-radius: 4px;
+        background-color: white;
         --drop-down-button-color: #{$primaryDarkColor};
         --drop-down-button-hover-color: #005c69;
         --drop-down-color: white;
@@ -54,9 +57,6 @@
         --drop-down-options-margin-side: 0;
         --drop-down-options-margin-top: 5px;
         --drop-down-width: 100%;
-        margin-left: 30px;
-        padding: 2px;
-        width: 110px;
     }
 
     .BacklogSection {
@@ -73,15 +73,15 @@
         color: $onPrimaryColor;
 
         .Action {
-            align-items: center;
-            border-radius: 3px;
-            --icon-color: white;
             display: flex;
+            width: 28px;
             height: 28px;
+            border-radius: 3px;
+            align-items: center;
+            --icon-color: white;
             justify-content: center;
             --icon-size: 24px;
             user-select: none;
-            width: 28px;
 
             &.Active {
                 background-color: white;
@@ -103,18 +103,18 @@
 
         .ButtonsSection {
             display: flex;
-            gap: 6px;
             margin-right: 40px;
+            gap: 6px;
 
             @include headerIconButton;
         }
 
         .UserSection {
-            align-items: center;
-            color: $onPrimaryColor;
             display: flex;
             height: 100%;
             margin-right: 26px;
+            color: $onPrimaryColor;
+            align-items: center;
 
             .UserProfile {
                 border: 3px solid transparent;
@@ -129,63 +129,63 @@
             }
 
             .UserName {
+                margin-left: 6px;
                 font-size: 20px;
                 font-weight: 500;
-                margin-left: 6px;
             }
         }
     }
 
     .SearchBar {
-        height: 32px;
         width: 500px;
+        height: 32px;
 
         &:focus {
             outline: none;
         }
 
         .Input {
-            align-items: center;
-            background-color: white;
-            border-radius: 4px;
             display: flex;
             height: 100%;
+            border-radius: 4px;
+            background-color: white;
             overflow: hidden;
+            align-items: center;
 
             .TextField {
+                height: 100%;
+                padding: 2px 20px;
                 border: none;
-                box-sizing: border-box;
-                flex: 1;
+                outline: none;
                 font-size: 16px;
                 font-weight: bold;
-                height: 100%;
                 line-height: 16px;
-                outline: none;
-                padding: 2px 20px;
+                box-sizing: border-box;
+                flex: 1;
             }
 
             .SearchIcon {
-                align-items: center;
-                background-color: #f5f5f5;
-                --icon-color: #424242;
                 display: flex;
-                height: 32px;
-                justify-content: center;
-                --icon-size: 24px;
-
-                user-select: none;
                 width: 32px;
+                height: 32px;
+                background-color: #f5f5f5;
+                align-items: center;
+                --icon-color: #424242;
+                justify-content: center;
+
+                --icon-size: 24px;
+                user-select: none;
             }
         }
 
         .Filters {
-            background-color: white;
-            border-radius: 4px;
-            box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-            margin-left: 50%;
-            margin-top: 4px;
-            transform: translateX(-50%);
             width: 700px;
+            margin-top: 4px;
+            margin-left: 50%;
+            transform: translateX(-50%);
+            border-radius: 4px;
+            background-color: white;
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
         }
     }
 }

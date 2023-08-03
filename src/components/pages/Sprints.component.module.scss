@@ -3,10 +3,10 @@
 @import '../internal/shared';
 
 .Sprint {
-    background-color: white;
     display: flex;
-    flex-direction: column;
     height: 100%;
+    background-color: white;
+    flex-direction: column;
     overflow-y: hidden;
 
     .Tabs {
@@ -15,8 +15,8 @@
         z-index: 2;
 
         .Container {
-            margin: auto;
             max-width: 800px;
+            margin: auto;
         }
     }
 
@@ -27,45 +27,45 @@
 
         .TeamTab {
             display: flex;
-            height: 100%;
             width: 100%;
+            height: 100%;
 
             .ParticipantsSection {
-                background-color: white;
-                box-sizing: border-box;
                 display: flex;
                 width: 240px;
+                background-color: white;
+                box-sizing: border-box;
 
                 .Content {
                     display: flex;
                     flex-direction: column;
 
                     .Title {
+                        position: relative;
                         font-size: 20px;
                         font-weight: 500;
-                        position: relative;
 
                         .Counter {
-                            align-items: center;
-                            background-color: rgba(0, 0, 0, 0.2);
-                            border-radius: 4px;
                             display: flex;
-                            font-size: 14px;
-                            height: 22px;
-                            justify-content: center;
-                            min-width: 22px;
                             position: absolute;
-                            right: 10px;
                             top: 50%;
+                            right: 10px;
+                            min-width: 22px;
+                            height: 22px;
                             transform: translateY(-50%);
+                            border-radius: 4px;
+                            background-color: rgba(0, 0, 0, 0.2);
+                            font-size: 14px;
+                            align-items: center;
+                            justify-content: center;
                         }
                     }
 
                     .ParticipantList {
-                        flex: 1;
                         margin: 0 8px;
-                        overflow-y: auto;
                         padding: 4px 8px;
+                        flex: 1;
+                        overflow-y: auto;
 
                         .Participant {
                             display: flex;
@@ -78,13 +78,13 @@
 
                             .AllParticipants,
                             .EmptySelectionFace {
-                                align-items: center;
                                 display: flex;
-                                height: 40px;
-                                justify-content: center;
-                                overflow: hidden;
-                                --icon-size: 46px;
                                 width: 40px;
+                                height: 40px;
+                                overflow: hidden;
+                                align-items: center;
+                                justify-content: center;
+                                --icon-size: 46px;
                             }
 
                             .AllParticipants {
@@ -98,12 +98,12 @@
                             .AllParticipants,
                             .EmptySelectionFace,
                             .UserProfile {
-                                border-radius: 50%;
                                 padding: 3px;
+                                border-radius: 50%;
 
                                 &:hover {
-                                    cursor: pointer;
                                     outline: 3px solid rgba(25, 118, 210, 0.5);
+                                    cursor: pointer;
                                 }
 
                                 &.Selected {
@@ -113,57 +113,58 @@
 
                             .RightSection {
                                 display: flex;
+                                margin-left: 8px;
                                 flex: 1;
                                 flex-direction: column;
                                 justify-content: center;
-                                margin-left: 8px;
 
                                 .Name {
                                     display: flex;
-                                    flex-direction: column;
                                     font-size: 15px;
                                     font-weight: bold;
+                                    flex-direction: column;
                                     justify-content: center;
                                 }
 
                                 .BandwidthSection {
-                                    align-items: center;
                                     display: flex;
-                                    margin-top: 4px;
                                     width: 100%;
+                                    margin-top: 4px;
+                                    align-items: center;
 
                                     .Icon {
-                                        background-color: #1565c0;
-                                        border-radius: 50%;
-                                        --icon-color: white;
                                         padding: 4px;
+                                        border-radius: 50%;
+                                        background-color: #1565c0;
+                                        --icon-color: white;
                                         --icon-size: 10px;
                                         user-select: none;
                                     }
 
                                     .Bandwidth {
-                                        flex: 1;
                                         margin-left: 6px;
+                                        flex: 1;
 
                                         .BandwidthFull {
+                                            height: 8px;
                                             background-color: rgba(
                                                 0,
                                                 0,
                                                 0,
                                                 0.1
                                             );
-                                            height: 8px;
 
                                             &:hover {
                                                 cursor: pointer;
                                             }
 
                                             .UnusedBandwidth {
-                                                background-color: #1565c0;
-
                                                 height: 100%;
+
                                                 transition: width 400ms
                                                     ease-in-out;
+                                                background-color: #1565c0;
+
                                                 &.Negative {
                                                     background-color: #c62828;
                                                 }
@@ -177,28 +178,29 @@
 
                     .ActionBar,
                     .Title {
-                        background-color: #1565c0;
-                        border-radius: 4px;
-                        color: white;
                         margin: 10px;
                         padding: 6px 0;
+                        border-radius: 4px;
+                        background-color: #1565c0;
+                        color: white;
                         text-align: center;
                     }
 
                     .MultiSelectionToggleContainer {
-                        align-items: center;
                         display: flex;
                         font-size: 15px;
                         font-weight: 500;
+                        align-items: center;
 
                         &:hover {
                             cursor: pointer;
                         }
 
                         .Toggle {
+                            margin-right: 8px;
+
                             margin-left: 8px;
 
-                            margin-right: 8px;
                             &:hover {
                                 cursor: pointer;
                             }
@@ -212,47 +214,47 @@
             }
 
             .Kanban {
+                padding: 10px;
                 background-color: white;
                 box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+                z-index: 1;
                 box-sizing: border-box;
                 flex: 1;
                 overflow-y: hidden;
-                padding: 10px;
-                z-index: 1;
             }
         }
     }
 }
 
 .SelectSprint {
-    align-items: center;
     display: flex;
     height: 100%;
+    align-items: center;
     justify-content: center;
 
     .Content {
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
         padding: 40px;
+        border-radius: 10px;
+        background-color: white;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
 
         .Title {
+            margin-bottom: 20px;
             font-size: 26px;
             font-weight: 600;
-            margin-bottom: 20px;
             text-align: center;
         }
 
         .AddSprint {
             display: flex;
-            justify-content: center;
             margin-bottom: 20px;
+            justify-content: center;
 
             .Button {
-                border-radius: 50%;
-                --icon-color: #424242;
-                font-weight: 600;
                 padding: 10px;
+                border-radius: 50%;
+                font-weight: 600;
+                --icon-color: #424242;
                 --icon-size: 50px;
 
                 &:hover {
@@ -263,16 +265,16 @@
         }
 
         .Sprints {
-            background-color: #f5f5f5;
+            max-height: 300px;
             border: 1px solid #e0e0e0;
             border-radius: 4px;
-            max-height: 300px;
+            background-color: #f5f5f5;
             overflow-y: auto;
 
             .SprintRow {
+                padding: 10px 40px;
                 font-size: 20px;
                 font-weight: 600;
-                padding: 10px 40px;
                 text-align: center;
 
                 &:not(:first-child) {
@@ -281,8 +283,8 @@
 
                 &:hover {
                     background-color: #3d7bf6;
-                    color: white;
                     cursor: pointer;
+                    color: white;
                 }
             }
         }

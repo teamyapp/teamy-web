@@ -16,8 +16,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { ConfirmActionsModalComponent } from './Modals/ConfirmActionsModal.component';
 import styles from './SprintsHeaderSection.component.module.scss';
-import { getEndAt } from './format';
-import { getSprintName } from './format';
+import { getEndAt, getSprintName } from './format';
 
 interface Props {
     deps: Deps;

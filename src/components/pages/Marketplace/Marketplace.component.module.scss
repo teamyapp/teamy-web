@@ -1,60 +1,60 @@
 @import '../../../libs/ui/styleguide/color.scss';
 
 .Marketplace {
-    align-items: center;
-    background-color: white;
     display: flex;
-    height: 100%;
-    justify-content: center;
     width: 100%;
+    height: 100%;
+    background-color: white;
+    align-items: center;
+    justify-content: center;
 
     > .LeftSection {
-        box-sizing: border-box;
-        height: 100%;
         width: 240px;
+        height: 100%;
+        box-sizing: border-box;
 
         .SearchBox {
-            background-color: #ececec;
-            border-radius: 4px;
             display: flex;
             height: 30px;
             margin: 20px;
+            border-radius: 4px;
+            background-color: #ececec;
 
             .Input {
                 flex: 1;
 
                 input {
-                    background-color: transparent;
-                    border: none;
-                    box-sizing: border-box;
-                    height: 100%;
-                    letter-spacing: 1px;
-                    outline: none;
-                    padding: 0 10px;
                     width: 100%;
+                    height: 100%;
+                    padding: 0 10px;
+                    border: none;
+                    outline: none;
+                    background-color: transparent;
+                    letter-spacing: 1px;
+                    box-sizing: border-box;
                 }
             }
 
             .Icon {
+                display: flex;
+                width: 30px;
                 align-items: center;
                 --icon-color: #575757;
-                display: flex;
                 justify-content: center;
                 --icon-size: 20px;
-                width: 30px;
             }
         }
 
         .Tabs {
             display: flex;
-            flex-direction: column;
             margin: 0 20px;
+            flex-direction: column;
             row-gap: 4px;
 
             .Tab {
+                padding: 8px 10px;
                 border-radius: 4px;
                 font-weight: bold;
-                padding: 8px 10px;
 
                 &:hover {
                     background-color: rgba(0, 0, 0, 0.07);
@@ -69,18 +69,18 @@
         }
 
         .Divider {
-            border-top: 1px solid #f3f3f3;
             margin: 20px 10px;
+            border-top: 1px solid #f3f3f3;
         }
     }
 
     .Content {
+        display: flex;
+        height: 100%;
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
         box-sizing: border-box;
-        display: flex;
         flex: 1;
         flex-direction: column;
-        height: 100%;
         overflow-y: auto;
 
         .BannerSection {
@@ -89,31 +89,31 @@
             padding: 30px;
 
             .Banner {
-                background-color: #f3f3f3;
+                position: relative;
                 border: 1px solid #e0e0e0;
                 border-radius: 8px;
-                flex: 1;
+                background-color: #f3f3f3;
                 overflow: hidden;
-                position: relative;
+                flex: 1;
 
                 .Controls {
-                    background-color: rgba(0, 0, 0, 0.6);
-                    border-radius: 16px;
-                    bottom: 10px;
-                    column-gap: 8px;
                     display: flex;
+                    position: absolute;
+                    bottom: 10px;
                     left: 50%;
                     padding: 8px 20px;
-                    position: absolute;
+                    column-gap: 8px;
                     transform: translateX(-50%);
+                    border-radius: 16px;
+                    background-color: rgba(0, 0, 0, 0.6);
                     z-index: 10;
 
                     .Control {
-                        background-color: white;
-                        border-radius: 50%;
-                        height: 8px;
-                        opacity: 0.4;
                         width: 8px;
+                        height: 8px;
+                        border-radius: 50%;
+                        background-color: white;
+                        opacity: 0.4;
 
                         &:hover {
                             cursor: pointer;
@@ -127,20 +127,20 @@
                 }
 
                 img {
+                    width: 100%;
                     height: 100%;
                     object-fit: cover;
-                    width: 100%;
                 }
             }
         }
 
         .ItemList {
             display: grid;
+            margin: 0 30px 30px 30px;
             flex: 1;
             gap: 30px 50px;
             grid-auto-rows: 62px;
             grid-template-columns: repeat(4, 1fr);
-            margin: 0 30px 30px 30px;
 
             .InlineItem {
                 display: flex;
@@ -150,14 +150,14 @@
                     margin-right: 10px;
 
                     .Icon {
-                        align-items: center;
+                        display: flex;
+                        width: 60px;
+                        height: 60px;
                         border: 1px solid #e0e0e0;
                         border-radius: 16px;
-                        display: flex;
-                        height: 60px;
-                        justify-content: center;
                         overflow: hidden;
-                        width: 60px;
+                        align-items: center;
+                        justify-content: center;
 
                         &:hover {
                             cursor: pointer;
@@ -165,8 +165,8 @@
                         }
 
                         img {
-                            height: 100%;
                             width: 100%;
+                            height: 100%;
                         }
                     }
                 }
@@ -178,9 +178,9 @@
                     justify-content: center;
 
                     .Name {
+                        margin-right: 10px;
                         font-size: 16px;
                         font-weight: bold;
-                        margin-right: 10px;
 
                         &:hover {
                             cursor: pointer;
@@ -189,16 +189,16 @@
                     }
 
                     .Installations {
+                        margin-top: 2px;
                         color: #575757;
                         font-size: 12px;
                         font-weight: bold;
-                        margin-top: 2px;
                     }
                 }
 
                 .RightSection {
-                    align-items: center;
                     display: flex;
+                    align-items: center;
                     flex-direction: column;
                     justify-content: center;
                     row-gap: 4px;
@@ -210,21 +210,21 @@
                     }
 
                     .Button {
-                        align-items: center;
-                        background-color: #eeeeee;
-                        border-radius: 13px;
-                        color: #1666ff;
                         display: flex;
+                        width: 70px;
+                        height: 24px;
+                        border-radius: 13px;
+                        background-color: #eeeeee;
+                        color: #1666ff;
                         font-size: 12px;
                         font-weight: bold;
-                        height: 24px;
+                        align-items: center;
                         justify-content: center;
-                        width: 70px;
 
                         &:hover {
                             background-color: #2770ff;
-                            color: white;
                             cursor: pointer;
+                            color: white;
                         }
 
                         &.Setting {
