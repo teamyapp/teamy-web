@@ -1,167 +1,130 @@
+import classNames from 'classnames';
 import { Component, ReactNode } from 'react';
 
+import * as csp from '@lib/csp/csp';
+import { Route } from '@lib/router/Route';
+import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
-import styles from './Marketplace.component.module.scss';
-import googleCalendarIconImg from './assets/calendar.png';
-import excelIconImg from './assets/excel.png';
-import figmaIconImg from './assets/figma.png';
-import githubIconImg from './assets/github.png';
-import githubBannerImg from './assets/github_ads.png';
-import gmailIconImg from './assets/gmail.png';
-import instagramIconImg from './assets/instagram.png';
-import miro from './assets/miro.png';
-import notionIconImg from './assets/notion.png';
-import onePasswordIconImg from './assets/onePassword.png';
-import powerpointIconImg from './assets/powerPoint.png';
-import salesforce from './assets/salesforce.png';
-import slackIconImg from './assets/slack.png';
-import teamsIconImg from './assets/teams.png';
-import googleTranslateIconImg from './assets/translate.png';
-import wechatIconImg from './assets/wechat.png';
-import wordIconImg from './assets/word.png';
-import zoomIconImg from './assets/zoom.png';
+import { Deps } from '@core/dep/deps';
+import {
+    getTag,
+    marketplaceDiscoverPath,
+    marketplaceDiscoverRoutePattern,
+    marketplaceFilterPath,
+    marketplaceFilterRoutePattern,
+    marketplaceInstalledPath,
+    marketplaceInstalledRoutePattern,
+    marketplaceManagedPath,
+    marketplaceManagedRoutePattern,
+} from '@core/routing/routes';
+import { LocalStore } from '@core/storage/syncer/localStore';
 
-interface Item {
-    id: number;
-    iconUrl: string;
-    name: string;
-    installations: number;
-    price: number;
-    isInstalled?: boolean;
+import { DiscoverTabComponent } from './DiscoverTab.component';
+import { FilterTabComponent } from './FilterTab.component';
+import { InstalledTabComponent } from './InstalledTab.component';
+import { ManagedTabComponent } from './ManagedTab.component';
+import styles from './Marketplace.component.module.scss';
+
+interface Props {
+    deps: Deps;
 }
 
-const items: Item[] = [
+interface Tab {
+    name: string;
+    key: string;
+    getRoute: (localStore: LocalStore) => string;
+}
+
+const upperTabs: Tab[] = [
     {
-        id: 1,
-        iconUrl: githubIconImg,
-        name: 'Github',
-        installations: 1_400,
-        price: 0,
-        isInstalled: true,
+        name: 'Managed',
+        key: 'managed',
+        getRoute: (localStore: LocalStore) =>
+            marketplaceManagedPath(localStore.getState().currTeamId!),
     },
     {
-        id: 2,
-        iconUrl: zoomIconImg,
-        name: 'Zoom',
-        installations: 1_200,
-        price: 0,
-    },
-    {
-        id: 3,
-        iconUrl: slackIconImg,
-        name: 'Slack',
-        installations: 1_000_000,
-        price: 0,
-    },
-    {
-        id: 4,
-        iconUrl: teamsIconImg,
-        name: 'Teams',
-        installations: 1_300_000,
-        price: 0,
-    },
-    {
-        id: 5,
-        iconUrl: figmaIconImg,
-        name: 'Figma',
-        installations: 50_000,
-        price: 0,
-    },
-    {
-        id: 6,
-        iconUrl: notionIconImg,
-        name: 'Notion',
-        installations: 100_000,
-        price: 0,
-    },
-    {
-        id: 7,
-        iconUrl: miro,
-        name: 'Miro',
-        installations: 1_000_000,
-        price: 0,
-    },
-    {
-        id: 8,
-        iconUrl: googleCalendarIconImg,
-        name: 'Google Calender',
-        installations: 1_400,
-        price: 0,
-    },
-    {
-        id: 9,
-        iconUrl: gmailIconImg,
-        name: 'Gmail',
-        installations: 2_000_000,
-        price: 0,
-    },
-    {
-        id: 10,
-        iconUrl: wordIconImg,
-        name: 'Word',
-        installations: 1_500_000,
-        price: 1.99,
-    },
-    {
-        id: 11,
-        iconUrl: powerpointIconImg,
-        name: 'Powerpoint',
-        installations: 1_400,
-        price: 1.99,
-    },
-    {
-        id: 12,
-        iconUrl: excelIconImg,
-        name: 'Excel',
-        installations: 2_000_000,
-        price: 1.99,
-    },
-    {
-        id: 13,
-        iconUrl: googleTranslateIconImg,
-        name: 'Google Translate',
-        installations: 12_000,
-        price: 0,
-    },
-    {
-        id: 14,
-        iconUrl: salesforce,
-        name: 'Salesforce',
-        installations: 2_000_000,
-        price: 4.99,
-    },
-    {
-        id: 15,
-        iconUrl: onePasswordIconImg,
-        name: '1Password',
-        installations: 10_000,
-        price: 2.99,
-    },
-    {
-        id: 16,
-        iconUrl: wechatIconImg,
-        name: 'WeChat',
-        installations: 1_400_000,
-        price: 0,
-    },
-    {
-        id: 17,
-        iconUrl: instagramIconImg,
-        name: 'Instagram',
-        installations: 1_600_000,
-        price: 0,
+        name: 'Installed',
+        key: 'installed',
+        getRoute: (localStore: LocalStore) =>
+            marketplaceInstalledPath(localStore.getState().currTeamId!),
     },
 ];
 
-interface Props {}
+const lowerTabs: Tab[] = [
+    {
+        name: 'Discover',
+        key: 'discover',
+        getRoute: (localStore: LocalStore) =>
+            marketplaceDiscoverPath(localStore.getState().currTeamId!),
+    },
+    {
+        name: 'Developer Tools',
+        key: formatFilterTabKey('developer-tools'),
+        getRoute: (localStore: LocalStore) =>
+            marketplaceFilterPath(
+                localStore.getState().currTeamId!,
+                'developer-tools',
+            ),
+    },
+    {
+        name: 'Automation',
+        key: formatFilterTabKey('automation'),
+        getRoute: (localStore: LocalStore) =>
+            marketplaceFilterPath(
+                localStore.getState().currTeamId!,
+                'automation',
+            ),
+    },
+    {
+        name: 'Communication',
+        key: formatFilterTabKey('communication'),
+        getRoute: (localStore: LocalStore) =>
+            marketplaceFilterPath(
+                localStore.getState().currTeamId!,
+                'communication',
+            ),
+    },
+    {
+        name: 'Design',
+        key: formatFilterTabKey('design'),
+        getRoute: (localStore: LocalStore) =>
+            marketplaceFilterPath(localStore.getState().currTeamId!, 'design'),
+    },
+    {
+        name: 'Sales',
+        key: formatFilterTabKey('sales'),
+        getRoute: (localStore: LocalStore) =>
+            marketplaceFilterPath(localStore.getState().currTeamId!, 'sales'),
+    },
+    {
+        name: 'Productivity',
+        key: formatFilterTabKey('productivity'),
+        getRoute: (localStore: LocalStore) =>
+            marketplaceFilterPath(
+                localStore.getState().currTeamId!,
+                'productivity',
+            ),
+    },
+];
 
-interface State {}
+interface State {
+    showTabViews: Record<string, boolean>;
+}
 
 export class MarketplaceComponent extends Component<Props, State> {
+    private readonly router: Router;
+    private readonly localStore: LocalStore;
+
+    private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
+
     constructor(props: Props) {
         super(props);
-        this.state = {};
+        this.router = props.deps.router;
+        this.localStore = props.deps.localStore;
+        this.state = {
+            showTabViews: {},
+        };
     }
 
     public render(): ReactNode {
@@ -177,101 +140,133 @@ export class MarketplaceComponent extends Component<Props, State> {
                         </div>
                     </div>
                     <div className={styles.Tabs}>
-                        <div className={styles.Tab}>Installed</div>
-                        <div className={styles.Tab}>Managed</div>
+                        {upperTabs.map((tab) => (
+                            <div
+                                key={tab.key}
+                                className={`${styles.Tab} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showTabViews[tab.key],
+                                })}`}
+                                onClick={this.onTabClickHandler(tab)}
+                            >
+                                {tab.name}
+                            </div>
+                        ))}
                     </div>
                     <div className={styles.Divider} />
                     <div className={styles.Tabs}>
-                        <div className={`${styles.Tab} ${styles.Active}`}>
-                            Discover
-                        </div>
-                        <div className={styles.Tab}>Developer Tools</div>
-                        <div className={styles.Tab}>Automation</div>
-                        <div className={styles.Tab}>Communication</div>
-                        <div className={styles.Tab}>Design</div>
-                        <div className={styles.Tab}>Sales</div>
-                        <div className={styles.Tab}>Productivity</div>
-                        <div className={styles.Tab}>Workflows</div>
-                    </div>
-                </div>
-                <div className={styles.Content}>
-                    <div className={styles.BannerSection}>
-                        <div className={styles.Banner}>
-                            <div className={styles.Controls}>
-                                <div
-                                    className={`${styles.Control} ${styles.Active}`}
-                                />
-                                <div className={styles.Control} />
-                                <div className={styles.Control} />
-                                <div className={styles.Control} />
-                            </div>
-                            <img src={githubBannerImg} />
-                        </div>
-                    </div>
-                    <div className={styles.ItemList}>
-                        {items.map((item) => (
-                            <div className={styles.InlineItem}>
-                                <div className={styles.LeftSection}>
-                                    <div className={styles.Icon}>
-                                        <img src={item.iconUrl} />
-                                    </div>
-                                </div>
-                                <div className={styles.MiddleSection}>
-                                    <div className={styles.Name}>
-                                        {item.name}
-                                    </div>
-                                    <div className={styles.Installations}>
-                                        {formatCount(item.installations)}{' '}
-                                        installed
-                                    </div>
-                                </div>
-                                <div className={styles.RightSection}>
-                                    {item.isInstalled && (
-                                        <>
-                                            <div
-                                                className={`${styles.Button} ${styles.Setting}`}
-                                            >
-                                                Setting
-                                            </div>
-                                            <div
-                                                className={`${styles.Button}  ${styles.Remove}`}
-                                            >
-                                                Remove
-                                            </div>
-                                        </>
-                                    )}
-                                    {!item.isInstalled && (
-                                        <>
-                                            <div className={styles.Price}>
-                                                {formatPrice(item.price)}
-                                            </div>
-                                            <div className={`${styles.Button}`}>
-                                                Install
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
+                        {lowerTabs.map((tab) => (
+                            <div
+                                key={tab.key}
+                                className={`${styles.Tab} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showTabViews[tab.key],
+                                })}`}
+                                onClick={this.onTabClickHandler(tab)}
+                            >
+                                {tab.name}
                             </div>
                         ))}
                     </div>
                 </div>
+                <div className={styles.Content}>
+                    <Route
+                        router={this.router}
+                        pattern={marketplaceManagedRoutePattern}
+                    >
+                        <ManagedTabComponent deps={this.props.deps} />
+                    </Route>
+                    <Route
+                        router={this.router}
+                        pattern={marketplaceInstalledRoutePattern}
+                    >
+                        <InstalledTabComponent deps={this.props.deps} />
+                    </Route>
+                    <Route
+                        router={this.router}
+                        pattern={marketplaceDiscoverRoutePattern}
+                    >
+                        <DiscoverTabComponent deps={this.props.deps} />
+                    </Route>
+                    <Route
+                        router={this.router}
+                        pattern={marketplaceFilterRoutePattern}
+                    >
+                        <FilterTabComponent deps={this.props.deps} />
+                    </Route>
+                </div>
             </div>
         );
     }
-}
 
-function formatCount(count: number): string {
-    if (count >= 1_000_000) {
-        return `${Math.round(count / 1_000_000)}M`;
+    componentDidMount() {
+        this.routeChangeChan = this.router.subscribeRouteChange();
+        (async () => {
+            while (true) {
+                const routeUpdate = await this.routeChangeChan!.pop();
+                if (routeUpdate === undefined) {
+                    return;
+                }
+
+                if (
+                    routeUpdate.routePattern.startsWith(
+                        marketplaceManagedRoutePattern,
+                    )
+                ) {
+                    this.setState({
+                        showTabViews: {
+                            managed: true,
+                        },
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(
+                        marketplaceInstalledRoutePattern,
+                    )
+                ) {
+                    this.setState({
+                        showTabViews: {
+                            installed: true,
+                        },
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(
+                        marketplaceDiscoverRoutePattern,
+                    )
+                ) {
+                    this.setState({
+                        showTabViews: {
+                            discover: true,
+                        },
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(
+                        marketplaceFilterRoutePattern,
+                    )
+                ) {
+                    const tag = getTag(routeUpdate.params);
+                    if (tag) {
+                        this.setState({
+                            showTabViews: {
+                                [formatFilterTabKey(tag)]: true,
+                            },
+                        });
+                    }
+                }
+            }
+        })().then();
     }
 
-    if (count >= 1_000) {
-        return `${Math.round(count / 1000)}K`;
-    }
-
-    return `${count}`;
+    private onTabClickHandler = (tab: Tab) => {
+        return () => {
+            this.setState({
+                showTabViews: {},
+            });
+            const route = tab.getRoute(this.localStore);
+            this.router.navigateTo(route);
+        };
+    };
 }
 
-function formatPrice(value: number): string {
-    return value === 0 ? 'Free' : `$${value}`;
+function formatFilterTabKey(tag: string): string {
+    return `filter/tag=${tag}`;
 }

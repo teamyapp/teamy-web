@@ -332,7 +332,9 @@ export class AppComponent extends Component<Props, State> {
                                             router={this.router}
                                             pattern={marketplaceRoutePattern}
                                         >
-                                            <MarketplaceComponent />
+                                            <MarketplaceComponent
+                                                deps={this.props.deps}
+                                            />
                                         </Route>
                                     </div>
                                 </div>
