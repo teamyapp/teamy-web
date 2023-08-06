@@ -16,6 +16,8 @@ import {
     getTabId,
     getTaskId,
     getTeamId,
+    marketplaceRoutePattern,
+    marketplaceRoutes,
     publicRoutes,
     signUpRoutePattern,
     sprintTabPath,
@@ -32,6 +34,7 @@ import { AppComponent } from '../components/App.component';
 import { signUpRedirectKey } from '../components/pages/SignUp.component';
 import { exactMatch, includePrefix } from './match';
 import {
+    redirectToMarketplaceFallback,
     redirectToSprintTabFallback,
     redirectToTeamsFallback,
 } from './redirect';
@@ -237,6 +240,32 @@ const sprintsRouteInterceptor = (
     };
 };
 
+const marketplaceRoutesInterceptor = (
+    localStore: LocalStore,
+): RouteInterceptor => {
+    return async (
+        router: Router,
+        routeUpdate: RouteUpdate,
+    ): Promise<RouteInterceptorResult> => {
+        if (!routeUpdate.routePattern.startsWith(marketplaceRoutePattern)) {
+            return {};
+        }
+
+        if (!includePrefix(marketplaceRoutes, routeUpdate.routePattern)) {
+            redirectToMarketplaceFallback(
+                router,
+                localStore.getState().currTeamId!,
+            );
+            return {
+                isRedirected: true,
+            };
+        }
+
+        // TODO: set filter
+        return {};
+    };
+};
+
 export function addRouteInterceptors(
     deps: Deps,
     appRef: RefObject<AppComponent>,
@@ -254,6 +283,9 @@ export function addRouteInterceptors(
     );
     deps.router.addRouteInterceptor(
         sprintsRouteInterceptor(deps.localStore, deps.stateSyncer),
+    );
+    deps.router.addRouteInterceptor(
+        marketplaceRoutesInterceptor(deps.localStore),
     );
 }
 

@@ -3,6 +3,7 @@ import { RefObject } from 'react';
 import { Deps } from '@core/dep/deps';
 import {
     appRoutes,
+    marketplaceRoutes,
     publicRoutes,
     rootRoutePattern,
     sprintsRoutes,
@@ -28,6 +29,10 @@ export function initRouter(deps: Deps, appRef: RefObject<AppComponent>) {
     }
 
     for (const route of sprintsRoutes) {
+        deps.router.registerRoute(route, false);
+    }
+
+    for (const route of marketplaceRoutes) {
         deps.router.registerRoute(route, false);
     }
 

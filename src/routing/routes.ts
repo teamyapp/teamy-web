@@ -8,6 +8,7 @@ const tabIdParam = 'tabId';
 const taskIdParam = 'taskId';
 const invitationIdParam = 'id';
 const invitationCodeParam = 'code';
+const tagParam = 'tag';
 
 export const getTeamId = (params?: Params) => params?.pathParams[teamIdParam];
 export const getSprintId = (params?: Params) =>
@@ -18,6 +19,7 @@ export const getInvitationId = (params?: Params) =>
     params?.queryParams[invitationIdParam];
 export const getInvitationCode = (params?: Params) =>
     params?.queryParams[invitationCodeParam];
+export const getTag = (params?: Params) => params?.queryParams[tagParam];
 
 export const rootRoutePattern = '/';
 export const teamsRoutePattern = `${rootRoutePattern}teams`;
@@ -33,6 +35,12 @@ export const planningRoutePattern = `${teamRoutePattern}/planning`;
 export const knowledgeRoutePattern = `${teamRoutePattern}/knowledge`;
 export const helpCenterRoutePattern = `${teamRoutePattern}/help-center`;
 export const marketplaceRoutePattern = `${teamRoutePattern}/marketplace`;
+
+export const marketplaceManagedRoutePattern = `${marketplaceRoutePattern}/managed`;
+export const marketplaceInstalledRoutePattern = `${marketplaceRoutePattern}/installed`;
+export const marketplaceDiscoverRoutePattern = `${marketplaceRoutePattern}/discover`;
+export const marketplaceFilterRoutePattern = `${marketplaceRoutePattern}/filter`;
+
 export const cloudRoutePattern = `${rootRoutePattern}cloud`;
 export const signUpRoutePattern = `${rootRoutePattern}sign-up`;
 export const signInRoutePattern = `${cloudRoutePattern}/identity/sign-in`;
@@ -51,9 +59,18 @@ export const insightsPath = (teamId: number) => `/teams/${teamId}/insights`;
 export const planningPath = (teamId: number) => `/teams/${teamId}/planning`;
 export const knowledgePath = (teamId: number) => `/teams/${teamId}/knowledge`;
 export const helpCenterPath = (teamId: number) =>
-    `/teams/${teamId}/help-center`;
+    `${teamPath(teamId)}/help-center`;
 export const marketplacePath = (teamId: number) =>
-    `/teams/${teamId}/marketplace`;
+    `${teamPath(teamId)}/marketplace`;
+
+export const marketplaceManagedPath = (teamId: number) =>
+    `${marketplacePath(teamId)}/managed`;
+export const marketplaceInstalledPath = (teamId: number) =>
+    `${marketplacePath(teamId)}/installed`;
+export const marketplaceDiscoverPath = (teamId: number) =>
+    `${marketplacePath(teamId)}/discover`;
+export const marketplaceFilterPath = (teamId: number, tag: string) =>
+    `${marketplacePath(teamId)}/filter?tag=${tag}`;
 
 export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`;
 
@@ -81,9 +98,16 @@ export const teamsRoutes = [
     planningRoutePattern,
     knowledgeRoutePattern,
     helpCenterRoutePattern,
-    marketplaceRoutePattern,
     invitationRoutePattern,
+    marketplaceRoutePattern,
     taskRoutePattern,
+];
+
+export const marketplaceRoutes = [
+    marketplaceManagedRoutePattern,
+    marketplaceInstalledRoutePattern,
+    marketplaceDiscoverRoutePattern,
+    marketplaceFilterRoutePattern,
 ];
 
 export const sprintsRoutes = [sprintTabRoutePattern];
