@@ -3,8 +3,6 @@ import React, { Component, ReactNode } from 'react';
 import { PopChannel } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 
-import { marketplaceDiscoverRoutePattern } from '@core/routing/routes';
-
 import {
     Errors,
     Params,

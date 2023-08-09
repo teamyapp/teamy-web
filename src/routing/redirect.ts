@@ -3,7 +3,6 @@ import { RouteInterceptorResult, Router } from '@lib/router/router';
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import {
     marketplaceDiscoverPath,
-    marketplaceRoutePattern,
     sprintTabPath,
     sprintsPath,
     teamsRoutePattern,

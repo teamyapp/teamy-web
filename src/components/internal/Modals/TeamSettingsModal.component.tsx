@@ -430,7 +430,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         parentOffset={this.state.modalPosition}
                     >
                         <div
-                            className={`${styles.Action} ${styles.CopyLinkAction}`}
+                            className={`${styles.Action} ${styles.CopyLink}`}
                             onClick={this.onCopyInvitationLinkClick(invitation)}
                         >
                             <MaterialIconUI iconStyle={'outlined'}>
@@ -454,7 +454,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         return (
             <TooltipUI message={'Delete'} parentOffset={modalPosition}>
                 <div
-                    className={`${styles.Action} ${styles.DeleteAction}`}
+                    className={`${styles.Action} ${styles.Delete}`}
                     onClick={this.onDeleteInvitationClick(invitation.id)}
                 >
                     <MaterialIconUI iconStyle={'outlined'}>

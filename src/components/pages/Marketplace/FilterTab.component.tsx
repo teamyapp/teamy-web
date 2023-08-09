@@ -4,13 +4,7 @@ import * as csp from '@lib/csp/csp';
 import { RouteUpdate, Router } from '@lib/router/router';
 
 import { Deps } from '@core/dep/deps';
-import {
-    getTag,
-    marketplaceDiscoverRoutePattern,
-    marketplaceFilterRoutePattern,
-    marketplaceInstalledRoutePattern,
-    marketplaceManagedRoutePattern,
-} from '@core/routing/routes';
+import { getTag, marketplaceFilterRoutePattern } from '@core/routing/routes';
 
 import styles from './FilterTab.component.module.scss';
 import googleCalendarIconImg from './assets/calendar.png';

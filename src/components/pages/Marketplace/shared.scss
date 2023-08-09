@@ -1,3 +1,24 @@
+@mixin AppIcon($size) {
+    display: flex;
+    width: $size;
+    height: $size;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+        cursor: pointer;
+        opacity: 0.8;
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+    }
+}
+
 @mixin ListItem {
     .InlineItem {
         display: flex;
@@ -7,24 +28,7 @@
             margin-right: 10px;
 
             .Icon {
-                display: flex;
-                width: 60px;
-                height: 60px;
-                border: 1px solid #e0e0e0;
-                border-radius: 16px;
-                overflow: hidden;
-                align-items: center;
-                justify-content: center;
-
-                &:hover {
-                    cursor: pointer;
-                    opacity: 0.8;
-                }
-
-                img {
-                    width: 100%;
-                    height: 100%;
-                }
+                @include AppIcon(60px);
             }
         }
 

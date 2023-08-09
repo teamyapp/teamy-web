@@ -1,8 +1,9 @@
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 
 import { Deps } from '@core/dep/deps';
 
 import styles from './ManagedTab.component.module.scss';
+import { ManageAppModalComponent } from './Modals/ManageAppModal.component';
 import githubIconImg from './assets/github.png';
 import slackIconImg from './assets/slack.png';
 import teamsIconImg from './assets/teams.png';
@@ -44,34 +45,48 @@ interface Props {
 interface State {}
 
 export class ManagedTabComponent extends Component<Props, State> {
+    private readonly manageAppModalRef = createRef<ManageAppModalComponent>();
+
     render() {
         return (
-            <div className={styles.ItemList}>
-                {items.map((item) => (
-                    <div className={styles.InlineItem}>
-                        <div className={styles.LeftSection}>
-                            <div className={styles.Icon}>
-                                <img src={item.iconUrl} />
+            <>
+                <div className={styles.ItemList}>
+                    {items.map((item) => (
+                        <div className={styles.InlineItem}>
+                            <div className={styles.LeftSection}>
+                                <div className={styles.Icon}>
+                                    <img src={item.iconUrl} />
+                                </div>
+                            </div>
+                            <div className={styles.MiddleSection}>
+                                <div className={styles.Name}>{item.name}</div>
+                            </div>
+                            <div className={styles.RightSection}>
+                                <div
+                                    className={`${styles.Button} ${styles.Manage}`}
+                                    onClick={this.onManageButtonClickHandler(
+                                        item.id,
+                                    )}
+                                >
+                                    Manage
+                                </div>
+                                <div
+                                    className={`${styles.Button}  ${styles.Delete}`}
+                                >
+                                    Delete
+                                </div>
                             </div>
                         </div>
-                        <div className={styles.MiddleSection}>
-                            <div className={styles.Name}>{item.name}</div>
-                        </div>
-                        <div className={styles.RightSection}>
-                            <div
-                                className={`${styles.Button} ${styles.Manage}`}
-                            >
-                                Manage
-                            </div>
-                            <div
-                                className={`${styles.Button}  ${styles.Delete}`}
-                            >
-                                Delete
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+                <ManageAppModalComponent ref={this.manageAppModalRef} />
+            </>
         );
+    }
+
+    private onManageButtonClickHandler(itemId: number) {
+        return () => {
+            this.manageAppModalRef.current?.open(itemId);
+        };
     }
 }
