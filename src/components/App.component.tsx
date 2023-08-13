@@ -31,6 +31,7 @@ import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { UserActionEvent } from '@core/event/userAction';
 import {
+    absoluteRootPath,
     debugRoutePattern,
     getTeamId,
     helpCenterPath,
@@ -838,11 +839,14 @@ export class AppComponent extends Component<Props, State> {
             key: 'GitHubCopyMentionTask',
             readableName: 'Copy mention task',
             execute: async (taskId: number) => {
-                const mentionTask = `(task:${taskId})`;
-                navigator.clipboard.writeText(mentionTask);
-                this.dynamicFeedbackRef.current?.show(
-                    `${mentionTask} is copied to clipboard`,
-                );
+                const teamId = this.localStore.getState().currTeamId;
+                if (teamId) {
+                    const mentionTask = `[(task:${taskId})](${absoluteRootPath}${taskPath(teamId, taskId)})`;
+                    navigator.clipboard.writeText(mentionTask);
+                    this.dynamicFeedbackRef.current?.show(
+                        `${mentionTask} is copied to clipboard`,
+                    );
+                }
             },
         });
     }
