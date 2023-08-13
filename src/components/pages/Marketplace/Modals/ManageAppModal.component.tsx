@@ -39,6 +39,19 @@ const tabs: Tab<TabKey>[] = [
     },
 ];
 
+type GroupTabKey = 'users' | 'teams';
+
+const groupTabs: Tab<GroupTabKey>[] = [
+    {
+        name: 'Users',
+        key: 'users',
+    },
+    {
+        name: 'Teams',
+        key: 'teams',
+    },
+];
+
 type RolloutGroupTabKey = 'users' | 'teams';
 
 const rolloutGroupTabs: Tab<RolloutGroupTabKey>[] = [
@@ -133,6 +146,7 @@ interface UserGroup {
     name: string;
     filter: string;
     createdAt: Date;
+    rollouts: Rollout<UserGroup>[];
 }
 
 const userGroups: UserGroup[] = [
@@ -141,12 +155,14 @@ const userGroups: UserGroup[] = [
         name: 'US Software Engineer',
         filter: '(country=US) or (jobTitle=software engineer)',
         createdAt: new Date(),
+        rollouts: [],
     },
     {
         id: 2,
         name: 'US Teenager',
         filter: '(country=US) and (age>18) and (age<26)',
         createdAt: new Date(),
+        rollouts: [],
     },
 ];
 
@@ -155,6 +171,7 @@ interface TeamGroup {
     name: string;
     filter: string;
     createdAt: Date;
+    rollouts: Rollout<TeamGroup>[];
 }
 
 const teamGroups: TeamGroup[] = [
@@ -163,12 +180,14 @@ const teamGroups: TeamGroup[] = [
         name: 'US Technology',
         filter: '(country=US) AND ((industry=software) or (industry=hardware))',
         createdAt: new Date(),
+        rollouts: [],
     },
     {
         id: 2,
         name: 'US Massachusetts',
         filter: '(country=US) AND (state=MA)',
         createdAt: new Date(),
+        rollouts: [],
     },
 ];
 
@@ -264,14 +283,22 @@ const teamGroupRollouts: Rollout<TeamGroup>[] = [
     },
 ];
 
+userGroups[0].rollouts.push(userGroupRollouts[0], userGroupRollouts[2]);
+userGroups[1].rollouts.push(userGroupRollouts[1], userGroupRollouts[2]);
+teamGroups[0].rollouts.push(teamGroupRollouts[0]);
+teamGroups[1].rollouts.push(teamGroupRollouts[0]);
+
 interface Props {}
 
 interface State {
     app?: App;
     selectedAppVersion?: AppVersion;
+    selectedUserGroup?: UserGroup;
+    selectedTeamGroup?: TeamGroup;
     selectedUserGroupRollout?: Rollout<UserGroup>;
     selectedTeamGroupRollout?: Rollout<TeamGroup>;
     showTabViews: Record<TabKey, boolean>;
+    showGroupTabViews: Record<GroupTabKey, boolean>;
     showRolloutGroupTabViews: Record<RolloutGroupTabKey, boolean>;
 }
 
@@ -286,6 +313,10 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 versions: false,
                 groups: false,
                 rollouts: false,
+            },
+            showGroupTabViews: {
+                users: true,
+                teams: false,
             },
             showRolloutGroupTabViews: {
                 users: true,
@@ -579,149 +610,29 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private renderGroupsTab(): ReactNode {
         return (
             <div className={styles.GroupsTab}>
-                <div className={styles.Section}>
-                    <div className={styles.TitleRow}>
-                        <div className={styles.Title}>User Groups</div>
-                        <div className={styles.Spacer} />
-                        <div className={styles.Actions}>
+                <div className={styles.GroupListSection}>
+                    <div className={styles.Tabs}>
+                        {groupTabs.map((tab) => (
                             <div
-                                className={`${styles.Action} ${styles.CreateGroup}`}
+                                className={`${styles.Tab} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showGroupTabViews[tab.key],
+                                })}`}
+                                onClick={this.onGroupTabClickHandler(tab)}
                             >
-                                Create group
+                                {tab.name}
                             </div>
-                        </div>
+                        ))}
                     </div>
-                    <table className={`${styles.Table} `}>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Group Name</th>
-                                <th>Filter</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {userGroups.map((userGroup) => (
-                                <tr>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Id}`}
-                                    >
-                                        {userGroup.id}
-                                    </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Name}`}
-                                    >
-                                        {userGroup.name}
-                                    </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Filter}`}
-                                    >
-                                        {userGroup.filter}
-                                    </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.CreatedAt}`}
-                                    >
-                                        {moment(userGroup.createdAt).fromNow()}
-                                    </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Actions}`}
-                                    >
-                                        <div
-                                            className={`${styles.RowAction} ${styles.Edit}`}
-                                        >
-                                            <MaterialIconUI
-                                                iconStyle={'outlined'}
-                                            >
-                                                edit
-                                            </MaterialIconUI>
-                                        </div>
-                                        <div
-                                            className={`${styles.RowAction} ${styles.Delete}`}
-                                        >
-                                            <MaterialIconUI
-                                                iconStyle={'outlined'}
-                                            >
-                                                remove_circle
-                                            </MaterialIconUI>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <div className={`${styles.Action} ${styles.CreateGroup}`}>
+                        Create Group
+                    </div>
+                    <div className={styles.GroupList}>
+                        {this.renderGroups()}
+                    </div>
                 </div>
-                <div className={styles.Section}>
-                    <div className={styles.TitleRow}>
-                        <div className={styles.Title}>Team Groups</div>
-                        <div className={styles.Spacer} />
-                        <div className={styles.Actions}>
-                            <div
-                                className={`${styles.Action} ${styles.CreateGroup}`}
-                            >
-                                Create group
-                            </div>
-                        </div>
-                    </div>
-                    <table className={`${styles.Table}`}>
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Group Name</th>
-                                <th>Filter</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {teamGroups.map((teamGroup) => (
-                                <tr>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Id}`}
-                                    >
-                                        {teamGroup.id}
-                                    </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Name}`}
-                                    >
-                                        {teamGroup.name}
-                                    </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Filter}`}
-                                    >
-                                        {teamGroup.filter}
-                                    </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.CreatedAt}`}
-                                    >
-                                        {moment(teamGroup.createdAt).fromNow()}
-                                    </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Actions}`}
-                                    >
-                                        <div
-                                            className={`${styles.RowAction} ${styles.Edit}`}
-                                        >
-                                            <MaterialIconUI
-                                                iconStyle={'outlined'}
-                                            >
-                                                edit
-                                            </MaterialIconUI>
-                                        </div>
-                                        <div
-                                            className={`${styles.RowAction} ${styles.Delete}`}
-                                        >
-                                            <MaterialIconUI
-                                                iconStyle={'outlined'}
-                                            >
-                                                remove_circle
-                                            </MaterialIconUI>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className={styles.GroupDetailSection}>
+                    {this.renderGroupDetail()}
                 </div>
             </div>
         );
@@ -748,8 +659,11 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             </div>
                         ))}
                     </div>
+                    <div className={`${styles.Action} ${styles.CreateRollout}`}>
+                        Create Rollout
+                    </div>
                     <div className={styles.RolloutList}>
-                        {this.renderRolloutTabs()}
+                        {this.renderRollouts()}
                     </div>
                 </div>
                 <div className={styles.RolloutDetailSection}>
@@ -759,20 +673,143 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     }
 
-    private renderRolloutTabs() {
+    private renderGroups(): ReactNode {
+        if (this.state.showGroupTabViews['users']) {
+            return userGroups.map((userGroup) =>
+                this.renderInlineGroup(
+                    userGroup,
+                    this.onInlineUserGroupClickHandler,
+                    this.state.selectedUserGroup,
+                ),
+            );
+        } else if (this.state.showGroupTabViews['teams']) {
+            return teamGroups.map((teamGroup) =>
+                this.renderInlineGroup(
+                    teamGroup,
+                    this.onInlineTeamGroupClickHandler,
+                    this.state.selectedTeamGroup,
+                ),
+            );
+        }
+    }
+
+    private renderInlineGroup<Group extends UserGroup | TeamGroup>(
+        group: Group,
+        onInlineGroupClickHandler: (group: Group) => () => void,
+        selectedGroup?: Group,
+    ) {
+        return (
+            <div
+                className={`${styles.Group} ${classNames({
+                    [styles.Active]: selectedGroup?.id == group.id,
+                })}`}
+                onClick={onInlineGroupClickHandler(group)}
+            >
+                <div className={styles.TopRow}>
+                    <div className={`${styles.Attribute} ${styles.Id}`}>
+                        {group.id}
+                    </div>
+                </div>
+                <div className={styles.Name}>{group.name}</div>
+                <div className={styles.CreatedAt}>
+                    {moment(group.createdAt).fromNow()}
+                </div>
+            </div>
+        );
+    }
+
+    private renderGroupDetail(): ReactNode {
+        if (this.state.showGroupTabViews['users']) {
+            return this.renderGroup(this.state.selectedUserGroup);
+        } else if (this.state.showGroupTabViews['teams']) {
+            return this.renderGroup(this.state.selectedTeamGroup);
+        }
+    }
+
+    private renderGroup(selectedGroup?: UserGroup | TeamGroup): ReactNode {
+        return (
+            selectedGroup && (
+                <div className={styles.Box}>
+                    <div className={styles.GroupInfo}>
+                        <div className={`${styles.Row} ${styles.Id}`}>
+                            <span
+                                className={`${styles.Label} ${styles.SameRow}`}
+                            >
+                                ID:
+                            </span>
+                            {selectedGroup.id}
+                        </div>
+                        <div className={`${styles.Row} ${styles.Type}`}>
+                            <span
+                                className={`${styles.Label} ${styles.SameRow}`}
+                            >
+                                Name:
+                            </span>
+                            {selectedGroup.name}
+                        </div>
+                        <div className={`${styles.Row} ${styles.Filter}`}>
+                            <div
+                                className={`${styles.Label} ${styles.NextRow}`}
+                            >
+                                Filter:
+                            </div>
+                            <div>{selectedGroup.filter}</div>
+                        </div>
+                        <div className={`${styles.Row} ${styles.CreatedAt}`}>
+                            <span
+                                className={`${styles.Label} ${styles.SameRow}`}
+                            >
+                                Created at:
+                            </span>
+                            {moment(selectedGroup.createdAt).fromNow()}
+                        </div>
+                    </div>
+                    <div className={styles.Rollouts}>
+                        <div className={`${styles.Label} ${styles.NextRow}`}>
+                            Rollouts:
+                        </div>
+                        <div className={styles.RolloutList}>
+                            {selectedGroup.rollouts.map((rollout) => (
+                                <div className={styles.Rollout}>
+                                    <div className={styles.TopRow}>
+                                        <div className={`${styles.Attribute}`}>
+                                            {rollout.id}
+                                        </div>
+                                        <div className={`${styles.Attribute}`}>
+                                            {rollout.type}
+                                        </div>
+                                    </div>
+                                    <div className={styles.Name}>
+                                        {rollout.name}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    <div className={styles.Buttons}>
+                        <div className={styles.Delete}>
+                            <ButtonUI label={'Delete'} />
+                        </div>
+                    </div>
+                </div>
+            )
+        );
+    }
+
+    private renderRollouts() {
         if (this.state.showRolloutGroupTabViews['users']) {
             return userGroupRollouts.map((rollout: Rollout<UserGroup>) =>
-                this.renderRolloutTab(
+                this.renderInlineRollout(
                     rollout,
-                    this.onUserRolloutTabClickHandler,
+                    this.onInlineUserRolloutClickHandler,
                     this.state.selectedUserGroupRollout,
                 ),
             );
         } else if (this.state.showRolloutGroupTabViews['teams']) {
             return teamGroupRollouts.map((rollout: Rollout<TeamGroup>) =>
-                this.renderRolloutTab(
+                this.renderInlineRollout(
                     rollout,
-                    this.onTeamRolloutTabClickHandler,
+                    this.onInlineTeamRolloutClickHandler,
                     this.state.selectedTeamGroupRollout,
                 ),
             );
@@ -819,6 +856,11 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             )}
                         </div>
                     </div>
+                    <div className={styles.Buttons}>
+                        <div className={styles.Delete}>
+                            <ButtonUI label={'Delete'} />
+                        </div>
+                    </div>
                 </div>
             )
         );
@@ -855,6 +897,11 @@ export class ManageAppModalComponent extends Component<Props, State> {
                                     </div>
                                 ),
                             )}
+                        </div>
+                    </div>
+                    <div className={styles.Buttons}>
+                        <div className={styles.Delete}>
+                            <ButtonUI label={'Delete'} />
                         </div>
                     </div>
                 </div>
@@ -1016,9 +1063,9 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     }
 
-    private renderRolloutTab<Group>(
+    private renderInlineRollout<Group>(
         rollout: Rollout<Group>,
-        onRolloutTabClickHandler: (rollout: Rollout<Group>) => () => void,
+        onInlineRolloutClickHandler: (rollout: Rollout<Group>) => () => void,
         selectedRollout?: Rollout<Group>,
     ) {
         return (
@@ -1026,7 +1073,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 className={`${styles.Rollout} ${classNames({
                     [styles.Active]: selectedRollout?.id == rollout.id,
                 })}`}
-                onClick={onRolloutTabClickHandler(rollout)}
+                onClick={onInlineRolloutClickHandler(rollout)}
             >
                 <div className={styles.TopRow}>
                     <div className={`${styles.Attribute} ${styles.Id}`}>
@@ -1044,6 +1091,22 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     }
 
+    private onGroupTabClickHandler = (tab: Tab<GroupTabKey>) => {
+        return () => {
+            this.setState({
+                showGroupTabViews: Object.assign(
+                    {
+                        users: false,
+                        teams: false,
+                    },
+                    {
+                        [tab.key]: true,
+                    },
+                ),
+            });
+        };
+    };
+
     private onRolloutGroupTabClickHandler = (tab: Tab<RolloutGroupTabKey>) => {
         return () => {
             this.setState({
@@ -1060,7 +1123,23 @@ export class ManageAppModalComponent extends Component<Props, State> {
         };
     };
 
-    private onUserRolloutTabClickHandler = (rollout: Rollout<UserGroup>) => {
+    private onInlineUserGroupClickHandler = (group: UserGroup) => {
+        return () => {
+            this.setState({
+                selectedUserGroup: group,
+            });
+        };
+    };
+
+    private onInlineTeamGroupClickHandler = (group: TeamGroup) => {
+        return () => {
+            this.setState({
+                selectedTeamGroup: group,
+            });
+        };
+    };
+
+    private onInlineUserRolloutClickHandler = (rollout: Rollout<UserGroup>) => {
         return () => {
             this.setState({
                 selectedUserGroupRollout: rollout,
@@ -1068,7 +1147,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
         };
     };
 
-    private onTeamRolloutTabClickHandler = (rollout: Rollout<TeamGroup>) => {
+    private onInlineTeamRolloutClickHandler = (rollout: Rollout<TeamGroup>) => {
         return () => {
             this.setState({
                 selectedTeamGroupRollout: rollout,
