@@ -836,7 +836,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
 
                     <div className={styles.Groups}>
                         <div className={`${styles.Label} ${styles.NextRow}`}>
-                            User Groups:
+                            Team Groups:
                         </div>
                         <div className={styles.GroupList}>
                             {this.state.selectedTeamGroupRollout.groups.map(
