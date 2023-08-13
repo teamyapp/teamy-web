@@ -30,13 +30,15 @@ interface Props {
     deps: Deps;
 }
 
-interface Tab {
+interface Tab<Key> {
     name: string;
     key: string;
     getRoute: (localStore: LocalStore) => string;
 }
 
-const upperTabs: Tab[] = [
+type UpperTabKey = 'managed' | 'installed';
+
+const upperTabs: Tab<UpperTabKey>[] = [
     {
         name: 'Managed',
         key: 'managed',
@@ -51,7 +53,16 @@ const upperTabs: Tab[] = [
     },
 ];
 
-const lowerTabs: Tab[] = [
+type LowerTabKey =
+    | 'discover'
+    | 'filter/tag=developer-tools'
+    | 'filter/tag=automation'
+    | 'filter/tag=communication'
+    | 'filter/tag=design'
+    | 'filter/tag=sales'
+    | 'filter/productivity';
+
+const lowerTabs: Tab<LowerTabKey>[] = [
     {
         name: 'Discover',
         key: 'discover',
@@ -256,7 +267,7 @@ export class MarketplaceComponent extends Component<Props, State> {
         })().then();
     }
 
-    private onTabClickHandler = (tab: Tab) => {
+    private onTabClickHandler = <Key,>(tab: Tab<Key>) => {
         return () => {
             this.setState({
                 showTabViews: {},
