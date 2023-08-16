@@ -34,7 +34,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
-    private readonly copyUnfinishedTasksConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
+    private readonly confirmStartNewSprintModalRef: React.RefObject<ConfirmActionsModalComponent> =
         React.createRef();
     private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
         React.createRef();
@@ -55,14 +55,11 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         const isOnActiveSprint = this.isOnActiveSprint();
         return (
             <div className={styles.SprintHeaderSectionContainer}>
-                <TooltipUI
-                    message={'Copy Unfinished Tasks To Next Sprint'}
-                    position={'Bottom'}
-                >
+                <TooltipUI message={'Start new sprint'} position={'Bottom'}>
                     <div className={styles.CopySection}>
                         <div
                             className={styles.Button}
-                            onClick={this.onCopyUnfinishedTasksClick}
+                            onClick={this.onStartNewSprintClick}
                         >
                             <MaterialIconUI>outbound</MaterialIconUI>
                         </div>
@@ -127,11 +124,10 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         </div>
                     </div>
                 </TooltipUI>
-
                 <ConfirmActionsModalComponent
-                    ref={this.copyUnfinishedTasksConfirmTaskRef}
-                    message='Do you want to copy unfinished tasks to next sprint?'
-                    onConfirm={this.copyUnfinishedTasksToNextSprint}
+                    ref={this.confirmStartNewSprintModalRef}
+                    message='Do you want to start a new sprint and copy unfinished tasks over?'
+                    onConfirm={this.startNewSprint}
                 />
                 <ConfirmActionsModalComponent
                     ref={this.deleteSprintConfirmTaskRef}
@@ -213,8 +209,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         });
     };
 
-    private onCopyUnfinishedTasksClick = () => {
-        this.copyUnfinishedTasksConfirmTaskRef.current?.open();
+    private onStartNewSprintClick = () => {
+        this.confirmStartNewSprintModalRef.current?.open();
     };
 
     private isOnActiveSprint = () => {
@@ -269,7 +265,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         });
     };
 
-    private copyUnfinishedTasksToNextSprint = async () => {
+    private startNewSprint = async () => {
         if (!this.canCopyTasksToNextSprint()) {
             alert('can not copy tasks to next sprint');
             return;

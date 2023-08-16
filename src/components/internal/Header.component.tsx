@@ -7,6 +7,7 @@ import { Route } from '@lib/router/Route';
 import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { userAll } from '@core/config/filter';
 import { contains } from '@core/data/task.filter';
@@ -147,14 +148,18 @@ export class HeaderComponent extends Component<Props, State> {
                     />
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.BacklogSection}>
-                            <div
-                                className={`${styles.Button} ${classNames({
-                                    [styles.Active]: this.state.showBacklog,
-                                })}`}
-                                onClick={this.onBacklogToggle}
-                            >
-                                <MaterialIconUI>work_history</MaterialIconUI>
-                            </div>
+                            <TooltipUI message={'Backlog'}>
+                                <div
+                                    className={`${styles.Button} ${classNames({
+                                        [styles.Active]: this.state.showBacklog,
+                                    })}`}
+                                    onClick={this.onBacklogToggle}
+                                >
+                                    <MaterialIconUI>
+                                        work_history
+                                    </MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         </div>
                     </Route>
                     <Route router={this.router} pattern={sprintsRoutePattern}>
