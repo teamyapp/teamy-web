@@ -1,8 +1,9 @@
 import React, { Component, RefObject, createRef } from 'react';
+
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 
 import styles from './AppSettingModal.component.module.scss';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 interface App {
     id: number;
@@ -20,8 +21,7 @@ const apps: Record<number, App> = {
     },
 };
 
-interface Props {
-}
+interface Props {}
 
 interface State {
     app?: App;
@@ -51,9 +51,10 @@ export class AppSettingModalComponent extends Component<Props, State> {
                             <MaterialIconUI>cancel</MaterialIconUI>
                         </div>
                     </div>
-                    <div className={styles.Content} ref={this.contentRef}/>
+                    <div className={styles.Content} ref={this.contentRef} />
                 </ModalUI>
-            ));
+            )
+        );
     }
 
     open(appId: number) {

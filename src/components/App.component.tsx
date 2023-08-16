@@ -841,7 +841,10 @@ export class AppComponent extends Component<Props, State> {
             execute: async (taskId: number) => {
                 const teamId = this.localStore.getState().currTeamId;
                 if (teamId) {
-                    const mentionTask = `[(task:${taskId})](${absoluteRootPath}${taskPath(teamId, taskId)})`;
+                    const mentionTask = `[(task:${taskId})](${absoluteRootPath}${taskPath(
+                        teamId,
+                        taskId,
+                    )})`;
                     navigator.clipboard.writeText(mentionTask);
                     this.dynamicFeedbackRef.current?.show(
                         `${mentionTask} is copied to clipboard`,

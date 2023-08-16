@@ -3,11 +3,11 @@ import { Component, createRef } from 'react';
 import { Deps } from '@core/dep/deps';
 
 import styles from './InstalledTab.component.module.scss';
+import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
+import { ManageAppModalComponent } from './Modals/ManageAppModal.component';
 import githubIconImg from './assets/github.png';
 import slackIconImg from './assets/slack.png';
 import { formatCount } from './format';
-import { ManageAppModalComponent } from './Modals/ManageAppModal.component';
-import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 
 interface Item {
     id: number;
@@ -35,8 +35,7 @@ interface Props {
     deps: Deps;
 }
 
-interface State {
-}
+interface State {}
 
 export class InstalledTabComponent extends Component<Props, State> {
     private readonly appSettingModalRef = createRef<AppSettingModalComponent>();
@@ -49,7 +48,7 @@ export class InstalledTabComponent extends Component<Props, State> {
                         <div className={styles.InlineItem}>
                             <div className={styles.LeftSection}>
                                 <div className={styles.Icon}>
-                                    <img src={item.iconUrl}/>
+                                    <img src={item.iconUrl} />
                                 </div>
                             </div>
                             <div className={styles.MiddleSection}>
@@ -61,7 +60,9 @@ export class InstalledTabComponent extends Component<Props, State> {
                             <div className={styles.RightSection}>
                                 <div
                                     className={`${styles.Button} ${styles.Setting}`}
-                                    onClick={this.onAppSettingButtonClickHandler(item.id)}
+                                    onClick={this.onAppSettingButtonClickHandler(
+                                        item.id,
+                                    )}
                                 >
                                     Setting
                                 </div>
@@ -74,7 +75,7 @@ export class InstalledTabComponent extends Component<Props, State> {
                         </div>
                     ))}
                 </div>
-                <AppSettingModalComponent ref={this.appSettingModalRef}/>
+                <AppSettingModalComponent ref={this.appSettingModalRef} />
             </>
         );
     }
