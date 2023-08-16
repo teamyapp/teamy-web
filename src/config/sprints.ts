@@ -1,2 +1,2 @@
-export const defaultSprintTabId = 'me';
-export const sprintTabIds = [defaultSprintTabId, 'team'];
+export const defaultSprintTabId = 'team';
+export const sprintTabIds = [defaultSprintTabId];

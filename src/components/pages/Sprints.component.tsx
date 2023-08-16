@@ -41,7 +41,6 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { KanbanUI } from '../internal/Kanban';
-import { PersonalStatusUI } from '../internal/PersonalStatus';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
@@ -118,16 +117,6 @@ export class SprintsComponent extends Component<Props, State> {
             this.state.isPageReady &&
             (this.state.selectedSprintId ? (
                 <div className={styles.Sprint}>
-                    <div className={styles.Tabs}>
-                        <div className={styles.Container}>
-                            <TabsUI
-                                ref={this.tabsRef}
-                                defaultSelectedIndex={this.state.activeTabIndex}
-                                tabNames={['Me', 'Team']}
-                                onTabClick={this.onTabClick}
-                            />
-                        </div>
-                    </div>
                     <div className={styles.Content}>
                         {this.renderTabContent(
                             sprintTabIds[this.state.activeTabIndex],
@@ -337,25 +326,6 @@ export class SprintsComponent extends Component<Props, State> {
 
         switch (tabId) {
             case sprintTabIds[0]:
-                return (
-                    <PersonalStatusUI
-                        deps={this.props.deps}
-                        personalTasks={this.state.sprintTasks.filter(
-                            personalTasksFilter,
-                        )}
-                        currentClientId={clientId}
-                        sortOrders={this.state.sortOrders}
-                        onCreateTask={this.onCreateTask}
-                        onUpdateTask={this.onUpdateTask}
-                        onStartTask={this.moveTaskToInProgress}
-                        onDeleteTask={this.onDeleteTask}
-                        onCompleteTask={this.moveTaskToDelivered}
-                        onViewTaskDetail={this.props.onViewTaskDetail}
-                        onReportTaskBlocked={this.onReportTaskBlocked}
-                        onSelectUpcomingOrder={this.onSelectUpcomingOrder}
-                    />
-                );
-            case sprintTabIds[1]:
                 return (
                     <div className={styles.TeamTab}>
                         <div className={styles.ParticipantsSection}>
