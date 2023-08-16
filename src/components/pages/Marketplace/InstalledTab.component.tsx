@@ -4,7 +4,6 @@ import { Deps } from '@core/dep/deps';
 
 import styles from './InstalledTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
-import { ManageAppModalComponent } from './Modals/ManageAppModal.component';
 import githubIconImg from './assets/github.png';
 import slackIconImg from './assets/slack.png';
 import { formatCount } from './format';
