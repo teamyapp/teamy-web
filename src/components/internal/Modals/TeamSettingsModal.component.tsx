@@ -367,7 +367,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     private renderDeleteTeamMember(userId: number) {
         return (
             <div
-                className={styles.DeleteAction}
+                className={`${styles.Action} ${styles.Delete}`}
                 onClick={this.onDeleteTeamMemberClick(userId)}
             >
                 <MaterialIconUI iconStyle={'outlined'}>
