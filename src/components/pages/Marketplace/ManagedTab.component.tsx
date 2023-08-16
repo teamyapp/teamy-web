@@ -9,13 +9,13 @@ import slackIconImg from './assets/slack.png';
 import teamsIconImg from './assets/teams.png';
 import wechatIconImg from './assets/wechat.png';
 
-interface Item {
+interface App {
     id: number;
     iconUrl: string;
     name: string;
 }
 
-const items: Item[] = [
+const apps: App[] = [
     {
         id: 1,
         iconUrl: githubIconImg,
@@ -51,21 +51,21 @@ export class ManagedTabComponent extends Component<Props, State> {
         return (
             <>
                 <div className={styles.ItemList}>
-                    {items.map((item) => (
+                    {apps.map((app) => (
                         <div className={styles.InlineItem}>
                             <div className={styles.LeftSection}>
                                 <div className={styles.Icon}>
-                                    <img src={item.iconUrl} />
+                                    <img src={app.iconUrl} />
                                 </div>
                             </div>
                             <div className={styles.MiddleSection}>
-                                <div className={styles.Name}>{item.name}</div>
+                                <div className={styles.Name}>{app.name}</div>
                             </div>
                             <div className={styles.RightSection}>
                                 <div
                                     className={`${styles.Button} ${styles.Manage}`}
                                     onClick={this.onManageButtonClickHandler(
-                                        item.id,
+                                        app.id,
                                     )}
                                 >
                                     Manage
