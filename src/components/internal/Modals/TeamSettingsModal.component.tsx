@@ -91,7 +91,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     'Bandwidth',
                                     'Members',
                                     'Invitations',
-                                    'Apps',
                                 ]}
                                 onTabClick={this.onTabClick}
                             />
@@ -123,8 +122,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 return this.renderTeamMembersTab();
             case 3:
                 return this.renderInvitationsTab();
-            case 4:
-                return this.renderAppsTab();
         }
     };
 
@@ -291,15 +288,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         </tbody>
                     </table>
                 </div>
-            </div>
-        );
-    };
-
-    private renderAppsTab = () => {
-        return (
-            <div className={styles.AppsTab}>
-                <div className={styles.Marketplace}></div>
-                <div className={styles.Installed}></div>
             </div>
         );
     };
