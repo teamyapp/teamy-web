@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, createRef } from 'react';
 
 import { Deps } from '@core/dep/deps';
 
@@ -6,6 +6,8 @@ import styles from './InstalledTab.component.module.scss';
 import githubIconImg from './assets/github.png';
 import slackIconImg from './assets/slack.png';
 import { formatCount } from './format';
+import { ManageAppModalComponent } from './Modals/ManageAppModal.component';
+import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 
 interface Item {
     id: number;
@@ -33,40 +35,53 @@ interface Props {
     deps: Deps;
 }
 
-interface State {}
+interface State {
+}
 
 export class InstalledTabComponent extends Component<Props, State> {
+    private readonly appSettingModalRef = createRef<AppSettingModalComponent>();
+
     render() {
         return (
-            <div className={styles.ItemList}>
-                {items.map((item) => (
-                    <div className={styles.InlineItem}>
-                        <div className={styles.LeftSection}>
-                            <div className={styles.Icon}>
-                                <img src={item.iconUrl} />
+            <>
+                <div className={styles.ItemList}>
+                    {items.map((item) => (
+                        <div className={styles.InlineItem}>
+                            <div className={styles.LeftSection}>
+                                <div className={styles.Icon}>
+                                    <img src={item.iconUrl}/>
+                                </div>
+                            </div>
+                            <div className={styles.MiddleSection}>
+                                <div className={styles.Name}>{item.name}</div>
+                                <div className={styles.Installations}>
+                                    {formatCount(item.installations)} installed
+                                </div>
+                            </div>
+                            <div className={styles.RightSection}>
+                                <div
+                                    className={`${styles.Button} ${styles.Setting}`}
+                                    onClick={this.onAppSettingButtonClickHandler(item.id)}
+                                >
+                                    Setting
+                                </div>
+                                <div
+                                    className={`${styles.Button}  ${styles.Remove}`}
+                                >
+                                    Remove
+                                </div>
                             </div>
                         </div>
-                        <div className={styles.MiddleSection}>
-                            <div className={styles.Name}>{item.name}</div>
-                            <div className={styles.Installations}>
-                                {formatCount(item.installations)} installed
-                            </div>
-                        </div>
-                        <div className={styles.RightSection}>
-                            <div
-                                className={`${styles.Button} ${styles.Setting}`}
-                            >
-                                Setting
-                            </div>
-                            <div
-                                className={`${styles.Button}  ${styles.Remove}`}
-                            >
-                                Remove
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+                <AppSettingModalComponent ref={this.appSettingModalRef}/>
+            </>
         );
     }
+
+    private onAppSettingButtonClickHandler = (appId: number) => {
+        return () => {
+            this.appSettingModalRef.current?.open(appId);
+        };
+    };
 }
