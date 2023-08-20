@@ -1,9 +1,6 @@
-import { Invitation } from '@core/entity/invitation';
-import { Sprint } from '@core/entity/sprint';
-import { Task } from '@core/entity/task';
 import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
 import { SprintNode } from '@core/storage/graph/sprint.node';
+import { TeamMemberNode } from '@core/storage/graph/teamMember.node';
 import { TeamState } from '@core/storage/states/team.state';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
@@ -30,34 +27,30 @@ export class TeamNode implements Team {
         return this.teamState.createdAt;
     }
 
-    public get creator(): User {
+    public get creator(): UserNode {
         return new UserNode(
             this.localStore,
             this.localStore.getState().users[this.teamState.creatorUserId],
         );
     }
 
-    public get owner(): User {
+    public get owner(): UserNode {
         return new UserNode(
             this.localStore,
             this.localStore.getState().users[this.teamState.ownerUserId],
         );
     }
 
-    public get members(): User[] {
+    public get members(): TeamMemberNode[] {
         const appState = this.localStore.getState();
         return appState.teamMembers
             .filter((teamMember) => teamMember.teamId === this.teamState.id)
             .map(
-                (teamMember) =>
-                    new UserNode(
-                        this.localStore,
-                        appState.users[teamMember.userId],
-                    ),
+                (teamMember) => new TeamMemberNode(this.localStore, teamMember),
             );
     }
 
-    public get tasks(): Task[] {
+    public get tasks(): TaskNode[] {
         const appState = this.localStore.getState();
         const tasks: TaskNode[] = [];
         for (let taskId in appState.tasks) {
@@ -70,7 +63,7 @@ export class TeamNode implements Team {
         return tasks;
     }
 
-    public get invitations(): Invitation[] {
+    public get invitations(): InvitationNode[] {
         const appState = this.localStore.getState();
         const invitations: InvitationNode[] = [];
         for (let invitationId in appState.invitations) {
@@ -85,7 +78,7 @@ export class TeamNode implements Team {
         return invitations;
     }
 
-    public get sprints(): Sprint[] {
+    public get sprints(): SprintNode[] {
         const appState = this.localStore.getState();
         const sprints: SprintNode[] = [];
         for (let sprintId in appState.sprints) {
@@ -96,5 +89,17 @@ export class TeamNode implements Team {
         }
 
         return sprints;
+    }
+
+    public get activeSprint(): SprintNode | undefined {
+        const appState = this.localStore.getState();
+        if (!this.teamState.activeSprintId) {
+            return;
+        }
+
+        const sprintState = appState.sprints[this.teamState.activeSprintId];
+        if (sprintState) {
+            return new SprintNode(this.localStore, sprintState);
+        }
     }
 }

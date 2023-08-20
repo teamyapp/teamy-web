@@ -1,26 +1,36 @@
-import moment from 'moment';
+import moment, { DurationInputArg2 } from 'moment';
 
-export function getShortName(firstName?: string, lastName?: string): string {
+type DurationUnit = DurationInputArg2;
+
+export type DurationKey = '1week' | '2weeks';
+
+export type Duration = {
+    value: number;
+    unit: DurationUnit;
+    description: string;
+};
+
+export const DURATIONS: Record<DurationKey, Duration> = {
+    '1week': {
+        value: 1,
+        unit: 'w',
+        description: '1 week',
+    },
+    '2weeks': {
+        value: 2,
+        unit: 'w',
+        description: '2 weeks',
+    },
+};
+
+export function getUserShortName(
+    firstName?: string,
+    lastName?: string,
+): string {
     if (!firstName) {
         return '';
     }
     return `${firstName} ${lastName && `${lastName![0].toUpperCase()}.`}`;
-}
-
-export function timeFromNow(date: Date): string {
-    const momentDate = moment(date);
-    const now = moment(Date.now());
-    let format;
-    if (momentDate.isSame(now, 'day')) {
-        format = 'h:mm:ss a';
-    } else if (Math.abs(momentDate.diff(now, 'days')) < 7) {
-        format = 'h:mm:ss a, dddd';
-    } else if (momentDate.isSame(now, 'year')) {
-        format = 'h:mm:ss a, MM/DD';
-    } else {
-        format = 'h:mm:ss a, MM/DD/YYYY';
-    }
-    return momentDate.format(format);
 }
 
 export function dueDate(date: Date): string {
@@ -36,4 +46,10 @@ export function dueDate(date: Date): string {
 
 export function getSprintName(startAt: Date): string {
     return moment(startAt).format('YYYY-MM-DD');
+}
+
+export function getEndAt(startAt: Date, duration: DurationKey): Date {
+    const { value = 1, unit = 'w' } = DURATIONS[duration] || {};
+
+    return moment(startAt).add(moment.duration(value, unit)).toDate();
 }

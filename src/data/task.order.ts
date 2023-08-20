@@ -1,14 +1,22 @@
+import { SortOrder } from '@lib/data/order';
+
 import { Task } from '@core/entity/task';
 import { TaskStatus } from '@core/entity/taskStatus';
 
-export const orderByPriority = (task1: Task, task2: Task): number => {
+export const orderByPriority: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
     // TODO: implement me
     return 0;
 };
 
-export const orderByUrgency = (task1: Task, task2: Task): number => {
+export const orderByUrgency: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
     if (!task1.dueAt && !task2.dueAt) {
-        return 0;
+        return task1.id - task2.id;
     }
 
     if (!task1.dueAt) {
@@ -27,26 +35,35 @@ export const orderByUrgency = (task1: Task, task2: Task): number => {
     return task1.id - task2.id;
 };
 
-export const orderByValue = (task1: Task, task2: Task): number => {
+export const orderByValue: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
     // TODO: implement me
     return 0;
 };
 
-export const orderByEffort = (task1: Task, task2: Task): number => {
+export const orderByEffort: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
     // TODO: implement me
     return 0;
 };
 
 const taskStatusProgressOrder: Record<TaskStatus, number> = {
     PAUSED: 1,
-    UPCOMING: 2,
+    TODO: 2,
     BLOCKED: 3,
     AWAITING: 4,
     IN_PROGRESS: 5,
     DELIVERED: 6,
 };
 
-export const orderByStatusUrgencyAsc = (task1: Task, task2: Task): number => {
+export const orderByStatusUrgencyAsc: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
     const compare =
         taskStatusProgressOrder[task1.status] -
         taskStatusProgressOrder[task2.status];
@@ -55,4 +72,11 @@ export const orderByStatusUrgencyAsc = (task1: Task, task2: Task): number => {
     }
 
     return orderByUrgency(task1, task2);
+};
+
+export const orderById: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
+    return task1.id - task2.id;
 };

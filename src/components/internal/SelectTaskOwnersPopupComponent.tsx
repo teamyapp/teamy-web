@@ -4,7 +4,6 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { Deps } from '@core/dep/deps';
-import { UpdateTaskInput } from '@core/entity/input';
 import { User } from '@core/entity/user';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -17,19 +16,18 @@ const taskOwnersListHorizontalOffset = 10;
 
 interface Props {
     deps: Deps;
+    selectedOwnerId?: number;
+    findTaskOwnersAlignTargetBoundBox?: BoundingBoxFinder;
     onClose?: () => void;
+    onSelectOwner?: (taskOwnerId?: number) => void;
 }
 
 interface State {
-    selectOwnerTaskId?: number;
     showPotentialTaskOwnersList: boolean;
-    findTaskOwnersAlignTargetBoundBox?: BoundingBoxFinder;
     taskOwnersListVisible: boolean;
     taskOwnersListLeft: number;
     taskOwnersListTop: number;
     potentialTaskOwners: User[];
-    selectedOwnerId?: number;
-    selectOwnerUpdateTaskInput?: UpdateTaskInput;
 }
 
 export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
@@ -76,7 +74,7 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
                     </div>
                     <SelectUserListUI
                         emptySelectionUserName={'Unassigned'}
-                        selectedUserId={this.state.selectedOwnerId}
+                        selectedUserId={this.props.selectedOwnerId}
                         users={this.state.potentialTaskOwners}
                         onSelectUser={this.onSelectTaskOwner}
                         onRemoveSelection={this.onRemoveTaskOwner}
@@ -94,20 +92,14 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
         window.removeEventListener('resize', this.onWindowResize);
     }
 
-    public show = async (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => {
+    public show = async () => {
+        // TODO: use relative layout library
         await this.stateSyncer.pullCurrentTeamMembers();
-        const owners = this.graphSource.currentTeam()!.members;
+        const teamMembers = this.graphSource.currentTeam()!.members;
         this.setState({
-            potentialTaskOwners: owners,
-            selectOwnerTaskId: taskId,
-            selectedOwnerId,
-            selectOwnerUpdateTaskInput: updateTaskInput,
-            findTaskOwnersAlignTargetBoundBox: findAlignTargetBoundBox,
+            potentialTaskOwners: teamMembers.map(
+                (teamMember) => teamMember.user,
+            ),
             showPotentialTaskOwnersList: true,
         });
 
@@ -126,11 +118,11 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
             return;
         }
 
-        if (!this.state.findTaskOwnersAlignTargetBoundBox) {
+        if (!this.props.findTaskOwnersAlignTargetBoundBox) {
             return;
         }
 
-        const boundingBox = this.state.findTaskOwnersAlignTargetBoundBox();
+        const boundingBox = this.props.findTaskOwnersAlignTargetBoundBox();
         const width = this.taskOwnersPopupRef.current?.offsetWidth || 0;
         const height = this.taskOwnersPopupRef.current?.offsetHeight || 0;
         const left = Math.min(
@@ -152,7 +144,6 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
     private onCloseTaskOwnersListClick = () => {
         this.setState({
             potentialTaskOwners: [],
-            selectOwnerTaskId: undefined,
             taskOwnersListVisible: false,
             showPotentialTaskOwnersList: false,
         });
@@ -160,43 +151,21 @@ export class SelectTaskOwnersPopupComponent extends Component<Props, State> {
     };
 
     private onSelectTaskOwner = (userId: number) => {
-        this.stateSyncer.updateTask(
-            this.state.selectOwnerTaskId!,
-            Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
-                {},
-                this.state.selectOwnerUpdateTaskInput!,
-                {
-                    ownerUserId: userId,
-                },
-            ),
-        );
         this.setState({
             potentialTaskOwners: [],
             showPotentialTaskOwnersList: false,
             taskOwnersListVisible: false,
-            selectedOwnerId: undefined,
-            selectOwnerTaskId: undefined,
         });
+        this.props.onSelectOwner?.call(this, userId);
     };
 
     private onRemoveTaskOwner = () => {
-        this.stateSyncer.updateTask(
-            this.state.selectOwnerTaskId!,
-            Object.assign<any, UpdateTaskInput, Partial<UpdateTaskInput>>(
-                {},
-                this.state.selectOwnerUpdateTaskInput!,
-                {
-                    ownerUserId: undefined,
-                },
-            ),
-        );
         this.setState({
             potentialTaskOwners: [],
             showPotentialTaskOwnersList: false,
             taskOwnersListVisible: false,
-            selectedOwnerId: undefined,
-            selectOwnerTaskId: undefined,
         });
+        this.props.onSelectOwner?.call(this);
     };
 
     private onWindowResize = () => {

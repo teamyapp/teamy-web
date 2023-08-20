@@ -1,20 +1,31 @@
 import classNames from 'classnames';
 import React, { ChangeEvent, Component, FocusEvent, createRef } from 'react';
 
+import * as csp from '@lib/csp/csp';
+import { closeIfNot } from '@lib/csp/lib';
 import { Route } from '@lib/router/Route';
-import { Router } from '@lib/router/router';
-import { DropDownList } from '@lib/ui/DropDownList';
+import { RouteUpdate, Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { userAll } from '@core/config/filter';
-import { sprintsRoutePattern, teamRoutePattern } from '@core/config/routing';
 import { contains } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
+import {
+    helpCenterRoutePattern,
+    insightsRoutePattern,
+    knowledgeRoutePattern,
+    marketplaceRoutePattern,
+    planningRoutePattern,
+    sprintsRoutePattern,
+    teamRoutePattern,
+} from '@core/routing/routes';
 
+import { ContextMenuComponent } from './ContextMenu.component';
 import { FilterListComponent } from './FilterList.component';
 import styles from './Header.component.module.scss';
 import { SprintsHeaderSectionComponent } from './SprintsHeaderSection.component';
@@ -31,18 +42,36 @@ interface Props {
     onUserProfileClick?: () => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
     onCreateSprintClick?: () => void;
+    onAddTeamMembersClick?: (teamId: number) => void;
+    onShowTeamMembersClick?: (teamId: number) => void;
+    onShowInvitationsClick?: (teamId: number) => void;
+    onViewTeamSettingsClick?: (teamId: number) => void;
+    onShowSprintsViewClick?: () => void;
+    onShowInsightsViewClick?: () => void;
+    onShowPlanningViewClick?: () => void;
+    onShowKnowledgeViewClick?: () => void;
+    onShowHelpCenterViewClick?: () => void;
+    onShowMarketplaceViewClick?: () => void;
 }
 
 interface State {
     isSearchBarFocused: boolean;
     showBacklog: boolean;
     taskFiltersData: TaskFiltersData;
+    showSprintsView: boolean;
+    showInsightsView: boolean;
+    showPlanningView: boolean;
+    showKnowledgeView: boolean;
+    showHelpCenterView: boolean;
+    showMarketplaceView: boolean;
 }
 
 export class HeaderComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly searchBarRef = createRef<HTMLDivElement>();
     private readonly searchInputRef = createRef<HTMLInputElement>();
+    private readonly teamContextMenuRef = createRef<ContextMenuComponent>();
+    private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
 
     constructor(props: Props) {
         super(props);
@@ -53,16 +82,27 @@ export class HeaderComponent extends Component<Props, State> {
             taskFiltersData: {
                 selectedTaskOwners: new Set<string>([userAll]),
             },
+            showSprintsView: false,
+            showInsightsView: false,
+            showPlanningView: false,
+            showKnowledgeView: false,
+            showHelpCenterView: false,
+            showMarketplaceView: false,
         };
     }
 
     render() {
         return (
-            <header className={styles.Header}>
-                <div className={styles.LeftSection}>
+            <header aria-label={'header'} className={styles.Header}>
+                <div
+                    role={'region'}
+                    aria-label={'leftSection'}
+                    className={styles.LeftSection}
+                >
                     <div className={styles.MenuButtonPlaceHolder}>
                         {!this.props.isDrawerOpen && (
                             <div
+                                role={'button'}
                                 className={styles.MenuButton}
                                 onClick={this.props.onMenuToggle}
                             >
@@ -70,30 +110,56 @@ export class HeaderComponent extends Component<Props, State> {
                             </div>
                         )}
                     </div>
-                    <div className={styles.TeamName}>
-                        {this.props.currentTeam?.name}
-                    </div>
-                    <div className={styles.Tools}>
-                        <DropDownList
-                            selectOptionKey={'sprint'}
-                            options={[
-                                {
-                                    key: 'sprint',
-                                    description: 'Sprint',
-                                },
-                            ]}
-                        />
-                    </div>
+                    {this.props.currentTeam && (
+                        <div
+                            role={'button'}
+                            aria-label={this.props.currentTeam.name}
+                            className={styles.TeamName}
+                            onClick={this.onViewTeamSettingsClick}
+                            onContextMenu={this.onTeamContextMenu}
+                        >
+                            {this.props.currentTeam.name}
+                        </div>
+                    )}
+                    <ContextMenuComponent
+                        ref={this.teamContextMenuRef}
+                        menuItems={[
+                            {
+                                key: 'addMembers',
+                                action: this.onAddMembersClick,
+                                label: 'Add Members',
+                            },
+                            {
+                                key: 'showMembers',
+                                action: this.onShowMembersClick,
+                                label: 'Show Members',
+                            },
+                            {
+                                key: 'showInvitations',
+                                action: this.onShowInvitationsClick,
+                                label: 'Show Invitations',
+                            },
+                            {
+                                key: 'viewTeamSettings',
+                                action: this.onViewTeamSettingsClick,
+                                label: 'View Team Settings',
+                            },
+                        ]}
+                    />
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.BacklogSection}>
-                            <div
-                                className={`${styles.Button} ${classNames({
-                                    [styles.Active]: this.state.showBacklog,
-                                })}`}
-                                onClick={this.onBacklogToggle}
-                            >
-                                <MaterialIconUI>work_history</MaterialIconUI>
-                            </div>
+                            <TooltipUI message={'Backlog'}>
+                                <div
+                                    className={`${styles.Button} ${classNames({
+                                        [styles.Active]: this.state.showBacklog,
+                                    })}`}
+                                    onClick={this.onBacklogToggle}
+                                >
+                                    <MaterialIconUI>
+                                        work_history
+                                    </MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         </div>
                     </Route>
                     <Route router={this.router} pattern={sprintsRoutePattern}>
@@ -147,7 +213,68 @@ export class HeaderComponent extends Component<Props, State> {
                     )}
                 </div>
                 <SpacerUI />
-                <div className={styles.RightSection}>
+                <div
+                    role={'region'}
+                    aria-label={'rightSection'}
+                    className={styles.RightSection}
+                >
+                    <Route router={this.router} pattern={teamRoutePattern}>
+                        <div className={styles.ButtonsSection}>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]: this.state.showSprintsView,
+                                })}`}
+                                onClick={this.onShowSprintsViewClick}
+                            >
+                                <MaterialIconUI>sprint</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showInsightsView,
+                                })}`}
+                                onClick={this.onShowInsightsViewClick}
+                            >
+                                <MaterialIconUI>insights</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showPlanningView,
+                                })}`}
+                                onClick={this.onShowPlanningViewClick}
+                            >
+                                <MaterialIconUI>flag</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showKnowledgeView,
+                                })}`}
+                                onClick={this.onShowKnowledgeViewClick}
+                            >
+                                <MaterialIconUI>school</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showHelpCenterView,
+                                })}`}
+                                onClick={this.onShowHelpCenterViewClick}
+                            >
+                                <MaterialIconUI>forum</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Active]:
+                                        this.state.showMarketplaceView,
+                                })}`}
+                                onClick={this.onShowMarketplaceViewClick}
+                            >
+                                <MaterialIconUI>shopping_cart</MaterialIconUI>
+                            </div>
+                        </div>
+                    </Route>
                     <div className={styles.UserActionSection}></div>
                     {this.props.me && (
                         <div className={styles.UserSection}>
@@ -167,6 +294,14 @@ export class HeaderComponent extends Component<Props, State> {
         );
     }
 
+    componentDidMount() {
+        this.monitorRouteChanges();
+    }
+
+    componentWillUnmount() {
+        closeIfNot(this.routeChangeChan);
+    }
+
     public toggleSearchInputFocus = () => {
         if (!this.state.isSearchBarFocused) {
             this.searchInputRef.current?.focus();
@@ -177,6 +312,56 @@ export class HeaderComponent extends Component<Props, State> {
             });
         }
     };
+
+    private monitorRouteChanges() {
+        this.routeChangeChan = this.router.subscribeRouteChange();
+        console.log('[HeaderComponent] subscribing route changes');
+        (async () => {
+            while (true) {
+                const routeUpdate = await this.routeChangeChan!.pop();
+                if (routeUpdate === undefined) {
+                    return;
+                }
+
+                this.resetViewButtons();
+                if (routeUpdate.routePattern.startsWith(sprintsRoutePattern)) {
+                    this.setState({
+                        showSprintsView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(insightsRoutePattern)
+                ) {
+                    this.setState({
+                        showInsightsView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(planningRoutePattern)
+                ) {
+                    this.setState({
+                        showPlanningView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(knowledgeRoutePattern)
+                ) {
+                    this.setState({
+                        showKnowledgeView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(helpCenterRoutePattern)
+                ) {
+                    this.setState({
+                        showHelpCenterView: true,
+                    });
+                } else if (
+                    routeUpdate.routePattern.startsWith(marketplaceRoutePattern)
+                ) {
+                    this.setState({
+                        showMarketplaceView: true,
+                    });
+                }
+            }
+        })().then();
+    }
 
     private onSearchBarFocus = () => {
         this.setState({
@@ -218,4 +403,104 @@ export class HeaderComponent extends Component<Props, State> {
 
         this.props.onBacklogToggle?.call(null);
     };
+
+    private onTeamContextMenu = (event: React.MouseEvent<HTMLElement>) => {
+        event.preventDefault();
+        this.teamContextMenuRef.current?.open(event.clientY, event.clientX);
+    };
+
+    private onAddMembersClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onAddTeamMembersClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+    };
+
+    private onShowMembersClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onShowTeamMembersClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+    };
+
+    private onShowInvitationsClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onShowInvitationsClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+    };
+
+    private onViewTeamSettingsClick = () => {
+        if (this.props.currentTeam?.id) {
+            this.props.onViewTeamSettingsClick?.call(
+                null,
+                this.props.currentTeam.id,
+            );
+        }
+    };
+
+    private onShowSprintsViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showSprintsView: true,
+        });
+        this.props.onShowSprintsViewClick?.call(null);
+    };
+
+    private onShowInsightsViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showInsightsView: true,
+        });
+        this.props.onShowInsightsViewClick?.call(null);
+    };
+
+    private onShowPlanningViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showPlanningView: true,
+        });
+        this.props.onShowPlanningViewClick?.call(null);
+    };
+
+    private onShowKnowledgeViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showKnowledgeView: true,
+        });
+        this.props.onShowKnowledgeViewClick?.call(null);
+    };
+
+    private onShowHelpCenterViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showHelpCenterView: true,
+        });
+        this.props.onShowHelpCenterViewClick?.call(null);
+    };
+
+    private onShowMarketplaceViewClick = () => {
+        this.resetViewButtons();
+        this.setState({
+            showMarketplaceView: true,
+        });
+        this.props.onShowMarketplaceViewClick?.call(null);
+    };
+
+    private resetViewButtons() {
+        this.setState({
+            showSprintsView: false,
+            showInsightsView: false,
+            showPlanningView: false,
+            showKnowledgeView: false,
+            showHelpCenterView: false,
+            showMarketplaceView: false,
+        });
+    }
 }

@@ -1,5 +1,5 @@
 export type TaskStatus =
-    | 'UPCOMING'
+    | 'TODO'
     | 'IN_PROGRESS'
     | 'PAUSED'
     | 'BLOCKED'

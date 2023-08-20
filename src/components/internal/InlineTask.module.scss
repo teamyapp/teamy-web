@@ -3,150 +3,111 @@
 @import '../../libs/ui/styleguide/elevation';
 @import 'inlineTask.shared';
 
-.Task {
-    .LeftSection {
-        .Goal {
-            @include goalText;
+$draggingColor: #00897b;
 
-            .Placeholder {
-                color: #757575;
+.InlineTask {
+    .DraggingBySection {
+        height: 28px;
+        padding: 5px 8px;
+        float: right;
+        border-radius: 0px 0 6px 6px;
+        background-color: $draggingColor;
+        color: white;
+        font-weight: 500;
+    }
+
+    .Task {
+        border: 2px solid transparent;
+
+        &.Dragging {
+            border: 2px solid $draggingColor;
+            border-radius: 6px 6px 0px 6px;
+        }
+
+        .LeftSection {
+            .Goal {
+                @include goalText;
+
+                .Placeholder {
+                    color: #757575;
+                }
+            }
+
+            .GoalTextField {
+                width: 100%;
+                height: 60px;
+                @include goalText;
+                margin: 0;
+                padding: 0;
+                border: none;
+                outline: none;
+                background-color: #f5f5f5;
+                box-sizing: border-box;
+                resize: none;
             }
         }
 
-        .GoalTextField {
-            background-color: #f5f5f5;
-            border: none;
-            @include goalText;
-            box-sizing: border-box;
-            height: 60px;
-            margin: 0;
-            outline: none;
-            padding: 0;
-            resize: none;
-            width: 100%;
+        .ViewDetailSection {
+            border-left: 2px solid $dividerColor;
         }
 
-        .DueAt {
-            align-items: center;
-            background-color: #546e7a;
-            border-radius: 4px;
-            --icon-color: white;
-            color: white;
+        .TopRow {
             display: flex;
-            font-weight: 500;
-            padding: 3px 8px;
-            --icon-size: 18px;
+            height: 22px;
+            margin-bottom: 10px;
+            align-items: center;
+            gap: 6px;
 
-            .Time {
-                font-size: 16px;
-                margin-left: 4px;
+            .Attribute {
+                display: flex;
+                height: 100%;
+                padding: 0 6px;
+                border-radius: 4px;
+                font-size: 14px;
+                font-weight: 600;
+                align-items: center;
             }
 
-            &.PastDue {
-                background-color: #c62828;
+            .Id {
+                background-color: #1976d2;
+                color: white;
+            }
+
+            .Status {
+                color: white;
+
+                &.TODO {
+                    background-color: #1e88e5;
+                }
+
+                &.PAUSED {
+                    background-color: #7b1fa2;
+                }
+
+                &.IN_PROGRESS {
+                    background-color: #ff551b;
+                }
+
+                &.AWAITING {
+                    background-color: #e91e63;
+                }
+
+                &.DELIVERED {
+                    background-color: #26882b;
+                }
             }
         }
 
-        .Attributes {
+        .BottomRow {
             display: flex;
             margin-top: 10px;
+            gap: 6px;
 
-            .EffortAttribute {
-                --color: #1976d2;
+            .Attribute {
+                height: 25px;
             }
         }
     }
-
-    .ActionsSection,
-    .ViewDetailSection {
-        border-left: 2px solid $dividerColor;
-    }
-
-    .ActionsSection {
-        display: grid;
-        gap: 2px;
-        grid-auto-rows: min-content;
-        padding-left: $edgeSpace;
-
-        .Action {
-            align-items: center;
-            border-radius: 4px;
-            --icon-box-size: #{$actionIconSize};
-            display: flex;
-            height: $actionIconSize;
-            justify-content: center;
-            padding: 4px;
-            --icon-size: #{$actionIconSize};
-            user-select: none;
-            width: $actionIconSize;
-
-            &.Active,
-            &:hover {
-                background-color: rgba(0, 0, 0, 0.07);
-            }
-        }
-
-        .AssignOwner {
-            --profile-height: #{$actionIconSize};
-            --profile-width: #{$actionIconSize};
-        }
-    }
-
-    .TopRow {
-        margin-bottom: 10px;
-
-        .Attribute {
-            border-radius: 4px;
-            font-weight: 500;
-            padding: 2px 6px;
-
-            &:not(:first-child) {
-                margin-left: 10px;
-            }
-        }
-
-        .Id {
-            background-color: #1976d2;
-            color: white;
-        }
-
-        .Status {
-            color: white;
-            font-size: 14px;
-
-            &.UPCOMING {
-                background-color: #1e88e5;
-            }
-
-            &.PAUSED {
-                background-color: #7b1fa2;
-            }
-
-            &.IN_PROGRESS {
-                background-color: #ff551b;
-            }
-
-            &.AWAITING {
-                background-color: #e91e63;
-            }
-
-            &.DELIVERED {
-                background-color: #26882b;
-            }
-        }
-    }
-
-    .BottomRow {
-        display: flex;
-        margin-top: 10px;
-    }
-}
-
-@mixin actionIcon {
-    border-radius: 50%;
-    align-items: center;
-    display: flex;
-    --icon-color: white;
 }
 
 .StartTaskIcon {
@@ -185,16 +146,9 @@
     --icon-size: #{$actionIconSize - 12px};
 }
 
-.AssignOwnerIcon {
-    align-items: center;
-    border-radius: 50%;
-    --icon-color: #3d7bf6;
-    display: flex;
-    --icon-size: #{$actionIconSize + 4px};
-}
-
 .AwaitForTasksSection {
     display: flex;
+    margin-top: 6px;
 
     .AwaitForIcon {
         --icon-color: #626262;
@@ -203,20 +157,20 @@
     .AwaitForTasks {
         display: flex;
         margin-left: 10px;
+        flex: 1;
+        flex-wrap: wrap;
+        gap: 6px;
     }
 
     .AwaitForTask {
-        background-color: #eeeeee;
-
-        border-radius: 4px;
-        color: #313131;
         display: flex;
+        height: 24px;
+        padding: 0 8px;
+        border-radius: 4px;
+        background-color: #eeeeee;
+        color: #313131;
         font-weight: 600;
-        padding: 2px 8px;
-
-        &:not(:first-child) {
-            margin-left: 6px;
-        }
+        align-items: center;
 
         &.Delivered {
             background-color: #00897b;
@@ -229,8 +183,8 @@
 
         &:hover {
             background-color: #616161;
-            color: white;
             cursor: pointer;
+            color: white;
         }
     }
 }

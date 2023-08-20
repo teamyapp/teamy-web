@@ -2,38 +2,29 @@ import React, { Component, ReactNode } from 'react';
 
 import styles from './MaterialIcon.module.scss';
 
-type IconStyle = undefined | 'outline' | 'round' | 'sharp';
+type IconStyle = 'outlined' | 'rounded' | 'sharp';
 
 interface Props {
+    children: React.ReactNode;
     iconStyle?: IconStyle;
+    color?: string;
 }
 
 export class MaterialIconUI extends Component<Props> {
     public render(): ReactNode {
+        const iconStyle = this.props.iconStyle || 'outlined';
         return (
             <i
-                className={styles.Icon}
+                role={'figure'}
+                className={`${styles.Icon} ${
+                    styles[`material-symbols-${iconStyle}`]
+                }`}
                 style={{
-                    fontFamily: `${materialFont(
-                        this.props.iconStyle,
-                    )}, sans-serif`,
+                    color: this.props.color,
                 }}
             >
                 <span className={styles.Content}>{this.props.children}</span>
             </i>
         );
-    }
-}
-
-function materialFont(iconStyle: IconStyle) {
-    switch (iconStyle) {
-        case undefined:
-            return 'Material Icons';
-        case 'outline':
-            return 'Material Icons Outlined';
-        case 'round':
-            return 'Material Icons Round';
-        case 'sharp':
-            return 'Material Icons Sharp';
     }
 }

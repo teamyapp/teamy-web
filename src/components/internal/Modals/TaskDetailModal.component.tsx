@@ -1,20 +1,15 @@
 import classNames from 'classnames';
-import React, {
-    Component,
-    Fragment,
-    MouseEvent,
-    ReactNode,
-    createRef,
-} from 'react';
+import React, { Component, MouseEvent, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { DatePickerUI } from '@lib/ui/DatePicker';
+import { Duration } from '@lib/entity/duration';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 import { TextFieldUI } from '@lib/ui/TextField';
-import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
@@ -24,23 +19,21 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { DurationInputUI } from '../DurationInput.ui';
+import { SelectTaskOwnersPopupComponent } from '../SelectTaskOwnersPopupComponent';
+import { TaskLinkIconUI } from '../TaskLinkIcon';
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
-import { getShortName } from '../format';
+import { getUserShortName } from '../format';
 import styles from './TaskDetailModal.component.module.scss';
 
-const verticalMargin = 40;
+const verticalMargin = 30;
+const DATE_PICKER_Z_INDEX = 1002;
+const DURATION_INPUT_Z_INDEX = 1000;
 
 interface Props {
     deps: Deps;
-    selectOwnerTaskId?: number;
     onClose?: () => void;
-    onShowPotentialTaskOwners?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
 }
 
 interface State {
@@ -48,16 +41,21 @@ interface State {
     updatedTask?: UpdateTaskInput;
     currentUserId?: number;
     heightWithMargin: number;
+    isSelectingOwner: boolean;
 }
 
 export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
+    private readonly relativeLayout: RelativeLayout;
+    private getBoundingClientRect?: () => DOMRect;
     private readonly modalRef = createRef<ModalUI>();
+    private readonly selectTaskOwnersPopupRef =
+        createRef<SelectTaskOwnersPopupComponent>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
-    private readonly dueAtDatePicker = createRef<DatePickerUI>();
+    private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
     constructor(props: Props) {
@@ -65,8 +63,10 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
+        this.relativeLayout = props.deps.relativeLayout;
         this.state = {
             heightWithMargin: 0,
+            isSelectingOwner: false,
         };
     }
 
@@ -75,132 +75,210 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             ? new Date(this.state.updatedTask.dueAt)
             : undefined;
         return (
-            <ModalUI ref={this.modalRef} onClose={this.props.onClose}>
-                {this.state.updatedTask && this.state.task && (
-                    <div
-                        className={styles.ModalContent}
-                        style={{
-                            height:
-                                this.state.heightWithMargin -
-                                2 * verticalMargin,
-                        }}
-                    >
-                        <div className={styles.Header}>
-                            Task #{this.state.task.id}
-                            <div
-                                className={styles.CloseButton}
-                                onClick={this.onCloseButtonClick}
-                            >
-                                <MaterialIconUI>cancel</MaterialIconUI>
-                            </div>
-                        </div>
-                        <div className={styles.TaskActionsSection}>
-                            <div
-                                className={`${styles.Action} ${
-                                    styles.AssignOwner
-                                } ${classNames({
-                                    [styles.Active]:
-                                        this.props.selectOwnerTaskId ===
-                                        this.state.task.id,
-                                })}`}
-                                onClick={this.onAssignOwnerClick}
-                            >
-                                {this.state.task?.owner ? (
-                                    <Fragment>
-                                        <UserProfileUI
-                                            user={this.state.task.owner}
-                                        />
-                                        <div className={styles.TaskOwnerName}>
-                                            {`${getShortName(
-                                                this.state.task.owner.firstName,
-                                                this.state.task.owner.lastName,
-                                            )}`}
-                                        </div>
-                                    </Fragment>
-                                ) : (
-                                    <Fragment>
-                                        <MaterialIconUI>face</MaterialIconUI>
-                                        <div className={styles.TaskOwnerName}>
-                                            Unassigned
-                                        </div>
-                                    </Fragment>
-                                )}
-                            </div>
-                            <div className={styles.SaveAction}>
+            <>
+                <ModalUI ref={this.modalRef} onClose={this.props.onClose}>
+                    {this.state.updatedTask && this.state.task && (
+                        <div
+                            className={styles.ModalContent}
+                            style={{
+                                height:
+                                    this.state.heightWithMargin -
+                                    2 * verticalMargin,
+                            }}
+                        >
+                            <div className={styles.Header}>
+                                Task #{this.state.task.id}
                                 <div
-                                    className={`${styles.Button}`}
-                                    onClick={this.onSaveButtonClick}
+                                    className={styles.CloseButton}
+                                    onClick={this.onCloseButtonClick}
                                 >
-                                    Save
+                                    <MaterialIconUI>cancel</MaterialIconUI>
                                 </div>
                             </div>
-                        </div>
-                        <div className={styles.TaskDetailSection}>
-                            <div className={styles.TaskDetailTop}>
-                                <div className={styles.LeftSection}>
-                                    <TextFieldUI
-                                        value={this.state.updatedTask.goal}
-                                        label={'Goal'}
-                                        showLengthCounter={true}
-                                        maxLength={taskGoalLengthLimit}
-                                        onChange={this.onTextFieldChangeHandler(
-                                            'goal',
-                                        )}
-                                    />
-                                </div>
-                                <div className={styles.RightSection}>
-                                    <div className={styles.Attributes}>
-                                        <div className={styles.Row}>
-                                            <DatePickerUI
-                                                ref={this.dueAtDatePicker}
-                                                label={'Due at'}
-                                                value={dueAt}
+                            <div className={styles.TaskActionsSection}>
+                                <div
+                                    className={`${styles.Action} ${
+                                        styles.AssignOwner
+                                    } ${classNames({
+                                        [styles.Active]:
+                                            this.state.isSelectingOwner,
+                                    })}`}
+                                    onClick={this.onAssignOwnerClick}
+                                >
+                                    {this.state.task?.owner ? (
+                                        <>
+                                            <UserProfileUI
+                                                user={this.state.task.owner}
                                             />
-                                        </div>
-                                        {/*<div*/}
-                                        {/*    className={`${styles.Row} ${styles.Effort}`}*/}
-                                        {/*>*/}
-                                        {/*<NamedValueUI*/}
-                                        {/*    name={'Effort'}*/}
-                                        {/*    value={`${*/}
-                                        {/*        this.state.task.effort ||*/}
-                                        {/*        'Unknown'*/}
-                                        {/*    }`}*/}
-                                        {/*/>*/}
-                                        {/*</div>*/}
+                                            <div
+                                                className={styles.TaskOwnerName}
+                                            >
+                                                {`${getUserShortName(
+                                                    this.state.task.owner
+                                                        .firstName,
+                                                    this.state.task.owner
+                                                        .lastName,
+                                                )}`}
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <MaterialIconUI>
+                                                face
+                                            </MaterialIconUI>
+                                            <div
+                                                className={styles.TaskOwnerName}
+                                            >
+                                                Unassigned
+                                            </div>
+                                        </>
+                                    )}
+                                </div>
+                                <div className={styles.SaveAction}>
+                                    <div
+                                        className={`${styles.Button}`}
+                                        onClick={this.onSaveButtonClick}
+                                    >
+                                        Save
                                     </div>
                                 </div>
                             </div>
-                            <div className={styles.Context}>
-                                <MarkdownEditorUI
-                                    label={'Context'}
-                                    content={this.state.updatedTask.context}
-                                    ref={this.markdownEditorRef}
-                                />
+                            <div className={styles.TaskDetailSection}>
+                                <div className={styles.LeftSection}>
+                                    <div>
+                                        <TextFieldUI
+                                            value={this.state.updatedTask.goal}
+                                            label={'Goal'}
+                                            showLengthCounter={true}
+                                            maxLength={taskGoalLengthLimit}
+                                            onChange={this.onTextFieldChangeHandler(
+                                                'goal',
+                                            )}
+                                        />
+                                    </div>
+                                    <div className={styles.Context}>
+                                        <MarkdownEditorUI
+                                            label={'Context'}
+                                            content={
+                                                this.state.updatedTask.context
+                                            }
+                                            ref={this.markdownEditorRef}
+                                        />
+                                    </div>
+                                    <div className={styles.LinksSection}>
+                                        <div className={styles.Title}>
+                                            Links&nbsp;(
+                                            {this.state.task.links.length})
+                                        </div>
+                                        {this.state.task.links.map((link) => (
+                                            <div className={styles.Link}>
+                                                <TaskLinkIconUI link={link} />
+                                                <a
+                                                    href={link.url}
+                                                    target='_blank'
+                                                    rel='noreferrer'
+                                                >
+                                                    {link.title}
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className={styles.CommentsSection}>
+                                        <div className={styles.Title}>
+                                            Comments&nbsp;(
+                                            {
+                                                this.state.task.comments
+                                                    .messages.length
+                                            }
+                                            )
+                                        </div>
+                                        <div
+                                            ref={this.threadDivRef}
+                                            className={styles.Thread}
+                                        >
+                                            <ThreadUI
+                                                messages={
+                                                    this.state.task.comments
+                                                        .messages
+                                                }
+                                                editorUserId={
+                                                    this.state.currentUserId!
+                                                }
+                                                postButtonLabel={'Comment'}
+                                                onPostMessage={
+                                                    this.onPostComment
+                                                }
+                                                onDeleteMessage={
+                                                    this.onDeleteMessage
+                                                }
+                                                onUpdateMessage={
+                                                    this.onUpdateMessage
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className={styles.RightSection}>
+                                    <div className={styles.Attributes}>
+                                        {!this.state.task.deliveredAt && (
+                                            <div className={styles.Row}>
+                                                <DateTextPickerUI
+                                                    relativeLayout={
+                                                        this.props.deps
+                                                            .relativeLayout
+                                                    }
+                                                    ref={this.dueAtDatePicker}
+                                                    label={'Due at'}
+                                                    value={dueAt}
+                                                    zOffset={
+                                                        DATE_PICKER_Z_INDEX
+                                                    }
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div
+                                            className={`${styles.Row} ${styles.Effort}`}
+                                        >
+                                            <DurationInputUI
+                                                relativeLayout={
+                                                    this.relativeLayout
+                                                }
+                                                duration={
+                                                    this.state.updatedTask
+                                                        .effort
+                                                }
+                                                canClear={true}
+                                                zOffset={DURATION_INPUT_Z_INDEX}
+                                                icon={
+                                                    <MaterialIconUI
+                                                        iconStyle={'outlined'}
+                                                    >
+                                                        weight
+                                                    </MaterialIconUI>
+                                                }
+                                                onDurationChange={
+                                                    this.onEffortChange
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className={styles.CommentsSection}>
-                            <div className={styles.Title}>
-                                Comments&nbsp;(
-                                {this.state.task.comments.messages.length})
-                            </div>
-                            <div
-                                ref={this.threadDivRef}
-                                className={styles.Thread}
-                            >
-                                <ThreadUI
-                                    messages={this.state.task.comments.messages}
-                                    editorUserId={this.state.currentUserId!}
-                                    postButtonLabel={'Comment'}
-                                    onPostMessage={this.onPostComment}
-                                    onDeleteMessage={this.onDeleteMessage}
-                                    onUpdateMessage={this.onUpdateMessage}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </ModalUI>
+                    )}
+                </ModalUI>
+                <SelectTaskOwnersPopupComponent
+                    ref={this.selectTaskOwnersPopupRef}
+                    findTaskOwnersAlignTargetBoundBox={
+                        this.getBoundingClientRect
+                    }
+                    deps={this.props.deps}
+                    onClose={this.onTaskOwnersPopupClose}
+                    onSelectOwner={this.onTaskOwnerSelected}
+                    selectedOwnerId={this.state.task?.owner?.id}
+                />
+            </>
         );
     }
 
@@ -290,20 +368,32 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onSaveButtonClick = async () => {
         if (this.state.task) {
-            const dueAt = this.dueAtDatePicker.current?.value || undefined;
-            const task = this.state.task!;
-            await this.stateSyncer.updateTask(task.id, {
-                goal: this.state.updatedTask!.goal,
-                context: this.markdownEditorRef.current?.content,
-                ownerUserId: task.owner?.id,
-                owningTeamId: this.graphSource.currentTeam()!.id,
-                dueAt: dueAt,
-            });
+            await this.stateSyncer.updateTask(
+                this.state.task.id,
+                this.getUpdatedTaskInput(),
+            );
             await this.props.deps.feedbackPubSub.publish({
                 type: 'TaskUpdated',
                 taskId: this.state.task.id,
             });
         }
+    };
+
+    private onTaskOwnerSelected = (ownerUserId?: number) => {
+        this.setState({
+            isSelectingOwner: false,
+        });
+
+        this.stateSyncer.updateTask(this.state.task!.id, {
+            ...this.getUpdatedTaskInput(),
+            ownerUserId,
+        });
+    };
+
+    private onTaskOwnersPopupClose = () => {
+        this.setState({
+            isSelectingOwner: false,
+        });
     };
 
     private onTextFieldChangeHandler(taskProp: string) {
@@ -339,16 +429,36 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
-        const task = this.state.task!;
         const element = event.currentTarget as HTMLDivElement;
-        this.props.onShowPotentialTaskOwners?.call(
-            null,
-            task.id,
-            this.state.updatedTask!,
-            (): Rect => {
-                return element.getBoundingClientRect();
-            },
-            task.owner?.id,
-        );
+        this.getBoundingClientRect =
+            element.getBoundingClientRect.bind(element);
+        this.selectTaskOwnersPopupRef.current?.show.call(null);
+        this.setState({
+            isSelectingOwner: true,
+        });
     };
+
+    private onEffortChange = async (effort?: Duration) => {
+        await this.stateSyncer.updateTask(this.state.task!.id, {
+            ...this.getUpdatedTaskInput(),
+            effort: effort,
+        });
+        await this.props.deps.feedbackPubSub.publish({
+            type: 'TaskUpdated',
+            taskId: this.state.task!.id,
+        });
+    };
+
+    private getUpdatedTaskInput(): UpdateTaskInput {
+        const dueAt = this.dueAtDatePicker.current?.value || undefined;
+        const task = this.state.task!;
+        return {
+            goal: this.state.updatedTask!.goal,
+            context: this.markdownEditorRef.current?.content,
+            ownerUserId: task.owner?.id,
+            owningTeamId: task.owningTeam.id,
+            dueAt: dueAt,
+            effort: task.effort,
+        };
+    }
 }

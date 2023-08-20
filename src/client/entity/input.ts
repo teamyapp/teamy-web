@@ -1,62 +1,68 @@
-export interface CreateUserInput {
+export interface RemoteCreateUserInput {
     lastName: string;
     firstName: string;
     profileUrl?: string;
 }
 
-export interface UpdateUserInput {
+export interface RemoteUpdateUserInput {
     lastName: string;
     firstName: string;
     profileUrl?: string;
 }
 
-export interface CreateTeamInput {
+export interface RemoteCreateTeamInput {
     name: string;
 }
 
-export interface UpdateTeamInput {
+export interface RemoteUpdateTeamInput {
     name: string;
     iconUrl?: string;
     ownerUserId: string;
 }
 
-export interface CreateTaskInput {
+export interface RemoteUpdateTeamMemberInput {
+    userId: string;
+    weeklyBandwidth: string;
+}
+
+export interface RemoteCreateTaskInput {
     goal: string;
     context?: string;
     ownerUserId?: string;
     dueAt?: Date;
-    isPlanned?: boolean;
+    isPlanned: boolean;
 }
 
-export interface UpdateTaskInput {
+export interface RemoteUpdateTaskInput {
     goal: string;
     context?: string;
     ownerUserId?: string;
     owningTeamId: string;
-    effort?: number;
+    effort?: string;
     dueAt?: Date;
 }
 
-export interface CreateMessageInput {
+export interface RemoteCreateMessageInput {
     body: string;
 }
 
-export interface UpdateMessageInput {
+export interface RemoteUpdateMessageInput {
     body: string;
 }
 
-export interface CreateInvitationInput {
+export interface RemoteCreateInvitationInput {
     receiverFirstName?: string;
     receiverLastName?: string;
     expireAt: Date;
 }
 
-export interface UpdateInvitationInput {
+export interface RemoteUpdateInvitationInput {
     receiverFirstName?: string;
     receiverLastName?: string;
     expireAt: Date;
 }
 
-export interface CreateSprintInput {
+export interface RemoteCreateSprintInput {
     startAt: Date;
+    endAt: Date;
 }

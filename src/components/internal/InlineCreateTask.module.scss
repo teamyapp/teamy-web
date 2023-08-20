@@ -3,31 +3,32 @@
 .Task {
     .LeftSection {
         .GoalTextField {
-            background-color: #f5f5f5;
-            border: none;
-            @include goalText;
-            box-sizing: border-box;
-            height: 60px;
-            margin: 0;
-            outline: none;
-            padding: 0;
-            resize: none;
             width: 100%;
+            height: 60px;
+            @include goalText;
+            margin: 0;
+            padding: 0;
+            border: none;
+            outline: none;
+            background-color: #f5f5f5;
+            box-sizing: border-box;
+            resize: none;
         }
     }
 
-    .Owner {
-        .Action {
-            height: $actionIconSize;
-            padding: 4px;
-            width: $actionIconSize;
-        }
+    .ActionsSection {
+        grid-template-columns: repeat(3, 1fr);
+    }
 
-        .OwnerIcon {
-            --icon-color: #1976d2;
-            --profile-height: #{$actionIconSize};
-            --icon-size: #{$actionIconSize};
-            --profile-width: #{$actionIconSize};
-        }
+    .SaveTaskIcon {
+        background-color: #00897b;
+        @include actionIcon;
+        --icon-size: #{$actionIconSize - 5px};
+    }
+
+    .CancelEditTaskIcon {
+        background-color: #e53935;
+        @include actionIcon;
+        --icon-size: #{$actionIconSize - 6px};
     }
 }

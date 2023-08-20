@@ -13,19 +13,17 @@ $borderRadius: 10px;
 }
 
 .TaskLists {
-    box-sizing: border-box;
     display: flex;
     height: 100%;
+    box-sizing: border-box;
+    overflow-x: auto;
     overflow-y: hidden;
 
     > .TaskListSection {
-        box-sizing: border-box;
-
-        flex: 1;
-
-        flex-direction: column;
-        height: 100%;
         min-width: 500px;
+        height: 100%;
+        box-sizing: border-box;
+        flex: 1;
         overflow-y: hidden;
 
         &:not(:first-child) {
@@ -35,31 +33,31 @@ $borderRadius: 10px;
 }
 
 .TaskList {
-    border-radius: 6px;
     display: grid;
+    border-radius: 6px;
     grid-auto-rows: min-content;
     grid-gap: 10px;
     grid-template-columns: 1fr;
 }
 
 .SectionTopBar {
-    align-items: center;
-    --background-color: transparent;
     display: flex;
     height: 24px;
-    justify-content: right;
     margin-left: 14px;
+    align-items: center;
+    --background-color: transparent;
+    justify-content: right;
     --icon-size: 30px;
 
     .TaskCounter {
-        align-items: center;
+        display: flex;
+        width: 30px;
+        height: 100%;
         border-radius: 4px;
         color: white;
-        display: flex;
         font-size: 14px;
-        height: 100%;
-        justify-content: center;
         line-height: 14px;
-        width: 30px;
+        align-items: center;
+        justify-content: center;
     }
 }

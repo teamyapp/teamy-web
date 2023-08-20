@@ -1,8 +1,6 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import { CreateSprintInput } from '@core/client/entity/input';
+import { RemoteCreateSprintInput } from '@core/client/entity/input';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 
@@ -16,7 +14,7 @@ export class SprintClient {
     public getSprintWithTaskPreviews(sprintId: string): Promise<RemoteSprint> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getSprint($sprintId: ID!) {
                         sprints(filter: { sprintId: $sprintId }) {
                             id
@@ -24,12 +22,16 @@ export class SprintClient {
                             endAt
                             owningTeam {
                                 id
+                                activeSprint {
+                                    id
+                                }
                             }
                             tasks {
                                 id
                                 goal
                                 dueAt
                                 status
+                                effort
                                 isPlanned
                                 owner {
                                     id
@@ -48,8 +50,29 @@ export class SprintClient {
                                         id
                                     }
                                 }
+                                deliveredAt
+                                links {
+                                    id
+                                    taskId
+                                    title
+                                    url
+                                    iconUrl
+                                    iconHoverUrl
+                                }
                             }
                             createdAt
+                            participants {
+                                sprint {
+                                    id
+                                }
+                                user {
+                                    id
+                                    firstName
+                                    lastName
+                                }
+                                totalBandwidth
+                                unusedBandwidth
+                            }
                         }
                     }
                 `,
@@ -62,11 +85,11 @@ export class SprintClient {
 
     public createSprint(
         teamId: string,
-        sprint: CreateSprintInput,
+        sprint: RemoteCreateSprintInput,
     ): Promise<RemoteSprint> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation createSprint(
                         $teamId: ID!
                         $sprint: CreateSprintInput!
@@ -79,6 +102,18 @@ export class SprintClient {
                                 id
                             }
                             createdAt
+                            participants {
+                                sprint {
+                                    id
+                                }
+                                user {
+                                    id
+                                    firstName
+                                    lastName
+                                }
+                                totalBandwidth
+                                unusedBandwidth
+                            }
                         }
                     }
                 `,
@@ -93,7 +128,7 @@ export class SprintClient {
     public deleteSprint(sprintId: string): Promise<RemoteSprint> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation deleteSprint($sprintId: ID!) {
                         deleteSprint(sprintId: $sprintId) {
                             id
@@ -107,13 +142,71 @@ export class SprintClient {
             .then((payload: any) => payload?.deleteSprint);
     }
 
+    public moveTasksToSprint(
+        fromSprintId: string,
+        toSprintId: string,
+        taskIds: string[],
+    ): Promise<RemoteTask[]> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation moveTasksToSprint(
+                        $fromSprintId: ID!
+                        $toSprintId: ID!
+                        $taskIds: [ID!]!
+                    ) {
+                        moveTasksToSprint(
+                            fromSprintId: $fromSprintId
+                            toSprintId: $toSprintId
+                            taskIds: $taskIds
+                        ) {
+                            id
+                        }
+                    }
+                `,
+                variables: {
+                    fromSprintId,
+                    toSprintId,
+                    taskIds,
+                },
+            })
+            .then((payload: any) => payload?.moveTasksToSprint);
+    }
+
+    public copyTasksToSprint(
+        toSprintId: string,
+        taskIds: string[],
+    ): Promise<RemoteTask[]> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation copyTasksToSprint(
+                        $toSprintId: ID!
+                        $taskIds: [ID!]!
+                    ) {
+                        copyTasksToSprint(
+                            toSprintId: $toSprintId
+                            taskIds: $taskIds
+                        ) {
+                            id
+                        }
+                    }
+                `,
+                variables: {
+                    toSprintId,
+                    taskIds,
+                },
+            })
+            .then((payload: any) => payload?.copyTasksToSprint);
+    }
+
     public addTaskToSprint(
         sprintId: string,
         taskId: string,
     ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation addTaskToSprint($sprintId: ID!, $taskId: ID!) {
                         addTaskToSprint(sprintId: $sprintId, taskId: $taskId) {
                             id
@@ -135,7 +228,7 @@ export class SprintClient {
     ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation removeTaskFromSprint(
                         $sprintId: ID!
                         $taskId: ID!

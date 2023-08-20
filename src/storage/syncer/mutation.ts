@@ -1,12 +1,18 @@
 export type CollectionType =
     | 'Task'
+    | 'Sprint'
+    | 'TaskLink'
     | 'Invitation'
     | 'Message'
     | 'Team'
     | 'User'
     | 'Thread'
     | 'TeamMember'
-    | 'TaskAwaitForRelation';
+    | 'TaskAwaitForRelation'
+    | 'SprintTaskRelation'
+    | 'Client'
+    | 'TaskActivity'
+    | 'SprintParticipant';
 
 export type MutationType = 'Create' | 'Update' | 'Delete';
 

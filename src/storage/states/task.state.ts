@@ -1,3 +1,5 @@
+import { Duration, MILLIS_IN_NANOS } from '@lib/entity/duration';
+
 import { toDate } from '@core/storage/states/parser';
 import { TaskStatus } from '@core/storage/states/taskStatus';
 
@@ -14,8 +16,9 @@ export class TaskState {
         public dueAt?: Date,
         public context?: string,
         public ownerUserId?: number,
-        public effort?: number,
+        public effort?: Duration,
         public updatedAt?: Date,
+        public deliveredAt?: Date,
     ) {}
 
     public static fromMutationPayload(json: any): TaskState {
@@ -31,8 +34,11 @@ export class TaskState {
             toDate(json.DueAt),
             json.Context,
             json.OwnerUserID,
-            json.Effort,
+            json.Effort
+                ? new Duration(json.Effort / MILLIS_IN_NANOS)
+                : undefined,
             toDate(json.UpdatedAt),
+            toDate(json.DeliveredAt),
         );
     }
 
@@ -49,8 +55,9 @@ export class TaskState {
             toDate(json.dueAt),
             json.context,
             json.ownerUserId,
-            json.effort,
+            json.effort ? Duration.fromString(json.effort) : undefined,
             toDate(json.updatedAt),
+            toDate(json.deliveredAt),
         );
     }
 }

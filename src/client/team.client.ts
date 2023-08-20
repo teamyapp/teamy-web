@@ -1,11 +1,11 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
-import { CreateTeamInput, UpdateTeamInput } from '@core/client/entity/input';
+import {
+    RemoteCreateTeamInput,
+    RemoteUpdateTeamInput,
+} from '@core/client/entity/input';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
-import { RemoteUser } from '@core/client/entity/remoteUser';
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;
@@ -17,10 +17,28 @@ export class TeamClient {
     public getTeamWithSprintPreviews(teamId: string): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getTeam($teamId: ID!) {
                         teams(filter: { teamId: $teamId }) {
                             id
+                            iconUrl
+                            activeSprint {
+                                id
+                            }
+                            taskActivities {
+                                taskId
+                                dragTaskActivity {
+                                    isDragging
+                                    client {
+                                        id
+                                        user {
+                                            id
+                                            firstName
+                                            lastName
+                                        }
+                                    }
+                                }
+                            }
                             sprints {
                                 id
                                 startAt
@@ -45,7 +63,7 @@ export class TeamClient {
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getTeam($teamId: ID!, $taskFilter: TaskFilter) {
                         teams(filter: { teamId: $teamId }) {
                             id
@@ -55,6 +73,7 @@ export class TeamClient {
                                 dueAt
                                 status
                                 isPlanned
+                                effort
                                 owner {
                                     id
                                     firstName
@@ -72,6 +91,14 @@ export class TeamClient {
                                         id
                                     }
                                 }
+                                links {
+                                    id
+                                    taskId
+                                    title
+                                    url
+                                    iconUrl
+                                    iconHoverUrl
+                                }
                             }
                         }
                     }
@@ -84,10 +111,10 @@ export class TeamClient {
             .then((payload: any) => payload?.teams[0]);
     }
 
-    public createTeam(team: CreateTeamInput): Promise<RemoteTeam> {
+    public createTeam(team: RemoteCreateTeamInput): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation createTeam($input: CreateTeamInput!) {
                         createTeam(team: $input) {
                             id
@@ -97,6 +124,11 @@ export class TeamClient {
                                 id
                             }
                             members {
+                                user {
+                                    id
+                                }
+                            }
+                            activeSprint {
                                 id
                             }
                         }
@@ -111,11 +143,11 @@ export class TeamClient {
 
     public updateTeam(
         teamId: string,
-        input: UpdateTeamInput,
+        input: RemoteUpdateTeamInput,
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation updateTeam(
                         $teamId: ID!
                         $input: UpdateTeamInput!
@@ -124,6 +156,9 @@ export class TeamClient {
                             id
                             name
                             iconUrl
+                            activeSprint {
+                                id
+                            }
                         }
                     }
                 `,
@@ -135,86 +170,92 @@ export class TeamClient {
             .then((payload: any) => payload?.updateTeam);
     }
 
-    public getTeamMembers(teamId: string): Promise<RemoteUser[]> {
-        return this.graphQLClient
-            .query({
-                query: gql`
-                    query getTeamMembers($teamId: ID!) {
-                        teams(filter: { teamId: $teamId }) {
-                            members {
-                                id
-                                lastName
-                                firstName
-                                profileUrl
-                                createdAt
-                            }
-                        }
-                    }
-                `,
-                variables: {
-                    teamId,
-                },
-            })
-            .then((payload: any) => payload?.teams[0]?.members);
-    }
-
-    public addMemberToTeam(
-        teamId: string,
-        memberUserId: string,
-    ): Promise<RemoteUser> {
+    public updateTeamActiveSprint(teamId: string, sprintId: string) {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
-                    mutation addMemberToTeam($teamId: ID!, $memberUserId: ID!) {
-                        addMemberToTeam(
-                            teamId: $teamId
-                            memberUserId: $memberUserId
-                        ) {
-                            id
-                            firstName
-                            lastName
-                            profileUrl
-                            teams {
-                                id
-                            }
-                        }
-                    }
-                `,
-                variables: {
-                    teamId,
-                    memberUserId,
-                },
-            })
-            .then((payload: any) => payload?.addMemberToTeam);
-    }
-
-    public removeMemberFromTeam(
-        teamId: string,
-        memberUserId: string,
-    ): Promise<RemoteUser> {
-        return this.graphQLClient
-            .mutate({
-                mutation: gql`
-                    mutation removeMemberFromTeam(
+                mutation: `
+                    mutation updateTeamActiveSprint(
                         $teamId: ID!
-                        $memberUserId: ID!
+                        $sprintId: ID!
                     ) {
-                        removeMemberFromTeam(
+                        updateTeamActiveSprint(
                             teamId: $teamId
-                            memberUserId: $memberUserId
+                            sprintId: $sprintId
                         ) {
                             id
-                            firstName
-                            lastName
-                            profileUrl
+                            name
+                            iconUrl
+                            activeSprint {
+                                id
+                            }
                         }
                     }
                 `,
                 variables: {
                     teamId,
-                    memberUserId,
+                    sprintId,
                 },
             })
-            .then((payload: any) => payload?.removeMemberFromTeam);
+            .then((payload: any) => payload?.updateTeamActiveSprint);
+    }
+
+    public deleteTeam(teamId: string): Promise<RemoteTeam> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation deleteTeam($teamId: ID!) {
+                        deleteTeam(teamId: $teamId) {
+                            id
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                },
+            })
+            .then((payload: any) => payload?.deleteTeam);
+    }
+
+    public createTeamIconUploadSession(teamId: string): Promise<string> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation createTeamIconUploadSession($teamId: ID!) {
+                        createTeamIconUploadSession(teamId: $teamId)
+                    }
+                `,
+                variables: {
+                    teamId,
+                },
+            })
+            .then((payload: any) => payload?.createTeamIconUploadSession);
+    }
+
+    public finishTeamIconUploadSession(
+        teamId: string,
+        fileUploadSessionId: string,
+    ): Promise<RemoteTeam> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation finishTeamIconUploadSession(
+                        $teamId: ID!
+                        $fileUploadSessionId: ID!
+                    ) {
+                        finishTeamIconUploadSession(
+                            teamId: $teamId
+                            fileUploadSessionId: $fileUploadSessionId
+                        ) {
+                            id
+                            iconUrl
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                    fileUploadSessionId,
+                },
+            })
+            .then((payload: any) => payload?.finishTeamIconUploadSession);
     }
 }

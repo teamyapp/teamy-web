@@ -1,5 +1,6 @@
 @use 'sass:math';
 @import 'Modal.shared.module';
+@import 'Field.shared.module';
 
 $defaultTeamIconBackground: $primaryColor;
 $memberProfileWidth: 60px;
@@ -8,109 +9,51 @@ $tableRowGap: 12px;
 
 .TeamSettingsModal {
     display: flex;
-    flex-direction: column;
-    height: 700px;
     width: 1000px;
+    height: 700px;
+    flex-direction: column;
 
     .Tabs {
         background-color: #f5f5f5;
     }
 
     .TabContent {
-        flex: 1;
         overflow: hidden;
+        flex: 1;
     }
 
     .TeamProfileTab {
-        align-items: center;
-        background-color: #cfd8dc;
-        box-sizing: border-box;
         display: flex;
-        flex-direction: column;
         height: 100%;
-        justify-content: center;
         padding: 20px;
+        background-color: #cfd8dc;
+        align-items: center;
+        box-sizing: border-box;
+        flex-direction: column;
+        justify-content: center;
 
         .TeamProfileTabContent {
-            align-items: center;
-            background-color: white;
-            border: 4px solid #b0bec5;
-            border-radius: 6px;
             display: flex;
-            flex-direction: column;
             padding: 40px;
+            border-radius: 6px;
+            background-color: white;
+            align-items: center;
+            flex-direction: column;
 
-            .TeamIcon {
-                align-items: center;
-                background-color: white;
-                border: 4px solid #e0e0e0;
-                border-radius: 50%;
-                display: flex;
-                height: 150px;
-                justify-content: center;
-                overflow: hidden;
-                position: relative;
-                width: 150px;
-
-                .TeamIconImg {
-                    box-sizing: border-box;
-                    height: 100%;
-                    padding: 20px;
-                    width: 100%;
-                }
-
-                .TeamIconDefault {
-                    align-items: center;
-                    background-color: $defaultTeamIconBackground;
-                    color: white;
-                    display: flex;
-                    font-size: 90px;
-                    font-weight: bold;
-                    height: 100%;
-                    justify-content: center;
-                    line-height: 90px;
-                    width: 100%;
-                }
-
-                &:hover {
-                    .UploadTeamIconButton {
-                        opacity: 0.9;
-                    }
-                }
-
-                .UploadTeamIconButton {
-                    align-items: center;
-                    background-color: #424242;
-                    box-sizing: border-box;
-                    color: white;
-                    display: flex;
-                    font-size: 20px;
-                    font-weight: bold;
-                    height: 100%;
-                    justify-content: center;
-                    left: 0;
-                    opacity: 0;
-                    padding: 0 10px;
-                    position: absolute;
-                    text-align: center;
-                    top: 0;
-                    user-select: none;
-                    width: 100%;
-
-                    &:hover {
-                        cursor: pointer;
-                    }
-                }
+            .TeamIconUploader {
+                --image-uploader-height: 150px;
+                --image-uploader-width: 150px;
             }
 
             .TeamNameSection {
-                --border: 2px solid #757575;
                 margin-top: 30px;
+                --border: 2px solid #757575;
             }
 
             .ActionsSection {
-                --width: 160px;
                 margin-top: 30px;
+                --width: 160px;
+                user-select: none;
 
                 .SaveAction {
                     --background-color: #388e3c;
@@ -118,68 +61,68 @@ $tableRowGap: 12px;
                 }
 
                 .DeleteTeamAction {
+                    margin-top: 6px;
                     --background-color: #d32f2f;
                     --border-color: #c62828;
-                    margin-top: 6px;
                 }
             }
         }
     }
 
     .TeamMembersTab {
-        box-sizing: border-box;
         height: 100%;
-        overflow: hidden;
         padding: 30px 6px;
+        overflow: hidden;
+        box-sizing: border-box;
 
         .Scrollable {
             height: 100%;
-            overflow-y: auto;
             padding: 0 14px;
+            overflow-y: auto;
 
             .TeamMemberList {
-                box-sizing: border-box;
-                column-gap: 20px;
                 display: grid;
+                width: 100%;
+                column-gap: 20px;
+                box-sizing: border-box;
                 grid-template-columns: repeat(5, 1fr);
                 --profile-height: #{$memberProfileHeight};
                 row-gap: 40px;
                 --profile-width: #{$memberProfileWidth};
-                width: 100%;
 
                 .Cell {
-                    align-items: center;
                     display: flex;
+                    align-items: center;
                     flex-direction: column;
 
                     .InvitedUserProfile {
-                        align-items: center;
-                        background-color: #37474f;
-                        border-radius: 50%;
-                        color: white;
                         display: flex;
+                        width: $memberProfileWidth;
+                        height: $memberProfileHeight;
+                        border-radius: 50%;
+                        background-color: #37474f;
+                        color: white;
                         font-size: 36px;
                         font-weight: bold;
-                        height: $memberProfileHeight;
+                        align-items: center;
                         justify-content: center;
                         user-select: none;
-                        width: $memberProfileWidth;
                     }
 
                     .AddButton {
-                        align-items: center;
-                        background-color: #ad1457;
-                        border-radius: 50%;
-                        --icon-color: white;
-                        cursor: pointer;
                         display: flex;
-                        font-weight: bold;
+                        width: $memberProfileWidth;
                         height: $memberProfileHeight;
+                        border-radius: 50%;
+                        background-color: #ad1457;
+                        cursor: pointer;
+                        font-weight: bold;
+                        align-items: center;
+                        --icon-color: white;
+
                         justify-content: center;
 
                         --icon-size: 30px;
-
-                        width: $memberProfileWidth;
 
                         &:hover {
                             opacity: 0.8;
@@ -187,9 +130,9 @@ $tableRowGap: 12px;
                     }
 
                     .MemberName {
+                        margin-top: 10px;
                         font-size: 18px;
                         font-weight: bold;
-                        margin-top: 10px;
                     }
 
                     .InvitationStatus {
@@ -198,6 +141,11 @@ $tableRowGap: 12px;
 
                     .Actions {
                         margin-top: 10px;
+
+                        &:hover {
+                            cursor: pointer;
+                            opacity: 0.8;
+                        }
                     }
                 }
             }
@@ -205,8 +153,8 @@ $tableRowGap: 12px;
     }
 
     .Actions {
-        column-gap: 10px;
         display: flex;
+        column-gap: 10px;
         justify-content: center;
 
         .Action {
@@ -216,55 +164,52 @@ $tableRowGap: 12px;
             }
         }
 
-        .CopyLinkAction {
-            align-items: center;
-            background-color: #1976d2;
-            border-radius: 50%;
-            --icon-color: white;
+        .CopyLink {
             display: flex;
-            height: 28px;
-            justify-content: center;
-            margin: 3px;
-            --icon-size: 19px;
             width: 28px;
+            height: 28px;
+            margin: 3px;
+            border-radius: 50%;
+            background-color: #1976d2;
+            align-items: center;
+            --icon-color: white;
+            justify-content: center;
+            --icon-size: 19px;
         }
 
-        .DeleteAction {
-            --icon-color: #ff0000;
+        .Delete {
             font-weight: 500;
+            --icon-color: #ff0000;
             --icon-size: 34px;
         }
     }
 
-    .InvitationsTab {
-        box-sizing: border-box;
+    .InvitationsTab,
+    .BandwidthTab {
         height: 100%;
-        overflow: hidden;
         padding: 20px 6px;
+        overflow: hidden;
+        box-sizing: border-box;
 
         .Scrollable {
             height: 100%;
-            overflow-y: auto;
             padding: 0 14px;
+            overflow-y: auto;
 
-            .Invitations {
-                border-collapse: collapse;
+            .Table {
                 width: 100%;
+                border-collapse: collapse;
 
                 th {
-                    background-color: #424242;
-                    color: white;
                     position: sticky;
                     top: 0;
+                    background-color: #424242;
+                    color: white;
                 }
 
                 td,
                 th {
                     padding: math.div($tableRowGap, 2) 0;
-                }
-
-                td {
-                    height: 22px;
                 }
 
                 tbody {
@@ -275,19 +220,45 @@ $tableRowGap: 12px;
                     }
                 }
 
-                .Invitation {
+                .Row {
                     font-size: 14px;
                     font-weight: bold;
                     text-align: center;
+                }
+            }
+        }
+    }
 
-                    .LastName {
-                        margin-left: 10px;
-                        margin-right: 10px;
+    .Invitation {
+        .LastName {
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+
+        .InvitationStatus {
+            display: block;
+            margin: 0 auto;
+        }
+    }
+
+    .BandwidthTab {
+        .Scrollable {
+            .Table {
+                .ProfileColumn {
+                    .Profile {
+                        display: flex;
+                        align-items: center;
+                        --profile-height: 40px;
+                        justify-content: center;
+                        --profile-width: 40px;
                     }
+                }
 
-                    .InvitationStatus {
-                        display: block;
-                        margin: 0 auto;
+                .BandwidthColumn {
+                    .Duration {
+                        display: flex;
+                        --duration-background-color: #1565c0;
+                        justify-content: center;
                     }
                 }
             }
@@ -295,13 +266,13 @@ $tableRowGap: 12px;
     }
 
     .InvitationStatus {
+        width: 100px;
+        padding: 4px 0;
         border-radius: 4px;
         font-size: 14px;
         font-weight: bold;
         line-height: 14px;
-        padding: 4px 0;
         text-align: center;
-        width: 100px;
 
         &.PENDING {
             background-color: #f57c00;

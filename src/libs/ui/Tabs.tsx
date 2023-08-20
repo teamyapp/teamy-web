@@ -2,25 +2,25 @@ import React, { Component, ReactNode, RefObject, createRef } from 'react';
 
 import styles from './Tabs.module.scss';
 
-interface IProps {
+interface Props {
     defaultSelectedIndex?: number;
     tabNames: string[];
     onTabClick?: (tableIndex: number) => void;
 }
 
-interface IState {
+interface State {
     selectedTabIndex: number;
     activateTabIndicatorWidth: number;
 }
 
-export class TabsUI extends Component<IProps, IState> {
+export class TabsUI extends Component<Props, State> {
     private readonly containerRef = createRef<HTMLDivElement>();
 
     private readonly tabsRef: RefObject<HTMLDivElement>[];
     private readonly activeTabIndicatorRef: RefObject<HTMLDivElement> =
         createRef();
 
-    constructor(props: IProps) {
+    constructor(props: Props) {
         super(props);
         this.state = {
             selectedTabIndex: props.defaultSelectedIndex || 0,
@@ -29,23 +29,14 @@ export class TabsUI extends Component<IProps, IState> {
         this.tabsRef = this.props.tabNames.map((_: string) => createRef());
     }
 
-    renderTab = (name: string, index: number): ReactNode => {
-        return (
-            <div
-                ref={this.tabsRef[index]}
-                className={styles.Tab}
-                key={index}
-                onClick={this.onTabClickHandler(index)}
-            >
-                {name}
-            </div>
-        );
-    };
-
     public render(): ReactNode {
         let indicatorLeft = this.getActiveTabIndicatorLeft();
         return (
-            <div ref={this.containerRef} className={styles.Tabs}>
+            <div
+                role={'tablist'}
+                ref={this.containerRef}
+                className={styles.Tabs}
+            >
                 {this.props.tabNames.map(this.renderTab)}
                 {this.props.tabNames && (
                     <div
@@ -60,6 +51,21 @@ export class TabsUI extends Component<IProps, IState> {
             </div>
         );
     }
+
+    renderTab = (name: string, index: number): ReactNode => {
+        return (
+            <div
+                role={'tab'}
+                lang={name}
+                ref={this.tabsRef[index]}
+                className={styles.Tab}
+                key={index}
+                onClick={this.onTabClickHandler(index)}
+            >
+                {name}
+            </div>
+        );
+    };
 
     public componentDidMount() {
         this.updateActiveTabIndicatorWidth();
@@ -100,7 +106,6 @@ export class TabsUI extends Component<IProps, IState> {
             this.setState({
                 selectedTabIndex: index,
             });
-
             this.props.onTabClick?.call(this, index);
         };
     }

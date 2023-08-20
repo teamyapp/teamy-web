@@ -1,7 +1,7 @@
 import React, { Component, createRef } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
-import { DatePickerUI } from '@lib/ui/DatePicker';
+import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { DropDownList } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
@@ -11,7 +11,11 @@ import { CreateSprintInput } from '@core/entity/input';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { DURATIONS, DurationKey, getEndAt } from '../format';
 import styles from './CreateSprintModal.component.module.scss';
+
+const SPRINT_LENGTHS: DurationKey[] = ['1week', '2weeks'];
+const DATE_PICKER_Z_INDEX = 1002;
 
 interface Props {
     deps: Deps;
@@ -21,7 +25,8 @@ export class CreateSprintModalComponent extends Component<Props> {
     private readonly localStore: LocalStore;
     private readonly stateSyncer: StateSyncer;
     private readonly modalRef = createRef<ModalUI>();
-    private readonly startDateInputRef = createRef<DatePickerUI>();
+    private readonly startDateInputRef = createRef<DateTextPickerUI>();
+    private readonly sprintLengthInputRef = createRef<DropDownList>();
 
     constructor(props: Props) {
         super(props);
@@ -43,22 +48,23 @@ export class CreateSprintModalComponent extends Component<Props> {
                 </div>
                 <div className={styles.Content}>
                     <div className={styles.StartDate}>
-                        <DatePickerUI
+                        <DateTextPickerUI
+                            relativeLayout={this.props.deps.relativeLayout}
                             label={'Start Date'}
                             ref={this.startDateInputRef}
                             value={new Date()}
+                            zOffset={DATE_PICKER_Z_INDEX}
                         />
                     </div>
                     <div className={styles.SprintLength}>
-                        <div className={styles.Label}>Sprint length: </div>
+                        <div className={styles.Label}>Sprint length:</div>
                         <DropDownList
-                            selectOptionKey={'1w'}
-                            options={[
-                                {
-                                    key: '1w',
-                                    description: '1 week',
-                                },
-                            ]}
+                            selectOptionKey={'1week'}
+                            ref={this.sprintLengthInputRef}
+                            options={SPRINT_LENGTHS.map((duration) => ({
+                                key: duration,
+                                description: DURATIONS[duration].description,
+                            }))}
                         />
                     </div>
                     <div className={styles.AddAction}>
@@ -90,9 +96,15 @@ export class CreateSprintModalComponent extends Component<Props> {
             return;
         }
 
+        const duration = this.sprintLengthInputRef.current?.value;
+        if (!duration) {
+            return;
+        }
+
         const teamId = this.localStore.getState().currTeamId;
         const sprintInput: CreateSprintInput = {
             startAt: startAt,
+            endAt: getEndAt(startAt, duration as DurationKey),
         };
 
         const sprintId = await this.stateSyncer.createSprint(

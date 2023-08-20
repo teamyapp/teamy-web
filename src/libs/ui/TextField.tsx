@@ -48,8 +48,9 @@ export class TextFieldUI extends Component<Props, State> {
 
     public render(): ReactNode {
         return (
-            <div>
+            <>
                 <div
+                    aria-label={this.props.label}
                     className={`${styles.TextField} ${classNames({
                         [styles.Focus]: this.state.isFocused,
                     })}`}
@@ -83,7 +84,7 @@ export class TextFieldUI extends Component<Props, State> {
                         {`${this.state.value.length} / ${this.props.maxLength}`}
                     </div>
                 )}
-            </div>
+            </>
         );
     }
 

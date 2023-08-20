@@ -1,10 +1,11 @@
 import { strictEqual } from 'assert';
+import { describe, it } from 'vitest';
 
 import { chan, multi, sleep } from './csp';
 
 describe('Multi Cast of Channels', () => {
     // TODO: fix 'A closed channel can never be put' error
-    xit('works', async () => {
+    it.skip('works', async () => {
         let c = chan();
         // @ts-ignore
         let multicaster = multi(c);

@@ -1,0 +1,83 @@
+import { InternalError } from '@lib/error/errors';
+import { Optional } from '@lib/sugar/optional';
+import { Logger } from '@lib/telemetry/Logger';
+import {
+    BodyProp,
+    CauseProp,
+    FileNameProp,
+    HeadersProp,
+    HostProp,
+    LineNumberProp,
+    MethodProp,
+    PathProp,
+    ProtocolProp,
+    StageProp,
+} from '@lib/telemetry/Props';
+
+import { Middleware } from '../../middleware/middleware';
+import { HTTPClient, HTTPRequestOptions, HTTPResponse } from '../HTTP.client';
+
+export const clientHTTPWithLogger: (logger: Logger) => Middleware<HTTPClient> =
+    (logger: Logger) =>
+    (httpClient: HTTPClient): HTTPClient => {
+        return {
+            request: async (
+                url: string,
+                options?: HTTPRequestOptions,
+                context?: Record<string, string>,
+            ): Promise<[Optional<HTTPResponse>, Optional<InternalError>]> => {
+                const { pathname, host } = new URL(url);
+                logger.logWithContext(
+                    'Info',
+                    {
+                        [ProtocolProp]: 'web',
+                        [StageProp]: 'begin',
+                        [HostProp]: host,
+                        [MethodProp]: options?.method || 'Get',
+                        [PathProp]: pathname,
+                        [HeadersProp]: JSON.stringify(options?.headers),
+                        [BodyProp]: options?.body
+                            ? JSON.stringify(options?.body)
+                            : '',
+                        [FileNameProp]: BUILD_INJECT_FILE_PATH,
+                        [LineNumberProp]: BUILD_INJECT_LINE_NUMBER,
+                    },
+                    context,
+                );
+                const [result, error] = await httpClient.request(
+                    url,
+                    options,
+                    context,
+                );
+
+                if (error) {
+                    logger.logWithContext(
+                        'Error',
+                        {
+                            [CauseProp]: error,
+                        },
+                        context,
+                    );
+                }
+
+                logger.logWithContext(
+                    'Info',
+                    {
+                        [ProtocolProp]: 'web',
+                        [StageProp]: 'end',
+                        [HostProp]: host,
+                        [MethodProp]: options?.method || 'Get',
+                        [PathProp]: pathname,
+                        [HeadersProp]: result?.headers
+                            ? JSON.stringify(result.headers)
+                            : '',
+                        [BodyProp]: result?.body,
+                        [FileNameProp]: BUILD_INJECT_FILE_PATH,
+                        [LineNumberProp]: BUILD_INJECT_LINE_NUMBER,
+                    },
+                    context,
+                );
+                return [result, error];
+            },
+        };
+    };

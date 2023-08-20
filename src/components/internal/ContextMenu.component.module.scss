@@ -1,0 +1,31 @@
+@import '../../libs/ui/styleguide/elevation';
+
+.ContextMenu {
+    position: fixed;
+    margin: 0;
+    padding: 0;
+    background-color: white;
+    list-style: none;
+    z-index: 1000;
+    @include elevation(5);
+
+    &:focus {
+        outline: none;
+    }
+
+    .ContextMenuItem {
+        padding: 6px 20px;
+        font-size: 16px;
+        font-weight: bold;
+
+        &:hover {
+            background-color: #424242;
+            cursor: pointer;
+            color: white;
+        }
+
+        &:not(:first-child) {
+            border-top: 1px solid #eeeeee;
+        }
+    }
+}

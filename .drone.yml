@@ -3,21 +3,18 @@ type: kubernetes
 name: feature
 
 steps:
-  - name: restore cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: retrieve cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: retrieve
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: build frontend
     image: node:16.13.0-alpine3.13
     commands:
@@ -29,22 +26,18 @@ steps:
     commands:
       - apk add --no-cache git
       - CI=true yarn test
-  - name: rebuild cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: persist cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      rebuild: true
-      override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: persist
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
@@ -53,6 +46,10 @@ steps:
       channel: code
     when:
       status: [ success, failure ]
+volumes:
+  - name: cache
+    host:
+      path: /var/lib/cache
 trigger:
   branch:
     - master
@@ -65,21 +62,18 @@ type: kubernetes
 name: testing
 
 steps:
-  - name: restore cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: retrieve cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: retrieve
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: build frontend
     image: node:16.13.0-alpine3.13
     commands:
@@ -98,28 +92,24 @@ steps:
   - name: notify image update
     image: plugins/webhook
     settings:
-      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      urls: http://keel.deploy.svc.cluster.local:9300/v1/webhooks/native
       template: |
         {
           "name": "registry.digitalocean.com/teamyapp/teamy-web-testing",
           "tag": "latest"
         }
-  - name: rebuild cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: persist cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      rebuild: true
-      override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: persist
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
@@ -128,6 +118,10 @@ steps:
       channel: code
     when:
       status: [ success, failure ]
+volumes:
+  - name: cache
+    host:
+      path: /var/lib/cache
 trigger:
   branch:
     - testing
@@ -139,21 +133,18 @@ type: kubernetes
 name: staging
 
 steps:
-  - name: restore cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: retrieve cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: retrieve
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: build frontend
     image: node:16.13.0-alpine3.13
     commands:
@@ -172,29 +163,25 @@ steps:
   - name: notify image update
     image: plugins/webhook
     settings:
-      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      urls: http://keel.deploy.svc.cluster.local:9300/v1/webhooks/native
       content_type: application/json
       template: |
         {
           "name": "registry.digitalocean.com/teamyapp/teamy-web-staging",
           "tag": "latest"
         }
-  - name: rebuild cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: persist cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      rebuild: true
-      override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: persist
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
@@ -203,6 +190,10 @@ steps:
       channel: code
     when:
       status: [ success, failure ]
+volumes:
+  - name: cache
+    host:
+      path: /var/lib/cache
 trigger:
   branch:
     - master
@@ -215,21 +206,18 @@ type: kubernetes
 name: production
 
 steps:
-  - name: restore cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: retrieve cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: retrieve
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: build frontend
     image: node:16.13.0-alpine3.13
     commands:
@@ -248,28 +236,24 @@ steps:
   - name: notify image update
     image: plugins/webhook
     settings:
-      urls: http://keel.keel.svc.cluster.local:9300/v1/webhooks/native
+      urls: http://keel.deploy.svc.cluster.local:9300/v1/webhooks/native
       template: |
         {
           "name": "registry.digitalocean.com/teamyapp/teamy-web",
           "tag": "latest"
         }
-  - name: rebuild cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: persist cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      rebuild: true
-      override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: persist
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
@@ -278,6 +262,10 @@ steps:
       channel: code
     when:
       status: [ success, failure ]
+volumes:
+  - name: cache
+    host:
+      path: /var/lib/cache
 trigger:
   branch:
     - production
@@ -289,48 +277,35 @@ type: kubernetes
 name: nightly
 
 steps:
-  - name: restore cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: retrieve cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      restore: true
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: retrieve
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
-  - name: build frontend
-    image: node:16.13.0-alpine3.13
-    commands:
-      - apk add --no-cache git g++ make python3
-      - yarn install --frozen-lockfile
-      - yarn build:staging
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: run e2e tests
     image: node:16.13.0-alpine3.13
     commands:
-      - apk add --no-cache git
+      - yarn install --frozen-lockfile
       - yarn test:e2e
-  - name: rebuild cache
-    image: meltwater/drone-cache
-    environment:
-      AWS_ACCESS_KEY_ID:
-        from_secret: SPACE_ACCESS_KEY
-      AWS_SECRET_ACCESS_KEY:
-        from_secret: SPACE_SECRET
+  - name: persist cache
+    image: ghcr.io/teamyapp/drone-cache:0.1.9
+    volumes:
+      - name: cache
+        path: /var/lib/cache
     settings:
-      endpoint: https://sfo3.digitaloceanspaces.com
-      bucket: teamyapp
-      region: sfo3
-      rebuild: true
-      override: false
-      cache_key: '{{ checksum "yarn.lock" }}'
-      mount:
+      mode: persist
+      version_file_path: yarn.lock
+      cacheable_relative_paths:
         - node_modules
+      storage_type: volume
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
@@ -339,6 +314,10 @@ steps:
       channel: code
     when:
       status: [ success, failure ]
+volumes:
+  - name: cache
+    host:
+      path: /var/lib/cache
 trigger:
   branch:
     - master

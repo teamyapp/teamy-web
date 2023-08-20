@@ -1,0 +1,86 @@
+@import '../../../libs/ui/styleguide/color.scss';
+
+.Marketplace {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    align-items: center;
+    justify-content: center;
+
+    > .LeftSection {
+        width: 240px;
+        height: 100%;
+        box-sizing: border-box;
+
+        .SearchBox {
+            display: flex;
+            height: 30px;
+            margin: 20px;
+            border-radius: 4px;
+            background-color: #ececec;
+
+            .Input {
+                flex: 1;
+
+                input {
+                    width: 100%;
+                    height: 100%;
+                    padding: 0 10px;
+                    border: none;
+                    outline: none;
+                    background-color: transparent;
+                    letter-spacing: 1px;
+                    box-sizing: border-box;
+                }
+            }
+
+            .Icon {
+                display: flex;
+                width: 30px;
+                align-items: center;
+                --icon-color: #575757;
+                justify-content: center;
+                --icon-size: 20px;
+            }
+        }
+
+        .Tabs {
+            display: flex;
+            margin: 0 20px;
+            flex-direction: column;
+            row-gap: 4px;
+
+            .Tab {
+                padding: 8px 10px;
+                border-radius: 4px;
+                font-weight: bold;
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.07);
+                    cursor: pointer;
+                }
+
+                &.Active {
+                    background-color: #2770ff;
+                    color: white;
+                }
+            }
+        }
+
+        .Divider {
+            margin: 20px 10px;
+            border-top: 1px solid #eeeeee;
+        }
+    }
+
+    .Content {
+        display: flex;
+        height: 100%;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+        flex: 1;
+        flex-direction: column;
+        overflow-y: auto;
+    }
+}

@@ -5,25 +5,33 @@ import React, {
     KeyboardEvent,
     MouseEvent,
     ReactNode,
+    createRef,
 } from 'react';
 
+import { Duration } from '@lib/entity/duration';
+import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { NamedValueUI } from '@lib/ui/NamedValue';
 import { TooltipUI } from '@lib/ui/Tooltip';
-import { BoundingBoxFinder, Rect } from '@lib/ui/position';
 
 import { taskGoalLengthLimit } from '@core/config/config';
+import { Deps } from '@core/dep/deps';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { ContextMenuComponent } from './ContextMenu.component';
+import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
+import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
+import { TaskLinkIconUI } from './TaskLinkIcon';
 import { UserProfileUI } from './UserProfile';
-import { dueDate, getShortName } from './format';
+import { dueDate, getUserShortName } from './format';
 
 const statusNames: Record<TaskStatus, string> = {
-    UPCOMING: 'Upcoming',
+    TODO: 'Todo',
     PAUSED: 'Paused',
     IN_PROGRESS: 'In Progress',
     BLOCKED: 'Blocked',
@@ -32,11 +40,13 @@ const statusNames: Record<TaskStatus, string> = {
 };
 
 interface Props {
+    deps: Deps;
+    relativeLayout: RelativeLayout;
     task: Task;
     filterTaskAction?: (action: TaskAction) => boolean;
     showStatus?: boolean;
     numActionColumns?: number;
-    isSelectingOwner?: boolean;
+    currentClientId?: number;
     onStartEditingTask?: () => void;
     onFinishEditingTask?: () => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
@@ -45,66 +55,126 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onShowPotentialTaskOwners?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
 }
 
 interface State {
     isEditingGoal: boolean;
+    isSelectingOwner: boolean;
     updatedGoal?: string;
 }
 
 export class InlineTaskUI extends Component<Props, State> {
+    private readonly stateSyncer: StateSyncer;
+    private getBoundingClientRect?: () => DOMRect;
+    private readonly selectTaskOwnersPopupRef =
+        createRef<SelectTaskOwnersPopupComponent>();
+    private readonly taskIdContextMenuRef = createRef<ContextMenuComponent>();
+
     constructor(props: Props) {
         super(props);
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
+            isSelectingOwner: false,
             isEditingGoal: false,
         };
     }
 
     public render() {
+        const { draggingBy } = this.props.task;
+
+        const showDraggingBy =
+            draggingBy && draggingBy.id !== this.props.currentClientId;
+
         return (
-            <div className={styles.Task}>
-                <div className={styles.LeftSection}>
-                    <div className={styles.TopRow}>
-                        <span className={`${styles.Attribute} ${styles.Id}`}>
-                            {this.props.task.id}
-                        </span>
-                        {this.props.showStatus && (
-                            <span
-                                className={`${styles.Attribute} ${
-                                    styles.Status
-                                } ${styles[this.props.task.status]}`}
-                            >
-                                {statusNames[this.props.task.status]}
-                            </span>
-                        )}
+            <>
+                <div className={styles.InlineTask}>
+                    <div
+                        className={`${styles.Task} ${classNames({
+                            [styles.Dragging]: showDraggingBy,
+                        })}`}
+                    >
+                        <div className={styles.LeftSection}>
+                            <div className={styles.TopRow}>
+                                <div
+                                    className={`${styles.Attribute} ${styles.Id}`}
+                                    onContextMenu={this.onTaskIdContextMenu}
+                                >
+                                    {this.props.task.id}
+                                </div>
+
+                                {this.props.showStatus && (
+                                    <div
+                                        className={`${styles.Attribute} ${
+                                            styles.Status
+                                        } ${styles[this.props.task.status]}`}
+                                    >
+                                        {statusNames[this.props.task.status]}
+                                    </div>
+                                )}
+                            </div>
+                            {this.renderGoal()}
+                            <div className={styles.BottomRow}>
+                                <div className={styles.Attribute}>
+                                    {this.renderDueAt()}
+                                </div>
+                                <div className={styles.Attribute}>
+                                    {this.renderEffort()}
+                                </div>
+
+                                {this.props.task.links.map((link) => (
+                                    <div
+                                        className={styles.Attribute}
+                                        key={link.id}
+                                    >
+                                        <TaskLinkIconUI link={link} />
+                                    </div>
+                                ))}
+                            </div>
+                            {this.props.task.awaitForTasks?.length > 0 &&
+                                this.renderAwaitForTasks()}
+                        </div>
+                        <div
+                            className={styles.ActionsSection}
+                            style={{
+                                gridTemplateColumns: `repeat(${
+                                    this.props.numActionColumns || 3
+                                }, 1fr)`,
+                            }}
+                        >
+                            {this.renderActions()}
+                        </div>
                     </div>
-                    {this.renderGoal()}
-                    <div className={styles.BottomRow}>{this.renderDueAt()}</div>
-                    {/*<div className={styles.Attributes}>*/}
-                    {/*    {this.renderEffort()}*/}
-                    {/*</div>*/}
-                    <div className={styles.AwaitFor}>
-                        {this.props.task.awaitForTasks?.length > 0 &&
-                            this.renderAwaitForTasks()}
-                    </div>
+                    {showDraggingBy && (
+                        <div className={styles.DraggingBySection}>
+                            {getUserShortName(
+                                draggingBy.user.firstName,
+                                draggingBy.user.lastName,
+                            )}{' '}
+                            is dragging
+                        </div>
+                    )}
                 </div>
-                <div
-                    className={styles.ActionsSection}
-                    style={{
-                        gridTemplateColumns: `repeat(${
-                            this.props.numActionColumns || 3
-                        }, 1fr)`,
-                    }}
-                >
-                    {this.renderActions()}
-                </div>
-            </div>
+                <SelectTaskOwnersPopupComponent
+                    ref={this.selectTaskOwnersPopupRef}
+                    deps={this.props.deps}
+                    findTaskOwnersAlignTargetBoundBox={
+                        this.getBoundingClientRect
+                    }
+                    onClose={this.onTaskOwnersPopupClose}
+                    onSelectOwner={this.onTaskOwnerSelected}
+                    selectedOwnerId={this.props.task.owner?.id}
+                />
+                <ContextMenuComponent
+                    ref={this.taskIdContextMenuRef}
+                    menuItems={Object.entries(
+                        this.props.deps.uiRegistry.taskIdActions,
+                    ).map(([key, value]) => ({
+                        key,
+                        label: value.readableName,
+                        action: () => value.execute(this.props.task.id),
+                    }))}
+                />
+            </>
         );
     }
 
@@ -130,33 +200,78 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     }
 
+    private onTaskIdContextMenu = (event: MouseEvent) => {
+        event.preventDefault();
+        this.taskIdContextMenuRef.current?.open(event.clientY, event.clientX);
+    };
+
     private renderDueAt = () => {
-        const { dueAt } = this.props.task;
-        const endOfDueAt = byTheEndOf(dueAt);
+        const { dueAt, deliveredAt } = this.props.task;
         const now = new Date();
+        const endOfDueAt = byTheEndOf(dueAt)?.getTime();
+        let warn = false;
+        if (endOfDueAt) {
+            warn = endOfDueAt < now.getTime();
+            if (deliveredAt && deliveredAt.getTime() <= endOfDueAt) {
+                warn = false;
+            }
+        }
+
         return (
-            dueAt &&
-            endOfDueAt && (
-                <div
-                    className={`${styles.DueAt} ${classNames({
-                        [styles.PastDue]: endOfDueAt.getTime() < now.getTime(),
-                    })}`}
-                >
-                    <MaterialIconUI>alarm</MaterialIconUI>
-                    <div className={styles.Time}>{dueDate(dueAt)}</div>
-                </div>
-            )
+            <DateLabelPickerUI
+                relativeLayout={this.props.relativeLayout}
+                value={dueAt}
+                isWarn={warn}
+                shownValue={dueAt && dueDate(dueAt)}
+                onChange={this.handleEndDateChanged}
+            />
         );
+    };
+
+    private handleEndDateChanged = (date?: Date) => {
+        if (!date) {
+            return;
+        }
+
+        this.props.onUpdateTask?.call(this, this.props.task.id, {
+            ...this.getUpdatedTask(),
+            dueAt: date,
+        });
+    };
+
+    private onTaskOwnerSelected = (ownerUserId?: number) => {
+        this.setState({
+            isSelectingOwner: false,
+        });
+
+        this.stateSyncer.updateTask(this.props.task.id, {
+            ...this.getUpdatedTask(),
+            ownerUserId,
+        });
+    };
+
+    private onTaskOwnersPopupClose = () => {
+        this.setState({
+            isSelectingOwner: false,
+        });
     };
 
     private renderEffort = () => {
         const { effort } = this.props.task;
         return (
-            effort && (
-                <span className={styles.EffortAttribute}>
-                    <NamedValueUI name={'Effort'} value={`${effort}`} />
-                </span>
-            )
+            <DurationInputUI
+                relativeLayout={this.props.relativeLayout}
+                duration={effort}
+                icon={
+                    <MaterialIconUI iconStyle={'outlined'}>
+                        weight
+                    </MaterialIconUI>
+                }
+                canClear={true}
+                onPopupOpen={this.onEffortPopupOpen}
+                onPopupClose={this.onEffortPopupClose}
+                onDurationChange={this.onEffortChange}
+            />
         );
     };
 
@@ -164,7 +279,7 @@ export class InlineTaskUI extends Component<Props, State> {
         return (
             <div className={styles.AwaitForTasksSection}>
                 <div className={styles.AwaitForIcon}>
-                    <MaterialIconUI iconStyle={'round'}>
+                    <MaterialIconUI iconStyle={'rounded'}>
                         hourglass_top
                     </MaterialIconUI>
                 </div>
@@ -259,7 +374,7 @@ export class InlineTaskUI extends Component<Props, State> {
                         onClick={this.onAddAwaitForTaskClick}
                     >
                         <div className={`${styles.AddAwaitForTaskIcon}`}>
-                            <MaterialIconUI iconStyle={'round'}>
+                            <MaterialIconUI iconStyle={'rounded'}>
                                 move_up
                             </MaterialIconUI>
                         </div>
@@ -278,7 +393,7 @@ export class InlineTaskUI extends Component<Props, State> {
                         onClick={this.onCompleteTaskClick}
                     >
                         <div className={` ${styles.CompleteTaskIcon}`}>
-                            <MaterialIconUI>check</MaterialIconUI>
+                            <MaterialIconUI>task_alt</MaterialIconUI>
                         </div>
                     </div>
                 </TooltipUI>
@@ -306,15 +421,14 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderAssignOwner(index: number): ReactNode {
         const owner = this.props.task.owner;
         const name = owner
-            ? getShortName(owner.firstName, owner.lastName)
+            ? getUserShortName(owner.firstName, owner.lastName)
             : 'Unassigned';
         return (
             <div key={index} className={styles.AssignOwner}>
                 <TooltipUI message={name}>
                     <div
                         className={`${styles.Action} ${classNames({
-                            [styles.Active]:
-                                this.props.isSelectingOwner || false,
+                            [styles.Active]: this.state.isSelectingOwner,
                         })}`}
                         onClick={this.onAssignOwnerClick}
                     >
@@ -370,15 +484,12 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
         const element = event.currentTarget as HTMLDivElement;
-        this.props.onShowPotentialTaskOwners?.call(
-            null,
-            this.props.task.id,
-            this.getUpdatedTask(),
-            (): Rect => {
-                return element.getBoundingClientRect();
-            },
-            this.props.task.owner?.id,
-        );
+        this.getBoundingClientRect =
+            element.getBoundingClientRect.bind(element);
+        this.selectTaskOwnersPopupRef?.current?.show.call(null);
+        this.setState({
+            isSelectingOwner: true,
+        });
     };
 
     private onAddAwaitForTaskClick = (event: MouseEvent<HTMLDivElement>) => {
@@ -436,6 +547,21 @@ export class InlineTaskUI extends Component<Props, State> {
             dueAt: this.props.task.dueAt,
         };
     }
+
+    private onEffortPopupOpen = () => {
+        this.props.onStartEditingTask?.call(null);
+    };
+
+    private onEffortPopupClose = () => {
+        this.props.onFinishEditingTask?.call(null);
+    };
+
+    private onEffortChange = (effort?: Duration) => {
+        this.props.onUpdateTask?.call(this, this.props.task.id, {
+            ...this.getUpdatedTask(),
+            effort: effort,
+        });
+    };
 }
 
 function byTheEndOf(date?: Date): Date | undefined {

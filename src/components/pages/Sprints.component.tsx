@@ -1,23 +1,21 @@
+import classNames from 'classnames';
 import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { and } from '@lib/data/filter';
+import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
-import { RouteUpdate, Router } from '@lib/router/router';
+import { Duration } from '@lib/entity/duration';
+import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
+import { Router } from '@lib/router/router';
+import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
-import { BoundingBoxFinder } from '@lib/ui/position';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
+import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
-import {
-    getSprintId,
-    getTabId,
-    sprintTabPath,
-    sprintTabRoutePattern,
-    sprintsPath,
-    sprintsRoutePattern,
-} from '@core/config/routing';
+import { userAll, userPrefix, userUnassigned } from '@core/config/filter';
 import {
     deliveredSectionId,
     inProgressSectionId,
@@ -25,24 +23,27 @@ import {
     upcomingSectionId,
 } from '@core/config/sections';
 import { taskUrgencyOrder } from '@core/config/sortOrder';
+import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import * as filters from '@core/data/task.filter';
+import { allTasks, ownedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { SortOrders } from '@core/entity/sortOrders';
 import { Sprint } from '@core/entity/sprint';
+import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
+import { sprintTabPath, sprintsPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
+import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { KanbanUI } from '../internal/Kanban';
-import { PersonalStatusUI } from '../internal/PersonalStatus';
-import { getSprintName } from '../internal/format';
+import { UserProfileUI } from '../internal/UserProfile';
+import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
-
-const tabIds = ['me', 'team'];
 
 const sectionIds = [
     upcomingSectionId,
@@ -54,27 +55,23 @@ const sectionIds = [
 interface Props {
     deps: Deps;
     taskFilters: TaskFilters;
-    selectOwnerTaskId?: number;
-    onShowPotentialTaskOwners?: (
-        taskId: number,
-        updateTaskInput: UpdateTaskInput,
-        findAlignTargetBoundBox: BoundingBoxFinder,
-        selectedOwnerId?: number,
-    ) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onCreateSprintClick?: () => void;
+    onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
 }
 
 interface State {
     activeTabIndex: number;
     currentUserId: number;
     selectedSprintId?: number;
-    teamTasks: Task[];
+    sprintTasks: Task[];
+    sprintParticipants: SprintParticipant[];
     receivingSectionId?: string;
     sortOrders: SortOrders;
+    selectedTaskOwners: Set<string>;
+    allowMultiSelection: boolean;
+    isPageReady?: boolean;
 }
-
-const acceptedRoutePatterns = [sprintsRoutePattern, sprintTabRoutePattern];
 
 export class SprintsComponent extends Component<Props, State> {
     private readonly router: Router;
@@ -83,10 +80,15 @@ export class SprintsComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
 
     private readonly tabsRef = createRef<TabsUI>();
+    private isSelectionModePermanent: boolean = false;
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
-    private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
-    private dragAndDropEventChan?: csp.PopChannel<DragAndDropEvent | undefined>;
+    private keyBoardEventChan?: csp.PopChannel<
+        InternalKeyboardEvent | undefined
+    >;
+    private dragAndDropEventChan?: csp.PopChannel<
+        DragAndDropEvent<DragAndDropContext> | undefined
+    >;
 
     constructor(props: Props) {
         super(props);
@@ -97,37 +99,39 @@ export class SprintsComponent extends Component<Props, State> {
         this.state = {
             activeTabIndex: 0,
             currentUserId: -1, // when not logged in yet
-            teamTasks: [],
+            sprintTasks: [],
+            sprintParticipants: [],
             sortOrders: {
                 upcoming: taskUrgencyOrder,
             },
+            selectedTaskOwners: new Set<string>([userAll]),
+            allowMultiSelection: false,
+            isPageReady: false,
         };
     }
 
     public render(): ReactNode {
+        const clientId = this.localStore.getState().currClientId;
         // TODO: will change when PersonalStatus is merged with Kanban
-        return this.state.selectedSprintId ? (
-            <div className={styles.Sprint}>
-                <div className={styles.Tabs}>
-                    <div className={styles.Container}>
-                        <TabsUI
-                            ref={this.tabsRef}
-                            defaultSelectedIndex={this.state.activeTabIndex}
-                            tabNames={['Me', 'Team']}
-                            onTabClick={this.onTabClick}
-                        />
+        return (
+            this.state.isPageReady &&
+            (this.state.selectedSprintId ? (
+                <div className={styles.Sprint}>
+                    <div className={styles.Content}>
+                        {this.renderTabContent(
+                            sprintTabIds[this.state.activeTabIndex],
+                            clientId,
+                        )}
                     </div>
                 </div>
-                <div className={styles.Content}>
-                    {this.renderTabContent(tabIds[this.state.activeTabIndex])}
-                </div>
-            </div>
-        ) : (
-            this.renderSelectSprint()
+            ) : (
+                this.renderSelectSprint()
+            ))
         );
     }
 
     public componentDidMount() {
+        this.monitorKeyboardEvents();
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -139,78 +143,37 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                if (
-                    acceptedRoutePatterns.includes(
-                        this.router.currentRouteUpdate.routePattern,
-                    )
-                ) {
-                    const sprintIdParam = getSprintId(
-                        this.router.currentRouteUpdate.params,
-                    );
-                    if (!sprintIdParam) {
-                        this.onTabClick(this.state.activeTabIndex);
-                    }
-                }
-
-                this.updateState();
-            }
-        })().then();
-
-        for (const routePattern of acceptedRoutePatterns) {
-            this.router.registerRoute(routePattern, false);
-        }
-        this.routeChangeChan = this.router.subscribeRouteChange();
-        console.log('[SprintComponent] subscribing');
-        (async () => {
-            while (true) {
-                const routeUpdate = await this.routeChangeChan!.pop();
-                if (routeUpdate === undefined) {
-                    return;
-                }
-
-                if (!acceptedRoutePatterns.includes(routeUpdate.routePattern)) {
-                    continue;
-                }
-
-                console.log(
-                    '[SprintComponent] accepted',
-                    routeUpdate.routePattern,
-                    routeUpdate.suffix,
-                    routeUpdate.params.pathParams,
-                );
-
                 const appState = this.localStore.getState();
-                const currTeamId = appState.currTeamId;
-                if (!currTeamId) {
-                    continue;
+                const currentSprint = this.graphSource.currentSprint();
+                const sprintTasks = currentSprint?.tasks || [];
+                const sprintParticipants = currentSprint?.participants || [];
+                const activeSprintTabIndex =
+                    appState.activeSprintTabIndex ||
+                    sprintTabIds.indexOf(defaultSprintTabId);
+                if (appState.currSprintId) {
+                    if (appState.sprintTabReady)
+                        if (
+                            appState.currSprintId !==
+                                this.state.selectedSprintId ||
+                            appState.activeSprintTabIndex !==
+                                this.state.activeTabIndex
+                        ) {
+                            this.selectTab(activeSprintTabIndex, false);
+                        }
+                } else {
+                    this.router.navigateTo(sprintsPath(appState.currTeamId!));
                 }
 
-                const sprintIdParam = getSprintId(routeUpdate.params);
-                if (!sprintIdParam) {
-                    this.onTabClick(this.state.activeTabIndex, true);
-                    continue;
+                if (appState.currUserId) {
+                    this.setState({
+                        sprintParticipants:
+                            sortParticipantsByName(sprintParticipants),
+                        currentUserId: appState.currUserId!,
+                        selectedSprintId: appState.currSprintId,
+                        sprintTasks: sprintTasks,
+                        isPageReady: appState.sprintTabReady,
+                    });
                 }
-
-                const tabId = getTabId(routeUpdate.params);
-                if (!tabId || tabIds.indexOf(tabId) < 0) {
-                    this.onTabClick(this.state.activeTabIndex, true);
-                    continue;
-                }
-
-                const tabIndex = tabIds.indexOf(tabId);
-                const newSprintId = parseInt(sprintIdParam);
-                if (newSprintId !== appState.currSprintId) {
-                    if (!this.stateSyncer.trySetCurrentSprint(newSprintId)) {
-                        this.router.navigateTo(sprintsPath(currTeamId));
-                    }
-                }
-
-                this.setState({
-                    activeTabIndex: tabIndex,
-                });
-                this.tabsRef.current?.setSelectedTabIndex(
-                    tabIds.indexOf(tabId),
-                );
             }
         })().then();
 
@@ -222,17 +185,19 @@ export class SprintsComponent extends Component<Props, State> {
                 if (event === undefined) {
                     return;
                 }
-                if (
-                    event.type === 'Drop' &&
-                    sectionIds.includes(event.srcContainId) &&
-                    sectionIds.includes(event.destContainerId) &&
-                    event.target.type === draggableTask
-                ) {
-                    this.processTaskDrop(
-                        event.srcContainId,
-                        event.destContainerId,
-                        event.target.data,
-                    );
+
+                if (event.type === 'Drop') {
+                    if (
+                        sectionIds.includes(event.srcContainId) &&
+                        sectionIds.includes(event.destContainerId) &&
+                        event.target.type === draggableTask
+                    ) {
+                        this.processTaskDrop(
+                            event.srcContainId,
+                            event.destContainerId,
+                            event.target.data,
+                        );
+                    }
                 }
             }
         })().then();
@@ -240,12 +205,44 @@ export class SprintsComponent extends Component<Props, State> {
 
     public componentWillUnmount() {
         closeIfNot(this.stateChangeChan);
-        closeIfNot(this.routeChangeChan);
         closeIfNot(this.dragAndDropEventChan);
     }
 
+    private monitorKeyboardEvents() {
+        this.keyBoardEventChan =
+            this.props.deps.keyBoardEventMonitor.subscribe();
+
+        (async () => {
+            while (true) {
+                console.log('[SprintsComponent] waiting for keyboard event');
+                const keyboardEvent = await this.keyBoardEventChan!.pop();
+                if (keyboardEvent === undefined) {
+                    return;
+                }
+
+                const { key, eventType } = keyboardEvent;
+                const platform = getPlatform();
+
+                if (
+                    (platform === 'Windows' && key === 'Control') ||
+                    (platform === 'Mac' && key === 'Meta')
+                ) {
+                    if (['keydown', 'keyup'].includes(eventType)) {
+                        if (this.isSelectionModePermanent) {
+                            continue;
+                        }
+
+                        this.setState({
+                            allowMultiSelection: eventType === 'keydown',
+                        });
+                    }
+                }
+            }
+        })();
+    }
+
     private renderSelectSprint(): ReactNode {
-        let sprints =
+        let sprints: Sprint[] =
             this.graphSource.team(this.localStore.getState().currTeamId!)
                 ?.sprints || [];
         sprints = orderByStartTimeDesc(sprints);
@@ -285,12 +282,16 @@ export class SprintsComponent extends Component<Props, State> {
 
     private onSprintRowClick = (sprintId: number) => {
         return async () => {
-            this.stateSyncer.trySetCurrentSprint(sprintId);
-            await this.stateSyncer.pullCurrentSprint();
+            if (this.stateSyncer.trySetCurrentSprint(sprintId)) {
+                await this.stateSyncer.pullCurrentSprint();
+            }
         };
     };
 
-    private renderTabContent(tabId: string): ReactNode | null {
+    private renderTabContent(
+        tabId: string,
+        clientId?: number,
+    ): ReactNode | null {
         let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
         let teamTasksFilter = filters.allTasks;
 
@@ -324,94 +325,280 @@ export class SprintsComponent extends Component<Props, State> {
         }
 
         switch (tabId) {
-            case tabIds[0]:
+            case sprintTabIds[0]:
                 return (
-                    <PersonalStatusUI
-                        deps={this.props.deps}
-                        personalTasks={this.state.teamTasks.filter(
-                            personalTasksFilter,
-                        )}
-                        selectOwnerTaskId={this.props.selectOwnerTaskId}
-                        sortOrders={this.state.sortOrders}
-                        onCreateTask={this.onCreateTask}
-                        onUpdateTask={this.onUpdateTask}
-                        onStartTask={this.moveTaskToInProgress}
-                        onDeleteTask={this.onDeleteTask}
-                        onCompleteTask={this.moveTaskToDelivered}
-                        onViewTaskDetail={this.props.onViewTaskDetail}
-                        onReportTaskBlocked={this.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
-                        }
-                        onSelectUpcomingOrder={this.onSelectUpcomingOrder}
-                    />
-                );
-            case tabIds[1]:
-                return (
-                    <KanbanUI
-                        deps={this.props.deps}
-                        tasks={this.state.teamTasks.filter(teamTasksFilter)}
-                        selectOwnerTaskId={this.props.selectOwnerTaskId}
-                        sortOrders={this.state.sortOrders}
-                        onCreateTask={this.onCreateTask}
-                        onUpdateTask={this.onUpdateTask}
-                        onStartTask={this.moveTaskToInProgress}
-                        onDeleteTask={this.onDeleteTask}
-                        onCompleteTask={this.moveTaskToDelivered}
-                        onViewTaskDetail={this.props.onViewTaskDetail}
-                        onReportTaskBlocked={this.onReportTaskBlocked}
-                        onShowPotentialTaskOwners={
-                            this.props.onShowPotentialTaskOwners
-                        }
-                        onSelectUpcomingOrder={this.onSelectUpcomingOrder}
-                    />
+                    <div className={styles.TeamTab}>
+                        <div className={styles.ParticipantsSection}>
+                            <div className={styles.Content}>
+                                <div className={styles.Title}>
+                                    Participants
+                                    <div className={styles.Counter}>
+                                        {this.state.sprintParticipants.length}
+                                    </div>
+                                </div>
+                                <div className={styles.ParticipantList}>
+                                    <div className={styles.Participant}>
+                                        <div
+                                            onClick={this.onTaskOwnersChange(
+                                                userAll,
+                                            )}
+                                        >
+                                            <div
+                                                className={`${
+                                                    styles.AllParticipants
+                                                }  ${classNames({
+                                                    [styles.Selected]:
+                                                        this.state.selectedTaskOwners.has(
+                                                            userAll,
+                                                        ),
+                                                })}`}
+                                            >
+                                                <MaterialIconUI>
+                                                    group_work
+                                                </MaterialIconUI>
+                                            </div>
+                                        </div>
+                                        <div className={styles.RightSection}>
+                                            <div className={styles.Name}>
+                                                All
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={styles.Participant}>
+                                        <div
+                                            onClick={this.onTaskOwnersChange(
+                                                userUnassigned,
+                                            )}
+                                        >
+                                            <div
+                                                className={`${
+                                                    styles.EmptySelectionFace
+                                                }  ${classNames({
+                                                    [styles.Selected]:
+                                                        this.state.selectedTaskOwners.has(
+                                                            userUnassigned,
+                                                        ),
+                                                })}`}
+                                            >
+                                                <MaterialIconUI>
+                                                    face
+                                                </MaterialIconUI>
+                                            </div>
+                                        </div>
+                                        <div className={styles.RightSection}>
+                                            <div className={styles.Name}>
+                                                Unassigned
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {this.state.sprintParticipants.map(
+                                        this.renderParticipant,
+                                    )}
+                                </div>
+                                <div className={styles.ActionBar}>
+                                    <div
+                                        className={
+                                            styles.MultiSelectionToggleContainer
+                                        }
+                                        onClick={
+                                            this.onMultiSelectionToggleClick
+                                        }
+                                    >
+                                        <input
+                                            className={styles.Toggle}
+                                            type='checkbox'
+                                            checked={
+                                                this.state.allowMultiSelection
+                                            }
+                                            onChange={() => {}}
+                                        />
+                                        <div className={styles.ToggleLabel}>
+                                            Select many
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className={styles.Kanban}>
+                            <KanbanUI
+                                deps={this.props.deps}
+                                tasks={this.state.sprintTasks.filter(
+                                    teamTasksFilter,
+                                )}
+                                currentClientId={clientId}
+                                sortOrders={this.state.sortOrders}
+                                onCreateTask={this.onCreateTask}
+                                onUpdateTask={this.onUpdateTask}
+                                onStartTask={this.moveTaskToInProgress}
+                                onDeleteTask={this.onDeleteTask}
+                                onCompleteTask={this.moveTaskToDelivered}
+                                onViewTaskDetail={this.props.onViewTaskDetail}
+                                onReportTaskBlocked={this.onReportTaskBlocked}
+                                onSelectUpcomingOrder={
+                                    this.onSelectUpcomingOrder
+                                }
+                            />
+                        </div>
+                    </div>
                 );
             default:
                 return null;
         }
     }
 
-    private updateState = () => {
-        const appState = this.localStore.getState();
-        const currentSprint = this.graphSource.currentSprint();
-        const teamTasks = currentSprint?.tasks || [];
-        if (
-            this.state.selectedSprintId &&
-            this.state.selectedSprintId !== appState.currSprintId
-        ) {
-            this.onTabClick(this.state.activeTabIndex, false);
-        }
-
-        if (appState.currUserId) {
-            this.setState({
-                currentUserId: appState.currUserId!,
-                selectedSprintId: appState.currSprintId,
-                teamTasks: teamTasks,
-            });
-        }
+    private onMultiSelectionToggleClick = () => {
+        this.isSelectionModePermanent = !this.state.allowMultiSelection;
+        this.setState({
+            allowMultiSelection: !this.state.allowMultiSelection,
+        });
     };
 
-    private onTabClick = (
+    private onTaskOwnersChange = (value: string) => {
+        return () => {
+            const hasValue = this.state.selectedTaskOwners.has(value);
+
+            if (this.state.allowMultiSelection && value !== userAll) {
+                if (hasValue) {
+                    this.state.selectedTaskOwners.delete(value);
+                } else {
+                    this.state.selectedTaskOwners.delete(userAll);
+                    this.state.selectedTaskOwners.add(value);
+                }
+            } else {
+                if (hasValue && this.state.selectedTaskOwners.size === 1) {
+                    this.state.selectedTaskOwners.delete(value);
+                } else {
+                    this.state.selectedTaskOwners.clear();
+                    this.state.selectedTaskOwners.add(value);
+                }
+            }
+
+            if (!this.state.selectedTaskOwners.size) {
+                this.state.selectedTaskOwners.add(userAll);
+            }
+
+            this.forceUpdate();
+            this.props.onTaskFiltersChange?.call(
+                null,
+                Object.assign<any, TaskFilters, Partial<TaskFilters>>(
+                    {},
+                    this.props.taskFilters,
+                    {
+                        taskOwnerFilter: this.getTaskOwnerFilter(),
+                    },
+                ),
+            );
+        };
+    };
+
+    private getTaskOwnerFilter(): Filter<Task> {
+        if (this.state.selectedTaskOwners.has(userAll)) {
+            return allTasks;
+        }
+
+        const filters = Array.from(this.state.selectedTaskOwners).map(
+            (key: string): Filter<Task> => {
+                if (key === userUnassigned) {
+                    return (task: Task) => !task.owner;
+                } else if (key.startsWith(userPrefix)) {
+                    const parts = key.split('/');
+                    return ownedBy(parseInt(parts[1]));
+                } else {
+                    return allTasks;
+                }
+            },
+        );
+        return or(...filters);
+    }
+
+    private renderParticipant = (
+        participant: SprintParticipant,
         index: number,
-        notifyRouteChange: boolean = false,
     ) => {
+        const { user } = participant;
+        const unusedBandwidthPercent = safePercent(
+            participant.unusedBandwidth,
+            participant.totalBandwidth,
+        );
+        const unusedBandwidthReadable =
+            participant.unusedBandwidth.toReadable();
+        const totalBandwidthReadable = participant.totalBandwidth.toReadable();
+        const userIdentity = `${userPrefix}${user.id}`;
+        return (
+            <div key={index} className={styles.Participant}>
+                <div onClick={this.onTaskOwnersChange(userIdentity)}>
+                    <div
+                        className={`${styles.UserProfile} ${classNames({
+                            [styles.Selected]:
+                                this.state.selectedTaskOwners.has(userIdentity),
+                        })}`}
+                    >
+                        <UserProfileUI user={user} />
+                    </div>
+                </div>
+                <div className={styles.RightSection}>
+                    <div className={styles.Name}>
+                        {getUserShortName(user.firstName, user.lastName)}
+                    </div>
+                    <div className={styles.BandwidthSection}>
+                        <div className={styles.Icon}>
+                            <MaterialIconUI>electric_bolt</MaterialIconUI>
+                        </div>
+                        <div className={styles.Bandwidth}>
+                            <TooltipUI
+                                message={`Bandwidth: ${unusedBandwidthReadable} / ${totalBandwidthReadable}`}
+                                position={'Bottom'}
+                            >
+                                <div className={styles.BandwidthFull}>
+                                    <div
+                                        className={`${
+                                            styles.UnusedBandwidth
+                                        } ${classNames({
+                                            [styles.Negative]:
+                                                participant.unusedBandwidth
+                                                    .totalMilliSeconds < 0,
+                                        })}`}
+                                        style={{
+                                            width: `${Math.abs(
+                                                unusedBandwidthPercent,
+                                            )}%`,
+                                        }}
+                                    />
+                                </div>
+                            </TooltipUI>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    private onTabClick = (index: number) => {
+        const appState = this.localStore.getState();
+        appState.activeSprintTabIndex = index;
+        this.localStore.updateState(appState);
+    };
+
+    private selectTab = (index: number, notifyRouteChange: boolean) => {
         const appState = this.localStore.getState();
         const currTeamId = appState.currTeamId;
         if (!currTeamId) {
             return;
         }
 
-        const currSprintId = appState.currSprintId;
-        if (!currSprintId) {
+        const sprintId = appState.currSprintId;
+        if (!sprintId) {
             return;
         }
 
         this.router.navigateTo(
-            sprintTabPath(currTeamId, currSprintId, tabIds[index]),
-            { notifyRouteChange: notifyRouteChange },
+            sprintTabPath(currTeamId, sprintId, sprintTabIds[index]),
+            {
+                notifyRouteChange: notifyRouteChange,
+            },
         );
 
-        const tabIndex = tabIds.indexOf(tabIds[index]);
+        const tabIndex = sprintTabIds.indexOf(sprintTabIds[index]);
         this.setState({
             activeTabIndex: tabIndex,
         });
@@ -495,4 +682,32 @@ export class SprintsComponent extends Component<Props, State> {
                 break;
         }
     }
+}
+
+function safePercent(dividend: Duration, divisor: Duration): number {
+    return (
+        safeDivide(dividend.totalMilliSeconds, divisor.totalMilliSeconds) * 100
+    );
+}
+
+function safeDivide(dividend: number, divisor: number): number {
+    if (divisor === 0) {
+        return 0;
+    }
+
+    return dividend / divisor;
+}
+
+function sortParticipantsByName(participants: SprintParticipantNode[]) {
+    return [...participants].sort((participantA, participantB) => {
+        const fullNameA = participantA.user.fullName.toUpperCase();
+        const fullNameB = participantB.user.fullName.toUpperCase();
+        if (fullNameA < fullNameB) {
+            return 1;
+        } else if (fullNameA > fullNameB) {
+            return -1;
+        }
+
+        return 0;
+    });
 }

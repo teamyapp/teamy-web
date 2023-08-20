@@ -1,5 +1,6 @@
 import React, { Component, createRef } from 'react';
 
+import { timeFromNow } from '@lib/data/format';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { SpacerUI } from '@lib/ui/Spacer';
@@ -9,7 +10,7 @@ import { Message } from '@core/entity/message';
 
 import styles from './Thread.module.scss';
 import { UserProfileUI } from './UserProfile';
-import { getShortName, timeFromNow } from './format';
+import { getUserShortName } from './format';
 
 interface Props {
     messages: Message[];
@@ -75,7 +76,7 @@ export class ThreadUI extends Component<Props, State> {
                     <div className={styles.RightSection}>
                         <div className={styles.RightTopRow}>
                             <div className={styles.AuthorName}>
-                                {getShortName(
+                                {getUserShortName(
                                     author.firstName,
                                     author.lastName,
                                 )}

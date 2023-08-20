@@ -1,8 +1,11 @@
 import moment from 'moment';
-import React, { Component, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
+import { Duration } from '@lib/entity/duration';
+import { RelativeLayout } from '@lib/layout';
+import { Router } from '@lib/router/router';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
@@ -11,16 +14,18 @@ import { TextFieldUI } from '@lib/ui/TextField';
 import { TooltipUI } from '@lib/ui/Tooltip';
 import { Point } from '@lib/ui/position';
 
-import { invitationLink } from '@core/config/routing';
 import { orderByStatus } from '@core/data/invitation.order';
 import { Deps } from '@core/dep/deps';
 import { Invitation } from '@core/entity/invitation';
 import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
+import { TeamMember } from '@core/entity/teamMember';
+import { invitationLink, teamsRoutePattern } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { DurationInputUI } from '../DurationInput.ui';
+import { ImageUploaderComponent } from '../ImageUploader.component';
 import { UserProfileUI } from '../UserProfile';
 import styles from './TeamSettingsModal.component.module.scss';
 
@@ -40,18 +45,22 @@ interface State {
 }
 
 export class TeamSettingsModalComponent extends Component<Props, State> {
+    private readonly router: Router;
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
+    private readonly relativeLayout: RelativeLayout;
 
     private readonly modalRef = createRef<ModalUI>();
     private onStateChangeChan?: PopChannel<boolean | undefined>;
 
     constructor(props: any) {
         super(props);
+        this.router = props.deps.router;
         this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
+        this.relativeLayout = props.deps.relativeLayout;
         this.state = {
             currentTabIndex: 0,
             invitations: [],
@@ -60,7 +69,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     public render() {
         return (
-            <ModalUI ref={this.modalRef}>
+            <ModalUI ariaLabel={'Team Setting'} ref={this.modalRef}>
                 {this.state.team && (
                     <div className={styles.TeamSettingsModal}>
                         <div className={styles.Header}>
@@ -77,14 +86,17 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                 defaultSelectedIndex={
                                     this.state.currentTabIndex
                                 }
-                                tabNames={['Profile', 'Members', 'Invitations']}
+                                tabNames={[
+                                    'Profile',
+                                    'Bandwidth',
+                                    'Members',
+                                    'Invitations',
+                                ]}
                                 onTabClick={this.onTabClick}
                             />
                         </div>
                         <div className={styles.TabContent}>
-                            {this.renderTeamProfileTab()}
-                            {this.renderTeamMembersTab()}
-                            {this.renderInvitationsTab()}
+                            {this.renderTab()}
                         </div>
                     </div>
                 )}
@@ -92,7 +104,28 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         );
     }
 
-    public componentDidMount() {
+    public open = async (teamId: number, defaultTabIndex: number = 0) => {
+        await this.stateSyncer.pullTeamMembers(teamId);
+        await this.stateSyncer.pullTeamInvitations(teamId);
+        await this.updateState(teamId, defaultTabIndex);
+        this.init(teamId);
+        this.modalRef.current?.open();
+    };
+
+    private renderTab = (): ReactNode => {
+        switch (this.state.currentTabIndex) {
+            case 0:
+                return this.renderTeamProfileTab();
+            case 1:
+                return this.renderBandwidthTab();
+            case 2:
+                return this.renderTeamMembersTab();
+            case 3:
+                return this.renderInvitationsTab();
+        }
+    };
+
+    private init(teamID: number) {
         this.onStateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -101,29 +134,17 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     return;
                 }
 
-                if (this.state.team) {
-                    await this.updateState(
-                        this.state.team.id,
-                        this.state.currentTabIndex,
-                    );
-                }
+                await this.updateState(teamID, this.state.currentTabIndex);
             }
-        })();
+        })().then();
     }
-
-    public componentWillUnmount() {
-        closeIfNot(this.onStateChangeChan);
-    }
-
-    public open = async (teamId: number, defaultTabIndex: number = 0) => {
-        await this.stateSyncer.pullTeamMembers(teamId);
-        await this.stateSyncer.pullTeamInvitations(teamId);
-        await this.updateState(teamId, defaultTabIndex);
-        this.modalRef.current?.open();
-    };
 
     private async updateState(teamId: number, defaultTabIndex: number) {
         const team = await this.graphSource.team(teamId);
+        if (!team) {
+            return;
+        }
+
         let invitations = team!.invitations.map((invitation) => invitation);
         invitations = invitations.sort(
             (invitation1: Invitation, invitation2: Invitation) =>
@@ -146,112 +167,175 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private renderTeamProfileTab = () => {
         return (
-            this.state.currentTabIndex === 0 && (
-                <div className={styles.TeamProfileTab}>
-                    <div className={styles.TeamProfileTabContent}>
-                        <div className={styles.TeamIcon}>
-                            {this.state.team?.iconUrl ? (
-                                <img
-                                    alt={this.state.team?.name}
-                                    className={styles.TeamIconImg}
-                                    src={this.state.team?.iconUrl}
-                                />
-                            ) : (
-                                <div className={styles.TeamIconDefault}>
-                                    {this.state.team?.name[0]?.toUpperCase()}
-                                </div>
-                            )}
-
-                            <div className={styles.UploadTeamIconButton}>
-                                Upload profile
-                            </div>
-                        </div>
-                        <div className={styles.TeamNameSection}>
-                            <TextFieldUI
-                                value={this.state.team?.name}
-                                label={'Name'}
-                                onChange={this.onTeamNameChange}
+            <div className={styles.TeamProfileTab}>
+                <div className={styles.TeamProfileTabContent}>
+                    <div className={styles.TeamIconUploader}>
+                        <ImageUploaderComponent
+                            imageAlt={this.state.team?.name}
+                            emptyImagePlaceholder={this.state.team?.name[0]?.toUpperCase()}
+                            fileUploadSessionFactory={
+                                this.props.deps.fileUploadSessionFactory
+                            }
+                            uploadButtonLabel='Upload icon'
+                            createRemoteFileUploadSession={
+                                this.createRemoteFileUploadSession
+                            }
+                            activeImageUrl={this.state.team?.iconUrl}
+                            onFileUploadFinished={this.handleFileUploadFinished}
+                            validateNewImage={this.validateTeamIconImage}
+                        />
+                    </div>
+                    <div className={styles.IdSection}>
+                        <div>ID:</div>
+                        <div className={styles.Id}>{this.state.team?.id}</div>
+                    </div>
+                    <div className={styles.TeamNameSection}>
+                        <TextFieldUI
+                            value={this.state.team?.name}
+                            label={'Name'}
+                            onChange={this.onTeamNameChange}
+                        />
+                    </div>
+                    <div className={styles.ActionsSection}>
+                        <div className={styles.SaveAction}>
+                            <ButtonUI
+                                label={'Save'}
+                                onClick={this.onSaveTeamProfileClick}
                             />
                         </div>
-                        <div className={styles.ActionsSection}>
-                            <div className={styles.SaveAction}>
-                                <ButtonUI
-                                    label={'Save'}
-                                    onClick={this.onSaveTeamProfileClick}
-                                />
-                            </div>
-                            <div className={styles.DeleteTeamAction}>
-                                <ButtonUI
-                                    label={'Delete Team'}
-                                    onClick={this.onDeleteTeamClick}
-                                />
-                            </div>
+                        <div className={styles.DeleteTeamAction}>
+                            <ButtonUI
+                                label={'Delete Team'}
+                                onClick={this.onDeleteTeamClick}
+                            />
                         </div>
                     </div>
                 </div>
-            )
+            </div>
         );
     };
 
     private renderTeamMembersTab = () => {
         return (
-            this.state.currentTabIndex === 1 && (
-                <div className={styles.TeamMembersTab}>
-                    <div className={styles.Scrollable}>
-                        <div className={styles.TeamMemberList}>
-                            <div className={styles.Cell}>
-                                <div
-                                    className={styles.AddButton}
-                                    onClick={this.onAddTeamMemberClick}
-                                >
-                                    <MaterialIconUI>add</MaterialIconUI>
-                                </div>
+            <div className={styles.TeamMembersTab}>
+                <div className={styles.Scrollable}>
+                    <div className={styles.TeamMemberList}>
+                        <div className={styles.Cell}>
+                            <div
+                                className={styles.AddButton}
+                                onClick={this.onAddTeamMemberClick}
+                            >
+                                <MaterialIconUI>add</MaterialIconUI>
                             </div>
-                            {this.state.team?.members?.map(
-                                this.renderTeamMember,
-                            )}
-                            {this.state.invitations
-                                .filter(
-                                    (invitation) =>
-                                        invitation.status === 'PENDING',
-                                )
-                                .map(this.renderInvitedUser)}
                         </div>
+                        {this.state.team?.members?.map(this.renderTeamMember)}
+                        {this.state.invitations
+                            .filter(
+                                (invitation) => invitation.status === 'PENDING',
+                            )
+                            .map(this.renderInvitedUser)}
                     </div>
                 </div>
-            )
+            </div>
         );
     };
 
     private renderInvitationsTab = () => {
         const sortedInvitations = orderByStatus(this.state.invitations);
         return (
-            this.state.currentTabIndex === 2 && (
-                <div className={styles.InvitationsTab}>
-                    <div className={styles.Scrollable}>
-                        <table className={styles.Invitations}>
-                            <thead>
-                                <tr>
-                                    <th>User ID</th>
-                                    <th>First Name</th>
-                                    <th>Last Name</th>
-                                    <th>Status</th>
-                                    <th>Created At</th>
-                                    <th>Expire At</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {sortedInvitations.map(this.renderInvitation)}
-                            </tbody>
-                        </table>
-                    </div>
+            <div className={styles.InvitationsTab}>
+                <div className={styles.Scrollable}>
+                    <table className={styles.Table}>
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Status</th>
+                                <th>Created At</th>
+                                <th>Expire At</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {sortedInvitations.map(this.renderInvitation)}
+                        </tbody>
+                    </table>
                 </div>
-            )
+            </div>
         );
     };
 
-    private renderTeamMember = (user: User, index: number) => {
+    private renderBandwidthTab = () => {
+        let teamMembers = this.state.team?.members || [];
+        teamMembers = teamMembers
+            .map((member) => member)
+            .sort((member1, member2) => member1.user.id - member2.user.id);
+        return (
+            <div className={styles.BandwidthTab}>
+                <div className={styles.Scrollable}>
+                    <table className={styles.Table}>
+                        <thead>
+                            <tr>
+                                <th>User ID</th>
+                                <th>Profile</th>
+                                <th>Name</th>
+                                <th>Weekly Bandwidth</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {teamMembers.map(this.renderMemberBandwidth)}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        );
+    };
+
+    private renderMemberBandwidth = (
+        member: TeamMember,
+        index: number,
+    ): ReactNode => {
+        const { user } = member;
+        const bandwidthDuration =
+            member.weeklyBandwidth.totalMilliSeconds === 0
+                ? undefined
+                : member.weeklyBandwidth;
+        return (
+            <tr key={index} className={styles.Row}>
+                <td>{user.id}</td>
+                <td className={styles.ProfileColumn}>
+                    <div className={styles.Profile}>
+                        <UserProfileUI user={user} />
+                    </div>
+                </td>
+                <td>
+                    {user.firstName} {user.lastName}
+                </td>
+                <td className={styles.BandwidthColumn}>
+                    <div className={styles.Duration}>
+                        <DurationInputUI
+                            zOffset={1000}
+                            relativeLayout={this.relativeLayout}
+                            duration={bandwidthDuration}
+                            icon={
+                                <MaterialIconUI iconStyle={'outlined'}>
+                                    electric_bolt
+                                </MaterialIconUI>
+                            }
+                            onDurationChange={this.onMemberBandwidthChange(
+                                member,
+                            )}
+                        />
+                    </div>
+                </td>
+            </tr>
+        );
+    };
+
+    private renderTeamMember = (teamMember: TeamMember, index: number) => {
+        const currUserId = this.graphSource.currentUser()!.id;
+        const user = teamMember.user;
         return (
             <div key={index} className={styles.Cell}>
                 <UserProfileUI user={user} />
@@ -261,15 +345,25 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     <span>{user.lastName}</span>
                 </div>
                 <div className={styles.Actions}>
-                    <div className={styles.DeleteAction}>
-                        <MaterialIconUI iconStyle={'outline'}>
-                            remove_circle
-                        </MaterialIconUI>
-                    </div>
+                    {currUserId !== user.id &&
+                        this.renderDeleteTeamMember(user.id)}
                 </div>
             </div>
         );
     };
+
+    private renderDeleteTeamMember(userId: number) {
+        return (
+            <div
+                className={`${styles.Action} ${styles.Delete}`}
+                onClick={this.onDeleteTeamMemberClick(userId)}
+            >
+                <MaterialIconUI iconStyle={'outlined'}>
+                    remove_circle
+                </MaterialIconUI>
+            </div>
+        );
+    }
 
     private renderInvitedUser = (invitation: Invitation, index: number) => {
         const modalPosition = this.modalRef.current?.Position() || {
@@ -299,7 +393,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private renderInvitation = (invitation: Invitation, index: number) => {
         return (
-            <tr key={index} className={styles.Invitation}>
+            <tr key={index} className={`${styles.Row} ${styles.Invitation}`}>
                 <td>{invitation.receiver?.id}</td>
                 <td className={styles.FirstName}>
                     {invitation.receiverFirstName}
@@ -324,10 +418,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         parentOffset={this.state.modalPosition}
                     >
                         <div
-                            className={`${styles.Action} ${styles.CopyLinkAction}`}
+                            className={`${styles.Action} ${styles.CopyLink}`}
                             onClick={this.onCopyInvitationLinkClick(invitation)}
                         >
-                            <MaterialIconUI iconStyle={'outline'}>
+                            <MaterialIconUI iconStyle={'outlined'}>
                                 link
                             </MaterialIconUI>
                         </div>
@@ -348,10 +442,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         return (
             <TooltipUI message={'Delete'} parentOffset={modalPosition}>
                 <div
-                    className={`${styles.Action} ${styles.DeleteAction}`}
+                    className={`${styles.Action} ${styles.Delete}`}
                     onClick={this.onDeleteInvitationClick(invitation.id)}
                 >
-                    <MaterialIconUI iconStyle={'outline'}>
+                    <MaterialIconUI iconStyle={'outlined'}>
                         remove_circle
                     </MaterialIconUI>
                 </div>
@@ -360,6 +454,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     private onCloseButtonClick = () => {
+        closeIfNot(this.onStateChangeChan);
         this.modalRef.current?.close();
     };
 
@@ -388,8 +483,11 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         });
     };
 
-    private onDeleteTeamClick = () => {
-        console.log('onDeleteTeamClick');
+    private onDeleteTeamClick = async () => {
+        const team = this.state.team!;
+        await this.stateSyncer.deleteTeam(team.id);
+        this.modalRef.current?.close();
+        this.router.navigateTo(teamsRoutePattern);
     };
 
     private onAddTeamMemberClick = async () => {
@@ -409,10 +507,64 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         };
     };
 
+    private onDeleteTeamMemberClick = (userId: number) => {
+        return () => {
+            this.stateSyncer.removeMemberFromTeam(this.state.team!.id, userId);
+        };
+    };
+
     private onDeleteInvitationClick = (invitationId: number) => {
         return () => {
             // TODO: replace with mutation event
             this.stateSyncer.deleteInvitation(invitationId);
         };
+    };
+
+    private onMemberBandwidthChange = (
+        teamMember: TeamMember,
+    ): ((duration?: Duration) => void) => {
+        return async (duration?: Duration) => {
+            if (duration === undefined) {
+                return;
+            }
+
+            await this.stateSyncer.updateTeamMember(teamMember.team.id, {
+                userId: teamMember.user.id,
+                weeklyBandwidth: duration,
+            });
+        };
+    };
+
+    private handleFileUploadFinished = async (fileUploadSessionId: number) => {
+        await this.stateSyncer.finishTeamIconUpdateSession(
+            this.state.team!.id,
+            fileUploadSessionId,
+        );
+        const team = this.graphSource.team(this.state.team!.id);
+        this.setState({
+            team,
+        });
+    };
+
+    private validateTeamIconImage(image: HTMLImageElement) {
+        const ratio = image.width / image.height;
+        if (ratio !== 1) {
+            alert('Team icon image need to be a square');
+            return false;
+        }
+
+        if (image.width > 800) {
+            alert(
+                'Team icon image need to be smaller than or equal to 800 x 800',
+            );
+            return false;
+        }
+        return true;
+    }
+
+    private createRemoteFileUploadSession = () => {
+        return this.stateSyncer.createTeamIconUpdateSession(
+            this.state.team!.id,
+        );
     };
 }

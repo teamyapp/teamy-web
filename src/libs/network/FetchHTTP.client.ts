@@ -1,23 +1,19 @@
-import { Errors } from '@lib/error/errors';
-import { Result } from '@lib/error/result';
+import { ErrorCode, InternalError } from '@lib/error/errors';
+import { Optional } from '@lib/sugar/optional';
 
-import { HTTPClient } from './HTTP.client';
+import { HTTPClient, HTTPResponse } from './HTTP.client';
 
-const errors: Record<number, Errors> = {
-    400: Errors.BadRequest,
-    401: Errors.Unauthenticated,
-    404: Errors.NotFound,
-    408: Errors.RequestTimeOut,
-    500: Errors.ServerInternalError,
-    501: Errors.NotImplemented,
-    503: Errors.ServiceUnavailable,
+const httpStatusCodeToErrorCode: Record<number, ErrorCode> = {
+    400: 'BadRequest',
+    401: 'Unauthenticated',
+    404: 'NotFound',
+    408: 'RequestTimeOut',
+    500: 'Unhandled',
+    501: 'NotImplemented',
+    503: 'ServiceUnavailable',
 };
 
 export class FetchHTTPClient implements HTTPClient {
-    private static getError(httpStatusCode: number): Errors {
-        return errors[httpStatusCode] || Errors.Unknown;
-    }
-
     async request(
         url: string,
         options?: {
@@ -25,30 +21,51 @@ export class FetchHTTPClient implements HTTPClient {
             headers?: Record<string, string>;
             body?: string;
         },
-    ): Promise<Result<string, Errors>> {
-        return new Promise<Result<string, Errors>>((resolve) => {
-            fetch(url, {
-                method: options?.method,
-                mode: 'cors',
-                cache: 'no-cache',
-                headers: options?.headers,
-                redirect: 'follow',
-                body: options?.body,
-            })
-                .then(async (response) => {
-                    if (response.status >= 400) {
-                        resolve([
-                            null,
-                            FetchHTTPClient.getError(response.status),
-                        ]);
-                        return null;
-                    } else {
-                        resolve([await response.text(), null]);
-                    }
+    ): Promise<[Optional<HTTPResponse>, Optional<InternalError>]> {
+        return new Promise<[Optional<HTTPResponse>, Optional<InternalError>]>(
+            (resolve) => {
+                fetch(url, {
+                    method: options?.method,
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: options?.headers,
+                    redirect: 'follow',
+                    body: options?.body,
                 })
-                .catch(() => {
-                    resolve([null, Errors.Unknown]);
-                });
-        });
+                    .then(async (response) => {
+                        const headers = Object.fromEntries(
+                            response.headers.entries(),
+                        );
+
+                        if (response.status >= 400) {
+                            resolve([
+                                {
+                                    body: null,
+                                    headers,
+                                    statusCode: response.status,
+                                },
+                                { errorCode: getErrorCode(response.status) },
+                            ]);
+                            return null;
+                        } else {
+                            resolve([
+                                {
+                                    body: await response.text(),
+                                    headers,
+                                    statusCode: response.status,
+                                },
+                                undefined,
+                            ]);
+                        }
+                    })
+                    .catch(() => {
+                        resolve([undefined, { errorCode: 'Unhandled' }]);
+                    });
+            },
+        );
     }
+}
+
+function getErrorCode(httpStatusCode: number): ErrorCode {
+    return httpStatusCodeToErrorCode[httpStatusCode] || 'Unhandled';
 }

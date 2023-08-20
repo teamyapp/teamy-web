@@ -60,5 +60,5 @@ spec:
           port: 80
           passHostHeader: true
   tls:
-    secretName: teamy-cert
+    secretName: cert-teamyapp.com
 

@@ -1,4 +1,5 @@
 import { Sprint } from '@core/entity/sprint';
+import { TeamMember } from '@core/entity/teamMember';
 
 import { User } from './user';
 
@@ -8,6 +9,7 @@ export interface Team {
     iconUrl?: string;
     creator: User;
     owner: User;
-    members?: User[];
+    members?: TeamMember[];
     sprints?: Sprint[];
+    activeSprint?: Sprint;
 }

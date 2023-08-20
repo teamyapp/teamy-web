@@ -1,11 +1,13 @@
 import classNames from 'classnames';
-import React, { Component, MouseEvent, RefObject, createRef } from 'react';
+import React, { Component, MouseEvent, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
+import { orderByName } from '@core/data/team.order';
 import { Team } from '@core/entity/team';
 
+import { ContextMenuComponent } from './ContextMenu.component';
 import styles from './Drawer.module.scss';
 
 interface Props {
@@ -21,24 +23,9 @@ interface Props {
     onCreateTeamClick?: () => void;
 }
 
-interface State {
-    showTeamContextMenu: boolean;
-    teamContextMenuLeft: number;
-    teamContextMenuTop: number;
-}
-
-export class DrawerUI extends Component<Props, State> {
+export class DrawerUI extends Component<Props> {
+    private readonly teamContextMenuRef = createRef<ContextMenuComponent>();
     private selectedTeamId?: number;
-    private teamContextMenuRef: RefObject<any> = createRef();
-
-    constructor(props: Props) {
-        super(props);
-        this.state = {
-            showTeamContextMenu: false,
-            teamContextMenuLeft: -1000,
-            teamContextMenuTop: -1000,
-        };
-    }
 
     render = () => {
         return (
@@ -60,7 +47,9 @@ export class DrawerUI extends Component<Props, State> {
                     </div>
                 </div>
                 <div className={styles.Teams}>
-                    {this.props.teams.map(this.renderTeam)}
+                    {[...this.props.teams]
+                        .sort(orderByName)
+                        .map(this.renderTeam)}
                     <div className={styles.CreateTeamFrame}>
                         <TooltipUI message={'Create Team'} position={'Right'}>
                             <div
@@ -72,43 +61,31 @@ export class DrawerUI extends Component<Props, State> {
                         </TooltipUI>
                     </div>
                 </div>
-                {this.state.showTeamContextMenu && (
-                    <ul
-                        ref={this.teamContextMenuRef}
-                        className={styles.TeamContextMenu}
-                        tabIndex={-1}
-                        style={{
-                            left: this.state.teamContextMenuLeft,
-                            top: this.state.teamContextMenuTop,
-                        }}
-                        onBlur={this.onTeamContextMenuBlur}
-                    >
-                        <li
-                            className={styles.ContextMenuItem}
-                            onClick={this.onAddMembersClick}
-                        >
-                            Add members
-                        </li>
-                        <li
-                            className={styles.ContextMenuItem}
-                            onClick={this.onShowMembersClick}
-                        >
-                            Show members
-                        </li>
-                        <li
-                            className={styles.ContextMenuItem}
-                            onClick={this.onShowInvitationsClick}
-                        >
-                            Show invitations
-                        </li>
-                        <li
-                            className={styles.ContextMenuItem}
-                            onClick={this.onViewTeamSettingsClick}
-                        >
-                            Settings
-                        </li>
-                    </ul>
-                )}
+                <ContextMenuComponent
+                    ref={this.teamContextMenuRef}
+                    menuItems={[
+                        {
+                            key: 'addMembers',
+                            action: this.onAddMembersClick,
+                            label: 'Add Members',
+                        },
+                        {
+                            key: 'showMembers',
+                            action: this.onShowMembersClick,
+                            label: 'Show Members',
+                        },
+                        {
+                            key: 'showInvitations',
+                            action: this.onShowInvitationsClick,
+                            label: 'Show Invitations',
+                        },
+                        {
+                            key: 'viewTeamSettings',
+                            action: this.onViewTeamSettingsClick,
+                            label: 'View Team Settings',
+                        },
+                    ]}
+                />
             </div>
         );
     };
@@ -156,63 +133,35 @@ export class DrawerUI extends Component<Props, State> {
 
     private onTeamContextMenu = (
         teamId: number,
-    ): ((event: MouseEvent<HTMLElement>) => void) => {
+    ): ((event: React.MouseEvent<HTMLElement>) => void) => {
         return (event: MouseEvent<HTMLElement>) => {
             event.preventDefault();
-            this.showTeamContextMenu(teamId, event.clientX, event.clientY);
+            this.selectedTeamId = teamId;
+            this.teamContextMenuRef.current?.open(event.clientY, event.clientX);
         };
     };
 
-    private showTeamContextMenu(teamId: number, left: number, top: number) {
-        this.selectedTeamId = teamId;
-        this.setState({
-            showTeamContextMenu: true,
-            teamContextMenuLeft: left,
-            teamContextMenuTop: top,
-        });
-        setTimeout(() => {
-            this.teamContextMenuRef.current?.focus();
-        });
-    }
-
-    private onTeamContextMenuBlur = () => {
-        this.closeTeamContextMenu();
-    };
-
-    private closeTeamContextMenu() {
-        this.setState({
-            showTeamContextMenu: false,
-            teamContextMenuLeft: -1000,
-            teamContextMenuTop: -1000,
-        });
-    }
-
     private onAddMembersClick = () => {
-        this.props.onAddTeamMembersClick?.call(null, this.selectedTeamId || -1);
-        this.closeTeamContextMenu();
+        if (this.selectedTeamId) {
+            this.props.onAddTeamMembersClick?.call(null, this.selectedTeamId);
+        }
     };
 
     private onShowMembersClick = () => {
-        this.props.onShowTeamMembersClick?.call(
-            null,
-            this.selectedTeamId || -1,
-        );
-        this.closeTeamContextMenu();
+        if (this.selectedTeamId) {
+            this.props.onShowTeamMembersClick?.call(null, this.selectedTeamId);
+        }
     };
 
     private onShowInvitationsClick = () => {
-        this.props.onShowInvitationsClick?.call(
-            null,
-            this.selectedTeamId || -1,
-        );
-        this.closeTeamContextMenu();
+        if (this.selectedTeamId) {
+            this.props.onShowInvitationsClick?.call(null, this.selectedTeamId);
+        }
     };
 
     private onViewTeamSettingsClick = () => {
-        this.props.onViewTeamSettingsClick?.call(
-            null,
-            this.selectedTeamId || -1,
-        );
-        this.closeTeamContextMenu();
+        if (this.selectedTeamId) {
+            this.props.onViewTeamSettingsClick?.call(null, this.selectedTeamId);
+        }
     };
 }

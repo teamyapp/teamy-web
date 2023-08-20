@@ -10,9 +10,11 @@ const minHoverMilliseconds = 500;
 type Position = 'Top' | 'Bottom' | 'Left' | 'Right';
 
 interface Props {
+    children: ReactNode;
     message: string;
     position?: Position;
     parentOffset?: Point;
+    disabled?: boolean;
 }
 
 interface State {
@@ -39,6 +41,10 @@ export class TooltipUI extends Component<Props, State> {
     }
 
     render(): ReactNode {
+        if (this.props.disabled) {
+            return this.props.children;
+        }
+
         return (
             <div className={styles.Box}>
                 <div
@@ -52,6 +58,8 @@ export class TooltipUI extends Component<Props, State> {
                     {this.props.children}
                 </div>
                 <div
+                    role={'tooltip'}
+                    aria-label={this.props.message}
                     ref={this.tooltipRef}
                     className={`${styles.Tooltip} ${classNames({
                         [styles.Show]: this.state.showTooltip,

@@ -1,22 +1,22 @@
 @import './styleguide/elevation';
 
 .Feedback {
-    align-items: center;
-    background-color: #424242;
-    border-radius: 4px;
+    display: none;
+    position: fixed;
+    bottom: 10px;
 
     @include elevation(5);
-    bottom: 10px;
-    display: none;
-    font-size: 16px;
     left: 50%;
-    opacity: 0;
     padding: 10px;
-    position: fixed;
     transform: translateX(-50%);
+    border-radius: 4px;
+    background-color: #424242;
+    font-size: 16px;
+    opacity: 0;
+    z-index: 2000;
+    align-items: center;
     transition-property: opacity;
     transition-timing-function: ease-in-out;
-    z-index: 2000;
 
     &.Show {
         display: flex;
@@ -27,16 +27,16 @@
     }
 
     .Content {
+        padding: 10px;
         color: white;
         flex: 1;
-        padding: 10px;
     }
 
     .Action {
+        padding: 4px 10px;
         border-radius: 2px;
         color: #fff59d;
         font-weight: bold;
-        padding: 4px 10px;
         text-transform: uppercase;
 
         &:hover {

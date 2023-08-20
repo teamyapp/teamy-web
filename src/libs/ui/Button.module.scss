@@ -3,17 +3,17 @@ $borderColor: var(--border-color, #37474f);
 $width: var(--width, 100%);
 
 .Button {
-    background-color: $backgroundColor;
+    width: $width;
+    padding: 6px 20px;
     border: 2px solid $borderColor;
     border-radius: 6px;
-    box-sizing: border-box;
+    background-color: $backgroundColor;
     color: white;
     font-size: 20px;
     font-weight: 500;
-    padding: 6px 20px;
     text-align: center;
+    box-sizing: border-box;
     user-select: none;
-    width: $width;
 
     &:hover {
         cursor: pointer;

@@ -1,19 +1,23 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React, { createRef } from 'react';
+import { createRoot } from 'react-dom/client';
 
 import { initDeps } from '@core/dep/deps';
 
 import { AppComponent } from './components/App.component';
 import './index.scss';
 import reportWebVitals from './reportWebVitals';
+import { initRouter } from './routing/init';
 
 const deps = initDeps();
 
-ReactDOM.render(
+const appRef = createRef<AppComponent>();
+initRouter(deps, appRef);
+
+const root = createRoot(document.getElementById('root')!);
+root.render(
     <React.StrictMode>
-        <AppComponent deps={deps} />
+        <AppComponent ref={appRef} deps={deps} />
     </React.StrictMode>,
-    document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function

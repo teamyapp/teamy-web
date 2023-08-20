@@ -3,18 +3,20 @@ import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { Router } from '@lib/router/router';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
+import { unfinished } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { Sprint } from '@core/entity/sprint';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { ConfirmActionsModalComponent } from './Modals/ConfirmActionsModal.component';
 import styles from './SprintsHeaderSection.component.module.scss';
-import { getSprintName } from './format';
+import { getEndAt, getSprintName } from './format';
 
 interface Props {
     deps: Deps;
@@ -25,13 +27,17 @@ interface State {
     currentSprint?: Sprint;
     showDetail: boolean;
     sprints: Sprint[];
+    sprintToDelete?: number;
 }
 
 export class SprintsHeaderSectionComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
-    private readonly router: Router;
+    private readonly confirmStartNewSprintModalRef: React.RefObject<ConfirmActionsModalComponent> =
+        React.createRef();
+    private readonly deleteSprintConfirmTaskRef: React.RefObject<ConfirmActionsModalComponent> =
+        React.createRef();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
 
     constructor(props: Props) {
@@ -39,7 +45,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         this.graphSource = props.deps.graphSource;
         this.localStore = props.deps.localStore;
         this.stateSyncer = props.deps.stateSyncer;
-        this.router = props.deps.router;
         this.state = {
             sprints: [],
             showDetail: false,
@@ -47,45 +52,88 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
     }
 
     render() {
+        const isOnActiveSprint = this.isOnActiveSprint();
         return (
-            <div
-                className={styles.SprintHeaderSection}
-                tabIndex={-1}
-                onBlur={this.onBlur}
-            >
+            <div className={styles.SprintHeaderSectionContainer}>
+                <TooltipUI message={'Start new sprint'} position={'Bottom'}>
+                    <div className={styles.CopySection}>
+                        <div
+                            className={styles.Button}
+                            onClick={this.onStartNewSprintClick}
+                        >
+                            <MaterialIconUI>outbound</MaterialIconUI>
+                        </div>
+                    </div>
+                </TooltipUI>
+
                 <div
-                    className={`${styles.HeaderSection} ${classNames({
-                        [styles.Active]: this.state.showDetail,
-                    })}`}
-                    onClick={this.onHeaderSectionClick}
+                    className={styles.SprintHeaderSection}
+                    tabIndex={-1}
+                    onBlur={this.onBlur}
                 >
-                    <div className={styles.Icon}>
-                        <MaterialIconUI>directions_run</MaterialIconUI>
-                    </div>
-                    {
-                        <div className={styles.Name}>
-                            {this.renderSprintName()}
-                        </div>
-                    }
-                </div>
-                {this.state.showDetail && (
-                    <div className={styles.Detail}>
-                        <div className={styles.AddSection}>
-                            <div
-                                className={styles.Button}
-                                onClick={this.props.onCreateSprintClick}
-                            >
-                                <MaterialIconUI>add</MaterialIconUI>
+                    <div className={styles.SectionContainer}>
+                        <div
+                            className={`${styles.HeaderSection} ${classNames({
+                                [styles.Active]: this.state.showDetail,
+                            })}`}
+                            onClick={this.onHeaderSectionClick}
+                        >
+                            <div className={styles.Icon}>
+                                <MaterialIconUI>directions_run</MaterialIconUI>
                             </div>
+                            {
+                                <div className={styles.Name}>
+                                    {this.renderSprintName()}
+                                </div>
+                            }
                         </div>
-                        {this.state.sprints.length > 0 && (
-                            <div className={styles.Divider} />
+                        {this.state.showDetail && (
+                            <div className={styles.Detail}>
+                                <div className={styles.AddSection}>
+                                    <div
+                                        className={styles.Button}
+                                        onClick={this.props.onCreateSprintClick}
+                                    >
+                                        <MaterialIconUI>add</MaterialIconUI>
+                                    </div>
+                                </div>
+                                {this.state.sprints.length > 0 && (
+                                    <div className={styles.Divider} />
+                                )}
+                                <div className={styles.Sprints}>
+                                    {this.state.sprints.map(this.renderSprint)}
+                                </div>
+                            </div>
                         )}
-                        <div className={styles.Sprints}>
-                            {this.state.sprints.map(this.renderSprint)}
+                    </div>
+                </div>
+                <TooltipUI
+                    message={'Set as active sprint'}
+                    position={'Bottom'}
+                    disabled={isOnActiveSprint}
+                >
+                    <div className={styles.SetActiveSprintSection}>
+                        <div
+                            className={`${styles.Button} ${classNames({
+                                [styles.Active]: isOnActiveSprint,
+                                [styles.Disabled]: isOnActiveSprint,
+                            })}`}
+                            onClick={this.onSetActiveSprintClick}
+                        >
+                            <MaterialIconUI>star_rate</MaterialIconUI>
                         </div>
                     </div>
-                )}
+                </TooltipUI>
+                <ConfirmActionsModalComponent
+                    ref={this.confirmStartNewSprintModalRef}
+                    message='Do you want to start a new sprint and copy unfinished tasks over?'
+                    onConfirm={this.startNewSprint}
+                />
+                <ConfirmActionsModalComponent
+                    ref={this.deleteSprintConfirmTaskRef}
+                    message='Do you want to delete this sprint?'
+                    onConfirm={this.deleteSprint}
+                />
             </div>
         );
     }
@@ -94,11 +142,14 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         return (
             <div
                 key={sprint.id}
-                className={styles.Sprint}
+                className={`${styles.Sprint} ${classNames({
+                    [styles.Selected]:
+                        sprint.id === this.state.currentSprint?.id,
+                })}`}
                 onClick={this.onSprintClick(sprint.id)}
             >
-                {sprint.id === this.state.currentSprint?.id && (
-                    <div className={styles.Selected} />
+                {sprint.id === this.getActiveSprint()?.id && (
+                    <div className={styles.Active} />
                 )}
                 <div>{getSprintName(sprint.startAt)}</div>
                 <div
@@ -144,7 +195,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     private updateState = () => {
         const currentSprint = this.graphSource.currentSprint();
-        let sprints = this.graphSource.currentTeam()?.sprints || [];
+        let sprints: Sprint[] = this.graphSource.currentTeam()?.sprints || [];
         sprints = orderByStartTimeDesc(sprints);
         this.setState({
             currentSprint,
@@ -158,6 +209,119 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         });
     };
 
+    private onStartNewSprintClick = () => {
+        this.confirmStartNewSprintModalRef.current?.open();
+    };
+
+    private isOnActiveSprint = () => {
+        const currentTeam = this.graphSource.currentTeam();
+        return (
+            currentTeam?.activeSprint &&
+            this.getActiveSprint()?.id === this.state.currentSprint?.id
+        );
+    };
+
+    private getActiveSprint = () => {
+        const currentTeam = this.graphSource.currentTeam();
+        return currentTeam?.activeSprint;
+    };
+
+    private onSetActiveSprintClick = () => {
+        const currentSprint = this.graphSource.currentSprint();
+        const currentTeam = this.graphSource.currentTeam();
+        if (this.isOnActiveSprint()) {
+            return;
+        }
+
+        this.stateSyncer.updateTeamActiveSprint(
+            currentTeam!.id,
+            currentSprint!.id,
+        );
+    };
+
+    private canCopyTasksToNextSprint = () => {
+        const currentSprint = this.graphSource.currentSprint();
+        if (!currentSprint) {
+            return false;
+        }
+
+        const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
+
+        if (!unfinishedTasks.length) {
+            return false;
+        }
+
+        return true;
+    };
+
+    private deleteSprint = async () => {
+        if (!this.state.sprintToDelete) {
+            return;
+        }
+
+        await this.stateSyncer.deleteSprint(this.state.sprintToDelete);
+        this.setState({
+            sprintToDelete: undefined,
+        });
+    };
+
+    private startNewSprint = async () => {
+        if (!this.canCopyTasksToNextSprint()) {
+            alert('can not copy tasks to next sprint');
+            return;
+        }
+
+        const currentSprint = this.graphSource.currentSprint()!;
+        const currentTeam = this.graphSource.currentTeam();
+        let nextSprintId = this.getNextSprint(currentSprint)?.id;
+        if (!nextSprintId) {
+            const startAt = new Date();
+            const endAt = getEndAt(startAt, '1week');
+
+            nextSprintId = await this.stateSyncer.createSprint(
+                currentTeam!.id,
+                {
+                    startAt,
+                    endAt,
+                },
+            );
+        }
+
+        const unfinishedTasks = (currentSprint.tasks || []).filter(unfinished);
+        const unfinishedTaskIds = unfinishedTasks.map((task) => task.id);
+
+        const promises = [];
+        if (this.stateSyncer.trySetCurrentSprint(nextSprintId)) {
+            promises.push(this.stateSyncer.pullCurrentSprint());
+        }
+
+        if (currentTeam?.activeSprint?.id !== nextSprintId) {
+            this.stateSyncer.updateTeamActiveSprint(
+                currentTeam!.id,
+                nextSprintId,
+            );
+        }
+
+        promises.push(
+            this.stateSyncer.copyTasksToSprint(nextSprintId, unfinishedTaskIds),
+        );
+        await Promise.all(promises);
+    };
+
+    private getNextSprint(currentSprint: Sprint) {
+        let sprints = [...this.state.sprints];
+        sprints = orderByStartTimeDesc(sprints);
+        const currentIndex = sprints.findIndex(
+            (sprint) => sprint.id === currentSprint.id,
+        );
+
+        if (currentIndex === 0) {
+            return null;
+        }
+
+        return sprints[currentIndex - 1];
+    }
+
     private onSprintClick = (sprintId: number) => {
         return async () => {
             if (this.stateSyncer.trySetCurrentSprint(sprintId)) {
@@ -170,9 +334,12 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         };
     };
 
-    private onDeleteSprintClick = (sprintId: number) => {
+    private onDeleteSprintClick = (sprintToDelete: number) => {
         return () => {
-            this.stateSyncer.deleteSprint(sprintId);
+            this.setState({
+                sprintToDelete,
+            });
+            this.deleteSprintConfirmTaskRef.current?.open();
         };
     };
 

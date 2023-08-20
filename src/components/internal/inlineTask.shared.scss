@@ -1,7 +1,34 @@
+@import '../../libs/ui/styleguide/divider';
 @import '../../libs/ui/styleguide/elevation';
+@import '../../libs/ui/styleguide/divider';
 
-$actionIconSize: 28px;
 $edgeSpace: 10px;
+$actionIconSize: 28px;
+
+@mixin actionIcon {
+    border-radius: 50%;
+    align-items: center;
+    display: flex;
+    --icon-color: white;
+}
+
+.Action {
+    display: flex;
+    width: $actionIconSize;
+    height: $actionIconSize;
+    padding: 4px;
+    border-radius: 4px;
+    align-items: center;
+    --icon-box-size: #{$actionIconSize};
+    justify-content: center;
+    --icon-size: #{$actionIconSize};
+    user-select: none;
+
+    &.Active,
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.07);
+    }
+}
 
 @mixin goalText {
     font-family: inherit;
@@ -11,19 +38,41 @@ $edgeSpace: 10px;
 
 .Task {
     @include elevation(4);
-    background-color: white;
-    border: 4px solid transparent;
-    border-radius: 6px;
     display: flex;
     min-height: 80px;
     padding: $edgeSpace;
+    border: 4px solid transparent;
+    border-radius: 6px;
+    background-color: white;
+    word-break: break-word;
 
     &:hover {
         cursor: pointer;
     }
 
     .LeftSection {
-        flex: 1;
         padding-right: $edgeSpace;
+        flex: 1;
+    }
+
+    .AssignOwnerIcon {
+        display: flex;
+        border-radius: 50%;
+        align-items: center;
+        --icon-color: #3d7bf6;
+        --icon-size: #{$actionIconSize + 4px};
+    }
+
+    .ActionsSection {
+        display: grid;
+        padding-left: $edgeSpace;
+        border-left: 2px solid $dividerColor;
+        gap: 2px;
+        grid-auto-rows: min-content;
+
+        .AssignOwner {
+            --profile-height: #{$actionIconSize};
+            --profile-width: #{$actionIconSize};
+        }
     }
 }

@@ -1,16 +1,19 @@
 import moment from 'moment';
 
 import { PopChannel, chan, multi } from '@lib/csp/csp';
+import { Duration } from '@lib/entity/duration';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
+import { RemoteTask } from '@core/client/entity/remoteTask';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
 import { SprintClient } from '@core/client/sprint.client';
 import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
+import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
 import { TaskFilter } from '@core/entity/filters';
 import {
@@ -23,21 +26,28 @@ import {
     UpdateMessageInput,
     UpdateTaskInput,
     UpdateTeamInput,
+    UpdateTeamMemberInput,
     UpdateUserInput,
 } from '@core/entity/input';
 import { AppState } from '@core/storage/states/app.state';
-import { toInt } from '@core/storage/states/parser';
+import { toDate, toInt } from '@core/storage/states/parser';
 import { SprintTaskRelationState } from '@core/storage/states/sprintTaskRelation.state';
 import { TaskState } from '@core/storage/states/task.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
 import { LocalStore } from './localStore';
-import { Mutation } from './mutation';
+import { Message } from './message';
+import { Metadata } from './metadata';
 import {
     applyInvitationMutation,
     applyMessageMutation,
+    applySprintMutation,
+    applySprintParticipantMutation,
+    applySprintTaskMutation,
+    applyTaskActivityMutation,
     applyTaskAwaitingForRelationMutation,
+    applyTaskLinkMutation,
     applyTaskMutation,
     applyTeamMemberMutation,
     applyTeamMutation,
@@ -49,22 +59,31 @@ import {
     mergeTask,
     mergeTeam,
     mergeUser,
+    removeOrMergeTeamMembers,
     replaceTeamInvitations,
-    replaceTeamMembers,
+    replaceTeamTaskActivities,
 } from './stateMutators';
+import { StateSyncClient } from './stateSyncClient';
+import { Transaction } from './transaction';
 
 export class StateSyncer {
     private readonly connection: Connection;
-    private readonly onMutationReceivedCh = chan<Mutation>();
-    private readonly onMutationReceivedMulti = multi(this.onMutationReceivedCh);
+    private readonly onTransactionReceivedCh = chan<Transaction>();
+    private readonly onTransactionReceivedMulti = multi(
+        this.onTransactionReceivedCh,
+    );
+
+    private metadataReceived = false;
 
     constructor(
+        private stateSyncClient: StateSyncClient,
         private webSocketEndpoint: string,
         private identityClient: IdentityClient,
         private localStore: LocalStore,
         private taskClient: TaskClient,
         private messageClient: MessageClient,
         private teamClient: TeamClient,
+        private teamMemberClient: TeamMemberClient,
         private userClient: UserClient,
         private invitationClient: InvitationClient,
         private sprintClient: SprintClient,
@@ -73,8 +92,23 @@ export class StateSyncer {
         this.connection = new WebSocketConnection(url, getAccessToken);
     }
 
-    public onMutationReceived(): PopChannel<Mutation | undefined> {
-        return this.onMutationReceivedMulti.copy();
+    public async notifyInitialStateReceived() {
+        if (!this.metadataReceived) {
+            return;
+        }
+
+        let appState = this.localStore.getState();
+        if (!appState.currClientId) {
+            return;
+        }
+
+        return this.stateSyncClient.sendInitialStateIsReady(
+            appState.currClientId,
+        );
+    }
+
+    public onTransactionReceived(): PopChannel<Transaction | undefined> {
+        return this.onTransactionReceivedMulti.copy();
     }
 
     public async ensureConnected(): Promise<void> {
@@ -83,22 +117,43 @@ export class StateSyncer {
         }
 
         const messageReceived = this.connection.onMessageReceived();
-        (async () => {
+        await this.connection.connect();
+        await new Promise(async (resolve) => {
             while (true) {
-                const message = await messageReceived.pop();
-                if (message === undefined) {
+                const receivedMessage = await messageReceived.pop();
+                if (receivedMessage === undefined) {
+                    resolve(null);
                     return;
                 }
 
-                const json = JSON.parse(message);
+                const json = JSON.parse(receivedMessage);
                 console.log('JSON received: ', json);
-                const mutation = Mutation.fromMutationPayload(json);
-                console.log('Mutation received: ', mutation);
-                await this.mutateState(mutation);
-                this.onMutationReceivedCh.put(mutation);
+                const message = Message.fromMutationPayload(json);
+                console.log('Message received: ', message);
+                switch (message.type) {
+                    case 'Transaction': {
+                        if (!this.metadataReceived) {
+                            break;
+                        }
+                        const transaction = Transaction.fromTransactionPayload(
+                            message.payload,
+                        );
+
+                        await this.mutateState(transaction);
+                        this.onTransactionReceivedCh.put(transaction);
+                        break;
+                    }
+                    case 'Metadata': {
+                        await this.updateMetadataState(
+                            Metadata.fromMutationPayload(message.payload),
+                        );
+                        this.metadataReceived = true;
+                        resolve(null);
+                        break;
+                    }
+                }
             }
-        })().then();
-        await this.connection.connect();
+        });
     }
 
     public trySetCurrentTeam(currTeamId: number): boolean {
@@ -113,6 +168,8 @@ export class StateSyncer {
                 teamMember.teamId === currTeamId,
         );
         if (match.length === 0) {
+            appState.currTeamId = undefined;
+            this.localStore.updateState(appState);
             return false;
         }
 
@@ -183,7 +240,17 @@ export class StateSyncer {
             return;
         }
 
+        appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
+
+        if (remoteTeam.taskActivities?.length) {
+            appState = replaceTeamTaskActivities(
+                appState,
+                currTeamId,
+                remoteTeam.taskActivities,
+            );
+        }
+
         if (remoteTeam.sprints) {
             const startOfDay = moment(Date.now()).startOf('day').utc().toDate();
             const startOfDayMilli = startOfDay.getTime();
@@ -232,7 +299,7 @@ export class StateSyncer {
             `${currTeamId}`,
             remoteFilter,
         );
-
+        appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
         this.localStore.updateState(appState);
     }
@@ -244,9 +311,14 @@ export class StateSyncer {
             return;
         }
 
+        await this.pullSprint(currSprintId);
+    }
+
+    public async pullSprint(sprintId: number) {
         const sprint = await this.sprintClient.getSprintWithTaskPreviews(
-            `${currSprintId}`,
+            `${sprintId}`,
         );
+        let appState = this.localStore.getState();
         if (sprint) {
             appState = mergeSprint(appState, sprint);
         } else {
@@ -266,13 +338,9 @@ export class StateSyncer {
     }
 
     public async pullTeamMembers(teamId: number): Promise<void> {
-        const members = await this.teamClient.getTeamMembers(`${teamId}`);
+        const members = await this.teamMemberClient.getTeamMembers(`${teamId}`);
         let appState = this.localStore.getState();
-        appState = replaceTeamMembers(appState, teamId, members);
-        members.forEach((member) => {
-            appState = mergeUser(appState, member);
-        });
-
+        appState = removeOrMergeTeamMembers(appState, teamId, members);
         this.localStore.updateState(appState);
     }
 
@@ -313,11 +381,6 @@ export class StateSyncer {
         const remoteTeam = await this.teamClient.createTeam(team);
         let appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
-
-        // TODO: dedupe with real time team member mutation
-        const userId = appState.currUserId;
-        const teamId = toInt(remoteTeam.id)!;
-        appState.teamMembers.push(new TeamMemberState(teamId, userId!));
         this.localStore.updateState(appState);
     }
 
@@ -336,16 +399,75 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async addTeamMember(teamId: number, userId: number): Promise<void> {
-        const remoteMember = await this.teamClient.addMemberToTeam(
+    public async updateTeamActiveSprint(teamId: number, sprintId: number) {
+        const remoteTeam = await this.teamClient.updateTeamActiveSprint(
             `${teamId}`,
-            `${userId}`,
+            `${sprintId}`,
         );
 
-        // TODO: dedupe with real time team member mutation
         let appState = this.localStore.getState();
-        appState = mergeUser(appState, remoteMember);
-        appState.teamMembers.push(new TeamMemberState(teamId, userId));
+        appState = mergeTeam(appState, remoteTeam);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteTeam(teamId: number) {
+        await this.teamClient.deleteTeam(`${teamId}`);
+    }
+
+    public async startDraggingTask(
+        taskId: number,
+    ): Promise<string | undefined> {
+        let appState = this.localStore.getState();
+        if (!appState.currClientId) {
+            return;
+        }
+
+        return this.taskClient.startDraggingTask(
+            `${taskId}`,
+            `${appState.currClientId}`,
+        );
+    }
+
+    public async stopDraggingTask(taskId: number): Promise<string | undefined> {
+        let appState = this.localStore.getState();
+        if (!appState.currClientId) {
+            return;
+        }
+
+        return this.taskClient.stopDraggingTask(
+            `${taskId}`,
+            `${appState.currClientId}`,
+        );
+    }
+
+    public async updateTeamMember(
+        teamId: number,
+        input: UpdateTeamMemberInput,
+    ): Promise<void> {
+        const remoteTeamMember = await this.teamMemberClient.updateTeamMember(
+            `${teamId}`,
+            {
+                userId: `${input.userId}`,
+                weeklyBandwidth: input.weeklyBandwidth.toString(),
+            },
+        );
+        const appState = this.localStore.getState();
+        appState.teamMembers = appState.teamMembers.map((teamMember) => {
+            if (
+                teamMember.teamId !== teamId ||
+                teamMember.userId !== input.userId
+            ) {
+                return teamMember;
+            }
+
+            return new TeamMemberState(
+                teamId,
+                input.userId,
+                Duration.fromString(remoteTeamMember.weeklyBandwidth),
+                toDate(remoteTeamMember.createdAt)!,
+                toDate(remoteTeamMember.updatedAt),
+            );
+        });
         this.localStore.updateState(appState);
     }
 
@@ -354,7 +476,7 @@ export class StateSyncer {
         task: CreateTaskInput,
         sprintId?: number,
     ): Promise<void> {
-        let isPlanned: boolean | undefined;
+        let isPlanned = false;
         if (sprintId) {
             isPlanned = true;
         }
@@ -383,7 +505,7 @@ export class StateSyncer {
             context: input.context,
             ownerUserId: input.ownerUserId ? `${input.ownerUserId}` : undefined,
             owningTeamId: `${input.owningTeamId}`,
-            effort: input.effort,
+            effort: input.effort?.toString(),
             dueAt: input.dueAt,
         });
 
@@ -430,6 +552,7 @@ export class StateSyncer {
         const remoteTask = await this.taskClient.moveTaskToInProgress(
             `${taskId}`,
         );
+        appState = this.localStore.getState();
         appState = mergeTask(appState, remoteTask);
         this.localStore.updateState(appState);
     }
@@ -445,6 +568,7 @@ export class StateSyncer {
         const remoteTask = await this.taskClient.moveTaskToDelivered(
             `${taskId}`,
         );
+        appState = this.localStore.getState();
         appState = mergeTask(appState, remoteTask);
         this.localStore.updateState(appState);
     }
@@ -459,7 +583,7 @@ export class StateSyncer {
                 task.status = 'PAUSED';
                 break;
             default:
-                task.status = 'UPCOMING';
+                task.status = 'TODO';
         }
 
         // Responsive UI for drag & drop
@@ -468,6 +592,7 @@ export class StateSyncer {
         const remoteTask = await this.taskClient.moveTaskToUpcoming(
             `${taskId}`,
         );
+        appState = this.localStore.getState();
         appState = mergeTask(appState, remoteTask);
         this.localStore.updateState(appState);
     }
@@ -486,20 +611,42 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async createUserProfileUpdateSession(): Promise<number> {
+    public createUserProfileUpdateSession = async (): Promise<number> => {
         const remoteSessionID =
             await this.userClient.createUserProfileUploadSession();
         return parseInt(remoteSessionID);
-    }
+    };
 
     public async finishUserProfileUpdateSession(
         fileUploadSessionId: number,
-    ): Promise<number> {
+    ): Promise<void> {
+        const remoteUser = await this.userClient.finishUserProfileUploadSession(
+            `${fileUploadSessionId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeUser(appState, remoteUser);
+        this.localStore.updateState(appState);
+    }
+
+    public createTeamIconUpdateSession = async (
+        teamId: number,
+    ): Promise<number> => {
         const remoteSessionID =
-            await this.userClient.finishUserProfileUploadSession(
-                `${fileUploadSessionId}`,
-            );
+            await this.teamClient.createTeamIconUploadSession(`${teamId}`);
         return parseInt(remoteSessionID);
+    };
+
+    public async finishTeamIconUpdateSession(
+        teamId: number,
+        fileUploadSessionId: number,
+    ): Promise<void> {
+        const remoteTeam = await this.teamClient.finishTeamIconUploadSession(
+            `${teamId}`,
+            `${fileUploadSessionId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeTeam(appState, remoteTeam);
+        this.localStore.updateState(appState);
     }
 
     public async createMessage(
@@ -580,12 +727,29 @@ export class StateSyncer {
         await this.invitationClient.deleteInvitation(`${invitationId}`);
     }
 
+    public async removeMemberFromTeam(
+        teamId: number,
+        userId: number,
+    ): Promise<void> {
+        let appState = this.localStore.getState();
+        appState.teamMembers = appState.teamMembers.filter(
+            (teamMember) =>
+                !(teamMember.teamId === teamId && teamMember.userId === userId),
+        );
+        this.localStore.updateState(appState);
+        await this.teamMemberClient.removeMemberFromTeam(
+            `${teamId}`,
+            `${userId}`,
+        );
+    }
+
     public async createSprint(
         teamId: number,
         sprint: CreateSprintInput,
     ): Promise<number> {
         const remoteSprint = await this.sprintClient.createSprint(`${teamId}`, {
             startAt: sprint.startAt,
+            endAt: sprint.endAt,
         });
         let appState = this.localStore.getState();
         appState = mergeSprint(appState, remoteSprint);
@@ -628,6 +792,60 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async copyTasksToSprint(toSprintId: number, taskIds: number[]) {
+        await this.sprintClient.copyTasksToSprint(
+            `${toSprintId}`,
+            taskIds.map(String),
+        );
+    }
+
+    public async moveTasksToSprint(
+        fromSprintId: number,
+        toSprintId: number,
+        taskIds: number[],
+    ) {
+        const remoteTasks = await this.sprintClient.moveTasksToSprint(
+            `${fromSprintId}`,
+            `${toSprintId}`,
+            taskIds.map(String),
+        );
+
+        const appState = remoteTasks.reduce(
+            (appState, remoteTask) =>
+                this._moveTaskToSprint(
+                    appState,
+                    remoteTask,
+                    fromSprintId,
+                    toSprintId,
+                ),
+            this.localStore.getState(),
+        );
+        this.localStore.updateState(appState);
+    }
+
+    private _moveTaskToSprint(
+        appState: AppState,
+        remoteTask: RemoteTask,
+        fromSprintId: number,
+        toSprintId: number,
+    ): AppState {
+        const taskId = toInt(remoteTask.id);
+        if (taskId === undefined) {
+            return appState;
+        }
+
+        appState = mergeTask(appState, remoteTask);
+        appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
+            (relation) =>
+                !(
+                    relation.sprintId === fromSprintId &&
+                    relation.taskId === taskId
+                ),
+        );
+
+        return appState;
+    }
+
     private async _removeTaskFromSprint(
         appState: AppState,
         sprintId: number,
@@ -655,52 +873,94 @@ export class StateSyncer {
         );
         let appState = this.localStore.getState();
         appState = mergeTask(appState, remoteTask);
+
+        if (
+            appState.sprintTaskRelations.find(
+                (sprintTaskRelationItem) =>
+                    sprintTaskRelationItem.taskId === taskId &&
+                    sprintTaskRelationItem.sprintId === sprintId,
+            )
+        ) {
+            return appState;
+        }
+
         const relation: SprintTaskRelationState = { sprintId, taskId };
         appState.sprintTaskRelations =
             appState.sprintTaskRelations.concat(relation);
         return appState;
     }
 
-    private async mutateState(mutation: Mutation) {
+    private async updateMetadataState(metadata: Metadata) {
         let appState = this.localStore.getState();
-        switch (mutation.collectionType) {
-            case 'Task': {
-                appState = applyTaskMutation(appState, mutation);
-                break;
-            }
-            case 'Invitation': {
-                appState = applyInvitationMutation(appState, mutation);
-                break;
-            }
-            case 'Message': {
-                appState = applyMessageMutation(appState, mutation);
-                break;
-            }
-            case 'Thread': {
-                break;
-            }
-            case 'Team': {
-                appState = applyTeamMutation(appState, mutation);
-                break;
-            }
-            case 'User': {
-                appState = applyUserMutation(appState, mutation);
-                break;
-            }
-            case 'TeamMember': {
-                appState = await applyTeamMemberMutation(
-                    appState,
-                    mutation,
-                    this.teamClient,
-                );
-                break;
-            }
-            case 'TaskAwaitForRelation': {
-                appState = applyTaskAwaitingForRelationMutation(
-                    appState,
-                    mutation,
-                );
-                break;
+        appState.currClientId = Number(metadata.clientId);
+        this.localStore.updateState(appState);
+    }
+
+    private async mutateState(transaction: Transaction) {
+        let appState = this.localStore.getState();
+        for (const mutation of transaction.mutations) {
+            switch (mutation.collectionType) {
+                case 'Sprint': {
+                    appState = applySprintMutation(appState, mutation);
+                    break;
+                }
+                case 'Task': {
+                    appState = applyTaskMutation(appState, mutation);
+                    break;
+                }
+                case 'TaskLink': {
+                    appState = applyTaskLinkMutation(appState, mutation);
+                    break;
+                }
+                case 'SprintTaskRelation': {
+                    appState = applySprintTaskMutation(appState, mutation);
+                    break;
+                }
+                case 'Invitation': {
+                    appState = applyInvitationMutation(appState, mutation);
+                    break;
+                }
+                case 'Message': {
+                    appState = applyMessageMutation(appState, mutation);
+                    break;
+                }
+                case 'Thread': {
+                    break;
+                }
+                case 'Team': {
+                    appState = applyTeamMutation(appState, mutation);
+                    break;
+                }
+                case 'User': {
+                    appState = applyUserMutation(appState, mutation);
+                    break;
+                }
+                case 'TeamMember': {
+                    appState = await applyTeamMemberMutation(
+                        appState,
+                        mutation,
+                        this.teamMemberClient,
+                    );
+                    break;
+                }
+                case 'TaskAwaitForRelation': {
+                    appState = applyTaskAwaitingForRelationMutation(
+                        appState,
+                        mutation,
+                    );
+                    break;
+                }
+                case 'TaskActivity': {
+                    appState = applyTaskActivityMutation(appState, mutation);
+                    break;
+                }
+                case 'SprintParticipant': {
+                    appState = applySprintParticipantMutation(
+                        appState,
+                        mutation,
+                    );
+                    break;
+                }
             }
         }
 

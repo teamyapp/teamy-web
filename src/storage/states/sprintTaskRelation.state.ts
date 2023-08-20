@@ -4,4 +4,8 @@ export class SprintTaskRelationState {
     public static fromJson(json: any): SprintTaskRelationState {
         return new SprintTaskRelationState(json.sprintId, json.taskId);
     }
+
+    public static fromMutationPayload(json: any): SprintTaskRelationState {
+        return new SprintTaskRelationState(json.SprintID, json.TaskID);
+    }
 }

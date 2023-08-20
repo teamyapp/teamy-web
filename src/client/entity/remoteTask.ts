@@ -1,4 +1,4 @@
-import { RemoteTaskAction } from './remoteTaskAction';
+import { RemoteTaskLink } from './remoteTaskLink';
 import { RemoteTaskStatus } from './remoteTaskStatus';
 import { RemoteTeam } from './remoteTeam';
 import { RemoteThread } from './remoteThread';
@@ -16,7 +16,9 @@ export interface RemoteTask {
     comments?: RemoteThread;
     createdAt?: string;
     updatedAt?: string;
+    deliveredAt?: string;
     dueAt?: string;
-    effort?: number;
+    effort?: string;
     awaitForTasks: RemoteTask[];
+    links: RemoteTaskLink[];
 }

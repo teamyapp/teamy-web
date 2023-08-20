@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import marked from 'marked';
+import { marked } from 'marked';
 import prismjs from 'prismjs';
 import React, { Component, FormEvent, ReactNode } from 'react';
 
@@ -51,6 +51,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
     render(): ReactNode {
         return (
             <div
+                aria-label={'markdown editor'}
                 className={`${styles.MarkdownEditor} ${classNames({
                     [styles.Focus]: this.state.focus,
                 })}`}

@@ -1,16 +1,16 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 
-import {
-    getInvitationCode,
-    getInvitationId,
-    rootRoutePattern,
-} from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
 import { Invitation } from '@core/entity/invitation';
 import { InvitationStatus } from '@core/entity/invitationStatus';
 import { User } from '@core/entity/user';
+import {
+    getInvitationCode,
+    getInvitationId,
+    rootRoutePattern,
+} from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
@@ -84,7 +84,7 @@ export class InvitationComponent extends Component<Props, State> {
             <div className={styles.Invitation}>
                 <div className={styles.Content}>
                     {this.state.hasError ? (
-                        <Fragment>
+                        <>
                             <div className={styles.Error}>
                                 {this.state.invitation
                                     ? renderInvitationStateError(
@@ -99,10 +99,10 @@ export class InvitationComponent extends Component<Props, State> {
                                     onClick={this.onGoHomePageClick}
                                 />
                             </div>
-                        </Fragment>
+                        </>
                     ) : (
                         this.state.invitation && (
-                            <Fragment>
+                            <>
                                 <div className={styles.Intro}>
                                     <div>
                                         <div className={styles.Greeting}>
@@ -177,7 +177,7 @@ export class InvitationComponent extends Component<Props, State> {
                                         />
                                     </div>
                                 </div>
-                            </Fragment>
+                            </>
                         )
                     )}
                 </div>

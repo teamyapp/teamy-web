@@ -3,8 +3,8 @@ import React, { Component, ReactNode, createRef } from 'react';
 import { ButtonUI } from '@lib/ui/Button';
 import { TextFieldUI } from '@lib/ui/TextField';
 
-import { absoluteRootPath } from '@core/config/routing';
 import { Deps } from '@core/dep/deps';
+import { absoluteRootPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 

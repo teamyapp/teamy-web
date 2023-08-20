@@ -1,0 +1,77 @@
+@import '../../libs/ui/styleguide/elevation';
+
+$backgroundColor: var(--duration-background-color, #7b1fa2);
+
+.Duration {
+    height: 100%;
+    outline: none;
+
+    .ValueRow {
+        display: flex;
+        height: 100%;
+        padding: 0 8px;
+        border-radius: 4px;
+        background-color: $backgroundColor;
+        color: white;
+        font-size: 14px;
+        font-weight: 500;
+        align-items: center;
+        --icon-color: white;
+        --icon-size: 18px;
+        user-select: none;
+
+        &:hover {
+            cursor: pointer;
+            opacity: 0.9;
+        }
+
+        .Value {
+            margin-left: 4px;
+        }
+    }
+}
+
+.InputPopup {
+    width: 360px;
+    padding: 20px;
+    border-radius: 4px;
+    background-color: white;
+    color: black;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+    box-sizing: border-box;
+
+    .InputRow {
+        display: flex;
+        width: 100%;
+        justify-content: center;
+
+        .TextField {
+            width: 100px;
+            --background-color: white;
+            --hint-color: black;
+        }
+
+        &:not(:first-child) {
+            margin-top: 14px;
+        }
+    }
+
+    .Button {
+        width: 100px;
+
+        &:not(:first-child) {
+            margin-left: 14px;
+        }
+    }
+
+    .SaveButton {
+        --background-color: #388e3c;
+        --border-color: #2e7d32;
+    }
+
+    .ClearButton {
+        --background-color: #d32f2f;
+        --border-color: #c62828;
+    }
+}

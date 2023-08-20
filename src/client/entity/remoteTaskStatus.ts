@@ -1,5 +1,5 @@
 export type RemoteTaskStatus =
-    | 'UPCOMING'
+    | 'TODO'
     | 'IN_PROGRESS'
     | 'PAUSED'
     | 'BLOCKED'

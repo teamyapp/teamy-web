@@ -1,3 +1,5 @@
+import { Duration } from '@lib/entity/duration';
+
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { SprintNode } from '@core/storage/graph/sprint.node';
@@ -5,12 +7,14 @@ import { TaskState } from '@core/storage/states/task.state';
 import { TaskStatus } from '@core/storage/states/taskStatus';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
+import { ClientNode } from './client.node';
+import { TaskLinkNode } from './taskLink.node';
 import { TeamNode } from './team.node';
 import { ThreadNode } from './thread.node';
 import { UserNode } from './user.node';
 
 const availableActions: Record<TaskStatus, TaskAction[]> = {
-    UPCOMING: ['START', 'DELETE', 'ASSIGN_OWNER'],
+    TODO: ['START', 'DELETE', 'ASSIGN_OWNER'],
     IN_PROGRESS: [
         'MARK_COMPLETE',
         'REPORT_BLOCKED',
@@ -84,11 +88,15 @@ export class TaskNode implements Task {
         return this.taskState.updatedAt;
     }
 
+    public get deliveredAt(): Date | undefined {
+        return this.taskState.deliveredAt;
+    }
+
     public get dueAt(): Date | undefined {
         return this.taskState.dueAt;
     }
 
-    public get effort(): number | undefined {
+    public get effort(): Duration | undefined {
         return this.taskState.effort;
     }
 
@@ -120,5 +128,40 @@ export class TaskNode implements Task {
                         appState.sprints[relation.sprintId],
                     ),
             );
+    }
+
+    public get draggingBy(): ClientNode | undefined {
+        const currentState = this.localStore.getState();
+        const taskActivities = currentState.taskActivities;
+        const taskActivity = taskActivities.find(({ teamId, taskId }) => {
+            return teamId === this.owningTeam.id && taskId === this.id;
+        });
+
+        if (
+            !taskActivity?.dragTaskActivity.isDragging ||
+            !taskActivity.dragTaskActivity.clientId
+        ) {
+            return undefined;
+        }
+
+        const clientState =
+            currentState.clients[taskActivity.dragTaskActivity.clientId];
+        return new ClientNode(this.localStore, clientState);
+    }
+
+    public get links(): TaskLinkNode[] {
+        const currentState = this.localStore.getState();
+        const taskLinks = currentState.taskLinks;
+        const links = [];
+        for (let taskLinkId in taskLinks) {
+            const taskLink = taskLinks[taskLinkId];
+            if (taskLink.taskId !== this.id) {
+                continue;
+            }
+
+            links.push(new TaskLinkNode(taskLink));
+        }
+
+        return links;
     }
 }

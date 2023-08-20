@@ -1,8 +1,9 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import { CreateTaskInput, UpdateTaskInput } from '@core/client/entity/input';
+import {
+    RemoteCreateTaskInput,
+    RemoteUpdateTaskInput,
+} from '@core/client/entity/input';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 
 export class TaskClient {
@@ -15,7 +16,7 @@ export class TaskClient {
     getTask(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getTask($taskId: ID!) {
                         tasks(filter: { taskId: $taskId }) {
                             id
@@ -28,11 +29,13 @@ export class TaskClient {
                                 lastName
                                 profileUrl
                             }
+                            effort
                             owningTeam {
                                 id
                             }
                             isPlanned
                             createdAt
+                            deliveredAt
                             comments {
                                 id
                                 messages {
@@ -44,11 +47,22 @@ export class TaskClient {
                                         lastName
                                         profileUrl
                                     }
+                                    thread {
+                                        id
+                                    }
                                     createdAt
                                     updatedAt
                                 }
                             }
                             status
+                            links {
+                                id
+                                taskId
+                                title
+                                url
+                                iconUrl
+                                iconHoverUrl
+                            }
                         }
                     }
                 `,
@@ -59,10 +73,13 @@ export class TaskClient {
             .then((payload: any) => payload?.tasks[0]);
     }
 
-    createTask(teamId: string, task: CreateTaskInput): Promise<RemoteTask> {
+    createTask(
+        teamId: string,
+        task: RemoteCreateTaskInput,
+    ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation createTask($teamId: ID!, $task: CreateTaskInput!) {
                         createTask(teamId: $teamId, task: $task) {
                             id
@@ -73,6 +90,7 @@ export class TaskClient {
                                 firstName
                                 profileUrl
                             }
+                            effort
                             owner {
                                 id
                                 firstName
@@ -95,10 +113,13 @@ export class TaskClient {
             .then((payload: any) => payload?.createTask);
     }
 
-    updateTask(taskId: string, input: UpdateTaskInput): Promise<RemoteTask> {
+    updateTask(
+        taskId: string,
+        input: RemoteUpdateTaskInput,
+    ): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation updateTask(
                         $taskId: ID!
                         $input: UpdateTaskInput!
@@ -110,6 +131,7 @@ export class TaskClient {
                             owner {
                                 id
                             }
+                            effort
                             owningTeam {
                                 id
                             }
@@ -129,7 +151,7 @@ export class TaskClient {
     deleteTask(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation deleteTask($taskId: ID!) {
                         deleteTask(taskId: $taskId) {
                             id
@@ -146,7 +168,7 @@ export class TaskClient {
     moveTaskToUpcoming(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation moveTaskToUpcoming($taskId: ID!) {
                         moveTaskToUpcoming(taskId: $taskId) {
                             id
@@ -165,7 +187,7 @@ export class TaskClient {
     moveTaskToInProgress(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation moveTaskToInProgress($taskId: ID!) {
                         moveTaskToInProgress(taskId: $taskId) {
                             id
@@ -184,15 +206,48 @@ export class TaskClient {
             .then((payload: any) => payload?.moveTaskToInProgress);
     }
 
+    startDraggingTask(taskId: string, clientId: string): Promise<string> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation startDraggingTask($taskId: ID!, $clientId: ID!) {
+                        startDraggingTask(taskId: $taskId, clientId: $clientId)
+                    }
+                `,
+                variables: {
+                    taskId,
+                    clientId,
+                },
+            })
+            .then((payload: any) => payload?.startDraggingTask);
+    }
+
+    stopDraggingTask(taskId: string, clientId: string): Promise<string> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation stopDraggingTask($taskId: ID!, $clientId: ID!) {
+                        stopDraggingTask(taskId: $taskId, clientId: $clientId)
+                    }
+                `,
+                variables: {
+                    taskId,
+                    clientId,
+                },
+            })
+            .then((payload: any) => payload?.stopDraggingTask);
+    }
+
     moveTaskToDelivered(taskId: string): Promise<RemoteTask> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation moveTaskToDelivered($taskId: ID!) {
                         moveTaskToDelivered(taskId: $taskId) {
                             id
                             status
                             updatedAt
+                            deliveredAt
                         }
                     }
                 `,

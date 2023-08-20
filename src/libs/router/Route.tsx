@@ -13,6 +13,7 @@ import {
 } from './router';
 
 interface Props {
+    children: ReactNode;
     router: Router;
     pattern: string;
     renderChild?: (params: Params) => ReactNode | null;
@@ -76,6 +77,7 @@ export class Route extends Component<Props, State> {
         if (this.state.err) {
             return <div>{this.state.err}</div>;
         }
+
         if (!this.state.shouldShow) {
             return null;
         }

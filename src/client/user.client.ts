@@ -1,5 +1,3 @@
-import { gql } from '@apollo/client';
-
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteUser } from '@core/client/entity/remoteUser';
@@ -15,7 +13,7 @@ export class UserClient {
     public getMeWithTeams(): Promise<RemoteUser> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getMeWithTeams {
                         me {
                             id
@@ -31,10 +29,17 @@ export class UserClient {
                                 owner {
                                     id
                                 }
-                                members {
+                                activeSprint {
                                     id
-                                    firstName
-                                    lastName
+                                }
+                                members {
+                                    user {
+                                        id
+                                        lastName
+                                        firstName
+                                        profileUrl
+                                        createdAt
+                                    }
                                 }
                             }
                         }
@@ -47,7 +52,7 @@ export class UserClient {
     public getMe(): Promise<RemoteUser> {
         return this.graphQLClient
             .query({
-                query: gql`
+                query: `
                     query getMe {
                         me {
                             id
@@ -66,7 +71,7 @@ export class UserClient {
     public createUser(input: CreateUserInput): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation createUser($input: CreateUserInput!) {
                         createUser(user: $input) {
                             id
@@ -86,7 +91,7 @@ export class UserClient {
     ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation updateUser(
                         $userId: ID!
                         $input: UpdateUserInput!
@@ -111,7 +116,7 @@ export class UserClient {
     public createUserProfileUploadSession(): Promise<string> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation createUserProfileUploadSession {
                         createUserProfileUploadSession
                     }
@@ -122,16 +127,19 @@ export class UserClient {
 
     public finishUserProfileUploadSession(
         fileUploadSessionId: string,
-    ): Promise<string> {
+    ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation: gql`
+                mutation: `
                     mutation finishUserProfileUploadSession(
                         $fileUploadSessionId: ID!
                     ) {
                         finishUserProfileUploadSession(
                             fileUploadSessionId: $fileUploadSessionId
-                        )
+                        ) {
+                            id
+                            profileUrl
+                        }
                     }
                 `,
                 variables: {

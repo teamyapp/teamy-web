@@ -23,6 +23,11 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea
-
+.vscode/*
 # GraphQL plugin
 .schema.graphql
+
+# Identity config
+src/libs/identity/config.ts
+
+tsconfig.json

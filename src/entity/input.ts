@@ -1,3 +1,5 @@
+import { Duration } from '@lib/entity/duration';
+
 export interface CreateUserInput {
     lastName: string;
     firstName: string;
@@ -32,7 +34,7 @@ export interface UpdateTaskInput {
     context?: string;
     ownerUserId?: number;
     owningTeamId: number;
-    effort?: number;
+    effort?: Duration;
     dueAt?: Date;
 }
 
@@ -58,4 +60,10 @@ export interface UpdateInvitationInput {
 
 export interface CreateSprintInput {
     startAt: Date;
+    endAt: Date;
+}
+
+export interface UpdateTeamMemberInput {
+    userId: number;
+    weeklyBandwidth: Duration;
 }
