@@ -223,7 +223,7 @@ steps:
     commands:
       - apk add --no-cache git g++ make python3
       - yarn install --frozen-lockfile
-      - yarn build:production
+      - yarn build
   - name: build & publish Docker image
     image: plugins/docker
     settings:
