@@ -1,10 +1,6 @@
-import _ from 'lodash';
 import React, { Component, ReactNode } from 'react';
 
-import { getConfig as getIdentityConfig } from '@lib/identity/config';
-
-import { getConfig } from '@core/config/config';
-import { getEnvironment } from '@core/env/environment';
+import { Config } from '@core/config/config';
 
 import styles from './Debug.component.module.scss';
 
@@ -17,6 +13,7 @@ interface ConfigRow {
 interface Props {
     repoOwner: string;
     repoName: string;
+    config: Config;
 }
 
 interface State {
@@ -32,12 +29,11 @@ export class DebugComponent extends Component<Props, State> {
     }
 
     public componentDidMount() {
-        const env = getEnvironment();
         this.setState({
             configRows: [
                 {
                     name: 'Environment',
-                    value: _.capitalize(env),
+                    value: this.props.config.environment,
                 },
                 {
                     name: 'Git commit',
@@ -45,16 +41,16 @@ export class DebugComponent extends Component<Props, State> {
                     link: `https://github.com/${this.props.repoOwner}/${this.props.repoName}/commit/${GIT_LONG_COMMIT_HASH}`,
                 },
                 {
-                    name: 'Teamy Web API',
-                    value: getConfig(env).servicesWebAPIEndpoint,
+                    name: 'Teamy Web API Endpoint',
+                    value: this.props.config.servicesWebAPIEndpoint,
                 },
                 {
-                    name: 'Teamy WebSocket API',
-                    value: getConfig(env).servicesWebSocketAPIEndpoint,
+                    name: 'Teamy WebSocket API Endpoint',
+                    value: this.props.config.servicesWebSocketAPIEndpoint,
                 },
                 {
-                    name: 'Identity web API',
-                    value: getIdentityConfig(env).apiBaseEndpoint,
+                    name: 'Identity API Endpoint',
+                    value: this.props.config.identityApiBaseEndpoint,
                 },
             ],
         });
