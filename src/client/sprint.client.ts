@@ -44,6 +44,8 @@ export class SprintClient {
                                 }
                                 awaitForTasks {
                                     id
+                                    goal
+                                    context
                                     status
                                     isPlanned
                                     owningTeam {

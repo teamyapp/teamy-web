@@ -85,6 +85,8 @@ export class TeamClient {
                                 }
                                 awaitForTasks {
                                     id
+                                    goal
+                                    context
                                     status
                                     isPlanned
                                     owningTeam {
