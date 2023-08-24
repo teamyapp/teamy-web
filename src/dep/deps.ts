@@ -34,7 +34,7 @@ import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
-import { getConfig } from '@core/config/config';
+import { Config, getConfig } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { shortcuts } from '@core/config/shortcut';
 import { Feedback } from '@core/entity/feedback';
@@ -46,6 +46,7 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { IdentityConfig } from '@lib/identity/config';
 
 export interface Deps {
     eventDetectionScheduler: EventDetectionScheduler;
@@ -63,10 +64,7 @@ export interface Deps {
     uiRegistry: UIRegistry;
 }
 
-export function initDeps(): Deps {
-    const env = getEnvironment();
-    const config = getConfig(env);
-
+export function initDeps(config: Config): Deps {
     //  can not set retry for telemetry, because retry requires logger
     const httpMiddlewares = [clientHTTPWithRequestId, clientHTTPWithIdentity];
     const httpClient = WithMiddlewares<HTTPClient>(
@@ -95,8 +93,8 @@ export function initDeps(): Deps {
     const longBackOff = new ExponentialBackoff(
         new BuiltInRandomNumberGenerator(),
         {
-            minDelay: config.longBackOffMinDelay,
-            maxDelay: config.longBackOffMaxDelay,
+            minDelay: config.longBackOffMinDelayMs,
+            maxDelay: config.longBackOffMaxDelayMs,
         },
     );
 
@@ -113,11 +111,19 @@ export function initDeps(): Deps {
             );
         }),
     ]);
+
+    const identityConfig: IdentityConfig = {
+        apiBaseEndpoint: config.identityApiBaseEndpoint,
+        cookieDomain: config.identityCookieDomain,
+        cookieSecure: config.identityCookieSecure,
+        signInLink: config.identitySignInLink,
+        signInFinishLink: config.identitySignInFinishLink,
+    };
     const identityClient = new IdentityClient(
-        env,
         signInFinishPath,
         absoluteRootPath,
         httpWithLogger,
+        identityConfig
     );
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,

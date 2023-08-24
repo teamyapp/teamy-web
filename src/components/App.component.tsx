@@ -78,6 +78,7 @@ import { MarketplaceComponent } from './pages/Marketplace/Marketplace.component'
 import { PlanningComponent } from './pages/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
+import { Config } from '@core/config/config';
 
 const sectionIds = [
     backlogSectionId,
@@ -90,6 +91,7 @@ const sectionIds = [
 
 interface Props {
     deps: Deps;
+    config: Config;
 }
 
 interface State {
@@ -171,6 +173,7 @@ export class AppComponent extends Component<Props, State> {
                     <DebugComponent
                         repoOwner={'teamyapp'}
                         repoName={'teamy-web'}
+                        config={this.props.config}
                     />
                 </Route>
                 <CloudComponent deps={this.props.deps} />

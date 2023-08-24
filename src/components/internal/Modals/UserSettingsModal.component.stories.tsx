@@ -5,12 +5,14 @@ import { initDeps } from '@core/dep/deps';
 
 import { UserSettingsModalComponent } from './UserSettingsModal.component';
 import styles from './UserSettingsModal.component.stories.module.scss';
+import { getConfig } from '@core/config/config';
 
 export default {
     component: UserSettingsModalComponent,
 };
 
-const deps = initDeps();
+const config = getConfig();
+const deps = initDeps(config);
 
 class ModalStory extends Component<any, any> {
     private readonly modalRef = createRef<UserSettingsModalComponent>();
