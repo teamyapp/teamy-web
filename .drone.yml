@@ -7,14 +7,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: retrieve
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: build frontend
     image: node:16.13.0-alpine3.13
     commands:
@@ -30,14 +30,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: persist
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
@@ -66,14 +66,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: retrieve
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: build frontend
     image: node:16.13.0-alpine3.13
     commands:
@@ -92,6 +92,10 @@ steps:
   - name: notify image update
     image: plugins/webhook
     settings:
+      username:
+        from_secret: KEEL_USERNAME
+      password:
+        from_secret: KEEL_PASSWORD
       urls: https://deploy.internal.teamyapp.com/v1/webhooks/native
       template: |
         {
@@ -102,14 +106,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: persist
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
@@ -137,14 +141,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: retrieve
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: build frontend
     image: node:16.13.0-alpine3.13
     commands:
@@ -163,6 +167,10 @@ steps:
   - name: notify image update
     image: plugins/webhook
     settings:
+      username:
+        from_secret: KEEL_USERNAME
+      password:
+        from_secret: KEEL_PASSWORD
       urls: https://deploy.internal.teamyapp.com/v1/webhooks/native
       content_type: application/json
       template: |
@@ -174,14 +182,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: persist
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
@@ -210,14 +218,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: retrieve
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: build frontend
     image: node:16.13.0-alpine3.13
     commands:
@@ -236,6 +244,10 @@ steps:
   - name: notify image update
     image: plugins/webhook
     settings:
+      username:
+        from_secret: KEEL_USERNAME
+      password:
+        from_secret: KEEL_PASSWORD
       urls: https://deploy.internal.teamyapp.com/v1/webhooks/native
       template: |
         {
@@ -246,14 +258,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: persist
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
@@ -281,14 +293,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: retrieve
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: run e2e tests
     image: node:16.13.0-alpine3.13
     commands:
@@ -298,14 +310,14 @@ steps:
     image: ghcr.io/teamyapp/drone-cache:0.1.9
     volumes:
       - name: cache
-        path: /var/cache
+        path: /var/lib/cache
     settings:
       mode: persist
       version_file_path: yarn.lock
       cacheable_relative_paths:
         - node_modules
       storage_type: volume
-      volume_cache_root_dir: /var/cache
+      volume_cache_root_dir: /var/lib/cache
   - name: slack
     image: plugins/slack
     settings:
