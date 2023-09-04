@@ -533,14 +533,16 @@ export class StateSyncer {
 
     public async moveTaskToInProgress(taskId: number) {
         let appState = this.localStore.getState();
-        let currInProgressTask = findInProgressTask(
-            appState,
-            appState.currUserId!,
-            appState.currTeamId!,
-        );
-        if (currInProgressTask) {
-            currInProgressTask.status = 'PAUSED';
-        }
+
+        // TODO: only enable when at more 1 in progress task is turned on
+        // let currInProgressTask = findInProgressTask(
+        //     appState,
+        //     appState.currUserId!,
+        //     appState.currTeamId!,
+        // );
+        // if (currInProgressTask) {
+        //     currInProgressTask.status = 'PAUSED';
+        // }
 
         const task = appState.tasks[taskId];
         task.status = 'IN_PROGRESS';
