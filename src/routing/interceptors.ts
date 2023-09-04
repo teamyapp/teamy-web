@@ -155,15 +155,15 @@ const teamsRoutesInterceptor = (
         }
 
         const appState = localStore.getState();
-        if (!appState.fetchedTeamData || teamId !== appState.currTeamId) {
-            await initTeam(stateSyncer, localStore, appRef);
-        }
-
         if (!stateSyncer.trySetCurrentTeam(teamId)) {
             redirectToTeamsFallback(router, localStore);
             return {
                 isRedirected: true,
             };
+        }
+
+        if (!appState.fetchedTeamData || teamId !== appState.currTeamId) {
+            await initTeam(stateSyncer, localStore, appRef);
         }
 
         if (routeUpdate.routePattern.startsWith(taskRoutePattern)) {
