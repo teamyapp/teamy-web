@@ -1,6 +1,7 @@
 import { ComponentStory } from '@storybook/react';
 import { Component, createRef } from 'react';
 
+import { getConfig } from '@core/config/config';
 import { initDeps } from '@core/dep/deps';
 
 import { UserSettingsModalComponent } from './UserSettingsModal.component';
@@ -10,7 +11,8 @@ export default {
     component: UserSettingsModalComponent,
 };
 
-const deps = initDeps();
+const config = getConfig();
+const deps = initDeps(config);
 
 class ModalStory extends Component<any, any> {
     private readonly modalRef = createRef<UserSettingsModalComponent>();

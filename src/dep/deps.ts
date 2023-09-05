@@ -4,6 +4,7 @@ import { KeyBoardEventMonitor } from '@lib/event/keyBoardEventMoniter';
 import { EventDetectionScheduler } from '@lib/event/scheduler';
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { IdentityClient } from '@lib/identity/Identity.client';
+import { IdentityConfig } from '@lib/identity/config';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { BuiltInRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { WithMiddlewares } from '@lib/middleware/middleware';
@@ -34,9 +35,10 @@ import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
-import { getConfig } from '@core/config/config';
+import { Config, getConfig } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { shortcuts } from '@core/config/shortcut';
+import { FeatureToggle, getFeatureToggle } from '@core/config/toggle';
 import { Feedback } from '@core/entity/feedback';
 import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
@@ -48,6 +50,7 @@ import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 export interface Deps {
+    featureToggle: FeatureToggle;
     eventDetectionScheduler: EventDetectionScheduler;
     relativeLayout: RelativeLayout;
     identityClient: IdentityClient;
@@ -63,10 +66,7 @@ export interface Deps {
     uiRegistry: UIRegistry;
 }
 
-export function initDeps(): Deps {
-    const env = getEnvironment();
-    const config = getConfig(env);
-
+export function initDeps(config: Config): Deps {
     //  can not set retry for telemetry, because retry requires logger
     const httpMiddlewares = [clientHTTPWithRequestId, clientHTTPWithIdentity];
     const httpClient = WithMiddlewares<HTTPClient>(
@@ -95,8 +95,8 @@ export function initDeps(): Deps {
     const longBackOff = new ExponentialBackoff(
         new BuiltInRandomNumberGenerator(),
         {
-            minDelay: config.longBackOffMinDelay,
-            maxDelay: config.longBackOffMaxDelay,
+            minDelay: config.longBackOffMinDelayMs,
+            maxDelay: config.longBackOffMaxDelayMs,
         },
     );
 
@@ -113,11 +113,19 @@ export function initDeps(): Deps {
             );
         }),
     ]);
+
+    const identityConfig: IdentityConfig = {
+        apiBaseEndpoint: config.identityApiBaseEndpoint,
+        cookieDomain: config.identityCookieDomain,
+        cookieSecure: config.identityCookieSecure,
+        signInLink: config.identitySignInLink,
+        signInFinishLink: config.identitySignInFinishLink,
+    };
     const identityClient = new IdentityClient(
-        env,
         signInFinishPath,
         absoluteRootPath,
         httpWithLogger,
+        identityConfig,
     );
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,
@@ -166,6 +174,7 @@ export function initDeps(): Deps {
     const relativeLayout = new RelativeLayout(boundingBoxChangeEventMonitor);
     const keyBoardEventMonitor = new KeyBoardEventMonitor();
     const uiRegistry = new UIRegistry();
+    const featureToggle = getFeatureToggle();
     return {
         keyBoardEventMonitor,
         eventDetectionScheduler,
@@ -180,5 +189,6 @@ export function initDeps(): Deps {
         feedbackPubSub,
         fileUploadSessionFactory,
         uiRegistry,
+        featureToggle,
     };
 }

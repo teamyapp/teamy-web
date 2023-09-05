@@ -3,9 +3,7 @@ import Cookies from 'js-cookie';
 import { UserLink } from '@lib/identity/userLink';
 import { HTTPClient } from '@lib/network/HTTP.client';
 
-import { Environment } from '@core/env/environment';
-
-import { Config, getConfig } from './config';
+import { IdentityConfig } from './config';
 
 const accessTokenKey = 'accessToken';
 const signInRedirectKey = 'signInRedirect';
@@ -13,16 +11,12 @@ const redirectUrlParam = 'redirectUrl';
 export const accessTokenParam = 'accessToken';
 
 export class IdentityClient {
-    private readonly config: Config;
-
     constructor(
-        env: Environment,
-        private signInFinishLink: string,
-        private homePageUrl: string,
-        private httpClient: HTTPClient,
-    ) {
-        this.config = getConfig(env);
-    }
+        private readonly signInFinishLink: string,
+        private readonly homePageUrl: string,
+        private readonly httpClient: HTTPClient,
+        private readonly config: IdentityConfig,
+    ) {}
 
     public async isSignedIn(): Promise<boolean> {
         const token = getAccessToken();

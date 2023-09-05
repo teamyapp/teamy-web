@@ -1,6 +1,7 @@
 import React, { createRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
+import { getConfig } from '@core/config/config';
 import { initDeps } from '@core/dep/deps';
 
 import { AppComponent } from './components/App.component';
@@ -8,7 +9,8 @@ import './index.scss';
 import reportWebVitals from './reportWebVitals';
 import { initRouter } from './routing/init';
 
-const deps = initDeps();
+const config = getConfig();
+const deps = initDeps(config);
 
 const appRef = createRef<AppComponent>();
 initRouter(deps, appRef);
@@ -16,7 +18,7 @@ initRouter(deps, appRef);
 const root = createRoot(document.getElementById('root')!);
 root.render(
     <React.StrictMode>
-        <AppComponent ref={appRef} deps={deps} />
+        <AppComponent ref={appRef} deps={deps} config={config} />
     </React.StrictMode>,
 );
 

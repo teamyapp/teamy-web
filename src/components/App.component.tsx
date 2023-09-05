@@ -14,6 +14,7 @@ import { BannerUI } from '@lib/ui/Banner';
 import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
+import { Config } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
 import {
@@ -90,6 +91,7 @@ const sectionIds = [
 
 interface Props {
     deps: Deps;
+    config: Config;
 }
 
 interface State {
@@ -171,6 +173,7 @@ export class AppComponent extends Component<Props, State> {
                     <DebugComponent
                         repoOwner={'teamyapp'}
                         repoName={'teamy-web'}
+                        config={this.props.config}
                     />
                 </Route>
                 <CloudComponent deps={this.props.deps} />
