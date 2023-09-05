@@ -22,16 +22,25 @@ export function getConfig(): Config {
     return {
         environment: import.meta.env.VITE_ENVIRONMENT,
         servicesWebAPIEndpoint: import.meta.env.VITE_SERVICES_WEB_API_ENDPOINT,
-        servicesWebSocketAPIEndpoint: import.meta.env.VITE_SERVICES_WEB_SOCKET_API_ENDPOINT,
+        servicesWebSocketAPIEndpoint: import.meta.env
+            .VITE_SERVICES_WEB_SOCKET_API_ENDPOINT,
         cloudWebAPIEndpoint: import.meta.env.VITE_CLOUD_WEB_API_ENDPOINT,
         defaultLogLevel: import.meta.env.VITE_DEFAULT_LOG_LEVEL,
-        maxAPIRetryTimes: import.meta.env.VITE_MAX_API_RETRY_TIMES,
-        longBackOffMinDelayMs: import.meta.env.VITE_LONG_BACK_OFF_MIN_DELAY_MS,
-        longBackOffMaxDelayMs: import.meta.env.VITE_LONG_BACK_OFF_MAX_DELAY_MS,
-        identityApiBaseEndpoint: import.meta.env.VITE_IDENTITY_API_BASE_ENDPOINT,
+        maxAPIRetryTimes: JSON.parse(import.meta.env.VITE_MAX_API_RETRY_TIMES),
+        longBackOffMinDelayMs: JSON.parse(
+            import.meta.env.VITE_LONG_BACK_OFF_MIN_DELAY_MS,
+        ),
+        longBackOffMaxDelayMs: JSON.parse(
+            import.meta.env.VITE_LONG_BACK_OFF_MAX_DELAY_MS,
+        ),
+        identityApiBaseEndpoint: import.meta.env
+            .VITE_IDENTITY_API_BASE_ENDPOINT,
         identityCookieDomain: import.meta.env.VITE_IDENTITY_COOKIE_DOMAIN,
-        identityCookieSecure: import.meta.env.VITE_IDENTITY_COOKIE_SECURE,
+        identityCookieSecure: JSON.parse(
+            import.meta.env.VITE_IDENTITY_COOKIE_SECURE,
+        ),
         identitySignInLink: import.meta.env.VITE_IDENTITY_SIGN_IN_LINK,
-        identitySignInFinishLink: import.meta.env.VITE_IDENTITY_SIGN_IN_FINISH_LINK,
-    }
+        identitySignInFinishLink: import.meta.env
+            .VITE_IDENTITY_SIGN_IN_FINISH_LINK,
+    };
 }

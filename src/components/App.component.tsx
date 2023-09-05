@@ -14,6 +14,7 @@ import { BannerUI } from '@lib/ui/Banner';
 import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
+import { Config } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
 import {
@@ -78,7 +79,6 @@ import { MarketplaceComponent } from './pages/Marketplace/Marketplace.component'
 import { PlanningComponent } from './pages/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
-import { Config } from '@core/config/config';
 
 const sectionIds = [
     backlogSectionId,

@@ -1,13 +1,13 @@
 import React, { createRef } from 'react';
 import { createRoot } from 'react-dom/client';
 
+import { getConfig } from '@core/config/config';
 import { initDeps } from '@core/dep/deps';
 
 import { AppComponent } from './components/App.component';
 import './index.scss';
 import reportWebVitals from './reportWebVitals';
 import { initRouter } from './routing/init';
-import { getConfig } from '@core/config/config';
 
 const config = getConfig();
 const deps = initDeps(config);

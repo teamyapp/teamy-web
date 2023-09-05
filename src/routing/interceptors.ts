@@ -9,6 +9,7 @@ import {
 } from '@lib/router/router';
 
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
+import { FeatureToggle } from '@core/config/toggle';
 import { Deps } from '@core/dep/deps';
 import {
     appRoutes,
@@ -16,8 +17,12 @@ import {
     getTabId,
     getTaskId,
     getTeamId,
+    helpCenterRoutePattern,
+    insightsRoutePattern,
+    knowledgeRoutePattern,
     marketplaceRoutePattern,
     marketplaceRoutes,
+    planningRoutePattern,
     publicRoutes,
     signUpRoutePattern,
     sprintTabPath,
@@ -129,6 +134,7 @@ const appRoutesInterceptor = (localStore: LocalStore): RouteInterceptor => {
 const teamsRoutesInterceptor = (
     localStore: LocalStore,
     stateSyncer: StateSyncer,
+    featureToggle: FeatureToggle,
     appRef: RefObject<AppComponent>,
 ): RouteInterceptor => {
     return async (
@@ -152,6 +158,48 @@ const teamsRoutesInterceptor = (
             return {
                 isRedirected: true,
             };
+        }
+
+        switch (routeUpdate.routePattern) {
+            case insightsRoutePattern:
+                if (!featureToggle.enableInsights) {
+                    redirectToTeamsFallback(router, localStore);
+                    return {
+                        isRedirected: true,
+                    };
+                }
+                break;
+            case planningRoutePattern:
+                if (!featureToggle.enablePlanningDoc) {
+                    redirectToTeamsFallback(router, localStore);
+                    return {
+                        isRedirected: true,
+                    };
+                }
+                break;
+            case knowledgeRoutePattern:
+                if (!featureToggle.enableKnowledgeBase) {
+                    redirectToTeamsFallback(router, localStore);
+                    return {
+                        isRedirected: true,
+                    };
+                }
+                break;
+            case helpCenterRoutePattern:
+                if (!featureToggle.enableHelpCenter) {
+                    redirectToTeamsFallback(router, localStore);
+                    return {
+                        isRedirected: true,
+                    };
+                }
+                break;
+            case marketplaceRoutePattern:
+                if (!featureToggle.enableMarketplace) {
+                    redirectToTeamsFallback(router, localStore);
+                    return {
+                        isRedirected: true,
+                    };
+                }
         }
 
         const appState = localStore.getState();
@@ -270,23 +318,23 @@ export function addRouteInterceptors(
     deps: Deps,
     appRef: RefObject<AppComponent>,
 ) {
-    deps.router.addRouteInterceptor(publicRoutesInterceptor);
-    deps.router.addRouteInterceptor(
+    let interceptors: RouteInterceptor[] = [
+        publicRoutesInterceptor,
         privateRoutesInterceptor(deps.identityClient),
-    );
-    deps.router.addRouteInterceptor(
         userSignUpInterceptor(deps.stateSyncer, deps.localStore),
-    );
-    deps.router.addRouteInterceptor(appRoutesInterceptor(deps.localStore));
-    deps.router.addRouteInterceptor(
-        teamsRoutesInterceptor(deps.localStore, deps.stateSyncer, appRef),
-    );
-    deps.router.addRouteInterceptor(
+        appRoutesInterceptor(deps.localStore),
+        teamsRoutesInterceptor(
+            deps.localStore,
+            deps.stateSyncer,
+            deps.featureToggle,
+            appRef,
+        ),
         sprintsRouteInterceptor(deps.localStore, deps.stateSyncer),
-    );
-    deps.router.addRouteInterceptor(
         marketplaceRoutesInterceptor(deps.localStore),
-    );
+    ];
+    interceptors.forEach((interceptor) => {
+        deps.router.addRouteInterceptor(interceptor);
+    });
 }
 
 async function initTeam(

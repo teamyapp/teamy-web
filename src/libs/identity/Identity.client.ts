@@ -11,14 +11,12 @@ const redirectUrlParam = 'redirectUrl';
 export const accessTokenParam = 'accessToken';
 
 export class IdentityClient {
-
     constructor(
         private readonly signInFinishLink: string,
         private readonly homePageUrl: string,
         private readonly httpClient: HTTPClient,
         private readonly config: IdentityConfig,
-    ) {
-    }
+    ) {}
 
     public async isSignedIn(): Promise<boolean> {
         const token = getAccessToken();

@@ -4,6 +4,7 @@ import { KeyBoardEventMonitor } from '@lib/event/keyBoardEventMoniter';
 import { EventDetectionScheduler } from '@lib/event/scheduler';
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { IdentityClient } from '@lib/identity/Identity.client';
+import { IdentityConfig } from '@lib/identity/config';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { BuiltInRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { WithMiddlewares } from '@lib/middleware/middleware';
@@ -37,6 +38,7 @@ import { UserClient } from '@core/client/user.client';
 import { Config, getConfig } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { shortcuts } from '@core/config/shortcut';
+import { FeatureToggle, getFeatureToggle } from '@core/config/toggle';
 import { Feedback } from '@core/entity/feedback';
 import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
@@ -46,9 +48,9 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { IdentityConfig } from '@lib/identity/config';
 
 export interface Deps {
+    featureToggle: FeatureToggle;
     eventDetectionScheduler: EventDetectionScheduler;
     relativeLayout: RelativeLayout;
     identityClient: IdentityClient;
@@ -123,7 +125,7 @@ export function initDeps(config: Config): Deps {
         signInFinishPath,
         absoluteRootPath,
         httpWithLogger,
-        identityConfig
+        identityConfig,
     );
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,
@@ -172,6 +174,7 @@ export function initDeps(config: Config): Deps {
     const relativeLayout = new RelativeLayout(boundingBoxChangeEventMonitor);
     const keyBoardEventMonitor = new KeyBoardEventMonitor();
     const uiRegistry = new UIRegistry();
+    const featureToggle = getFeatureToggle();
     return {
         keyBoardEventMonitor,
         eventDetectionScheduler,
@@ -186,5 +189,6 @@ export function initDeps(config: Config): Deps {
         feedbackPubSub,
         fileUploadSessionFactory,
         uiRegistry,
+        featureToggle,
     };
 }
