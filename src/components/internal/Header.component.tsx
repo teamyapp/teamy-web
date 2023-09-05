@@ -228,51 +228,66 @@ export class HeaderComponent extends Component<Props, State> {
                             >
                                 <MaterialIconUI>sprint</MaterialIconUI>
                             </div>
-                            <div
-                                className={`${styles.Button} ${classNames({
-                                    [styles.Active]:
-                                        this.state.showInsightsView,
-                                })}`}
-                                onClick={this.onShowInsightsViewClick}
-                            >
-                                <MaterialIconUI>insights</MaterialIconUI>
-                            </div>
-                            <div
-                                className={`${styles.Button} ${classNames({
-                                    [styles.Active]:
-                                        this.state.showPlanningView,
-                                })}`}
-                                onClick={this.onShowPlanningViewClick}
-                            >
-                                <MaterialIconUI>flag</MaterialIconUI>
-                            </div>
-                            <div
-                                className={`${styles.Button} ${classNames({
-                                    [styles.Active]:
-                                        this.state.showKnowledgeView,
-                                })}`}
-                                onClick={this.onShowKnowledgeViewClick}
-                            >
-                                <MaterialIconUI>school</MaterialIconUI>
-                            </div>
-                            <div
-                                className={`${styles.Button} ${classNames({
-                                    [styles.Active]:
-                                        this.state.showHelpCenterView,
-                                })}`}
-                                onClick={this.onShowHelpCenterViewClick}
-                            >
-                                <MaterialIconUI>forum</MaterialIconUI>
-                            </div>
-                            <div
-                                className={`${styles.Button} ${classNames({
-                                    [styles.Active]:
-                                        this.state.showMarketplaceView,
-                                })}`}
-                                onClick={this.onShowMarketplaceViewClick}
-                            >
-                                <MaterialIconUI>shopping_cart</MaterialIconUI>
-                            </div>
+                            {this.props.deps.featureToggle.enableInsights && (
+                                <div
+                                    className={`${styles.Button} ${classNames({
+                                        [styles.Active]:
+                                            this.state.showInsightsView,
+                                    })}`}
+                                    onClick={this.onShowInsightsViewClick}
+                                >
+                                    <MaterialIconUI>insights</MaterialIconUI>
+                                </div>
+                            )}
+                            {this.props.deps.featureToggle
+                                .enablePlanningDoc && (
+                                <div
+                                    className={`${styles.Button} ${classNames({
+                                        [styles.Active]:
+                                            this.state.showPlanningView,
+                                    })}`}
+                                    onClick={this.onShowPlanningViewClick}
+                                >
+                                    <MaterialIconUI>flag</MaterialIconUI>
+                                </div>
+                            )}
+                            {this.props.deps.featureToggle
+                                .enableKnowledgeBase && (
+                                <div
+                                    className={`${styles.Button} ${classNames({
+                                        [styles.Active]:
+                                            this.state.showKnowledgeView,
+                                    })}`}
+                                    onClick={this.onShowKnowledgeViewClick}
+                                >
+                                    <MaterialIconUI>school</MaterialIconUI>
+                                </div>
+                            )}
+                            {this.props.deps.featureToggle.enableHelpCenter && (
+                                <div
+                                    className={`${styles.Button} ${classNames({
+                                        [styles.Active]:
+                                            this.state.showHelpCenterView,
+                                    })}`}
+                                    onClick={this.onShowHelpCenterViewClick}
+                                >
+                                    <MaterialIconUI>forum</MaterialIconUI>
+                                </div>
+                            )}
+                            {this.props.deps.featureToggle
+                                .enableMarketplace && (
+                                <div
+                                    className={`${styles.Button} ${classNames({
+                                        [styles.Active]:
+                                            this.state.showMarketplaceView,
+                                    })}`}
+                                    onClick={this.onShowMarketplaceViewClick}
+                                >
+                                    <MaterialIconUI>
+                                        shopping_cart
+                                    </MaterialIconUI>
+                                </div>
+                            )}
                         </div>
                     </Route>
                     <div className={styles.UserActionSection}></div>

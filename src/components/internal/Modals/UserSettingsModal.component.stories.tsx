@@ -1,11 +1,11 @@
 import { ComponentStory } from '@storybook/react';
 import { Component, createRef } from 'react';
 
+import { getConfig } from '@core/config/config';
 import { initDeps } from '@core/dep/deps';
 
 import { UserSettingsModalComponent } from './UserSettingsModal.component';
 import styles from './UserSettingsModal.component.stories.module.scss';
-import { getConfig } from '@core/config/config';
 
 export default {
     component: UserSettingsModalComponent,
