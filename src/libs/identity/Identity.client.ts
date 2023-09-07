@@ -16,7 +16,8 @@ export class IdentityClient {
         private readonly homePageUrl: string,
         private readonly httpClient: HTTPClient,
         private readonly config: IdentityConfig,
-    ) {}
+    ) {
+    }
 
     public async isSignedIn(): Promise<boolean> {
         const token = getAccessToken();
@@ -50,7 +51,10 @@ export class IdentityClient {
     }
 
     public signOut() {
-        removeAccessToken();
+        Cookies.remove(accessTokenKey, {
+            domain: this.config.cookieDomain,
+            secure: this.config.cookieSecure,
+        });
         this.trySignIn();
     }
 
@@ -107,10 +111,6 @@ export class IdentityClient {
 
 export function getAccessToken(): string {
     return Cookies.get(accessTokenKey) || '';
-}
-
-export function removeAccessToken() {
-    return Cookies.remove(accessTokenKey);
 }
 
 function saveSignInRedirectUrl(redirectUrl: string): void {
