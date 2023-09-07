@@ -299,6 +299,7 @@ export class HeaderComponent extends Component<Props, State> {
                     {this.props.me && (
                         <div
                             className={styles.UserSection}
+                            tabIndex={-1}
                             ref={this.userProfileSectionRef}
                             onBlur={this.onUserProfileSectionBlur}
                         >
