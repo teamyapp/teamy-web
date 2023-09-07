@@ -9,6 +9,7 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './SignUp.component.module.scss';
+import { IdentityClient } from '@lib/identity/Identity.client';
 
 export const signUpRedirectKey = 'signUpRedirect';
 
@@ -23,6 +24,7 @@ interface State {
 export class SignUpComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
+    private readonly identityClient: IdentityClient;
     private readonly firstNameTextFieldRef = createRef<TextFieldUI>();
     private readonly lastNameTextFieldRef = createRef<TextFieldUI>();
 
@@ -30,6 +32,7 @@ export class SignUpComponent extends Component<Props, State> {
         super(props);
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
+        this.identityClient = props.deps.identityClient;
         this.state = {
             showPageContent: false,
         };
@@ -62,6 +65,12 @@ export class SignUpComponent extends Component<Props, State> {
                                     onClick={this.onCreateAccountClick}
                                 />
                             </div>
+                            <div className={styles.SignOut}>
+                                <ButtonUI
+                                    label={'Sign Out'}
+                                    onClick={this.onSignOutClick}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -86,6 +95,10 @@ export class SignUpComponent extends Component<Props, State> {
         });
         redirectBack();
     };
+
+    private onSignOutClick = () => {
+        this.identityClient.signOut();
+    }
 }
 
 function redirectBack() {

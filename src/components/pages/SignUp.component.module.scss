@@ -31,11 +31,19 @@
         }
 
         .Actions {
+            display: flex;
             margin-top: 20px;
+            flex-direction: column;
+            row-gap: 10px;
 
             .CreateAccount {
                 --background-color: #388e3c;
                 --border-color: #2e7d32;
+            }
+
+            .SignOut {
+                --background-color: #bd1717;
+                --border-color: #9f1212;
             }
         }
     }
