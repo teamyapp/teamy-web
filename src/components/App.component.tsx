@@ -235,7 +235,10 @@ export class AppComponent extends Component<Props, State> {
                                 isDrawerOpen={this.state.isDrawerOpen}
                                 taskFilters={this.state.taskFilters}
                                 onMenuToggle={this.onMenuToggle}
-                                onUserProfileClick={this.onUserProfileClick}
+                                onViewUserSettingClick={
+                                    this.onViewUserSettingClick
+                                }
+                                onSignOutClick={this.onSignOutClick}
                                 onTaskFiltersChange={this.onTaskFiltersChange}
                                 onBacklogToggle={this.onBacklogToggle}
                                 onCreateSprintClick={this.onCreateSprintClick}
@@ -580,8 +583,12 @@ export class AppComponent extends Component<Props, State> {
         });
     };
 
-    private onUserProfileClick = () => {
+    private onViewUserSettingClick = () => {
         this.userModalRef.current?.open(this.state.me!);
+    };
+
+    private onSignOutClick = () => {
+        this.identityClient.signOut();
     };
 
     private onAddTeamMembersClick = (teamId: number) => {

@@ -49,6 +49,11 @@ export class IdentityClient {
         this.redirectBack();
     }
 
+    public signOut() {
+        removeAccessToken();
+        this.trySignIn();
+    }
+
     public redirectBack() {
         const redirectUrl = localStorage.getItem(signInRedirectKey);
         localStorage.removeItem(signInRedirectKey);
@@ -102,6 +107,10 @@ export class IdentityClient {
 
 export function getAccessToken(): string {
     return Cookies.get(accessTokenKey) || '';
+}
+
+export function removeAccessToken() {
+    return Cookies.remove(accessTokenKey);
 }
 
 function saveSignInRedirectUrl(redirectUrl: string): void {
