@@ -16,8 +16,7 @@ export class IdentityClient {
         private readonly homePageUrl: string,
         private readonly httpClient: HTTPClient,
         private readonly config: IdentityConfig,
-    ) {
-    }
+    ) {}
 
     public async isSignedIn(): Promise<boolean> {
         const token = getAccessToken();
