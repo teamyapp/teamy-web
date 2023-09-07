@@ -111,6 +111,7 @@
 
         .UserSection {
             display: flex;
+            position: relative;
             height: 100%;
             margin-right: 26px;
             color: $onPrimaryColor;
@@ -132,6 +133,37 @@
                 margin-left: 6px;
                 font-size: 20px;
                 font-weight: 500;
+            }
+
+            .Popup {
+                display: none;
+                position: absolute;
+                top: 100%;
+                width: 160px;
+                margin-right: -26px;
+                background-color: white;
+                color: black;
+                box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+
+                &.Show {
+                    display: block;
+                }
+
+                .Item {
+                    padding: 8px 20px;
+                    font-size: 16px;
+                    font-weight: bold;
+
+                    &:not(:first-child) {
+                        border-top: 1px solid #eeeeee;
+                    }
+
+                    &:hover {
+                        background-color: #424242;
+                        cursor: pointer;
+                        color: white;
+                    }
+                }
             }
         }
     }

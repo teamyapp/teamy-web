@@ -39,7 +39,8 @@ interface Props {
     taskFilters: TaskFilters;
     onMenuToggle?: () => void;
     onBacklogToggle?: () => void;
-    onUserProfileClick?: () => void;
+    onViewUserSettingClick?: () => void;
+    onSignOutClick?: () => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
     onCreateSprintClick?: () => void;
     onAddTeamMembersClick?: (teamId: number) => void;
@@ -55,6 +56,7 @@ interface Props {
 }
 
 interface State {
+    showUserProfileMenu: boolean;
     isSearchBarFocused: boolean;
     showBacklog: boolean;
     taskFiltersData: TaskFiltersData;
@@ -71,12 +73,15 @@ export class HeaderComponent extends Component<Props, State> {
     private readonly searchBarRef = createRef<HTMLDivElement>();
     private readonly searchInputRef = createRef<HTMLInputElement>();
     private readonly teamContextMenuRef = createRef<ContextMenuComponent>();
+    private readonly userProfileSectionRef: React.RefObject<HTMLDivElement> =
+        createRef();
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
 
     constructor(props: Props) {
         super(props);
         this.router = props.deps.router;
         this.state = {
+            showUserProfileMenu: false,
             showBacklog: false,
             isSearchBarFocused: false,
             taskFiltersData: {
@@ -292,15 +297,38 @@ export class HeaderComponent extends Component<Props, State> {
                     </Route>
                     <div className={styles.UserActionSection}></div>
                     {this.props.me && (
-                        <div className={styles.UserSection}>
+                        <div
+                            className={styles.UserSection}
+                            ref={this.userProfileSectionRef}
+                            onBlur={this.onUserProfileSectionBlur}
+                        >
                             <div
                                 className={styles.UserProfile}
-                                onClick={this.props.onUserProfileClick}
+                                onClick={this.onUserProfileClick}
                             >
                                 <UserProfileUI user={this.props.me} />
                             </div>
                             <div className={styles.UserName}>
                                 {`${this.props.me.firstName} ${this.props.me.lastName}`}
+                            </div>
+                            <div
+                                className={`${styles.Popup} ${classNames({
+                                    [styles.Show]:
+                                        this.state.showUserProfileMenu,
+                                })}`}
+                            >
+                                <div
+                                    className={styles.Item}
+                                    onClick={this.onViewUserSettingClick}
+                                >
+                                    Settings
+                                </div>
+                                <div
+                                    className={`${styles.Item} ${styles.SignOut}`}
+                                    onClick={this.onSignOutClick}
+                                >
+                                    Sign out
+                                </div>
                             </div>
                         </div>
                     )}
@@ -518,4 +546,37 @@ export class HeaderComponent extends Component<Props, State> {
             showMarketplaceView: false,
         });
     }
+
+    private onUserProfileClick = () => {
+        this.setState(
+            {
+                showUserProfileMenu: !this.state.showUserProfileMenu,
+            },
+            () => {
+                if (this.state.showUserProfileMenu) {
+                    this.userProfileSectionRef.current?.focus();
+                }
+            },
+        );
+    };
+
+    private onUserProfileSectionBlur = () => {
+        this.setState({
+            showUserProfileMenu: false,
+        });
+    };
+
+    private onViewUserSettingClick = () => {
+        this.setState({
+            showUserProfileMenu: false,
+        });
+        this.props.onViewUserSettingClick?.call(null);
+    };
+
+    private onSignOutClick = () => {
+        this.setState({
+            showUserProfileMenu: false,
+        });
+        this.props.onSignOutClick?.call(null);
+    };
 }
