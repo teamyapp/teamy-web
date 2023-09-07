@@ -300,7 +300,6 @@ export class HeaderComponent extends Component<Props, State> {
                         <div
                             className={styles.UserSection}
                             ref={this.userProfileSectionRef}
-                            tabIndex={-1}
                             onBlur={this.onUserProfileSectionBlur}
                         >
                             <div
