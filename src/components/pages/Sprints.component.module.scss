@@ -71,6 +71,7 @@
                             display: flex;
                             --profile-height: 40px;
                             --profile-width: 40px;
+                            align-items: center;
 
                             &:not(:first-child) {
                                 margin-top: 10px;
@@ -127,49 +128,38 @@
                                 }
 
                                 .BandwidthSection {
-                                    display: flex;
                                     width: 100%;
-                                    margin-top: 4px;
-                                    align-items: center;
+                                    margin-top: 6px;
 
-                                    .Icon {
-                                        padding: 4px;
-                                        border-radius: 50%;
-                                        background-color: #1565c0;
-                                        --icon-color: white;
-                                        --icon-size: 10px;
-                                        user-select: none;
-                                    }
+                                    .BandwidthFull {
+                                        height: 8px;
+                                        overflow-x: hidden;
+                                        background-color: rgba(
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        0.1
+                                        );
 
-                                    .Bandwidth {
-                                        margin-left: 6px;
-                                        flex: 1;
+                                        &:hover {
+                                            cursor: pointer;
+                                        }
 
-                                        .BandwidthFull {
-                                            height: 8px;
-                                            background-color: rgba(
-                                                0,
-                                                0,
-                                                0,
-                                                0.1
-                                            );
+                                        .UnusedBandwidth {
+                                            height: 100%;
+                                            transition: width 400ms ease-in-out;
+                                            background-color: #1565c0;
 
-                                            &:hover {
-                                                cursor: pointer;
-                                            }
-
-                                            .UnusedBandwidth {
-                                                height: 100%;
-
-                                                transition: width 400ms
-                                                    ease-in-out;
-                                                background-color: #1565c0;
-
-                                                &.Negative {
-                                                    background-color: #c62828;
-                                                }
+                                            &.Negative {
+                                                background-color: #c62828;
                                             }
                                         }
+                                    }
+
+                                    .Label {
+                                        margin-top: 4px;
+                                        font-size: 12px;
+                                        font-weight: bold;
                                     }
                                 }
                             }
