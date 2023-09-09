@@ -830,6 +830,7 @@ export class StateSyncer {
     }
 
     public createApp(teamId: number, input: CreateAppInput): Promise<number> {
+        // TODO: integrate with create app APIs
         console.log('createApp', teamId, input);
         return Promise.resolve(0);
     }

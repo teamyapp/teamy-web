@@ -45,7 +45,7 @@ export class CreateTeamModalComponent extends Component<Props> {
                             label={'Name'}
                         />
                     </div>
-                    <div className={styles.AddAction}>
+                    <div className={styles.CreateAction}>
                         <ButtonUI
                             label={'Create'}
                             onClick={this.onCreateClick}
