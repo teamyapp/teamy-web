@@ -1,8 +1,11 @@
 import { Component, createRef } from 'react';
 
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
 import { Deps } from '@core/dep/deps';
 
 import styles from './ManagedTab.component.module.scss';
+import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
 import { ManageAppModalComponent } from './Modals/ManageAppModal.component';
 import githubIconImg from './assets/github.png';
 import slackIconImg from './assets/slack.png';
@@ -45,6 +48,7 @@ interface Props {
 interface State {}
 
 export class ManagedTabComponent extends Component<Props, State> {
+    private readonly createAppModalRef = createRef<CreateAppModalComponent>();
     private readonly manageAppModalRef = createRef<ManageAppModalComponent>();
 
     render() {
@@ -52,7 +56,7 @@ export class ManagedTabComponent extends Component<Props, State> {
             <>
                 <div className={styles.ItemList}>
                     {apps.map((app) => (
-                        <div className={styles.InlineItem}>
+                        <div className={styles.InlineItem} key={app.id}>
                             <div className={styles.LeftSection}>
                                 <div className={styles.Icon}>
                                     <img src={app.iconUrl} />
@@ -78,11 +82,25 @@ export class ManagedTabComponent extends Component<Props, State> {
                             </div>
                         </div>
                     ))}
+                    <div
+                        className={styles.CreateAppButton}
+                        onClick={this.onCreateAppClick}
+                    >
+                        <MaterialIconUI>add</MaterialIconUI>
+                    </div>
                 </div>
+                <CreateAppModalComponent
+                    ref={this.createAppModalRef}
+                    deps={this.props.deps}
+                />
                 <ManageAppModalComponent ref={this.manageAppModalRef} />
             </>
         );
     }
+
+    private onCreateAppClick = () => {
+        this.createAppModalRef.current?.open();
+    };
 
     private onManageButtonClickHandler(itemId: number) {
         return () => {

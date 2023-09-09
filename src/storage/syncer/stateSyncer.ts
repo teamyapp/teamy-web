@@ -66,6 +66,10 @@ import {
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
 
+interface CreateAppInput {
+    name: string;
+}
+
 export class StateSyncer {
     private readonly connection: Connection;
     private readonly onTransactionReceivedCh = chan<Transaction>();
@@ -823,6 +827,11 @@ export class StateSyncer {
             this.localStore.getState(),
         );
         this.localStore.updateState(appState);
+    }
+
+    public createApp(teamId: number, input: CreateAppInput): Promise<number> {
+        console.log('createApp', teamId, input);
+        return Promise.resolve(0);
     }
 
     private _moveTaskToSprint(
