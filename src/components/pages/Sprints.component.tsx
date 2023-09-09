@@ -36,9 +36,7 @@ import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
 import { sprintTabPath, sprintsPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
-import {
-    SprintParticipantNode
-} from '@core/storage/graph/sprintParticipant.node';
+import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
@@ -156,9 +154,9 @@ export class SprintsComponent extends Component<Props, State> {
                     if (appState.sprintTabReady)
                         if (
                             appState.currSprintId !==
-                            this.state.selectedSprintId ||
+                                this.state.selectedSprintId ||
                             appState.activeSprintTabIndex !==
-                            this.state.activeTabIndex
+                                this.state.activeTabIndex
                         ) {
                             this.selectTab(activeSprintTabIndex, false);
                         }
@@ -222,7 +220,7 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                const {key, eventType} = keyboardEvent;
+                const { key, eventType } = keyboardEvent;
                 const platform = getPlatform();
 
                 if (
@@ -408,12 +406,11 @@ export class SprintsComponent extends Component<Props, State> {
                                     >
                                         <input
                                             className={styles.Toggle}
-                                            type="checkbox"
+                                            type='checkbox'
                                             checked={
                                                 this.state.allowMultiSelection
                                             }
-                                            onChange={() => {
-                                            }}
+                                            onChange={() => {}}
                                         />
                                         <div className={styles.ToggleLabel}>
                                             Select many
@@ -518,7 +515,7 @@ export class SprintsComponent extends Component<Props, State> {
         participant: SprintParticipant,
         index: number,
     ) => {
-        const {user} = participant;
+        const { user } = participant;
         const unusedBandwidthPercent = safePercent(
             participant.unusedBandwidth,
             participant.totalBandwidth,
@@ -536,7 +533,7 @@ export class SprintsComponent extends Component<Props, State> {
                                 this.state.selectedTaskOwners.has(userIdentity),
                         })}`}
                     >
-                        <UserProfileUI user={user}/>
+                        <UserProfileUI user={user} />
                     </div>
                 </div>
                 <div className={styles.RightSection}>
@@ -544,25 +541,25 @@ export class SprintsComponent extends Component<Props, State> {
                         {getUserShortName(user.firstName, user.lastName)}
                     </div>
                     <div className={styles.BandwidthSection}>
-                            <div className={styles.BandwidthFull}>
-                                <div
-                                    className={`${
-                                        styles.UnusedBandwidth
-                                    } ${classNames({
-                                        [styles.Negative]:
+                        <div className={styles.BandwidthFull}>
+                            <div
+                                className={`${
+                                    styles.UnusedBandwidth
+                                } ${classNames({
+                                    [styles.Negative]:
                                         participant.unusedBandwidth
                                             .totalMilliSeconds < 0,
-                                    })}`}
-                                    style={{
-                                        width: `${Math.abs(
-                                            unusedBandwidthPercent,
-                                        )}%`,
-                                    }}
-                                />
-                            </div>
-                            <div className={styles.Label}>
-                                {`${unusedBandwidthReadable} / ${totalBandwidthReadable}`}
-                            </div>
+                                })}`}
+                                style={{
+                                    width: `${Math.abs(
+                                        unusedBandwidthPercent,
+                                    )}%`,
+                                }}
+                            />
+                        </div>
+                        <div className={styles.Label}>
+                            {`${unusedBandwidthReadable} / ${totalBandwidthReadable}`}
+                        </div>
                     </div>
                 </div>
             </div>

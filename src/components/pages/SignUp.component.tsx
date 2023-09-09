@@ -1,5 +1,6 @@
 import React, { Component, ReactNode, createRef } from 'react';
 
+import { IdentityClient } from '@lib/identity/Identity.client';
 import { ButtonUI } from '@lib/ui/Button';
 import { TextFieldUI } from '@lib/ui/TextField';
 
@@ -9,7 +10,6 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './SignUp.component.module.scss';
-import { IdentityClient } from '@lib/identity/Identity.client';
 
 export const signUpRedirectKey = 'signUpRedirect';
 
@@ -98,7 +98,7 @@ export class SignUpComponent extends Component<Props, State> {
 
     private onSignOutClick = () => {
         this.identityClient.signOut();
-    }
+    };
 }
 
 function redirectBack() {

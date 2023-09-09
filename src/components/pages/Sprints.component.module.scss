@@ -134,12 +134,7 @@
                                     .BandwidthFull {
                                         height: 8px;
                                         overflow-x: hidden;
-                                        background-color: rgba(
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        0.1
-                                        );
+                                        background-color: rgba(0, 0, 0, 0.1);
 
                                         &:hover {
                                             cursor: pointer;
