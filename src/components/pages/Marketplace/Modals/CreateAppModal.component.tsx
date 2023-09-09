@@ -15,9 +15,7 @@ interface Props {
     deps: Deps;
 }
 
-interface State {}
-
-export class CreateAppModalComponent extends Component<Props, State> {
+export class CreateAppModalComponent extends Component<Props> {
     private readonly modalRef: RefObject<ModalUI> = createRef();
     private readonly appNameInputRef: RefObject<TextFieldUI> = createRef();
 
@@ -28,7 +26,6 @@ export class CreateAppModalComponent extends Component<Props, State> {
         super(props);
         this.localStore = props.deps.localStore;
         this.stateSyncer = props.deps.stateSyncer;
-        this.state = {};
     }
 
     render() {
