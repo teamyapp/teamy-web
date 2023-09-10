@@ -6,11 +6,13 @@ import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 
+import { Deps } from '@core/dep/deps';
 import { User } from '@core/entity/user';
 
 import { getUserShortName } from '../../../internal/format';
 import github2IconImg from '../assets/github2.png';
 import githubIconImg from '../assets/github.png';
+import { CreateAppApiTokenModalComponent } from './CreateAppApiTokenModal.component';
 import styles from './ManageAppModal.component.module.scss';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts';
@@ -288,7 +290,9 @@ userGroups[1].rollouts.push(userGroupRollouts[1], userGroupRollouts[2]);
 teamGroups[0].rollouts.push(teamGroupRollouts[0]);
 teamGroups[1].rollouts.push(teamGroupRollouts[0]);
 
-interface Props {}
+interface Props {
+    deps: Deps;
+}
 
 interface State {
     app?: App;
@@ -304,6 +308,8 @@ interface State {
 
 export class ManageAppModalComponent extends Component<Props, State> {
     private readonly modalRef: RefObject<ModalUI> = createRef();
+    private readonly createAppApiTokenModalRef =
+        createRef<CreateAppApiTokenModalComponent>();
 
     constructor(props: Props) {
         super(props);
@@ -329,41 +335,51 @@ export class ManageAppModalComponent extends Component<Props, State> {
         return (
             this.state.app && (
                 <ModalUI ref={this.modalRef}>
-                    <div className={styles.Header}>
-                        Manage {this.state.app.name} App
-                        <div
-                            role={'button'}
-                            aria-label={'Close'}
-                            className={styles.CloseButton}
-                            onClick={this.onCloseButtonClick}
-                        >
-                            <MaterialIconUI>cancel</MaterialIconUI>
-                        </div>
-                    </div>
-                    <div className={styles.Content}>
-                        <div className={styles.LeftSection}>
-                            <div className={styles.Tabs}>
-                                {tabs.map((tab) => (
-                                    <div
-                                        key={tab.key}
-                                        className={`${styles.Tab} ${classNames({
-                                            [styles.Active]:
-                                                this.state.showTabViews[
-                                                    tab.key
-                                                ],
-                                        })}`}
-                                        onClick={this.onTabClickHandler(tab)}
-                                    >
-                                        {tab.name}
-                                    </div>
-                                ))}
+                    <>
+                        <div className={styles.Header}>
+                            Manage {this.state.app.name} App
+                            <div
+                                role={'button'}
+                                aria-label={'Close'}
+                                className={styles.CloseButton}
+                                onClick={this.onCloseButtonClick}
+                            >
+                                <MaterialIconUI>cancel</MaterialIconUI>
                             </div>
                         </div>
-                        <div className={styles.Divider} />
-                        <div className={styles.RightSection}>
-                            {this.renderTab()}
+                        <div className={styles.Content}>
+                            <div className={styles.LeftSection}>
+                                <div className={styles.Tabs}>
+                                    {tabs.map((tab) => (
+                                        <div
+                                            key={tab.key}
+                                            className={`${
+                                                styles.Tab
+                                            } ${classNames({
+                                                [styles.Active]:
+                                                    this.state.showTabViews[
+                                                        tab.key
+                                                    ],
+                                            })}`}
+                                            onClick={this.onTabClickHandler(
+                                                tab,
+                                            )}
+                                        >
+                                            {tab.name}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className={styles.Divider} />
+                            <div className={styles.RightSection}>
+                                {this.renderTab()}
+                            </div>
                         </div>
-                    </div>
+                        <CreateAppApiTokenModalComponent
+                            ref={this.createAppApiTokenModalRef}
+                            deps={this.props.deps}
+                        />
+                    </>
                 </ModalUI>
             )
         );
@@ -446,6 +462,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         <div className={styles.Actions}>
                             <div
                                 className={`${styles.Action} ${styles.CreateToken}`}
+                                onClick={this.onCreateApiTokenClick}
                             >
                                 Create token
                             </div>
@@ -1090,6 +1107,12 @@ export class ManageAppModalComponent extends Component<Props, State> {
             </div>
         );
     }
+
+    private onCreateApiTokenClick = () => {
+        if (this.state.app) {
+            this.createAppApiTokenModalRef.current?.open(this.state.app.id);
+        }
+    };
 
     private onGroupTabClickHandler = (tab: Tab<GroupTabKey>) => {
         return () => {

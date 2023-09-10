@@ -93,7 +93,10 @@ export class ManagedTabComponent extends Component<Props, State> {
                     ref={this.createAppModalRef}
                     deps={this.props.deps}
                 />
-                <ManageAppModalComponent ref={this.manageAppModalRef} />
+                <ManageAppModalComponent
+                    ref={this.manageAppModalRef}
+                    deps={this.props.deps}
+                />
             </>
         );
     }

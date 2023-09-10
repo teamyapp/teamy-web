@@ -70,6 +70,10 @@ interface CreateAppInput {
     name: string;
 }
 
+interface CreateAppApiTokenInput {
+    name: string;
+}
+
 export class StateSyncer {
     private readonly connection: Connection;
     private readonly onTransactionReceivedCh = chan<Transaction>();
@@ -830,8 +834,17 @@ export class StateSyncer {
     }
 
     public createApp(teamId: number, input: CreateAppInput): Promise<number> {
-        // TODO: integrate with create app APIs
+        // TODO: integrate with create app API
         console.log('createApp', teamId, input);
+        return Promise.resolve(0);
+    }
+
+    public createAppApiToken(
+        appId: number,
+        input: CreateAppApiTokenInput,
+    ): Promise<number> {
+        // TODO: integrate with create app api token API
+        console.log('createAppApiToken', appId, input);
         return Promise.resolve(0);
     }
 
