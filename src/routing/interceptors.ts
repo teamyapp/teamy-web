@@ -160,46 +160,42 @@ const teamsRoutesInterceptor = (
             };
         }
 
-        switch (routeUpdate.routePattern) {
-            case insightsRoutePattern:
-                if (!featureToggle.enableInsights) {
-                    redirectToTeamsFallback(router, localStore);
-                    return {
-                        isRedirected: true,
-                    };
-                }
-                break;
-            case planningRoutePattern:
-                if (!featureToggle.enablePlanningDoc) {
-                    redirectToTeamsFallback(router, localStore);
-                    return {
-                        isRedirected: true,
-                    };
-                }
-                break;
-            case knowledgeRoutePattern:
-                if (!featureToggle.enableKnowledgeBase) {
-                    redirectToTeamsFallback(router, localStore);
-                    return {
-                        isRedirected: true,
-                    };
-                }
-                break;
-            case helpCenterRoutePattern:
-                if (!featureToggle.enableHelpCenter) {
-                    redirectToTeamsFallback(router, localStore);
-                    return {
-                        isRedirected: true,
-                    };
-                }
-                break;
-            case marketplaceRoutePattern:
-                if (!featureToggle.enableMarketplace) {
-                    redirectToTeamsFallback(router, localStore);
-                    return {
-                        isRedirected: true,
-                    };
-                }
+        if (routeUpdate.routePattern.startsWith(insightsRoutePattern)) {
+            if (!featureToggle.enableInsights) {
+                redirectToTeamsFallback(router, localStore);
+                return {
+                    isRedirected: true,
+                };
+            }
+        } else if (routeUpdate.routePattern.startsWith(planningRoutePattern)) {
+            if (!featureToggle.enablePlanningDoc) {
+                redirectToTeamsFallback(router, localStore);
+                return {
+                    isRedirected: true,
+                };
+            }
+        } else if (routeUpdate.routePattern.startsWith(knowledgeRoutePattern)) {
+            if (!featureToggle.enableKnowledgeBase) {
+                redirectToTeamsFallback(router, localStore);
+                return {
+                    isRedirected: true,
+                };
+            }
+        } else if (routeUpdate.routePattern.startsWith(helpCenterRoutePattern)) {
+            if (!featureToggle.enableHelpCenter) {
+                redirectToTeamsFallback(router, localStore);
+                return {
+                    isRedirected: true,
+                };
+            }
+        } else if (
+            routeUpdate.routePattern.startsWith(marketplaceRoutePattern)) {
+            if (!featureToggle.enableMarketplace) {
+                redirectToTeamsFallback(router, localStore);
+                return {
+                    isRedirected: true,
+                };
+            }
         }
 
         const appState = localStore.getState();
