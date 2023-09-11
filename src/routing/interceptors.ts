@@ -93,6 +93,12 @@ const userSignUpInterceptor = (
             appState.fetchedMeData = true;
             localStore.updateState(appState);
 
+            if (routeUpdate.routePattern == signUpRoutePattern) {
+                return {
+                    stopPipeline: true,
+                }
+            }
+
             if (!appState.currUserId) {
                 const currUrl = window.location.href;
                 localStorage.setItem(signUpRedirectKey, currUrl);
