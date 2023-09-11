@@ -9,4 +9,23 @@
     grid-template-columns: repeat(4, 1fr);
 
     @include ListItem;
+
+    .CreateAppButton {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        background-color: rgba(0, 0, 0, 0.05);
+
+        --icon-size: 34px;
+        --icon-color: rgb(130, 130, 130);
+
+        &:hover {
+            background-color: #828282;
+            cursor: pointer;
+            --icon-color: white;
+        }
+    }
 }
