@@ -848,6 +848,12 @@ export class StateSyncer {
         return Promise.resolve(0);
     }
 
+    public createAppVersion(appId: number): Promise<number> {
+        // TODO: integrate with create app version API
+        console.log('createAppVersion', appId);
+        return Promise.resolve(0);
+    }
+
     private _moveTaskToSprint(
         appState: AppState,
         remoteTask: RemoteTask,

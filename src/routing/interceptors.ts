@@ -96,7 +96,7 @@ const userSignUpInterceptor = (
             if (routeUpdate.routePattern == signUpRoutePattern) {
                 return {
                     stopPipeline: true,
-                }
+                };
             }
 
             if (!appState.currUserId) {
@@ -187,7 +187,9 @@ const teamsRoutesInterceptor = (
                     isRedirected: true,
                 };
             }
-        } else if (routeUpdate.routePattern.startsWith(helpCenterRoutePattern)) {
+        } else if (
+            routeUpdate.routePattern.startsWith(helpCenterRoutePattern)
+        ) {
             if (!featureToggle.enableHelpCenter) {
                 redirectToTeamsFallback(router, localStore);
                 return {
@@ -195,7 +197,8 @@ const teamsRoutesInterceptor = (
                 };
             }
         } else if (
-            routeUpdate.routePattern.startsWith(marketplaceRoutePattern)) {
+            routeUpdate.routePattern.startsWith(marketplaceRoutePattern)
+        ) {
             if (!featureToggle.enableMarketplace) {
                 redirectToTeamsFallback(router, localStore);
                 return {

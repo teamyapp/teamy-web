@@ -8,7 +8,7 @@ import { TextFieldUI } from '@lib/ui/TextField';
 import { Deps } from '@core/dep/deps';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
-import styles from './CreateAppApiTokenModal.component.module.scss';
+import styles from './CreateAppSecretModal.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -18,9 +18,9 @@ interface State {
     appId?: number;
 }
 
-export class CreateAppApiTokenModalComponent extends Component<Props, State> {
+export class CreateAppSecretModalComponent extends Component<Props, State> {
     private readonly modalRef: RefObject<ModalUI> = createRef();
-    private readonly tokenNameInputRef: RefObject<TextFieldUI> = createRef();
+    private readonly secretNameInputRef: RefObject<TextFieldUI> = createRef();
 
     private stateSyncer: StateSyncer;
 
@@ -34,7 +34,7 @@ export class CreateAppApiTokenModalComponent extends Component<Props, State> {
         return (
             <ModalUI ref={this.modalRef}>
                 <div className={styles.Header}>
-                    Create API Token
+                    Create App Secret
                     <div
                         role={'button'}
                         aria-label={'Close'}
@@ -45,9 +45,9 @@ export class CreateAppApiTokenModalComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <div className={styles.Content}>
-                    <div className={styles.TokenName}>
+                    <div className={styles.SecretName}>
                         <TextFieldUI
-                            ref={this.tokenNameInputRef}
+                            ref={this.secretNameInputRef}
                             label={'Name'}
                         />
                     </div>
@@ -70,7 +70,7 @@ export class CreateAppApiTokenModalComponent extends Component<Props, State> {
             () => {
                 this.modalRef.current?.open();
                 setTimeout(() => {
-                    this.tokenNameInputRef.current?.focus();
+                    this.secretNameInputRef.current?.focus();
                 });
             },
         );
@@ -81,10 +81,10 @@ export class CreateAppApiTokenModalComponent extends Component<Props, State> {
     };
 
     onCreateClick = async () => {
-        const tokeName = this.tokenNameInputRef.current?.value;
-        if (this.state.appId && tokeName) {
+        const secretName = this.secretNameInputRef.current?.value;
+        if (this.state.appId && secretName) {
             await this.stateSyncer.createAppApiToken(this.state.appId, {
-                name: tokeName,
+                name: secretName,
             });
         }
 
