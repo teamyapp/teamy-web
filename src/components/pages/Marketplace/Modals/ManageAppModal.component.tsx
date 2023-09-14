@@ -1,18 +1,20 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import React, { Component, ReactNode, RefObject, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 
 import { Deps } from '@core/dep/deps';
-import { User } from '@core/entity/user';
+import { AppSecret } from '@core/entity/appSecret';
+import { AppVersion } from '@core/entity/appVersion';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { getUserShortName } from '../../../internal/format';
 import github2IconImg from '../assets/github2.png';
 import githubIconImg from '../assets/github.png';
-import { CreateAppApiTokenModalComponent } from './CreateAppApiTokenModal.component';
+import { CreateAppSecretModalComponent } from './CreateAppSecretModal.component';
 import styles from './ManageAppModal.component.module.scss';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts';
@@ -67,15 +69,7 @@ const rolloutGroupTabs: Tab<RolloutGroupTabKey>[] = [
     },
 ];
 
-interface ApiToken {
-    id: number;
-    name: string;
-    addedAt: Date;
-    addedBy: User;
-    lastUsedAt?: Date;
-}
-
-const apiTokens: ApiToken[] = [
+const appSecrets: AppSecret[] = [
     {
         id: 1,
         name: 'Backend',
@@ -88,6 +82,12 @@ const apiTokens: ApiToken[] = [
             profileUrl: '',
             teams: [],
             linkedUsers: [],
+        },
+        app: {
+            id: 1,
+            secrets: [],
+            totalInstallations: 0,
+            versions: [],
         },
     },
     {
@@ -104,42 +104,91 @@ const apiTokens: ApiToken[] = [
             linkedUsers: [],
         },
         lastUsedAt: moment().subtract(2, 'd').toDate(),
+        app: {
+            id: 1,
+            secrets: [],
+            totalInstallations: 0,
+            versions: [],
+        },
     },
 ];
-
-interface AppVersion {
-    number: number;
-    appName: string;
-    appDescription: string;
-    iconUrl: string;
-    changes: string[];
-    createdAt: Date;
-}
 
 const appVersions: AppVersion[] = [
     {
         number: 1,
         appName: 'GH',
-        appDescription: 'Github integration',
+        description: 'Github integration',
         iconUrl: github2IconImg,
         changes: ['Create initial version of app'],
         createdAt: moment().subtract('2', 'd').toDate(),
+        createdBy: {
+            id: 1,
+            firstName: 'Harry',
+            lastName: 'Liu',
+            fullName: 'Harry Liu',
+            profileUrl: '',
+            teams: [],
+            linkedUsers: [],
+        },
+        prices: [],
+        isReady: true,
     },
     {
         number: 2,
         appName: 'Github',
-        appDescription: 'Github integration for Teamy',
+        description: 'Github integration for Teamy',
         iconUrl: githubIconImg,
         changes: ['Use a new icon for the app', 'Clarified app description'],
         createdAt: moment().subtract('1', 'd').toDate(),
+        createdBy: {
+            id: 1,
+            firstName: 'Harry',
+            lastName: 'Liu',
+            fullName: 'Harry Liu',
+            profileUrl: '',
+            teams: [],
+            linkedUsers: [],
+        },
+        prices: [],
+        isReady: true,
     },
     {
         number: 3,
         appName: 'Github',
-        appDescription: 'Github integration for Teamy',
+        description: 'Github integration for Teamy',
         iconUrl: githubIconImg,
         changes: ['Support pull request automation'],
         createdAt: moment().subtract('1', 'd').toDate(),
+        createdBy: {
+            id: 1,
+            firstName: 'Harry',
+            lastName: 'Liu',
+            fullName: 'Harry Liu',
+            profileUrl: '',
+            teams: [],
+            linkedUsers: [],
+        },
+        prices: [],
+        isReady: true,
+    },
+    {
+        number: 4,
+        appName: '',
+        description: '',
+        iconUrl: '',
+        changes: [],
+        createdAt: moment().subtract('1', 'd').toDate(),
+        createdBy: {
+            id: 1,
+            firstName: 'Harry',
+            lastName: 'Liu',
+            fullName: 'Harry Liu',
+            profileUrl: '',
+            teams: [],
+            linkedUsers: [],
+        },
+        prices: [],
+        isReady: false,
     },
 ];
 
@@ -290,6 +339,8 @@ userGroups[1].rollouts.push(userGroupRollouts[1], userGroupRollouts[2]);
 teamGroups[0].rollouts.push(teamGroupRollouts[0]);
 teamGroups[1].rollouts.push(teamGroupRollouts[0]);
 
+type AppPackageStatus = 'selecting' | 'uploading' | 'processing' | 'ready';
+
 interface Props {
     deps: Deps;
 }
@@ -304,15 +355,18 @@ interface State {
     showTabViews: Record<TabKey, boolean>;
     showGroupTabViews: Record<GroupTabKey, boolean>;
     showRolloutGroupTabViews: Record<RolloutGroupTabKey, boolean>;
+    appPackageStatus: AppPackageStatus;
 }
 
 export class ManageAppModalComponent extends Component<Props, State> {
-    private readonly modalRef: RefObject<ModalUI> = createRef();
-    private readonly createAppApiTokenModalRef =
-        createRef<CreateAppApiTokenModalComponent>();
+    private readonly modalRef = createRef<ModalUI>();
+    private readonly createAppSecretModalRef =
+        createRef<CreateAppSecretModalComponent>();
+    private readonly stateSyncer: StateSyncer;
 
     constructor(props: Props) {
         super(props);
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             showTabViews: {
                 credentials: true,
@@ -328,6 +382,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 users: true,
                 teams: false,
             },
+            appPackageStatus: 'processing',
         };
     }
 
@@ -375,9 +430,9 @@ export class ManageAppModalComponent extends Component<Props, State> {
                                 {this.renderTab()}
                             </div>
                         </div>
-                        <CreateAppApiTokenModalComponent
-                            ref={this.createAppApiTokenModalRef}
+                        <CreateAppSecretModalComponent
                             deps={this.props.deps}
+                            ref={this.createAppSecretModalRef}
                         />
                     </>
                 </ModalUI>
@@ -457,18 +512,18 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 </div>
                 <div className={styles.Section}>
                     <div className={styles.TitleRow}>
-                        <div className={styles.Title}>API Tokens</div>
+                        <div className={styles.Title}>API Secrets</div>
                         <div className={styles.Spacer} />
                         <div className={styles.Actions}>
                             <div
-                                className={`${styles.Action} ${styles.CreateToken}`}
-                                onClick={this.onCreateApiTokenClick}
+                                className={`${styles.Action} ${styles.CreateSecret}`}
+                                onClick={this.onCreateSecretClick}
                             >
-                                Create token
+                                Create secret
                             </div>
                         </div>
                     </div>
-                    <table className={`${styles.Table} ${styles.ApiToken}`}>
+                    <table className={`${styles.Table} ${styles.Secret}`}>
                         <thead>
                             <tr>
                                 <th className={`${styles.Cell} ${styles.Name}`}>
@@ -481,23 +536,25 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             </tr>
                         </thead>
                         <tbody>
-                            {apiTokens.map((token) => (
-                                <tr className={styles.TokenRow}>
+                            {appSecrets.map((secret) => (
+                                <tr className={styles.SecretRow}>
                                     <td
                                         className={`${styles.Cell} ${styles.Name}`}
                                     >
-                                        {token.name}
+                                        {secret.name}
                                     </td>
-                                    <td>{moment(token.addedAt).fromNow()}</td>
+                                    <td>{moment(secret.addedAt).fromNow()}</td>
                                     <td>
                                         {getUserShortName(
-                                            token.addedBy.firstName,
-                                            token.addedBy.lastName,
+                                            secret.addedBy.firstName,
+                                            secret.addedBy.lastName,
                                         )}
                                     </td>
                                     <td>
-                                        {token.lastUsedAt
-                                            ? moment(token.lastUsedAt).fromNow()
+                                        {secret.lastUsedAt
+                                            ? moment(
+                                                  secret.lastUsedAt,
+                                              ).fromNow()
                                             : 'Never'}
                                     </td>
                                     <td
@@ -526,7 +583,10 @@ export class ManageAppModalComponent extends Component<Props, State> {
         return (
             <div className={styles.VersionsTab}>
                 <div className={styles.VersionsSection}>
-                    <div className={`${styles.Action} ${styles.CreateVersion}`}>
+                    <div
+                        className={`${styles.Action} ${styles.CreateVersion}`}
+                        onClick={this.onCreateVersionClick}
+                    >
                         Create Version
                     </div>
                     <div className={styles.VersionList}>
@@ -555,72 +615,132 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <div className={styles.AppVersionDetail}>
-                    {this.state.selectedAppVersion && (
-                        <div className={styles.Box}>
-                            <div className={`${styles.Row} ${styles.Icon}`}>
-                                <img
-                                    className={styles.Icon}
-                                    src={this.state.selectedAppVersion.iconUrl}
-                                />
-                            </div>
-                            <div className={`${styles.Row} ${styles.Name}`}>
-                                <span
-                                    className={`${styles.Label} ${styles.SameRow}`}
-                                >
-                                    Name:
-                                </span>
-                                {this.state.selectedAppVersion.appName}
-                            </div>
-                            <div
-                                className={`${styles.Row} ${styles.Description}`}
-                            >
-                                <span
-                                    className={`${styles.Label} ${styles.SameRow}`}
-                                >
-                                    Description:
-                                </span>
-                                {this.state.selectedAppVersion.appDescription}
-                            </div>
-                            <div className={`${styles.Row} ${styles.Changes}`}>
-                                <div
-                                    className={`${styles.Label} ${styles.NextRow}`}
-                                >
-                                    Changes:
-                                </div>
-                                <div className={styles.ChangeList}>
-                                    {this.state.selectedAppVersion.changes.map(
-                                        (change) => (
-                                            <div className={styles.Change}>
-                                                {change}
-                                            </div>
-                                        ),
-                                    )}
-                                </div>
-                            </div>
-                            <div
-                                className={`${styles.Row} ${styles.CreatedAt}`}
-                            >
-                                <span
-                                    className={`${styles.Label} ${styles.SameRow}`}
-                                >
-                                    Created at:
-                                </span>
-                                {moment(
-                                    this.state.selectedAppVersion.createdAt,
-                                ).format('l LT')}
-                            </div>
-                            <div className={`${styles.Row} ${styles.Buttons}`}>
-                                <div className={styles.Download}>
-                                    <ButtonUI label={'Download'} />
-                                </div>
-                                <div className={styles.Delete}>
-                                    <ButtonUI label={'Delete'} />
-                                </div>
-                            </div>
-                        </div>
-                    )}
+                    {this.state.selectedAppVersion &&
+                        (this.state.selectedAppVersion.isReady
+                            ? this.renderAppVersionDetail()
+                            : this.renderUploadAppVersionPackage())}
                 </div>
             </div>
+        );
+    }
+
+    private renderUploadAppVersionPackage(): ReactNode {
+        return (
+            <div className={`${styles.Box} ${styles.UploadAppPackage}`}>
+                {this.renderUploadAppPackageTabContent()}
+            </div>
+        );
+    }
+
+    private renderUploadAppPackageTabContent(): ReactNode {
+        switch (this.state.appPackageStatus) {
+            case 'selecting':
+                return this.renderSelectingAppPackageTab();
+            case 'uploading':
+                return this.renderUploadingAppPackageTab();
+            case 'processing':
+                return this.renderProcessingAppPackageTab();
+        }
+    }
+
+    private renderSelectingAppPackageTab(): ReactNode {
+        return (
+            <>
+                <div className={styles.Title}>Select App Package</div>
+                <div className={`${styles.Button} ${styles.SelectFile}`}>
+                    <div className={styles.Icon}>
+                        <MaterialIconUI>upload_file</MaterialIconUI>
+                    </div>
+                    <input type={'file'} className={styles.FileInput} />
+                </div>
+            </>
+        );
+    }
+
+    private renderUploadingAppPackageTab(): ReactNode {
+        return (
+            <>
+                <div className={styles.Title}>Uploading App Package</div>
+                <div className={styles.ProgressBar}>
+                    <div className={styles.Progress} />
+                </div>
+            </>
+        );
+    }
+
+    private renderProcessingAppPackageTab(): ReactNode {
+        return (
+            <>
+                <div className={styles.Title}>Processing App Package</div>
+                <div className={styles.Spinner}>
+                    <div className={`${styles.Rect} ${styles.One}`} />
+                    <div className={`${styles.Rect} ${styles.Two}`} />
+                    <div className={`${styles.Rect} ${styles.Three}`} />
+                    <div className={`${styles.Rect} ${styles.Four}`} />
+                    <div className={`${styles.Rect} ${styles.Five}`} />
+                </div>
+            </>
+        );
+    }
+
+    private renderAppPackageReadyTab(): ReactNode {
+        return <></>;
+    }
+
+    private renderAppVersionDetail() {
+        return (
+            this.state.selectedAppVersion && (
+                <div className={`${styles.Box} ${styles.VersionDetail}`}>
+                    <div className={`${styles.Row} ${styles.Icon}`}>
+                        <img
+                            className={styles.Icon}
+                            src={this.state.selectedAppVersion.iconUrl}
+                        />
+                    </div>
+                    <div className={`${styles.Row} ${styles.Name}`}>
+                        <span className={`${styles.Label} ${styles.SameRow}`}>
+                            Name:
+                        </span>
+                        {this.state.selectedAppVersion.appName}
+                    </div>
+                    <div className={`${styles.Row} ${styles.Description}`}>
+                        <span className={`${styles.Label} ${styles.SameRow}`}>
+                            Description:
+                        </span>
+                        {this.state.selectedAppVersion.description}
+                    </div>
+                    <div className={`${styles.Row} ${styles.Changes}`}>
+                        <div className={`${styles.Label} ${styles.NextRow}`}>
+                            Changes:
+                        </div>
+                        <div className={styles.ChangeList}>
+                            {this.state.selectedAppVersion.changes.map(
+                                (change) => (
+                                    <div className={styles.Change}>
+                                        {change}
+                                    </div>
+                                ),
+                            )}
+                        </div>
+                    </div>
+                    <div className={`${styles.Row} ${styles.CreatedAt}`}>
+                        <span className={`${styles.Label} ${styles.SameRow}`}>
+                            Created at:
+                        </span>
+                        {moment(this.state.selectedAppVersion.createdAt).format(
+                            'l LT',
+                        )}
+                    </div>
+                    <div className={`${styles.Row} ${styles.Buttons}`}>
+                        <div className={styles.Download}>
+                            <ButtonUI label={'Download'} />
+                        </div>
+                        <div className={styles.Delete}>
+                            <ButtonUI label={'Delete'} />
+                        </div>
+                    </div>
+                </div>
+            )
         );
     }
 
@@ -746,7 +866,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private renderGroup(selectedGroup?: UserGroup | TeamGroup): ReactNode {
         return (
             selectedGroup && (
-                <div className={styles.Box}>
+                <div className={`${styles.Box} ${styles.Group}`}>
                     <div className={styles.GroupInfo}>
                         <div className={`${styles.Row} ${styles.Id}`}>
                             <span
@@ -844,7 +964,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private renderUserGroupRollout(): ReactNode {
         return (
             this.state.selectedUserGroupRollout && (
-                <div className={styles.Box}>
+                <div className={`${styles.Box} ${styles.Group}`}>
                     <div className={styles.RolloutInfo}>
                         {this.renderRolloutInfo(
                             this.state.selectedUserGroupRollout,
@@ -886,7 +1006,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private renderTeamGroupRollout(): ReactNode {
         return (
             this.state.selectedTeamGroupRollout && (
-                <div className={styles.Box}>
+                <div className={`${styles.Box} ${styles.Group}`}>
                     <div className={styles.RolloutInfo}>
                         {this.renderRolloutInfo(
                             this.state.selectedTeamGroupRollout,
@@ -1108,9 +1228,9 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     }
 
-    private onCreateApiTokenClick = () => {
+    private onCreateSecretClick = () => {
         if (this.state.app) {
-            this.createAppApiTokenModalRef.current?.open(this.state.app.id);
+            this.createAppSecretModalRef.current?.open(this.state.app.id);
         }
     };
 
@@ -1176,5 +1296,14 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 selectedTeamGroupRollout: rollout,
             });
         };
+    };
+
+    private onCreateVersionClick = async () => {
+        if (this.state.app) {
+            let versionNumber = await this.stateSyncer.createAppVersion(
+                this.state.app.id,
+            );
+            // TODO: show newly created version
+        }
     };
 }
