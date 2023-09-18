@@ -77,7 +77,13 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
             team && (
                 <div className={styles.InlineTeam}>
                     <div className={styles.Icon}>
-                        <img src={team.iconUrl} alt={team.name} />
+                        {team.iconUrl ? (
+                            <img src={team.iconUrl} alt={team.name} />
+                        ) : (
+                            <div className={styles.IconDefault}>
+                                {team.name[0].toUpperCase()}
+                            </div>
+                        )}
                     </div>
                     <div className={styles.Name}>{team.name}</div>
                 </div>

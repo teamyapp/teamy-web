@@ -8,6 +8,7 @@ import { Deps } from '@core/dep/deps';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { UserProfileUI } from '../../../internal/UserProfile';
 import { getUserShortName } from '../../../internal/format';
 import { CreateGroupViewComponent } from './CreateGroupView.component';
 import styles from './CreateUserGroupModal.component.module.scss';
@@ -78,7 +79,7 @@ export class CreateUserGroupModalComponent extends Component<Props> {
             user && (
                 <div className={styles.InlineUser}>
                     <div className={styles.Profile}>
-                        <img src={user.profileUrl} alt={user.fullName} />
+                        <UserProfileUI user={user} />
                     </div>
                     <div className={styles.Name}>
                         {getUserShortName(user.firstName, user.lastName)}
