@@ -74,6 +74,16 @@ interface CreateAppApiTokenInput {
     name: string;
 }
 
+interface CreateStaticGroupInput {
+    groupName: string;
+    memberIds: number[];
+}
+
+interface CreateFilterGroupInput {
+    groupName: string;
+    filter: string;
+}
+
 export class StateSyncer {
     private readonly connection: Connection;
     private readonly onTransactionReceivedCh = chan<Transaction>();
@@ -851,6 +861,42 @@ export class StateSyncer {
     public createAppVersion(appId: number): Promise<number> {
         // TODO: integrate with create app version API
         console.log('createAppVersion', appId);
+        return Promise.resolve(0);
+    }
+
+    public createStaticUserGroup(
+        appId: number,
+        input: CreateStaticGroupInput,
+    ): Promise<number> {
+        // TODO: integrate with create static user group API
+        console.log('createStaticUserGroup', appId, input);
+        return Promise.resolve(0);
+    }
+
+    public createFilterUserGroup(
+        appId: number,
+        input: CreateFilterGroupInput,
+    ): Promise<number> {
+        // TODO: integrate with create filter user group API
+        console.log('createFilterUserGroup', appId, input);
+        return Promise.resolve(0);
+    }
+
+    public createStaticTeamGroup(
+        appId: number,
+        input: CreateStaticGroupInput,
+    ): Promise<number> {
+        // TODO: integrate with create static team group API
+        console.log('createStaticTeamGroup', appId, input);
+        return Promise.resolve(0);
+    }
+
+    public createFilterTeamGroup(
+        appId: number,
+        input: CreateFilterGroupInput,
+    ): Promise<number> {
+        // TODO: integrate with create filter team group API
+        console.log('createFilterTeamGroup', appId, input);
         return Promise.resolve(0);
     }
 

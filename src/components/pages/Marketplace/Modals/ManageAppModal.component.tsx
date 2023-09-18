@@ -15,6 +15,8 @@ import { getUserShortName } from '../../../internal/format';
 import github2IconImg from '../assets/github2.png';
 import githubIconImg from '../assets/github.png';
 import { CreateAppSecretModalComponent } from './CreateAppSecretModal.component';
+import { CreateTeamGroupModalComponent } from './CreateTeamGroupModal.component';
+import { CreateUserGroupModalComponent } from './CreateUserGroupModal.component';
 import styles from './ManageAppModal.component.module.scss';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts';
@@ -362,6 +364,10 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private readonly modalRef = createRef<ModalUI>();
     private readonly createAppSecretModalRef =
         createRef<CreateAppSecretModalComponent>();
+    private readonly createUserGroupModalRef =
+        createRef<CreateUserGroupModalComponent>();
+    private readonly createTeamGroupModalRef =
+        createRef<CreateTeamGroupModalComponent>();
     private readonly stateSyncer: StateSyncer;
 
     constructor(props: Props) {
@@ -433,6 +439,17 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         <CreateAppSecretModalComponent
                             deps={this.props.deps}
                             ref={this.createAppSecretModalRef}
+                            appId={this.state.app.id}
+                        />
+                        <CreateUserGroupModalComponent
+                            deps={this.props.deps}
+                            ref={this.createUserGroupModalRef}
+                            appId={this.state.app.id}
+                        />
+                        <CreateTeamGroupModalComponent
+                            deps={this.props.deps}
+                            ref={this.createTeamGroupModalRef}
+                            appId={this.state.app.id}
                         />
                     </>
                 </ModalUI>
@@ -761,12 +778,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             </div>
                         ))}
                     </div>
-                    <div className={`${styles.Action} ${styles.CreateGroup}`}>
-                        Create Group
-                    </div>
-                    <div className={styles.GroupList}>
-                        {this.renderGroups()}
-                    </div>
+                    {this.renderGroupsSection()}
                 </div>
                 <div className={styles.GroupDetailSection}>
                     {this.renderGroupDetail()}
@@ -810,22 +822,46 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     }
 
-    private renderGroups(): ReactNode {
+    private renderGroupsSection(): ReactNode {
         if (this.state.showGroupTabViews['users']) {
-            return userGroups.map((userGroup) =>
-                this.renderInlineGroup(
-                    userGroup,
-                    this.onInlineUserGroupClickHandler,
-                    this.state.selectedUserGroup,
-                ),
+            return (
+                <>
+                    <div
+                        className={`${styles.Action} ${styles.CreateGroup}`}
+                        onClick={this.onCreateUserGroupClick}
+                    >
+                        Create User Group
+                    </div>
+                    <div className={styles.GroupList}>
+                        {userGroups.map((userGroup) =>
+                            this.renderInlineGroup(
+                                userGroup,
+                                this.onInlineUserGroupClickHandler,
+                                this.state.selectedUserGroup,
+                            ),
+                        )}
+                    </div>
+                </>
             );
         } else if (this.state.showGroupTabViews['teams']) {
-            return teamGroups.map((teamGroup) =>
-                this.renderInlineGroup(
-                    teamGroup,
-                    this.onInlineTeamGroupClickHandler,
-                    this.state.selectedTeamGroup,
-                ),
+            return (
+                <>
+                    <div
+                        className={`${styles.Action} ${styles.CreateGroup}`}
+                        onClick={this.onCreateTeamGroupClick}
+                    >
+                        Create Team Group
+                    </div>
+                    <div className={styles.GroupList}>
+                        {teamGroups.map((teamGroup) =>
+                            this.renderInlineGroup(
+                                teamGroup,
+                                this.onInlineTeamGroupClickHandler,
+                                this.state.selectedTeamGroup,
+                            ),
+                        )}
+                    </div>
+                </>
             );
         }
     }
@@ -1229,9 +1265,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     }
 
     private onCreateSecretClick = () => {
-        if (this.state.app) {
-            this.createAppSecretModalRef.current?.open(this.state.app.id);
-        }
+        this.createAppSecretModalRef.current?.open();
     };
 
     private onGroupTabClickHandler = (tab: Tab<GroupTabKey>) => {
@@ -1305,5 +1339,13 @@ export class ManageAppModalComponent extends Component<Props, State> {
             );
             // TODO: show newly created version
         }
+    };
+
+    private onCreateUserGroupClick = () => {
+        this.createUserGroupModalRef.current?.open();
+    };
+
+    private onCreateTeamGroupClick = () => {
+        this.createTeamGroupModalRef.current?.open();
     };
 }

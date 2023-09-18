@@ -12,13 +12,10 @@ import styles from './CreateAppSecretModal.component.module.scss';
 
 interface Props {
     deps: Deps;
+    appId: number;
 }
 
-interface State {
-    appId?: number;
-}
-
-export class CreateAppSecretModalComponent extends Component<Props, State> {
+export class CreateAppSecretModalComponent extends Component<Props> {
     private readonly modalRef: RefObject<ModalUI> = createRef();
     private readonly secretNameInputRef: RefObject<TextFieldUI> = createRef();
 
@@ -62,18 +59,11 @@ export class CreateAppSecretModalComponent extends Component<Props, State> {
         );
     }
 
-    open(appId: number) {
-        this.setState(
-            {
-                appId,
-            },
-            () => {
-                this.modalRef.current?.open();
-                setTimeout(() => {
-                    this.secretNameInputRef.current?.focus();
-                });
-            },
-        );
+    open() {
+        this.modalRef.current?.open();
+        setTimeout(() => {
+            this.secretNameInputRef.current?.focus();
+        });
     }
 
     onCloseButtonClick = () => {
@@ -82,8 +72,8 @@ export class CreateAppSecretModalComponent extends Component<Props, State> {
 
     onCreateClick = async () => {
         const secretName = this.secretNameInputRef.current?.value;
-        if (this.state.appId && secretName) {
-            await this.stateSyncer.createAppApiToken(this.state.appId, {
+        if (this.props.appId && secretName) {
+            await this.stateSyncer.createAppApiToken(this.props.appId, {
                 name: secretName,
             });
         }

@@ -1,0 +1,32 @@
+@import '../shared.scss';
+@import '../../../internal/Modals/Modal.shared.module';
+
+.Content {
+    display: flex;
+    width: 400px;
+    box-sizing: border-box;
+
+    .InlineUser {
+        display: flex;
+        column-gap: 10px;
+        align-items: center;
+
+        .Profile {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background-color: white;
+            overflow: hidden;
+
+            img {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        .Name {
+            font-size: 16px;
+            font-weight: bold;
+        }
+    }
+}
