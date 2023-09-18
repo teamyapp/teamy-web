@@ -30,6 +30,7 @@ export class DropDownList extends Component<Props, State> {
         for (const option of this.props.options) {
             options[option.key] = option;
         }
+
         this.state = {
             selectedOption: this.props.selectOptionKey
                 ? options[this.props.selectOptionKey]

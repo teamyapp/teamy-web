@@ -4,7 +4,7 @@
     height: var(--profile-height, 24px);
     border-radius: 50%;
     background-color: var(--profile-background, #455a64);
-    color: white;
+    color: var(--profile-text-color, white);
     font-weight: bold;
     align-items: center;
     justify-content: center;
