@@ -830,7 +830,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         className={`${styles.Action} ${styles.CreateGroup}`}
                         onClick={this.onCreateUserGroupClick}
                     >
-                        Create User Group
+                        Create Group
                     </div>
                     <div className={styles.GroupList}>
                         {userGroups.map((userGroup) =>
@@ -850,7 +850,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         className={`${styles.Action} ${styles.CreateGroup}`}
                         onClick={this.onCreateTeamGroupClick}
                     >
-                        Create Team Group
+                        Create Group
                     </div>
                     <div className={styles.GroupList}>
                         {teamGroups.map((teamGroup) =>
