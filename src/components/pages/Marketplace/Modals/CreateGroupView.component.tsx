@@ -1,10 +1,4 @@
-import React, {
-    ChangeEvent,
-    Component,
-    KeyboardEvent,
-    MouseEvent,
-    ReactNode,
-} from 'react';
+import React, { Component, KeyboardEvent, MouseEvent, ReactNode } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';

@@ -9,9 +9,7 @@ import { ModalUI } from '@lib/ui/Modal';
 import { Deps } from '@core/dep/deps';
 import { AppSecret } from '@core/entity/appSecret';
 import { AppVersion } from '@core/entity/appVersion';
-import { Sprint } from '@core/entity/sprint';
 import { Team } from '@core/entity/team';
-import { TeamMember } from '@core/entity/teamMember';
 import { User } from '@core/entity/user';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
