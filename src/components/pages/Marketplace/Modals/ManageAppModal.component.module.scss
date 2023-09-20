@@ -1,5 +1,6 @@
 @import '../shared.scss';
 @import '../../../internal/Modals/Modal.shared.module';
+@import 'shared';
 
 .Content {
     display: flex;
@@ -452,6 +453,30 @@
                         row-gap: 20px;
                     }
 
+                    .InlineUsers {
+                        .Users {
+                            display: flex;
+                            gap: 6px;
+                            flex-wrap: wrap;
+
+                            .InlineUser {
+                                @include inline-user;
+                            }
+                        }
+                    }
+
+                    .InlineTeams {
+                        .Teams {
+                            display: flex;
+                            gap: 6px;
+                            flex-wrap: wrap;
+
+                            .InlineTeam {
+                                @include inline-team;
+                            }
+                        }
+                    }
+
                     .Rollouts {
                         margin-top: 20px;
 
@@ -633,28 +658,37 @@
                         flex-direction: column;
                         row-gap: 20px;
 
-                        .Versions,
-                        .Version {
-                            .Value {
-                                padding: 2px 10px;
+                        .Activator,
+                        .VersionSelector {
+                            .Detail {
                                 border-radius: 4px;
-                                background-color: rgba(0, 0, 0, 0.05);
-                                font-weight: bold;
-
-                                &:hover {
-                                    background-color: #2770ff;
-                                    cursor: pointer;
-                                    color: white;
-                                }
-                            }
-                        }
-
-                        .Versions {
-                            display: flex;
-
-                            .Values {
+                                padding: 20px;
                                 display: flex;
-                                column-gap: 4px;
+                                flex-direction: column;
+                                row-gap: 20px;
+                                background-color: rgba(0, 0, 0, 0.02);
+
+                                .Value {
+                                    padding: 2px 10px;
+                                    border-radius: 4px;
+                                    background-color: #e91e63;
+                                    font-weight: bold;
+                                    color: white;
+
+                                    &:hover {
+                                        background-color: #2770ff;
+                                        cursor: pointer;
+                                    }
+                                }
+
+                                .Values {
+                                    display: flex;
+                                    column-gap: 4px;
+                                }
+
+                                .Versions {
+                                    display: flex;
+                                }
                             }
                         }
                     }
