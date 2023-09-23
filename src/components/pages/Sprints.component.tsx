@@ -11,7 +11,6 @@ import { Router } from '@lib/router/router';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
-import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
@@ -23,7 +22,6 @@ import {
     upcomingSectionId,
 } from '@core/config/sections';
 import { taskUrgencyOrder } from '@core/config/sortOrder';
-import { taskPriorityOrder } from '@core/config/sortOrder';
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import * as filters from '@core/data/task.filter';
