@@ -5,7 +5,6 @@ import { ModalUI } from '@lib/ui/Modal';
 
 import { Group } from '@core/entity/group';
 import { CreateAppRolloutInput } from '@core/entity/input';
-import { Rollout } from '@core/entity/rollout';
 import { User } from '@core/entity/user';
 
 import { CreateRolloutViewComponent } from './CreateRolloutView.component';

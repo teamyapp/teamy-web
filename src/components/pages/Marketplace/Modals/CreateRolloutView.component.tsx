@@ -154,55 +154,6 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
         );
     }
 
-    onSelectActivatorType = (activatorType: string) => {
-        this.setState({
-            selectedActivatorType: activatorType as ActivatorType,
-        });
-    };
-
-    onSelectVersionSelectorType = (versionSelectorType: string) => {
-        this.setState({
-            selectedVersionSelectorType:
-                versionSelectorType as VersionSelectorType,
-        });
-    };
-
-    onVersionNumberInputKeydown = (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            const versionNumber = Number(event.currentTarget.value);
-            if (!isNaN(versionNumber)) {
-                if (!this.state.versionNumbers.includes(versionNumber)) {
-                    this.setState({
-                        versionNumbers: [
-                            ...this.state.versionNumbers,
-                            versionNumber,
-                        ],
-                    });
-                }
-            }
-
-            event.currentTarget.value = '';
-        }
-    };
-
-    onGroupIdInputKeydown = (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter') {
-            const groupId = Number(event.currentTarget.value);
-            if (this.props.isValidGroup?.call(null, groupId)) {
-                if (!this.state.selectedGroupIds.includes(groupId)) {
-                    this.setState({
-                        selectedGroupIds: [
-                            ...this.state.selectedGroupIds,
-                            groupId,
-                        ],
-                    });
-                }
-            }
-
-            event.currentTarget.value = '';
-        }
-    };
-
     private renderActivatorSection(): ReactNode {
         switch (this.state.selectedActivatorType) {
             case 'static':
@@ -319,6 +270,57 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
             </div>
         );
     }
+
+
+
+    onSelectActivatorType = (activatorType: string) => {
+        this.setState({
+            selectedActivatorType: activatorType as ActivatorType,
+        });
+    };
+
+    onSelectVersionSelectorType = (versionSelectorType: string) => {
+        this.setState({
+            selectedVersionSelectorType:
+                versionSelectorType as VersionSelectorType,
+        });
+    };
+
+    onVersionNumberInputKeydown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            const versionNumber = Number(event.currentTarget.value);
+            if (!isNaN(versionNumber)) {
+                if (!this.state.versionNumbers.includes(versionNumber)) {
+                    this.setState({
+                        versionNumbers: [
+                            ...this.state.versionNumbers,
+                            versionNumber,
+                        ],
+                    });
+                }
+            }
+
+            event.currentTarget.value = '';
+        }
+    };
+
+    onGroupIdInputKeydown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            const groupId = Number(event.currentTarget.value);
+            if (this.props.isValidGroup?.call(null, groupId)) {
+                if (!this.state.selectedGroupIds.includes(groupId)) {
+                    this.setState({
+                        selectedGroupIds: [
+                            ...this.state.selectedGroupIds,
+                            groupId,
+                        ],
+                    });
+                }
+            }
+
+            event.currentTarget.value = '';
+        }
+    };
 
     onCreateRolloutClick = () => {
         this.props.onCreateClick?.({

@@ -5,9 +5,7 @@ import { ModalUI } from '@lib/ui/Modal';
 
 import { Group } from '@core/entity/group';
 import { CreateAppRolloutInput } from '@core/entity/input';
-import { Rollout } from '@core/entity/rollout';
 import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
 
 import { CreateRolloutViewComponent } from './CreateRolloutView.component';
 import styles from './CreateTeamRolloutModal.component.module.scss';
