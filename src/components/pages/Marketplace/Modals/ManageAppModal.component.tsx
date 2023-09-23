@@ -9,6 +9,17 @@ import { ModalUI } from '@lib/ui/Modal';
 import { Deps } from '@core/dep/deps';
 import { AppSecret } from '@core/entity/appSecret';
 import { AppVersion } from '@core/entity/appVersion';
+import { FilterGroup, Group, StaticGroup } from '@core/entity/group';
+import {
+    Activator,
+    ExperimentVersionSelector,
+    PercentageActivator,
+    Rollout,
+    StaticActivator,
+    StaticVersionSelector,
+    TimeRangeActivator,
+    VersionSelector,
+} from '@core/entity/rollout';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -19,7 +30,9 @@ import github2IconImg from '../assets/github2.png';
 import githubIconImg from '../assets/github.png';
 import { CreateAppSecretModalComponent } from './CreateAppSecretModal.component';
 import { CreateTeamGroupModalComponent } from './CreateTeamGroupModal.component';
+import { CreateTeamRolloutModalComponent } from './CreateTeamRolloutModal.component';
 import { CreateUserGroupModalComponent } from './CreateUserGroupModal.component';
+import { CreateUserRolloutModalComponent } from './CreateUserRolloutModal.component';
 import styles from './ManageAppModal.component.module.scss';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts';
@@ -197,26 +210,6 @@ const appVersions: AppVersion[] = [
     },
 ];
 
-type Group<GroupMember> = StaticGroup<GroupMember> | FilterGroup<GroupMember>;
-
-interface StaticGroup<GroupMember> {
-    id: number;
-    type: 'static';
-    name: string;
-    members: GroupMember[];
-    createdAt: Date;
-    rollouts: Rollout<GroupMember>[];
-}
-
-interface FilterGroup<GroupMember> {
-    id: number;
-    type: 'filter';
-    name: string;
-    filter: string;
-    createdAt: Date;
-    rollouts: Rollout<GroupMember>[];
-}
-
 const userGroups: Group<User>[] = [
     {
         id: 1,
@@ -339,73 +332,6 @@ const apps: Record<number, App> = {
     },
 };
 
-type Activator =
-    | StaticActivator
-    | TimeRangeActivator
-    | MaxViewersActivator
-    | PercentageActivator;
-
-interface StaticActivator {
-    id: number;
-    type: 'static';
-    createdAt: Date;
-    updatedAt?: Date;
-}
-
-interface TimeRangeActivator {
-    id: number;
-    type: 'timeRange';
-    startAt?: Date;
-    endAt?: Date;
-    createdAt: Date;
-    updatedAt?: Date;
-}
-
-interface MaxViewersActivator {
-    id: number;
-    type: 'maxViewers';
-    maxViewers: number;
-    createdAt: Date;
-    updatedAt?: Date;
-}
-
-interface PercentageActivator {
-    id: number;
-    type: 'percentage';
-    percentage: number;
-    createdAt: Date;
-    updatedAt?: Date;
-}
-
-type VersionSelector = StaticVersionSelector | ExperimentVersionSelector;
-
-interface StaticVersionSelector {
-    id: number;
-    type: 'static';
-    versionNumber: number;
-    createdAt: Date;
-    updatedAt?: Date;
-}
-
-interface ExperimentVersionSelector {
-    id: number;
-    type: 'experiment';
-    versionNumbers: number[];
-    createdAt: Date;
-    updatedAt?: Date;
-}
-
-interface Rollout<GroupMember> {
-    id: number;
-    name: string;
-    activator: Activator;
-    versionSelector: VersionSelector;
-    isEnabled: boolean;
-    createdAt: Date;
-    updatedAt?: Date;
-    groups: Group<GroupMember>[];
-}
-
 const userGroupRollouts: Rollout<User>[] = [
     {
         id: 1,
@@ -521,6 +447,10 @@ export class ManageAppModalComponent extends Component<Props, State> {
         createRef<CreateUserGroupModalComponent>();
     private readonly createTeamGroupModalRef =
         createRef<CreateTeamGroupModalComponent>();
+    private readonly createUserRolloutModalRef =
+        createRef<CreateUserRolloutModalComponent>();
+    private readonly createTeamRolloutModalRef =
+        createRef<CreateTeamRolloutModalComponent>();
     private readonly stateSyncer: StateSyncer;
 
     constructor(props: Props) {
@@ -603,6 +533,12 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             deps={this.props.deps}
                             ref={this.createTeamGroupModalRef}
                             appId={this.state.app.id}
+                        />
+                        <CreateUserRolloutModalComponent
+                            ref={this.createUserRolloutModalRef}
+                        />
+                        <CreateTeamRolloutModalComponent
+                            ref={this.createTeamRolloutModalRef}
                         />
                     </>
                 </ModalUI>
@@ -957,12 +893,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             </div>
                         ))}
                     </div>
-                    <div className={`${styles.Action} ${styles.CreateRollout}`}>
-                        Create Rollout
-                    </div>
-                    <div className={styles.RolloutList}>
-                        {this.renderRollouts()}
-                    </div>
+                    {this.renderRollouts()}
                 </div>
                 <div className={styles.RolloutDetailSection}>
                     {this.renderRolloutDetail()}
@@ -1243,33 +1174,57 @@ export class ManageAppModalComponent extends Component<Props, State> {
 
     private renderRollouts() {
         if (this.state.showRolloutGroupTabViews['users']) {
-            return userGroupRollouts.map((rollout: Rollout<User>) =>
-                this.renderInlineRollout(
-                    rollout,
-                    this.onInlineUserRolloutClickHandler,
-                    this.state.selectedUserGroupRollout,
-                ),
+            return (
+                <>
+                    <div
+                        className={`${styles.Action} ${styles.CreateRollout}`}
+                        onClick={this.onCreateUserRolloutClick}
+                    >
+                        Create Rollout
+                    </div>
+                    <div className={styles.RolloutList}>
+                        {userGroupRollouts.map((rollout: Rollout<User>) =>
+                            this.renderInlineRollout(
+                                rollout,
+                                this.onInlineUserRolloutClickHandler,
+                                this.state.selectedUserGroupRollout,
+                            ),
+                        )}
+                    </div>
+                </>
             );
         } else if (this.state.showRolloutGroupTabViews['teams']) {
-            return teamGroupRollouts.map((rollout: Rollout<Team>) =>
-                this.renderInlineRollout(
-                    rollout,
-                    this.onInlineTeamRolloutClickHandler,
-                    this.state.selectedTeamGroupRollout,
-                ),
+            return (
+                <>
+                    <div
+                        className={`${styles.Action} ${styles.CreateRollout}`}
+                        onClick={this.onCreateTeamRolloutClick}
+                    >
+                        Create Rollout
+                    </div>
+                    <div className={styles.RolloutList}>
+                        {teamGroupRollouts.map((rollout: Rollout<Team>) =>
+                            this.renderInlineRollout(
+                                rollout,
+                                this.onInlineTeamRolloutClickHandler,
+                                this.state.selectedTeamGroupRollout,
+                            ),
+                        )}
+                    </div>
+                </>
             );
         }
     }
 
     private renderRolloutDetail(): ReactNode {
         if (this.state.showRolloutGroupTabViews['users']) {
-            return this.renderUserGroupRollout();
+            return this.renderUserRollout();
         } else if (this.state.showRolloutGroupTabViews['teams']) {
-            return this.renderTeamGroupRollout();
+            return this.renderTeamRollout();
         }
     }
 
-    private renderUserGroupRollout(): ReactNode {
+    private renderUserRollout(): ReactNode {
         return (
             this.state.selectedUserGroupRollout && (
                 <div className={`${styles.Box} ${styles.Group}`}>
@@ -1311,7 +1266,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     }
 
-    private renderTeamGroupRollout(): ReactNode {
+    private renderTeamRollout(): ReactNode {
         return (
             this.state.selectedTeamGroupRollout && (
                 <div className={`${styles.Box} ${styles.Group}`}>
@@ -1755,5 +1710,13 @@ export class ManageAppModalComponent extends Component<Props, State> {
 
     private onCreateTeamGroupClick = () => {
         this.createTeamGroupModalRef.current?.open();
+    };
+
+    private onCreateUserRolloutClick = () => {
+        this.createUserRolloutModalRef.current?.open();
+    };
+
+    private onCreateTeamRolloutClick = () => {
+        this.createTeamRolloutModalRef.current?.open();
     };
 }

@@ -36,7 +36,7 @@
         }
 
         .TextField,
-        .Members {
+        .ItemList {
             width: 100%;
             border-radius: 4px;
             background-color: #ececec;
@@ -56,13 +56,13 @@
             }
         }
 
-        .Members {
+        .ItemList {
             display: flex;
             padding: 6px;
             gap: 6px;
             flex-wrap: wrap;
 
-            .GroupMember {
+            .Item {
                 display: flex;
                 padding: 6px;
                 column-gap: 10px;
