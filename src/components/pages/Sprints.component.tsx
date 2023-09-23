@@ -104,7 +104,6 @@ export class SprintsComponent extends Component<Props, State> {
             sprintParticipants: [],
             sortOrders: {
                 upcoming: taskUrgencyOrder,
-                // upcoming: taskPriorityOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
             allowMultiSelection: false,

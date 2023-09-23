@@ -14,13 +14,13 @@ const taskStatusProgressOrder: Record<TaskStatus, number> = {
 };
 
 const priorityOrder: Record<Priority, number> = {
-    URGENT: 1,
-    HIGH: 2,
-    MEDIUM: 3,
-    LOW: 4,
+    LOW: 1,
+    MEDIUM: 2,
+    HIGH: 3,
+    URGENT: 4,
 };
 
-export const orderByPriority: SortOrder<Task> = (
+export const orderByPriorityDesc: SortOrder<Task> = (
     task1: Task,
     task2: Task,
 ): number => {
@@ -36,7 +36,7 @@ export const orderByPriority: SortOrder<Task> = (
         return -1;
     }
 
-    return priorityOrder[task1.priority] - priorityOrder[task2.priority];
+    return priorityOrder[task2.priority] - priorityOrder[task1.priority];
 };
 
 export const orderByUrgency: SortOrder<Task> = (

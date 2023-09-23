@@ -3,6 +3,7 @@ import { RemoteTaskStatus } from './remoteTaskStatus';
 import { RemoteTeam } from './remoteTeam';
 import { RemoteThread } from './remoteThread';
 import { RemoteUser } from './remoteUser';
+import { RemotePriority } from "@core/client/entity/remotePriority";
 
 export interface RemoteTask {
     id: string;
@@ -19,7 +20,7 @@ export interface RemoteTask {
     deliveredAt?: string;
     dueAt?: string;
     effort?: string;
-    priority?: string;
+    priority?: RemotePriority;
     awaitForTasks: RemoteTask[];
     links: RemoteTaskLink[];
 }
