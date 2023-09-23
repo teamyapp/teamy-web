@@ -46,7 +46,9 @@ export class CreateGroupViewComponent extends Component<Props, State> {
     render() {
         return (
             <div className={styles.CreateGroupView}>
-                <div className={`${styles.Row} ${styles.Inline}`}>
+                <div
+                    className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
+                >
                     <div className={`${styles.Label} ${styles.SameRow}`}>
                         Group Name:
                     </div>
@@ -87,10 +89,10 @@ export class CreateGroupViewComponent extends Component<Props, State> {
                     <div className={`${styles.Label} ${styles.NextRow}`}>
                         {this.props.membersLabel}:
                     </div>
-                    <div className={styles.Members}>
+                    <div className={styles.ItemList}>
                         {this.state.groupMemberIds.map((groupMemberId) => {
                             return (
-                                <div className={styles.GroupMember}>
+                                <div className={styles.Item}>
                                     {this.props.renderInlineGroupMember(
                                         groupMemberId,
                                     )}
