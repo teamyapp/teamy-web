@@ -11,7 +11,6 @@ import { Router } from '@lib/router/router';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
-import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';

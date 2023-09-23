@@ -32,6 +32,7 @@ export class SprintClient {
                                 dueAt
                                 status
                                 effort
+                                priority
                                 isPlanned
                                 owner {
                                     id

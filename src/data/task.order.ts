@@ -1,14 +1,42 @@
 import { SortOrder } from '@lib/data/order';
 
+import { Priority } from '@core/entity/priority';
 import { Task } from '@core/entity/task';
 import { TaskStatus } from '@core/entity/taskStatus';
 
-export const orderByPriority: SortOrder<Task> = (
+const taskStatusProgressOrder: Record<TaskStatus, number> = {
+    PAUSED: 1,
+    TODO: 2,
+    BLOCKED: 3,
+    AWAITING: 4,
+    IN_PROGRESS: 5,
+    DELIVERED: 6,
+};
+
+const priorityOrder: Record<Priority, number> = {
+    LOW: 1,
+    MEDIUM: 2,
+    HIGH: 3,
+    URGENT: 4,
+};
+
+export const orderByPriorityDesc: SortOrder<Task> = (
     task1: Task,
     task2: Task,
 ): number => {
-    // TODO: implement me
-    return 0;
+    if (!task1.priority && !task2.priority) {
+        return 0;
+    }
+
+    if (!task1.priority) {
+        return 1;
+    }
+
+    if (!task2.priority) {
+        return -1;
+    }
+
+    return priorityOrder[task2.priority] - priorityOrder[task1.priority];
 };
 
 export const orderByUrgency: SortOrder<Task> = (
@@ -49,15 +77,6 @@ export const orderByEffort: SortOrder<Task> = (
 ): number => {
     // TODO: implement me
     return 0;
-};
-
-const taskStatusProgressOrder: Record<TaskStatus, number> = {
-    PAUSED: 1,
-    TODO: 2,
-    BLOCKED: 3,
-    AWAITING: 4,
-    IN_PROGRESS: 5,
-    DELIVERED: 6,
 };
 
 export const orderByStatusUrgencyAsc: SortOrder<Task> = (

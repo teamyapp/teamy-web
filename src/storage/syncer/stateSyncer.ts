@@ -524,6 +524,7 @@ export class StateSyncer {
             ownerUserId: input.ownerUserId ? `${input.ownerUserId}` : undefined,
             owningTeamId: `${input.owningTeamId}`,
             effort: input.effort?.toString(),
+            priority: input.priority,
             dueAt: input.dueAt,
         });
 
