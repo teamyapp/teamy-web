@@ -19,6 +19,7 @@ export interface RemoteTask {
     deliveredAt?: string;
     dueAt?: string;
     effort?: string;
+    priority?: string;
     awaitForTasks: RemoteTask[];
     links: RemoteTaskLink[];
 }

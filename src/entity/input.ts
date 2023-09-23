@@ -1,5 +1,7 @@
 import { Duration } from '@lib/entity/duration';
 
+import { Priority } from '@core/entity/priority';
+
 export interface CreateUserInput {
     lastName: string;
     firstName: string;
@@ -35,6 +37,7 @@ export interface UpdateTaskInput {
     ownerUserId?: number;
     owningTeamId: number;
     effort?: Duration;
+    priority?: Priority;
     dueAt?: Date;
 }
 

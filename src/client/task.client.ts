@@ -1,10 +1,8 @@
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import {
-    RemoteCreateTaskInput,
-    RemoteUpdateTaskInput,
-} from '@core/client/entity/input';
+import { RemoteCreateTaskInput } from '@core/client/entity/input';
 import { RemoteTask } from '@core/client/entity/remoteTask';
+import { RemoteUpdateTaskInput } from '@core/client/entity/remoteUpdateTaskInput';
 
 export class TaskClient {
     private readonly graphQLClient: GraphQLClient;
@@ -30,6 +28,7 @@ export class TaskClient {
                                 profileUrl
                             }
                             effort
+                            priority
                             owningTeam {
                                 id
                             }
@@ -91,6 +90,7 @@ export class TaskClient {
                                 profileUrl
                             }
                             effort
+                            priority
                             owner {
                                 id
                                 firstName
@@ -131,11 +131,11 @@ export class TaskClient {
                             owner {
                                 id
                             }
-                            effort
                             owningTeam {
                                 id
                             }
                             effort
+                            priority
                             dueAt
                         }
                     }

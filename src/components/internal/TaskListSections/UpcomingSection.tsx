@@ -76,9 +76,13 @@ export class UpcomingSection extends Component<Props, State> {
     }
 
     public render() {
-        const flattenTasks = flattenGroupedTasksByOwner(
-            groupByOwners(this.props.tasks),
-        );
+        // const flattenTasks = flattenGroupedTasksByOwner(
+        //     groupByOwners(this.props.tasks),
+        // );
+        const sortOrder = this.getSortOrder();
+
+        const sortedTasks = this.props.tasks.sort(sortOrder);
+
         const initialTaskOwnerId = this.props.isPersonal
             ? this.localStore.getState().currUserId
             : undefined;
@@ -96,7 +100,7 @@ export class UpcomingSection extends Component<Props, State> {
                         actions={
                             <div className={`${styles.SectionTopBar}`}>
                                 <div className={styles.TaskCounter}>
-                                    {flattenTasks.length}
+                                    {sortedTasks.length}
                                 </div>
                                 <div className={styles.SortOrder}>
                                     <DropDownList
@@ -126,7 +130,7 @@ export class UpcomingSection extends Component<Props, State> {
                                     onDiscardNewTask={this.onDiscardNewTask}
                                 />
                             )}
-                            {flattenTasks.map(
+                            {sortedTasks.map(
                                 this.renderInlineTask(upcomingSectionId),
                             )}
                         </div>

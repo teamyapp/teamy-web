@@ -6,10 +6,10 @@ export const taskValueOrder = 'value';
 export const taskEffortOrder = 'effort';
 
 export const upcomingSortOrders: Option[] = [
-    // {
-    //     key: taskPriorityOrder,
-    //     description: 'Priority',
-    // },
+    {
+        key: taskPriorityOrder,
+        description: 'Priority',
+    },
     {
         key: taskUrgencyOrder,
         description: 'Urgency',
