@@ -16,7 +16,6 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { taskGoalLengthLimit } from '@core/config/config';
-import { upcomingSortOrders } from '@core/config/sortOrder';
 import { Deps } from '@core/dep/deps';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Priority } from '@core/entity/priority';
@@ -124,7 +123,7 @@ export class InlineTaskUI extends Component<Props, State> {
 
         const showDraggingBy =
             draggingBy && draggingBy.id !== this.props.currentClientId;
-
+        const priorityStyle = toOptionKey(this.props.task.priority);
         return (
             <>
                 <div className={styles.InlineTask}>
@@ -155,7 +154,9 @@ export class InlineTaskUI extends Component<Props, State> {
                             {this.renderGoal()}
                             <div className={styles.BottomRow}>
                                 <div
-                                    className={`${styles.Attribute} ${styles.Priority}`}
+                                    className={`${styles.Attribute} ${styles.Priority} ${classNames({
+                                        [styles[priorityStyle]]: true
+                                    })}`}
                                 >
                                     <DropDownList
                                         selectOptionKey={toOptionKey(
