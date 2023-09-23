@@ -21,7 +21,7 @@ import {
     needAttentionSectionId,
     upcomingSectionId,
 } from '@core/config/sections';
-import { taskUrgencyOrder } from '@core/config/sortOrder';
+import { taskPriorityOrder, taskUrgencyOrder } from '@core/config/sortOrder';
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import * as filters from '@core/data/task.filter';
@@ -101,7 +101,7 @@ export class SprintsComponent extends Component<Props, State> {
             sprintTasks: [],
             sprintParticipants: [],
             sortOrders: {
-                upcoming: taskUrgencyOrder,
+                upcoming: taskPriorityOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
             allowMultiSelection: false,
