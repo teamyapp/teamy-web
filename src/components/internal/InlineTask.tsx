@@ -11,12 +11,14 @@ import React, {
 import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
+import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
 import { UpdateTaskInput } from '@core/entity/input';
+import { Priority } from '@core/entity/priority';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
@@ -37,6 +39,43 @@ const statusNames: Record<TaskStatus, string> = {
     BLOCKED: 'Blocked',
     AWAITING: 'Awaiting',
     DELIVERED: 'Delivered',
+};
+
+const priorityOptions: Option[] = [
+    {
+        key: 'unset',
+        description: '',
+    },
+    {
+        key: 'urgent',
+        description: 'Urgent',
+    },
+    {
+        key: 'high',
+        description: 'High',
+    },
+    {
+        key: 'medium',
+        description: 'Medium',
+    },
+    {
+        key: 'low',
+        description: 'Low',
+    },
+];
+
+const priorityToOptionKey: Record<Priority, string> = {
+    URGENT: 'urgent',
+    HIGH: 'high',
+    MEDIUM: 'medium',
+    LOW: 'low',
+};
+
+const optionKeyToPriority: Record<string, Priority> = {
+    urgent: 'URGENT',
+    high: 'HIGH',
+    medium: 'MEDIUM',
+    low: 'LOW',
 };
 
 interface Props {
@@ -84,7 +123,7 @@ export class InlineTaskUI extends Component<Props, State> {
 
         const showDraggingBy =
             draggingBy && draggingBy.id !== this.props.currentClientId;
-
+        const priorityStyle = toOptionKey(this.props.task.priority);
         return (
             <>
                 <div className={styles.InlineTask}>
@@ -114,6 +153,20 @@ export class InlineTaskUI extends Component<Props, State> {
                             </div>
                             {this.renderGoal()}
                             <div className={styles.BottomRow}>
+                                <div
+                                    className={`${styles.Attribute} ${styles.Priority} ${classNames({
+                                        [styles[priorityStyle]]: true
+                                    })}`}
+                                >
+                                    <DropDownList
+                                        selectOptionKey={toOptionKey(
+                                            this.props.task.priority,
+                                        )}
+                                        options={priorityOptions}
+                                        onSelectOption={this.onPrioritySelected}
+                                    />
+                                </div>
+
                                 <div className={styles.Attribute}>
                                     {this.renderDueAt()}
                                 </div>
@@ -290,10 +343,10 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     }
 
-    private renderAwaitForTask = (task: Task, index: number): ReactNode => {
+    private renderAwaitForTask = (task: Task): ReactNode => {
         return (
             <div
-                key={index}
+                key={task.id}
                 className={`${styles.AwaitForTask} ${classNames({
                     [styles.Delivered]: task.status === 'DELIVERED',
                 })}`}
@@ -544,6 +597,7 @@ export class InlineTaskUI extends Component<Props, State> {
             ownerUserId: this.props.task.owner?.id,
             owningTeamId: this.props.task.owningTeam.id,
             effort: this.props.task.effort,
+            priority: this.props.task.priority,
             dueAt: this.props.task.dueAt,
         };
     }
@@ -562,6 +616,14 @@ export class InlineTaskUI extends Component<Props, State> {
             effort: effort,
         });
     };
+
+    private onPrioritySelected = (optionKey: string) => {
+        const priority = toPriority(optionKey);
+        this.props.onUpdateTask?.call(this, this.props.task.id, {
+            ...this.getUpdatedTask(),
+            priority: priority,
+        });
+    };
 }
 
 function byTheEndOf(date?: Date): Date | undefined {
@@ -574,4 +636,20 @@ function byTheEndOf(date?: Date): Date | undefined {
     newDate.setMinutes(59);
     newDate.setSeconds(59);
     return newDate;
+}
+
+function toOptionKey(priority?: Priority): string {
+    if (!priority) {
+        return 'unset';
+    }
+
+    return priorityToOptionKey[priority];
+}
+
+function toPriority(optionKey: string): Priority | undefined {
+    if (optionKey == 'unset') {
+        return;
+    }
+
+    return optionKeyToPriority[optionKey];
 }

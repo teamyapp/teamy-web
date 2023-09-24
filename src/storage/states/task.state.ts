@@ -1,5 +1,6 @@
 import { Duration, MILLIS_IN_NANOS } from '@lib/entity/duration';
 
+import { Priority } from '@core/entity/priority';
 import { toDate } from '@core/storage/states/parser';
 import { TaskStatus } from '@core/storage/states/taskStatus';
 
@@ -17,6 +18,7 @@ export class TaskState {
         public context?: string,
         public ownerUserId?: number,
         public effort?: Duration,
+        public priority?: Priority,
         public updatedAt?: Date,
         public deliveredAt?: Date,
     ) {}
@@ -37,6 +39,7 @@ export class TaskState {
             json.Effort
                 ? new Duration(json.Effort / MILLIS_IN_NANOS)
                 : undefined,
+            json.Priority,
             toDate(json.UpdatedAt),
             toDate(json.DeliveredAt),
         );
@@ -56,6 +59,7 @@ export class TaskState {
             json.context,
             json.ownerUserId,
             json.effort ? Duration.fromString(json.effort) : undefined,
+            json.priority,
             toDate(json.updatedAt),
             toDate(json.deliveredAt),
         );

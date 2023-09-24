@@ -11,7 +11,6 @@ import { Router } from '@lib/router/router';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
-import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
@@ -22,7 +21,7 @@ import {
     needAttentionSectionId,
     upcomingSectionId,
 } from '@core/config/sections';
-import { taskUrgencyOrder } from '@core/config/sortOrder';
+import { taskPriorityOrder, taskUrgencyOrder } from '@core/config/sortOrder';
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import * as filters from '@core/data/task.filter';
@@ -102,7 +101,7 @@ export class SprintsComponent extends Component<Props, State> {
             sprintTasks: [],
             sprintParticipants: [],
             sortOrders: {
-                upcoming: taskUrgencyOrder,
+                upcoming: taskPriorityOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
             allowMultiSelection: false,
@@ -268,10 +267,10 @@ export class SprintsComponent extends Component<Props, State> {
         );
     }
 
-    private renderSprintRow = (sprint: Sprint, index: number) => {
+    private renderSprintRow = (sprint: Sprint) => {
         return (
             <div
-                key={index}
+                key={sprint.id}
                 className={styles.SprintRow}
                 onClick={this.onSprintRowClick(sprint.id)}
             >
@@ -525,7 +524,7 @@ export class SprintsComponent extends Component<Props, State> {
         const totalBandwidthReadable = participant.totalBandwidth.toReadable();
         const userIdentity = `${userPrefix}${user.id}`;
         return (
-            <div key={index} className={styles.Participant}>
+            <div key={participant.user.id} className={styles.Participant}>
                 <div onClick={this.onTaskOwnersChange(userIdentity)}>
                     <div
                         className={`${styles.UserProfile} ${classNames({

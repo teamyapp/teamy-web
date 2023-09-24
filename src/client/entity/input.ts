@@ -1,3 +1,5 @@
+import { Priority } from '@core/entity/priority';
+
 export interface RemoteCreateUserInput {
     lastName: string;
     firstName: string;
@@ -39,6 +41,7 @@ export interface RemoteUpdateTaskInput {
     ownerUserId?: string;
     owningTeamId: string;
     effort?: string;
+    priority?: Priority;
     dueAt?: Date;
 }
 

@@ -1,0 +1,36 @@
+@use 'sass:math';
+
+$width: var(--toggle-width, 56px);
+$height: var(--toggle-height, 28px);
+$padding: 2px;
+$onBackgroundColor: var(--toggle-on-background-color, #2ecc71);
+
+.Toggle {
+    position: relative;
+    width: $width;
+    height: $height;
+    padding: $padding;
+    transition: background-color 0.2s ease-in-out;
+    border-radius: calc(($height + $padding) / 2);
+    background-color: #f0f0f0;
+    cursor: pointer;
+
+    .Button {
+        position: absolute;
+        top: $padding;
+        left: $padding;
+        width: $height;
+        height: $height;
+        transition: left 0.2s ease-in-out;
+        border-radius: 50%;
+        background-color: white;
+    }
+
+    &.Enabled {
+        background-color: $onBackgroundColor;
+
+        .Button {
+            left: calc($width - $height + $padding);
+        }
+    }
+}

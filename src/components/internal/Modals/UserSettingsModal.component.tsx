@@ -98,7 +98,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
                                 <MaterialIconUI>cancel</MaterialIconUI>
                             </div>
                         </div>
-                        <div key={0} className={styles.Tabs}>
+                        <div className={styles.Tabs}>
                             <TabsUI
                                 defaultSelectedIndex={
                                     this.state.currentTabIndex
@@ -238,7 +238,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
     ): ReactNode => {
         const linkedUser = this.state.linkedUsers.get(authProvider);
         return (
-            <div className={styles.ExternalAccount} key={index}>
+            <div className={styles.ExternalAccount} key={linkedUser?.id}>
                 <div className={styles.AccountProvider}>
                     <div className={styles.Logo}>
                         <img

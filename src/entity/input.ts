@@ -1,5 +1,7 @@
 import { Duration } from '@lib/entity/duration';
 
+import { Priority } from '@core/entity/priority';
+
 export interface CreateUserInput {
     lastName: string;
     firstName: string;
@@ -35,6 +37,7 @@ export interface UpdateTaskInput {
     ownerUserId?: number;
     owningTeamId: number;
     effort?: Duration;
+    priority?: Priority;
     dueAt?: Date;
 }
 
@@ -66,4 +69,52 @@ export interface CreateSprintInput {
 export interface UpdateTeamMemberInput {
     userId: number;
     weeklyBandwidth: Duration;
+}
+
+export type CreateActivatorInput =
+    | CreateStaticActivatorInput
+    | CreateTimeRangeActivatorInput
+    | CreateMaxViewersActivatorInput
+    | CreatePercentageActivatorInput;
+
+export interface CreateStaticActivatorInput {
+    type: 'static';
+}
+
+export interface CreateTimeRangeActivatorInput {
+    type: 'timeRange';
+    startAt?: Date;
+    endAt?: Date;
+}
+
+export interface CreateMaxViewersActivatorInput {
+    type: 'maxViewers';
+    maxViewers: number;
+}
+
+export interface CreatePercentageActivatorInput {
+    type: 'percentage';
+    percentage: number;
+}
+
+export type CreateVersionSelectorInput =
+    | CreateStaticVersionSelectorInput
+    | CreateExperimentVersionSelectorInput;
+
+export interface CreateStaticVersionSelectorInput {
+    type: 'static';
+    versionNumber: number;
+}
+
+export interface CreateExperimentVersionSelectorInput {
+    type: 'experiment';
+    versionNumbers: number[];
+}
+
+export interface CreateAppRolloutInput {
+    name: string;
+    activator: CreateActivatorInput;
+    versionSelector: CreateVersionSelectorInput;
+    isEnabled: boolean;
+    groupIds: number[];
 }

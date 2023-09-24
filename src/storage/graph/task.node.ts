@@ -1,5 +1,6 @@
 import { Duration } from '@lib/entity/duration';
 
+import { Priority } from '@core/entity/priority';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 import { SprintNode } from '@core/storage/graph/sprint.node';
@@ -98,6 +99,10 @@ export class TaskNode implements Task {
 
     public get effort(): Duration | undefined {
         return this.taskState.effort;
+    }
+
+    public get priority(): Priority | undefined {
+        return this.taskState.priority;
     }
 
     public get availableActions(): TaskAction[] {

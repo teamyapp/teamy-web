@@ -139,8 +139,8 @@ export class BacklogComponent extends Component<Props, State> {
                                     onDiscardNewTask={this.onDiscardNewTask}
                                 />
                             )}
-                            {filteredTasks.map((task, index) =>
-                                this.renderTask(task, index, clientId),
+                            {filteredTasks.map((task) =>
+                                this.renderTask(task, clientId),
                             )}
                         </div>
                     </div>
@@ -165,11 +165,10 @@ export class BacklogComponent extends Component<Props, State> {
 
     private renderTask = (
         task: Task,
-        index: number,
         clientId?: number,
     ): ReactNode => {
         return (
-            <div className={styles.ListItem} key={index}>
+            <div className={styles.ListItem} key={task.id}>
                 <TaskListItem
                     deps={this.props.deps}
                     relativeLayout={this.relativeLayout}

@@ -1,5 +1,6 @@
 import { Duration } from '@lib/entity/duration';
 
+import { Priority } from '@core/entity/priority';
 import { Team } from '@core/entity/team';
 import { Thread } from '@core/entity/thread';
 
@@ -18,6 +19,7 @@ export interface Task {
     owner?: User;
     owningTeam: Team;
     effort?: Duration;
+    priority?: Priority;
     comments: Thread;
     availableActions: TaskAction[];
     status: TaskStatus;

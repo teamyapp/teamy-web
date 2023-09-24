@@ -20,7 +20,7 @@ export class UserNode implements User {
     }
 
     public get fullName(): string {
-        return `${this.lastName} ${this.firstName}`;
+        return `${this.firstName} ${this.lastName}`;
     }
 
     public get profileUrl(): string | undefined {
