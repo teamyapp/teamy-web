@@ -65,10 +65,10 @@ export class ThreadUI extends Component<Props, State> {
         );
     }
 
-    private renderMessage = (message: Message, index: number) => {
+    private renderMessage = (message: Message) => {
         const { author } = message;
         return (
-            <div key={index} className={styles.Message}>
+            <div key={message.id} className={styles.Message}>
                 <div className={styles.MessageCenter}>
                     <div className={styles.LeftSection}>
                         <UserProfileUI user={author} />

@@ -81,7 +81,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                 <MaterialIconUI>cancel</MaterialIconUI>
                             </div>
                         </div>
-                        <div key={0} className={styles.Tabs}>
+                        <div className={styles.Tabs}>
                             <TabsUI
                                 defaultSelectedIndex={
                                     this.state.currentTabIndex
@@ -302,7 +302,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 ? undefined
                 : member.weeklyBandwidth;
         return (
-            <tr key={index} className={styles.Row}>
+            <tr key={member.user.id} className={styles.Row}>
                 <td>{user.id}</td>
                 <td className={styles.ProfileColumn}>
                     <div className={styles.Profile}>
@@ -333,11 +333,11 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         );
     };
 
-    private renderTeamMember = (teamMember: TeamMember, index: number) => {
+    private renderTeamMember = (teamMember: TeamMember) => {
         const currUserId = this.graphSource.currentUser()!.id;
         const user = teamMember.user;
         return (
-            <div key={index} className={styles.Cell}>
+            <div key={teamMember.user.id} className={styles.Cell}>
                 <UserProfileUI user={user} />
                 <div className={styles.MemberName}>
                     <span>{user.firstName}</span>
@@ -371,7 +371,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             top: 0,
         };
         return (
-            <div key={index} className={styles.Cell}>
+            <div key={invitation.id} className={styles.Cell}>
                 <div className={styles.InvitedUserProfile}>?</div>
                 <div className={styles.MemberName}>
                     <span>{invitation.receiverFirstName}</span>
@@ -393,7 +393,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private renderInvitation = (invitation: Invitation, index: number) => {
         return (
-            <tr key={index} className={`${styles.Row} ${styles.Invitation}`}>
+            <tr key={invitation.id} className={`${styles.Row} ${styles.Invitation}`}>
                 <td>{invitation.receiver?.id}</td>
                 <td className={styles.FirstName}>
                     {invitation.receiverFirstName}

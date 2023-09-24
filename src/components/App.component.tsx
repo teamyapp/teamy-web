@@ -533,12 +533,12 @@ export class AppComponent extends Component<Props, State> {
         );
     }
 
-    private renderTeamRow = (team: Team, index: number) => {
+    private renderTeamRow = (team: Team) => {
         return (
             <div
                 role={'listitem'}
                 aria-label={team.name}
-                key={index}
+                key={team.id}
                 className={styles.TeamRow}
                 onClick={this.onActiveTeamSelectHandler(team.id)}
             >

@@ -30,7 +30,7 @@ export class SelectUserListUI extends Component<Props> {
         return (
             <div
                 className={styles.UserRow}
-                key={index}
+                key={user.id}
                 onClick={this.onUserRowClick(user.id)}
             >
                 <div className={styles.SelectionIndicator}>

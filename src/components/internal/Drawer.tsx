@@ -96,7 +96,7 @@ export class DrawerUI extends Component<Props> {
                 className={`${styles.IconFrameBorder} ${classNames({
                     [styles.Active]: this.props.activeTeamId === team.id,
                 })}`}
-                key={index}
+                key={team.id}
             >
                 <TooltipUI message={team.name} position={'Right'}>
                     <div
