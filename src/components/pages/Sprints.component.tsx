@@ -267,10 +267,10 @@ export class SprintsComponent extends Component<Props, State> {
         );
     }
 
-    private renderSprintRow = (sprint: Sprint, index: number) => {
+    private renderSprintRow = (sprint: Sprint) => {
         return (
             <div
-                key={index}
+                key={sprint.id}
                 className={styles.SprintRow}
                 onClick={this.onSprintRowClick(sprint.id)}
             >
@@ -524,7 +524,7 @@ export class SprintsComponent extends Component<Props, State> {
         const totalBandwidthReadable = participant.totalBandwidth.toReadable();
         const userIdentity = `${userPrefix}${user.id}`;
         return (
-            <div key={index} className={styles.Participant}>
+            <div key={participant.user.id} className={styles.Participant}>
                 <div onClick={this.onTaskOwnersChange(userIdentity)}>
                     <div
                         className={`${styles.UserProfile} ${classNames({
