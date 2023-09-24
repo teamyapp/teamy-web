@@ -74,6 +74,7 @@ export class TeamClient {
                                 status
                                 isPlanned
                                 effort
+                                priority
                                 owner {
                                     id
                                     firstName
@@ -89,6 +90,8 @@ export class TeamClient {
                                     context
                                     status
                                     isPlanned
+                                    effort
+                                    priority
                                     owningTeam {
                                         id
                                     }
