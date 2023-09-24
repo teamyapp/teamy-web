@@ -597,6 +597,7 @@ export class InlineTaskUI extends Component<Props, State> {
             ownerUserId: this.props.task.owner?.id,
             owningTeamId: this.props.task.owningTeam.id,
             effort: this.props.task.effort,
+            priority: this.props.task.priority,
             dueAt: this.props.task.dueAt,
         };
     }
