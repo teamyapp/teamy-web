@@ -12,7 +12,7 @@ export const upcomingSortOrders: Option[] = [
     },
     {
         key: taskUrgencyOrder,
-        description: 'Urgency',
+        description: 'Deadline',
     },
     // {
     //     key: taskValueOrder,
