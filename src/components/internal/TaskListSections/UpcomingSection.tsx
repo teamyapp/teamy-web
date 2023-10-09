@@ -18,7 +18,8 @@ import { upcomingSectionId } from '@core/config/sections';
 import {
     taskEffortOrder,
     taskPriorityOrder,
-    taskUrgencyOrder,
+    taskOwnerOrder,
+    taskDeadlineOrder,
     taskValueOrder,
     upcomingSortOrders,
 } from '@core/config/sortOrder';
@@ -30,7 +31,8 @@ import {
     orderByEffort,
     orderById,
     orderByPriorityDesc,
-    orderByUrgency,
+    orderByOwner,
+    orderByDeadline,
     orderByValue,
 } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
@@ -194,8 +196,10 @@ export class UpcomingSection extends Component<Props, State> {
         switch (this.props.sortOrder) {
             case taskPriorityOrder:
                 return orderByPriorityDesc;
-            case taskUrgencyOrder:
-                return orderByUrgency;
+            case taskOwnerOrder:
+                return orderByOwner;
+            case taskDeadlineOrder:
+                return orderByDeadline;
             case taskValueOrder:
                 return orderByValue;
             case taskEffortOrder:

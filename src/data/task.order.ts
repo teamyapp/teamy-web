@@ -39,7 +39,26 @@ export const orderByPriorityDesc: SortOrder<Task> = (
     return priorityOrder[task2.priority] - priorityOrder[task1.priority];
 };
 
-export const orderByUrgency: SortOrder<Task> = (
+export const orderByOwner: SortOrder<Task> = (
+    task1: Task,
+    task2: Task,
+): number => {
+    if (!task1.owner?.id && !task2.owner?.id) {
+        return 0;
+    }
+
+    if (!task1.owner?.id) {
+        return 1;
+    }
+
+    if (!task2.owner?.id) {
+        return -1;
+    }
+
+    return task1.owner.id - task2.owner.id;
+};
+
+export const orderByDeadline: SortOrder<Task> = (
     task1: Task,
     task2: Task,
 ): number => {
@@ -90,7 +109,7 @@ export const orderByStatusUrgencyAsc: SortOrder<Task> = (
         return compare;
     }
 
-    return orderByUrgency(task1, task2);
+    return orderByDeadline(task1, task2);
 };
 
 export const orderById: SortOrder<Task> = (
