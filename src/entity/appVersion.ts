@@ -1,5 +1,6 @@
 import { Money } from '@core/entity/money';
 import { User } from '@core/entity/user';
+import { App } from './app';
 
 export interface AppVersion {
     number: number;
@@ -11,4 +12,5 @@ export interface AppVersion {
     iconUrl: string;
     prices: Money[];
     isReady: boolean;
+    app: App;
 }

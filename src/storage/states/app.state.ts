@@ -1,3 +1,4 @@
+import {PluginAppState} from '@core/storage/states/pluginApp.state';
 import { ClientState } from '@core/storage/states/client.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
@@ -13,9 +14,15 @@ import { UserState } from '@core/storage/states/user.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
 import { TaskLinkState } from './taskLink.state';
+import { AppInstallationState } from './appInstallation.state';
+import { AppSecretState } from './appSecret.state';
+
 
 export class AppState {
     public constructor(
+        public apps: Record<number, PluginAppState>,
+        public appSecrets: Record<number, AppSecretState>,
+        public appInstallations: Record<number, AppInstallationState>,
         public users: Record<number, UserState>,
         public clients: Record<number, ClientState>,
         public teams: Record<number, TeamState>,
@@ -43,6 +50,9 @@ export class AppState {
 
     public static fromJson(json: any): AppState {
         return new AppState(
+            {},
+            {},
+            {},
             {},
             {},
             {},
