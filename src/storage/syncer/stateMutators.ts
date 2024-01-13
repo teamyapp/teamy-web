@@ -558,74 +558,64 @@ export function mergeApp(
         currAppState = mergeTeam(currAppState, remoteApp.managedByTeam);
     }
 
-    if (remoteApp.secrets) {
-        currAppState = mergeAppSecrets(currAppState, remoteApp.secrets);
-    }
+    remoteApp.secrets?.forEach((secret) => {
+        currAppState = mergeAppSecret(currAppState, secret);
+    });
 
-    if (remoteApp.installations) {
-        currAppState = mergeAppInstallations(
-            currAppState,
-            remoteApp.installations,
-        );
-    }
+    remoteApp.installations?.forEach((installation) => {
+        currAppState = mergeAppInstallation(currAppState, installation);
+    });
 
     currAppState.apps[remoteAppId] = localNewApp;
     return currAppState;
 }
 
-export function mergeAppSecrets(
+export function mergeAppSecret(
     currAppState: AppState,
-    appSecrets: RemoteAppSecret[],
+    remoteAppSecret: RemoteAppSecret,
 ): AppState {
-    appSecrets.forEach((remoteAppSecret) => {
-        const remoteAppSecretId = toInt(remoteAppSecret.id)!;
-        const localOldAppSecret =
-            currAppState.appSecrets[remoteAppSecretId] || {};
-        const localNewAppSecret: AppSecretState = {
-            id: remoteAppSecretId,
-            name: remoteAppSecret.name || localOldAppSecret.name,
-            addedAt:
-                toDate(remoteAppSecret.addedAt) || localOldAppSecret.addedAt,
-            addedByUserId:
-                toInt(remoteAppSecret.addedBy.id) ||
-                localOldAppSecret.addedByUserId,
-            appId: toInt(remoteAppSecret.app.id) || localOldAppSecret.appId,
-            lastUsedAt:
-                toDate(remoteAppSecret.lastUsedAt) ||
-                localOldAppSecret.lastUsedAt,
-        };
+    const remoteAppSecretId = toInt(remoteAppSecret.id)!;
+    const localOldAppSecret = currAppState.appSecrets[remoteAppSecretId] || {};
+    const localNewAppSecret: AppSecretState = {
+        id: remoteAppSecretId,
+        name: remoteAppSecret.name || localOldAppSecret.name,
+        addedAt: toDate(remoteAppSecret.addedAt) || localOldAppSecret.addedAt,
+        addedByUserId:
+            toInt(remoteAppSecret.addedBy.id) ||
+            localOldAppSecret.addedByUserId,
+        appId: toInt(remoteAppSecret.app.id) || localOldAppSecret.appId,
+        lastUsedAt:
+            toDate(remoteAppSecret.lastUsedAt) || localOldAppSecret.lastUsedAt,
+    };
 
-        currAppState.appSecrets[remoteAppSecretId] = localNewAppSecret;
-    });
+    currAppState.appSecrets[remoteAppSecretId] = localNewAppSecret;
 
     return currAppState;
 }
 
-export function mergeAppInstallations(
+export function mergeAppInstallation(
     currAppState: AppState,
-    appInstallations: RemoteAppInstallation[],
+    remoteAppInstallation: RemoteAppInstallation,
 ): AppState {
-    appInstallations.forEach((remoteAppInstallation) => {
-        const remoteAppInstallationId = toInt(remoteAppInstallation.id)!;
-        const localOldAppInstallation =
-            currAppState.appInstallations[remoteAppInstallationId] || {};
+    const remoteAppInstallationId = toInt(remoteAppInstallation.id)!;
+    const localOldAppInstallation =
+        currAppState.appInstallations[remoteAppInstallationId] || {};
 
-        const localNewAppInstallation: AppInstallationState = {
-            id: remoteAppInstallationId,
-            installedTeamId:
-                toInt(remoteAppInstallation.installedTeam.id) ||
-                localOldAppInstallation.installedTeamId,
-            appId:
-                toInt(remoteAppInstallation.activeAppVersion.app.id) ||
-                localOldAppInstallation.appId,
-            appVersionNumber:
-                remoteAppInstallation.activeAppVersion.number ||
-                localOldAppInstallation.appVersionNumber,
-        };
+    const localNewAppInstallation: AppInstallationState = {
+        id: remoteAppInstallationId,
+        installedTeamId:
+            toInt(remoteAppInstallation.installedTeam.id) ||
+            localOldAppInstallation.installedTeamId,
+        appId:
+            toInt(remoteAppInstallation.activeAppVersion.app.id) ||
+            localOldAppInstallation.appId,
+        appVersionNumber:
+            remoteAppInstallation.activeAppVersion.number ||
+            localOldAppInstallation.appVersionNumber,
+    };
 
-        currAppState.appInstallations[remoteAppInstallationId] =
-            localNewAppInstallation;
-    });
+    currAppState.appInstallations[remoteAppInstallationId] =
+        localNewAppInstallation;
 
     return currAppState;
 }
@@ -784,12 +774,9 @@ export function mergeTeam(
         currAppState = mergeApp(currAppState, app);
     });
 
-    if (remoteTeam.appInstallations) {
-        currAppState = mergeAppInstallations(
-            currAppState,
-            remoteTeam.appInstallations,
-        );
-    }
+    remoteTeam.appInstallations?.forEach((appInstallation) => {
+        currAppState = mergeAppInstallation(currAppState, appInstallation);
+    })
 
     if (remoteTeam.invitations) {
         currAppState = replaceTeamInvitations(
