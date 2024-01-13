@@ -784,6 +784,13 @@ export function mergeTeam(
         currAppState = mergeApp(currAppState, app);
     });
 
+    if (remoteTeam.appInstallations) {
+        currAppState = mergeAppInstallations(
+            currAppState,
+            remoteTeam.appInstallations,
+        );
+    }
+
     if (remoteTeam.invitations) {
         currAppState = replaceTeamInvitations(
             currAppState,
