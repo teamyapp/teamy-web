@@ -14,6 +14,7 @@ export class TeamClient {
         this.graphQLClient = graphQLClient;
     }
 
+    // TODO: the query will be simplified(app version part) once we have apps query
     public getTeamWithSprintPreviews(teamId: string): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
@@ -37,6 +38,99 @@ export class TeamClient {
                                             lastName
                                         }
                                     }
+                                }
+                            }
+                            appInstallations {
+                                id
+                                installedTeam {
+                                    id
+                                }
+                                activeAppVersion {
+                                    app {
+                                        id
+                                    }
+                                    number
+                                    appName
+                                    description
+                                    changes
+                                    prices {
+                                        amount
+                                        currency
+                                    }
+                                    createdAt
+                                    createdBy {
+                                        id
+                                    }
+                                    isReady
+                                    iconUrl
+                                }
+                            }
+                            managedApps {
+                                id
+                                secrets {
+                                    id
+                                    name
+                                    addedAt
+                                    addedBy {
+                                        id
+                                    }
+                                    app {
+                                        id
+                                    }
+                                }
+                                totalInstallations
+                                installations {
+                                    id
+                                    installedTeam {
+                                        id
+                                    }
+                                    activeAppVersion {
+                                        app {
+                                            id
+                                        }
+                                        number
+                                    }
+                                }
+                                latestVersionForTeam(teamId: $teamId) {
+                                    app {
+                                        id
+                                    }
+                                    number
+                                    appName
+                                    description
+                                    changes
+                                    prices {
+                                        amount
+                                        currency
+                                    }
+                                    createdAt
+                                    createdBy {
+                                        id
+                                    }
+                                    isReady
+                                    iconUrl
+                                }
+                                versions {
+                                    app {
+                                        id
+                                    }
+                                    number
+                                    appName
+                                    description
+                                    changes
+                                    prices {
+                                        amount
+                                        currency
+                                    }
+                                    createdAt
+                                    createdBy {
+                                        id
+                                    }
+                                    isReady
+                                    iconUrl
+                                }
+                                managedByTeam {
+                                    id
                                 }
                             }
                             sprints {
