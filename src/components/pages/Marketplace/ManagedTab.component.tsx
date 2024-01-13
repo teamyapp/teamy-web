@@ -40,7 +40,7 @@ export class ManagedTabComponent extends Component<Props, State> {
                                 <div className={styles.Icon}>
                                     <img
                                         src={
-                                            app.latestVersionForTeamNumber
+                                            app.latestVersionForTeam
                                                 ?.iconUrl
                                         }
                                     />
@@ -48,7 +48,7 @@ export class ManagedTabComponent extends Component<Props, State> {
                             </div>
                             <div className={styles.MiddleSection}>
                                 <div className={styles.Name}>
-                                    {app.latestVersionForTeamNumber?.appName}
+                                    {app.latestVersionForTeam?.appName}
                                 </div>
                             </div>
                             <div className={styles.RightSection}>
