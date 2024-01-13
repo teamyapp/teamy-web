@@ -8,7 +8,6 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import styles from './ManagedTab.component.module.scss';
 import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
 import { ManageAppModalComponent } from './Modals/ManageAppModal/ManageAppModal.component';
-import { LocalStore } from '@core/storage/syncer/localStore';
 
 interface Props {
     deps: Deps;
@@ -18,12 +17,10 @@ export class ManagedTabComponent extends Component<Props> {
     private readonly createAppModalRef = createRef<CreateAppModalComponent>();
     private readonly manageAppModalRef = createRef<ManageAppModalComponent>();
     private readonly graphSource: GraphSource;
-    private readonly localStore: LocalStore;
 
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
-        this.localStore = props.deps.localStore;
         this.state = {};
     }
 
@@ -37,7 +34,7 @@ export class ManagedTabComponent extends Component<Props> {
             <>
                 <div className={styles.ItemList}>
                     {managedApps.map((app) => {
-                        const currentTeamAppVersion = app.latestVersionForTeam(this.localStore.getState().currTeamId)
+                        const currentTeamAppVersion = app.latestVersionForTeam(this.graphSource.currentTeam()?.id)
                         if (!currentTeamAppVersion) {
                             return null;
                         }
