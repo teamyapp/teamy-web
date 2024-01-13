@@ -53,13 +53,13 @@ export class AppNode implements App {
     }
 
     public get latestVersionForTeam(): AppVersionNode | undefined {
-        if (this.app.latestVersionForTeamNumber === undefined) {
+        if (this.app.latestVersionNumberForTeam === undefined) {
             return undefined;
         }
 
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id];
-        const latestVersion = app.versions[this.app.latestVersionForTeamNumber];
+        const latestVersion = app.versions[this.app.latestVersionNumberForTeam];
         if (!latestVersion) {
             return undefined;
         }
