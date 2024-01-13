@@ -52,14 +52,14 @@ export class AppNode implements App {
         });
     }
 
-    public get latestVersionForTeamNumber(): AppVersionNode | undefined {
-        if (this.app.latestVersionForTeamNumber === undefined) {
+    public get latestVersionForTeam(): AppVersionNode | undefined {
+        if (this.app.latestVersionForTeam === undefined) {
             return undefined;
         }
 
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id];
-        const latestVersion = app.versions[this.app.latestVersionForTeamNumber];
+        const latestVersion = app.versions[this.app.latestVersionForTeam];
         if (!latestVersion) {
             return undefined;
         }

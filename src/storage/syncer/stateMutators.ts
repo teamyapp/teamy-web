@@ -505,9 +505,9 @@ export function mergeApp(
             remoteApp.totalInstallations || localOldApp.totalInstallations,
         managedByTeamId:
             toInt(remoteApp.managedByTeam.id) || localOldApp.managedByTeamId,
-        latestVersionForTeamNumber:
+        latestVersionForTeam:
             remoteApp.latestVersionForTeam?.number ||
-            localOldApp.latestVersionForTeamNumber,
+            localOldApp.latestVersionForTeam,
         secretIds:
             remoteApp.secrets.map((secret) => toInt(secret.id)!) ||
             localOldApp.secretIds,
