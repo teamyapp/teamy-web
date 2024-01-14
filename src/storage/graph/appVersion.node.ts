@@ -6,17 +6,6 @@ import { AppNode } from './app.node';
 import { MoneyNode } from './money.node';
 import { UserNode } from './user.node';
 
-// number: number;
-// appName: string;
-// description: string;
-// changes: string[];
-// createdAt: Date;
-// createdBy: User;
-// iconUrl: string;
-// prices: Money[];
-// isReady: boolean;
-// app: App;
-
 export class AppVersionNode implements AppVersion {
     constructor(
         private localStore: LocalStore,

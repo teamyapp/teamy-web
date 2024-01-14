@@ -1,4 +1,4 @@
-import {PluginAppState} from '@core/storage/states/pluginApp.state';
+import { PluginAppState } from '@core/storage/states/pluginApp.state';
 import { ClientState } from '@core/storage/states/client.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';

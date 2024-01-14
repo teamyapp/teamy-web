@@ -80,7 +80,6 @@ export class CreateAppVersionModalComponent extends Component<Props> {
     onCreateClick = async () => {
         const appName = this.appNameInputRef.current?.value;
         const description = this.descriptionInputRef.current?.value;
-
         if (this.props.appId && appName && description) {
             await this.stateSyncer.createAppVersion(this.props.appId, {
                 appName,

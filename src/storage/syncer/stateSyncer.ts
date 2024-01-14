@@ -861,7 +861,7 @@ export class StateSyncer {
         appState = mergeAppSecret(appState, remoteAppSecret);
         const app = appState.apps[appId];
         const secretId = toInt(remoteAppSecret.id);
-        if (secretId === undefined) {
+        if (!secretId) {
             return;
         }
 
@@ -882,13 +882,11 @@ export class StateSyncer {
         const appVersion = await this.appClient.createAppVersion(`${appId}`, version);
         let appState = this.localStore.getState();
         appState = mergeAppVersion(appState, appId, appVersion);
-
         this.localStore.updateState(appState);
     }
 
     public async deleteAppVersion(appId: number, versionNumber: number): Promise<void> {
         await this.appClient.deleteAppVersion(`${appId}`, versionNumber);
-
         let appState = this.localStore.getState();
         const app = appState.apps[appId];
         delete app.versions[versionNumber];

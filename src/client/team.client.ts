@@ -14,7 +14,7 @@ export class TeamClient {
         this.graphQLClient = graphQLClient;
     }
 
-    // TODO: the query will be simplified(app version part) once we have apps query
+    // TODO: simplify query(app version part) once we have apps query
     public getTeamWithSprintPreviews(teamId: string): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({

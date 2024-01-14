@@ -24,7 +24,6 @@ export class InstalledTabComponent extends Component<Props, State> {
 
     render() {
         const installations = this.graphSource.currentTeam()?.appInstallations;
-
         if (!installations) {
             return null;
         }

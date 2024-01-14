@@ -536,7 +536,6 @@ export function mergeApp(
     return currAppState;
 }
 
-
 export function mergeAppVersion(
     currAppState: AppState,
     remoteAppId: number,
@@ -576,8 +575,6 @@ export function mergeAppVersion(
 
     return currAppState;
 }
-
-
 
 export function mergeAppSecret(
     currAppState: AppState,

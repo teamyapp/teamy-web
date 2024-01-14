@@ -29,7 +29,6 @@ export class AppInstallationNode implements AppInstallation {
         const app = appState.apps[this.appInstallation.appId];
         const activeAppVersion =
             app.versions[this.appInstallation.appVersionNumber];
-
         return new AppVersionNode(this.localStore, activeAppVersion!);
     }
 }
