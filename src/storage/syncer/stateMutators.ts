@@ -497,59 +497,22 @@ export function mergeApp(
 ): AppState {
     const remoteAppId = toInt(remoteApp.id)!;
     const localOldApp: PluginAppState = currAppState.apps[remoteAppId] || {};
-    const localOldVersions: Record<number, AppVersionState> =
-        localOldApp.versions || {};
+    
     const localNewApp: PluginAppState = {
         id: remoteAppId,
         totalInstallations:
             remoteApp.totalInstallations || localOldApp.totalInstallations,
         managedByTeamId:
-            toInt(remoteApp.managedByTeam.id) || localOldApp.managedByTeamId,
+            toInt(remoteApp.managedByTeam?.id) || localOldApp.managedByTeamId,
         latestVersionNumberForTeam: remoteApp.latestVersionForTeam?.number || localOldApp.latestVersionNumberForTeam,
         secretIds:
-            remoteApp.secrets.map((secret) => toInt(secret.id)!) ||
+            remoteApp.secrets?.map((secret) => toInt(secret.id)!) ||
             localOldApp.secretIds,
         installationIds:
-            remoteApp.installations.map(
+            remoteApp.installations?.map(
                 (installation) => toInt(installation.id)!,
             ) || localOldApp.installationIds,
-        versions: remoteApp.versions.reduce(
-            (
-                acc: Record<number, AppVersionState>,
-                version: RemoteAppVersion,
-            ) => {
-                acc[version.number] = {
-                    number: version.number,
-                    appName:
-                        version.appName ||
-                        localOldVersions[version.number]?.appName,
-                    appId: remoteAppId,
-                    createdAt:
-                        toDate(version.createdAt) ||
-                        localOldVersions[version.number]?.createdAt,
-                    creatorUserId:
-                        toInt(version.createdBy.id) ||
-                        localOldVersions[version.number]?.creatorUserId,
-                    changes:
-                        version.changes ||
-                        localOldVersions[version.number]?.changes,
-                    description:
-                        version.description ||
-                        localOldVersions[version.number]?.description,
-                    iconUrl:
-                        version.iconUrl ||
-                        localOldVersions[version.number]?.iconUrl,
-                    isReady:
-                        version.isReady ||
-                        localOldVersions[version.number]?.isReady,
-                    prices:
-                        version.prices ||
-                        localOldVersions[version.number]?.prices,
-                };
-                return acc;
-            },
-            {},
-        ),
+        versions: localOldApp.versions || {},
     };
 
     if (remoteApp.managedByTeam) {
@@ -565,8 +528,56 @@ export function mergeApp(
     });
 
     currAppState.apps[remoteAppId] = localNewApp;
+
+    remoteApp.versions?.forEach((version) => {
+        currAppState = mergeAppVersion(currAppState, remoteAppId, version);
+    });
+
     return currAppState;
 }
+
+
+export function mergeAppVersion(
+    currAppState: AppState,
+    remoteAppId: number,
+    version: RemoteAppVersion,
+): AppState {
+    const app = currAppState.apps[remoteAppId];
+    const localOldVersion = app.versions[version.number] || {}
+ 
+    app.versions[version.number] = {
+        number: version.number,
+        appName:
+            version.appName ||
+            localOldVersion.appName,
+        appId: remoteAppId,
+        createdAt:
+            toDate(version.createdAt) ||
+            localOldVersion.createdAt,
+        creatorUserId:
+            toInt(version.createdBy.id) ||
+            localOldVersion.creatorUserId,
+        changes:
+            version.changes ||
+            localOldVersion.changes,
+        description:
+            version.description ||
+            localOldVersion.description,
+        iconUrl:
+            version.iconUrl ||
+            localOldVersion.iconUrl,
+        isReady:
+            version.isReady ||
+            localOldVersion.isReady,
+        prices:
+            version.prices ||
+            localOldVersion.prices,
+    };
+
+    return currAppState;
+}
+
+
 
 export function mergeAppSecret(
     currAppState: AppState,
@@ -587,7 +598,6 @@ export function mergeAppSecret(
     };
 
     currAppState.appSecrets[remoteAppSecretId] = localNewAppSecret;
-
     return currAppState;
 }
 

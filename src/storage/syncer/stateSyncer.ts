@@ -6,6 +6,7 @@ import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
+import { AppClient } from '@core/client/app.client';
 import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { InvitationClient } from '@core/client/invitation.client';
@@ -17,6 +18,8 @@ import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
 import { TaskFilter } from '@core/entity/filters';
 import {
+    CreateAppSecretInput,
+    CreateAppVersionInput,
     CreateInvitationInput,
     CreateMessageInput,
     CreateSprintInput,
@@ -53,6 +56,8 @@ import {
     applyTeamMutation,
     applyUserMutation,
     deleteThread,
+    mergeAppSecret,
+    mergeAppVersion,
     mergeInvitation,
     mergeMessage,
     mergeSprint,
@@ -67,10 +72,6 @@ import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
 
 interface CreateAppInput {
-    name: string;
-}
-
-interface CreateAppApiTokenInput {
     name: string;
 }
 
@@ -98,6 +99,7 @@ export class StateSyncer {
         private webSocketEndpoint: string,
         private identityClient: IdentityClient,
         private localStore: LocalStore,
+        private appClient: AppClient,
         private taskClient: TaskClient,
         private messageClient: MessageClient,
         private teamClient: TeamClient,
@@ -850,19 +852,47 @@ export class StateSyncer {
         return Promise.resolve(0);
     }
 
-    public createAppApiToken(
+    public async createAppSecret(
         appId: number,
-        input: CreateAppApiTokenInput,
-    ): Promise<number> {
-        // TODO: integrate with create app api token API
-        console.log('createAppApiToken', appId, input);
-        return Promise.resolve(0);
+        secret: CreateAppSecretInput,
+    ): Promise<void> {
+        const remoteAppSecret = await this.appClient.createAppSecret(`${appId}`, secret);
+        let appState = this.localStore.getState();
+        appState = mergeAppSecret(appState, remoteAppSecret);
+        const app = appState.apps[appId];
+        const secretId = toInt(remoteAppSecret.id);
+        if (secretId === undefined) {
+            return;
+        }
+
+        app.secretIds.push(secretId);
+        this.localStore.updateState(appState);
     }
 
-    public createAppVersion(appId: number): Promise<number> {
-        // TODO: integrate with create app version API
-        console.log('createAppVersion', appId);
-        return Promise.resolve(0);
+    public async deleteAppSecret(appId: number, secretId: number): Promise<void> {
+        await this.appClient.deleteAppSecret(`${secretId}`);
+        let appState = this.localStore.getState();
+        delete appState.appSecrets[secretId];
+        const app = appState.apps[appId];
+        app.secretIds = app.secretIds.filter((id) => id !== secretId);
+        this.localStore.updateState(appState);
+    }
+
+    public async createAppVersion(appId: number, version: CreateAppVersionInput): Promise<void> {
+        const appVersion = await this.appClient.createAppVersion(`${appId}`, version);
+        let appState = this.localStore.getState();
+        appState = mergeAppVersion(appState, appId, appVersion);
+
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteAppVersion(appId: number, versionNumber: number): Promise<void> {
+        await this.appClient.deleteAppVersion(`${appId}`, versionNumber);
+
+        let appState = this.localStore.getState();
+        const app = appState.apps[appId];
+        delete app.versions[versionNumber];
+        this.localStore.updateState(appState);
     }
 
     public createStaticUserGroup(

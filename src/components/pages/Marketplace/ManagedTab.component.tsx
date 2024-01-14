@@ -13,9 +13,7 @@ interface Props {
     deps: Deps;
 }
 
-interface State {}
-
-export class ManagedTabComponent extends Component<Props, State> {
+export class ManagedTabComponent extends Component<Props> {
     private readonly createAppModalRef = createRef<CreateAppModalComponent>();
     private readonly manageAppModalRef = createRef<ManageAppModalComponent>();
     private readonly graphSource: GraphSource;
@@ -23,6 +21,7 @@ export class ManagedTabComponent extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
+        this.state = {};
     }
 
     render() {
