@@ -118,3 +118,12 @@ export interface CreateAppRolloutInput {
     isEnabled: boolean;
     groupIds: number[];
 }
+
+export interface CreateAppSecretInput {
+    name: string;
+}
+
+export interface CreateAppVersionInput {
+    appName: string;
+    description: string;
+}

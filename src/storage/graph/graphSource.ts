@@ -4,6 +4,7 @@ import { TaskNode } from '@core/storage/graph/task.node';
 import { TeamNode } from '@core/storage/graph/team.node';
 import { UserNode } from '@core/storage/graph/user.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
+import { AppNode } from './app.node';
 
 export class GraphSource {
     constructor(private localStore: LocalStore) {}
@@ -81,5 +82,13 @@ export class GraphSource {
         }
 
         return new SprintNode(this.localStore, sprintState);
+    }
+
+    public app(appId: number): AppNode | undefined {
+        const appState = this.localStore.getState();
+        const app = appState.apps[appId];
+        if (app) {
+            return new AppNode(this.localStore, app);
+        }
     }
 }

@@ -8,14 +8,13 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import styles from './ManagedTab.component.module.scss';
 import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
 import { ManageAppModalComponent } from './Modals/ManageAppModal.component';
+import { App } from '@core/entity/app';
 
 interface Props {
     deps: Deps;
 }
 
-interface State {}
-
-export class ManagedTabComponent extends Component<Props, State> {
+export class ManagedTabComponent extends Component<Props> {
     private readonly createAppModalRef = createRef<CreateAppModalComponent>();
     private readonly manageAppModalRef = createRef<ManageAppModalComponent>();
     private readonly graphSource: GraphSource;
@@ -23,6 +22,7 @@ export class ManagedTabComponent extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
+        this.state = {};
     }
 
     render() {

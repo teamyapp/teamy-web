@@ -7,7 +7,6 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 
 import { Deps } from '@core/dep/deps';
-import { AppSecret } from '@core/entity/appSecret';
 import { AppVersion } from '@core/entity/appVersion';
 import { FilterGroup, Group, StaticGroup } from '@core/entity/group';
 import {
@@ -26,14 +25,16 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { UserProfileUI } from '../../../internal/UserProfile';
 import { getUserShortName } from '../../../internal/format';
-import github2IconImg from '../assets/github2.png';
-import githubIconImg from '../assets/github.png';
 import { CreateAppSecretModalComponent } from './CreateAppSecretModal.component';
 import { CreateTeamGroupModalComponent } from './CreateTeamGroupModal.component';
 import { CreateTeamRolloutModalComponent } from './CreateTeamRolloutModal.component';
 import { CreateUserGroupModalComponent } from './CreateUserGroupModal.component';
 import { CreateUserRolloutModalComponent } from './CreateUserRolloutModal.component';
 import styles from './ManageAppModal.component.module.scss';
+import { App } from '@core/entity/app';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { on } from 'events';
+import { CreateAppVersionModalComponent } from './CreateAppVersionModal.component';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts';
 
@@ -87,128 +88,6 @@ const rolloutGroupTabs: Tab<RolloutGroupTabKey>[] = [
     },
 ];
 
-const appSecrets: AppSecret[] = [
-    {
-        id: 1,
-        name: 'Backend',
-        addedAt: moment().subtract(2, 'week').toDate(),
-        addedBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        app: {
-            id: 1,
-            secrets: [],
-            totalInstallations: 0,
-            versions: [],
-        },
-    },
-    {
-        id: 1,
-        name: 'Harry Mac Dev',
-        addedAt: moment().subtract(1, 'week').toDate(),
-        addedBy: {
-            id: 1,
-            firstName: 'Xianbo',
-            lastName: 'Duan',
-            fullName: 'Xianbo Duan',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        lastUsedAt: moment().subtract(2, 'd').toDate(),
-        app: {
-            id: 1,
-            secrets: [],
-            totalInstallations: 0,
-            versions: [],
-        },
-    },
-];
-
-const appVersions: AppVersion[] = [
-    {
-        number: 1,
-        appName: 'GH',
-        description: 'Github integration',
-        iconUrl: github2IconImg,
-        changes: ['Create initial version of app'],
-        createdAt: moment().subtract('2', 'd').toDate(),
-        createdBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        prices: [],
-        isReady: true,
-    },
-    {
-        number: 2,
-        appName: 'Github',
-        description: 'Github integration for Teamy',
-        iconUrl: githubIconImg,
-        changes: ['Use a new icon for the app', 'Clarified app description'],
-        createdAt: moment().subtract('1', 'd').toDate(),
-        createdBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        prices: [],
-        isReady: true,
-    },
-    {
-        number: 3,
-        appName: 'Github',
-        description: 'Github integration for Teamy',
-        iconUrl: githubIconImg,
-        changes: ['Support pull request automation'],
-        createdAt: moment().subtract('1', 'd').toDate(),
-        createdBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        prices: [],
-        isReady: true,
-    },
-    {
-        number: 4,
-        appName: '',
-        description: '',
-        iconUrl: '',
-        changes: [],
-        createdAt: moment().subtract('1', 'd').toDate(),
-        createdBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        prices: [],
-        isReady: false,
-    },
-];
 
 const userGroups: Group<User>[] = [
     {
@@ -319,18 +198,6 @@ const teamGroups: Group<Team>[] = [
         rollouts: [],
     },
 ];
-
-interface App {
-    id: number;
-    name: string;
-}
-
-const apps: Record<number, App> = {
-    1: {
-        id: 1,
-        name: 'Github',
-    },
-};
 
 const userGroupRollouts: Rollout<User>[] = [
     {
@@ -443,6 +310,8 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private readonly modalRef = createRef<ModalUI>();
     private readonly createAppSecretModalRef =
         createRef<CreateAppSecretModalComponent>();
+    private readonly createAppVersionModalRef =
+        createRef<CreateAppVersionModalComponent>();
     private readonly createUserGroupModalRef =
         createRef<CreateUserGroupModalComponent>();
     private readonly createTeamGroupModalRef =
@@ -452,10 +321,12 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private readonly createTeamRolloutModalRef =
         createRef<CreateTeamRolloutModalComponent>();
     private readonly stateSyncer: StateSyncer;
+    private readonly graphSource: GraphSource;
 
     constructor(props: Props) {
         super(props);
         this.stateSyncer = props.deps.stateSyncer;
+        this.graphSource = props.deps.graphSource;
         this.state = {
             showTabViews: {
                 credentials: true,
@@ -481,7 +352,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 <ModalUI ref={this.modalRef}>
                     <>
                         <div className={styles.Header}>
-                            Manage {this.state.app.name} App
+                            Manage {this.state.app.latestVersionForTeam?.appName} App
                             <div
                                 role={'button'}
                                 aria-label={'Close'}
@@ -524,6 +395,11 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             ref={this.createAppSecretModalRef}
                             appId={this.state.app.id}
                         />
+                        <CreateAppVersionModalComponent
+                            deps={this.props.deps}
+                            ref={this.createAppVersionModalRef}
+                            appId={this.state.app.id}
+                        />
                         <CreateUserGroupModalComponent
                             deps={this.props.deps}
                             ref={this.createUserGroupModalRef}
@@ -549,7 +425,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     open(appId: number) {
         this.setState(
             {
-                app: apps[appId],
+                app: this.graphSource.app(appId),
             },
             () => {
                 this.modalRef.current?.open();
@@ -642,8 +518,8 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             </tr>
                         </thead>
                         <tbody>
-                            {appSecrets.map((secret) => (
-                                <tr className={styles.SecretRow}>
+                            {this.state.app?.secrets.map((secret) => (
+                                <tr className={styles.SecretRow} key={secret.id}>
                                     <td
                                         className={`${styles.Cell} ${styles.Name}`}
                                     >
@@ -668,6 +544,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                                     >
                                         <div
                                             className={`${styles.RowAction} ${styles.Delete}`}
+                                            onClick={this.onDeleteSecretClick(secret.id)}
                                         >
                                             <MaterialIconUI
                                                 iconStyle={'outlined'}
@@ -696,13 +573,14 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         Create Version
                     </div>
                     <div className={styles.VersionList}>
-                        {appVersions
+                        {this.state.app?.versions
                             .sort(
                                 (appVersion1, appVersion2) =>
                                     appVersion2.number - appVersion1.number,
                             )
                             .map((appVersion) => (
                                 <div
+                                    key={appVersion.number}
                                     className={`${
                                         styles.AppVersion
                                     } ${classNames({
@@ -816,7 +694,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             Changes:
                         </div>
                         <div className={styles.ChangeList}>
-                            {this.state.selectedAppVersion.changes.map(
+                            {this.state.selectedAppVersion.changes?.map(
                                 (change) => (
                                     <div className={styles.Change}>
                                         {change}
@@ -837,7 +715,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         <div className={styles.Download}>
                             <ButtonUI label={'Download'} />
                         </div>
-                        <div className={styles.Delete}>
+                        <div className={styles.Delete} onClick={this.onDeleteVersionClick}>
                             <ButtonUI label={'Delete'} />
                         </div>
                     </div>
@@ -1631,6 +1509,19 @@ export class ManageAppModalComponent extends Component<Props, State> {
         this.createAppSecretModalRef.current?.open();
     };
 
+    private onDeleteSecretClick = (secretId: number) => {
+        return () =>
+        this.stateSyncer.deleteAppSecret(this.state.app!.id, secretId);
+    };
+
+    private onDeleteVersionClick = async () => {
+        await this.stateSyncer.deleteAppVersion(this.state.app!.id, this.state.selectedAppVersion!.number);
+        this.setState({
+            selectedAppVersion: undefined,
+        });
+    }
+
+
     private onGroupTabClickHandler = (tab: Tab<GroupTabKey>) => {
         return () => {
             this.setState({
@@ -1696,12 +1587,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     };
 
     private onCreateVersionClick = async () => {
-        if (this.state.app) {
-            let versionNumber = await this.stateSyncer.createAppVersion(
-                this.state.app.id,
-            );
-            // TODO: show newly created version
-        }
+        this.createAppVersionModalRef.current?.open();
     };
 
     private onCreateUserGroupClick = () => {

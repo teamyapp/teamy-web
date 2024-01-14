@@ -54,6 +54,7 @@
 
     > .RightSection {
         flex: 1;
+        overflow: scroll;
 
         .GeneralTab {
             padding: 30px;
