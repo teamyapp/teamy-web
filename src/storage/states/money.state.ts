@@ -1,5 +1,7 @@
+import { Currency } from './currency';
+
 export class MoneyState {
-    public constructor(public amount: number, public currency: string) {}
+    public constructor(public amount: number, public currency: Currency) {}
 
     public static fromMutationPayload(json: any): MoneyState {
         return new MoneyState(json.Amount, json.Currency);

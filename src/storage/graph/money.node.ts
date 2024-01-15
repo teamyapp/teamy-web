@@ -1,4 +1,4 @@
-import { Money } from '@core/entity/money';
+import { Currency, Money } from '@core/entity/money';
 
 import { MoneyState } from '../states/money.state';
 
@@ -9,7 +9,7 @@ export class MoneyNode implements Money {
         return this.money.amount;
     }
 
-    public get currency(): string {
+    public get currency(): Currency {
         return this.money.currency;
     }
 }

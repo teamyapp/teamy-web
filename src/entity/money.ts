@@ -1,4 +1,6 @@
+export type Currency = 'USD';
+
 export interface Money {
-    currency: string;
+    currency: Currency;
     amount: number;
 }
