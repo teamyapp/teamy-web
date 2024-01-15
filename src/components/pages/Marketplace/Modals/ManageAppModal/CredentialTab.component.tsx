@@ -1,5 +1,5 @@
 import moment from 'moment/moment';
-import React, { ChangeEvent, createRef } from 'react';
+import React, { ChangeEvent, createRef, useEffect } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
@@ -9,50 +9,6 @@ import { AppSecret } from '@core/entity/appSecret';
 import { getUserShortName } from '../../../../internal/format';
 import { CreateAppSecretModalComponent } from '../CreateAppSecretModal.component';
 import styles from './CredentialTab.component.module.scss';
-
-const appSecrets: AppSecret[] = [
-    {
-        id: 1,
-        name: 'Backend',
-        addedAt: moment().subtract(2, 'week').toDate(),
-        addedBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        app: {
-            id: 1,
-            secrets: [],
-            totalInstallations: 0,
-            versions: [],
-        },
-    },
-    {
-        id: 2,
-        name: 'Harry Mac Dev',
-        addedAt: moment().subtract(1, 'week').toDate(),
-        addedBy: {
-            id: 1,
-            firstName: 'Xianbo',
-            lastName: 'Duan',
-            fullName: 'Xianbo Duan',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        lastUsedAt: moment().subtract(2, 'd').toDate(),
-        app: {
-            id: 1,
-            secrets: [],
-            totalInstallations: 0,
-            versions: [],
-        },
-    },
-];
 
 interface ApiSecretInput {
     name: string;
@@ -66,17 +22,47 @@ interface Props {
 export function CredentialTabComponent(props: Props) {
     const createAppSecretModalRef = createRef<CreateAppSecretModalComponent>();
     const feedbackPubSub = props.deps.feedbackPubSub;
+    const app = props.deps.graphSource.app(props.appId);
+    const [apiSecretInputs, setApiSecretInputs] = React.useState<
+        Record<number, ApiSecretInput>
+    >({});
 
-    const tmpApiSecretInputs: Record<number, ApiSecretInput> = {};
-    appSecrets.forEach((secret) => {
-        if (secret.app.id == props.appId) {
-            tmpApiSecretInputs[secret.id] = {
-                name: secret.name,
-            };
-        }
-    });
-    const [apiSecretInputs, setApiSecretInputs] =
-        React.useState<Record<number, ApiSecretInput>>(tmpApiSecretInputs);
+    useEffect(() => {
+        const stateChangeChan = props.deps.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                console.log('[AppComponent] waiting for state changes');
+                const hasChanged = await stateChangeChan!.pop();
+                if (hasChanged === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+
+                setApiSecretInputs(() => {
+                    const tmpApiSecretInputs: Record<number, ApiSecretInput> =
+                        {};
+
+                    app?.secrets.forEach((secret) => {
+                        tmpApiSecretInputs[secret.id] = {
+                            name: secret.name,
+                        };
+                    });
+
+                    return tmpApiSecretInputs;
+                });
+            }
+        })().then();
+
+        return () => {
+            stateChangeChan?.close();
+        };
+    }, []);
+
+    if (Object.entries(apiSecretInputs).length === 0) {
+        return null;
+    }
+
     const onCreateSecretClick = () => {
         createAppSecretModalRef.current?.open();
     };
@@ -109,8 +95,8 @@ export function CredentialTabComponent(props: Props) {
     };
 
     const onDeleteSecretClickHandler = (apiSecretId: number) => {
-        return async () => {
-            // TODO: delete secret
+        return () => {
+            props.deps.stateSyncer.deleteAppSecret(props.appId, apiSecretId);
         };
     };
 
@@ -154,7 +140,7 @@ export function CredentialTabComponent(props: Props) {
                             </tr>
                         </thead>
                         <tbody>
-                            {appSecrets.map((secret) => (
+                            {app?.secrets.map((secret) => (
                                 <tr
                                     key={secret.id}
                                     className={styles.SecretRow}

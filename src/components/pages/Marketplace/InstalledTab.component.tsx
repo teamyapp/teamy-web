@@ -32,7 +32,7 @@ export class InstalledTabComponent extends Component<Props, State> {
             <>
                 <div className={styles.ItemList}>
                     {installations.map((item) => (
-                        <div className={styles.InlineItem}>
+                        <div className={styles.InlineItem} key={item.id}>
                             <div className={styles.LeftSection}>
                                 <div className={styles.Icon}>
                                     <img src={item.activeAppVersion.iconUrl} />
