@@ -758,6 +758,13 @@ export function mergeTeam(
         ownerUserId: toInt(remoteTeam.owner?.id) || localOldTeam.ownerUserId,
         activeSprintId:
             toInt(remoteTeam.activeSprint?.id) || localOldTeam.activeSprintId,
+        managedAppIds:
+            remoteTeam.managedApps?.map((app) => toInt(app.id)!) ||
+            localOldTeam.managedAppIds,
+        appInstallationIds:
+            remoteTeam.appInstallations?.map(
+                (appInstallation) => toInt(appInstallation.id)!,
+            ) || localOldTeam.appInstallationIds,
     };
 
     if (remoteTeam.creator) {
