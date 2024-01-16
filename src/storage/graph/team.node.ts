@@ -111,7 +111,7 @@ export class TeamNode implements Team {
             const app = appState.apps[appId];
            
             return new AppNode(this.localStore, app);
-        }).filter(v => v) || [];
+        }) || [];
     }
 
     public get appInstallations(): AppInstallationNode[] {
@@ -120,6 +120,6 @@ export class TeamNode implements Team {
         return this.teamState.appInstallationIds?.map((appInstallationId) => {
             const appInstallation = appState.appInstallations[appInstallationId];
             return new AppInstallationNode(this.localStore, appInstallation);
-        }).filter(v => v) || [];
+        }) || [];
     }
 }
