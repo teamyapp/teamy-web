@@ -12,15 +12,12 @@ export class PluginAppState {
     ) {}
 
     public static fromMutationPayload(json: any): PluginAppState {
-        const versions = json.Versions.reduce(
-            (acc: Record<number, AppVersionState>, version: any) => {
-                acc[version.Number] =
-                    AppVersionState.fromMutationPayload(version);
-                return acc;
-            },
-            {},
-        );
+        const versions: Record<number, AppVersionState> = {}
 
+        for (const version of json.Versions) {
+            versions[version.Number] = AppVersionState.fromMutationPayload(version);
+        }
+    
         return new PluginAppState(
             json.ID,
             json.SecretIDs,
@@ -33,13 +30,10 @@ export class PluginAppState {
     }
 
     public static fromJson(json: any): PluginAppState {
-        const versions = json.versions.reduce(
-            (acc: Record<number, AppVersionState>, version: any) => {
-                acc[version.number] = AppVersionState.fromJson(version);
-                return acc;
-            },
-            {},
-        );
+        const versions: Record<number, AppVersionState> = {}
+        for (const version of json.versions) {
+            versions[version.number] = AppVersionState.fromJson(version);
+        }
 
         return new PluginAppState(
             json.id,
