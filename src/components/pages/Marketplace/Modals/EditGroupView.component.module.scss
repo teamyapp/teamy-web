@@ -6,90 +6,149 @@
     row-gap: 10px;
     box-sizing: border-box;
 
-    .Row {
-        --drop-down-button-color: rgba(0, 0, 0, 0.2);
-        --drop-down-color: #1565c0;
+    .Info {
+        display: flex;
+        flex-direction: column;
+        row-gap: 20px;
 
-        &.Inline {
-            display: flex;
+        .Row {
+            --drop-down-button-color: rgba(0, 0, 0, 0.2);
+            --drop-down-color: #1565c0;
 
-            .TextField {
-                flex: 1;
-            }
-        }
-
-        &.Text {
-            align-items: center;
-        }
-
-        .Label {
-            font-size: 16px;
-            font-weight: bold;
-
-            &.SameRow {
-                margin-right: 10px;
-            }
-
-            &.NextRow {
-                margin-bottom: 10px;
-            }
-        }
-
-        .TextField,
-        .ItemList {
-            width: 100%;
-            border-radius: 4px;
-            background-color: #ececec;
-            box-sizing: border-box;
-        }
-
-        .TextField {
-            padding: 6px 10px;
-            border: none;
-            outline: none;
-            font-size: 16px;
-            letter-spacing: 1px;
-            resize: none;
-
-            &.Filter {
-                height: 200px;
-            }
-        }
-
-        .ItemList {
-            display: flex;
-            padding: 6px;
-            gap: 6px;
-            flex-wrap: wrap;
-
-            .Item {
+            &.Inline {
                 display: flex;
-                padding: 6px;
-                column-gap: 10px;
-                border-radius: 4px;
-                background-color: #3d3d3d;
-                color: white;
-                align-items: center;
 
-                .Remove {
-                    opacity: 0.5;
-                    --icon-size: 24px;
-                    --icon-color: white;
-
-                    &:hover {
-                        cursor: pointer;
-                        opacity: 1;
-                    }
+                .TextField {
+                    flex: 1;
                 }
             }
 
-            .Input {
-                padding: 4px 0;
+            &.Text {
+                align-items: center;
+            }
+
+            .Label {
+                font-size: 16px;
+                font-weight: bold;
+
+                &.SameRow {
+                    margin-right: 10px;
+                }
+
+                &.NextRow {
+                    margin-bottom: 10px;
+                }
+            }
+
+            .TextField,
+            .ItemList {
+                width: 100%;
+                border-radius: 4px;
+                background-color: #ececec;
+                box-sizing: border-box;
+            }
+
+            .TextField {
+                padding: 6px 10px;
                 border: none;
                 outline: none;
-                background-color: transparent;
                 font-size: 16px;
-                flex: 1;
+                letter-spacing: 1px;
+                resize: none;
+
+                &.Filter {
+                    height: 200px;
+                }
+            }
+
+            .ItemList {
+                display: flex;
+                padding: 6px;
+                gap: 6px;
+                flex-wrap: wrap;
+
+                .Item {
+                    display: flex;
+                    padding: 6px;
+                    column-gap: 10px;
+                    border-radius: 4px;
+                    background-color: #3d3d3d;
+                    color: white;
+                    align-items: center;
+
+                    .Remove {
+                        opacity: 0.5;
+                        --icon-size: 24px;
+                        --icon-color: white;
+
+                        &:hover {
+                            cursor: pointer;
+                            opacity: 1;
+                        }
+                    }
+                }
+
+                .Input {
+                    padding: 4px 0;
+                    border: none;
+                    outline: none;
+                    background-color: transparent;
+                    font-size: 16px;
+                    flex: 1;
+                }
+            }
+        }
+
+        .RolloutList {
+            display: flex;
+            flex-direction: column;
+            row-gap: 4px;
+            margin-top: 10px;
+
+            .Rollout {
+                display: flex;
+                padding: 10px;
+                border-radius: 4px;
+                background-color: rgba(0, 0, 0, 0.03);
+                flex-direction: column;
+                align-items: center;
+
+                &:hover {
+                    background-color: #2770ff;
+                    cursor: pointer;
+                    color: white;
+
+                    .TopRow {
+                        .Attribute {
+                            background-color: rgba(
+                                            255,
+                                            255,
+                                            255,
+                                            0.15
+                            );
+                        }
+                    }
+                }
+
+                .TopRow {
+                    display: flex;
+                    column-gap: 4px;
+
+                    .Attribute {
+                        padding: 2px 10px;
+                        border-radius: 4px;
+                        background-color: #e91e63;
+                        color: white;
+                        font-size: 14px;
+                        font-weight: bold;
+                    }
+                }
+
+                .Name {
+                    margin-top: 4px;
+                    font-size: 14px;
+                    font-weight: bold;
+                }
             }
         }
     }

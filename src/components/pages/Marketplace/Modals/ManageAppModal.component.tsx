@@ -1,15 +1,15 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import React, { Component, ReactNode, createRef } from 'react';
+import React, {Component, createRef, ReactNode} from 'react';
 
-import { ButtonUI } from '@lib/ui/Button';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { ModalUI } from '@lib/ui/Modal';
+import {ButtonUI} from '@lib/ui/Button';
+import {MaterialIconUI} from '@lib/ui/MaterialIcon';
+import {ModalUI} from '@lib/ui/Modal';
 
-import { Deps } from '@core/dep/deps';
-import { AppSecret } from '@core/entity/appSecret';
-import { AppVersion } from '@core/entity/appVersion';
-import { FilterGroup, Group, StaticGroup } from '@core/entity/group';
+import {Deps} from '@core/dep/deps';
+import {AppSecret} from '@core/entity/appSecret';
+import {AppVersion} from '@core/entity/appVersion';
+import {Group} from '@core/entity/group';
 import {
     Activator,
     ExperimentVersionSelector,
@@ -20,33 +20,22 @@ import {
     TimeRangeActivator,
     VersionSelector,
 } from '@core/entity/rollout';
-import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import {Team} from '@core/entity/team';
+import {User} from '@core/entity/user';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
-import { UserProfileUI } from '../../../internal/UserProfile';
-import { getUserShortName } from '../../../internal/format';
+import {UserProfileUI} from '../../../internal/UserProfile';
+import {getUserShortName} from '../../../internal/format';
 import github2IconImg from '../assets/github2.png';
 import githubIconImg from '../assets/github.png';
-import {
-    CreateAppSecretModalComponent
-} from './CreateAppSecretModal.component';
-import {
-    CreateTeamGroupModalComponent
-} from './CreateTeamGroupModal.component';
-import {
-    CreateTeamRolloutModalComponent
-} from './CreateTeamRolloutModal.component';
-import {
-    CreateUserGroupModalComponent
-} from './CreateUserGroupModal.component';
-import {
-    CreateUserRolloutModalComponent
-} from './CreateUserRolloutModal.component';
+import {CreateAppSecretModalComponent} from './CreateAppSecretModal.component';
+import {CreateTeamGroupModalComponent} from './CreateTeamGroupModal.component';
+import {CreateTeamRolloutModalComponent} from './CreateTeamRolloutModal.component';
+import {CreateUserGroupModalComponent} from './CreateUserGroupModal.component';
+import {CreateUserRolloutModalComponent} from './CreateUserRolloutModal.component';
+import {EditGroupViewComponent} from './EditGroupView.component';
+import {GraphSource} from '@core/storage/graph/graphSource';
 import styles from './ManageAppModal.component.module.scss';
-import { DropDownList, Option } from '@lib/ui/DropDownList';
-import { EditGroupViewComponent } from './EditGroupView.component';
-import { GraphSource } from '@core/storage/graph/graphSource';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts';
 
@@ -122,7 +111,7 @@ const appSecrets: AppSecret[] = [
         },
     },
     {
-        id: 1,
+        id: 2,
         name: 'Harry Mac Dev',
         addedAt: moment().subtract(1, 'week').toDate(),
         addedBy: {
@@ -435,11 +424,6 @@ teamGroups[1].rollouts.push(teamGroupRollouts[0]);
 
 type AppPackageStatus = 'selecting' | 'uploading' | 'processing' | 'ready';
 
-// const groupTypeOptions: Option[] = [
-//     {key: 'static', description: 'Static'},
-//     {key: 'filter', description: 'Filter'},
-// ];
-
 interface Props {
     deps: Deps;
 }
@@ -458,7 +442,7 @@ interface State {
 }
 
 export class ManageAppModalComponent extends Component<Props, State> {
-    private readonly editGroupViewRef = createRef<EditGroupViewComponent<User|Team>>();
+    private readonly editGroupViewRef = createRef<EditGroupViewComponent<User | Team>>();
     private readonly modalRef = createRef<ModalUI>();
     private readonly createAppSecretModalRef =
         createRef<CreateAppSecretModalComponent>();
@@ -664,7 +648,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         </thead>
                         <tbody>
                         {appSecrets.map((secret) => (
-                            <tr className={styles.SecretRow}>
+                            <tr key={secret.id} className={styles.SecretRow}>
                                 <td
                                     className={`${styles.Cell} ${styles.Name}`}
                                 >
@@ -724,6 +708,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             )
                             .map((appVersion) => (
                                 <div
+                                    key={appVersion.number}
                                     className={`${
                                         styles.AppVersion
                                     } ${classNames({
@@ -838,8 +823,8 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         </div>
                         <div className={styles.ChangeList}>
                             {this.state.selectedAppVersion.changes.map(
-                                (change) => (
-                                    <div className={styles.Change}>
+                                (index: string, change) => (
+                                    <div key={index} className={styles.Change}>
                                         {change}
                                     </div>
                                 ),
@@ -874,6 +859,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     <div className={styles.Tabs}>
                         {groupTabs.map((tab) => (
                             <div
+                                key={tab.key}
                                 className={`${styles.Tab} ${classNames({
                                     [styles.Active]:
                                         this.state.showGroupTabViews[tab.key],
@@ -974,6 +960,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     ) {
         return (
             <div
+                key={group.id}
                 className={`${styles.Group} ${classNames({
                     [styles.Active]: selectedGroup?.id == group.id,
                 })}`}
@@ -999,6 +986,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 <div className={`${styles.Box} ${styles.Group}`}>
                     <EditGroupViewComponent
                         ref={this.editGroupViewRef}
+                        group={this.state.selectedUserGroup}
                         membersLabel={'Users'}
                         memberLabel={'User'}
                         renderInlineGroupMember={this.renderInlineUser}
@@ -1011,6 +999,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 <div className={`${styles.Box} ${styles.Group}`}>
                     <EditGroupViewComponent
                         ref={this.editGroupViewRef}
+                        group={this.state.selectedTeamGroup}
                         membersLabel={'Teams'}
                         memberLabel={'Team'}
                         renderInlineGroupMember={this.renderInlineTeam}
@@ -1187,29 +1176,29 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     }
 
-    private renderInlineRollouts<GroupMember>(
-        rollouts: Rollout<GroupMember>[],
-    ): ReactNode {
-        return (
-            <div className={styles.Rollouts}>
-                <div className={`${styles.Label} ${styles.NextRow}`}>
-                    Rollouts:
-                </div>
-                <div className={styles.RolloutList}>
-                    {rollouts.map((rollout) => (
-                        <div className={styles.Rollout}>
-                            <div className={styles.TopRow}>
-                                <div className={`${styles.Attribute}`}>
-                                    {rollout.id}
-                                </div>
-                            </div>
-                            <div className={styles.Name}>{rollout.name}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-    }
+    // private renderInlineRollouts<GroupMember>(
+    //     rollouts: Rollout<GroupMember>[],
+    // ): ReactNode {
+    //     return (
+    //         <div className={styles.Rollouts}>
+    //             <div className={`${styles.Label} ${styles.NextRow}`}>
+    //                 Rollouts:
+    //             </div>
+    //             <div className={styles.RolloutList}>
+    //                 {rollouts.map((rollout) => (
+    //                     <div className={styles.Rollout}>
+    //                         <div className={styles.TopRow}>
+    //                             <div className={`${styles.Attribute}`}>
+    //                                 {rollout.id}
+    //                             </div>
+    //                         </div>
+    //                         <div className={styles.Name}>{rollout.name}</div>
+    //                     </div>
+    //                 ))}
+    //             </div>
+    //         </div>
+    //     );
+    // }
 
     private renderRollouts() {
         if (this.state.showRolloutGroupTabViews['users']) {
@@ -1648,6 +1637,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     ) {
         return (
             <div
+                key={rollout.id}
                 className={`${styles.Rollout} ${classNames({
                     [styles.Active]: selectedRollout?.id == rollout.id,
                 })}`}

@@ -1,12 +1,12 @@
-import React, {Component, KeyboardEvent, MouseEvent, ReactNode} from 'react';
+import React, {ChangeEvent, Component, KeyboardEvent, MouseEvent, ReactNode} from 'react';
 import styles from './EditGroupView.component.module.scss';
 import {DropDownList, Option} from '@lib/ui/DropDownList';
 import {MaterialIconUI} from '@lib/ui/MaterialIcon';
 import {ButtonUI} from '@lib/ui/Button';
-import {Group, StaticGroup} from '@core/entity/group';
+import {Group} from '@core/entity/group';
 import {Entity} from "@core/entity/entity";
-import {Team} from "@core/entity/team";
-import {User} from "@core/entity/user";
+import moment from "moment";
+import {Rollout} from "@core/entity/rollout";
 
 type groupType = 'static' | 'filter';
 
@@ -23,7 +23,8 @@ interface FilterGroupInput {
     filter: string;
 }
 
-interface Props {
+interface Props<GroupMember> {
+    group: Group<GroupMember>;
     membersLabel: string;
     memberLabel: string;
     renderInlineGroupMember: (memberId: number) => ReactNode;
@@ -32,15 +33,15 @@ interface Props {
     onCreateFilterGroup?: (groupName: string, filter: string) => void;
 }
 
-interface State {
+interface State<GroupMember> {
+    group?: Group<GroupMember>;
     selectedGroupType?: groupType;
-    groupId?: number;
     groupName?: string;
     staticGroupInput?: StaticGroupInput;
     filterGroupInput?: FilterGroupInput;
 }
 
-export class EditGroupViewComponent<GroupMember extends Entity> extends Component<Props, State> {
+export class EditGroupViewComponent<GroupMember extends Entity> extends Component<Props<GroupMember>, State<GroupMember>> {
     private readonly groupNameInputRef: React.RefObject<HTMLInputElement> =
         React.createRef();
     private readonly memberIdInputRef: React.RefObject<HTMLInputElement> =
@@ -50,48 +51,69 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
     private readonly groupTypeDropdownRef: React.RefObject<DropDownList> =
         React.createRef();
 
-    constructor(props: Props) {
+    constructor(props: Props<GroupMember>) {
         super(props);
 
         this.state = {
+            group: props.group,
+            selectedGroupType: props.group.type,
+            groupName: props.group.name,
+            staticGroupInput: this.toStaticGroupInput(props.group),
+            filterGroupInput: this.toFilterGroupInput(props.group),
         };
     }
 
     render() {
         return (
             <div className={styles.EditGroupView}>
-                <div
-                    className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
-                >
-                    <div className={`${styles.Label} ${styles.SameRow}`}>
-                        ID:
+                <div className={`${styles.Info}`}>
+                    <div
+                        className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
+                    >
+                        <div className={`${styles.Label} ${styles.SameRow}`}>
+                            ID:
+                        </div>
+                        <div>{this.state.group?.id}</div>
                     </div>
-                    <div>{this.state.groupId}</div>
-                </div>
-                <div
-                    className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
-                >
-                    <div className={`${styles.Label} ${styles.SameRow}`}>
-                        Group Name:
+                    <div
+                        className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
+                    >
+                        <div className={`${styles.Label} ${styles.SameRow}`}>
+                            Group Name:
+                        </div>
+                        <input
+                            ref={this.groupNameInputRef}
+                            type={'text'}
+                            className={styles.TextField}
+                            value={this.state.groupName}
+                            onChange={this.onGroupNameChange}
+                        />
                     </div>
-                    <input
-                        ref={this.groupNameInputRef}
-                        type={'text'}
-                        className={styles.TextField}
-                        value={this.state.groupName}
-                    />
-                </div>
-                <div className={`${styles.Row} ${styles.Inline}`}>
-                    <div className={`${styles.Label} ${styles.SameRow}`}>
-                        Group Type:
+                    <div className={`${styles.Row} ${styles.Inline}`}>
+                        <div className={`${styles.Label} ${styles.SameRow}`}>
+                            Created At:
+                        </div>
+                        <div>{moment(this.props.group.createdAt).fromNow()}</div>
                     </div>
-                    <DropDownList
-                        ref={this.groupTypeDropdownRef}
-                        options={groupTypeOptions}
-                        onSelectOption={this.onSelectGroupType}
-                    />
+                    <div className={`${styles.Row} ${styles.Inline}`}>
+                        <div className={`${styles.Label} ${styles.SameRow}`}>
+                            Group Type:
+                        </div>
+                        <DropDownList
+                            ref={this.groupTypeDropdownRef}
+                            selectOptionKey={this.state.selectedGroupType}
+                            options={groupTypeOptions}
+                            onSelectOption={this.onSelectGroupType}
+                        />
+                    </div>
+                    {this.renderGroupDetailSection()}
+                    <div className={`${styles.Row} ${styles.NextRow}`}>
+                        <div className={`${styles.Label} ${styles.SameRow}`}>
+                            Group Type:
+                        </div>
+                        {this.renderInlineRollouts(this.props.group.rollouts)}
+                    </div>
                 </div>
-                {this.renderGroupDetailSection()}
                 <div className={styles.Actions}>
                     <div className={styles.SaveAction}>
                         <ButtonUI
@@ -127,7 +149,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                     <div className={styles.ItemList}>
                         {this.state.staticGroupInput?.memberIds.map((groupMemberId) => {
                             return (
-                                <div className={styles.Item}>
+                                <div key={groupMemberId} className={styles.Item}>
                                     {this.props.renderInlineGroupMember(
                                         groupMemberId,
                                     )}
@@ -168,6 +190,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                         ref={this.filterInputRef}
                         className={`${styles.TextField} ${styles.Filter}`}
                         value={this.state.filterGroupInput?.filter}
+                        onChange={this.onFilterChange}
                     />
                 </div>
             </>
@@ -176,7 +199,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
 
     public show(group: Group<GroupMember>) {
         this.setState({
-            groupId: group.id,
+            group: group,
             groupName: group.name,
             selectedGroupType: group.type,
             staticGroupInput: this.toStaticGroupInput(group),
@@ -195,6 +218,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         event: KeyboardEvent<HTMLInputElement>,
     ) => {
         if (event.code === 'Enter') {
+            debugger;
             let memberId = Number(this.memberIdInputRef.current?.value);
             if (memberId) {
                 if (this.props.isValidMember?.call(null, memberId)) {
@@ -216,6 +240,25 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         }
     };
 
+    private renderInlineRollouts<GroupMember>(
+        rollouts: Rollout<GroupMember>[],
+    ): ReactNode {
+        return (
+            <div className={styles.RolloutList}>
+                {rollouts.map((rollout) => (
+                    <div className={styles.Rollout}>
+                        <div className={styles.TopRow}>
+                            <div className={`${styles.Attribute}`}>
+                                {rollout.id}
+                            </div>
+                        </div>
+                        <div className={styles.Name}>{rollout.name}</div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
     private onRemoveMemberClickHandler = (memberId: number) => {
         return (event: MouseEvent) => {
             // TODO: update group at backend
@@ -229,9 +272,9 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         };
     };
 
-    toStaticGroupInput(group: Group<GroupMember>): StaticGroupInput|undefined {
+    toStaticGroupInput(group: Group<GroupMember>): StaticGroupInput | undefined {
         if (group.type !== 'static') {
-            return ;
+            return;
         }
 
         return {
@@ -239,13 +282,27 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         };
     }
 
-    toFilterGroupInput(group: Group<GroupMember>): FilterGroupInput|undefined {
+    toFilterGroupInput(group: Group<GroupMember>): FilterGroupInput | undefined {
         if (group.type !== 'filter') {
-            return ;
+            return;
         }
 
         return {
             filter: group.filter,
         };
+    }
+
+    private onGroupNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            groupName: event.target.value,
+        });
+    }
+
+    private onFilterChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        this.setState({
+            filterGroupInput: {
+                filter: event.target.value,
+            },
+        });
     }
 }
