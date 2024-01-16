@@ -109,7 +109,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                     {this.renderGroupDetailSection()}
                     <div className={`${styles.Row} ${styles.NextRow}`}>
                         <div className={`${styles.Label} ${styles.SameRow}`}>
-                            Group Type:
+                            Rollouts:
                         </div>
                         {this.renderInlineRollouts(this.props.group.rollouts)}
                     </div>
