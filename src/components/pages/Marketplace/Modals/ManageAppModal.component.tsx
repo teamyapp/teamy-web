@@ -1,15 +1,15 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import React, { Component, ReactNode, createRef } from 'react';
+import React, {Component, createRef, ReactNode} from 'react';
 
-import { ButtonUI } from '@lib/ui/Button';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { ModalUI } from '@lib/ui/Modal';
+import {ButtonUI} from '@lib/ui/Button';
+import {MaterialIconUI} from '@lib/ui/MaterialIcon';
+import {ModalUI} from '@lib/ui/Modal';
 
-import { Deps } from '@core/dep/deps';
-import { AppSecret } from '@core/entity/appSecret';
-import { AppVersion } from '@core/entity/appVersion';
-import { FilterGroup, Group, StaticGroup } from '@core/entity/group';
+import {Deps} from '@core/dep/deps';
+import {AppSecret} from '@core/entity/appSecret';
+import {AppVersion} from '@core/entity/appVersion';
+import {Group} from '@core/entity/group';
 import {
     Activator,
     ExperimentVersionSelector,
@@ -20,19 +20,21 @@ import {
     TimeRangeActivator,
     VersionSelector,
 } from '@core/entity/rollout';
-import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import {Team} from '@core/entity/team';
+import {User} from '@core/entity/user';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
-import { UserProfileUI } from '../../../internal/UserProfile';
-import { getUserShortName } from '../../../internal/format';
+import {UserProfileUI} from '../../../internal/UserProfile';
+import {getUserShortName} from '../../../internal/format';
 import github2IconImg from '../assets/github2.png';
 import githubIconImg from '../assets/github.png';
-import { CreateAppSecretModalComponent } from './CreateAppSecretModal.component';
-import { CreateTeamGroupModalComponent } from './CreateTeamGroupModal.component';
-import { CreateTeamRolloutModalComponent } from './CreateTeamRolloutModal.component';
-import { CreateUserGroupModalComponent } from './CreateUserGroupModal.component';
-import { CreateUserRolloutModalComponent } from './CreateUserRolloutModal.component';
+import {CreateAppSecretModalComponent} from './CreateAppSecretModal.component';
+import {CreateTeamGroupModalComponent} from './CreateTeamGroupModal.component';
+import {CreateTeamRolloutModalComponent} from './CreateTeamRolloutModal.component';
+import {CreateUserGroupModalComponent} from './CreateUserGroupModal.component';
+import {CreateUserRolloutModalComponent} from './CreateUserRolloutModal.component';
+import {EditGroupViewComponent} from './EditGroupView.component';
+import {GraphSource} from '@core/storage/graph/graphSource';
 import styles from './ManageAppModal.component.module.scss';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts';
@@ -109,7 +111,7 @@ const appSecrets: AppSecret[] = [
         },
     },
     {
-        id: 1,
+        id: 2,
         name: 'Harry Mac Dev',
         addedAt: moment().subtract(1, 'week').toDate(),
         addedBy: {
@@ -440,6 +442,7 @@ interface State {
 }
 
 export class ManageAppModalComponent extends Component<Props, State> {
+    private readonly editGroupViewRef = createRef<EditGroupViewComponent<User | Team>>();
     private readonly modalRef = createRef<ModalUI>();
     private readonly createAppSecretModalRef =
         createRef<CreateAppSecretModalComponent>();
@@ -451,10 +454,12 @@ export class ManageAppModalComponent extends Component<Props, State> {
         createRef<CreateUserRolloutModalComponent>();
     private readonly createTeamRolloutModalRef =
         createRef<CreateTeamRolloutModalComponent>();
+    private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
 
     constructor(props: Props) {
         super(props);
+        this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             showTabViews: {
@@ -503,7 +508,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                                                 [styles.Active]:
                                                     this.state.showTabViews[
                                                         tab.key
-                                                    ],
+                                                        ],
                                             })}`}
                                             onClick={this.onTabClickHandler(
                                                 tab,
@@ -514,7 +519,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                                     ))}
                                 </div>
                             </div>
-                            <div className={styles.Divider} />
+                            <div className={styles.Divider}/>
                             <div className={styles.RightSection}>
                                 {this.renderTab()}
                             </div>
@@ -619,7 +624,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 <div className={styles.Section}>
                     <div className={styles.TitleRow}>
                         <div className={styles.Title}>API Secrets</div>
-                        <div className={styles.Spacer} />
+                        <div className={styles.Spacer}/>
                         <div className={styles.Actions}>
                             <div
                                 className={`${styles.Action} ${styles.CreateSecret}`}
@@ -631,53 +636,53 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     </div>
                     <table className={`${styles.Table} ${styles.Secret}`}>
                         <thead>
-                            <tr>
-                                <th className={`${styles.Cell} ${styles.Name}`}>
-                                    Name
-                                </th>
-                                <th>Added at</th>
-                                <th>Added by</th>
-                                <th>Last used</th>
-                                <th>Actions</th>
-                            </tr>
+                        <tr>
+                            <th className={`${styles.Cell} ${styles.Name}`}>
+                                Name
+                            </th>
+                            <th>Added at</th>
+                            <th>Added by</th>
+                            <th>Last used</th>
+                            <th>Actions</th>
+                        </tr>
                         </thead>
                         <tbody>
-                            {appSecrets.map((secret) => (
-                                <tr className={styles.SecretRow}>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Name}`}
+                        {appSecrets.map((secret) => (
+                            <tr key={secret.id} className={styles.SecretRow}>
+                                <td
+                                    className={`${styles.Cell} ${styles.Name}`}
+                                >
+                                    {secret.name}
+                                </td>
+                                <td>{moment(secret.addedAt).fromNow()}</td>
+                                <td>
+                                    {getUserShortName(
+                                        secret.addedBy.firstName,
+                                        secret.addedBy.lastName,
+                                    )}
+                                </td>
+                                <td>
+                                    {secret.lastUsedAt
+                                        ? moment(
+                                            secret.lastUsedAt,
+                                        ).fromNow()
+                                        : 'Never'}
+                                </td>
+                                <td
+                                    className={`${styles.Cell} ${styles.Actions}`}
+                                >
+                                    <div
+                                        className={`${styles.RowAction} ${styles.Delete}`}
                                     >
-                                        {secret.name}
-                                    </td>
-                                    <td>{moment(secret.addedAt).fromNow()}</td>
-                                    <td>
-                                        {getUserShortName(
-                                            secret.addedBy.firstName,
-                                            secret.addedBy.lastName,
-                                        )}
-                                    </td>
-                                    <td>
-                                        {secret.lastUsedAt
-                                            ? moment(
-                                                  secret.lastUsedAt,
-                                              ).fromNow()
-                                            : 'Never'}
-                                    </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Actions}`}
-                                    >
-                                        <div
-                                            className={`${styles.RowAction} ${styles.Delete}`}
+                                        <MaterialIconUI
+                                            iconStyle={'outlined'}
                                         >
-                                            <MaterialIconUI
-                                                iconStyle={'outlined'}
-                                            >
-                                                remove_circle
-                                            </MaterialIconUI>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
+                                            remove_circle
+                                        </MaterialIconUI>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
                         </tbody>
                     </table>
                 </div>
@@ -703,13 +708,14 @@ export class ManageAppModalComponent extends Component<Props, State> {
                             )
                             .map((appVersion) => (
                                 <div
+                                    key={appVersion.number}
                                     className={`${
                                         styles.AppVersion
                                     } ${classNames({
                                         [styles.Active]:
-                                            appVersion.number ==
-                                            this.state.selectedAppVersion
-                                                ?.number,
+                                        appVersion.number ==
+                                        this.state.selectedAppVersion
+                                            ?.number,
                                     })}`}
                                     onClick={this.onVersionNumberClickHandler(
                                         appVersion,
@@ -757,7 +763,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     <div className={styles.Icon}>
                         <MaterialIconUI>upload_file</MaterialIconUI>
                     </div>
-                    <input type={'file'} className={styles.FileInput} />
+                    <input type={'file'} className={styles.FileInput}/>
                 </div>
             </>
         );
@@ -768,7 +774,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
             <>
                 <div className={styles.Title}>Uploading App Package</div>
                 <div className={styles.ProgressBar}>
-                    <div className={styles.Progress} />
+                    <div className={styles.Progress}/>
                 </div>
             </>
         );
@@ -779,11 +785,11 @@ export class ManageAppModalComponent extends Component<Props, State> {
             <>
                 <div className={styles.Title}>Processing App Package</div>
                 <div className={styles.Spinner}>
-                    <div className={`${styles.Rect} ${styles.One}`} />
-                    <div className={`${styles.Rect} ${styles.Two}`} />
-                    <div className={`${styles.Rect} ${styles.Three}`} />
-                    <div className={`${styles.Rect} ${styles.Four}`} />
-                    <div className={`${styles.Rect} ${styles.Five}`} />
+                    <div className={`${styles.Rect} ${styles.One}`}/>
+                    <div className={`${styles.Rect} ${styles.Two}`}/>
+                    <div className={`${styles.Rect} ${styles.Three}`}/>
+                    <div className={`${styles.Rect} ${styles.Four}`}/>
+                    <div className={`${styles.Rect} ${styles.Five}`}/>
                 </div>
             </>
         );
@@ -817,8 +823,8 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         </div>
                         <div className={styles.ChangeList}>
                             {this.state.selectedAppVersion.changes.map(
-                                (change) => (
-                                    <div className={styles.Change}>
+                                (index: string, change) => (
+                                    <div key={index} className={styles.Change}>
                                         {change}
                                     </div>
                                 ),
@@ -835,10 +841,10 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     </div>
                     <div className={`${styles.Row} ${styles.Buttons}`}>
                         <div className={styles.Download}>
-                            <ButtonUI label={'Download'} />
+                            <ButtonUI label={'Download'}/>
                         </div>
                         <div className={styles.Delete}>
-                            <ButtonUI label={'Delete'} />
+                            <ButtonUI label={'Delete'}/>
                         </div>
                     </div>
                 </div>
@@ -853,6 +859,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     <div className={styles.Tabs}>
                         {groupTabs.map((tab) => (
                             <div
+                                key={tab.key}
                                 className={`${styles.Tab} ${classNames({
                                     [styles.Active]:
                                         this.state.showGroupTabViews[tab.key],
@@ -883,7 +890,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                                     [styles.Active]:
                                         this.state.showRolloutGroupTabViews[
                                             tab.key
-                                        ],
+                                            ],
                                 })}`}
                                 onClick={this.onRolloutGroupTabClickHandler(
                                     tab,
@@ -953,6 +960,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     ) {
         return (
             <div
+                key={group.id}
                 className={`${styles.Group} ${classNames({
                     [styles.Active]: selectedGroup?.id == group.id,
                 })}`}
@@ -975,201 +983,34 @@ export class ManageAppModalComponent extends Component<Props, State> {
         if (this.state.showGroupTabViews['users']) {
             return (
                 this.state.selectedUserGroup &&
-                this.renderGroup(
-                    this.state.selectedUserGroup,
-                    this.renderInlineUsers,
-                )
+                <div className={`${styles.Box} ${styles.Group}`}>
+                    <EditGroupViewComponent
+                        ref={this.editGroupViewRef}
+                        group={this.state.selectedUserGroup}
+                        membersLabel={'Users'}
+                        memberLabel={'User'}
+                        renderInlineGroupMember={this.renderInlineUser}
+                        renderInlineRollout={this.renderInlineRolloutForEdit}
+                        isValidMember={this.isValidUser}
+                        isValidRollout={this.isValidRollout}/>
+                </div>
             );
         } else if (this.state.showGroupTabViews['teams']) {
             return (
                 this.state.selectedTeamGroup &&
-                this.renderGroup(
-                    this.state.selectedTeamGroup,
-                    this.renderInlineTeams,
-                )
+                <div className={`${styles.Box} ${styles.Group}`}>
+                    <EditGroupViewComponent
+                        ref={this.editGroupViewRef}
+                        group={this.state.selectedTeamGroup}
+                        membersLabel={'Teams'}
+                        memberLabel={'Team'}
+                        renderInlineGroupMember={this.renderInlineTeam}
+                        renderInlineRollout={this.renderInlineRolloutForEdit}
+                        isValidMember={this.isValidTeam}
+                        isValidRollout={this.isValidRollout}/>
+                </div>
             );
         }
-    }
-
-    private renderGroup<GroupMember>(
-        group: Group<GroupMember>,
-        renderGroupMembers: (members: GroupMember[]) => ReactNode,
-    ): ReactNode {
-        switch (group.type) {
-            case 'static':
-                return this.renderStaticGroup(group, renderGroupMembers);
-            case 'filter':
-                return this.renderFilterGroup(group);
-        }
-    }
-
-    private renderStaticGroup<GroupMember>(
-        group: StaticGroup<GroupMember>,
-        renderGroupMembers: (members: GroupMember[]) => ReactNode,
-    ): ReactNode {
-        return (
-            <div className={`${styles.Box} ${styles.Group}`}>
-                <div className={styles.GroupInfo}>
-                    <div className={`${styles.Row} ${styles.Id}`}>
-                        <span className={`${styles.Label} ${styles.SameRow}`}>
-                            ID:
-                        </span>
-                        {group.id}
-                    </div>
-                    <div className={`${styles.Row} ${styles.Type}`}>
-                        <span className={`${styles.Label} ${styles.SameRow}`}>
-                            Type:
-                        </span>
-                        {group.type}
-                    </div>
-                    <div className={`${styles.Row} ${styles.Name}`}>
-                        <span className={`${styles.Label} ${styles.SameRow}`}>
-                            Name:
-                        </span>
-                        {group.name}
-                    </div>
-                    {renderGroupMembers(group.members)}
-                    <div className={`${styles.Row} ${styles.CreatedAt}`}>
-                        <span className={`${styles.Label} ${styles.SameRow}`}>
-                            Created at:
-                        </span>
-                        {moment(group.createdAt).fromNow()}
-                    </div>
-                </div>
-                {this.renderInlineRollouts(group.rollouts)}
-                <div className={styles.Buttons}>
-                    <div className={styles.Delete}>
-                        <ButtonUI label={'Delete'} />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    private renderFilterGroup<GroupMember>(
-        group: FilterGroup<GroupMember>,
-    ): ReactNode {
-        return (
-            <div className={`${styles.Box} ${styles.Group}`}>
-                <div className={styles.GroupInfo}>
-                    <div className={`${styles.Row} ${styles.Id}`}>
-                        <span className={`${styles.Label} ${styles.SameRow}`}>
-                            ID:
-                        </span>
-                        {group.id}
-                    </div>
-                    <div className={`${styles.Row} ${styles.Type}`}>
-                        <span className={`${styles.Label} ${styles.SameRow}`}>
-                            Type:
-                        </span>
-                        {group.type}
-                    </div>
-                    <div className={`${styles.Row} ${styles.Name}`}>
-                        <span className={`${styles.Label} ${styles.SameRow}`}>
-                            Name:
-                        </span>
-                        {group.name}
-                    </div>
-                    <div className={`${styles.Row} ${styles.Filter}`}>
-                        <div className={`${styles.Label} ${styles.NextRow}`}>
-                            Filter:
-                        </div>
-                        <div>{group.filter}</div>
-                    </div>
-                    <div className={`${styles.Row} ${styles.CreatedAt}`}>
-                        <span className={`${styles.Label} ${styles.SameRow}`}>
-                            Created at:
-                        </span>
-                        {moment(group.createdAt).fromNow()}
-                    </div>
-                </div>
-                {this.renderInlineRollouts(group.rollouts)}
-                <div className={styles.Buttons}>
-                    <div className={styles.Delete}>
-                        <ButtonUI label={'Delete'} />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    private renderInlineUsers(users: User[]): ReactNode {
-        return (
-            <div className={styles.InlineUsers}>
-                <div className={`${styles.Label} ${styles.NextRow}`}>
-                    Users:
-                </div>
-                <div className={styles.Users}>
-                    {users.map((user) => (
-                        <div className={styles.InlineUser}>
-                            <UserProfileUI user={user} />
-                            <div className={styles.Name}>
-                                {getUserShortName(
-                                    user.firstName,
-                                    user.lastName,
-                                )}
-                            </div>
-                            <div className={styles.Remove}>
-                                <MaterialIconUI>cancel</MaterialIconUI>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
-    private renderInlineTeams(teams: Team[]): ReactNode {
-        return (
-            <div className={styles.InlineTeams}>
-                <div className={`${styles.Label} ${styles.NextRow}`}>
-                    Teams:
-                </div>
-                <div className={styles.Teams}>
-                    {teams.map((team) => (
-                        <div className={styles.InlineTeam}>
-                            <div className={styles.Icon}>
-                                {team.iconUrl ? (
-                                    <img src={team.iconUrl} alt={team.name} />
-                                ) : (
-                                    <div className={styles.IconDefault}>
-                                        {team.name[0].toUpperCase()}
-                                    </div>
-                                )}
-                            </div>
-                            <div className={styles.Name}>{team.name}</div>
-                            <div className={styles.Remove}>
-                                <MaterialIconUI>cancel</MaterialIconUI>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
-    private renderInlineRollouts<GroupMember>(
-        rollouts: Rollout<GroupMember>[],
-    ): ReactNode {
-        return (
-            <div className={styles.Rollouts}>
-                <div className={`${styles.Label} ${styles.NextRow}`}>
-                    Rollouts:
-                </div>
-                <div className={styles.RolloutList}>
-                    {rollouts.map((rollout) => (
-                        <div className={styles.Rollout}>
-                            <div className={styles.TopRow}>
-                                <div className={`${styles.Attribute}`}>
-                                    {rollout.id}
-                                </div>
-                            </div>
-                            <div className={styles.Name}>{rollout.name}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
     }
 
     private renderRollouts() {
@@ -1258,7 +1099,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     </div>
                     <div className={styles.Buttons}>
                         <div className={styles.Delete}>
-                            <ButtonUI label={'Delete'} />
+                            <ButtonUI label={'Delete'}/>
                         </div>
                     </div>
                 </div>
@@ -1300,7 +1141,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     </div>
                     <div className={styles.Buttons}>
                         <div className={styles.Delete}>
-                            <ButtonUI label={'Delete'} />
+                            <ButtonUI label={'Delete'}/>
                         </div>
                     </div>
                 </div>
@@ -1609,6 +1450,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     ) {
         return (
             <div
+                key={rollout.id}
                 className={`${styles.Rollout} ${classNames({
                     [styles.Active]: selectedRollout?.id == rollout.id,
                 })}`}
@@ -1625,6 +1467,74 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 </div>
             </div>
         );
+    }
+
+    private renderInlineUser = (userId: number): ReactNode => {
+        // TODO: pull user
+        let user = this.graphSource.user(userId);
+        return (
+            user && (
+                <div className={styles.InlineUser}>
+                    <div className={styles.Profile}>
+                        <UserProfileUI user={user}/>
+                    </div>
+                    <div className={styles.Name}>
+                        {getUserShortName(user.firstName, user.lastName)}
+                    </div>
+                </div>
+            )
+        );
+    };
+
+    private isValidUser = (userId: number): boolean => {
+        // TODO: pull user
+        return this.graphSource.user(userId) !== undefined;
+    };
+
+    private renderInlineTeam = (teamId: number): ReactNode => {
+        // TODO: pull team
+        let team = this.graphSource.team(teamId);
+        return (
+            team && (
+                <div className={styles.InlineTeam}>
+                    <div className={styles.Icon}>
+                        {team.iconUrl ? (
+                            <img src={team.iconUrl} alt={team.name}/>
+                        ) : (
+                            <div className={styles.IconDefault}>
+                                {team.name[0].toUpperCase()}
+                            </div>
+                        )}
+                    </div>
+                    <div className={styles.Name}>{team.name}</div>
+                </div>
+            )
+        );
+    };
+
+    private renderInlineRolloutForEdit = (rolloutId: number): ReactNode => {
+        // TODO: pull team
+        const rollout = userGroupRollouts.find((rollout) => rollout.id == rolloutId) ||
+        teamGroupRollouts.find((rollout) => rollout.id == rolloutId);
+        return (
+            rollout && (
+                <div className={styles.InlineRollout}>
+                    <div className={styles.Id}>{rollout.id}</div>
+                    <div className={styles.Name}>{rollout.name}</div>
+                </div>
+            )
+        );
+    };
+
+    private isValidTeam = (teamId: number): boolean => {
+        // TODO: pull team
+        return this.graphSource.team(teamId) !== undefined;
+    };
+
+    private isValidRollout = (rolloutId: number): boolean => {
+        // TODO: pull rollout and read from store
+        return userGroupRollouts.some((rollout) => rollout.id == rolloutId) ||
+            teamGroupRollouts.some((rollout) => rollout.id == rolloutId);
     }
 
     private onCreateSecretClick = () => {
@@ -1644,6 +1554,16 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     },
                 ),
             });
+            switch (tab.key) {
+                case 'users': {
+                    this.editGroupViewRef.current?.show(this.state.selectedUserGroup!);
+                    break;
+                }
+                case 'teams': {
+                    this.editGroupViewRef.current?.show(this.state.selectedTeamGroup!);
+                    break;
+                }
+            }
         };
     };
 
@@ -1667,6 +1587,8 @@ export class ManageAppModalComponent extends Component<Props, State> {
         return () => {
             this.setState({
                 selectedUserGroup: group,
+            }, () => {
+                this.editGroupViewRef.current?.show(group);
             });
         };
     };
@@ -1675,6 +1597,8 @@ export class ManageAppModalComponent extends Component<Props, State> {
         return () => {
             this.setState({
                 selectedTeamGroup: group,
+            }, () => {
+                this.editGroupViewRef.current?.show(group);
             });
         };
     };
