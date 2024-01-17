@@ -172,15 +172,16 @@
 
             .AppVersionDetail {
                 display: flex;
-                padding: 40px;
+                padding: 20px;
                 background-color: #cfd8dc;
                 flex: 1;
                 justify-content: center;
                 align-items: center;
 
                 .Box {
-                    width: 380px;
-                    height: 540px;
+                    width: 460px;
+                    height: 100%;
+                    box-sizing: border-box;
                     border-radius: 6px;
                     background-color: white;
                     overflow-y: auto;
@@ -223,7 +224,8 @@
                     &.UploadAppPackage {
                         display: flex;
                         width: 460px;
-                        height: 620px;
+                        height: 100%;
+                        box-sizing: border-box;
                         flex-direction: column;
                         box-sizing: border-box;
                         align-items: center;
@@ -429,15 +431,16 @@
 
             .GroupDetailSection {
                 display: flex;
-                padding: 40px;
+                padding: 20px;
                 background-color: #cfd8dc;
                 flex: 1;
                 justify-content: center;
                 align-items: center;
 
                 .Box {
-                    width: 380px;
-                    height: 540px;
+                    width: 460px;
+                    height: 100%;
+                    box-sizing: border-box;
                     padding: 20px;
                     border-radius: 6px;
                     background-color: white;
@@ -470,6 +473,28 @@
                             .InlineTeam {
                                 @include inline-team;
                             }
+                        }
+                    }
+
+                    .InlineRollout {
+                        display: flex;
+                        align-items: center;
+
+                        .Id {
+                            width: 26px;
+                            height: 26px;
+                            border-radius: 50%;
+                            background-color: white;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            color: black;
+                            font-weight: bold;
+                        }
+
+                        .Name {
+                            margin-left: 10px;
+                            font-weight: bold;
                         }
                     }
                 }
@@ -586,8 +611,9 @@
                 align-items: center;
 
                 .Box {
-                    width: 380px;
-                    height: 540px;
+                    width: 460px;
+                    height: 100%;
+                    box-sizing: border-box;
                     padding: 20px;
                     border-radius: 6px;
                     background-color: white;

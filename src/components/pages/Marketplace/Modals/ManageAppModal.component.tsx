@@ -990,7 +990,9 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         membersLabel={'Users'}
                         memberLabel={'User'}
                         renderInlineGroupMember={this.renderInlineUser}
-                        isValidMember={this.isValidUser}/>
+                        renderInlineRollout={this.renderInlineRolloutForEdit}
+                        isValidMember={this.isValidUser}
+                        isValidRollout={this.isValidRollout}/>
                 </div>
             );
         } else if (this.state.showGroupTabViews['teams']) {
@@ -1003,202 +1005,13 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         membersLabel={'Teams'}
                         memberLabel={'Team'}
                         renderInlineGroupMember={this.renderInlineTeam}
-                        isValidMember={this.isValidTeam}/>
+                        renderInlineRollout={this.renderInlineRolloutForEdit}
+                        isValidMember={this.isValidTeam}
+                        isValidRollout={this.isValidRollout}/>
                 </div>
             );
         }
     }
-
-    // private renderGroup<GroupMember>(
-    //     group: Group<GroupMember>,
-    //     renderGroupMembers: (members: GroupMember[]) => ReactNode,
-    // ): ReactNode {
-    //     switch (group.type) {
-    //         case 'static':
-    //             return this.renderStaticGroup(group, renderGroupMembers);
-    //         case 'filter':
-    //             return this.renderFilterGroup(group);
-    //     }
-    // }
-
-    // private renderStaticGroup<GroupMember>(
-    //     group: StaticGroup<GroupMember>,
-    //     renderGroupMembers: (members: GroupMember[]) => ReactNode,
-    // ): ReactNode {
-    //     return (
-    //         <div className={`${styles.Box} ${styles.Group}`}>
-    //             <div className={styles.GroupInfo}>
-    //                 <div className={`${styles.Row} ${styles.Id}`}>
-    //                     <span className={`${styles.Label} ${styles.SameRow}`}>
-    //                         ID:
-    //                     </span>
-    //                     {group.id}
-    //                 </div>
-    //                 <div className={`${styles.Row} ${styles.Type}`}>
-    //                     <span className={`${styles.Label} ${styles.SameRow}`}>
-    //                         Type:
-    //                     </span>
-    //                     {group.type}
-    //                 </div>
-    //                 <div className={`${styles.Row} ${styles.Name}`}>
-    //                     <span className={`${styles.Label} ${styles.SameRow}`}>
-    //                         Name:
-    //                     </span>
-    //                     {group.name}
-    //                 </div>
-    //                 {renderGroupMembers(group.members)}
-    //                 <div className={`${styles.Row} ${styles.CreatedAt}`}>
-    //                     <span className={`${styles.Label} ${styles.SameRow}`}>
-    //                         Created at:
-    //                     </span>
-    //                     {moment(group.createdAt).fromNow()}
-    //                 </div>
-    //             </div>
-    //             {this.renderInlineRollouts(group.rollouts)}
-    //             <div className={styles.Buttons}>
-    //                 <div className={styles.Save}>
-    //                     <ButtonUI label={'Save'} />
-    //                 </div>
-    //                 <div className={styles.Delete}>
-    //                     <ButtonUI label={'Delete'} />
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     );
-    // }
-
-    // private renderFilterGroup<GroupMember>(
-    //     group: FilterGroup<GroupMember>,
-    // ): ReactNode {
-    //     return (
-    //         <div className={`${styles.Box} ${styles.Group}`}>
-    //             <div className={styles.GroupInfo}>
-    //                 <div className={`${styles.Row} ${styles.Id}`}>
-    //                     <span className={`${styles.Label} ${styles.SameRow}`}>
-    //                         ID:
-    //                     </span>
-    //                     {group.id}
-    //                 </div>
-    //                 <div className={`${styles.Row} ${styles.Inline}`}>
-    //                     <div className={`${styles.Label} ${styles.SameRow}`}>
-    //                         Group Type:
-    //                     </div>
-    //                     <DropDownList
-    //                         selectOptionKey={this.state.selectedGroupType}
-    //                         options={groupTypeOptions}
-    //                         onSelectOption={this.onSelectGroupType}
-    //                     />
-    //                 </div>
-    //                 <div className={`${styles.Row} ${styles.Name}`}>
-    //                     <span className={`${styles.Label} ${styles.SameRow}`}>
-    //                         Name:
-    //                     </span>
-    //                     {group.name}
-    //                 </div>
-    //                 <div className={`${styles.Row} ${styles.Filter}`}>
-    //                     <div className={`${styles.Label} ${styles.NextRow}`}>
-    //                         Filter:
-    //                     </div>
-    //                     <div>{group.filter}</div>
-    //                 </div>
-    //                 <div className={`${styles.Row} ${styles.CreatedAt}`}>
-    //                     <span className={`${styles.Label} ${styles.SameRow}`}>
-    //                         Created at:
-    //                     </span>
-    //                     {moment(group.createdAt).fromNow()}
-    //                 </div>
-    //             </div>
-    //             {this.renderInlineRollouts(group.rollouts)}
-    //             <div className={styles.Buttons}>
-    //                 <div className={styles.Save}>
-    //                     <ButtonUI label={'Save'} />
-    //                 </div>
-    //                 <div className={styles.Delete}>
-    //                     <ButtonUI label={'Delete'} />
-    //                 </div>
-    //             </div>
-    //         </div>
-    //     );
-    // }
-
-    private renderInlineUsers(users: User[]): ReactNode {
-        return (
-            <div className={styles.InlineUsers}>
-                <div className={`${styles.Label} ${styles.NextRow}`}>
-                    Users:
-                </div>
-                <div className={styles.Users}>
-                    {users.map((user) => (
-                        <div className={styles.InlineUser}>
-                            <UserProfileUI user={user}/>
-                            <div className={styles.Name}>
-                                {getUserShortName(
-                                    user.firstName,
-                                    user.lastName,
-                                )}
-                            </div>
-                            <div className={styles.Remove}>
-                                <MaterialIconUI>cancel</MaterialIconUI>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
-    private renderInlineTeams(teams: Team[]): ReactNode {
-        return (
-            <div className={styles.InlineTeams}>
-                <div className={`${styles.Label} ${styles.NextRow}`}>
-                    Teams:
-                </div>
-                <div className={styles.Teams}>
-                    {teams.map((team) => (
-                        <div className={styles.InlineTeam}>
-                            <div className={styles.Icon}>
-                                {team.iconUrl ? (
-                                    <img src={team.iconUrl} alt={team.name}/>
-                                ) : (
-                                    <div className={styles.IconDefault}>
-                                        {team.name[0].toUpperCase()}
-                                    </div>
-                                )}
-                            </div>
-                            <div className={styles.Name}>{team.name}</div>
-                            <div className={styles.Remove}>
-                                <MaterialIconUI>cancel</MaterialIconUI>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        );
-    }
-
-    // private renderInlineRollouts<GroupMember>(
-    //     rollouts: Rollout<GroupMember>[],
-    // ): ReactNode {
-    //     return (
-    //         <div className={styles.Rollouts}>
-    //             <div className={`${styles.Label} ${styles.NextRow}`}>
-    //                 Rollouts:
-    //             </div>
-    //             <div className={styles.RolloutList}>
-    //                 {rollouts.map((rollout) => (
-    //                     <div className={styles.Rollout}>
-    //                         <div className={styles.TopRow}>
-    //                             <div className={`${styles.Attribute}`}>
-    //                                 {rollout.id}
-    //                             </div>
-    //                         </div>
-    //                         <div className={styles.Name}>{rollout.name}</div>
-    //                     </div>
-    //                 ))}
-    //             </div>
-    //         </div>
-    //     );
-    // }
 
     private renderRollouts() {
         if (this.state.showRolloutGroupTabViews['users']) {
@@ -1699,10 +1512,30 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     };
 
+    private renderInlineRolloutForEdit = (rolloutId: number): ReactNode => {
+        // TODO: pull team
+        const rollout = userGroupRollouts.find((rollout) => rollout.id == rolloutId) ||
+        teamGroupRollouts.find((rollout) => rollout.id == rolloutId);
+        return (
+            rollout && (
+                <div className={styles.InlineRollout}>
+                    <div className={styles.Id}>{rollout.id}</div>
+                    <div className={styles.Name}>{rollout.name}</div>
+                </div>
+            )
+        );
+    };
+
     private isValidTeam = (teamId: number): boolean => {
         // TODO: pull team
         return this.graphSource.team(teamId) !== undefined;
     };
+
+    private isValidRollout = (rolloutId: number): boolean => {
+        // TODO: pull rollout and read from store
+        return userGroupRollouts.some((rollout) => rollout.id == rolloutId) ||
+            teamGroupRollouts.some((rollout) => rollout.id == rolloutId);
+    }
 
     private onCreateSecretClick = () => {
         this.createAppSecretModalRef.current?.open();
@@ -1721,6 +1554,16 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     },
                 ),
             });
+            switch (tab.key) {
+                case 'users': {
+                    this.editGroupViewRef.current?.show(this.state.selectedUserGroup!);
+                    break;
+                }
+                case 'teams': {
+                    this.editGroupViewRef.current?.show(this.state.selectedTeamGroup!);
+                    break;
+                }
+            }
         };
     };
 

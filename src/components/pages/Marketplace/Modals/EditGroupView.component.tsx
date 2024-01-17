@@ -6,7 +6,6 @@ import {ButtonUI} from '@lib/ui/Button';
 import {Group} from '@core/entity/group';
 import {Entity} from "@core/entity/entity";
 import moment from "moment";
-import {Rollout} from "@core/entity/rollout";
 
 type groupType = 'static' | 'filter';
 
@@ -28,7 +27,9 @@ interface Props<GroupMember> {
     membersLabel: string;
     memberLabel: string;
     renderInlineGroupMember: (memberId: number) => ReactNode;
+    renderInlineRollout: (rolloutId: number) => ReactNode;
     isValidMember?: (memberId: number) => boolean;
+    isValidRollout?: (rolloutId: number) => boolean;
     onCreateStaticGroup?: (groupName: string, memberIds: number[]) => void;
     onCreateFilterGroup?: (groupName: string, filter: string) => void;
 }
@@ -39,12 +40,15 @@ interface State<GroupMember> {
     groupName?: string;
     staticGroupInput?: StaticGroupInput;
     filterGroupInput?: FilterGroupInput;
+    rolloutIds: number[];
 }
 
 export class EditGroupViewComponent<GroupMember extends Entity> extends Component<Props<GroupMember>, State<GroupMember>> {
     private readonly groupNameInputRef: React.RefObject<HTMLInputElement> =
         React.createRef();
     private readonly memberIdInputRef: React.RefObject<HTMLInputElement> =
+        React.createRef();
+    private readonly rolloutIdInputRef: React.RefObject<HTMLInputElement> =
         React.createRef();
     private readonly filterInputRef: React.RefObject<HTMLTextAreaElement> =
         React.createRef();
@@ -60,6 +64,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
             groupName: props.group.name,
             staticGroupInput: this.toStaticGroupInput(props.group),
             filterGroupInput: this.toFilterGroupInput(props.group),
+            rolloutIds: props.group.rollouts.map((rollout) => rollout.id),
         };
     }
 
@@ -107,11 +112,38 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                         />
                     </div>
                     {this.renderGroupDetailSection()}
-                    <div className={`${styles.Row} ${styles.NextRow}`}>
-                        <div className={`${styles.Label} ${styles.SameRow}`}>
+                    <div className={`${styles.Row} ${styles.Rollouts}`}>
+                        <div className={`${styles.Label} ${styles.NextRow}`}>
                             Rollouts:
                         </div>
-                        {this.renderInlineRollouts(this.props.group.rollouts)}
+                        <div className={styles.ItemList}>
+                            {this.state.rolloutIds.map((rolloutId) => {
+                                return (
+                                    <div key={rolloutId} className={styles.Item}>
+                                        {this.props.renderInlineRollout(
+                                            rolloutId,
+                                        )}
+                                        <div
+                                            className={styles.Remove}
+                                            onClick={this.onRemoveRolloutClickHandler(
+                                                rolloutId,
+                                            )}
+                                        >
+                                            <MaterialIconUI>cancel</MaterialIconUI>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                            <input
+                                ref={this.rolloutIdInputRef}
+                                type={'text'}
+                                className={styles.Input}
+                                placeholder={`Enter rollout ID`}
+                                autoComplete={'off'}
+                                data-1p-ignore={true}
+                                onKeyDown={this.onRolloutIdInputKeydown}
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className={styles.Actions}>
@@ -204,7 +236,9 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
             selectedGroupType: group.type,
             staticGroupInput: this.toStaticGroupInput(group),
             filterGroupInput: this.toFilterGroupInput(group),
+            rolloutIds: group.rollouts.map((rollout) => rollout.id),
         });
+
         this.groupTypeDropdownRef.current?.selectOption(group.type);
     }
 
@@ -218,7 +252,6 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         event: KeyboardEvent<HTMLInputElement>,
     ) => {
         if (event.code === 'Enter') {
-            debugger;
             let memberId = Number(this.memberIdInputRef.current?.value);
             if (memberId) {
                 if (this.props.isValidMember?.call(null, memberId)) {
@@ -240,25 +273,6 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         }
     };
 
-    private renderInlineRollouts<GroupMember>(
-        rollouts: Rollout<GroupMember>[],
-    ): ReactNode {
-        return (
-            <div className={styles.RolloutList}>
-                {rollouts.map((rollout) => (
-                    <div className={styles.Rollout}>
-                        <div className={styles.TopRow}>
-                            <div className={`${styles.Attribute}`}>
-                                {rollout.id}
-                            </div>
-                        </div>
-                        <div className={styles.Name}>{rollout.name}</div>
-                    </div>
-                ))}
-            </div>
-        );
-    }
-
     private onRemoveMemberClickHandler = (memberId: number) => {
         return (event: MouseEvent) => {
             // TODO: update group at backend
@@ -272,9 +286,11 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         };
     };
 
-    toStaticGroupInput(group: Group<GroupMember>): StaticGroupInput | undefined {
+    toStaticGroupInput(group: Group<GroupMember>): StaticGroupInput {
         if (group.type !== 'static') {
-            return;
+            return {
+                memberIds: [],
+            }
         }
 
         return {
@@ -282,9 +298,11 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         };
     }
 
-    toFilterGroupInput(group: Group<GroupMember>): FilterGroupInput | undefined {
+    toFilterGroupInput(group: Group<GroupMember>): FilterGroupInput {
         if (group.type !== 'filter') {
-            return;
+            return {
+                filter: '',
+            };
         }
 
         return {
@@ -304,5 +322,38 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                 filter: event.target.value,
             },
         });
+    }
+
+    private onRolloutIdInputKeydown = (
+        event: KeyboardEvent<HTMLInputElement>,
+    ) => {
+        if (event.code === 'Enter') {
+            let rolloutId = Number(this.rolloutIdInputRef.current?.value);
+            if (rolloutId) {
+                if (this.props.isValidRollout?.call(null, rolloutId)) {
+                    if (!this.state.rolloutIds.includes(rolloutId)) {
+                        // TODO: update rollout at backend
+                        this.setState({
+                            rolloutIds: [
+                                ...this.state.rolloutIds,
+                                rolloutId,
+                            ],
+                        });
+                    }
+                }
+            }
+
+            this.rolloutIdInputRef.current!.value = '';
+        }
+    }
+
+    private onRemoveRolloutClickHandler = (rolloutId: number) => {
+        return (event: MouseEvent) => {
+            this.setState({
+                rolloutIds: this.state.rolloutIds.filter(
+                    (id) => id !== rolloutId,
+                ),
+            });
+        }
     }
 }
