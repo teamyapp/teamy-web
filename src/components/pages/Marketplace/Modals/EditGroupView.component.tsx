@@ -1,17 +1,26 @@
-import React, {ChangeEvent, Component, KeyboardEvent, MouseEvent, ReactNode} from 'react';
+import moment from 'moment';
+import React, {
+    ChangeEvent,
+    Component,
+    KeyboardEvent,
+    MouseEvent,
+    ReactNode,
+} from 'react';
+
+import { ButtonUI } from '@lib/ui/Button';
+import { DropDownList, Option } from '@lib/ui/DropDownList';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
+import { Entity } from '@core/entity/entity';
+import { Group } from '@core/entity/group';
+
 import styles from './EditGroupView.component.module.scss';
-import {DropDownList, Option} from '@lib/ui/DropDownList';
-import {MaterialIconUI} from '@lib/ui/MaterialIcon';
-import {ButtonUI} from '@lib/ui/Button';
-import {Group} from '@core/entity/group';
-import {Entity} from "@core/entity/entity";
-import moment from "moment";
 
 type groupType = 'static' | 'filter';
 
 const groupTypeOptions: Option[] = [
-    {key: 'static', description: 'Static'},
-    {key: 'filter', description: 'Filter'},
+    { key: 'static', description: 'Static' },
+    { key: 'filter', description: 'Filter' },
 ];
 
 interface StaticGroupInput {
@@ -43,7 +52,9 @@ interface State<GroupMember> {
     rolloutIds: number[];
 }
 
-export class EditGroupViewComponent<GroupMember extends Entity> extends Component<Props<GroupMember>, State<GroupMember>> {
+export class EditGroupViewComponent<
+    GroupMember extends Entity,
+> extends Component<Props<GroupMember>, State<GroupMember>> {
     private readonly groupNameInputRef: React.RefObject<HTMLInputElement> =
         React.createRef();
     private readonly memberIdInputRef: React.RefObject<HTMLInputElement> =
@@ -98,7 +109,9 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                         <div className={`${styles.Label} ${styles.SameRow}`}>
                             Created At:
                         </div>
-                        <div>{moment(this.props.group.createdAt).fromNow()}</div>
+                        <div>
+                            {moment(this.props.group.createdAt).fromNow()}
+                        </div>
                     </div>
                     <div className={`${styles.Row} ${styles.Inline}`}>
                         <div className={`${styles.Label} ${styles.SameRow}`}>
@@ -119,7 +132,10 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                         <div className={styles.ItemList}>
                             {this.state.rolloutIds.map((rolloutId) => {
                                 return (
-                                    <div key={rolloutId} className={styles.Item}>
+                                    <div
+                                        key={rolloutId}
+                                        className={styles.Item}
+                                    >
                                         {this.props.renderInlineRollout(
                                             rolloutId,
                                         )}
@@ -129,7 +145,9 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                                                 rolloutId,
                                             )}
                                         >
-                                            <MaterialIconUI>cancel</MaterialIconUI>
+                                            <MaterialIconUI>
+                                                cancel
+                                            </MaterialIconUI>
                                         </div>
                                     </div>
                                 );
@@ -148,14 +166,10 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                 </div>
                 <div className={styles.Actions}>
                     <div className={styles.SaveAction}>
-                        <ButtonUI
-                            label={'Save'}
-                        />
+                        <ButtonUI label={'Save'} />
                     </div>
                     <div className={styles.DeleteAction}>
-                        <ButtonUI
-                            label={'Delete'}
-                        />
+                        <ButtonUI label={'Delete'} />
                     </div>
                 </div>
             </div>
@@ -179,23 +193,30 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                         {this.props.membersLabel}:
                     </div>
                     <div className={styles.ItemList}>
-                        {this.state.staticGroupInput?.memberIds.map((groupMemberId) => {
-                            return (
-                                <div key={groupMemberId} className={styles.Item}>
-                                    {this.props.renderInlineGroupMember(
-                                        groupMemberId,
-                                    )}
+                        {this.state.staticGroupInput?.memberIds.map(
+                            (groupMemberId) => {
+                                return (
                                     <div
-                                        className={styles.Remove}
-                                        onClick={this.onRemoveMemberClickHandler(
+                                        key={groupMemberId}
+                                        className={styles.Item}
+                                    >
+                                        {this.props.renderInlineGroupMember(
                                             groupMemberId,
                                         )}
-                                    >
-                                        <MaterialIconUI>cancel</MaterialIconUI>
+                                        <div
+                                            className={styles.Remove}
+                                            onClick={this.onRemoveMemberClickHandler(
+                                                groupMemberId,
+                                            )}
+                                        >
+                                            <MaterialIconUI>
+                                                cancel
+                                            </MaterialIconUI>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            },
+                        )}
                         <input
                             ref={this.memberIdInputRef}
                             type={'text'}
@@ -255,7 +276,11 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
             let memberId = Number(this.memberIdInputRef.current?.value);
             if (memberId) {
                 if (this.props.isValidMember?.call(null, memberId)) {
-                    if (!this.state.staticGroupInput!.memberIds.includes(memberId)) {
+                    if (
+                        !this.state.staticGroupInput!.memberIds.includes(
+                            memberId,
+                        )
+                    ) {
                         // TODO: update group at backend
                         this.setState({
                             staticGroupInput: {
@@ -290,7 +315,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         if (group.type !== 'static') {
             return {
                 memberIds: [],
-            }
+            };
         }
 
         return {
@@ -314,7 +339,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
         this.setState({
             groupName: event.target.value,
         });
-    }
+    };
 
     private onFilterChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         this.setState({
@@ -322,7 +347,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                 filter: event.target.value,
             },
         });
-    }
+    };
 
     private onRolloutIdInputKeydown = (
         event: KeyboardEvent<HTMLInputElement>,
@@ -334,10 +359,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                     if (!this.state.rolloutIds.includes(rolloutId)) {
                         // TODO: update rollout at backend
                         this.setState({
-                            rolloutIds: [
-                                ...this.state.rolloutIds,
-                                rolloutId,
-                            ],
+                            rolloutIds: [...this.state.rolloutIds, rolloutId],
                         });
                     }
                 }
@@ -345,7 +367,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
 
             this.rolloutIdInputRef.current!.value = '';
         }
-    }
+    };
 
     private onRemoveRolloutClickHandler = (rolloutId: number) => {
         return (event: MouseEvent) => {
@@ -354,6 +376,6 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                     (id) => id !== rolloutId,
                 ),
             });
-        }
-    }
+        };
+    };
 }

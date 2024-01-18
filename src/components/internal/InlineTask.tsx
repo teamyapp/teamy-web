@@ -154,8 +154,10 @@ export class InlineTaskUI extends Component<Props, State> {
                             {this.renderGoal()}
                             <div className={styles.BottomRow}>
                                 <div
-                                    className={`${styles.Attribute} ${styles.Priority} ${classNames({
-                                        [styles[priorityStyle]]: true
+                                    className={`${styles.Attribute} ${
+                                        styles.Priority
+                                    } ${classNames({
+                                        [styles[priorityStyle]]: true,
                                     })}`}
                                 >
                                     <DropDownList
