@@ -52,12 +52,12 @@
 }
 
 .ItemList {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
+    //box-sizing: border-box;
     margin: 0 30px 30px 30px;
-    flex: 1;
     gap: 30px 50px;
-    grid-auto-rows: 62px;
-    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
 
     @include ListItem;
 }
