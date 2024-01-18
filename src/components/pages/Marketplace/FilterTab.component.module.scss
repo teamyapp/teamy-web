@@ -1,12 +1,10 @@
 @import './shared';
 
 .ItemList {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     margin: 30px;
-    flex: 1;
     gap: 30px 50px;
-    grid-auto-rows: 62px;
-    grid-template-columns: repeat(4, 1fr);
 
     @include ListItem;
 }
