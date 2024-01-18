@@ -173,7 +173,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
 
     private renderStaticGroupDetailSection(): ReactNode {
         return (
-            <>
+            <div className={styles.Section}>
                 <div className={styles.Row}>
                     <div className={`${styles.Label} ${styles.NextRow}`}>
                         {this.props.membersLabel}:
@@ -207,13 +207,13 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                         />
                     </div>
                 </div>
-            </>
+            </div>
         );
     }
 
     private renderFilterGroupDetailSection(): ReactNode {
         return (
-            <>
+            <div className={styles.Section}>
                 <div className={styles.Row}>
                     <div className={`${styles.Label} ${styles.NextRow}`}>
                         Filter:
@@ -225,7 +225,7 @@ export class EditGroupViewComponent<GroupMember extends Entity> extends Componen
                         onChange={this.onFilterChange}
                     />
                 </div>
-            </>
+            </div>
         );
     }
 

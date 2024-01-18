@@ -497,6 +497,10 @@
                             font-weight: bold;
                         }
                     }
+
+                    .InlineVersionNumber {
+                        font-weight: bold;
+                    }
                 }
             }
         }
@@ -618,46 +622,6 @@
                     border-radius: 6px;
                     background-color: white;
                     overflow-y: auto;
-
-                    .RolloutInfo {
-                        display: flex;
-                        flex-direction: column;
-                        row-gap: 20px;
-
-                        .Activator,
-                        .VersionSelector {
-                            .Detail {
-                                display: flex;
-                                padding: 20px;
-                                border-radius: 4px;
-                                background-color: rgba(0, 0, 0, 0.02);
-                                flex-direction: column;
-                                row-gap: 20px;
-
-                                .Value {
-                                    padding: 2px 10px;
-                                    border-radius: 4px;
-                                    background-color: #e91e63;
-                                    color: white;
-                                    font-weight: bold;
-
-                                    &:hover {
-                                        background-color: #2770ff;
-                                        cursor: pointer;
-                                    }
-                                }
-
-                                .Values {
-                                    display: flex;
-                                    column-gap: 4px;
-                                }
-
-                                .Versions {
-                                    display: flex;
-                                }
-                            }
-                        }
-                    }
 
                     .Groups {
                         margin-top: 20px;

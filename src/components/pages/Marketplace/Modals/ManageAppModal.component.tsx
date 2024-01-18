@@ -35,6 +35,7 @@ import {CreateUserGroupModalComponent} from './CreateUserGroupModal.component';
 import {CreateUserRolloutModalComponent} from './CreateUserRolloutModal.component';
 import {EditGroupViewComponent} from './EditGroupView.component';
 import {GraphSource} from '@core/storage/graph/graphSource';
+import {EditRolloutViewComponent, EditRolloutViewComponentHandle} from "./EditRolloutView.component";
 import styles from './ManageAppModal.component.module.scss';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts';
@@ -424,6 +425,9 @@ teamGroups[1].rollouts.push(teamGroupRollouts[0]);
 
 type AppPackageStatus = 'selecting' | 'uploading' | 'processing' | 'ready';
 
+const EditUserGroupRolloutViewComponent = EditRolloutViewComponent<User>();
+const EditTeamGroupRolloutViewComponent = EditRolloutViewComponent<Team>();
+
 interface Props {
     deps: Deps;
 }
@@ -454,6 +458,8 @@ export class ManageAppModalComponent extends Component<Props, State> {
         createRef<CreateUserRolloutModalComponent>();
     private readonly createTeamRolloutModalRef =
         createRef<CreateTeamRolloutModalComponent>();
+    private readonly editUserGroupRolloutViewRef = createRef<EditRolloutViewComponentHandle<User>>();
+    private readonly editTeamGroupRolloutViewRef = createRef<EditRolloutViewComponentHandle<Team>>();
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
 
@@ -1059,9 +1065,27 @@ export class ManageAppModalComponent extends Component<Props, State> {
 
     private renderRolloutDetail(): ReactNode {
         if (this.state.showRolloutGroupTabViews['users']) {
-            return this.renderUserRollout();
+            return (
+                <div className={`${styles.Box} ${styles.Rollout}`}>
+                    {this.state.selectedUserGroupRollout &&
+                        <EditUserGroupRolloutViewComponent
+                            ref={this.editUserGroupRolloutViewRef}
+                            rollout={this.state.selectedUserGroupRollout}
+                            isValidVersionNumber={this.isValidVersionNumber}
+                            renderInlineVersionNumber={this.renderInlineVersionNumber}/>}
+                </div>
+            );
         } else if (this.state.showRolloutGroupTabViews['teams']) {
-            return this.renderTeamRollout();
+            return (
+                <div className={`${styles.Box} ${styles.Rollout}`}>
+                    {this.state.selectedTeamGroupRollout &&
+                        <EditTeamGroupRolloutViewComponent
+                            ref={this.editTeamGroupRolloutViewRef}
+                            rollout={this.state.selectedTeamGroupRollout}
+                            isValidVersionNumber={this.isValidVersionNumber}
+                            renderInlineVersionNumber={this.renderInlineVersionNumber}/>}
+                </div>
+            );
         }
     }
 
@@ -1515,7 +1539,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private renderInlineRolloutForEdit = (rolloutId: number): ReactNode => {
         // TODO: pull team
         const rollout = userGroupRollouts.find((rollout) => rollout.id == rolloutId) ||
-        teamGroupRollouts.find((rollout) => rollout.id == rolloutId);
+            teamGroupRollouts.find((rollout) => rollout.id == rolloutId);
         return (
             rollout && (
                 <div className={styles.InlineRollout}>
@@ -1535,6 +1559,19 @@ export class ManageAppModalComponent extends Component<Props, State> {
         // TODO: pull rollout and read from store
         return userGroupRollouts.some((rollout) => rollout.id == rolloutId) ||
             teamGroupRollouts.some((rollout) => rollout.id == rolloutId);
+    }
+
+    private isValidVersionNumber = (versionNumber: number): boolean => {
+        return appVersions.some((appVersion) => appVersion.number == versionNumber);
+    }
+
+    private renderInlineVersionNumber = (versionNumber: number): ReactNode => {
+            const appVersion = appVersions.find((appVersion) => appVersion.number == versionNumber);
+            return (
+                appVersion && (
+                    <div className={styles.InlineVersionNumber}>{appVersion.number}</div>
+                )
+            );
     }
 
     private onCreateSecretClick = () => {
@@ -1608,6 +1645,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
             this.setState({
                 selectedUserGroupRollout: rollout,
             });
+            this.editUserGroupRolloutViewRef.current?.show(rollout);
         };
     };
 
@@ -1616,6 +1654,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
             this.setState({
                 selectedTeamGroupRollout: rollout,
             });
+            this.editTeamGroupRolloutViewRef.current?.show(rollout);
         };
     };
 
