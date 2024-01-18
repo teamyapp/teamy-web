@@ -186,7 +186,7 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
                     <input
                         type={'text'}
                         className={styles.TextField}
-                        placeholder={'YYYY/MM/DD HH:MM:SS'}
+                        placeholder={'MM/DD/YYYY HH:MM:SS'}
                     />
                 </div>
                 <div
@@ -198,7 +198,7 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
                     <input
                         type={'text'}
                         className={styles.TextField}
-                        placeholder={'YYYY/MM/DD HH:MM:SS'}
+                        placeholder={'MM/DD/YYYY HH:MM:SS'}
                     />
                 </div>
             </div>
@@ -270,8 +270,6 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
             </div>
         );
     }
-
-
 
     onSelectActivatorType = (activatorType: string) => {
         this.setState({

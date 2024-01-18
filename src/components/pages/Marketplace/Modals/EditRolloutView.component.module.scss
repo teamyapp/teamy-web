@@ -1,0 +1,130 @@
+.EditRolloutView {
+    display: flex;
+    width: 100%;
+    padding: 20px;
+    flex-direction: column;
+    row-gap: 10px;
+    box-sizing: border-box;
+
+    .Info {
+        display: flex;
+        flex-direction: column;
+        row-gap: 20px;
+
+        .Row {
+            --drop-down-button-color: rgba(0, 0, 0, 0.2);
+            --drop-down-color: #1565c0;
+
+            &.Inline {
+                display: flex;
+
+                .TextField {
+                    flex: 1;
+                }
+            }
+
+            &.Text {
+                align-items: center;
+            }
+
+            .Label {
+                font-size: 16px;
+                font-weight: bold;
+
+                &.SameRow {
+                    margin-right: 10px;
+                }
+
+                &.NextRow {
+                    margin-bottom: 10px;
+                }
+            }
+
+            .TextField,
+            .ItemList {
+                width: 100%;
+                border-radius: 4px;
+                background-color: #ececec;
+                box-sizing: border-box;
+            }
+
+            .TextField {
+                padding: 6px 10px;
+                border: none;
+                outline: none;
+                font-size: 16px;
+                letter-spacing: 1px;
+                resize: none;
+
+                &.Filter {
+                    height: 200px;
+                }
+            }
+
+            .ItemList {
+                display: flex;
+                padding: 6px;
+                gap: 6px;
+                flex-wrap: wrap;
+
+                .Item {
+                    display: flex;
+                    padding: 6px;
+                    column-gap: 10px;
+                    border-radius: 4px;
+                    background-color: #3d3d3d;
+                    color: white;
+                    align-items: center;
+
+                    .Remove {
+                        opacity: 0.5;
+                        --icon-size: 24px;
+                        --icon-color: white;
+
+                        &:hover {
+                            cursor: pointer;
+                            opacity: 1;
+                        }
+                    }
+                }
+
+                .Input {
+                    padding: 4px 0;
+                    border: none;
+                    outline: none;
+                    background-color: transparent;
+                    font-size: 16px;
+                    flex: 1;
+                }
+            }
+        }
+
+        .Section {
+            display: flex;
+            padding: 10px;
+            border: 2px solid #eaeaea;
+            border-radius: 4px;
+            flex-direction: column;
+            row-gap: 10px;
+        }
+    }
+
+    .Actions {
+        display: flex;
+        margin-top: 10px;
+        justify-content: center;
+        column-gap: 10px;
+
+        .SaveAction {
+            width: 120px;
+            --background-color: #388e3c;
+            --border-color: #2e7d32;
+        }
+
+        .DeleteAction {
+            width: 120px;
+            --background-color: #d32f2f;
+            --border-color: #c62828;
+        }
+    }
+}

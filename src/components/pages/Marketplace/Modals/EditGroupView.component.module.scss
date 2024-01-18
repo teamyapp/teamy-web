@@ -99,7 +99,13 @@
             }
         }
 
-        .Rollouts {
+        .Section {
+            display: flex;
+            padding: 10px;
+            border: 2px solid #eaeaea;
+            border-radius: 4px;
+            flex-direction: column;
+            row-gap: 10px;
         }
     }
 
