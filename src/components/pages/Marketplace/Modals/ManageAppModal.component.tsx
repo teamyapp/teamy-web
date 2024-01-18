@@ -1066,25 +1066,27 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private renderRolloutDetail(): ReactNode {
         if (this.state.showRolloutGroupTabViews['users']) {
             return (
-                <div className={`${styles.Box} ${styles.Rollout}`}>
-                    {this.state.selectedUserGroupRollout &&
+                this.state.selectedUserGroupRollout && (
+                    <div className={`${styles.Box} ${styles.Rollout}`}>
                         <EditUserGroupRolloutViewComponent
                             ref={this.editUserGroupRolloutViewRef}
                             rollout={this.state.selectedUserGroupRollout}
                             isValidVersionNumber={this.isValidVersionNumber}
-                            renderInlineVersionNumber={this.renderInlineVersionNumber}/>}
-                </div>
+                            renderInlineVersionNumber={this.renderInlineVersionNumber}/>
+                    </div>
+                )
             );
         } else if (this.state.showRolloutGroupTabViews['teams']) {
             return (
-                <div className={`${styles.Box} ${styles.Rollout}`}>
-                    {this.state.selectedTeamGroupRollout &&
-                        <EditTeamGroupRolloutViewComponent
-                            ref={this.editTeamGroupRolloutViewRef}
-                            rollout={this.state.selectedTeamGroupRollout}
-                            isValidVersionNumber={this.isValidVersionNumber}
-                            renderInlineVersionNumber={this.renderInlineVersionNumber}/>}
-                </div>
+                this.state.selectedTeamGroupRollout && (
+                    <div className={`${styles.Box} ${styles.Rollout}`}>
+                            <EditTeamGroupRolloutViewComponent
+                                ref={this.editTeamGroupRolloutViewRef}
+                                rollout={this.state.selectedTeamGroupRollout}
+                                isValidVersionNumber={this.isValidVersionNumber}
+                                renderInlineVersionNumber={this.renderInlineVersionNumber}/>
+                    </div>
+                )
             );
         }
     }
@@ -1566,12 +1568,12 @@ export class ManageAppModalComponent extends Component<Props, State> {
     }
 
     private renderInlineVersionNumber = (versionNumber: number): ReactNode => {
-            const appVersion = appVersions.find((appVersion) => appVersion.number == versionNumber);
-            return (
-                appVersion && (
-                    <div className={styles.InlineVersionNumber}>{appVersion.number}</div>
-                )
-            );
+        const appVersion = appVersions.find((appVersion) => appVersion.number == versionNumber);
+        return (
+            appVersion && (
+                <div className={styles.InlineVersionNumber}>{appVersion.number}</div>
+            )
+        );
     }
 
     private onCreateSecretClick = () => {
