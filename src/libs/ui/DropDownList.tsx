@@ -124,6 +124,6 @@ export class DropDownList extends Component<Props, State> {
             selectedOption: this.props.options.find((option) => {
                 return option.key === optionKey;
             }),
-        })
+        });
     }
 }

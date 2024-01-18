@@ -163,10 +163,7 @@ export class BacklogComponent extends Component<Props, State> {
         });
     }
 
-    private renderTask = (
-        task: Task,
-        clientId?: number,
-    ): ReactNode => {
+    private renderTask = (task: Task, clientId?: number): ReactNode => {
         return (
             <div className={styles.ListItem} key={task.id}>
                 <TaskListItem

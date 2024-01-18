@@ -393,7 +393,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private renderInvitation = (invitation: Invitation, index: number) => {
         return (
-            <tr key={invitation.id} className={`${styles.Row} ${styles.Invitation}`}>
+            <tr
+                key={invitation.id}
+                className={`${styles.Row} ${styles.Invitation}`}
+            >
                 <td>{invitation.receiver?.id}</td>
                 <td className={styles.FirstName}>
                     {invitation.receiverFirstName}

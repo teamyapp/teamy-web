@@ -110,22 +110,22 @@ $draggingColor: #00897b;
                     --drop-down-font-size: 14px;
 
                     &.urgent {
-                        --drop-down-button-color: rgba(0, 0, 0, .12);
+                        --drop-down-button-color: rgba(0, 0, 0, 0.12);
                         --drop-down-color: #bb0600;
                     }
 
                     &.high {
-                        --drop-down-button-color: rgba(0, 0, 0, .1);
+                        --drop-down-button-color: rgba(0, 0, 0, 0.1);
                         --drop-down-color: #cb6600;
                     }
 
                     &.medium {
-                        --drop-down-button-color: rgba(0, 0, 0, .15);
+                        --drop-down-button-color: rgba(0, 0, 0, 0.15);
                         --drop-down-color: #1976d2;
                     }
 
                     &.low {
-                        --drop-down-button-color: rgba(0, 0, 0, .15);
+                        --drop-down-button-color: rgba(0, 0, 0, 0.15);
                         --drop-down-color: #038d08;
                     }
 

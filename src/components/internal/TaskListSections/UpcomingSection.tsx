@@ -16,10 +16,10 @@ import {
 } from '@core/config/draggable';
 import { upcomingSectionId } from '@core/config/sections';
 import {
-    taskEffortOrder,
-    taskPriorityOrder,
-    taskOwnerOrder,
     taskDeadlineOrder,
+    taskEffortOrder,
+    taskOwnerOrder,
+    taskPriorityOrder,
     taskValueOrder,
     upcomingSortOrders,
 } from '@core/config/sortOrder';
@@ -28,11 +28,11 @@ import {
     groupByOwners,
 } from '@core/data/task.group';
 import {
+    orderByDeadline,
     orderByEffort,
     orderById,
-    orderByPriorityDesc,
     orderByOwner,
-    orderByDeadline,
+    orderByPriorityDesc,
     orderByValue,
 } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';

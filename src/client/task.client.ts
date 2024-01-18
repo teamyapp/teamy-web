@@ -1,6 +1,9 @@
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import { RemoteCreateTaskInput, RemoteUpdateTaskInput } from '@core/client/entity/input';
+import {
+    RemoteCreateTaskInput,
+    RemoteUpdateTaskInput,
+} from '@core/client/entity/input';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 
 export class TaskClient {

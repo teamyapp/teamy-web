@@ -21,7 +21,7 @@ import {
     needAttentionSectionId,
     upcomingSectionId,
 } from '@core/config/sections';
-import { taskPriorityOrder, taskDeadlineOrder } from '@core/config/sortOrder';
+import { taskDeadlineOrder, taskPriorityOrder } from '@core/config/sortOrder';
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import * as filters from '@core/data/task.filter';
