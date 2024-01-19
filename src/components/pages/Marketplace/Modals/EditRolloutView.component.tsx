@@ -1,3 +1,4 @@
+import {ToggleUI} from '@lib/ui/Toggle';
 import moment from 'moment';
 import React, {
     ChangeEvent,
@@ -68,6 +69,7 @@ export function EditRolloutViewComponent<GroupMember>() {
                 createRef<HTMLInputElement>();
             const staticVersionSelectorVersionNumberInputRef =
                 createRef<HTMLInputElement>();
+            const isEnabledToggleRef = createRef<ToggleUI>();
 
             const [rollout, setRollout] = useState<Rollout<GroupMember>>(
                 props.rollout,
@@ -98,6 +100,7 @@ export function EditRolloutViewComponent<GroupMember>() {
             ] = useState<ExperimentVersionSelectorInput | undefined>(
                 getExperimentVersionSelectorInput(props.rollout),
             );
+            const [isEnabled, setIsEnabled] = useState<boolean>(props.rollout.isEnabled);
 
             function getTimeRangeActivatorInput(rollout: Rollout<GroupMember>) {
                 return rollout.activator.type === 'timeRange'
@@ -158,12 +161,14 @@ export function EditRolloutViewComponent<GroupMember>() {
                         setExperimentVersionSelectorInput(
                             getExperimentVersionSelectorInput(rollout),
                         );
+                        setIsEnabled(rollout.isEnabled);
                         activatorTypeRef.current?.selectOption(
                             rollout.activator.type,
                         );
                         versionSelectorTypeRef.current?.selectOption(
                             rollout.versionSelector.type,
                         );
+                        isEnabledToggleRef.current?.setStatus(rollout.isEnabled);
                     },
                 };
             });
@@ -248,6 +253,10 @@ export function EditRolloutViewComponent<GroupMember>() {
                                 currVersionNumber !== versionNumber,
                         ) ?? [],
                 });
+            };
+
+            const onIsEnabledChange = (isEnabled: boolean) => {
+                setIsEnabled(isEnabled);
             };
 
             const renderActivatorDetailSection = () => {
@@ -464,13 +473,25 @@ export function EditRolloutViewComponent<GroupMember>() {
                             />
                         </div>
                         {renderVersionSelectorDetailSection()}
+                        <div
+                            className={`${styles.Row} ${styles.Inline} ${styles.Toggle}`}
+                        >
+                            <div className={`${styles.Label} ${styles.SameRow}`}>
+                                Enable:
+                            </div>
+                            <ToggleUI
+                                ref={isEnabledToggleRef}
+                                defaultEnable={isEnabled}
+                                onStatusChange={onIsEnabledChange}
+                            />
+                        </div>
                     </div>
                     <div className={styles.Actions}>
                         <div className={styles.SaveAction}>
-                            <ButtonUI label={'Save'} />
+                            <ButtonUI label={'Save'}/>
                         </div>
                         <div className={styles.DeleteAction}>
-                            <ButtonUI label={'Delete'} />
+                            <ButtonUI label={'Delete'}/>
                         </div>
                     </div>
                 </div>
