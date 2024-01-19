@@ -1,8 +1,8 @@
-import React, { Component, KeyboardEvent, MouseEvent, ReactNode } from 'react';
+import React, { Component, ReactNode, RefObject, createRef } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { ItemListUI } from '@lib/ui/ItemList';
 
 import styles from './CreateGroupView.component.module.scss';
 
@@ -12,6 +12,14 @@ const groupTypeOptions: Option[] = [
     { key: 'static', description: 'Static' },
     { key: 'filter', description: 'Filter' },
 ];
+
+interface StaticInput {
+    memberIds: number[];
+}
+
+interface FilterInput {
+    filter: string;
+}
 
 interface Props {
     membersLabel: string;
@@ -24,22 +32,20 @@ interface Props {
 
 interface State {
     selectedGroupType: groupType;
-    groupMemberIds: number[];
+    staticInput?: StaticInput;
+    filterInput?: FilterInput;
 }
 
 export class CreateGroupViewComponent extends Component<Props, State> {
-    private readonly groupNameInputRef: React.RefObject<HTMLInputElement> =
-        React.createRef();
-    private readonly memberIdInputRef: React.RefObject<HTMLInputElement> =
-        React.createRef();
-    private readonly filterInputRef: React.RefObject<HTMLTextAreaElement> =
-        React.createRef();
+    private readonly groupNameInputRef: RefObject<HTMLInputElement> =
+        createRef();
+    private readonly filterInputRef: RefObject<HTMLTextAreaElement> =
+        createRef();
 
     constructor(props: Props) {
         super(props);
         this.state = {
             selectedGroupType: 'static',
-            groupMemberIds: [],
         };
     }
 
@@ -89,34 +95,16 @@ export class CreateGroupViewComponent extends Component<Props, State> {
                     <div className={`${styles.Label} ${styles.NextRow}`}>
                         {this.props.membersLabel}:
                     </div>
-                    <div className={styles.ItemList}>
-                        {this.state.groupMemberIds.map((groupMemberId) => {
-                            return (
-                                <div className={styles.Item}>
-                                    {this.props.renderInlineGroupMember(
-                                        groupMemberId,
-                                    )}
-                                    <div
-                                        className={styles.Remove}
-                                        onClick={this.onRemoveMemberClickHandler(
-                                            groupMemberId,
-                                        )}
-                                    >
-                                        <MaterialIconUI>cancel</MaterialIconUI>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                        <input
-                            ref={this.memberIdInputRef}
-                            type={'text'}
-                            className={styles.Input}
-                            placeholder={`Enter ${this.props.memberLabel} ID`}
-                            autoComplete={'off'}
-                            data-1p-ignore={true}
-                            onKeyDown={this.onMemberIdInputKeydown}
-                        />
-                    </div>
+                    <ItemListUI
+                        items={this.state.staticInput?.memberIds || []}
+                        renderInlineItem={this.props.renderInlineGroupMember}
+                        newItemInputLabel={`Enter ${this.props.memberLabel} ID`}
+                        parseNewItem={this.parseNewGroupMember}
+                        isItemValid={this.props.isValidMember}
+                        isItemDuplicate={this.isDuplicateGroupMember}
+                        onAddItem={this.addNewGroupMember}
+                        onRemoveItem={this.removeGroupMember}
+                    />
                 </div>
                 <div className={styles.Actions}>
                     <div className={styles.CreateAction}>
@@ -140,6 +128,8 @@ export class CreateGroupViewComponent extends Component<Props, State> {
                     <textarea
                         ref={this.filterInputRef}
                         className={`${styles.TextField} ${styles.Filter}`}
+                        value={this.state.filterInput?.filter || ''}
+                        onChange={this.onFilterGroupFilterChange}
                     />
                 </div>
                 <div className={styles.Actions}>
@@ -160,47 +150,53 @@ export class CreateGroupViewComponent extends Component<Props, State> {
         });
     };
 
-    private onMemberIdInputKeydown = (
-        event: KeyboardEvent<HTMLInputElement>,
-    ) => {
-        if (event.code === 'Enter') {
-            let memberId = Number(this.memberIdInputRef.current?.value);
-            if (memberId) {
-                if (this.props.isValidMember?.call(null, memberId)) {
-                    if (!this.state.groupMemberIds.includes(memberId)) {
-                        this.setState({
-                            groupMemberIds: [
-                                ...this.state.groupMemberIds,
-                                memberId,
-                            ],
-                        });
-                    }
-                }
-            }
-
-            this.memberIdInputRef.current!.value = '';
-        }
+    private parseNewGroupMember = (input: string): number => {
+        return Number(input);
     };
 
-    private onRemoveMemberClickHandler = (memberId: number) => {
-        return (event: MouseEvent) => {
-            this.setState({
-                groupMemberIds: this.state.groupMemberIds.filter(
-                    (id) => id !== memberId,
-                ),
-            });
-        };
+    private isDuplicateGroupMember = (memberId: number): boolean => {
+        return this.state.staticInput?.memberIds.includes(memberId) || false;
+    };
+
+    private addNewGroupMember = (memberId: number) => {
+        this.setState({
+            staticInput: {
+                memberIds: [
+                    ...(this.state.staticInput?.memberIds || []),
+                    memberId,
+                ],
+            },
+        });
+    };
+
+    private removeGroupMember = (memberId: number) => {
+        this.setState({
+            staticInput: {
+                memberIds:
+                    this.state.staticInput?.memberIds.filter(
+                        (id) => id !== memberId,
+                    ) || [],
+            },
+        });
+    };
+
+    private onFilterGroupFilterChange = () => {
+        this.setState({
+            filterInput: {
+                filter: this.filterInputRef.current?.value || '',
+            },
+        });
     };
 
     private onCreateStaticGroupClick = () => {
         let groupName = this.groupNameInputRef.current?.value || '';
-        let memberIds = this.state.groupMemberIds;
+        let memberIds = this.state.staticInput?.memberIds || [];
         this.props.onCreateStaticGroup?.call(null, groupName, memberIds);
     };
 
     private onCreateFilterGroupClick = () => {
         let groupName = this.groupNameInputRef.current?.value || '';
-        let filter = this.filterInputRef.current?.value || '';
+        let filter = this.state.filterInput?.filter || '';
         this.props.onCreateFilterGroup?.call(null, groupName, filter);
     };
 }

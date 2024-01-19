@@ -6,7 +6,7 @@ import { Deps } from '@core/dep/deps';
 
 import styles from './ManagedTab.component.module.scss';
 import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
-import { ManageAppModalComponent } from './Modals/ManageAppModal.component';
+import { ManageAppModalComponent } from './Modals/ManageAppModal/ManageAppModal.component';
 import githubIconImg from './assets/github.png';
 import slackIconImg from './assets/slack.png';
 import teamsIconImg from './assets/teams.png';
