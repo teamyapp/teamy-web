@@ -13,10 +13,11 @@ import { CredentialTabComponent } from './CredentialTab.component';
 import { GroupsTabComponent } from './GroupsTab.component';
 import styles from './ManageAppModal.component.module.scss';
 import { RolloutsTabComponent } from './RolloutsTab.component';
+import { TagsTabComponent } from './TagsTab.component';
 import { VersionsTabComponent } from './VersionsTab.component';
 import { appVersions } from './data';
 
-type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts';
+type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts' | 'tags';
 
 interface Tab<Key> {
     name: string;
@@ -40,6 +41,24 @@ const tabs: Tab<TabKey>[] = [
         name: 'Rollouts',
         key: 'rollouts',
     },
+    {
+        name: 'Tags',
+        key: 'tags',
+    },
+];
+
+const tags: string[] = [
+    'developer-tools',
+    'productivity',
+    'social-networking',
+    'utilities',
+    'lifestyle',
+    'photo-video',
+    'music',
+    'finance',
+    'business',
+    'education',
+    'news',
 ];
 
 interface App {
@@ -76,6 +95,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 versions: false,
                 groups: false,
                 rollouts: false,
+                tags: false,
             },
         };
     }
@@ -159,6 +179,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         versions: false,
                         groups: false,
                         rollouts: false,
+                        tags: false,
                     },
                     {
                         [tab.key]: true,
@@ -202,6 +223,14 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 <RolloutsTabComponent
                     isValidVersionNumber={this.isValidVersionNumber}
                     renderInlineVersionNumber={this.renderInlineVersionNumber}
+                />
+            );
+        } else if (this.state.showTabViews['tags']) {
+            return (
+                <TagsTabComponent
+                    tags={tags}
+                    onAddTage={this.onAddTage}
+                    onRemoveTag={this.onRemoveTag}
                 />
             );
         }
@@ -274,5 +303,13 @@ export class ManageAppModalComponent extends Component<Props, State> {
     private onCreateVersionClick = (): number => {
         //TODO: create new version
         return 0;
+    };
+
+    private onAddTage = (tag: string) => {
+        // TODO: add tag
+    };
+
+    private onRemoveTag = (tag: string) => {
+        // TODO: remove tag
     };
 }
