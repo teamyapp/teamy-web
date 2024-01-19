@@ -32,7 +32,6 @@ interface Props {
 
 interface State {
     selectedGroupType: groupType;
-    // groupMemberIds: number[];
     staticInput?: StaticInput;
     filterInput?: FilterInput;
 }
