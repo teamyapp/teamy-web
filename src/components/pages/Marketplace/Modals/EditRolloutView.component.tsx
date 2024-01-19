@@ -1,4 +1,3 @@
-import {ToggleUI} from '@lib/ui/Toggle';
 import moment from 'moment';
 import React, {
     ChangeEvent,
@@ -13,6 +12,7 @@ import React, {
 import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { ItemListUI } from '@lib/ui/ItemList';
+import { ToggleUI } from '@lib/ui/Toggle';
 
 import { Rollout } from '@core/entity/rollout';
 
@@ -100,7 +100,9 @@ export function EditRolloutViewComponent<GroupMember>() {
             ] = useState<ExperimentVersionSelectorInput | undefined>(
                 getExperimentVersionSelectorInput(props.rollout),
             );
-            const [isEnabled, setIsEnabled] = useState<boolean>(props.rollout.isEnabled);
+            const [isEnabled, setIsEnabled] = useState<boolean>(
+                props.rollout.isEnabled,
+            );
 
             function getTimeRangeActivatorInput(rollout: Rollout<GroupMember>) {
                 return rollout.activator.type === 'timeRange'
@@ -168,7 +170,9 @@ export function EditRolloutViewComponent<GroupMember>() {
                         versionSelectorTypeRef.current?.selectOption(
                             rollout.versionSelector.type,
                         );
-                        isEnabledToggleRef.current?.setStatus(rollout.isEnabled);
+                        isEnabledToggleRef.current?.setStatus(
+                            rollout.isEnabled,
+                        );
                     },
                 };
             });
@@ -476,7 +480,9 @@ export function EditRolloutViewComponent<GroupMember>() {
                         <div
                             className={`${styles.Row} ${styles.Inline} ${styles.Toggle}`}
                         >
-                            <div className={`${styles.Label} ${styles.SameRow}`}>
+                            <div
+                                className={`${styles.Label} ${styles.SameRow}`}
+                            >
                                 Enable:
                             </div>
                             <ToggleUI
@@ -488,10 +494,10 @@ export function EditRolloutViewComponent<GroupMember>() {
                     </div>
                     <div className={styles.Actions}>
                         <div className={styles.SaveAction}>
-                            <ButtonUI label={'Save'}/>
+                            <ButtonUI label={'Save'} />
                         </div>
                         <div className={styles.DeleteAction}>
-                            <ButtonUI label={'Delete'}/>
+                            <ButtonUI label={'Delete'} />
                         </div>
                     </div>
                 </div>
