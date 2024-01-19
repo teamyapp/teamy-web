@@ -1,0 +1,211 @@
+.RolloutsTab {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+
+    .Action {
+        padding: 6px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-align: center;
+
+        &:hover {
+            cursor: pointer;
+            opacity: 0.85;
+        }
+
+        &.CreateRollout {
+            border-color: #2e7d32;
+            background-color: #388e3c;
+            color: white;
+        }
+    }
+
+    .RolloutListSection {
+        width: 300px;
+        height: 100%;
+        padding: 30px;
+        box-sizing: border-box;
+
+        .Tabs {
+            display: flex;
+            column-gap: 4px;
+
+            .Tab {
+                padding: 4px 0;
+                border-radius: 4px;
+                font-weight: bold;
+                text-align: center;
+                flex: 1;
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.05);
+                    cursor: pointer;
+                }
+
+                &.Active {
+                    background-color: #2770ff;
+                    color: white;
+                }
+            }
+        }
+
+        .Action {
+            margin-top: 10px;
+        }
+
+        .RolloutList {
+            display: flex;
+            margin-top: 10px;
+            flex-direction: column;
+            row-gap: 4px;
+
+            .Rollout {
+                display: flex;
+                padding: 10px;
+                border-radius: 4px;
+                flex-direction: column;
+                align-items: center;
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.05);
+                    cursor: pointer;
+                }
+
+                .TopRow {
+                    display: flex;
+                    column-gap: 4px;
+
+                    .Attribute {
+                        padding: 2px 10px;
+                        border-radius: 4px;
+                        background-color: #e91e63;
+                        color: white;
+                        font-size: 14px;
+                        font-weight: bold;
+                    }
+                }
+
+                .Name {
+                    margin-top: 4px;
+                    font-weight: bold;
+                }
+
+                .CreatedAt {
+                    margin-top: 4px;
+                    color: #626262;
+                    font-size: 14px;
+                    line-height: 14px;
+                }
+
+                &.Active {
+                    background-color: #2770ff;
+                    color: white;
+
+                    .TopRow {
+                        .Attribute {
+                            background-color: rgba(255, 255, 255, 0.15);
+                        }
+                    }
+
+                    .CreatedAt {
+                        color: white;
+                    }
+                }
+            }
+        }
+    }
+
+    .RolloutDetailSection {
+        display: flex;
+        padding: 20px;
+        background-color: #cfd8dc;
+        flex: 1;
+        justify-content: center;
+        align-items: center;
+
+        .Box {
+            width: 460px;
+            height: 100%;
+            box-sizing: border-box;
+            padding: 20px;
+            border-radius: 6px;
+            background-color: white;
+            overflow-y: auto;
+
+            .Groups {
+                margin-top: 20px;
+
+                .GroupList {
+                    display: flex;
+                    flex-direction: column;
+                    row-gap: 4px;
+
+                    .Group {
+                        display: flex;
+                        padding: 10px;
+                        border-radius: 4px;
+                        background-color: rgba(0, 0, 0, 0.03);
+                        flex-direction: column;
+                        align-items: center;
+
+                        &:hover {
+                            background-color: #2770ff;
+                            cursor: pointer;
+                            color: white;
+
+                            .TopRow {
+                                .Attribute {
+                                    background-color: rgba(255, 255, 255, 0.15);
+                                }
+                            }
+                        }
+
+                        .TopRow {
+                            display: flex;
+                            column-gap: 4px;
+
+                            .Attribute {
+                                padding: 2px 10px;
+                                border-radius: 4px;
+                                background-color: #e91e63;
+                                color: white;
+                                font-size: 14px;
+                                font-weight: bold;
+                            }
+                        }
+
+                        .Name {
+                            margin-top: 4px;
+                            font-size: 14px;
+                            font-weight: bold;
+                        }
+                    }
+                }
+            }
+        }
+
+        .Buttons {
+            display: flex;
+            margin-top: 30px;
+            column-gap: 10px;
+            justify-content: center;
+
+            .Save,
+            .Delete {
+                width: 160px;
+            }
+
+            .Save {
+                --background-color: #388e3c;
+                --border-color: #2e7d32;
+            }
+
+            .Delete {
+                --background-color: #d32f2f;
+                --border-color: #c62828;
+            }
+        }
+    }
+}

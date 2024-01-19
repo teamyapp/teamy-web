@@ -1,5 +1,6 @@
 import moment from 'moment';
 import React, {
+    ChangeEvent,
     ForwardedRef,
     ReactNode,
     createRef,
@@ -65,10 +66,6 @@ export function EditRolloutViewComponent<GroupMember>() {
             const versionSelectorTypeRef = createRef<DropDownList>();
             const timeRangeActivatorStartTimeInputRef =
                 createRef<HTMLInputElement>();
-            const timeRangeActivatorEndTimeInputRef =
-                createRef<HTMLInputElement>();
-            const percentageActivatorPercentageInputRef =
-                createRef<HTMLInputElement>();
             const staticVersionSelectorVersionNumberInputRef =
                 createRef<HTMLInputElement>();
 
@@ -83,6 +80,24 @@ export function EditRolloutViewComponent<GroupMember>() {
             );
             const [versionSelectorType, setVersionSelectorType] =
                 useState<string>(props.rollout.versionSelector.type);
+            const [timeRangeActivatorInput, setTimeRangeActivatorInput] =
+                useState<TimeRangeActivatorInput | undefined>(
+                    getTimeRangeActivatorInput(props.rollout),
+                );
+            const [percentageActivatorInput, setPercentageActivatorInput] =
+                useState<PercentageActivatorInput | undefined>(
+                    getPercentageActivatorInput(props.rollout),
+                );
+            const [staticVersionSelectorInput, setStaticVersionSelectorInput] =
+                useState<StaticVersionSelectorInput | undefined>(
+                    getStaticVersionSelectorInput(props.rollout),
+                );
+            const [
+                experimentVersionSelectorInput,
+                setExperimentVersionSelectorInput,
+            ] = useState<ExperimentVersionSelectorInput | undefined>(
+                getExperimentVersionSelectorInput(props.rollout),
+            );
 
             function getTimeRangeActivatorInput(rollout: Rollout<GroupMember>) {
                 return rollout.activator.type === 'timeRange'
@@ -123,25 +138,6 @@ export function EditRolloutViewComponent<GroupMember>() {
                       }
                     : undefined;
             }
-
-            const [timeRangeActivatorInput, setTimeRangeActivatorInput] =
-                useState<TimeRangeActivatorInput | undefined>(
-                    getTimeRangeActivatorInput(props.rollout),
-                );
-            const [percentageActivatorInput, setPercentageActivatorInput] =
-                useState<PercentageActivatorInput | undefined>(
-                    getPercentageActivatorInput(props.rollout),
-                );
-            const [staticVersionSelectorInput, setStaticVersionSelectorInput] =
-                useState<StaticVersionSelectorInput | undefined>(
-                    getStaticVersionSelectorInput(props.rollout),
-                );
-            const [
-                experimentVersionSelectorInput,
-                setExperimentVersionSelectorInput,
-            ] = useState<ExperimentVersionSelectorInput | undefined>(
-                getExperimentVersionSelectorInput(props.rollout),
-            );
 
             useImperativeHandle(ref, () => {
                 return {
@@ -198,7 +194,7 @@ export function EditRolloutViewComponent<GroupMember>() {
             };
 
             const onTimeRangeActivatorEndTimeChange = (
-                event: React.ChangeEvent<HTMLInputElement>,
+                event: ChangeEvent<HTMLInputElement>,
             ) => {
                 setTimeRangeActivatorInput({
                     ...timeRangeActivatorInput,
@@ -207,7 +203,7 @@ export function EditRolloutViewComponent<GroupMember>() {
             };
 
             const onPercentageActivatorPercentageChange = (
-                event: React.ChangeEvent<HTMLInputElement>,
+                event: ChangeEvent<HTMLInputElement>,
             ) => {
                 setPercentageActivatorInput({
                     percentage: Number(event.target.value),
@@ -215,7 +211,7 @@ export function EditRolloutViewComponent<GroupMember>() {
             };
 
             const onStaticVersionSelectorVersionNumberChange = (
-                event: React.ChangeEvent<HTMLInputElement>,
+                event: ChangeEvent<HTMLInputElement>,
             ) => {
                 setStaticVersionSelectorInput({
                     versionNumber: Number(event.target.value),
@@ -276,7 +272,8 @@ export function EditRolloutViewComponent<GroupMember>() {
                                         type={'text'}
                                         className={styles.TextField}
                                         value={
-                                            timeRangeActivatorInput?.startTime
+                                            timeRangeActivatorInput?.startTime ||
+                                            ''
                                         }
                                         placeholder={'YYYY/MM/DD HH:MM:SS'}
                                         onChange={
@@ -293,10 +290,12 @@ export function EditRolloutViewComponent<GroupMember>() {
                                         End Time:
                                     </div>
                                     <input
-                                        ref={timeRangeActivatorEndTimeInputRef}
                                         type={'text'}
                                         className={styles.TextField}
-                                        value={timeRangeActivatorInput?.endTime}
+                                        value={
+                                            timeRangeActivatorInput?.endTime ||
+                                            ''
+                                        }
                                         placeholder={'YYYY/MM/DD HH:MM:SS'}
                                         onChange={
                                             onTimeRangeActivatorEndTimeChange
@@ -317,13 +316,11 @@ export function EditRolloutViewComponent<GroupMember>() {
                                         Percentage:
                                     </div>
                                     <input
-                                        ref={
-                                            percentageActivatorPercentageInputRef
-                                        }
                                         type={'text'}
                                         className={styles.TextField}
                                         value={
-                                            percentageActivatorInput?.percentage
+                                            percentageActivatorInput?.percentage ||
+                                            ''
                                         }
                                         placeholder={'0-100'}
                                         onChange={
@@ -356,7 +353,8 @@ export function EditRolloutViewComponent<GroupMember>() {
                                         type={'text'}
                                         className={styles.TextField}
                                         value={
-                                            staticVersionSelectorInput?.versionNumber
+                                            staticVersionSelectorInput?.versionNumber ||
+                                            ''
                                         }
                                         onChange={
                                             onStaticVersionSelectorVersionNumberChange
