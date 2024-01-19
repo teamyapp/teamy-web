@@ -24,6 +24,12 @@ export class ToggleUI extends Component<Props, State> {
         return this.state.status;
     }
 
+    setStatus(status: boolean) {
+        this.setState({
+            status,
+        });
+    }
+
     render() {
         return (
             <div
