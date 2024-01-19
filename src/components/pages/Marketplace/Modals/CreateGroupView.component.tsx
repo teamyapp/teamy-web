@@ -46,7 +46,6 @@ export class CreateGroupViewComponent extends Component<Props, State> {
         super(props);
         this.state = {
             selectedGroupType: 'static',
-            // groupMemberIds: [],
         };
     }
 
