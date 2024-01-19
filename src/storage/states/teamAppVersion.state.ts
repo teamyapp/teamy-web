@@ -1,6 +1,3 @@
-
-
-
 export class TeamAppVersionState {
     public constructor(
         public teamId: number,

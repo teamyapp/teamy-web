@@ -111,7 +111,6 @@ export class GraphSource {
         }
 
         const version = app.versions[teamAppVersion.appVersion];
-
         if (!version) {
             return;
         }

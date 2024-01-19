@@ -814,7 +814,7 @@ export function mergeTeam(
 
     remoteTeam.appInstallations?.forEach((appInstallation) => {
         currAppState = mergeAppInstallation(currAppState, appInstallation);
-    })
+    });
 
     if (remoteTeam.invitations) {
         currAppState = replaceTeamInvitations(

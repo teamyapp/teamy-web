@@ -60,6 +60,7 @@ export class AppNode implements App {
         if (!teamAppVersion) {
             return undefined;
         }
+        
         return this.versions.find((version) => version.number === teamAppVersion.appVersion);
     }
 }
