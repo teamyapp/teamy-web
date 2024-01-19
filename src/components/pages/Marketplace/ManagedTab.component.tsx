@@ -33,40 +33,44 @@ export class ManagedTabComponent extends Component<Props> {
         return (
             <>
                 <div className={styles.ItemList}>
-                    {managedApps.map((app) => (
-                        <div className={styles.InlineItem} key={app.id}>
-                            <div className={styles.LeftSection}>
-                                <div className={styles.Icon}>
-                                    <img
-                                        src={
-                                            app.latestVersionForTeam
-                                                ?.iconUrl
-                                        }
-                                    />
+                    {managedApps.map((app) => {
+                        const currentTeamAppVersion = this.graphSource.currentTeamAppVersion(app.id)
+                        if (!currentTeamAppVersion) {
+                            return null;
+                        }
+
+                        return (
+                            <div className={styles.InlineItem} key={app.id}>
+                                <div className={styles.LeftSection}>
+                                    <div className={styles.Icon}>
+                                        <img
+                                            src={currentTeamAppVersion.iconUrl}
+                                        />
+                                    </div>
+                                </div>
+                                <div className={styles.MiddleSection}>
+                                    <div className={styles.Name}>
+                                        {currentTeamAppVersion.appName}
+                                    </div>
+                                </div>
+                                <div className={styles.RightSection}>
+                                    <div
+                                        className={`${styles.Button} ${styles.Manage}`}
+                                        onClick={this.onManageButtonClickHandler(
+                                            app.id,
+                                        )}
+                                    >
+                                        Manage
+                                    </div>
+                                    <div
+                                        className={`${styles.Button}  ${styles.Delete}`}
+                                    >
+                                        Delete
+                                    </div>
                                 </div>
                             </div>
-                            <div className={styles.MiddleSection}>
-                                <div className={styles.Name}>
-                                    {app.latestVersionForTeam?.appName}
-                                </div>
-                            </div>
-                            <div className={styles.RightSection}>
-                                <div
-                                    className={`${styles.Button} ${styles.Manage}`}
-                                    onClick={this.onManageButtonClickHandler(
-                                        app.id,
-                                    )}
-                                >
-                                    Manage
-                                </div>
-                                <div
-                                    className={`${styles.Button}  ${styles.Delete}`}
-                                >
-                                    Delete
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                     <div
                         className={styles.CreateAppButton}
                         onClick={this.onCreateAppClick}

@@ -494,6 +494,7 @@ export function mergeUser(
 export function mergeApp(
     currAppState: AppState,
     remoteApp: RemoteApp,
+    remoteTeamId?: number,
 ): AppState {
     const remoteAppId = toInt(remoteApp.id)!;
     const localOldApp: PluginAppState = currAppState.apps[remoteAppId] || {};
@@ -504,7 +505,6 @@ export function mergeApp(
             remoteApp.totalInstallations || localOldApp.totalInstallations,
         managedByTeamId:
             toInt(remoteApp.managedByTeam?.id) || localOldApp.managedByTeamId,
-        latestVersionNumberForTeam: remoteApp.latestVersionForTeam?.number || localOldApp.latestVersionNumberForTeam,
         secretIds:
             remoteApp.secrets?.map((secret) => toInt(secret.id)!) ||
             localOldApp.secretIds,
@@ -514,6 +514,10 @@ export function mergeApp(
             ) || localOldApp.installationIds,
         versions: localOldApp.versions || {},
     };
+
+    if (remoteApp.latestVersionForTeam && remoteTeamId) {
+        currAppState = mergeTeamAppVersion(currAppState, remoteTeamId, remoteApp.latestVersionForTeam)
+    }
 
     if (remoteApp.managedByTeam) {
         currAppState = mergeTeam(currAppState, remoteApp.managedByTeam);
@@ -573,6 +577,28 @@ export function mergeAppVersion(
             localOldVersion.prices,
     };
 
+    return currAppState;
+}
+
+
+export function mergeTeamAppVersion(
+    currAppState: AppState,
+    teamId: number,
+    version: RemoteAppVersion,
+): AppState {
+    for (let teamAppVersion of currAppState.teamAppVersions) {
+        if (teamAppVersion.teamId === teamId && teamAppVersion.appId === toInt(version.app.id)) {
+            teamAppVersion.appVersion = version.number;
+            return currAppState;
+        }
+    }
+
+    currAppState.teamAppVersions.push({
+        teamId: teamId,
+        appId: toInt(version.app.id)!,
+        appVersion: version.number,
+    });
+    
     return currAppState;
 }
 
@@ -783,7 +809,7 @@ export function mergeTeam(
     });
 
     remoteTeam.managedApps?.forEach((app) => {
-        currAppState = mergeApp(currAppState, app);
+        currAppState = mergeApp(currAppState, app, remoteTeamId);
     });
 
     remoteTeam.appInstallations?.forEach((appInstallation) => {

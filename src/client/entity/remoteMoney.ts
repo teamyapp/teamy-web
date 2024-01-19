@@ -1,4 +1,5 @@
+export type Currency = 'USD';
 export interface RemoteMoney {
     amount: number;
-    currency: string;
+    currency: Currency;
 }

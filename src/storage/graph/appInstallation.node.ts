@@ -25,10 +25,12 @@ export class AppInstallationNode implements AppInstallation {
     }
 
     public get activeAppVersion(): AppVersionNode {
+        debugger
         const appState = this.localStore.getState();
         const app = appState.apps[this.appInstallation.appId];
         const activeAppVersion =
             app.versions[this.appInstallation.appVersionNumber];
+        debugger
         return new AppVersionNode(this.localStore, activeAppVersion!);
     }
 }

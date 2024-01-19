@@ -10,5 +10,4 @@ export interface App {
     installations:  AppInstallation[];
     managedByTeam: Team;
     versions: AppVersion[];
-    latestVersionForTeam?: AppVersion;
 }

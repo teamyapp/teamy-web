@@ -8,7 +8,6 @@ export class PluginAppState {
         public totalInstallations: number,
         public managedByTeamId: number,
         public versions: Record<number, AppVersionState>,
-        public latestVersionNumberForTeam?: number,
     ) {}
 
     public static fromMutationPayload(json: any): PluginAppState {
@@ -25,7 +24,6 @@ export class PluginAppState {
             json.TotalInstallations,
             json.ManagedByTeamID,
             versions,
-            json.LatestVersionForTeamNumber,
         );
     }
 
@@ -42,7 +40,6 @@ export class PluginAppState {
             json.totalInstallations,
             json.managedByTeamId,
             versions,
-            json.latestVersionForTeam,
         );
     }
 }

@@ -51,18 +51,15 @@ export class AppNode implements App {
         });
     }
 
-    public get latestVersionForTeam(): AppVersionNode | undefined {
-        if (this.app.latestVersionNumberForTeam === undefined) {
-            return undefined;
-        }
-
+    public latestVersionForTeam(teamId: number): AppVersionNode | undefined {
         const appState = this.localStore.getState();
-        const app = appState.apps[this.app.id];
-        const latestVersion = app.versions[this.app.latestVersionNumberForTeam];
-        if (!latestVersion) {
+        const teamAppVersion = appState.teamAppVersions.find(
+            (teamAppVersion) =>
+                teamAppVersion.teamId === teamId && teamAppVersion.appId === this.app.id,
+        );
+        if (!teamAppVersion) {
             return undefined;
         }
-
-        return new AppVersionNode(this.localStore, latestVersion);
+        return this.versions.find((version) => version.number === teamAppVersion.appVersion);
     }
 }

@@ -16,6 +16,7 @@ import { UserLinkState } from '@core/storage/states/userLink.state';
 import { TaskLinkState } from './taskLink.state';
 import { AppInstallationState } from './appInstallation.state';
 import { AppSecretState } from './appSecret.state';
+import { TeamAppVersionState } from './teamAppVersion.state';
 
 
 export class AppState {
@@ -38,6 +39,7 @@ export class AppState {
         public sprintParticipants: SprintParticipantState[],
         public teamSelectedSprint: Record<number, number>,
         public taskActivities: TaskActivityState[],
+        public teamAppVersions: TeamAppVersionState[],
         public currUserId?: number,
         public currTeamId?: number,
         public currSprintId?: number,
@@ -67,6 +69,7 @@ export class AppState {
             [],
             [],
             json.teamSelectedSprint || {},
+            [],
             [],
             json.currUserId,
             json.currTeamId,

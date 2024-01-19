@@ -5,6 +5,7 @@ import { TeamNode } from '@core/storage/graph/team.node';
 import { UserNode } from '@core/storage/graph/user.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { AppNode } from './app.node';
+import { AppVersionNode } from './appVersion.node';
 
 export class GraphSource {
     constructor(private localStore: LocalStore) {}
@@ -90,5 +91,31 @@ export class GraphSource {
         if (app) {
             return new AppNode(this.localStore, app);
         }
+    }
+
+    public currentTeamAppVersion(appid: number): AppVersionNode | undefined {
+        const appState = this.localStore.getState();
+        const teamAppVersion = appState.teamAppVersions.find(
+            (teamAppVersion) =>
+                teamAppVersion.teamId === appState.currTeamId &&
+                teamAppVersion.appId === appid,
+        );
+
+        if (!teamAppVersion) {
+            return;
+        }
+
+        const app = appState.apps[appid];
+        if (!app) {
+            return;
+        }
+
+        const version = app.versions[teamAppVersion.appVersion];
+
+        if (!version) {
+            return;
+        }
+
+        return new AppVersionNode(this.localStore, version);
     }
 }
