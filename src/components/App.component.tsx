@@ -68,6 +68,7 @@ import {
 import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
 import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
+import { AppSecretCopiedFeedbackComponent } from './internal/feedbacks/AppSecretCopiedFeedback.component';
 import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/InviationLinkCopiedFeedback.component';
 import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
@@ -385,6 +386,7 @@ export class AppComponent extends Component<Props, State> {
                 <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <TaskUpdatedFeedbackComponent deps={this.props.deps} />
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
+                <AppSecretCopiedFeedbackComponent deps={this.props.deps} />
                 <DynamicFeedbackUI ref={this.dynamicFeedbackRef} />
                 <RequiredActionsModalComponent
                     ref={this.requiredActionsModalRef}

@@ -40,15 +40,11 @@
                 }
             }
 
-            .TextField,
-            .ItemList {
+            .TextField {
                 width: 100%;
                 border-radius: 4px;
                 background-color: #ececec;
                 box-sizing: border-box;
-            }
-
-            .TextField {
                 padding: 6px 10px;
                 border: none;
                 outline: none;
@@ -58,43 +54,6 @@
 
                 &.Filter {
                     height: 200px;
-                }
-            }
-
-            .ItemList {
-                display: flex;
-                padding: 6px;
-                gap: 6px;
-                flex-wrap: wrap;
-
-                .Item {
-                    display: flex;
-                    padding: 6px;
-                    column-gap: 10px;
-                    border-radius: 4px;
-                    background-color: #3d3d3d;
-                    color: white;
-                    align-items: center;
-
-                    .Remove {
-                        opacity: 0.5;
-                        --icon-size: 24px;
-                        --icon-color: white;
-
-                        &:hover {
-                            cursor: pointer;
-                            opacity: 1;
-                        }
-                    }
-                }
-
-                .Input {
-                    padding: 4px 0;
-                    border: none;
-                    outline: none;
-                    background-color: transparent;
-                    font-size: 16px;
-                    flex: 1;
                 }
             }
         }

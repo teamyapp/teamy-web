@@ -4,7 +4,8 @@ export type Feedback =
     | TaskUpdatedFeedback
     | UserProfileUpdatedFeedback
     | TeamProfileUpdatedFeedback
-    | InvitationLinkCopiedFeedback;
+    | InvitationLinkCopiedFeedback
+    | AppSecretCopiedFeedback;
 
 export interface TaskUpdatedFeedback {
     type: 'TaskUpdated';
@@ -22,4 +23,9 @@ export interface TeamProfileUpdatedFeedback {
 export interface InvitationLinkCopiedFeedback {
     type: 'InvitationLinkCopied';
     invitation: Invitation;
+}
+
+export interface AppSecretCopiedFeedback {
+    type: 'AppSecretCopied';
+    appSecretId: number;
 }

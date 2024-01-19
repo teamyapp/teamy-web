@@ -227,7 +227,6 @@
                         height: 100%;
                         box-sizing: border-box;
                         flex-direction: column;
-                        box-sizing: border-box;
                         align-items: center;
                         justify-content: center;
 
@@ -710,31 +709,47 @@
             }
         }
 
+        .TextField {
+            width: 100%;
+            border-radius: 4px;
+            box-sizing: border-box;
+            padding: 6px 10px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+            letter-spacing: 1px;
+            resize: none;
+
+            &:hover,
+            &:focus {
+                background-color: #eaeaea;
+            }
+        }
+
         .RowAction {
-            border-radius: 50%;
+            border-radius: 4px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 38px;
+            height: 38px;
+            --icon-size: 24px;
 
             &:hover {
+                background-color: rgba(0, 0, 0, 0.07);
                 cursor: pointer;
-                opacity: 0.8;
             }
 
-            &.Edit {
-                display: flex;
-                width: 26px;
-                height: 26px;
-                margin: 2px;
-                background-color: #1976d2;
-                justify-content: center;
-                align-items: center;
-                --icon-color: white;
-                --icon-size: 16px;
+            &.Copy {
+                --icon-color: #1976d2;
+            }
+
+            &.Save {
+                --icon-color: #009304;
             }
 
             &.Delete {
-                width: 34px;
-                height: 34px;
                 --icon-color: #ff0000;
-                --icon-size: 30px;
             }
         }
 
