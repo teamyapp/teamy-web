@@ -25,7 +25,6 @@ export class AppInstallationNode implements AppInstallation {
     }
 
     public get activeAppVersion(): AppVersionNode {
-        debugger
         const appState = this.localStore.getState();
         const app = appState.apps[this.appInstallation.appId];
         const activeAppVersion =
