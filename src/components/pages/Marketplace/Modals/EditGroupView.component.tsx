@@ -1,15 +1,9 @@
 import moment from 'moment';
-import React, {
-    ChangeEvent,
-    Component,
-    KeyboardEvent,
-    MouseEvent,
-    ReactNode,
-} from 'react';
+import React, { ChangeEvent, Component, ReactNode } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { ItemListUI } from '@lib/ui/ItemList';
 
 import { Entity } from '@core/entity/entity';
 import { Group } from '@core/entity/group';
@@ -129,39 +123,16 @@ export class EditGroupViewComponent<
                         <div className={`${styles.Label} ${styles.NextRow}`}>
                             Rollouts:
                         </div>
-                        <div className={styles.ItemList}>
-                            {this.state.rolloutIds.map((rolloutId) => {
-                                return (
-                                    <div
-                                        key={rolloutId}
-                                        className={styles.Item}
-                                    >
-                                        {this.props.renderInlineRollout(
-                                            rolloutId,
-                                        )}
-                                        <div
-                                            className={styles.Remove}
-                                            onClick={this.onRemoveRolloutClickHandler(
-                                                rolloutId,
-                                            )}
-                                        >
-                                            <MaterialIconUI>
-                                                cancel
-                                            </MaterialIconUI>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            <input
-                                ref={this.rolloutIdInputRef}
-                                type={'text'}
-                                className={styles.Input}
-                                placeholder={`Enter rollout ID`}
-                                autoComplete={'off'}
-                                data-1p-ignore={true}
-                                onKeyDown={this.onRolloutIdInputKeydown}
-                            />
-                        </div>
+                        <ItemListUI
+                            items={this.state.rolloutIds}
+                            renderInlineItem={this.props.renderInlineRollout}
+                            newItemInputLabel={'Enter rollout ID'}
+                            parseNewItem={this.parseNewRollout}
+                            isItemDuplicate={this.isRolloutDuplicate}
+                            isItemValid={this.isRolloutValid}
+                            onAddItem={this.onAddRollout}
+                            onRemoveItem={this.onRemoveRollout}
+                        />
                     </div>
                 </div>
                 <div className={styles.Actions}>
@@ -192,41 +163,16 @@ export class EditGroupViewComponent<
                     <div className={`${styles.Label} ${styles.NextRow}`}>
                         {this.props.membersLabel}:
                     </div>
-                    <div className={styles.ItemList}>
-                        {this.state.staticGroupInput?.memberIds.map(
-                            (groupMemberId) => {
-                                return (
-                                    <div
-                                        key={groupMemberId}
-                                        className={styles.Item}
-                                    >
-                                        {this.props.renderInlineGroupMember(
-                                            groupMemberId,
-                                        )}
-                                        <div
-                                            className={styles.Remove}
-                                            onClick={this.onRemoveMemberClickHandler(
-                                                groupMemberId,
-                                            )}
-                                        >
-                                            <MaterialIconUI>
-                                                cancel
-                                            </MaterialIconUI>
-                                        </div>
-                                    </div>
-                                );
-                            },
-                        )}
-                        <input
-                            ref={this.memberIdInputRef}
-                            type={'text'}
-                            className={styles.Input}
-                            placeholder={`Enter ${this.props.memberLabel} ID`}
-                            autoComplete={'off'}
-                            data-1p-ignore={true}
-                            onKeyDown={this.onMemberIdInputKeydown}
-                        />
-                    </div>
+                    <ItemListUI
+                        items={this.state.staticGroupInput?.memberIds || []}
+                        renderInlineItem={this.props.renderInlineGroupMember}
+                        newItemInputLabel={`Enter new ${this.props.membersLabel} ID`}
+                        parseNewItem={this.parseNewMember}
+                        isItemDuplicate={this.isMemberDuplicate}
+                        isItemValid={this.props.isValidMember}
+                        onAddItem={this.onAddMember}
+                        onRemoveItem={this.onRemoveMember}
+                    />
                 </div>
             </div>
         );
@@ -269,46 +215,57 @@ export class EditGroupViewComponent<
         });
     };
 
-    private onMemberIdInputKeydown = (
-        event: KeyboardEvent<HTMLInputElement>,
-    ) => {
-        if (event.code === 'Enter') {
-            let memberId = Number(this.memberIdInputRef.current?.value);
-            if (memberId) {
-                if (this.props.isValidMember?.call(null, memberId)) {
-                    if (
-                        !this.state.staticGroupInput!.memberIds.includes(
-                            memberId,
-                        )
-                    ) {
-                        // TODO: update group at backend
-                        this.setState({
-                            staticGroupInput: {
-                                memberIds: [
-                                    ...this.state.staticGroupInput!.memberIds,
-                                    memberId,
-                                ],
-                            },
-                        });
-                    }
-                }
-            }
-
-            this.memberIdInputRef.current!.value = '';
-        }
+    private parseNewRollout = (rolloutId: string): number => {
+        return Number(rolloutId);
     };
 
-    private onRemoveMemberClickHandler = (memberId: number) => {
-        return (event: MouseEvent) => {
-            // TODO: update group at backend
-            this.setState({
-                staticGroupInput: {
-                    memberIds: this.state.staticGroupInput!.memberIds.filter(
-                        (id) => id !== memberId,
-                    ),
-                },
-            });
-        };
+    private isRolloutDuplicate = (rolloutId: number): boolean => {
+        return this.state.rolloutIds.includes(rolloutId);
+    };
+
+    private isRolloutValid = (rolloutId: number): boolean => {
+        return this.props.isValidRollout?.call(null, rolloutId) || false;
+    };
+
+    private onAddRollout = (rolloutId: number) => {
+        this.setState({
+            rolloutIds: [...this.state.rolloutIds, rolloutId],
+        });
+    };
+
+    private onRemoveRollout = (rolloutId: number) => {
+        this.setState({
+            rolloutIds: this.state.rolloutIds.filter((id) => id !== rolloutId),
+        });
+    };
+
+    private parseNewMember = (memberId: string): number => {
+        return Number(memberId);
+    };
+
+    private isMemberDuplicate = (memberId: number): boolean => {
+        return this.state.staticGroupInput!.memberIds.includes(memberId);
+    };
+
+    private onAddMember = (memberId: number) => {
+        this.setState({
+            staticGroupInput: {
+                memberIds: [
+                    ...this.state.staticGroupInput!.memberIds,
+                    memberId,
+                ],
+            },
+        });
+    };
+
+    private onRemoveMember = (memberId: number) => {
+        this.setState({
+            staticGroupInput: {
+                memberIds: this.state.staticGroupInput!.memberIds.filter(
+                    (id) => id !== memberId,
+                ),
+            },
+        });
     };
 
     toStaticGroupInput(group: Group<GroupMember>): StaticGroupInput {
@@ -347,35 +304,5 @@ export class EditGroupViewComponent<
                 filter: event.target.value,
             },
         });
-    };
-
-    private onRolloutIdInputKeydown = (
-        event: KeyboardEvent<HTMLInputElement>,
-    ) => {
-        if (event.code === 'Enter') {
-            let rolloutId = Number(this.rolloutIdInputRef.current?.value);
-            if (rolloutId) {
-                if (this.props.isValidRollout?.call(null, rolloutId)) {
-                    if (!this.state.rolloutIds.includes(rolloutId)) {
-                        // TODO: update rollout at backend
-                        this.setState({
-                            rolloutIds: [...this.state.rolloutIds, rolloutId],
-                        });
-                    }
-                }
-            }
-
-            this.rolloutIdInputRef.current!.value = '';
-        }
-    };
-
-    private onRemoveRolloutClickHandler = (rolloutId: number) => {
-        return (event: MouseEvent) => {
-            this.setState({
-                rolloutIds: this.state.rolloutIds.filter(
-                    (id) => id !== rolloutId,
-                ),
-            });
-        };
     };
 }

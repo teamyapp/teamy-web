@@ -5,6 +5,7 @@ import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { PubSub } from '@lib/pubSub/pubSub';
 import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -13,6 +14,7 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
+import { Feedback } from '@core/entity/feedback';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/storage/graph/graphSource';
@@ -48,6 +50,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
+    private readonly feedbackPubSub: PubSub<Feedback>;
     private readonly relativeLayout: RelativeLayout;
     private getBoundingClientRect?: () => DOMRect;
     private readonly modalRef = createRef<ModalUI>();
@@ -63,6 +66,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
+        this.feedbackPubSub = props.deps.feedbackPubSub;
         this.relativeLayout = props.deps.relativeLayout;
         this.state = {
             heightWithMargin: 0,
@@ -372,7 +376,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                 this.state.task.id,
                 this.getUpdatedTaskInput(),
             );
-            await this.props.deps.feedbackPubSub.publish({
+            await this.feedbackPubSub.publish({
                 type: 'TaskUpdated',
                 taskId: this.state.task.id,
             });

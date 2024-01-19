@@ -1,7 +1,8 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import React, { Component, ReactNode, createRef } from 'react';
+import React, { ChangeEvent, Component, ReactNode, createRef } from 'react';
 
+import { PubSub } from '@lib/pubSub/pubSub';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
@@ -9,17 +10,9 @@ import { ModalUI } from '@lib/ui/Modal';
 import { Deps } from '@core/dep/deps';
 import { AppSecret } from '@core/entity/appSecret';
 import { AppVersion } from '@core/entity/appVersion';
+import { Feedback } from '@core/entity/feedback';
 import { Group } from '@core/entity/group';
-import {
-    Activator,
-    ExperimentVersionSelector,
-    PercentageActivator,
-    Rollout,
-    StaticActivator,
-    StaticVersionSelector,
-    TimeRangeActivator,
-    VersionSelector,
-} from '@core/entity/rollout';
+import { Rollout } from '@core/entity/rollout';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { GraphSource } from '@core/storage/graph/graphSource';
@@ -431,6 +424,10 @@ type AppPackageStatus = 'selecting' | 'uploading' | 'processing' | 'ready';
 const EditUserGroupRolloutViewComponent = EditRolloutViewComponent<User>();
 const EditTeamGroupRolloutViewComponent = EditRolloutViewComponent<Team>();
 
+interface ApiSecretInput {
+    name: string;
+}
+
 interface Props {
     deps: Deps;
 }
@@ -446,6 +443,7 @@ interface State {
     showGroupTabViews: Record<GroupTabKey, boolean>;
     showRolloutGroupTabViews: Record<RolloutGroupTabKey, boolean>;
     appPackageStatus: AppPackageStatus;
+    apiSecretInputs: Record<number, ApiSecretInput>;
 }
 
 export class ManageAppModalComponent extends Component<Props, State> {
@@ -468,11 +466,13 @@ export class ManageAppModalComponent extends Component<Props, State> {
         createRef<EditRolloutViewComponentHandle<Team>>();
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
+    private readonly feedbackPubSub: PubSub<Feedback>;
 
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
+        this.feedbackPubSub = props.deps.feedbackPubSub;
         this.state = {
             showTabViews: {
                 credentials: true,
@@ -489,6 +489,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 teams: false,
             },
             appPackageStatus: 'processing',
+            apiSecretInputs: {},
         };
     }
 
@@ -564,9 +565,19 @@ export class ManageAppModalComponent extends Component<Props, State> {
     }
 
     open(appId: number) {
+        const app = apps[appId];
+        const apiSecretInputs: Record<number, ApiSecretInput> = {};
+        appSecrets.forEach((secret) => {
+            if (secret.app.id == appId) {
+                apiSecretInputs[secret.id] = {
+                    name: secret.name,
+                };
+            }
+        });
         this.setState(
             {
-                app: apps[appId],
+                app: app,
+                apiSecretInputs: apiSecretInputs,
             },
             () => {
                 this.modalRef.current?.open();
@@ -649,6 +660,9 @@ export class ManageAppModalComponent extends Component<Props, State> {
                     <table className={`${styles.Table} ${styles.Secret}`}>
                         <thead>
                             <tr>
+                                <th className={`${styles.Cell} ${styles.Id}`}>
+                                    ID
+                                </th>
                                 <th className={`${styles.Cell} ${styles.Name}`}>
                                     Name
                                 </th>
@@ -664,10 +678,22 @@ export class ManageAppModalComponent extends Component<Props, State> {
                                     key={secret.id}
                                     className={styles.SecretRow}
                                 >
+                                    <td>{secret.id}</td>
                                     <td
                                         className={`${styles.Cell} ${styles.Name}`}
                                     >
-                                        {secret.name}
+                                        <input
+                                            type={'text'}
+                                            className={styles.TextField}
+                                            value={
+                                                this.state.apiSecretInputs[
+                                                    secret.id
+                                                ].name
+                                            }
+                                            onChange={this.onApiSecretNameChangeHandler(
+                                                secret.id,
+                                            )}
+                                        />
                                     </td>
                                     <td>{moment(secret.addedAt).fromNow()}</td>
                                     <td>
@@ -687,7 +713,34 @@ export class ManageAppModalComponent extends Component<Props, State> {
                                         className={`${styles.Cell} ${styles.Actions}`}
                                     >
                                         <div
+                                            className={`${styles.RowAction} ${styles.Copy}`}
+                                            onClick={this.onCopySecretClickHandler(
+                                                secret.id,
+                                            )}
+                                        >
+                                            <MaterialIconUI
+                                                iconStyle={'outlined'}
+                                            >
+                                                content_copy
+                                            </MaterialIconUI>
+                                        </div>
+                                        <div
+                                            className={`${styles.RowAction} ${styles.Save}`}
+                                            onClick={this.onSaveSecretClickHandler(
+                                                secret.id,
+                                            )}
+                                        >
+                                            <MaterialIconUI
+                                                iconStyle={'outlined'}
+                                            >
+                                                save
+                                            </MaterialIconUI>
+                                        </div>
+                                        <div
                                             className={`${styles.RowAction} ${styles.Delete}`}
+                                            onClick={this.onDeleteSecretClickHandler(
+                                                secret.id,
+                                            )}
                                         >
                                             <MaterialIconUI
                                                 iconStyle={'outlined'}
@@ -1114,384 +1167,6 @@ export class ManageAppModalComponent extends Component<Props, State> {
         }
     }
 
-    private renderUserRollout(): ReactNode {
-        return (
-            this.state.selectedUserGroupRollout && (
-                <div className={`${styles.Box} ${styles.Group}`}>
-                    <div className={styles.RolloutInfo}>
-                        {this.renderRolloutInfo(
-                            this.state.selectedUserGroupRollout,
-                        )}
-                    </div>
-                    <div className={styles.Groups}>
-                        <div className={`${styles.Label} ${styles.NextRow}`}>
-                            User Groups:
-                        </div>
-                        <div className={styles.GroupList}>
-                            {this.state.selectedUserGroupRollout.groups.map(
-                                (group) => (
-                                    <div className={styles.Group}>
-                                        <div className={styles.TopRow}>
-                                            <div
-                                                className={`${styles.Attribute}`}
-                                            >
-                                                {group.id}
-                                            </div>
-                                        </div>
-                                        <div className={styles.Name}>
-                                            {group.name}
-                                        </div>
-                                    </div>
-                                ),
-                            )}
-                        </div>
-                    </div>
-                    <div className={styles.Buttons}>
-                        <div className={styles.Delete}>
-                            <ButtonUI label={'Delete'} />
-                        </div>
-                    </div>
-                </div>
-            )
-        );
-    }
-
-    private renderTeamRollout(): ReactNode {
-        return (
-            this.state.selectedTeamGroupRollout && (
-                <div className={`${styles.Box} ${styles.Group}`}>
-                    <div className={styles.RolloutInfo}>
-                        {this.renderRolloutInfo(
-                            this.state.selectedTeamGroupRollout,
-                        )}
-                    </div>
-                    <div className={styles.Groups}>
-                        <div className={`${styles.Label} ${styles.NextRow}`}>
-                            Team Groups:
-                        </div>
-                        <div className={styles.GroupList}>
-                            {this.state.selectedTeamGroupRollout.groups.map(
-                                (group) => (
-                                    <div className={styles.Group}>
-                                        <div className={styles.TopRow}>
-                                            <div
-                                                className={`${styles.Attribute}`}
-                                            >
-                                                {group.id}
-                                            </div>
-                                        </div>
-                                        <div className={styles.Name}>
-                                            {group.name}
-                                        </div>
-                                    </div>
-                                ),
-                            )}
-                        </div>
-                    </div>
-                    <div className={styles.Buttons}>
-                        <div className={styles.Delete}>
-                            <ButtonUI label={'Delete'} />
-                        </div>
-                    </div>
-                </div>
-            )
-        );
-    }
-
-    private renderRolloutInfo<Group>(rollout: Rollout<Group>): ReactNode {
-        return (
-            <>
-                <div className={`${styles.Row} ${styles.Id}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        ID:
-                    </span>
-                    {rollout.id}
-                </div>
-                <div className={`${styles.Row} ${styles.Name}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Name:
-                    </span>
-                    {rollout.name}
-                </div>
-                <div className={`${styles.Row} ${styles.IsEnabled}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Is Enabled:
-                    </span>
-                    {rollout.isEnabled ? 'Yes' : 'No'}
-                </div>
-                <div className={styles.Activator}>
-                    <div className={`${styles.Label} ${styles.NextRow}`}>
-                        Activator:
-                    </div>
-                    <div className={styles.Detail}>
-                        {this.renderActivatorInfo(rollout.activator)}
-                    </div>
-                </div>
-                <div className={styles.VersionSelector}>
-                    <div className={`${styles.Label} ${styles.NextRow}`}>
-                        VersionSelector:
-                    </div>
-                    <div className={styles.Detail}>
-                        {this.renderVersionSelectorInfo(
-                            rollout.versionSelector,
-                        )}
-                    </div>
-                </div>
-                <div className={styles.CreatedAt}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Created at:
-                    </span>
-                    {moment(rollout.createdAt).fromNow()}
-                </div>
-                <div className={styles.UpdatedAt}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Updated at:
-                    </span>
-                    {rollout.updatedAt
-                        ? moment(rollout.updatedAt).fromNow()
-                        : 'Never'}
-                </div>
-            </>
-        );
-    }
-
-    private renderActivatorInfo(activator: Activator): ReactNode {
-        switch (activator.type) {
-            case 'static':
-                return this.renderStaticActivatorInfo(activator);
-            case 'timeRange':
-                return this.renderTimeRangeActivatorInfo(activator);
-            case 'percentage':
-                return this.renderPercentageActivatorInfo(activator);
-        }
-    }
-
-    private renderVersionSelectorInfo(
-        versionSelector: VersionSelector,
-    ): ReactNode {
-        switch (versionSelector.type) {
-            case 'static':
-                return this.renderStaticVersionSelectorInfo(versionSelector);
-            case 'experiment':
-                return this.renderExperimentVersionSelectorInfo(
-                    versionSelector,
-                );
-        }
-    }
-
-    private renderStaticActivatorInfo(activator: StaticActivator): ReactNode {
-        return (
-            <>
-                <div className={`${styles.Row} ${styles.Id}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        ID:
-                    </span>
-                    {activator.id}
-                </div>
-                <div className={`${styles.Row} ${styles.Type}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Type:
-                    </span>
-                    {activator.type}
-                </div>
-                <div className={`${styles.Row} ${styles.CreatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Created at:
-                    </span>
-                    {moment(activator.createdAt).fromNow()}
-                </div>
-                <div className={`${styles.Row} ${styles.UpdatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Updated at:
-                    </span>
-                    {activator.updatedAt
-                        ? moment(activator.updatedAt).fromNow()
-                        : 'Never'}
-                </div>
-            </>
-        );
-    }
-
-    private renderTimeRangeActivatorInfo(
-        activator: TimeRangeActivator,
-    ): ReactNode {
-        return (
-            <>
-                <div className={`${styles.Row} ${styles.Id}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        ID:
-                    </span>
-                    {activator.id}
-                </div>
-                <div className={`${styles.Row} ${styles.Type}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Type:
-                    </span>
-                    {activator.type}
-                </div>
-                <div className={`${styles.Row} ${styles.StartAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Start at:
-                    </span>
-                    {activator.startAt
-                        ? moment(activator.startAt).format('l LT')
-                        : 'Now'}
-                </div>
-                <div className={`${styles.Row} ${styles.EndAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        End at:
-                    </span>
-                    {activator.endAt
-                        ? moment(activator.endAt).format('l LT')
-                        : 'Never'}
-                </div>
-                <div className={`${styles.Row} ${styles.CreatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Created at:
-                    </span>
-                    {moment(activator.createdAt).fromNow()}
-                </div>
-                <div className={`${styles.Row} ${styles.UpdatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Updated at:
-                    </span>
-                    {activator.updatedAt
-                        ? moment(activator.updatedAt).fromNow()
-                        : 'Never'}
-                </div>
-            </>
-        );
-    }
-
-    private renderPercentageActivatorInfo(
-        activator: PercentageActivator,
-    ): ReactNode {
-        return (
-            <>
-                <div className={`${styles.Row} ${styles.Id}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        ID:
-                    </span>
-                    {activator.id}
-                </div>
-                <div className={`${styles.Row} ${styles.Type}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Type:
-                    </span>
-                    {activator.type}
-                </div>
-                <div className={`${styles.Row} ${styles.Percentage}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Percentage:
-                    </span>
-                    {activator.percentage}%
-                </div>
-                <div className={`${styles.Row} ${styles.CreatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Created at:
-                    </span>
-                    {moment(activator.createdAt).fromNow()}
-                </div>
-                <div className={`${styles.Row} ${styles.UpdatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Updated at:
-                    </span>
-                    {activator.updatedAt
-                        ? moment(activator.updatedAt).fromNow()
-                        : 'Never'}
-                </div>
-            </>
-        );
-    }
-
-    private renderStaticVersionSelectorInfo(
-        versionSelector: StaticVersionSelector,
-    ): ReactNode {
-        return (
-            <>
-                <div className={`${styles.Row} ${styles.Id}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        ID:
-                    </span>
-                    {versionSelector.id}
-                </div>
-                <div className={`${styles.Row} ${styles.Type}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Type:
-                    </span>
-                    {versionSelector.type}
-                </div>
-                <div className={`${styles.Row} ${styles.Version}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        App version:
-                    </span>
-                    <span className={styles.Value}>
-                        {versionSelector.versionNumber}
-                    </span>
-                </div>
-                <div className={`${styles.Row} ${styles.CreatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Created at:
-                    </span>
-                    {moment(versionSelector.createdAt).fromNow()}
-                </div>
-                <div className={`${styles.Row} ${styles.UpdatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Updated at:
-                    </span>
-                    {versionSelector.updatedAt
-                        ? moment(versionSelector.updatedAt).fromNow()
-                        : 'Never'}
-                </div>
-            </>
-        );
-    }
-
-    private renderExperimentVersionSelectorInfo(
-        versionSelector: ExperimentVersionSelector,
-    ): ReactNode {
-        return (
-            <>
-                <div className={`${styles.Row} ${styles.Id}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        ID:
-                    </span>
-                    {versionSelector.id}
-                </div>
-                <div className={`${styles.Row} ${styles.Type}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Type:
-                    </span>
-                    {versionSelector.type}
-                </div>
-                <div className={`${styles.Row} ${styles.Versions}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        App versions:
-                    </span>
-                    <div className={styles.Values}>
-                        {versionSelector.versionNumbers.map((versionNumber) => (
-                            <div className={styles.Value}>{versionNumber}</div>
-                        ))}
-                    </div>
-                </div>
-                <div className={`${styles.Row} ${styles.CreatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Created at:
-                    </span>
-                    {moment(versionSelector.createdAt).fromNow()}
-                </div>
-                <div className={`${styles.Row} ${styles.UpdatedAt}`}>
-                    <span className={`${styles.Label} ${styles.SameRow}`}>
-                        Updated at:
-                    </span>
-                    {versionSelector.updatedAt
-                        ? moment(versionSelector.updatedAt).fromNow()
-                        : 'Never'}
-                </div>
-            </>
-        );
-    }
-
     private renderInlineRollout<Group>(
         rollout: Rollout<Group>,
         onInlineRolloutClickHandler: (rollout: Rollout<Group>) => () => void,
@@ -1702,6 +1377,18 @@ export class ManageAppModalComponent extends Component<Props, State> {
         };
     };
 
+    private onApiSecretNameChangeHandler = (apiSecretId: number) => {
+        return (event: ChangeEvent<HTMLInputElement>) => {
+            this.setState({
+                apiSecretInputs: Object.assign({}, this.state.apiSecretInputs, {
+                    [apiSecretId]: {
+                        name: event.target.value,
+                    },
+                }),
+            });
+        };
+    };
+
     private onCreateVersionClick = async () => {
         if (this.state.app) {
             let versionNumber = await this.stateSyncer.createAppVersion(
@@ -1725,5 +1412,27 @@ export class ManageAppModalComponent extends Component<Props, State> {
 
     private onCreateTeamRolloutClick = () => {
         this.createTeamRolloutModalRef.current?.open();
+    };
+
+    private onCopySecretClickHandler = (appSecretId: number) => {
+        return async () => {
+            // TODO: copy secret
+            await this.feedbackPubSub.publish({
+                type: 'AppSecretCopied',
+                appSecretId: appSecretId,
+            });
+        };
+    };
+
+    private onSaveSecretClickHandler = (apiSecretId: number) => {
+        return async () => {
+            // TODO: save secret
+        };
+    };
+
+    private onDeleteSecretClickHandler = (apiSecretId: number) => {
+        return async () => {
+            // TODO: delete secret
+        };
     };
 }

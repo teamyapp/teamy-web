@@ -10,7 +10,7 @@ import React, {
 
 import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { ItemListUI } from '@lib/ui/ItemList';
 
 import { Rollout } from '@core/entity/rollout';
 
@@ -61,7 +61,6 @@ export function EditRolloutViewComponent<GroupMember>() {
             ref: ForwardedRef<EditRolloutViewComponentHandle<GroupMember>>,
         ) => {
             const rolloutNameInputRef = createRef<HTMLInputElement>();
-            const versionNumberInputRef = createRef<HTMLInputElement>();
             const activatorTypeRef = createRef<DropDownList>();
             const versionSelectorTypeRef = createRef<DropDownList>();
             const timeRangeActivatorStartTimeInputRef =
@@ -223,52 +222,36 @@ export function EditRolloutViewComponent<GroupMember>() {
                 });
             };
 
-            const onRemoveVersionNumberClickHandler = (
-                versionNumber: number,
-            ) => {
-                return () => {
-                    setExperimentVersionSelectorInput({
-                        versionNumbers:
-                            experimentVersionSelectorInput?.versionNumbers.filter(
-                                (n) => n !== versionNumber,
-                            ) ?? [],
-                    });
-                };
+            const parseNewVersionNumber = (input: string) => {
+                return Number(input);
             };
 
-            const onVersionNumberInputKeydown = (
-                event: React.KeyboardEvent<HTMLInputElement>,
-            ) => {
-                if (event.key === 'Enter') {
-                    const versionNumber = Number(
-                        versionNumberInputRef.current?.value,
-                    );
-                    if (versionNumber) {
-                        if (
-                            props.isValidVersionNumber?.call(
-                                null,
-                                versionNumber,
-                            )
-                        ) {
-                            if (
-                                !experimentVersionSelectorInput?.versionNumbers.includes(
-                                    versionNumber,
-                                )
-                            ) {
-                                // TODO: update rollout at backend
-                                setExperimentVersionSelectorInput({
-                                    versionNumbers: [
-                                        ...(experimentVersionSelectorInput?.versionNumbers ??
-                                            []),
-                                        versionNumber,
-                                    ],
-                                });
-                            }
-                        }
-                    }
+            const isVersionNumberDuplicate = (versionNumber: number) => {
+                return (
+                    experimentVersionSelectorInput?.versionNumbers.includes(
+                        versionNumber,
+                    ) || false
+                );
+            };
 
-                    versionNumberInputRef.current!.value = '';
-                }
+            const onAddVersionNumber = (versionNumber: number) => {
+                setExperimentVersionSelectorInput({
+                    versionNumbers: [
+                        ...(experimentVersionSelectorInput?.versionNumbers ??
+                            []),
+                        versionNumber,
+                    ],
+                });
+            };
+
+            const onRemoveVersionNumber = (versionNumber: number) => {
+                setExperimentVersionSelectorInput({
+                    versionNumbers:
+                        experimentVersionSelectorInput?.versionNumbers.filter(
+                            (currVersionNumber) =>
+                                currVersionNumber !== versionNumber,
+                        ) ?? [],
+                });
             };
 
             const renderActivatorDetailSection = () => {
@@ -391,45 +374,25 @@ export function EditRolloutViewComponent<GroupMember>() {
                                     >
                                         Version Numbers:
                                     </div>
-                                    <div className={styles.ItemList}>
-                                        {experimentVersionSelectorInput?.versionNumbers.map(
-                                            (versionNumber) => {
-                                                return (
-                                                    <div
-                                                        key={versionNumber}
-                                                        className={styles.Item}
-                                                    >
-                                                        {props.renderInlineVersionNumber(
-                                                            versionNumber,
-                                                        )}
-                                                        <div
-                                                            className={
-                                                                styles.Remove
-                                                            }
-                                                            onClick={onRemoveVersionNumberClickHandler(
-                                                                versionNumber,
-                                                            )}
-                                                        >
-                                                            <MaterialIconUI>
-                                                                cancel
-                                                            </MaterialIconUI>
-                                                        </div>
-                                                    </div>
-                                                );
-                                            },
-                                        )}
-                                        <input
-                                            ref={versionNumberInputRef}
-                                            type={'text'}
-                                            className={styles.Input}
-                                            placeholder={`Enter version number`}
-                                            autoComplete={'off'}
-                                            data-1p-ignore={true}
-                                            onKeyDown={
-                                                onVersionNumberInputKeydown
-                                            }
-                                        />
-                                    </div>
+                                    <ItemListUI
+                                        items={
+                                            experimentVersionSelectorInput?.versionNumbers ||
+                                            []
+                                        }
+                                        renderInlineItem={
+                                            props.renderInlineVersionNumber
+                                        }
+                                        newItemInputLabel={
+                                            'Enter version number'
+                                        }
+                                        parseNewItem={parseNewVersionNumber}
+                                        isItemValid={props.isValidVersionNumber}
+                                        isItemDuplicate={
+                                            isVersionNumberDuplicate
+                                        }
+                                        onAddItem={onAddVersionNumber}
+                                        onRemoveItem={onRemoveVersionNumber}
+                                    />
                                 </div>
                             </div>
                         );
