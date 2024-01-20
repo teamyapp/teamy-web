@@ -888,6 +888,10 @@ export class StateSyncer {
 
     public async deleteAppVersion(appId: number, versionNumber: number): Promise<void> {
         await this.appClient.deleteAppVersion(`${appId}`, versionNumber);
+        let appState = this.localStore.getState();
+        const app = appState.apps[appId];
+        delete app.versions[versionNumber];
+        this.localStore.updateState(appState);
     }
 
     public createStaticUserGroup(
