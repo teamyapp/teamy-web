@@ -68,7 +68,7 @@ interface Props {
 }
 
 interface State {
-    app?: App,
+    app?: App;
     showTabViews: Record<TabKey, boolean>;
 }
 
@@ -91,7 +91,8 @@ export class ManageAppModalComponent extends Component<Props, State> {
     }
 
     render() {
-        const latestTeamAppVersion = this.state.app?.latestVersionForTeam(this.props.deps.graphSource.currentTeam()?.id);
+        const currTeamId = this.props.deps.graphSource.currentTeam()?.id;
+        const latestTeamAppVersion = this.state.app?.latestVersionForTeam(currTeamId);
         if (!latestTeamAppVersion) {
            return null
         }

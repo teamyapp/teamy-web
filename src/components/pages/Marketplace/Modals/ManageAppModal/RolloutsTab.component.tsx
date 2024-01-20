@@ -224,7 +224,9 @@ export function RolloutsTabComponent(props: Props) {
                 </div>
             </div>
             <CreateUserRolloutModalComponent ref={createUserRolloutModalRef} />
-            <CreateTeamRolloutModalComponent ref={createTeamRolloutModalRef} isValidVersionNumber={props.isValidVersionNumber} />
+            <CreateTeamRolloutModalComponent 
+                ref={createTeamRolloutModalRef} 
+                isValidVersionNumber={props.isValidVersionNumber} />
         </>
     );
 }

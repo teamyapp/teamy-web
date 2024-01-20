@@ -59,7 +59,8 @@ export class AppNode implements App {
         const appState = this.localStore.getState();
         const teamAppVersion = appState.teamAppVersions.find(
             (teamAppVersion) =>
-                teamAppVersion.teamId === teamId && teamAppVersion.appId === this.app.id,
+                teamAppVersion.teamId === teamId && 
+                teamAppVersion.appId === this.app.id,
         );
         if (!teamAppVersion) {
             return undefined;

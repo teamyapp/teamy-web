@@ -38,7 +38,6 @@ export function VersionsTabComponent(props: Props) {
             return;
         }
 
-        debugger
         props.onDeleteVersionClick(selectedAppVersion.number)
         
     }
