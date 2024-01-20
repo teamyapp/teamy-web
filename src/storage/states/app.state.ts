@@ -16,7 +16,7 @@ import { UserLinkState } from '@core/storage/states/userLink.state';
 import { TaskLinkState } from './taskLink.state';
 import { AppInstallationState } from './appInstallation.state';
 import { AppSecretState } from './appSecret.state';
-
+import { TeamAppVersionState } from './teamAppVersion.state';
 
 export class AppState {
     public constructor(

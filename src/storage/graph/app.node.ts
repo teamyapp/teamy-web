@@ -30,7 +30,6 @@ export class AppNode implements App {
     public get secrets(): AppSecretNode[] {
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id];
-        debugger
         return app.secretIds.map((secretId) => {
             const secret = appState.appSecrets[secretId];
             return new AppSecretNode(this.localStore, secret);
