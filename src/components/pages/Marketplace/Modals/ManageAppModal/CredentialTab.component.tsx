@@ -31,7 +31,7 @@ export function CredentialTabComponent(props: Props) {
         const stateChangeChan = props.deps.localStore.subscribeStateChange();
         (async () => {
             while (true) {
-                console.log('[AppComponent] waiting for state changes');
+                console.log('[CredentialTabComponent] waiting for state changes');
                 const hasChanged = await stateChangeChan!.pop();
                 if (hasChanged === undefined) {
                     // check undefined instead of falsy because

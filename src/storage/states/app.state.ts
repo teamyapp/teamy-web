@@ -18,7 +18,6 @@ import { AppInstallationState } from './appInstallation.state';
 import { AppSecretState } from './appSecret.state';
 import { TeamAppVersionState } from './teamAppVersion.state';
 
-
 export class AppState {
     public constructor(
         public apps: Record<number, ThirdPartyAppState>,
