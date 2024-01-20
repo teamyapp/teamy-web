@@ -9,7 +9,6 @@ import { Team } from '@core/entity/team';
 
 import { CreateRolloutViewComponent } from './CreateRolloutView.component';
 import styles from './CreateTeamRolloutModal.component.module.scss';
-import { appVersions } from './ManageAppModal/data';
 
 const teamGroups: Group<Team>[] = [
     {
@@ -81,7 +80,9 @@ const teamGroups: Group<Team>[] = [
     },
 ];
 
-interface Props {}
+interface Props {
+    isValidVersionNumber: (versionNumber: number) => boolean;
+}
 
 export class CreateTeamRolloutModalComponent extends Component<Props> {
     private readonly modalRef: RefObject<ModalUI> = createRef();
@@ -105,7 +106,7 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
                         groupLabel={'Team'}
                         renderInlineGroup={this.renderInlineTeamGroup}
                         isValidGroup={this.isValidTeamGroup}
-                        isValidVersionNumber={this.isValidVersionNumber}
+                        isValidVersionNumber={this.props.isValidVersionNumber}
                         onCreateClick={this.onCreateRolloutClick}
                     />
                 </div>
@@ -135,10 +136,4 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
     };
 
     private onCreateRolloutClick = (rollout: CreateAppRolloutInput) => {};
-
-    private isValidVersionNumber = (versionNumber: number): boolean => {
-        return appVersions.some(
-            (appVersion) => appVersion.number == versionNumber,
-        );
-    };
 }

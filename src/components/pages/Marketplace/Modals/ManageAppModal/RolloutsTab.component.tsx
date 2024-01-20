@@ -14,6 +14,7 @@ import {
 } from '../EditRolloutView.component';
 import styles from './RolloutsTab.component.module.scss';
 import { teamGroupRollouts, userGroupRollouts } from './data';
+import { Deps } from '@core/dep/deps';
 
 interface Tab<Key> {
     name: string;
@@ -197,6 +198,7 @@ export function RolloutsTabComponent(props: Props) {
             );
         }
     };
+
     return (
         <>
             <div className={styles.RolloutsTab}>
@@ -222,7 +224,7 @@ export function RolloutsTabComponent(props: Props) {
                 </div>
             </div>
             <CreateUserRolloutModalComponent ref={createUserRolloutModalRef} />
-            <CreateTeamRolloutModalComponent ref={createTeamRolloutModalRef} />
+            <CreateTeamRolloutModalComponent ref={createTeamRolloutModalRef} isValidVersionNumber={props.isValidVersionNumber} />
         </>
     );
 }

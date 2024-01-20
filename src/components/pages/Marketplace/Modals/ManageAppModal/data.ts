@@ -1,92 +1,9 @@
 import moment from 'moment/moment';
 
-import { AppVersion } from '@core/entity/appVersion';
 import { Group } from '@core/entity/group';
 import { Rollout } from '@core/entity/rollout';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
-
-import github2IconImg from '../../assets/github2.png';
-import githubIconImg from '../../assets/github.png';
-
-export const appVersions: AppVersion[] = [
-    {
-        number: 1,
-        appName: 'GH',
-        description: 'Github integration',
-        iconUrl: github2IconImg,
-        changes: ['Create initial version of app'],
-        createdAt: moment().subtract('2', 'd').toDate(),
-        createdBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        prices: [],
-        isReady: true,
-    },
-    {
-        number: 2,
-        appName: 'Github',
-        description: 'Github integration for Teamy',
-        iconUrl: githubIconImg,
-        changes: ['Use a new icon for the app', 'Clarified app description'],
-        createdAt: moment().subtract('1', 'd').toDate(),
-        createdBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        prices: [],
-        isReady: true,
-    },
-    {
-        number: 3,
-        appName: 'Github',
-        description: 'Github integration for Teamy',
-        iconUrl: githubIconImg,
-        changes: ['Support pull request automation'],
-        createdAt: moment().subtract('1', 'd').toDate(),
-        createdBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        prices: [],
-        isReady: true,
-    },
-    {
-        number: 4,
-        appName: '',
-        description: '',
-        iconUrl: '',
-        changes: [],
-        createdAt: moment().subtract('1', 'd').toDate(),
-        createdBy: {
-            id: 1,
-            firstName: 'Harry',
-            lastName: 'Liu',
-            fullName: 'Harry Liu',
-            profileUrl: '',
-            teams: [],
-            linkedUsers: [],
-        },
-        prices: [],
-        isReady: false,
-    },
-];
 
 export const userGroups: Group<User>[] = [
     {
