@@ -39,8 +39,7 @@ export function CredentialTabComponent(props: Props) {
                     return;
                 }
 
-                setApiSecretInputs(() => {
-                    const tmpApiSecretInputs: Record<number, ApiSecretInput> =
+ const tmpApiSecretInputs: Record<number, ApiSecretInput> =
                         {};
 
                     app?.secrets.forEach((secret) => {
@@ -48,9 +47,7 @@ export function CredentialTabComponent(props: Props) {
                             name: secret.name,
                         };
                     });
-
-                    return tmpApiSecretInputs;
-                });
+                setApiSecretInputs(tmpApiSecretInputs);
             }
         })().then();
 
