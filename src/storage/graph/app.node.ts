@@ -1,14 +1,14 @@
 import { App } from '@core/entity/app';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
-import { PluginAppState } from '../states/pluginApp.state';
+import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { AppInstallationNode } from './appInstallation.node';
 import { AppSecretNode } from './appSecret.node';
 import { AppVersionNode } from './appVersion.node';
 import { TeamNode } from './team.node';
 
 export class AppNode implements App {
-    constructor(private localStore: LocalStore, private app: PluginAppState) {}
+    constructor(private localStore: LocalStore, private app: ThirdPartyAppState) {}
 
     public get id(): number {
         return this.app.id;
@@ -51,7 +51,11 @@ export class AppNode implements App {
         });
     }
 
-    public latestVersionForTeam(teamId: number): AppVersionNode | undefined {
+    public latestVersionForTeam(teamId?: number): AppVersionNode | undefined {
+        if (!teamId) {
+            return undefined;
+        }
+
         const appState = this.localStore.getState();
         const teamAppVersion = appState.teamAppVersions.find(
             (teamAppVersion) =>

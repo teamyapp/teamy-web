@@ -1,11 +1,11 @@
-import { AppInstallation } from '@core/entity/appInstallation';
+import { TeamAppInstallation } from '@core/entity/teamAppInstallation';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { AppInstallationState } from '../states/appInstallation.state';
 import { AppVersionNode } from './appVersion.node';
 import { TeamNode } from './team.node';
 
-export class AppInstallationNode implements AppInstallation {
+export class AppInstallationNode implements TeamAppInstallation {
     constructor(
         private localStore: LocalStore,
         private appInstallation: AppInstallationState,

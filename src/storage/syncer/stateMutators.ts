@@ -37,10 +37,9 @@ import {
 
 import { AppInstallationState } from '../states/appInstallation.state';
 import { AppSecretState } from '../states/appSecret.state';
-import { AppVersionState } from '../states/appVersion.state';
 import { ClientState } from '../states/client.state';
 import { DragTaskActivityState } from '../states/dragTaskActivity.state';
-import { PluginAppState } from '../states/pluginApp.state';
+import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { TaskActivityState } from '../states/taskActivity.state';
 import { TaskLinkState } from '../states/taskLink.state';
 import { Mutation } from './mutation';
@@ -497,9 +496,9 @@ export function mergeApp(
     remoteTeamId?: number,
 ): AppState {
     const remoteAppId = toInt(remoteApp.id)!;
-    const localOldApp: PluginAppState = currAppState.apps[remoteAppId] || {};
+    const localOldApp: ThirdPartyAppState = currAppState.apps[remoteAppId] || {};
     
-    const localNewApp: PluginAppState = {
+    const localNewApp: ThirdPartyAppState = {
         id: remoteAppId,
         totalInstallations:
             remoteApp.totalInstallations || localOldApp.totalInstallations,

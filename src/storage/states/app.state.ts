@@ -1,4 +1,4 @@
-import { PluginAppState } from '@core/storage/states/pluginApp.state';
+import { ThirdPartyAppState } from '@core/storage/states/thirdPartyApp.state';
 import { ClientState } from '@core/storage/states/client.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
@@ -21,7 +21,7 @@ import { TeamAppVersionState } from './teamAppVersion.state';
 
 export class AppState {
     public constructor(
-        public apps: Record<number, PluginAppState>,
+        public apps: Record<number, ThirdPartyAppState>,
         public appSecrets: Record<number, AppSecretState>,
         public appInstallations: Record<number, AppInstallationState>,
         public users: Record<number, UserState>,

@@ -1,6 +1,6 @@
 import { AppVersionState } from './appVersion.state';
 
-export class PluginAppState {
+export class ThirdPartyAppState {
     public constructor(
         public id: number,
         public secretIds: number[],
@@ -10,14 +10,14 @@ export class PluginAppState {
         public versions: Record<number, AppVersionState>,
     ) {}
 
-    public static fromMutationPayload(json: any): PluginAppState {
+    public static fromMutationPayload(json: any): ThirdPartyAppState {
         const versions: Record<number, AppVersionState> = {}
 
         for (const version of json.Versions) {
             versions[version.Number] = AppVersionState.fromMutationPayload(version);
         }
     
-        return new PluginAppState(
+        return new ThirdPartyAppState(
             json.ID,
             json.SecretIDs,
             json.InstallationIDs,
@@ -27,13 +27,13 @@ export class PluginAppState {
         );
     }
 
-    public static fromJson(json: any): PluginAppState {
+    public static fromJson(json: any): ThirdPartyAppState {
         const versions: Record<number, AppVersionState> = {}
         for (const version of json.versions) {
             versions[version.number] = AppVersionState.fromJson(version);
         }
 
-        return new PluginAppState(
+        return new ThirdPartyAppState(
             json.id,
             json.secretIds,
             json.installationIds,

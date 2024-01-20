@@ -92,29 +92,4 @@ export class GraphSource {
             return new AppNode(this.localStore, app);
         }
     }
-
-    public currentTeamAppVersion(appid: number): AppVersionNode | undefined {
-        const appState = this.localStore.getState();
-        const teamAppVersion = appState.teamAppVersions.find(
-            (teamAppVersion) =>
-                teamAppVersion.teamId === appState.currTeamId &&
-                teamAppVersion.appId === appid,
-        );
-
-        if (!teamAppVersion) {
-            return;
-        }
-
-        const app = appState.apps[appid];
-        if (!app) {
-            return;
-        }
-
-        const version = app.versions[teamAppVersion.appVersion];
-        if (!version) {
-            return;
-        }
-
-        return new AppVersionNode(this.localStore, version);
-    }
 }
