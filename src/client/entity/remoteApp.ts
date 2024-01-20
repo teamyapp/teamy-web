@@ -1,7 +1,10 @@
 import { RemoteAppInstallation } from './remoteAppInstallation';
 import { RemoteAppSecret } from './remoteAppSecret';
 import { RemoteAppVersion } from './remoteAppVersion';
+import { RemoteRollout } from './remoteRollout';
 import { RemoteTeam } from './remoteTeam';
+import { RemoteTeamGroup } from './remoteTeamGroup';
+import { RemoteUserGroup } from './remoteUserGroup';
 
 export interface RemoteApp {
     id: string;
@@ -10,5 +13,9 @@ export interface RemoteApp {
     installations: RemoteAppInstallation[];
     latestVersionForTeam?: RemoteAppVersion;
     versions: RemoteAppVersion[];
+    userGroups: RemoteUserGroup[];
+    teamGroups: RemoteTeamGroup[];
+    userRollouts: RemoteRollout[];
+    teamRollouts: RemoteRollout[];
     managedByTeam: RemoteTeam;
 }
