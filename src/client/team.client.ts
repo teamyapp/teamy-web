@@ -132,6 +132,115 @@ export class TeamClient {
                                 managedByTeam {
                                     id
                                 }
+                                userGroups {
+                                    id
+                                    type
+                                    name
+                                    ... on staticUserGroup{
+                                        users {
+                                            id
+                                        }
+                                    }
+                                    ... on filterGroup {
+                                        filter
+                                        memberCount
+                                    }
+                                    createdAt
+                                    updatedAt
+                                    rollouts {
+                                        id
+                                    }
+                                    app {
+                                        id
+                                    }
+                                }
+                                teamGroups {
+                                    id
+                                    type
+                                    name
+                                    filter
+                                    ... on staticTeamGroup{ 
+                                        teams {
+                                            id
+                                        }
+                                    }
+                                    ... on filterGroup {
+                                        filter
+                                        memberCount
+                                    }
+                                    createdAt
+                                    updatedAt
+                                    rollouts {
+                                        id
+                                    }
+                                    app {
+                                        id
+                                    }
+                                }
+                                userRollouts {
+                                    id
+                                    isEnabled
+                                    activator {
+                                        id
+                                        type
+                                        createdAt
+                                        updatedAt
+                                        ... on timeRangeActivator {
+                                            startedAt
+                                            endedAt
+                                        }
+                                        ... on maxViewersActivator {
+                                            maxViewers
+                                        }
+                                        ... on percentageActivator {
+                                            percentage
+                                        }
+                                    }
+                                    versionSelector {
+                                        id
+                                        type
+                                        ... on staticVersionSelector {
+                                            versionNumber
+                                        }
+                                        ... on experimentVersionSelector {
+                                            versionNumbers
+                                        }
+                                    }
+                                    createdAt
+                                    updatedAt
+                                }
+                                teamRollouts {
+                                    id
+                                    isEnabled
+                                    activator {
+                                        id
+                                        type
+                                        createdAt
+                                        updatedAt
+                                        ... on timeRangeActivator {
+                                            startedAt
+                                            endedAt
+                                        }
+                                        ... on maxViewersActivator {
+                                            maxViewers
+                                        }
+                                        ... on percentageActivator {
+                                            percentage
+                                        }
+                                    }
+                                    versionSelector {
+                                        id
+                                        type
+                                        ... on staticVersionSelector {
+                                            versionNumber
+                                        }
+                                        ... on experimentVersionSelector {
+                                            versionNumbers
+                                        }
+                                    }
+                                    createdAt
+                                    updatedAt
+                                }
                             }
                             sprints {
                                 id
