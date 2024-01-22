@@ -3,85 +3,74 @@ import { Component, createRef } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
+import { GraphSource } from '@core/storage/graph/graphSource';
 
 import styles from './ManagedTab.component.module.scss';
 import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
 import { ManageAppModalComponent } from './Modals/ManageAppModal/ManageAppModal.component';
-import githubIconImg from './assets/github.png';
-import slackIconImg from './assets/slack.png';
-import teamsIconImg from './assets/teams.png';
-import wechatIconImg from './assets/wechat.png';
-
-interface App {
-    id: number;
-    iconUrl: string;
-    name: string;
-}
-
-const apps: App[] = [
-    {
-        id: 1,
-        iconUrl: githubIconImg,
-        name: 'Github',
-    },
-    {
-        id: 2,
-        iconUrl: slackIconImg,
-        name: 'Slack',
-    },
-    {
-        id: 3,
-        iconUrl: teamsIconImg,
-        name: 'Teams',
-    },
-    {
-        id: 4,
-        iconUrl: wechatIconImg,
-        name: 'WeChat',
-    },
-];
 
 interface Props {
     deps: Deps;
 }
 
-interface State {}
-
-export class ManagedTabComponent extends Component<Props, State> {
+export class ManagedTabComponent extends Component<Props> {
     private readonly createAppModalRef = createRef<CreateAppModalComponent>();
     private readonly manageAppModalRef = createRef<ManageAppModalComponent>();
+    private readonly graphSource: GraphSource;
+
+    constructor(props: Props) {
+        super(props);
+        this.graphSource = props.deps.graphSource;
+        this.state = {};
+    }
 
     render() {
+        const managedApps = this.graphSource.currentTeam()?.managedApps;
+        if (!managedApps) {
+            return null;
+        }
+
         return (
             <>
                 <div className={styles.ItemList}>
-                    {apps.map((app) => (
-                        <div className={styles.InlineItem} key={app.id}>
-                            <div className={styles.LeftSection}>
-                                <div className={styles.Icon}>
-                                    <img src={app.iconUrl} />
+                    {managedApps.map((app) => {
+                        const currentTeamAppVersion = app.latestVersionForTeam(this.graphSource.currentTeam()?.id)
+                        if (!currentTeamAppVersion) {
+                            return null;
+                        }
+
+                        return (
+                            <div className={styles.InlineItem} key={app.id}>
+                                <div className={styles.LeftSection}>
+                                    <div className={styles.Icon}>
+                                        <img
+                                            src={currentTeamAppVersion.iconUrl}
+                                        />
+                                    </div>
+                                </div>
+                                <div className={styles.MiddleSection}>
+                                    <div className={styles.Name}>
+                                        {currentTeamAppVersion.appName}
+                                    </div>
+                                </div>
+                                <div className={styles.RightSection}>
+                                    <div
+                                        className={`${styles.Button} ${styles.Manage}`}
+                                        onClick={this.onManageButtonClickHandler(
+                                            app.id,
+                                        )}
+                                    >
+                                        Manage
+                                    </div>
+                                    <div
+                                        className={`${styles.Button}  ${styles.Delete}`}
+                                    >
+                                        Delete
+                                    </div>
                                 </div>
                             </div>
-                            <div className={styles.MiddleSection}>
-                                <div className={styles.Name}>{app.name}</div>
-                            </div>
-                            <div className={styles.RightSection}>
-                                <div
-                                    className={`${styles.Button} ${styles.Manage}`}
-                                    onClick={this.onManageButtonClickHandler(
-                                        app.id,
-                                    )}
-                                >
-                                    Manage
-                                </div>
-                                <div
-                                    className={`${styles.Button}  ${styles.Delete}`}
-                                >
-                                    Delete
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                     <div
                         className={styles.CreateAppButton}
                         onClick={this.onCreateAppClick}

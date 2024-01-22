@@ -15,7 +15,7 @@ import styles from './ManageAppModal.component.module.scss';
 import { RolloutsTabComponent } from './RolloutsTab.component';
 import { TagsTabComponent } from './TagsTab.component';
 import { VersionsTabComponent } from './VersionsTab.component';
-import { appVersions } from './data';
+import { App } from '@core/entity/app';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts' | 'tags';
 
@@ -61,17 +61,7 @@ const tags: string[] = [
     'news',
 ];
 
-interface App {
-    id: number;
-    name: string;
-}
 
-const apps: Record<number, App> = {
-    1: {
-        id: 1,
-        name: 'Github',
-    },
-};
 
 interface Props {
     deps: Deps;
@@ -101,12 +91,18 @@ export class ManageAppModalComponent extends Component<Props, State> {
     }
 
     render() {
+        const currTeamId = this.props.deps.graphSource.currentTeam()?.id;
+        const latestTeamAppVersion = this.state.app?.latestVersionForTeam(currTeamId);
+        if (!latestTeamAppVersion) {
+           return null
+        }
+
         return (
             this.state.app && (
                 <ModalUI ref={this.modalRef}>
                     <>
                         <div className={styles.Header}>
-                            Manage {this.state.app.name} App
+                            Manage {latestTeamAppVersion.appName} App
                             <div
                                 role={'button'}
                                 aria-label={'Close'}
@@ -151,7 +147,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
     }
 
     open(appId: number) {
-        const app = apps[appId];
+        const app = this.graphSource.app(appId);
         this.setState(
             {
                 app: app,
@@ -202,7 +198,9 @@ export class ManageAppModalComponent extends Component<Props, State> {
         } else if (this.state.showTabViews['versions']) {
             return (
                 <VersionsTabComponent
+                    appVersions={this.state.app?.versions}
                     onCreateVersionClick={this.onCreateVersionClick}
+                    onDeleteVersionClick={this.onDeleteVersionClick}
                 />
             );
         } else if (this.state.showTabViews['groups']) {
@@ -282,13 +280,13 @@ export class ManageAppModalComponent extends Component<Props, State> {
     };
 
     private isValidVersionNumber = (versionNumber: number): boolean => {
-        return appVersions.some(
+        return this.state.app?.versions.some(
             (appVersion) => appVersion.number == versionNumber,
-        );
+        ) || false;
     };
 
     private renderInlineVersionNumber = (versionNumber: number): ReactNode => {
-        const appVersion = appVersions.find(
+        const appVersion = this.state.app?.versions.find(
             (appVersion) => appVersion.number == versionNumber,
         );
         return (
@@ -304,6 +302,14 @@ export class ManageAppModalComponent extends Component<Props, State> {
         //TODO: create new version
         return 0;
     };
+
+    private onDeleteVersionClick = (versionNumber: number) => {
+        if (!this.state.app) {
+            return;
+        }
+
+        this.props.deps.stateSyncer.deleteAppVersion(this.state.app.id, versionNumber); 
+    }
 
     private onAddTage = (tag: string) => {
         // TODO: add tag

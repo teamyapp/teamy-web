@@ -5,6 +5,8 @@ import { RemoteInvitation } from './remoteInvitation';
 import { RemoteTask } from './remoteTask';
 import { RemoteTaskActivity } from './remoteTaskActivity';
 import { RemoteUser } from './remoteUser';
+import { RemoteApp } from './remoteApp';
+import { RemoteAppInstallation } from './remoteAppInstallation';
 
 export interface RemoteTeam {
     id: string;
@@ -19,4 +21,6 @@ export interface RemoteTeam {
     sprints?: RemoteSprint[];
     taskActivities?: RemoteTaskActivity[];
     activeSprint?: RemoteSprint;
+    managedApps?: RemoteApp[];
+    appInstallations?: RemoteAppInstallation[];
 }

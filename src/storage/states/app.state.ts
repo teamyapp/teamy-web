@@ -1,3 +1,4 @@
+import { ThirdPartyAppState } from '@core/storage/states/thirdPartyApp.state';
 import { ClientState } from '@core/storage/states/client.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
@@ -13,9 +14,15 @@ import { UserState } from '@core/storage/states/user.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
 import { TaskLinkState } from './taskLink.state';
+import { AppInstallationState } from './appInstallation.state';
+import { AppSecretState } from './appSecret.state';
+import { TeamAppVersionState } from './teamAppVersion.state';
 
 export class AppState {
     public constructor(
+        public apps: Record<number, ThirdPartyAppState>,
+        public appSecrets: Record<number, AppSecretState>,
+        public appInstallations: Record<number, AppInstallationState>,
         public users: Record<number, UserState>,
         public clients: Record<number, ClientState>,
         public teams: Record<number, TeamState>,
@@ -31,6 +38,7 @@ export class AppState {
         public sprintParticipants: SprintParticipantState[],
         public teamSelectedSprint: Record<number, number>,
         public taskActivities: TaskActivityState[],
+        public teamAppVersions: TeamAppVersionState[],
         public currUserId?: number,
         public currTeamId?: number,
         public currSprintId?: number,
@@ -51,12 +59,16 @@ export class AppState {
             {},
             {},
             {},
+            {},
+            {},
+            {},
             [],
             [],
             [],
             [],
             [],
             json.teamSelectedSprint || {},
+            [],
             [],
             json.currUserId,
             json.currTeamId,

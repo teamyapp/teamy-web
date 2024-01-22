@@ -4,6 +4,8 @@ import { TeamMemberNode } from '@core/storage/graph/teamMember.node';
 import { TeamState } from '@core/storage/states/team.state';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
+import { AppNode } from './app.node';
+import { AppInstallationNode } from './appInstallation.node';
 import { InvitationNode } from './invitation.node';
 import { TaskNode } from './task.node';
 import { UserNode } from './user.node';
@@ -101,5 +103,21 @@ export class TeamNode implements Team {
         if (sprintState) {
             return new SprintNode(this.localStore, sprintState);
         }
+    }
+
+    public get managedApps(): AppNode[] {
+        const appState = this.localStore.getState();
+        return this.teamState.managedAppIds?.map((appId) => {
+            const app = appState.apps[appId];
+            return new AppNode(this.localStore, app);
+        }) || [];
+    }
+
+    public get appInstallations(): AppInstallationNode[] {
+        const appState = this.localStore.getState();
+        return this.teamState.appInstallationIds?.map((appInstallationId) => {
+            const appInstallation = appState.appInstallations[appInstallationId];
+            return new AppInstallationNode(this.localStore, appInstallation);
+        }) || [];
     }
 }

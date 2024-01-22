@@ -8,12 +8,13 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { AppVersion } from '@core/entity/appVersion';
 
 import styles from './VersionsTab.component.module.scss';
-import { appVersions } from './data';
 
 type AppPackageStatus = 'selecting' | 'uploading' | 'processing' | 'ready';
 
 interface Props {
     onCreateVersionClick: () => number;
+    onDeleteVersionClick: (versionNumber: number) => void;
+    appVersions?: AppVersion[];
 }
 
 export function VersionsTabComponent(props: Props) {
@@ -31,6 +32,15 @@ export function VersionsTabComponent(props: Props) {
             setSelectedAppVersion(appVersion);
         };
     };
+
+    const onDeleteVersionClick = () => {
+        if (!selectedAppVersion) {
+            return;
+        }
+
+        props.onDeleteVersionClick(selectedAppVersion.number)
+        
+    }
 
     const renderSelectingAppPackageTab = (): ReactNode => {
         return (
@@ -137,7 +147,7 @@ export function VersionsTabComponent(props: Props) {
                         <div className={styles.Download}>
                             <ButtonUI label={'Download'} />
                         </div>
-                        <div className={styles.Delete}>
+                        <div className={styles.Delete} onClick={onDeleteVersionClick}>
                             <ButtonUI label={'Delete'} />
                         </div>
                     </div>
@@ -156,8 +166,7 @@ export function VersionsTabComponent(props: Props) {
                     Create Version
                 </div>
                 <div className={styles.VersionList}>
-                    {appVersions
-                        .sort(
+                    {props.appVersions?.sort(
                             (appVersion1, appVersion2) =>
                                 appVersion2.number - appVersion1.number,
                         )

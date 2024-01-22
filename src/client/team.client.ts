@@ -14,6 +14,7 @@ export class TeamClient {
         this.graphQLClient = graphQLClient;
     }
 
+    // TODO: simplify query(app version part) once we have apps query
     public getTeamWithSprintPreviews(teamId: string): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
@@ -37,6 +38,208 @@ export class TeamClient {
                                             lastName
                                         }
                                     }
+                                }
+                            }
+                            appInstallations {
+                                id
+                                installedTeam {
+                                    id
+                                }
+                                activeAppVersion {
+                                    app {
+                                        id
+                                    }
+                                    number
+                                    appName
+                                    description
+                                    changes
+                                    prices {
+                                        amount
+                                        currency
+                                    }
+                                    createdAt
+                                    createdBy {
+                                        id
+                                    }
+                                    isReady
+                                    iconUrl
+                                }
+                            }
+                            managedApps {
+                                id
+                                secrets {
+                                    id
+                                    name
+                                    addedAt
+                                    addedBy {
+                                        id
+                                    }
+                                    app {
+                                        id
+                                    }
+                                }
+                                totalInstallations
+                                installations {
+                                    id
+                                    installedTeam {
+                                        id
+                                    }
+                                    activeAppVersion {
+                                        app {
+                                            id
+                                        }
+                                        number
+                                    }
+                                }
+                                latestVersionForTeam(teamId: $teamId) {
+                                    app {
+                                        id
+                                    }
+                                    number
+                                    appName
+                                    description
+                                    changes
+                                    prices {
+                                        amount
+                                        currency
+                                    }
+                                    createdAt
+                                    createdBy {
+                                        id
+                                    }
+                                    isReady
+                                    iconUrl
+                                }
+                                versions {
+                                    app {
+                                        id
+                                    }
+                                    number
+                                    appName
+                                    description
+                                    changes
+                                    prices {
+                                        amount
+                                        currency
+                                    }
+                                    createdAt
+                                    createdBy {
+                                        id
+                                    }
+                                    isReady
+                                    iconUrl
+                                }
+                                managedByTeam {
+                                    id
+                                }
+                                userGroups {
+                                    id
+                                    type
+                                    name
+                                    ... on staticUserGroup{
+                                        users {
+                                            id
+                                        }
+                                    }
+                                    ... on filterGroup {
+                                        filter
+                                        memberCount
+                                    }
+                                    createdAt
+                                    updatedAt
+                                    rollouts {
+                                        id
+                                    }
+                                    app {
+                                        id
+                                    }
+                                }
+                                teamGroups {
+                                    id
+                                    type
+                                    name
+                                    filter
+                                    ... on staticTeamGroup{ 
+                                        teams {
+                                            id
+                                        }
+                                    }
+                                    ... on filterGroup {
+                                        filter
+                                        memberCount
+                                    }
+                                    createdAt
+                                    updatedAt
+                                    rollouts {
+                                        id
+                                    }
+                                    app {
+                                        id
+                                    }
+                                }
+                                userRollouts {
+                                    id
+                                    isEnabled
+                                    activator {
+                                        id
+                                        type
+                                        createdAt
+                                        updatedAt
+                                        ... on timeRangeActivator {
+                                            startedAt
+                                            endedAt
+                                        }
+                                        ... on maxViewersActivator {
+                                            maxViewers
+                                        }
+                                        ... on percentageActivator {
+                                            percentage
+                                        }
+                                    }
+                                    versionSelector {
+                                        id
+                                        type
+                                        ... on staticVersionSelector {
+                                            versionNumber
+                                        }
+                                        ... on experimentVersionSelector {
+                                            versionNumbers
+                                        }
+                                    }
+                                    createdAt
+                                    updatedAt
+                                }
+                                teamRollouts {
+                                    id
+                                    isEnabled
+                                    activator {
+                                        id
+                                        type
+                                        createdAt
+                                        updatedAt
+                                        ... on timeRangeActivator {
+                                            startedAt
+                                            endedAt
+                                        }
+                                        ... on maxViewersActivator {
+                                            maxViewers
+                                        }
+                                        ... on percentageActivator {
+                                            percentage
+                                        }
+                                    }
+                                    versionSelector {
+                                        id
+                                        type
+                                        ... on staticVersionSelector {
+                                            versionNumber
+                                        }
+                                        ... on experimentVersionSelector {
+                                            versionNumbers
+                                        }
+                                    }
+                                    createdAt
+                                    updatedAt
                                 }
                             }
                             sprints {

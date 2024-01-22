@@ -69,3 +69,12 @@ export interface RemoteCreateSprintInput {
     startAt: Date;
     endAt: Date;
 }
+
+export interface RemoteCreateAppSecretInput {
+    name: string;
+}
+
+export interface RemoteCreateAppVersionInput {
+    appName: string;
+    description: string;
+}
