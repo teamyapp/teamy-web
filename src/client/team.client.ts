@@ -136,12 +136,12 @@ export class TeamClient {
                                     id
                                     type
                                     name
-                                    ... on staticUserGroup{
+                                    ... on StaticUserGroup{
                                         users {
                                             id
                                         }
                                     }
-                                    ... on filterGroup {
+                                    ... on FilterGroup {
                                         filter
                                         memberCount
                                     }
@@ -158,13 +158,12 @@ export class TeamClient {
                                     id
                                     type
                                     name
-                                    filter
-                                    ... on staticTeamGroup{ 
+                                    ... on StaticTeamGroup{ 
                                         teams {
                                             id
                                         }
                                     }
-                                    ... on filterGroup {
+                                    ... on FilterGroup {
                                         filter
                                         memberCount
                                     }
@@ -185,24 +184,24 @@ export class TeamClient {
                                         type
                                         createdAt
                                         updatedAt
-                                        ... on timeRangeActivator {
-                                            startedAt
-                                            endedAt
+                                        ... on TimeRangeActivator {
+                                            startAt
+                                            endAt
                                         }
-                                        ... on maxViewersActivator {
+                                        ... on MaxViewersActivator {
                                             maxViewers
                                         }
-                                        ... on percentageActivator {
+                                        ... on PercentageActivator {
                                             percentage
                                         }
                                     }
                                     versionSelector {
                                         id
                                         type
-                                        ... on staticVersionSelector {
+                                        ... on StaticVersionSelector {
                                             versionNumber
                                         }
-                                        ... on experimentVersionSelector {
+                                        ... on ExperimentVersionSelector {
                                             versionNumbers
                                         }
                                     }
@@ -217,24 +216,24 @@ export class TeamClient {
                                         type
                                         createdAt
                                         updatedAt
-                                        ... on timeRangeActivator {
-                                            startedAt
-                                            endedAt
+                                        ... on TimeRangeActivator {
+                                            startAt
+                                            endAt
                                         }
-                                        ... on maxViewersActivator {
+                                        ... on MaxViewersActivator {
                                             maxViewers
                                         }
-                                        ... on percentageActivator {
+                                        ... on PercentageActivator {
                                             percentage
                                         }
                                     }
                                     versionSelector {
                                         id
                                         type
-                                        ... on staticVersionSelector {
+                                        ... on StaticVersionSelector {
                                             versionNumber
                                         }
-                                        ... on experimentVersionSelector {
+                                        ... on ExperimentVersionSelector {
                                             versionNumbers
                                         }
                                     }
