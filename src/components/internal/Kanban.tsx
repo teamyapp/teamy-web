@@ -14,6 +14,7 @@ import { AwaitingSection } from './TaskListSections/AwaitingSection';
 import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { InProgressSection } from './TaskListSections/InProgressSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 const upcomingColumnFilter = or(filters.todo, filters.paused);
 const inProgressColumnFilter = filters.inProgress;
@@ -26,6 +27,7 @@ interface Props {
     findPotentialOwnersForTask?: (taskId: number) => Promise<User[]>;
     sortOrders: SortOrders;
     currentClientId?: number;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -59,6 +61,7 @@ export class KanbanUI extends Component<Props> {
                         currentClientId={this.props.currentClientId}
                         tasks={upcomingTasks}
                         sortOrder={this.props.sortOrders.upcoming}
+                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                         onCreateTask={this.props.onCreateTask}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
@@ -78,6 +81,7 @@ export class KanbanUI extends Component<Props> {
                         }
                         tasks={inProgressTasks}
                         currentClientId={this.props.currentClientId}
+                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}
@@ -95,6 +99,7 @@ export class KanbanUI extends Component<Props> {
                         }
                         currentClientId={this.props.currentClientId}
                         tasks={awaitingTasks}
+                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}
@@ -112,6 +117,7 @@ export class KanbanUI extends Component<Props> {
                         }
                         tasks={deliveredTasks}
                         currentClientId={this.props.currentClientId}
+                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

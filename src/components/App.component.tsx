@@ -1,22 +1,22 @@
-import { CloudComponent } from '@cloud/Cloud.component';
-import { Extension, ExtensionRuntime } from '@teamyapp/ext';
+import {CloudComponent} from '@cloud/Cloud.component';
+import {RequiredActions, ThirdPartyApp, ThirdPartyAppClient, ThirdPartyAppEventHub} from '@teamyapp/ext';
 import classNames from 'classnames';
-import React, { Component, createRef } from 'react';
+import React, {Component, createRef, ReactNode} from 'react';
 
 import * as csp from '@lib/csp/csp';
-import { closeIfNot } from '@lib/csp/lib';
-import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
-import { TeamyExtensionRuntime } from '@lib/ext/runtime';
-import { IdentityClient } from '@lib/identity/Identity.client';
-import { Route } from '@lib/router/Route';
-import { Router } from '@lib/router/router';
-import { BannerUI } from '@lib/ui/Banner';
-import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import {closeIfNot} from '@lib/csp/lib';
+import {DragAndDropEvent} from '@lib/dragAndDrop/DragAndDropController';
+import {TeamyThirdPartyAppClient} from '@lib/thirdPartyApp/client';
+import {IdentityClient} from '@lib/identity/Identity.client';
+import {Route} from '@lib/router/Route';
+import {Router} from '@lib/router/router';
+import {BannerUI} from '@lib/ui/Banner';
+import {DynamicFeedbackUI} from '@lib/ui/DynamicFeedback';
+import {MaterialIconUI} from '@lib/ui/MaterialIcon';
 
-import { Config } from '@core/config/config';
-import { DragAndDropContext } from '@core/config/dragAndDrop';
-import { draggableTask } from '@core/config/draggable';
+import {Config} from '@core/config/config';
+import {DragAndDropContext} from '@core/config/dragAndDrop';
+import {draggableTask} from '@core/config/draggable';
 import {
     awaitingSectionId,
     backlogSectionId,
@@ -25,14 +25,13 @@ import {
     needAttentionSectionId,
     upcomingSectionId,
 } from '@core/config/sections';
-import { Deps } from '@core/dep/deps';
-import { TaskFilters } from '@core/entity/filters';
-import { Task } from '@core/entity/task';
-import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
-import { UserActionEvent } from '@core/event/userAction';
+import {Deps} from '@core/dep/deps';
+import {TaskFilters} from '@core/entity/filters';
+import {Task} from '@core/entity/task';
+import {Team} from '@core/entity/team';
+import {User} from '@core/entity/user';
+import {UserActionEvent} from '@core/event/userAction';
 import {
-    absoluteRootPath,
     debugRoutePattern,
     getTeamId,
     helpCenterPath,
@@ -50,36 +49,33 @@ import {
     sprintsRoutePattern,
     taskPath,
 } from '@core/routing/routes';
-import { GraphSource } from '@core/storage/graph/graphSource';
-import { LocalStore } from '@core/storage/syncer/localStore';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import {GraphSource} from '@core/storage/graph/graphSource';
+import {LocalStore} from '@core/storage/syncer/localStore';
+import {StateSyncer} from '@core/storage/syncer/stateSyncer';
 
 import styles from './App.component.module.scss';
-import { BacklogComponent } from './internal/Backlog.component';
-import { DrawerUI } from './internal/Drawer';
-import { HeaderComponent } from './internal/Header.component';
-import { AddTeamMembersModalComponent } from './internal/Modals/AddTeamMembersModal.component';
-import { CreateSprintModalComponent } from './internal/Modals/CreateSprintModal.component';
-import { CreateTeamModalComponent } from './internal/Modals/CreateTeamModal.component';
-import {
-    RequiredAction,
-    RequiredActionsModalComponent,
-} from './internal/Modals/RequiredActionsModal.component';
-import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
-import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
-import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
-import { AppSecretCopiedFeedbackComponent } from './internal/feedbacks/AppSecretCopiedFeedback.component';
-import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/InviationLinkCopiedFeedback.component';
-import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
-import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
-import { UserProfileUpdatedFeedbackComponent } from './internal/feedbacks/UserProfileUpdatedFeedback.component';
-import { DebugComponent } from './pages/Debug.component';
-import { InsightsComponent } from './pages/Insights.component';
-import { InvitationComponent } from './pages/Invitation.component';
-import { MarketplaceComponent } from './pages/Marketplace/Marketplace.component';
-import { PlanningComponent } from './pages/Planning.component';
-import { SignUpComponent } from './pages/SignUp.component';
-import { SprintsComponent } from './pages/Sprints.component';
+import {BacklogComponent} from './internal/Backlog.component';
+import {DrawerUI} from './internal/Drawer';
+import {HeaderComponent} from './internal/Header.component';
+import {AddTeamMembersModalComponent} from './internal/Modals/AddTeamMembersModal.component';
+import {CreateSprintModalComponent} from './internal/Modals/CreateSprintModal.component';
+import {CreateTeamModalComponent} from './internal/Modals/CreateTeamModal.component';
+import {RequiredActionsModalComponent} from './internal/Modals/RequiredActionsModal.component';
+import {TaskDetailModalComponent} from './internal/Modals/TaskDetailModal.component';
+import {TeamSettingsModalComponent} from './internal/Modals/TeamSettingsModal.component';
+import {UserSettingsModalComponent} from './internal/Modals/UserSettingsModal.component';
+import {AppSecretCopiedFeedbackComponent} from './internal/feedbacks/AppSecretCopiedFeedback.component';
+import {InvitationLinkCopiedFeedbackComponent} from './internal/feedbacks/InviationLinkCopiedFeedback.component';
+import {TaskUpdatedFeedbackComponent} from './internal/feedbacks/TaskUpdatedFeedback.component';
+import {TeamProfileUpdatedFeedbackComponent} from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
+import {UserProfileUpdatedFeedbackComponent} from './internal/feedbacks/UserProfileUpdatedFeedback.component';
+import {DebugComponent} from './pages/Debug.component';
+import {InsightsComponent} from './pages/Insights.component';
+import {InvitationComponent} from './pages/Invitation.component';
+import {MarketplaceComponent} from './pages/Marketplace/Marketplace.component';
+import {PlanningComponent} from './pages/Planning.component';
+import {SignUpComponent} from './pages/SignUp.component';
+import {SprintsComponent} from './pages/Sprints.component';
 
 const sectionIds = [
     backlogSectionId,
@@ -108,6 +104,7 @@ interface State {
     backlogDropReceiverLayer: number;
     taskFilters: TaskFilters;
     showActiveSprintBanner?: boolean;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
 }
 
 export class AppComponent extends Component<Props, State> {
@@ -138,8 +135,6 @@ export class AppComponent extends Component<Props, State> {
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
 
-    private extensions: Extension[] = [];
-
     constructor(props: Props) {
         super(props);
         this.router = props.deps.router;
@@ -156,6 +151,7 @@ export class AppComponent extends Component<Props, State> {
             teams: [],
             taskFilters: {},
             backlogDropReceiverLayer: -1,
+            thirdPartyAppEventHubs: [],
         };
     }
 
@@ -177,9 +173,9 @@ export class AppComponent extends Component<Props, State> {
                         config={this.props.config}
                     />
                 </Route>
-                <CloudComponent deps={this.props.deps} />
+                <CloudComponent deps={this.props.deps}/>
                 <Route router={this.router} pattern={signUpRoutePattern}>
-                    <SignUpComponent deps={this.props.deps} />
+                    <SignUpComponent deps={this.props.deps}/>
                 </Route>
                 {this.state.me && (
                     <>
@@ -281,7 +277,7 @@ export class AppComponent extends Component<Props, State> {
                                             styles.Sidebar
                                         } ${classNames({
                                             [styles.Shown]:
-                                                this.state.showBacklog,
+                                            this.state.showBacklog,
                                         })}`}
                                     >
                                         <div className={styles.Backlog}>
@@ -311,6 +307,7 @@ export class AppComponent extends Component<Props, State> {
                                                 taskFilters={
                                                     this.state.taskFilters
                                                 }
+                                                thirdPartyAppEventHubs={this.state.thirdPartyAppEventHubs}
                                                 onViewTaskDetail={
                                                     this.onViewTaskDetail
                                                 }
@@ -334,7 +331,7 @@ export class AppComponent extends Component<Props, State> {
                                             router={this.router}
                                             pattern={planningRoutePattern}
                                         >
-                                            <PlanningComponent />
+                                            <PlanningComponent/>
                                         </Route>
                                         <Route
                                             router={this.router}
@@ -342,6 +339,7 @@ export class AppComponent extends Component<Props, State> {
                                         >
                                             <MarketplaceComponent
                                                 deps={this.props.deps}
+                                                thirdPartyAppEventHubs={this.state.thirdPartyAppEventHubs}
                                             />
                                         </Route>
                                     </div>
@@ -353,7 +351,7 @@ export class AppComponent extends Component<Props, State> {
                     </>
                 )}
                 <Route router={this.router} pattern={invitationRoutePattern}>
-                    <InvitationComponent deps={this.props.deps} />
+                    <InvitationComponent deps={this.props.deps}/>
                 </Route>
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
@@ -369,7 +367,7 @@ export class AppComponent extends Component<Props, State> {
                     ref={this.teamSettingsModalRef}
                     onAddTeamMemberClick={this.onAddTeamMembersClick}
                 />
-                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps} />
+                <TeamProfileUpdatedFeedbackComponent deps={this.props.deps}/>
                 <AddTeamMembersModalComponent
                     deps={this.props.deps}
                     ref={this.addTeamMembersModalRef}
@@ -383,11 +381,11 @@ export class AppComponent extends Component<Props, State> {
                     ref={this.createSprintModalRef}
                     deps={this.props.deps}
                 />
-                <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
-                <TaskUpdatedFeedbackComponent deps={this.props.deps} />
-                <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
-                <AppSecretCopiedFeedbackComponent deps={this.props.deps} />
-                <DynamicFeedbackUI ref={this.dynamicFeedbackRef} />
+                <UserProfileUpdatedFeedbackComponent deps={this.props.deps}/>
+                <TaskUpdatedFeedbackComponent deps={this.props.deps}/>
+                <InvitationLinkCopiedFeedbackComponent deps={this.props.deps}/>
+                <AppSecretCopiedFeedbackComponent deps={this.props.deps}/>
+                <DynamicFeedbackUI ref={this.dynamicFeedbackRef}/>
                 <RequiredActionsModalComponent
                     ref={this.requiredActionsModalRef}
                 />
@@ -466,10 +464,10 @@ export class AppComponent extends Component<Props, State> {
 
     public async onTeamInit() {
         try {
-            this.extensions = await this.loadExtensions();
+            await this.bootstrapThirdPartyApps();
             await this.showRequiredActionsIfAny();
         } catch (err) {
-            console.log(`Fail to load extensions: ${err}`);
+            console.log(`Fail to load extensions: `, err);
         }
     }
 
@@ -782,42 +780,15 @@ export class AppComponent extends Component<Props, State> {
     }
 
     private async showRequiredActionsIfAny() {
-        const requiredActions: RequiredAction[] = [];
-        for (let index = 0; index < this.extensions.length; index++) {
-            const extension = this.extensions[index];
-            const extRequiredActions = await extension.requiredActions(
-                this.state.activeTeamId!,
-            );
-            if (extRequiredActions.length < 1) {
-                continue;
-            }
-
-            const viewRef = createRef<HTMLDivElement>();
-            extRequiredActions.forEach((requiredAction) => {
-                const view = (
-                    <div
-                        key={index}
-                        ref={viewRef}
-                        style={{
-                            height: '100%',
-                        }}
-                    />
-                );
-                requiredActions.push({
-                    actionName: requiredAction.name(),
-                    view,
-                    renderView: () => {
-                        requiredAction.renderView({
-                            container: viewRef.current!,
-                            onActionComplete: this.onRequireActionComplete,
-                        });
-                    },
-                });
-            });
+        const allRequiredActions: RequiredActions[] = [];
+        for (let index = 0; index < this.state.thirdPartyAppEventHubs.length; index++) {
+            const thirdPartyAppEventHub = this.state.thirdPartyAppEventHubs[index];
+            const requiredActions = await thirdPartyAppEventHub.onShowRequiredActions(this.onRequireActionComplete);
+            allRequiredActions.push(...requiredActions);
         }
 
-        if (requiredActions.length > 0) {
-            this.requiredActionsModalRef.current?.open(requiredActions);
+        if (allRequiredActions.length > 0) {
+            this.requiredActionsModalRef.current?.open(allRequiredActions);
         }
     }
 
@@ -825,62 +796,38 @@ export class AppComponent extends Component<Props, State> {
         this.requiredActionsModalRef.current?.completeCurrentStep();
     };
 
-    private loadExtensions(): Promise<Extension[]> {
+    private async bootstrapThirdPartyApps() {
         // TODO(magicoder10): load extension from backend
         // TODO(magicoder10): error handling when failed to load script
-        this.registerGithubExtensionUI();
+        const githubAppId = 1;
 
-        return Promise.all(
+        const thirdPartyAppEventHubs: ThirdPartyAppEventHub[] = [];
+        await Promise.all(
             ['http://localhost:8082/app/app.js'].map(
                 async (extensionEntryPoint) => {
-                    let { App } = await importModule(extensionEntryPoint);
-                    const app: Extension = new App();
-                    const runtime = this.getExtensionRuntime(0);
-                    app.init(runtime);
+                    let {App} = await importModule(extensionEntryPoint);
+                    const app: ThirdPartyApp = new App();
+
+                    const thirdPartyAppEventHub = new ThirdPartyAppEventHub(githubAppId);
+                    thirdPartyAppEventHubs.push(thirdPartyAppEventHub);
+
+                    const client: ThirdPartyAppClient = new TeamyThirdPartyAppClient(
+                        this.localStore,
+                        this.router,
+                        this.identityClient,
+                        this.dynamicFeedbackRef
+                    );
+                    app.init({
+                        eventListener: thirdPartyAppEventHub,
+                        client,
+                    });
                     console.log(`[Extension][${app.name()}] Loaded`);
                     return app;
                 },
             ),
         );
-    }
-
-    private registerGithubExtensionUI() {
-        // simulate ui extension to register configs and actions,
-        // remove once ui extension is fully implemented
-        this.props.deps.uiRegistry.registerTaskIdAction({
-            key: 'GitHubCopyMentionTask',
-            readableName: 'Copy mention task',
-            execute: async (taskId: number) => {
-                const teamId = this.localStore.getState().currTeamId;
-                if (teamId) {
-                    const mentionTask = `[(task:${taskId})](${absoluteRootPath}${taskPath(
-                        teamId,
-                        taskId,
-                    )})`;
-                    navigator.clipboard.writeText(mentionTask);
-                    this.dynamicFeedbackRef.current?.show(
-                        `${mentionTask} is copied to clipboard`,
-                    );
-                }
-            },
+        this.setState({
+            thirdPartyAppEventHubs,
         });
     }
-
-    private getExtensionRuntime(extensionVersion: number): ExtensionRuntime {
-        return new TeamyExtensionRuntime(
-            extensionVersion,
-            this.router,
-            this.identityClient,
-        );
-    }
 }
-
-// function includePrefix(patterns: string[], input: string): boolean {
-//     for (const pattern of patterns) {
-//         if (input.startsWith(pattern)) {
-//             return true;
-//         }
-//     }
-//
-//     return false;
-// }

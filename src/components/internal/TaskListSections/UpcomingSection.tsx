@@ -43,6 +43,7 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface Props {
     deps: Deps;
@@ -52,6 +53,7 @@ interface Props {
     sortOrder?: string;
     currentClientId?: number;
     isPersonal?: boolean;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -151,6 +153,7 @@ export class UpcomingSection extends Component<Props, State> {
                         task={task}
                         showStatus={true}
                         currentClientId={this.props.currentClientId}
+                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

@@ -1,11 +1,11 @@
-import React, { Component, createRef } from 'react';
+import React, {Component, createRef, ReactNode} from 'react';
 
 import styles from './ContextMenu.component.module.scss';
 
-interface MenuItem {
+export interface MenuItem {
     key: string;
     action: () => void;
-    label: string;
+    label: ReactNode;
 }
 
 interface Props {

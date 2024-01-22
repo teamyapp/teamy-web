@@ -13,6 +13,7 @@ import { AwaitingSection } from './TaskListSections/AwaitingSection';
 import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { NeedAttentionSection } from './TaskListSections/NeedAttentionSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 const upcomingColumnFilter = or(filters.todo, filters.paused);
 const deliveredColumnFilter = filters.delivered;
@@ -24,6 +25,7 @@ interface Props {
     personalTasks: Task[];
     sortOrders: SortOrders;
     currentClientId?: number;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -59,6 +61,7 @@ export class PersonalStatusUI extends Component<Props> {
                         }
                         currentClientId={this.props.currentClientId}
                         needAttentionTask={needAttentionTask}
+                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}
@@ -78,6 +81,7 @@ export class PersonalStatusUI extends Component<Props> {
                             tasks={upcomingTasks}
                             sortOrder={this.props.sortOrders.upcoming}
                             currentClientId={this.props.currentClientId}
+                            thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                             onCreateTask={this.props.onCreateTask}
                             onUpdateTask={this.props.onUpdateTask}
                             onStartTask={this.props.onStartTask}
@@ -98,6 +102,7 @@ export class PersonalStatusUI extends Component<Props> {
                             }
                             currentClientId={this.props.currentClientId}
                             tasks={awaitingTasks}
+                            thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                             onUpdateTask={this.props.onUpdateTask}
                             onStartTask={this.props.onStartTask}
                             onDeleteTask={this.props.onDeleteTask}

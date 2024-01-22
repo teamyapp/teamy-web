@@ -40,9 +40,7 @@ import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { shortcuts } from '@core/config/shortcut';
 import { FeatureToggle, getFeatureToggle } from '@core/config/toggle';
 import { Feedback } from '@core/entity/feedback';
-import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
-import { UIRegistry } from '@core/ext/UIRegistry';
 import { absoluteRootPath, signInFinishPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
@@ -64,7 +62,6 @@ export interface Deps {
     feedbackPubSub: PubSub<Feedback>;
     fileUploadSessionFactory: FileUploadSessionFactory;
     keyBoardEventMonitor: KeyBoardEventMonitor;
-    uiRegistry: UIRegistry;
 }
 
 export function initDeps(config: Config): Deps {
@@ -176,7 +173,6 @@ export function initDeps(config: Config): Deps {
     );
     const relativeLayout = new RelativeLayout(boundingBoxChangeEventMonitor);
     const keyBoardEventMonitor = new KeyBoardEventMonitor();
-    const uiRegistry = new UIRegistry();
     const featureToggle = getFeatureToggle();
     return {
         keyBoardEventMonitor,
@@ -191,7 +187,6 @@ export function initDeps(config: Config): Deps {
         dragAndDropController,
         feedbackPubSub,
         fileUploadSessionFactory,
-        uiRegistry,
         featureToggle,
     };
 }

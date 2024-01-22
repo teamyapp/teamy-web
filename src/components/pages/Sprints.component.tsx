@@ -43,6 +43,7 @@ import { KanbanUI } from '../internal/Kanban';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 const sectionIds = [
     upcomingSectionId,
@@ -54,6 +55,7 @@ const sectionIds = [
 interface Props {
     deps: Deps;
     taskFilters: TaskFilters;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onViewTaskDetail?: (taskId: number) => void;
     onCreateSprintClick?: () => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
@@ -426,6 +428,9 @@ export class SprintsComponent extends Component<Props, State> {
                                 )}
                                 currentClientId={clientId}
                                 sortOrders={this.state.sortOrders}
+                                thirdPartyAppEventHubs={
+                                    this.props.thirdPartyAppEventHubs
+                                }
                                 onCreateTask={this.onCreateTask}
                                 onUpdateTask={this.onUpdateTask}
                                 onStartTask={this.moveTaskToInProgress}

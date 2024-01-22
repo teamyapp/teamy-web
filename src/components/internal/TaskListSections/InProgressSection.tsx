@@ -18,6 +18,7 @@ import { Task } from '@core/entity/task';
 
 import styles from './InProgressSection.module.scss';
 import { TaskListItem } from './TaskListItem';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface Props {
     deps: Deps;
@@ -25,6 +26,7 @@ interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
     currentClientId?: number;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
     onDeleteTask?: (taskId: number) => void;
@@ -80,6 +82,7 @@ export class InProgressSection extends Component<Props> {
                         sectionId={sectionId}
                         task={task}
                         currentClientId={this.props.currentClientId}
+                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

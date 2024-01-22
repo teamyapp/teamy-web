@@ -27,12 +27,14 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import styles from './Backlog.component.module.scss';
 import { InlineCreateTaskUI } from './InlineCreateTask';
 import { TaskListItem } from './TaskListSections/TaskListItem';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface Props {
     children?: React.ReactNode;
     deps: Deps;
     dropReceiverLayer?: number;
     taskFilters: TaskFilters;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onViewTaskDetail?: (taskId: number) => void;
 }
 
@@ -178,6 +180,7 @@ export class BacklogComponent extends Component<Props, State> {
                     numActionColumns={1}
                     showStatus={true}
                     filterTaskAction={filterTaskAction}
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                     onUpdateTask={this.onUpdateTask}
                     onDeleteTask={this.onDeleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}
