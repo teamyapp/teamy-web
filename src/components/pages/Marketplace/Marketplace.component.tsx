@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import { Component, ReactNode } from 'react';
 
@@ -25,7 +26,6 @@ import { FilterTabComponent } from './FilterTab.component';
 import { InstalledTabComponent } from './InstalledTab.component';
 import { ManagedTabComponent } from './ManagedTab.component';
 import styles from './Marketplace.component.module.scss';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface Tab<Key> {
     name: string;
@@ -195,7 +195,9 @@ export class MarketplaceComponent extends Component<Props, State> {
                     >
                         <InstalledTabComponent
                             deps={this.props.deps}
-                            thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
                         />
                     </Route>
                     <Route
@@ -204,7 +206,10 @@ export class MarketplaceComponent extends Component<Props, State> {
                     >
                         <DiscoverTabComponent
                             deps={this.props.deps}
-                            thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}/>
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
+                        />
                     </Route>
                     <Route
                         router={this.router}
@@ -212,7 +217,10 @@ export class MarketplaceComponent extends Component<Props, State> {
                     >
                         <FilterTabComponent
                             deps={this.props.deps}
-                            thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}/>
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
+                        />
                     </Route>
                 </div>
             </div>

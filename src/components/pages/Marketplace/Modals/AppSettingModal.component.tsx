@@ -1,10 +1,10 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, RefObject, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 
 import styles from './AppSettingModal.component.module.scss';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface App {
     id: number;
@@ -39,8 +39,9 @@ export class AppSettingModalComponent extends Component<Props, State> {
     }
 
     render() {
-        const thirdPartyAppEventHub = this.props.thirdPartyAppEventHubs
-            .find((hub) => hub.appId === this.state.app?.id);
+        const thirdPartyAppEventHub = this.props.thirdPartyAppEventHubs.find(
+            (hub) => hub.appId === this.state.app?.id,
+        );
         return (
             this.state.app && (
                 <ModalUI ref={this.modalRef}>

@@ -1,8 +1,10 @@
-import React, {Component, createRef} from 'react';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
+import React, { Component, createRef } from 'react';
 
 import { Deps } from '@core/dep/deps';
 
 import styles from './DiscoveredTab.component.module.scss';
+import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import googleCalendarIconImg from './assets/calendar.png';
 import excelIconImg from './assets/excel.png';
 import figmaIconImg from './assets/figma.png';
@@ -22,8 +24,6 @@ import wechatIconImg from './assets/wechat.png';
 import wordIconImg from './assets/word.png';
 import zoomIconImg from './assets/zoom.png';
 import { formatCount, formatPrice } from './format';
-import {AppSettingModalComponent} from './Modals/AppSettingModal.component';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface Item {
     id: number;
@@ -231,7 +231,8 @@ export class DiscoverTabComponent extends Component<Props, State> {
                 </div>
                 <AppSettingModalComponent
                     ref={this.appSettingModalRef}
-                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}/>
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                />
             </>
         );
     }

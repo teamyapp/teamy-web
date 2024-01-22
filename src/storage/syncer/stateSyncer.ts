@@ -856,7 +856,10 @@ export class StateSyncer {
         appId: number,
         secret: CreateAppSecretInput,
     ): Promise<void> {
-        const remoteAppSecret = await this.appClient.createAppSecret(`${appId}`, secret);
+        const remoteAppSecret = await this.appClient.createAppSecret(
+            `${appId}`,
+            secret,
+        );
         let appState = this.localStore.getState();
         appState = mergeAppSecret(appState, remoteAppSecret);
         const app = appState.apps[appId];
@@ -869,7 +872,10 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async deleteAppSecret(appId: number, secretId: number): Promise<void> {
+    public async deleteAppSecret(
+        appId: number,
+        secretId: number,
+    ): Promise<void> {
         await this.appClient.deleteAppSecret(`${secretId}`);
         let appState = this.localStore.getState();
         delete appState.appSecrets[secretId];
@@ -878,14 +884,23 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async createAppVersion(appId: number, version: CreateAppVersionInput): Promise<void> {
-        const appVersion = await this.appClient.createAppVersion(`${appId}`, version);
+    public async createAppVersion(
+        appId: number,
+        version: CreateAppVersionInput,
+    ): Promise<void> {
+        const appVersion = await this.appClient.createAppVersion(
+            `${appId}`,
+            version,
+        );
         let appState = this.localStore.getState();
         appState = mergeAppVersion(appState, appId, appVersion);
         this.localStore.updateState(appState);
     }
 
-    public async deleteAppVersion(appId: number, versionNumber: number): Promise<void> {
+    public async deleteAppVersion(
+        appId: number,
+        versionNumber: number,
+    ): Promise<void> {
         await this.appClient.deleteAppVersion(`${appId}`, versionNumber);
         let appState = this.localStore.getState();
         const app = appState.apps[appId];

@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
@@ -17,7 +18,6 @@ import { Task } from '@core/entity/task';
 
 import styles from './NeedAttentionSection.module.scss';
 import { TaskListItem } from './TaskListItem';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface Props {
     deps: Deps;
@@ -69,7 +69,9 @@ export class NeedAttentionSection extends Component<Props> {
                         sectionId={sectionId}
                         task={task}
                         currentClientId={this.props.currentClientId}
-                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                        thirdPartyAppEventHubs={
+                            this.props.thirdPartyAppEventHubs
+                        }
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

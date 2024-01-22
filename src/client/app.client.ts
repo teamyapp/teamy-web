@@ -1,6 +1,9 @@
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
-import { RemoteCreateAppSecretInput, RemoteCreateAppVersionInput } from '@core/client/entity/input';
+import {
+    RemoteCreateAppSecretInput,
+    RemoteCreateAppVersionInput,
+} from '@core/client/entity/input';
 
 import { RemoteAppSecret } from './entity/remoteAppSecret';
 import { RemoteAppVersion } from './entity/remoteAppVersion';
@@ -12,7 +15,10 @@ export class AppClient {
         this.graphQLClient = graphQLClient;
     }
 
-    createAppVersion(appId: string, input: RemoteCreateAppVersionInput): Promise<RemoteAppVersion> {
+    createAppVersion(
+        appId: string,
+        input: RemoteCreateAppVersionInput,
+    ): Promise<RemoteAppVersion> {
         return this.graphQLClient
             .mutate({
                 mutation: `
@@ -56,7 +62,6 @@ export class AppClient {
             })
             .then(({ deleteAppVersion }) => deleteAppVersion);
     }
-
 
     createAppSecret(
         appId: string,

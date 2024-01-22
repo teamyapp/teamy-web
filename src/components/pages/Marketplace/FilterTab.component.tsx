@@ -1,12 +1,14 @@
-import React, {Component, createRef} from 'react';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
+import React, { Component, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
-import {RouteUpdate, Router} from '@lib/router/router';
+import { RouteUpdate, Router } from '@lib/router/router';
 
-import {Deps} from '@core/dep/deps';
-import {getTag, marketplaceFilterRoutePattern} from '@core/routing/routes';
+import { Deps } from '@core/dep/deps';
+import { getTag, marketplaceFilterRoutePattern } from '@core/routing/routes';
 
 import styles from './FilterTab.component.module.scss';
+import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import googleCalendarIconImg from './assets/calendar.png';
 import excelIconImg from './assets/excel.png';
 import figmaIconImg from './assets/figma.png';
@@ -24,9 +26,7 @@ import googleTranslateIconImg from './assets/translate.png';
 import wechatIconImg from './assets/wechat.png';
 import wordIconImg from './assets/word.png';
 import zoomIconImg from './assets/zoom.png';
-import {formatCount, formatPrice} from './format';
-import {AppSettingModalComponent} from './Modals/AppSettingModal.component';
-import {ThirdPartyAppEventHub} from '@teamyapp/ext';
+import { formatCount, formatPrice } from './format';
 
 interface Item {
     id: number;
@@ -219,7 +219,7 @@ export class FilterTabComponent extends Component<Props, State> {
                         <div key={item.id} className={styles.InlineItem}>
                             <div className={styles.LeftSection}>
                                 <div className={styles.Icon}>
-                                    <img src={item.iconUrl}/>
+                                    <img src={item.iconUrl} />
                                 </div>
                             </div>
                             <div className={styles.MiddleSection}>
@@ -262,7 +262,8 @@ export class FilterTabComponent extends Component<Props, State> {
                 </div>
                 <AppSettingModalComponent
                     ref={this.appSettingModalRef}
-                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}/>
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                />
             </>
         );
     }

@@ -39,9 +39,9 @@ import { AppInstallationState } from '../states/appInstallation.state';
 import { AppSecretState } from '../states/appSecret.state';
 import { ClientState } from '../states/client.state';
 import { DragTaskActivityState } from '../states/dragTaskActivity.state';
-import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { TaskActivityState } from '../states/taskActivity.state';
 import { TaskLinkState } from '../states/taskLink.state';
+import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { Mutation } from './mutation';
 
 export function applyTaskMutation(
@@ -496,8 +496,9 @@ export function mergeApp(
     remoteTeamId?: number,
 ): AppState {
     const remoteAppId = toInt(remoteApp.id)!;
-    const localOldApp: ThirdPartyAppState = currAppState.apps[remoteAppId] || {};
-    
+    const localOldApp: ThirdPartyAppState =
+        currAppState.apps[remoteAppId] || {};
+
     const localNewApp: ThirdPartyAppState = {
         id: remoteAppId,
         totalInstallations:
@@ -515,7 +516,11 @@ export function mergeApp(
     };
 
     if (remoteApp.latestVersionForTeam && remoteTeamId) {
-        currAppState = mergeTeamAppVersion(currAppState, remoteTeamId, remoteApp.latestVersionForTeam)
+        currAppState = mergeTeamAppVersion(
+            currAppState,
+            remoteTeamId,
+            remoteApp.latestVersionForTeam,
+        );
     }
 
     if (remoteApp.managedByTeam) {
@@ -545,35 +550,20 @@ export function mergeAppVersion(
     version: RemoteAppVersion,
 ): AppState {
     const app = currAppState.apps[remoteAppId];
-    const localOldVersion = app.versions[version.number] || {}
- 
+    const localOldVersion = app.versions[version.number] || {};
+
     app.versions[version.number] = {
         number: version.number,
-        appName:
-            version.appName ||
-            localOldVersion.appName,
+        appName: version.appName || localOldVersion.appName,
         appId: remoteAppId,
-        createdAt:
-            toDate(version.createdAt) ||
-            localOldVersion.createdAt,
+        createdAt: toDate(version.createdAt) || localOldVersion.createdAt,
         creatorUserId:
-            toInt(version.createdBy.id) ||
-            localOldVersion.creatorUserId,
-        changes:
-            version.changes ||
-            localOldVersion.changes,
-        description:
-            version.description ||
-            localOldVersion.description,
-        iconUrl:
-            version.iconUrl ||
-            localOldVersion.iconUrl,
-        isReady:
-            version.isReady ||
-            localOldVersion.isReady,
-        prices:
-            version.prices ||
-            localOldVersion.prices,
+            toInt(version.createdBy.id) || localOldVersion.creatorUserId,
+        changes: version.changes || localOldVersion.changes,
+        description: version.description || localOldVersion.description,
+        iconUrl: version.iconUrl || localOldVersion.iconUrl,
+        isReady: version.isReady || localOldVersion.isReady,
+        prices: version.prices || localOldVersion.prices,
     };
 
     return currAppState;
@@ -585,7 +575,10 @@ export function mergeTeamAppVersion(
     version: RemoteAppVersion,
 ): AppState {
     for (let teamAppVersion of currAppState.teamAppVersions) {
-        if (teamAppVersion.teamId === teamId && teamAppVersion.appId === toInt(version.app.id)) {
+        if (
+            teamAppVersion.teamId === teamId &&
+            teamAppVersion.appId === toInt(version.app.id)
+        ) {
             teamAppVersion.appVersion = version.number;
             return currAppState;
         }
@@ -596,7 +589,7 @@ export function mergeTeamAppVersion(
         appId: toInt(version.app.id)!,
         appVersion: version.number,
     });
-    
+
     return currAppState;
 }
 

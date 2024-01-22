@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, {
     ChangeEvent,
@@ -24,14 +25,13 @@ import { TaskAction } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
-import {ContextMenuComponent, MenuItem} from './ContextMenu.component';
+import { ContextMenuComponent, MenuItem } from './ContextMenu.component';
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
 import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
 import { TaskLinkIconUI } from './TaskLinkIcon';
 import { UserProfileUI } from './UserProfile';
 import { dueDate, getUserShortName } from './format';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 const statusNames: Record<TaskStatus, string> = {
     TODO: 'Todo',
@@ -525,7 +525,7 @@ export class InlineTaskUI extends Component<Props, State> {
             });
         });
         return menuItems;
-    }
+    };
 
     private onStartTaskClick = () => {
         this.props.onStartTask?.call(null, this.props.task.id);

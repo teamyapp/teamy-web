@@ -4,6 +4,7 @@ import { TaskNode } from '@core/storage/graph/task.node';
 import { TeamNode } from '@core/storage/graph/team.node';
 import { UserNode } from '@core/storage/graph/user.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
+
 import { AppNode } from './app.node';
 import { AppVersionNode } from './appVersion.node';
 

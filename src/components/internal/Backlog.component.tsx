@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -27,7 +28,6 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import styles from './Backlog.component.module.scss';
 import { InlineCreateTaskUI } from './InlineCreateTask';
 import { TaskListItem } from './TaskListSections/TaskListItem';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface Props {
     children?: React.ReactNode;

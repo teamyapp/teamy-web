@@ -1,4 +1,4 @@
-import React, {Component, createRef, ReactNode} from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import styles from './ContextMenu.component.module.scss';
 

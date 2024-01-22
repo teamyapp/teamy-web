@@ -5,6 +5,7 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 
 import { Deps } from '@core/dep/deps';
+import { App } from '@core/entity/app';
 import { GraphSource } from '@core/storage/graph/graphSource';
 
 import { UserProfileUI } from '../../../../internal/UserProfile';
@@ -15,7 +16,6 @@ import styles from './ManageAppModal.component.module.scss';
 import { RolloutsTabComponent } from './RolloutsTab.component';
 import { TagsTabComponent } from './TagsTab.component';
 import { VersionsTabComponent } from './VersionsTab.component';
-import { App } from '@core/entity/app';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts' | 'tags';
 
@@ -61,8 +61,6 @@ const tags: string[] = [
     'news',
 ];
 
-
-
 interface Props {
     deps: Deps;
 }
@@ -92,9 +90,10 @@ export class ManageAppModalComponent extends Component<Props, State> {
 
     render() {
         const currTeamId = this.props.deps.graphSource.currentTeam()?.id;
-        const latestTeamAppVersion = this.state.app?.latestVersionForTeam(currTeamId);
+        const latestTeamAppVersion =
+            this.state.app?.latestVersionForTeam(currTeamId);
         if (!latestTeamAppVersion) {
-           return null
+            return null;
         }
 
         return (
@@ -280,9 +279,11 @@ export class ManageAppModalComponent extends Component<Props, State> {
     };
 
     private isValidVersionNumber = (versionNumber: number): boolean => {
-        return this.state.app?.versions.some(
-            (appVersion) => appVersion.number == versionNumber,
-        ) || false;
+        return (
+            this.state.app?.versions.some(
+                (appVersion) => appVersion.number == versionNumber,
+            ) || false
+        );
     };
 
     private renderInlineVersionNumber = (versionNumber: number): ReactNode => {
@@ -308,8 +309,11 @@ export class ManageAppModalComponent extends Component<Props, State> {
             return;
         }
 
-        this.props.deps.stateSyncer.deleteAppVersion(this.state.app.id, versionNumber); 
-    }
+        this.props.deps.stateSyncer.deleteAppVersion(
+            this.state.app.id,
+            versionNumber,
+        );
+    };
 
     private onAddTage = (tag: string) => {
         // TODO: add tag

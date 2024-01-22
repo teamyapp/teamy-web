@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import { or } from '@lib/data/filter';
@@ -13,7 +14,6 @@ import { AwaitingSection } from './TaskListSections/AwaitingSection';
 import { DeliveredSection } from './TaskListSections/DeliveredSection';
 import { NeedAttentionSection } from './TaskListSections/NeedAttentionSection';
 import { UpcomingSection } from './TaskListSections/UpcomingSection';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 const upcomingColumnFilter = or(filters.todo, filters.paused);
 const deliveredColumnFilter = filters.delivered;
@@ -61,7 +61,9 @@ export class PersonalStatusUI extends Component<Props> {
                         }
                         currentClientId={this.props.currentClientId}
                         needAttentionTask={needAttentionTask}
-                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                        thirdPartyAppEventHubs={
+                            this.props.thirdPartyAppEventHubs
+                        }
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}
@@ -81,7 +83,9 @@ export class PersonalStatusUI extends Component<Props> {
                             tasks={upcomingTasks}
                             sortOrder={this.props.sortOrders.upcoming}
                             currentClientId={this.props.currentClientId}
-                            thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
                             onCreateTask={this.props.onCreateTask}
                             onUpdateTask={this.props.onUpdateTask}
                             onStartTask={this.props.onStartTask}
@@ -102,7 +106,9 @@ export class PersonalStatusUI extends Component<Props> {
                             }
                             currentClientId={this.props.currentClientId}
                             tasks={awaitingTasks}
-                            thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
                             onUpdateTask={this.props.onUpdateTask}
                             onStartTask={this.props.onStartTask}
                             onDeleteTask={this.props.onDeleteTask}

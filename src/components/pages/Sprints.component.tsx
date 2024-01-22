@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, { Component, ReactNode, createRef } from 'react';
 
@@ -43,7 +44,6 @@ import { KanbanUI } from '../internal/Kanban';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 const sectionIds = [
     upcomingSectionId,

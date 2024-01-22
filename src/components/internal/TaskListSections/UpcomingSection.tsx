@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import { SortOrder } from '@lib/data/order';
@@ -43,7 +44,6 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { InlineCreateTaskUI } from '../InlineCreateTask';
 import { TaskListItem } from './TaskListItem';
 import styles from './UpcomingSection.module.scss';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface Props {
     deps: Deps;
@@ -153,7 +153,9 @@ export class UpcomingSection extends Component<Props, State> {
                         task={task}
                         showStatus={true}
                         currentClientId={this.props.currentClientId}
-                        thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                        thirdPartyAppEventHubs={
+                            this.props.thirdPartyAppEventHubs
+                        }
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component } from 'react';
 
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
@@ -12,7 +13,6 @@ import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 
 import { InlineTaskUI } from '../InlineTask';
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 
 interface Props {
     deps: Deps;

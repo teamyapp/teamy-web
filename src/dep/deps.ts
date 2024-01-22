@@ -28,6 +28,7 @@ import { logWithCommit } from '@lib/telemetry/middleware/logWithCommit';
 import { logWithRequestId } from '@lib/telemetry/middleware/logWithRequestId';
 import { logWithServiceName } from '@lib/telemetry/middleware/logWithServiceName';
 
+import { AppClient } from '@core/client/app.client';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
 import { SprintClient } from '@core/client/sprint.client';
@@ -46,7 +47,6 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { AppClient } from '@core/client/app.client';
 
 export interface Deps {
     featureToggle: FeatureToggle;
