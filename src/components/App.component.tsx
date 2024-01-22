@@ -6,7 +6,7 @@ import {
     ThirdPartyAppEventHub,
 } from '@teamyapp/ext';
 import classNames from 'classnames';
-import React, { Component, ReactNode, createRef } from 'react';
+import React, { Component, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
