@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import { SortOrder } from '@lib/data/order';
@@ -52,6 +53,7 @@ interface Props {
     sortOrder?: string;
     currentClientId?: number;
     isPersonal?: boolean;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -151,6 +153,9 @@ export class UpcomingSection extends Component<Props, State> {
                         task={task}
                         showStatus={true}
                         currentClientId={this.props.currentClientId}
+                        thirdPartyAppEventHubs={
+                            this.props.thirdPartyAppEventHubs
+                        }
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

@@ -1,6 +1,5 @@
-
-import { RemoteTeam } from "./remoteTeam";
-import { RemoteAppVersion } from "./remoteAppVersion";
+import { RemoteAppVersion } from './remoteAppVersion';
+import { RemoteTeam } from './remoteTeam';
 
 export interface RemoteAppInstallation {
     id: string;

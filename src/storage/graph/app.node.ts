@@ -8,7 +8,10 @@ import { AppVersionNode } from './appVersion.node';
 import { TeamNode } from './team.node';
 
 export class AppNode implements App {
-    constructor(private localStore: LocalStore, private app: ThirdPartyAppState) {}
+    constructor(
+        private localStore: LocalStore,
+        private app: ThirdPartyAppState,
+    ) {}
 
     public get id(): number {
         return this.app.id;
@@ -59,13 +62,15 @@ export class AppNode implements App {
         const appState = this.localStore.getState();
         const teamAppVersion = appState.teamAppVersions.find(
             (teamAppVersion) =>
-                teamAppVersion.teamId === teamId && 
+                teamAppVersion.teamId === teamId &&
                 teamAppVersion.appId === this.app.id,
         );
         if (!teamAppVersion) {
             return undefined;
         }
-        
-        return this.versions.find((version) => version.number === teamAppVersion.appVersion);
+
+        return this.versions.find(
+            (version) => version.number === teamAppVersion.appVersion,
+        );
     }
 }

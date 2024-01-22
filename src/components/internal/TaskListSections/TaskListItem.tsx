@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component } from 'react';
 
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
@@ -23,6 +24,7 @@ interface Props {
     filterTaskAction?: (action: TaskAction) => boolean;
     numActionColumns?: number;
     showStatus?: boolean;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
     onDeleteTask?: (taskId: number) => void;
@@ -48,6 +50,7 @@ export class TaskListItem extends Component<Props> {
                     filterTaskAction={this.props.filterTaskAction}
                     numActionColumns={this.props.numActionColumns}
                     showStatus={this.props.showStatus}
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                     onUpdateTask={this.props.onUpdateTask}
                     onStartTask={this.props.onStartTask}
                     onDeleteTask={this.props.onDeleteTask}

@@ -1,1 +1,4 @@
-export type RemoteRolloutActivatorType = 'TIME_RANGE' | 'MAX_VIEWERS' | 'PERCENTAGE'
+export type RemoteRolloutActivatorType =
+    | 'TIME_RANGE'
+    | 'MAX_VIEWERS'
+    | 'PERCENTAGE';

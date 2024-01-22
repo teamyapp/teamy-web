@@ -1,5 +1,5 @@
-import { Team } from "./team";
-import { AppVersion } from "./appVersion";
+import { AppVersion } from './appVersion';
+import { Team } from './team';
 
 export interface TeamAppInstallation {
     id: number;

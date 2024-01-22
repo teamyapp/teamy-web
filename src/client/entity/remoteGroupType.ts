@@ -1,1 +1,1 @@
-export type RemoteGroupType = 'STATIC' | "FILTER"
+export type RemoteGroupType = 'STATIC' | 'FILTER';

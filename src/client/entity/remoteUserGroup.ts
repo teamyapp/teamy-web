@@ -1,7 +1,7 @@
-import { RemoteApp } from "./remoteApp";
-import { RemoteGroupType } from "./remoteGroupType";
-import { RemoteRollout } from "./remoteRollout";
-import { RemoteUser } from "./remoteUser";
+import { RemoteApp } from './remoteApp';
+import { RemoteGroupType } from './remoteGroupType';
+import { RemoteRollout } from './remoteRollout';
+import { RemoteUser } from './remoteUser';
 
 export interface RemoteUserGroup {
     id: string;
@@ -12,6 +12,6 @@ export interface RemoteUserGroup {
     memberCount?: number;
     createdAt: string;
     updatedAt?: string;
-    rollouts: RemoteRollout[]
+    rollouts: RemoteRollout[];
     app: RemoteApp;
 }

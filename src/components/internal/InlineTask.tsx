@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, {
     ChangeEvent,
@@ -24,7 +25,7 @@ import { TaskAction } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
-import { ContextMenuComponent } from './ContextMenu.component';
+import { ContextMenuComponent, MenuItem } from './ContextMenu.component';
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
 import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
@@ -86,6 +87,7 @@ interface Props {
     showStatus?: boolean;
     numActionColumns?: number;
     currentClientId?: number;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onStartEditingTask?: () => void;
     onFinishEditingTask?: () => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
@@ -221,13 +223,7 @@ export class InlineTaskUI extends Component<Props, State> {
                 />
                 <ContextMenuComponent
                     ref={this.taskIdContextMenuRef}
-                    menuItems={Object.entries(
-                        this.props.deps.uiRegistry.taskIdActions,
-                    ).map(([key, value]) => ({
-                        key,
-                        label: value.readableName,
-                        action: () => value.execute(this.props.task.id),
-                    }))}
+                    menuItems={this.renderContextMenuItems()}
                 />
             </>
         );
@@ -516,6 +512,20 @@ export class InlineTaskUI extends Component<Props, State> {
             </div>
         );
     }
+
+    private renderContextMenuItems = (): MenuItem[] => {
+        const menuItems: MenuItem[] = [];
+        this.props.thirdPartyAppEventHubs.forEach((hub) => {
+            hub.onShowTaskIdActions(this.props.task.id).forEach((action) => {
+                menuItems.push({
+                    key: `${hub.appId}/${action.key}`,
+                    label: action.view,
+                    action: () => action.execute(this.props.task.id),
+                });
+            });
+        });
+        return menuItems;
+    };
 
     private onStartTaskClick = () => {
         this.props.onStartTask?.call(null, this.props.task.id);

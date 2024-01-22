@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import { or } from '@lib/data/filter';
@@ -24,6 +25,7 @@ interface Props {
     personalTasks: Task[];
     sortOrders: SortOrders;
     currentClientId?: number;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -59,6 +61,9 @@ export class PersonalStatusUI extends Component<Props> {
                         }
                         currentClientId={this.props.currentClientId}
                         needAttentionTask={needAttentionTask}
+                        thirdPartyAppEventHubs={
+                            this.props.thirdPartyAppEventHubs
+                        }
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}
@@ -78,6 +83,9 @@ export class PersonalStatusUI extends Component<Props> {
                             tasks={upcomingTasks}
                             sortOrder={this.props.sortOrders.upcoming}
                             currentClientId={this.props.currentClientId}
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
                             onCreateTask={this.props.onCreateTask}
                             onUpdateTask={this.props.onUpdateTask}
                             onStartTask={this.props.onStartTask}
@@ -98,6 +106,9 @@ export class PersonalStatusUI extends Component<Props> {
                             }
                             currentClientId={this.props.currentClientId}
                             tasks={awaitingTasks}
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
                             onUpdateTask={this.props.onUpdateTask}
                             onStartTask={this.props.onStartTask}
                             onDeleteTask={this.props.onDeleteTask}

@@ -1,4 +1,3 @@
-import { ThirdPartyAppState } from '@core/storage/states/thirdPartyApp.state';
 import { ClientState } from '@core/storage/states/client.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
@@ -10,12 +9,13 @@ import { TaskActivityState } from '@core/storage/states/taskActivity.state';
 import { TaskAwaitForRelationState } from '@core/storage/states/taskAwaitForRelation.state';
 import { TeamState } from '@core/storage/states/team.state';
 import { TeamMemberState } from '@core/storage/states/teamMember.state';
+import { ThirdPartyAppState } from '@core/storage/states/thirdPartyApp.state';
 import { UserState } from '@core/storage/states/user.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
-import { TaskLinkState } from './taskLink.state';
 import { AppInstallationState } from './appInstallation.state';
 import { AppSecretState } from './appSecret.state';
+import { TaskLinkState } from './taskLink.state';
 import { TeamAppVersionState } from './teamAppVersion.state';
 
 export class AppState {

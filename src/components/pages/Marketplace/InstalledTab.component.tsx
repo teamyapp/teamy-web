@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import { Component, createRef } from 'react';
 
 import { Deps } from '@core/dep/deps';
@@ -5,10 +6,13 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 
 import styles from './InstalledTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
+import githubIconImg from './assets/github.png';
+import slackIconImg from './assets/slack.png';
 import { formatCount } from './format';
 
 interface Props {
     deps: Deps;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
 }
 
 interface State {}
@@ -68,7 +72,10 @@ export class InstalledTabComponent extends Component<Props, State> {
                         </div>
                     ))}
                 </div>
-                <AppSettingModalComponent ref={this.appSettingModalRef} />
+                <AppSettingModalComponent
+                    ref={this.appSettingModalRef}
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                />
             </>
         );
     }

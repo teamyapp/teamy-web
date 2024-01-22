@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -33,6 +34,7 @@ interface Props {
     deps: Deps;
     dropReceiverLayer?: number;
     taskFilters: TaskFilters;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onViewTaskDetail?: (taskId: number) => void;
 }
 
@@ -178,6 +180,7 @@ export class BacklogComponent extends Component<Props, State> {
                     numActionColumns={1}
                     showStatus={true}
                     filterTaskAction={filterTaskAction}
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                     onUpdateTask={this.onUpdateTask}
                     onDeleteTask={this.onDeleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}

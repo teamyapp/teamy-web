@@ -1,6 +1,6 @@
-import { RemoteApp } from "./remoteApp";
-import { RemoteMoney } from "./remoteMoney";
-import { RemoteUser } from "./remoteUser";
+import { RemoteApp } from './remoteApp';
+import { RemoteMoney } from './remoteMoney';
+import { RemoteUser } from './remoteUser';
 
 export interface RemoteAppVersion {
     number: number;

@@ -1,12 +1,12 @@
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 
+import { RemoteApp } from './remoteApp';
+import { RemoteAppInstallation } from './remoteAppInstallation';
 import { RemoteInvitation } from './remoteInvitation';
 import { RemoteTask } from './remoteTask';
 import { RemoteTaskActivity } from './remoteTaskActivity';
 import { RemoteUser } from './remoteUser';
-import { RemoteApp } from './remoteApp';
-import { RemoteAppInstallation } from './remoteAppInstallation';
 
 export interface RemoteTeam {
     id: string;

@@ -1,1 +1,1 @@
-export type RemoteRolloutVersionSelectorType = 'STATIC' | 'EXPERIMENT'
+export type RemoteRolloutVersionSelectorType = 'STATIC' | 'EXPERIMENT';

@@ -31,7 +31,9 @@ export function CredentialTabComponent(props: Props) {
         const stateChangeChan = props.deps.localStore.subscribeStateChange();
         (async () => {
             while (true) {
-                console.log('[CredentialTabComponent] waiting for state changes');
+                console.log(
+                    '[CredentialTabComponent] waiting for state changes',
+                );
                 const hasChanged = await stateChangeChan!.pop();
                 if (hasChanged === undefined) {
                     // check undefined instead of falsy because
@@ -39,14 +41,13 @@ export function CredentialTabComponent(props: Props) {
                     return;
                 }
 
- const tmpApiSecretInputs: Record<number, ApiSecretInput> =
-                        {};
+                const tmpApiSecretInputs: Record<number, ApiSecretInput> = {};
 
-                    app?.secrets.forEach((secret) => {
-                        tmpApiSecretInputs[secret.id] = {
-                            name: secret.name,
-                        };
-                    });
+                app?.secrets.forEach((secret) => {
+                    tmpApiSecretInputs[secret.id] = {
+                        name: secret.name,
+                    };
+                });
                 setApiSecretInputs(tmpApiSecretInputs);
             }
         })().then();

@@ -34,7 +34,9 @@ export class ManagedTabComponent extends Component<Props> {
             <>
                 <div className={styles.ItemList}>
                     {managedApps.map((app) => {
-                        const currentTeamAppVersion = app.latestVersionForTeam(this.graphSource.currentTeam()?.id)
+                        const currentTeamAppVersion = app.latestVersionForTeam(
+                            this.graphSource.currentTeam()?.id,
+                        );
                         if (!currentTeamAppVersion) {
                             return null;
                         }

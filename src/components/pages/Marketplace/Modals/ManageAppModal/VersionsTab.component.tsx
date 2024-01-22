@@ -38,9 +38,8 @@ export function VersionsTabComponent(props: Props) {
             return;
         }
 
-        props.onDeleteVersionClick(selectedAppVersion.number)
-        
-    }
+        props.onDeleteVersionClick(selectedAppVersion.number);
+    };
 
     const renderSelectingAppPackageTab = (): ReactNode => {
         return (
@@ -147,7 +146,10 @@ export function VersionsTabComponent(props: Props) {
                         <div className={styles.Download}>
                             <ButtonUI label={'Download'} />
                         </div>
-                        <div className={styles.Delete} onClick={onDeleteVersionClick}>
+                        <div
+                            className={styles.Delete}
+                            onClick={onDeleteVersionClick}
+                        >
                             <ButtonUI label={'Delete'} />
                         </div>
                     </div>
@@ -166,7 +168,8 @@ export function VersionsTabComponent(props: Props) {
                     Create Version
                 </div>
                 <div className={styles.VersionList}>
-                    {props.appVersions?.sort(
+                    {props.appVersions
+                        ?.sort(
                             (appVersion1, appVersion2) =>
                                 appVersion2.number - appVersion1.number,
                         )

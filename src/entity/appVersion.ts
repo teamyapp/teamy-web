@@ -1,5 +1,6 @@
 import { Money } from '@core/entity/money';
 import { User } from '@core/entity/user';
+
 import { App } from './app';
 
 export interface AppVersion {

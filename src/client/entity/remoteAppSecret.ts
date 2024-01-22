@@ -1,5 +1,5 @@
-import { RemoteApp } from "./remoteApp";
-import { RemoteUser } from "./remoteUser";
+import { RemoteApp } from './remoteApp';
+import { RemoteUser } from './remoteUser';
 
 export interface RemoteAppSecret {
     id: string;

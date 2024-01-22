@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import { Component, ReactNode } from 'react';
 
@@ -25,10 +26,6 @@ import { FilterTabComponent } from './FilterTab.component';
 import { InstalledTabComponent } from './InstalledTab.component';
 import { ManagedTabComponent } from './ManagedTab.component';
 import styles from './Marketplace.component.module.scss';
-
-interface Props {
-    deps: Deps;
-}
 
 interface Tab<Key> {
     name: string;
@@ -119,6 +116,11 @@ const lowerTabs: Tab<LowerTabKey>[] = [
     },
 ];
 
+interface Props {
+    deps: Deps;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
+}
+
 interface State {
     showTabViews: Record<string, boolean>;
 }
@@ -191,19 +193,34 @@ export class MarketplaceComponent extends Component<Props, State> {
                         router={this.router}
                         pattern={marketplaceInstalledRoutePattern}
                     >
-                        <InstalledTabComponent deps={this.props.deps} />
+                        <InstalledTabComponent
+                            deps={this.props.deps}
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
+                        />
                     </Route>
                     <Route
                         router={this.router}
                         pattern={marketplaceDiscoverRoutePattern}
                     >
-                        <DiscoverTabComponent deps={this.props.deps} />
+                        <DiscoverTabComponent
+                            deps={this.props.deps}
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
+                        />
                     </Route>
                     <Route
                         router={this.router}
                         pattern={marketplaceFilterRoutePattern}
                     >
-                        <FilterTabComponent deps={this.props.deps} />
+                        <FilterTabComponent
+                            deps={this.props.deps}
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
+                        />
                     </Route>
                 </div>
             </div>

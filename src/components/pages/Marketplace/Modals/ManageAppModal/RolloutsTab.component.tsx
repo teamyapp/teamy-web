@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import moment from 'moment/moment';
 import React, { ReactNode, createRef, useState } from 'react';
 
+import { Deps } from '@core/dep/deps';
 import { Rollout } from '@core/entity/rollout';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
@@ -14,7 +15,6 @@ import {
 } from '../EditRolloutView.component';
 import styles from './RolloutsTab.component.module.scss';
 import { teamGroupRollouts, userGroupRollouts } from './data';
-import { Deps } from '@core/dep/deps';
 
 interface Tab<Key> {
     name: string;
@@ -224,9 +224,10 @@ export function RolloutsTabComponent(props: Props) {
                 </div>
             </div>
             <CreateUserRolloutModalComponent ref={createUserRolloutModalRef} />
-            <CreateTeamRolloutModalComponent 
-                ref={createTeamRolloutModalRef} 
-                isValidVersionNumber={props.isValidVersionNumber} />
+            <CreateTeamRolloutModalComponent
+                ref={createTeamRolloutModalRef}
+                isValidVersionNumber={props.isValidVersionNumber}
+            />
         </>
     );
 }

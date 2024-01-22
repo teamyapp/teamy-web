@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, { Component, ReactNode, createRef } from 'react';
 
@@ -54,6 +55,7 @@ const sectionIds = [
 interface Props {
     deps: Deps;
     taskFilters: TaskFilters;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onViewTaskDetail?: (taskId: number) => void;
     onCreateSprintClick?: () => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
@@ -426,6 +428,9 @@ export class SprintsComponent extends Component<Props, State> {
                                 )}
                                 currentClientId={clientId}
                                 sortOrders={this.state.sortOrders}
+                                thirdPartyAppEventHubs={
+                                    this.props.thirdPartyAppEventHubs
+                                }
                                 onCreateTask={this.onCreateTask}
                                 onUpdateTask={this.onUpdateTask}
                                 onStartTask={this.moveTaskToInProgress}

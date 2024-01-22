@@ -1,3 +1,4 @@
+import { RequiredAction } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, { Component, ReactNode, createRef } from 'react';
 
@@ -5,12 +6,6 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 
 import styles from './RequiredActionsModal.component.module.scss';
-
-export interface RequiredAction {
-    actionName: string;
-    view: ReactNode;
-    renderView: () => void;
-}
 
 interface State {
     requiredActions: RequiredAction[];
@@ -58,11 +53,6 @@ export class RequiredActionsModalComponent extends Component<any, State> {
         });
 
         this.modalRef.current?.open();
-        setTimeout(() => {
-            this.state.requiredActions[
-                this.state.currentStepIndex
-            ].renderView();
-        });
     }
 
     public completeCurrentStep() {
@@ -72,12 +62,6 @@ export class RequiredActionsModalComponent extends Component<any, State> {
         });
         if (prevIndex === this.state.requiredActions.length - 1) {
             this.modalRef.current?.close();
-        } else {
-            setTimeout(() => {
-                this.state.requiredActions[
-                    this.state.currentStepIndex
-                ].renderView();
-            });
         }
     }
 

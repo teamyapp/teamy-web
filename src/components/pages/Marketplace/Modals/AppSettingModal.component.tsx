@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, RefObject, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -21,7 +22,9 @@ const apps: Record<number, App> = {
     },
 };
 
-interface Props {}
+interface Props {
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
+}
 
 interface State {
     app?: App;
@@ -29,7 +32,6 @@ interface State {
 
 export class AppSettingModalComponent extends Component<Props, State> {
     private readonly modalRef: RefObject<ModalUI> = createRef();
-    private readonly contentRef: RefObject<HTMLDivElement> = createRef();
 
     constructor(props: Props) {
         super(props);
@@ -37,6 +39,9 @@ export class AppSettingModalComponent extends Component<Props, State> {
     }
 
     render() {
+        const thirdPartyAppEventHub = this.props.thirdPartyAppEventHubs.find(
+            (hub) => hub.appId === this.state.app?.id,
+        );
         return (
             this.state.app && (
                 <ModalUI ref={this.modalRef}>
@@ -51,7 +56,9 @@ export class AppSettingModalComponent extends Component<Props, State> {
                             <MaterialIconUI>cancel</MaterialIconUI>
                         </div>
                     </div>
-                    <div className={styles.Content} ref={this.contentRef} />
+                    <div className={styles.Content}>
+                        {thirdPartyAppEventHub?.onShowAppSetting?.()}
+                    </div>
                 </ModalUI>
             )
         );

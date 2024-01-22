@@ -1,8 +1,10 @@
-import { Component } from 'react';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
+import React, { Component, createRef } from 'react';
 
 import { Deps } from '@core/dep/deps';
 
 import styles from './DiscoveredTab.component.module.scss';
+import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import googleCalendarIconImg from './assets/calendar.png';
 import excelIconImg from './assets/excel.png';
 import figmaIconImg from './assets/figma.png';
@@ -157,11 +159,14 @@ const items: Item[] = [
 
 interface Props {
     deps: Deps;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
 }
 
 interface State {}
 
 export class DiscoverTabComponent extends Component<Props, State> {
+    private readonly appSettingModalRef = createRef<AppSettingModalComponent>();
+
     render() {
         return (
             <>
@@ -197,6 +202,9 @@ export class DiscoverTabComponent extends Component<Props, State> {
                                     <>
                                         <div
                                             className={`${styles.Button} ${styles.Setting}`}
+                                            onClick={this.onAppSettingButtonClickHandler(
+                                                item.id,
+                                            )}
                                         >
                                             Setting
                                         </div>
@@ -221,7 +229,17 @@ export class DiscoverTabComponent extends Component<Props, State> {
                         </div>
                     ))}
                 </div>
+                <AppSettingModalComponent
+                    ref={this.appSettingModalRef}
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                />
             </>
         );
     }
+
+    private onAppSettingButtonClickHandler = (appId: number) => {
+        return () => {
+            this.appSettingModalRef.current?.open(appId);
+        };
+    };
 }

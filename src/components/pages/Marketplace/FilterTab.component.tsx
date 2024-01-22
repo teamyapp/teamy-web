@@ -1,4 +1,5 @@
-import { Component } from 'react';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
+import React, { Component, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { RouteUpdate, Router } from '@lib/router/router';
@@ -7,6 +8,7 @@ import { Deps } from '@core/dep/deps';
 import { getTag, marketplaceFilterRoutePattern } from '@core/routing/routes';
 
 import styles from './FilterTab.component.module.scss';
+import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import googleCalendarIconImg from './assets/calendar.png';
 import excelIconImg from './assets/excel.png';
 import figmaIconImg from './assets/figma.png';
@@ -169,6 +171,7 @@ const tagToItemIds: Record<string, number[]> = {
 
 interface Props {
     deps: Deps;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
 }
 
 interface State {
@@ -178,6 +181,7 @@ interface State {
 export class FilterTabComponent extends Component<Props, State> {
     private readonly router: Router;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
+    private readonly appSettingModalRef = createRef<AppSettingModalComponent>();
 
     constructor(props: Props) {
         super(props);
@@ -209,51 +213,66 @@ export class FilterTabComponent extends Component<Props, State> {
 
     render() {
         return (
-            <div className={styles.ItemList}>
-                {filterItemsByTag(items, this.state.tag).map((item) => (
-                    <div key={item.id} className={styles.InlineItem}>
-                        <div className={styles.LeftSection}>
-                            <div className={styles.Icon}>
-                                <img src={item.iconUrl} />
+            <>
+                <div className={styles.ItemList}>
+                    {filterItemsByTag(items, this.state.tag).map((item) => (
+                        <div key={item.id} className={styles.InlineItem}>
+                            <div className={styles.LeftSection}>
+                                <div className={styles.Icon}>
+                                    <img src={item.iconUrl} />
+                                </div>
+                            </div>
+                            <div className={styles.MiddleSection}>
+                                <div className={styles.Name}>{item.name}</div>
+                                <div className={styles.Installations}>
+                                    {formatCount(item.installations)} installed
+                                </div>
+                            </div>
+                            <div className={styles.RightSection}>
+                                {item.isInstalled && (
+                                    <>
+                                        <div
+                                            className={`${styles.Button} ${styles.Setting}`}
+                                            onClick={this.onAppSettingButtonClickHandler(
+                                                item.id,
+                                            )}
+                                        >
+                                            Setting
+                                        </div>
+                                        <div
+                                            className={`${styles.Button}  ${styles.Remove}`}
+                                        >
+                                            Remove
+                                        </div>
+                                    </>
+                                )}
+                                {!item.isInstalled && (
+                                    <>
+                                        <div className={styles.Price}>
+                                            {formatPrice(item.price)}
+                                        </div>
+                                        <div className={`${styles.Button}`}>
+                                            Install
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
-                        <div className={styles.MiddleSection}>
-                            <div className={styles.Name}>{item.name}</div>
-                            <div className={styles.Installations}>
-                                {formatCount(item.installations)} installed
-                            </div>
-                        </div>
-                        <div className={styles.RightSection}>
-                            {item.isInstalled && (
-                                <>
-                                    <div
-                                        className={`${styles.Button} ${styles.Setting}`}
-                                    >
-                                        Setting
-                                    </div>
-                                    <div
-                                        className={`${styles.Button}  ${styles.Remove}`}
-                                    >
-                                        Remove
-                                    </div>
-                                </>
-                            )}
-                            {!item.isInstalled && (
-                                <>
-                                    <div className={styles.Price}>
-                                        {formatPrice(item.price)}
-                                    </div>
-                                    <div className={`${styles.Button}`}>
-                                        Install
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+                <AppSettingModalComponent
+                    ref={this.appSettingModalRef}
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                />
+            </>
         );
     }
+
+    private onAppSettingButtonClickHandler = (appId: number) => {
+        return () => {
+            this.appSettingModalRef.current?.open(appId);
+        };
+    };
 }
 
 function filterItemsByTag(items: Item[], tag: string | undefined) {
