@@ -16,13 +16,13 @@ steps:
       storage_type: volume
       volume_cache_root_dir: /var/lib/cache
   - name: build frontend
-    image: node:21.6.0-alpine3.13
+    image: node:21.6.0-alpine3.19
     commands:
       - apk add --no-cache git g++ make python3
       - yarn install --frozen-lockfile
       - yarn build:staging
   - name: run unit tests
-    image: node:21.6.0-alpine3.13
+    image: node:21.6.0-alpine3.19
     commands:
       - apk add --no-cache git
       - CI=true yarn test
@@ -75,7 +75,7 @@ steps:
       storage_type: volume
       volume_cache_root_dir: /var/lib/cache
   - name: build frontend
-    image: node:21.6.0-alpine3.13
+    image: node:21.6.0-alpine3.19
     commands:
       - apk add --no-cache git g++ make python3
       - yarn install --frozen-lockfile
@@ -150,7 +150,7 @@ steps:
       storage_type: volume
       volume_cache_root_dir: /var/lib/cache
   - name: build frontend
-    image: node:21.6.0-alpine3.13
+    image: node:21.6.0-alpine3.19
     commands:
       - apk add --no-cache git g++ make python3
       - yarn install --frozen-lockfile
@@ -227,7 +227,7 @@ steps:
       storage_type: volume
       volume_cache_root_dir: /var/lib/cache
   - name: build frontend
-    image: node:21.6.0-alpine3.13
+    image: node:21.6.0-alpine3.19
     commands:
       - apk add --no-cache git g++ make python3
       - yarn install --frozen-lockfile
@@ -302,7 +302,7 @@ steps:
       storage_type: volume
       volume_cache_root_dir: /var/lib/cache
   - name: run e2e tests
-    image: node:21.6.0-alpine3.13
+    image: node:21.6.0-alpine3.19
     commands:
       - yarn install --frozen-lockfile
       - yarn test:e2e
