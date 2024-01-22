@@ -327,7 +327,6 @@ export class StateSyncer {
     public async pullCurrentSprint() {
         let appState = this.localStore.getState();
         const currSprintId = appState.currSprintId;
-        debugger
         if (!currSprintId) {
             return;
         }
