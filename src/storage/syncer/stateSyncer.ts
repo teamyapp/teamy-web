@@ -61,6 +61,7 @@ import {
     mergeInvitation,
     mergeMessage,
     mergeSprint,
+    mergeTag,
     mergeTask,
     mergeTeam,
     mergeUser,
@@ -907,6 +908,30 @@ export class StateSyncer {
         delete app.versions[versionNumber];
         this.localStore.updateState(appState);
     }
+
+    public async addTagToApp(appId: number, tag: string): Promise<void> {
+        const remoteTag = await this.appClient.addTagToApp(`${appId}`, tag);
+        let appState = this.localStore.getState();
+        const app = appState.apps[appId];
+        const tagId = toInt(remoteTag.id);
+        if (!tagId) {
+            return;
+        }
+
+        app.tagIds.add(tagId);
+        appState = mergeTag(appState, remoteTag);
+        this.localStore.updateState(appState);
+    }
+
+    public async removeTagFromApp(appId: number, tagId: number): Promise<void> {
+        await this.appClient.removeTagFromApp(`${appId}`, `${tagId}`);
+        let appState = this.localStore.getState();
+        const app = appState.apps[appId];
+        app.tagIds.delete(tagId);
+        this.localStore.updateState(appState);
+    }
+
+
 
     public createStaticUserGroup(
         appId: number,

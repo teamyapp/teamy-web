@@ -43,6 +43,8 @@ import { TaskActivityState } from '../states/taskActivity.state';
 import { TaskLinkState } from '../states/taskLink.state';
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { Mutation } from './mutation';
+import { RemoteTag } from '@core/client/entity/remoteTag';
+import { TagState } from '../states/tag.state';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -512,6 +514,9 @@ export function mergeApp(
             remoteApp.installations?.map(
                 (installation) => toInt(installation.id)!,
             ) || localOldApp.installationIds,
+        tagIds: new Set(
+            remoteApp.tags?.map((tag) => toInt(tag.id)!),
+        ) || localOldApp.tagIds,
         versions: localOldApp.versions || {},
     };
 
@@ -534,6 +539,10 @@ export function mergeApp(
     remoteApp.installations?.forEach((installation) => {
         currAppState = mergeAppInstallation(currAppState, installation);
     });
+
+    remoteApp.tags?.forEach((tag) => {
+        currAppState = mergeTag(currAppState, tag);
+    })
 
     currAppState.apps[remoteAppId] = localNewApp;
 
@@ -614,6 +623,22 @@ export function mergeAppSecret(
     currAppState.appSecrets[remoteAppSecretId] = localNewAppSecret;
     return currAppState;
 }
+
+export function mergeTag(
+    currAppState: AppState,
+    remoteTag: RemoteTag,
+): AppState {
+    const remoteTagId = toInt(remoteTag.id)!;
+    const localOldTag = currAppState.tags[remoteTagId] || {};
+    const localNewTag: TagState = {
+        id: remoteTagId,
+        tag: remoteTag.tag || localOldTag.tag,
+    };
+
+    currAppState.tags[remoteTagId] = localNewTag;
+    return currAppState;
+}
+
 
 export function mergeAppInstallation(
     currAppState: AppState,

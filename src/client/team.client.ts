@@ -67,6 +67,10 @@ export class TeamClient {
                             }
                             managedApps {
                                 id
+                                tags {
+                                    id
+                                    tag
+                                }
                                 secrets {
                                     id
                                     name

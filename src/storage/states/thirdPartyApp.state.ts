@@ -7,6 +7,7 @@ export class ThirdPartyAppState {
         public installationIds: number[],
         public totalInstallations: number,
         public managedByTeamId: number,
+        public tagIds: Set<number>,
         public versions: Record<number, AppVersionState>,
     ) {}
 
@@ -24,6 +25,7 @@ export class ThirdPartyAppState {
             json.InstallationIDs,
             json.TotalInstallations,
             json.ManagedByTeamID,
+            json.TagIDs,
             versions,
         );
     }
@@ -40,6 +42,7 @@ export class ThirdPartyAppState {
             json.installationIds,
             json.totalInstallations,
             json.managedByTeamId,
+            json.tagIds,
             versions,
         );
     }

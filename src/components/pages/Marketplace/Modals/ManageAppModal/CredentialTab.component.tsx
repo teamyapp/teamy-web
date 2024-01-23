@@ -23,9 +23,21 @@ export function CredentialTabComponent(props: Props) {
     const createAppSecretModalRef = createRef<CreateAppSecretModalComponent>();
     const feedbackPubSub = props.deps.feedbackPubSub;
     const app = props.deps.graphSource.app(props.appId);
+    const tmpApiSecretInputs = () => {
+        const tmpApiSecretInputs: Record<number, ApiSecretInput> = {};
+
+        app?.secrets.forEach((secret) => {
+            tmpApiSecretInputs[secret.id] = {
+                name: secret.name,
+            };
+        });
+
+        return tmpApiSecretInputs;
+    };
+
     const [apiSecretInputs, setApiSecretInputs] = React.useState<
         Record<number, ApiSecretInput>
-    >({});
+    >(tmpApiSecretInputs);
 
     useEffect(() => {
         const stateChangeChan = props.deps.localStore.subscribeStateChange();
@@ -41,13 +53,6 @@ export function CredentialTabComponent(props: Props) {
                     return;
                 }
 
-                const tmpApiSecretInputs: Record<number, ApiSecretInput> = {};
-
-                app?.secrets.forEach((secret) => {
-                    tmpApiSecretInputs[secret.id] = {
-                        name: secret.name,
-                    };
-                });
                 setApiSecretInputs(tmpApiSecretInputs);
             }
         })().then();
@@ -56,10 +61,6 @@ export function CredentialTabComponent(props: Props) {
             stateChangeChan?.close();
         };
     }, []);
-
-    if (Object.entries(apiSecretInputs).length === 0) {
-        return null;
-    }
 
     const onCreateSecretClick = () => {
         createAppSecretModalRef.current?.open();

@@ -1,41 +1,68 @@
-import React, { useState } from 'react';
-
+import React, { useEffect } from 'react';
 import { ItemListUI } from '@lib/ui/ItemList';
 
 import styles from './TagsTab.component.module.scss';
+import { Deps } from '@core/dep/deps';
+import { Tag } from '@core/entity/tag';
 
 interface Props {
-    tags: string[];
-    onAddTage?: (tag: string) => void;
-    onRemoveTag?: (tag: string) => void;
+    appId: number;
+    tags: Tag[];
+    deps: Deps;
 }
 
+
 export function TagsTabComponent(props: Props) {
-    const [tags, setTags] = useState<string[]>(props.tags);
-    const renderInlineTag = (tag: string) => {
-        return <div className={styles.Tag}>{tag}</div>;
+    const [tags, setTags] = React.useState<Tag[]>(props.tags);
+    useEffect(() => {
+        const stateChangeChan = props.deps.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                console.log(
+                    '[CredentialTagsTabComponent] waiting for state changes',
+                );
+                const hasChanged = await stateChangeChan!.pop();
+                if (hasChanged === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+                debugger
+                const app = props.deps.graphSource.app(props.appId);
+                if (app) {
+                    setTags(app.tags);
+                }
+            }
+        })().then();
+
+        return () => {
+            stateChangeChan?.close();
+        };
+    }, []);
+
+
+    const renderInlineTag = (tag: Tag) => {
+        return <div className={styles.Tag}>{tag.tag}</div>;
     };
 
-    const parseNewTag = (tag: string) => {
-        return tag.trim();
+    const parseNewTag = (tag: string)=> {
+        return tag.trim()
     };
 
     const isTagValid = (tag: string) => {
-        return tag.length > 0;
+        return true
     };
 
     const isTagDuplicate = (tag: string) => {
-        return tags.includes(tag);
+        return props.tags.some(t => t.tag === tag);
     };
 
     const onAddTag = (tag: string) => {
-        setTags([...tags, tag]);
-        props.onAddTage?.(tag);
+        props.deps.stateSyncer.addTagToApp(props.appId, tag);        
     };
 
-    const onRemoveTag = (tag: string) => {
-        setTags(tags.filter((t) => t !== tag));
-        props.onRemoveTag?.(tag);
+    const onRemoveTag = (tag: Tag) => {
+        props.deps.stateSyncer.removeTagFromApp(props.appId, tag.id);
     };
 
     return (

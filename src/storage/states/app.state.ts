@@ -17,12 +17,14 @@ import { AppInstallationState } from './appInstallation.state';
 import { AppSecretState } from './appSecret.state';
 import { TaskLinkState } from './taskLink.state';
 import { TeamAppVersionState } from './teamAppVersion.state';
+import { TagState } from './tag.state';
 
 export class AppState {
     public constructor(
         public apps: Record<number, ThirdPartyAppState>,
         public appSecrets: Record<number, AppSecretState>,
         public appInstallations: Record<number, AppInstallationState>,
+        public tags: Record<number, TagState>,
         public users: Record<number, UserState>,
         public clients: Record<number, ClientState>,
         public teams: Record<number, TeamState>,
@@ -51,6 +53,7 @@ export class AppState {
 
     public static fromJson(json: any): AppState {
         return new AppState(
+            {},
             {},
             {},
             {},
