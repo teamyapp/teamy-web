@@ -25,13 +25,11 @@ export function CredentialTabComponent(props: Props) {
     const app = props.deps.graphSource.app(props.appId);
     const tmpApiSecretInputs = () => {
         const tmpApiSecretInputs: Record<number, ApiSecretInput> = {};
-
         app?.secrets.forEach((secret) => {
             tmpApiSecretInputs[secret.id] = {
                 name: secret.name,
             };
         });
-
         return tmpApiSecretInputs;
     };
 

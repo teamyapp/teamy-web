@@ -58,7 +58,6 @@ export class AppNode implements App {
     public get tags(): TagNode[] {
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id];
-
         return Array.from(app.tagIds).map((tagId) => {
             const tag = appState.tags[tagId];
             return new TagNode(this.localStore, tag);

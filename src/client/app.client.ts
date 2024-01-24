@@ -152,6 +152,4 @@ export class AppClient {
             })
             .then(({ removeTagFromApp }) => removeTagFromApp);
     }
-
-
 }

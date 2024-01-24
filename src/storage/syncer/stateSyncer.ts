@@ -931,8 +931,6 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-
-
     public createStaticUserGroup(
         appId: number,
         input: CreateStaticGroupInput,

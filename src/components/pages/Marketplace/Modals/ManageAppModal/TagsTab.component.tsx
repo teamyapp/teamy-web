@@ -19,7 +19,7 @@ export function TagsTabComponent(props: Props) {
         (async () => {
             while (true) {
                 console.log(
-                    '[CredentialTagsTabComponent] waiting for state changes',
+                    '[TagsTabComponent] waiting for state changes',
                 );
                 const hasChanged = await stateChangeChan!.pop();
                 if (hasChanged === undefined) {
@@ -27,19 +27,16 @@ export function TagsTabComponent(props: Props) {
                     // a falsy data could be valid data per channel's concern.
                     return;
                 }
-                debugger
                 const app = props.deps.graphSource.app(props.appId);
                 if (app) {
                     setTags(app.tags);
                 }
             }
         })().then();
-
         return () => {
             stateChangeChan?.close();
         };
     }, []);
-
 
     const renderInlineTag = (tag: Tag) => {
         return <div className={styles.Tag}>{tag.value}</div>;
