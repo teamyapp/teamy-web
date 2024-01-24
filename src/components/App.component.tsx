@@ -139,6 +139,7 @@ export class AppComponent extends Component<Props, State> {
     private dragAndDropEventChan?: csp.PopChannel<
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
+    private thirdPartyAppEventHubs: ThirdPartyAppEventHub[] = [];
 
     constructor(props: Props) {
         super(props);
@@ -296,6 +297,7 @@ export class AppComponent extends Component<Props, State> {
                                                 taskFilters={
                                                     this.state.taskFilters
                                                 }
+                                                thirdPartyAppEventHubs={this.state.thirdPartyAppEventHubs}
                                                 onViewTaskDetail={
                                                     this.onViewTaskDetail
                                                 }
@@ -794,11 +796,11 @@ export class AppComponent extends Component<Props, State> {
         const allRequiredActions: RequiredActions[] = [];
         for (
             let index = 0;
-            index < this.state.thirdPartyAppEventHubs.length;
+            index < this.thirdPartyAppEventHubs.length;
             index++
         ) {
             const thirdPartyAppEventHub =
-                this.state.thirdPartyAppEventHubs[index];
+                this.thirdPartyAppEventHubs[index];
             const requiredActions =
                 await thirdPartyAppEventHub.onShowRequiredActions(
                     this.onRequireActionComplete,
@@ -820,7 +822,7 @@ export class AppComponent extends Component<Props, State> {
         // TODO(magicoder10): error handling when failed to load script
         const githubAppId = 1;
 
-        const thirdPartyAppEventHubs: ThirdPartyAppEventHub[] = [];
+        this.thirdPartyAppEventHubs = [];
         await Promise.all(
             ['http://localhost:8082/app/app.js'].map(
                 async (extensionEntryPoint) => {
@@ -830,7 +832,7 @@ export class AppComponent extends Component<Props, State> {
                     const thirdPartyAppEventHub = new ThirdPartyAppEventHub(
                         githubAppId,
                     );
-                    thirdPartyAppEventHubs.push(thirdPartyAppEventHub);
+                    this.thirdPartyAppEventHubs.push(thirdPartyAppEventHub);
 
                     const client: ThirdPartyAppClient =
                         new TeamyThirdPartyAppClient(
@@ -849,7 +851,7 @@ export class AppComponent extends Component<Props, State> {
             ),
         );
         this.setState({
-            thirdPartyAppEventHubs,
+            thirdPartyAppEventHubs: this.thirdPartyAppEventHubs,
         });
     }
 }
