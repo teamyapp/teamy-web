@@ -4,5 +4,5 @@
 
 export interface Tag {
     id: number;
-    tag: string;
+    value: string;
 }

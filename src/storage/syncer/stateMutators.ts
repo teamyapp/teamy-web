@@ -632,7 +632,7 @@ export function mergeTag(
     const localOldTag = currAppState.tags[remoteTagId] || {};
     const localNewTag: TagState = {
         id: remoteTagId,
-        tag: remoteTag.tag || localOldTag.tag,
+        value: remoteTag.value || localOldTag.value,
     };
 
     currAppState.tags[remoteTagId] = localNewTag;

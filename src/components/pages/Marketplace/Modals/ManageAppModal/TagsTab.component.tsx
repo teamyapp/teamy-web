@@ -42,7 +42,7 @@ export function TagsTabComponent(props: Props) {
 
 
     const renderInlineTag = (tag: Tag) => {
-        return <div className={styles.Tag}>{tag.tag}</div>;
+        return <div className={styles.Tag}>{tag.value}</div>;
     };
 
     const parseNewTag = (tag: string)=> {
@@ -53,12 +53,12 @@ export function TagsTabComponent(props: Props) {
         return true
     };
 
-    const isTagDuplicate = (tag: string) => {
-        return props.tags.some(t => t.tag === tag);
+    const isTagDuplicate = (value: string) => {
+        return props.tags.some(t => t.value === value);
     };
 
-    const onAddTag = (tag: string) => {
-        props.deps.stateSyncer.addTagToApp(props.appId, tag);        
+    const onAddTag = (value: string) => {
+        props.deps.stateSyncer.addTagToApp(props.appId, value);        
     };
 
     const onRemoveTag = (tag: Tag) => {

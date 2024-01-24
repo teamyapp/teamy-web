@@ -4,13 +4,13 @@ import { TagState } from "../states/tag.state";
 
 
 export class TagNode implements Tag {
-    constructor(private localStore: LocalStore, private _tag: TagState) {}
+    constructor(private localStore: LocalStore, private tag: TagState) {}
 
     public get id(): number {
-        return this._tag.id;
+        return this.tag.id;
     }
 
-    public get tag(): string {
-        return this._tag.tag;
+    public get value(): string {
+        return this.tag.value;
     }
 }

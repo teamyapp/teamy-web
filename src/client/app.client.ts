@@ -114,20 +114,20 @@ export class AppClient {
             .then(({ deleteAppSecret }) => deleteAppSecret);
     }
 
-    addTagToApp(appId: string, tag: string): Promise<RemoteTag> {
+    addTagToApp(appId: string, value: string): Promise<RemoteTag> {
         return this.graphQLClient
             .mutate({
                 mutation: `
-                    mutation addTagToApp($appId: ID!, $tag: String!) {
-                        addTagToApp(appId: $appId, tag: $tag) {
+                    mutation addTagToApp($appId: ID!, $value: String!) {
+                        addTagToApp(appId: $appId, value: $value) {
                             id
-                            tag
+                            value
                         }
                     }
                 `,
                 variables: {
                     appId,
-                    tag,
+                    value,
                 },
             })
             .then(({ addTagToApp }) => addTagToApp);
@@ -141,7 +141,7 @@ export class AppClient {
                     mutation removeTagFromApp($appId: ID!, $tagId: ID!) {
                         removeTagFromApp(appId: $appId, tagId: $tagId) {
                             id
-                            tag
+                            value
                         }
                     }
                 `,

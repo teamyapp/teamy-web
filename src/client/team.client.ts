@@ -69,7 +69,7 @@ export class TeamClient {
                                 id
                                 tags {
                                     id
-                                    tag
+                                    value
                                 }
                                 secrets {
                                     id

@@ -1,20 +1,20 @@
 export  class TagState {
     public constructor(
         public id: number,
-        public tag: string,
+        public value: string,
     ) {}
 
     public static fromMutationPayload(json: any): TagState {
         return new TagState(
             json.ID,
-            json.Tag,
+            json.Value,
         );
     }
 
     public static fromJson(json: any): TagState {
         return new TagState(
             json.id,
-            json.tag,
+            json.value,
         );
     }
 }
