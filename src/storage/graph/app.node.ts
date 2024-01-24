@@ -6,6 +6,7 @@ import { AppInstallationNode } from './appInstallation.node';
 import { AppSecretNode } from './appSecret.node';
 import { AppVersionNode } from './appVersion.node';
 import { TeamNode } from './team.node';
+import { TagNode } from './tag.node';
 
 export class AppNode implements App {
     constructor(
@@ -51,6 +52,15 @@ export class AppNode implements App {
         const app = appState.apps[this.app.id];
         return Object.values(this.app.versions).map((version) => {
             return new AppVersionNode(this.localStore, version);
+        });
+    }
+
+    public get tags(): TagNode[] {
+        const appState = this.localStore.getState();
+        const app = appState.apps[this.app.id];
+        return Array.from(app.tagIds).map((tagId) => {
+            const tag = appState.tags[tagId];
+            return new TagNode(this.localStore, tag);
         });
     }
 

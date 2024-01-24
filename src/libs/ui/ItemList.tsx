@@ -4,30 +4,28 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import styles from './ItemList.module.scss';
 
-interface Props<Item> {
+interface Props<Item, ItemValue> {
     items: Item[];
     renderInlineItem: (item: Item) => ReactNode;
     newItemInputLabel: string;
-    parseNewItem(input: string): Item;
-    isItemValid?: (item: Item) => boolean;
-    isItemDuplicate: (item: Item) => boolean;
-    onAddItem?: (item: Item) => void;
+    parseNewItem(input: string): ItemValue;
+    isItemValid?: (itemValue: ItemValue) => boolean;
+    isItemDuplicate: (itemValue: ItemValue) => boolean;
+    onAddItem?: (itemValue: ItemValue) => void;
     onRemoveItem?: (item: Item) => void;
 }
 
-export function ItemListUI<Item>(props: Props<Item>) {
+export function ItemListUI<Item, ItemValue>(props: Props<Item, ItemValue>) {
     const newItemInputRef = createRef<HTMLInputElement>();
-    const [items, setItems] = useState<Item[]>(props.items);
 
     const onNewItemInputKeydown = (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
-            const item = props.parseNewItem(
+            const itemValue = props.parseNewItem(
                 newItemInputRef.current?.value || '',
             );
-            if (props.isItemValid?.(item)) {
-                if (!props.isItemDuplicate?.(item)) {
-                    setItems([...items, item]);
-                    props.onAddItem?.(item);
+            if (props.isItemValid?.(itemValue)) {
+                if (!props.isItemDuplicate?.(itemValue)) {
+                    props.onAddItem?.(itemValue);
                 }
             }
 
@@ -37,7 +35,6 @@ export function ItemListUI<Item>(props: Props<Item>) {
 
     const onRemoveItemHandler = (item: Item) => {
         return () => {
-            setItems(items.filter((currItem) => currItem !== item));
             props.onRemoveItem?.(item);
         };
     };

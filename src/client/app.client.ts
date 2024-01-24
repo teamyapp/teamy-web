@@ -7,6 +7,7 @@ import {
 
 import { RemoteAppSecret } from './entity/remoteAppSecret';
 import { RemoteAppVersion } from './entity/remoteAppVersion';
+import { RemoteTag } from './entity/remoteTag';
 
 export class AppClient {
     private readonly graphQLClient: GraphQLClient;
@@ -111,5 +112,44 @@ export class AppClient {
                 },
             })
             .then(({ deleteAppSecret }) => deleteAppSecret);
+    }
+
+    addTagToApp(appId: string, value: string): Promise<RemoteTag> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation addTagToApp($appId: ID!, $value: String!) {
+                        addTagToApp(appId: $appId, value: $value) {
+                            id
+                            value
+                        }
+                    }
+                `,
+                variables: {
+                    appId,
+                    value,
+                },
+            })
+            .then(({ addTagToApp }) => addTagToApp);
+
+    }
+
+    removeTagFromApp(appId: string, tagId: string): Promise<void> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation removeTagFromApp($appId: ID!, $tagId: ID!) {
+                        removeTagFromApp(appId: $appId, tagId: $tagId) {
+                            id
+                            value
+                        }
+                    }
+                `,
+                variables: {
+                    appId,
+                    tagId,
+                },
+            })
+            .then(({ removeTagFromApp }) => removeTagFromApp);
     }
 }

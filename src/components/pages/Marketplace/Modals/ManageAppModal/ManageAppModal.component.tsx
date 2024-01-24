@@ -47,19 +47,6 @@ const tabs: Tab<TabKey>[] = [
     },
 ];
 
-const tags: string[] = [
-    'developer-tools',
-    'productivity',
-    'social-networking',
-    'utilities',
-    'lifestyle',
-    'photo-video',
-    'music',
-    'finance',
-    'business',
-    'education',
-    'news',
-];
 
 interface Props {
     deps: Deps;
@@ -223,11 +210,11 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 />
             );
         } else if (this.state.showTabViews['tags']) {
-            return (
+            return this.state.app && (
                 <TagsTabComponent
-                    tags={tags}
-                    onAddTage={this.onAddTage}
-                    onRemoveTag={this.onRemoveTag}
+                    appId={this.state.app.id}
+                    tags={this.state.app.tags}
+                    deps={this.props.deps}
                 />
             );
         }
@@ -309,17 +296,6 @@ export class ManageAppModalComponent extends Component<Props, State> {
             return;
         }
 
-        this.props.deps.stateSyncer.deleteAppVersion(
-            this.state.app.id,
-            versionNumber,
-        );
-    };
-
-    private onAddTage = (tag: string) => {
-        // TODO: add tag
-    };
-
-    private onRemoveTag = (tag: string) => {
-        // TODO: remove tag
-    };
+        this.props.deps.stateSyncer.deleteAppVersion(this.state.app.id, versionNumber); 
+    }
 }
