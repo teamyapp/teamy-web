@@ -9,7 +9,7 @@ export type Group = StaticGroup<User> | StaticGroup<Team> | FilterGroup;
 export type GroupType = 'STATIC' | 'FILTER'
 
 
-interface GroupInfo {
+export interface GroupInfo {
     id: number;
     type: GroupType;
     name: string;

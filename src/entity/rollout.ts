@@ -4,7 +4,7 @@ export type Activator =
     | MaxViewersActivator
     | PercentageActivator;
 
-interface ActivatorInfo {
+export interface ActivatorInfo {
     id: number;
     type: 'STATIC' | 'TIME_RANGE' | 'MAX_VIEWERS' | 'PERCENTAGE';
     createdAt: Date;
@@ -33,7 +33,7 @@ export interface PercentageActivator extends ActivatorInfo{
 export type VersionSelector = StaticVersionSelector | ExperimentVersionSelector;
 
 
-interface VersionSelectorInfo {
+export interface VersionSelectorInfo {
     id: number;
     type: 'STATIC' | 'EXPERIMENT';
     createdAt: Date;

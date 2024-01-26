@@ -1,24 +1,28 @@
-import { ExperimentVersionSelector, StaticVersionSelector } from "@core/entity/rollout";
-import { LocalStore } from "../syncer/localStore";
-import { ExperimentVersionSelectorState, StaticVersionSelectorState, VersionSelectorState } from "../states/versionSelector.state";
+import {
+    ExperimentVersionSelector,
+    StaticVersionSelector,
+    VersionSelectorInfo,
+} from '@core/entity/rollout';
 
-export class StaticVersionSelectorNode implements StaticVersionSelector {
+import {
+    ExperimentVersionSelectorState,
+    StaticVersionSelectorState,
+    VersionSelectorState,
+} from '../states/versionSelector.state';
+import { LocalStore } from '../syncer/localStore';
+
+export class VersionSelectorNode implements VersionSelectorInfo {
     constructor(
-        private localStore: LocalStore,
-        private versionSelector: VersionSelectorState,
-        private staticVersionSelector: StaticVersionSelectorState,
+        protected localStore: LocalStore,
+        protected versionSelector: VersionSelectorState,
     ) {}
 
     get id(): number {
         return this.versionSelector.id;
     }
 
-    get type(): 'STATIC' {
-        return 'STATIC';
-    }
-
-    get versionNumber(): number {
-        return this.staticVersionSelector.versionNumber;
+    get type(): 'STATIC' | 'EXPERIMENT' {
+        return this.versionSelector.type;
     }
 
     get createdAt(): Date {
@@ -30,30 +34,44 @@ export class StaticVersionSelectorNode implements StaticVersionSelector {
     }
 }
 
-export class ExperimentVersionSelectorNode implements ExperimentVersionSelector {
-        constructor(
-            private localStore: LocalStore,
-            private versionSelector: VersionSelectorState,
-            private experimentVersionSelector: ExperimentVersionSelectorState,
-        ) {}
-    
-        get id(): number {
-            return this.versionSelector.id;
-        }
-    
-        get type(): 'EXPERIMENT' {
-            return 'EXPERIMENT'
-        }
-    
-        get versionNumbers(): number[] {
-            return this.experimentVersionSelector.versionNumbers;
-        }
+export class StaticVersionSelectorNode
+    extends VersionSelectorNode
+    implements StaticVersionSelector
+{
+    constructor(
+        protected localStore: LocalStore,
+        protected versionSelector: VersionSelectorState,
+        private staticVersionSelector: StaticVersionSelectorState,
+    ) {
+        super(localStore, versionSelector);
+    }
 
-        get createdAt(): Date {
-            return this.versionSelector.createdAt;
-        }
-    
-        get updatedAt(): Date | undefined {
-            return this.versionSelector.updatedAt;
-        }
+    get type(): 'STATIC' {
+        return 'STATIC';
+    }
+
+    get versionNumber(): number {
+        return this.staticVersionSelector.versionNumber;
+    }
+}
+
+export class ExperimentVersionSelectorNode
+    extends VersionSelectorNode
+    implements ExperimentVersionSelector
+{
+    constructor(
+        protected localStore: LocalStore,
+        protected versionSelector: VersionSelectorState,
+        private experimentVersionSelector: ExperimentVersionSelectorState,
+    ) {
+        super(localStore, versionSelector);
+    }
+
+    get type(): 'EXPERIMENT' {
+        return 'EXPERIMENT';
+    }
+
+    get versionNumbers(): number[] {
+        return this.experimentVersionSelector.versionNumbers;
+    }
 }
