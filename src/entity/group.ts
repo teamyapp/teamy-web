@@ -8,26 +8,25 @@ export type Group = StaticGroup<User> | StaticGroup<Team> | FilterGroup;
 
 export type GroupType = 'STATIC' | 'FILTER'
 
-export interface StaticGroup<Member> {
+
+interface GroupInfo {
     id: number;
-    type: 'STATIC';
+    type: GroupType;
     name: string;
-    members: Member[];
     createdAt: Date;
     updatedAt?: Date;
     rollouts: Rollout[];
     app: App;
 }
 
+export interface StaticGroup<Member> extends GroupInfo {
+    type: 'STATIC';
+    members: Member[];
+}
 
-export interface FilterGroup {
-    id: number;
+
+export interface FilterGroup extends GroupInfo {
     type: 'FILTER';
-    name: string;
     filter: string;
     memberCount: number;
-    createdAt: Date;
-    updatedAt?: Date;
-    rollouts: Rollout[];
-    app: App;
 }

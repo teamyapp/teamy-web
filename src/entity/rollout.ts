@@ -4,53 +4,50 @@ export type Activator =
     | MaxViewersActivator
     | PercentageActivator;
 
-export interface StaticActivator {
+interface ActivatorInfo {
     id: number;
-    type: 'STATIC';
+    type: 'STATIC' | 'TIME_RANGE' | 'MAX_VIEWERS' | 'PERCENTAGE';
     createdAt: Date;
     updatedAt?: Date;
 }
-export interface TimeRangeActivator {
-    id: number;
+
+export interface StaticActivator extends ActivatorInfo {
+    type: 'STATIC';
+}
+export interface TimeRangeActivator extends ActivatorInfo{
     type: 'TIME_RANGE';
     startAt?: Date;
     endAt?: Date;
-    createdAt: Date;
-    updatedAt?: Date;
 }
 
-export interface MaxViewersActivator {
-    id: number;
+export interface MaxViewersActivator extends ActivatorInfo{
     type: 'MAX_VIEWERS';
     maxViewers: number;
-    createdAt: Date;
-    updatedAt?: Date;
 }
 
-export interface PercentageActivator {
-    id: number;
+export interface PercentageActivator extends ActivatorInfo{
     type: 'PERCENTAGE';
     percentage: number;
-    createdAt: Date;
-    updatedAt?: Date;
 }
 
 export type VersionSelector = StaticVersionSelector | ExperimentVersionSelector;
 
-export interface StaticVersionSelector {
+
+interface VersionSelectorInfo {
     id: number;
-    type: 'STATIC';
-    versionNumber: number;
+    type: 'STATIC' | 'EXPERIMENT';
     createdAt: Date;
     updatedAt?: Date;
 }
 
-export interface ExperimentVersionSelector {
-    id: number;
+export interface StaticVersionSelector extends VersionSelectorInfo {
+    type: 'STATIC';
+    versionNumber: number;
+}
+
+export interface ExperimentVersionSelector extends VersionSelectorInfo {
     type: 'EXPERIMENT';
     versionNumbers: number[];
-    createdAt: Date;
-    updatedAt?: Date;
 }
 
 export interface Rollout {
