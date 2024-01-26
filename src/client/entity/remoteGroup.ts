@@ -1,17 +1,20 @@
 import { RemoteApp } from './remoteApp';
+import { RemoteGroupMemberType } from './remoteGroupMemberType';
+import { RemoteGroupRolloutRelation } from './remoteGroupRolloutRelation';
 import { RemoteGroupType } from './remoteGroupType';
-import { RemoteRollout } from './remoteRollout';
 import { RemoteTeam } from './remoteTeam';
 
-export interface RemoteTeamGroup {
+export interface RemoteGroup {
     id: string;
     type: RemoteGroupType;
+    memberType: RemoteGroupMemberType;
     name: string;
     filter?: string;
     teams?: RemoteTeam[];
+    users?: string[];
     memberCount?: number;
     createdAt: string;
     updatedAt?: string;
-    rollouts: RemoteRollout[];
-    app: RemoteApp;
+    groupRolloutRelations: RemoteGroupRolloutRelation[];
+    apps: RemoteApp[];
 }

@@ -18,6 +18,12 @@ import { AppSecretState } from './appSecret.state';
 import { TaskLinkState } from './taskLink.state';
 import { TeamAppVersionState } from './teamAppVersion.state';
 import { TagState } from './tag.state';
+import { FilterGroupState, GroupState } from './group.state';
+import { ActivatorState, MaxViewersActivatorState, PercentageActivatorState, TimeRangeActivatorState } from './activator.state';
+import { ExperimentVersionSelectorState, StaticVersionSelectorState, VersionSelectorState } from './versionSelector.state';
+import { RolloutState } from './rollout.state';
+import { GroupMemberRelationState } from './groupMemberRelation.state';
+import { AppGroupRelationState } from './appGroupRelation.state';
 
 export class AppState {
     public constructor(
@@ -25,6 +31,16 @@ export class AppState {
         public appSecrets: Record<number, AppSecretState>,
         public appInstallations: Record<number, AppInstallationState>,
         public tags: Record<number, TagState>,
+        public groups: Record<number, GroupState>,
+        public filterGroups: Record<number, FilterGroupState>,
+        public activators: Record<number, ActivatorState>,
+        public maxViewersActivators: Record<number, MaxViewersActivatorState>,
+        public percentageActivators: Record<number, PercentageActivatorState>,
+        public timeRangeActivators: Record<number, TimeRangeActivatorState>,
+        public versionSelectors: Record<number, VersionSelectorState>,
+        public staticVersionSelectors: Record<number, StaticVersionSelectorState>,
+        public experimentVersionSelectors: Record<number, ExperimentVersionSelectorState>,
+        public rollouts: Record<number, RolloutState>,
         public users: Record<number, UserState>,
         public clients: Record<number, ClientState>,
         public teams: Record<number, TeamState>,
@@ -41,6 +57,9 @@ export class AppState {
         public teamSelectedSprint: Record<number, number>,
         public taskActivities: TaskActivityState[],
         public teamAppVersions: TeamAppVersionState[],
+        public memberGroupRelations: GroupMemberRelationState[],
+        public appGroupRelations: AppGroupRelationState[],
+        public groupRolloutRelations:GroupRolloutRelationState[],
         public currUserId?: number,
         public currTeamId?: number,
         public currSprintId?: number,
@@ -65,12 +84,24 @@ export class AppState {
             {},
             {},
             {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
+            {},
             [],
             [],
             [],
             [],
             [],
             json.teamSelectedSprint || {},
+            [],
+            [],
+            [],
             [],
             [],
             json.currUserId,

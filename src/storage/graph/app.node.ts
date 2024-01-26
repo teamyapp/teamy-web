@@ -7,6 +7,9 @@ import { AppSecretNode } from './appSecret.node';
 import { AppVersionNode } from './appVersion.node';
 import { TeamNode } from './team.node';
 import { TagNode } from './tag.node';
+import { FilterGroupNode, StaticGroupNode } from './group.node';
+import { RolloutNode } from './rollout.node';
+import { UserNode } from './user.node';
 
 export class AppNode implements App {
     constructor(
@@ -61,6 +64,67 @@ export class AppNode implements App {
         return Array.from(app.tagIds).map((tagId) => {
             const tag = appState.tags[tagId];
             return new TagNode(this.localStore, tag);
+        });
+    }
+
+
+    public get userGroups(): (StaticGroupNode<UserNode>  | FilterGroupNode)[] {
+        const appState = this.localStore.getState();
+        return appState.appGroupRelations.filter((appGroupRelation) => {
+            const group = appState.groups[appGroupRelation.groupId];
+            return appGroupRelation.appId === this.app.id && group.memberType === 'USER';
+        })
+        .map((appGroupRelation) => {
+            const group = appState.groups[appGroupRelation.groupId];
+
+            switch (group.type) {
+                case 'FILTER':
+                    const filterGroup = appState.filterGroups[group.id];
+                    return new FilterGroupNode(this.localStore, group,  filterGroup);
+                case 'STATIC':
+                    return new StaticGroupNode<UserNode>(this.localStore, group, (userId: number) => {
+                        return new UserNode(this.localStore, appState.users[userId]);
+                    });
+            }
+        })
+    }
+
+    public get teamGroups(): (StaticGroupNode<TeamNode> | FilterGroupNode)[] {
+        const appState = this.localStore.getState();
+        return appState.appGroupRelations.filter((appGroupRelation) => {
+            const group = appState.groups[appGroupRelation.groupId];
+            return appGroupRelation.appId === this.app.id && group.memberType === 'TEAM';
+        })
+        .map((appGroupRelation) => {
+            const group = appState.groups[appGroupRelation.groupId];
+
+            switch (group.type) {
+                case 'FILTER':
+                    const filterGroup = appState.filterGroups[group.id];
+                    return new FilterGroupNode(this.localStore, group,  filterGroup);
+                case 'STATIC':
+                    return new StaticGroupNode<TeamNode>(this.localStore, group, (teamId: number) => {
+                        return new TeamNode(this.localStore, appState.teams[teamId]);
+                    });
+            }
+        })
+    }
+
+    public get userRollouts(): RolloutNode[] {
+        const appState = this.localStore.getState();
+        const app = appState.apps[this.app.id];
+        return app.userRolloutIds.map((rolloutId) => {
+            const rollout = appState.rollouts[rolloutId];
+            return new RolloutNode(this.localStore, rollout);
+        });
+    }
+
+    public get teamRollouts(): RolloutNode[] {
+        const appState = this.localStore.getState();
+        const app = appState.apps[this.app.id];
+        return app.teamRolloutIds.map((rolloutId) => {
+            const rollout = appState.rollouts[rolloutId];
+            return new RolloutNode(this.localStore, rollout);
         });
     }
 

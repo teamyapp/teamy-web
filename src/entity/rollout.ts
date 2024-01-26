@@ -1,4 +1,4 @@
-import { Group } from '@core/entity/group';
+import { Group } from "./group";
 
 export type Activator =
     | StaticActivator
@@ -6,57 +6,58 @@ export type Activator =
     | MaxViewersActivator
     | PercentageActivator;
 
-export interface StaticActivator {
+
+export type ActivatorType = 'STATIC' | 'TIME_RANGE' | 'MAX_VIEWERS' | 'PERCENTAGE';
+
+export interface ActivatorInfo {
     id: number;
-    type: 'static';
+    type: ActivatorType;
     createdAt: Date;
     updatedAt?: Date;
 }
 
-export interface TimeRangeActivator {
-    id: number;
-    type: 'timeRange';
+export interface StaticActivator extends ActivatorInfo {
+    type: 'STATIC';
+}
+
+export interface TimeRangeActivator extends ActivatorInfo{
+    type: 'TIME_RANGE';
     startAt?: Date;
     endAt?: Date;
-    createdAt: Date;
-    updatedAt?: Date;
 }
 
-export interface MaxViewersActivator {
-    id: number;
-    type: 'maxViewers';
+export interface MaxViewersActivator extends ActivatorInfo{
+    type: 'MAX_VIEWERS';
     maxViewers: number;
-    createdAt: Date;
-    updatedAt?: Date;
 }
 
-export interface PercentageActivator {
-    id: number;
-    type: 'percentage';
+export interface PercentageActivator extends ActivatorInfo{
+    type: 'PERCENTAGE';
     percentage: number;
-    createdAt: Date;
-    updatedAt?: Date;
 }
 
 export type VersionSelector = StaticVersionSelector | ExperimentVersionSelector;
 
-export interface StaticVersionSelector {
+export type VersionSelectorType = 'STATIC' | 'EXPERIMENT';
+
+export interface VersionSelectorInfo {
     id: number;
-    type: 'static';
+    type: VersionSelectorType;
+    createdAt: Date;
+    updatedAt?: Date;
+}
+
+export interface StaticVersionSelector extends VersionSelectorInfo {
+    type: 'STATIC';
     versionNumber: number;
-    createdAt: Date;
-    updatedAt?: Date;
 }
 
-export interface ExperimentVersionSelector {
-    id: number;
-    type: 'experiment';
+export interface ExperimentVersionSelector extends VersionSelectorInfo {
+    type: 'EXPERIMENT';
     versionNumbers: number[];
-    createdAt: Date;
-    updatedAt?: Date;
 }
 
-export interface Rollout<GroupMember> {
+export interface Rollout {
     id: number;
     name: string;
     activator: Activator;
@@ -64,5 +65,5 @@ export interface Rollout<GroupMember> {
     isEnabled: boolean;
     createdAt: Date;
     updatedAt?: Date;
-    groups: Group<GroupMember>[];
+    groups: Group[];
 }
