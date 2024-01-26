@@ -1,5 +1,3 @@
-import { Group } from '@core/entity/group';
-
 export type Activator =
     | StaticActivator
     | TimeRangeActivator
@@ -8,14 +6,13 @@ export type Activator =
 
 export interface StaticActivator {
     id: number;
-    type: 'static';
+    type: 'STATIC';
     createdAt: Date;
     updatedAt?: Date;
 }
-
 export interface TimeRangeActivator {
     id: number;
-    type: 'timeRange';
+    type: 'TIME_RANGE';
     startAt?: Date;
     endAt?: Date;
     createdAt: Date;
@@ -24,7 +21,7 @@ export interface TimeRangeActivator {
 
 export interface MaxViewersActivator {
     id: number;
-    type: 'maxViewers';
+    type: 'MAX_VIEWERS';
     maxViewers: number;
     createdAt: Date;
     updatedAt?: Date;
@@ -32,7 +29,7 @@ export interface MaxViewersActivator {
 
 export interface PercentageActivator {
     id: number;
-    type: 'percentage';
+    type: 'PERCENTAGE';
     percentage: number;
     createdAt: Date;
     updatedAt?: Date;
@@ -42,7 +39,7 @@ export type VersionSelector = StaticVersionSelector | ExperimentVersionSelector;
 
 export interface StaticVersionSelector {
     id: number;
-    type: 'static';
+    type: 'STATIC';
     versionNumber: number;
     createdAt: Date;
     updatedAt?: Date;
@@ -50,19 +47,17 @@ export interface StaticVersionSelector {
 
 export interface ExperimentVersionSelector {
     id: number;
-    type: 'experiment';
+    type: 'EXPERIMENT';
     versionNumbers: number[];
     createdAt: Date;
     updatedAt?: Date;
 }
 
-export interface Rollout<GroupMember> {
+export interface Rollout {
     id: number;
-    name: string;
     activator: Activator;
     versionSelector: VersionSelector;
     isEnabled: boolean;
     createdAt: Date;
     updatedAt?: Date;
-    groups: Group<GroupMember>[];
 }
