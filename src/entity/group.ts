@@ -1,23 +1,30 @@
-import { Rollout } from '@core/entity/rollout';
+import { App } from "./app";
+import { Rollout } from "./rollout";
+import { Team } from "./team";
+import { User } from "./user";
 
-export type Group<GroupMember> =
-    | StaticGroup<GroupMember>
-    | FilterGroup<GroupMember>;
 
-export interface StaticGroup<GroupMember> {
+export type Group = StaticGroup<User> | StaticGroup<Team> | FilterGroup;
+
+export type GroupType = 'STATIC' | 'FILTER'
+
+export interface GroupInfo {
     id: number;
-    type: 'static';
+    type: GroupType;
     name: string;
-    members: GroupMember[];
     createdAt: Date;
-    rollouts: Rollout<GroupMember>[];
+    updatedAt?: Date;
+    rollouts: Rollout[];
+    app: App;
 }
 
-export interface FilterGroup<GroupMember> {
-    id: number;
-    type: 'filter';
-    name: string;
+export interface StaticGroup<Member> extends GroupInfo {
+    type: 'STATIC';
+    members: Member[];
+}
+
+export interface FilterGroup extends GroupInfo {
+    type: 'FILTER';
     filter: string;
-    createdAt: Date;
-    rollouts: Rollout<GroupMember>[];
+    memberCount: number;
 }
