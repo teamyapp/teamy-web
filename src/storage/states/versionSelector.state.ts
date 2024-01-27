@@ -27,7 +27,6 @@ export class VersionSelectorState {
     }
 }
 
-
 export class StaticVersionSelectorState {
     constructor (
         public versionNumber: number,
@@ -45,7 +44,6 @@ export class StaticVersionSelectorState {
         );
     }
 }
-
 
 export class ExperimentVersionSelectorState {
     constructor (
