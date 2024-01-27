@@ -1,4 +1,4 @@
-import { FilterGroup, GroupInfo, StaticGroup } from '@core/entity/group';
+import { FilterGroup, GroupInfo, GroupType, StaticGroup } from '@core/entity/group';
 
 import { FilterGroupState, GroupState } from '../states/group.state';
 import { MemberGroupRelationState } from '../states/memberGroupRelation.state';
@@ -16,7 +16,7 @@ class GroupNode implements GroupInfo {
         return this.group.id;
     }
 
-    public get type(): 'STATIC' | 'FILTER' {
+    public get type(): GroupType {
         return this.group.type;
     }
 

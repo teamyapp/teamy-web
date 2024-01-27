@@ -2,6 +2,7 @@ import {
     ExperimentVersionSelector,
     StaticVersionSelector,
     VersionSelectorInfo,
+    VersionSelectorType,
 } from '@core/entity/rollout';
 
 import {
@@ -21,7 +22,7 @@ export class VersionSelectorNode implements VersionSelectorInfo {
         return this.versionSelector.id;
     }
 
-    get type(): 'STATIC' | 'EXPERIMENT' {
+    get type(): VersionSelectorType {
         return this.versionSelector.type;
     }
 

@@ -1,7 +1,10 @@
-import { MaxViewersActivator, PercentageActivator, TimeRangeActivator, StaticActivator, ActivatorInfo } from "@core/entity/rollout";
+import { MaxViewersActivator, PercentageActivator, TimeRangeActivator, StaticActivator, ActivatorInfo, ActivatorType } from "@core/entity/rollout";
 import { LocalStore } from "../syncer/localStore";
 import { ActivatorState, MaxViewersActivatorState, PercentageActivatorState, TimeRangeActivatorState } from "../states/activator.state";
-export class ActivatorNode implements ActivatorInfo {
+
+export type ActivatorNode = StaticActivatorNode | TimeRangeActivatorNode | MaxViewersActivatorNode | PercentageActivatorNode;
+
+export class ActivatorInfoNode implements ActivatorInfo {
     constructor(
         protected localStore: LocalStore,
         protected activator: ActivatorState,
@@ -11,7 +14,7 @@ export class ActivatorNode implements ActivatorInfo {
         return this.activator.id;
     }
 
-    get type(): 'STATIC' | 'TIME_RANGE' | 'MAX_VIEWERS' | 'PERCENTAGE' {
+    get type(): ActivatorType {
         return this.activator.type;
     }
 
@@ -24,13 +27,13 @@ export class ActivatorNode implements ActivatorInfo {
     }
 }
 
-export class StaticActivatorNode extends ActivatorNode implements StaticActivator {
+export class StaticActivatorNode extends ActivatorInfoNode implements StaticActivator {
     get type(): 'STATIC' {
         return 'STATIC'
     }
 }
 
-export class TimeRangeActivatorNode extends ActivatorNode implements TimeRangeActivator {
+export class TimeRangeActivatorNode extends ActivatorInfoNode implements TimeRangeActivator {
     constructor(
         protected localStore: LocalStore,
         protected activator: ActivatorState,
@@ -52,7 +55,7 @@ export class TimeRangeActivatorNode extends ActivatorNode implements TimeRangeAc
     }
 }
 
-export class MaxViewersActivatorNode extends ActivatorNode implements MaxViewersActivator {
+export class MaxViewersActivatorNode extends ActivatorInfoNode implements MaxViewersActivator {
     constructor(
         protected localStore: LocalStore,
         protected activator: ActivatorState,

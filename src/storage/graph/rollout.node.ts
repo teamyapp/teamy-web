@@ -3,6 +3,7 @@ import { Rollout } from '@core/entity/rollout';
 import { RolloutState } from '../states/rollout.state';
 import { LocalStore } from '../syncer/localStore';
 import {
+    ActivatorNode,
     MaxViewersActivatorNode,
     PercentageActivatorNode,
     StaticActivatorNode,
@@ -32,11 +33,7 @@ export class RolloutNode implements Rollout {
         return this.rollout.updatedAt;
     }
 
-    get activator():
-        | StaticActivatorNode
-        | TimeRangeActivatorNode
-        | MaxViewersActivatorNode
-        | PercentageActivatorNode {
+    get activator(): ActivatorNode {
             const appState = this.localStore.getState();
             const activator = appState.activators[this.rollout.activatorId];
 
