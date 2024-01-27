@@ -1,8 +1,6 @@
 import { MaxViewersActivator, PercentageActivator, TimeRangeActivator, StaticActivator, ActivatorInfo } from "@core/entity/rollout";
 import { LocalStore } from "../syncer/localStore";
 import { ActivatorState, MaxViewersActivatorState, PercentageActivatorState, TimeRangeActivatorState } from "../states/activator.state";
-
-
 export class ActivatorNode implements ActivatorInfo {
     constructor(
         protected localStore: LocalStore,
@@ -25,8 +23,6 @@ export class ActivatorNode implements ActivatorInfo {
         return this.activator.updatedAt;
     }
 }
-
-
 
 export class StaticActivatorNode extends ActivatorNode implements StaticActivator {
     get type(): 'STATIC' {

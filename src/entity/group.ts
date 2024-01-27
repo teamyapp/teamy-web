@@ -8,7 +8,6 @@ export type Group = StaticGroup<User> | StaticGroup<Team> | FilterGroup;
 
 export type GroupType = 'STATIC' | 'FILTER'
 
-
 export interface GroupInfo {
     id: number;
     type: GroupType;
@@ -23,7 +22,6 @@ export interface StaticGroup<Member> extends GroupInfo {
     type: 'STATIC';
     members: Member[];
 }
-
 
 export interface FilterGroup extends GroupInfo {
     type: 'FILTER';

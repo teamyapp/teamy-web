@@ -34,7 +34,6 @@ class GroupNode implements GroupInfo {
 
     public get rollouts(): RolloutNode[] {
         const appState = this.localStore.getState();
-
         return this.group.rolloutIds.map((rolloutId) => {
             return new RolloutNode(
                 this.localStore,
@@ -50,7 +49,6 @@ class GroupNode implements GroupInfo {
         );
     }
 }
-
 export class FilterGroupNode extends GroupNode implements FilterGroup {
     constructor(
         protected localStore: LocalStore,

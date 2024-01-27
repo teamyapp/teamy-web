@@ -14,6 +14,7 @@ export interface ActivatorInfo {
 export interface StaticActivator extends ActivatorInfo {
     type: 'STATIC';
 }
+
 export interface TimeRangeActivator extends ActivatorInfo{
     type: 'TIME_RANGE';
     startAt?: Date;

@@ -24,7 +24,6 @@ import { ExperimentVersionSelectorState, StaticVersionSelectorState, VersionSele
 import { RolloutState } from './rollout.state';
 import { MemberGroupRelationState } from './memberGroupRelation.state';
 
-
 export class AppState {
     public constructor(
         public apps: Record<number, ThirdPartyAppState>,

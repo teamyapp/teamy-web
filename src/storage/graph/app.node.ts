@@ -12,7 +12,6 @@ import { FilterGroupNode, StaticGroupNode } from './group.node';
 import { RolloutNode } from './rollout.node';
 import { UserNode } from './user.node';
 
-
 export class AppNode implements App {
     constructor(
         private localStore: LocalStore,
@@ -90,13 +89,11 @@ export class AppNode implements App {
         });
     }
 
-
     public get teamGroups(): (StaticGroup<TeamNode> | FilterGroupNode)[] {
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id]; 
         return app.teamGroupIds.map((groupId) => {
             const group =  appState.groups[groupId];
-
             switch (group.type) {
                 case 'STATIC':
                     return new StaticGroupNode<TeamNode>(
