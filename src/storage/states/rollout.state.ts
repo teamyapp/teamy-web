@@ -1,6 +1,7 @@
 export class RolloutState {
     constructor(
         public id: number,
+        public name: string,
         public activatorId: number,
         public versionSelectorId: number,
         public isEnabled: boolean,
@@ -11,6 +12,7 @@ export class RolloutState {
     public static fromMutationPayload(json: any): RolloutState {
         return new RolloutState(
             json.ID,
+            json.Name,
             json.ActivatorID,
             json.VersionSelectorID,
             json.IsEnabled,
@@ -22,6 +24,7 @@ export class RolloutState {
     public static fromJson(json: any): RolloutState {
         return new RolloutState(
             json.id,
+            json.name,
             json.activatorId,
             json.versionSelectorId,
             json.isEnabled,

@@ -1,3 +1,5 @@
+import { Group } from "./group";
+
 export type Activator =
     | StaticActivator
     | TimeRangeActivator
@@ -56,9 +58,11 @@ export interface ExperimentVersionSelector extends VersionSelectorInfo {
 
 export interface Rollout {
     id: number;
+    name: string;
     activator: Activator;
     versionSelector: VersionSelector;
     isEnabled: boolean;
     createdAt: Date;
     updatedAt?: Date;
+    group: Group;
 }

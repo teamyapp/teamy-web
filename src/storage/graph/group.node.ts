@@ -5,8 +5,12 @@ import { MemberGroupRelationState } from '../states/memberGroupRelation.state';
 import { LocalStore } from '../syncer/localStore';
 import { AppNode } from './app.node';
 import { RolloutNode } from './rollout.node';
+import { UserNode } from './user.node';
+import { TeamNode } from './team.node';
 
-class GroupNode implements GroupInfo {
+export type GroupNode = FilterGroupNode | StaticGroupNode<UserNode> | StaticGroupNode<TeamNode>;
+
+class GroupInfoNode implements GroupInfo {
     constructor(
         protected localStore: LocalStore,
         protected group: GroupState,
@@ -49,7 +53,7 @@ class GroupNode implements GroupInfo {
         );
     }
 }
-export class FilterGroupNode extends GroupNode implements FilterGroup {
+export class FilterGroupNode extends GroupInfoNode implements FilterGroup {
     constructor(
         protected localStore: LocalStore,
         protected group: GroupState,
@@ -72,7 +76,7 @@ export class FilterGroupNode extends GroupNode implements FilterGroup {
 }
 
 export class StaticGroupNode<MemberNode>
-    extends GroupNode
+    extends GroupInfoNode
     implements StaticGroup<MemberNode>
 {
     constructor(

@@ -10,6 +10,7 @@ import {
     TimeRangeActivatorNode,
 } from './activator.node';
 import { ExperimentVersionSelectorNode, StaticVersionSelectorNode } from './versionSelector.node';
+import { FilterGroupNode, GroupNode } from './group.node';
 
 export class RolloutNode implements Rollout {
     constructor(
@@ -19,6 +20,10 @@ export class RolloutNode implements Rollout {
 
     get id(): number {
         return this.rollout.id;
+    }
+
+    get name(): string {
+        return this.rollout.name;
     }
 
     get isEnabled(): boolean {
@@ -64,5 +69,12 @@ export class RolloutNode implements Rollout {
                 const experimentVersionSelector = appState.experimentVersionSelectors[versionSelector.id];
                 return new ExperimentVersionSelectorNode(this.localStore, versionSelector, experimentVersionSelector);
         }
+    }
+
+
+    get group(): GroupNode {
+        //TODO: We need to figure out how to get the group from the rollout.
+        const appState = this.localStore.getState();
+        return new FilterGroupNode(this.localStore, appState.groups[0], appState.filterGroups[0]);
     }
 }
