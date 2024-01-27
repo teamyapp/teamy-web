@@ -68,7 +68,6 @@ export class AppNode implements App {
         });
     }
 
-
     public get userGroups(): (StaticGroupNode<UserNode> | FilterGroupNode)[] {
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id]; 
