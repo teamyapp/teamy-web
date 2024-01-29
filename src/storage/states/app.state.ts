@@ -24,87 +24,85 @@ import { ExperimentVersionSelectorState, StaticVersionSelectorState, VersionSele
 import { RolloutState } from './rollout.state';
 import { MemberGroupRelationState } from './memberGroupRelation.state';
 
+
+interface StateParams {
+    teamSelectedSprint: Record<number, number>,
+    currUserId?: number;
+    currTeamId?: number;
+    currSprintId?: number;
+    currClientId?: number;
+} 
+
+
 export class AppState {
-    public constructor(
-        public apps: Record<number, ThirdPartyAppState>,
-        public appSecrets: Record<number, AppSecretState>,
-        public appInstallations: Record<number, AppInstallationState>,
-        public tags: Record<number, TagState>,
-        public groups: Record<number, GroupState>,
-        public filterGroups: Record<number, FilterGroupState>,
-        public activators: Record<number, ActivatorState>,
-        public maxViewersActivators: Record<number, MaxViewersActivatorState>,
-        public percentageActivators: Record<number, PercentageActivatorState>,
-        public timeRangeActivators: Record<number, TimeRangeActivatorState>,
-        public versionSelectors: Record<number, VersionSelectorState>,
-        public staticVersionSelectors: Record<number, StaticVersionSelectorState>,
-        public experimentVersionSelectors: Record<number, ExperimentVersionSelectorState>,
-        public rollouts: Record<number, RolloutState>,
-        public users: Record<number, UserState>,
-        public clients: Record<number, ClientState>,
-        public teams: Record<number, TeamState>,
-        public tasks: Record<number, TaskState>,
-        public taskLinks: Record<number, TaskLinkState>,
-        public messages: Record<number, MessageState>,
-        public invitations: Record<number, InvitationState>,
-        public sprints: Record<number, SprintState>,
-        public teamMembers: TeamMemberState[],
-        public taskAwaitForRelations: TaskAwaitForRelationState[],
-        public userLinks: UserLinkState[],
-        public sprintTaskRelations: SprintTaskRelationState[],
-        public sprintParticipants: SprintParticipantState[],
-        public teamSelectedSprint: Record<number, number>,
-        public taskActivities: TaskActivityState[],
-        public teamAppVersions: TeamAppVersionState[],
-        public userGroupRelations: MemberGroupRelationState[],
-        public teamGroupRelations: MemberGroupRelationState[],
-        public currUserId?: number,
-        public currTeamId?: number,
-        public currSprintId?: number,
-        public currClientId?: number,
-        public activeSprintTabIndex?: number,
-        public fetchedMeData?: boolean,
-        public fetchedTeamData?: boolean,
-        public sprintTabReady?: boolean,
-    ) {}
+    public readonly apps: Record<number, ThirdPartyAppState> = {};
+    public readonly appSecrets: Record<number, AppSecretState> = {};
+    public readonly appInstallations: Record<number, AppInstallationState> = {};
+    public readonly tags: Record<number, TagState> = {};
+    public readonly groups: Record<number, GroupState> = {};
+    public readonly filterGroups: Record<number, FilterGroupState> = {};
+    public readonly activators: Record<number, ActivatorState> = {};
+    public readonly maxViewersActivators: Record<number, MaxViewersActivatorState> = {};
+    public readonly percentageActivators: Record<number, PercentageActivatorState> = {};
+    public readonly timeRangeActivators: Record<number, TimeRangeActivatorState> = {};
+    public readonly versionSelectors: Record<number, VersionSelectorState> = {};
+    public readonly staticVersionSelectors: Record<number, StaticVersionSelectorState> = {};
+    public readonly experimentVersionSelectors: Record<number, ExperimentVersionSelectorState> = {};
+    public readonly rollouts: Record<number, RolloutState> = {};
+    public readonly users: Record<number, UserState> = {};
+    public readonly clients: Record<number, ClientState> = {};
+    public readonly teams: Record<number, TeamState> = {};
+    public readonly tasks: Record<number, TaskState> = {};
+    public readonly taskLinks: Record<number, TaskLinkState> = {};
+    public readonly messages: Record<number, MessageState> = {};
+    public readonly invitations: Record<number, InvitationState> = {};
+    public readonly sprints: Record<number, SprintState> = {};
+    public readonly teamSelectedSprint: Record<number, number> = {};
+    public readonly teamMembers: TeamMemberState[] = [];
+    public readonly taskAwaitForRelations: TaskAwaitForRelationState[] = [];
+    public readonly userLinks: UserLinkState[] = [];
+    public readonly sprintTaskRelations: SprintTaskRelationState[] = []; 
+    public readonly sprintParticipants: SprintParticipantState[] = [];
+
+    public readonly taskActivities: TaskActivityState[] = [];
+    public readonly teamAppVersions: TeamAppVersionState[] = [];
+    public readonly userGroupRelations: MemberGroupRelationState[] = [];
+    public readonly teamGroupRelations: MemberGroupRelationState[] = [];
+    public readonly currUserId?: number;
+    public readonly currTeamId?: number;
+    public readonly currSprintId?: number;
+    public readonly currClientId?: number;
+    public readonly activeSprintTabIndex?: number;
+    public readonly fetchedMeData?: boolean;
+    public readonly fetchedTeamData?: boolean;
+
+
+    constructor(state: StateParams = {
+        teamSelectedSprint: {},
+        currUserId: undefined,
+        currTeamId: undefined,
+        currSprintId: undefined,
+        currClientId: undefined,
+    }) {
+        this.currUserId = state.currUserId;
+        this.currTeamId = state.currTeamId;
+        this.currSprintId = state.currSprintId;
+        this.currClientId = state.currClientId;
+        this.teamSelectedSprint = state.teamSelectedSprint;
+    }
+
+
 
     public static fromJson(json: any): AppState {
-        return new AppState(
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-            [],
-            [],
-            [],
-            [],
-            [],
-            json.teamSelectedSprint || {},
-            [],
-            [],
-            [],
-            [],
-            json.currUserId,
-            json.currTeamId,
-            json.currSprintId,
-            json.clientId,
-        );
+        return new AppState({
+            currClientId: json.currClientId,
+            currSprintId: json.currSprintId,
+            currTeamId: json.currTeamId,
+            currUserId: json.currUserId,
+            teamSelectedSprint: json.teamSelectedSprint,
+            
+
+           
+        });
     }
 }
