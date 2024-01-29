@@ -25,7 +25,7 @@ import { RolloutState } from './rollout.state';
 import { MemberGroupRelationState } from './memberGroupRelation.state';
 
 
-interface StateParams {
+interface PersistedState {
     teamSelectedSprint: Record<number, number>,
     currUserId?: number;
     currTeamId?: number;
@@ -77,7 +77,7 @@ export class AppState {
     public fetchedTeamData?: boolean;
 
 
-    constructor(state: StateParams = {
+    constructor(state: PersistedState = {
         teamSelectedSprint: {},
         currUserId: undefined,
         currTeamId: undefined,
@@ -100,9 +100,6 @@ export class AppState {
             currTeamId: json.currTeamId,
             currUserId: json.currUserId,
             teamSelectedSprint: json.teamSelectedSprint,
-            
-
-           
         });
     }
 }
