@@ -385,7 +385,6 @@ export function applySprintParticipantMutation(
     switch (mutation.mutationType) {
         case 'Create':
         case 'Update': {
-            debugger;
             const newSprintParticipant =
                 SprintParticipantState.fromMutationPayload(mutation.payload);
             currState.sprintParticipants = currState.sprintParticipants.filter(
@@ -861,7 +860,6 @@ export function mergeSprint(
     currAppState: AppState,
     remoteSprint: RemoteSprint,
 ): AppState {
-    debugger
     const remoteSprintId = toInt(remoteSprint.id)!;
     const localOldSprint = currAppState.sprints[remoteSprintId] || {};
     const localNewSprint: SprintState = {
@@ -894,7 +892,6 @@ export function mergeSprint(
     }
 
     if (remoteSprint.participants) {
-        debugger
         currAppState = replaceSprintParticipants(
             currAppState,
             remoteSprintId,
