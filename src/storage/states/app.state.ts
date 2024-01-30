@@ -63,7 +63,6 @@ export class AppState {
     public userLinks: UserLinkState[] = [];
     public sprintTaskRelations: SprintTaskRelationState[] = []; 
     public sprintParticipants: SprintParticipantState[] = [];
-
     public taskActivities: TaskActivityState[] = [];
     public teamAppVersions: TeamAppVersionState[] = [];
     public userGroupRelations: MemberGroupRelationState[] = [];
@@ -75,7 +74,6 @@ export class AppState {
     public activeSprintTabIndex?: number;
     public fetchedMeData?: boolean;
     public fetchedTeamData?: boolean;
-
 
     constructor(state: PersistedState = {
         teamSelectedSprint: {},
