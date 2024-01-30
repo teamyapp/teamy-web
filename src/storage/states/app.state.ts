@@ -24,7 +24,6 @@ import { ExperimentVersionSelectorState, StaticVersionSelectorState, VersionSele
 import { RolloutState } from './rollout.state';
 import { MemberGroupRelationState } from './memberGroupRelation.state';
 
-
 interface PersistedState {
     teamSelectedSprint: Record<number, number>,
     currUserId?: number;
@@ -32,7 +31,6 @@ interface PersistedState {
     currSprintId?: number;
     currClientId?: number;
 } 
-
 
 export class AppState {
     public apps: Record<number, ThirdPartyAppState> = {};
@@ -88,7 +86,6 @@ export class AppState {
         this.currClientId = state.currClientId;
         this.teamSelectedSprint = state.teamSelectedSprint;
     }
-
 
 
     public static fromJson(json: any): AppState {
