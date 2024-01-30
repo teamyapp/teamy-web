@@ -12,7 +12,6 @@ import {
 import { ExperimentVersionSelectorNode, StaticVersionSelectorNode } from './versionSelector.node';
 import { FilterGroupNode, GroupNode, StaticGroupNode } from './group.node';
 import { UserNode } from './user.node';
-import { Group } from '@lib/draw/drawables/group';
 import { TeamNode } from './team.node';
 
 export class RolloutNode implements Rollout {
