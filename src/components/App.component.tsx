@@ -1,6 +1,7 @@
 import { CloudComponent } from '@cloud/Cloud.component';
+import {TeamyThirdPartyAppFeedbackUI} from '@lib/thirdPartyApp/DynamicFeedback';
 import {
-    RequiredActions,
+    RequiredAction,
     ThirdPartyApp,
     ThirdPartyAppClient,
     ThirdPartyAppEventHub,
@@ -133,6 +134,7 @@ export class AppComponent extends Component<Props, State> {
         createRef<RequiredActionsModalComponent>();
     private readonly backlogRef = createRef<BacklogComponent>();
     private readonly dynamicFeedbackRef = createRef<DynamicFeedbackUI>();
+    private readonly thirdPartyAppFeedbackRef = createRef<TeamyThirdPartyAppFeedbackUI>();
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
@@ -399,6 +401,7 @@ export class AppComponent extends Component<Props, State> {
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
                 <AppSecretCopiedFeedbackComponent deps={this.props.deps} />
                 <DynamicFeedbackUI ref={this.dynamicFeedbackRef} />
+                <TeamyThirdPartyAppFeedbackUI ref={this.thirdPartyAppFeedbackRef}/>
                 <RequiredActionsModalComponent
                     ref={this.requiredActionsModalRef}
                 />
@@ -793,7 +796,7 @@ export class AppComponent extends Component<Props, State> {
     }
 
     private async showRequiredActionsIfAny() {
-        const allRequiredActions: RequiredActions[] = [];
+        const allRequiredActions: RequiredAction[] = [];
         for (
             let index = 0;
             index < this.thirdPartyAppEventHubs.length;
@@ -824,7 +827,7 @@ export class AppComponent extends Component<Props, State> {
 
         this.thirdPartyAppEventHubs = [];
         await Promise.all(
-            ['http://localhost:8082/app/app.js'].map(
+            ['http://localhost:8082/apps/github/app.js'].map(
                 async (extensionEntryPoint) => {
                     let { App } = await importModule(extensionEntryPoint);
                     const app: ThirdPartyApp = new App();
@@ -839,7 +842,7 @@ export class AppComponent extends Component<Props, State> {
                             this.localStore,
                             this.router,
                             this.identityClient,
-                            this.dynamicFeedbackRef,
+                            this.thirdPartyAppFeedbackRef,
                         );
                     app.init({
                         eventListener: thirdPartyAppEventHub,

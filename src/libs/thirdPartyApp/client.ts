@@ -1,27 +1,28 @@
-import { ThirdPartyAppClient } from '@teamyapp/ext';
-import { ReactNode, RefObject } from 'react';
+import {TeamyThirdPartyAppFeedbackUI} from '@lib/thirdPartyApp/DynamicFeedback';
+import {RenderFunc, ThirdPartyAppClient} from '@teamyapp/ext';
+import {RefObject} from 'react';
 
-import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
-import { Router } from '@lib/router/router';
-import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
+import {IdentityClient, getAccessToken} from '@lib/identity/Identity.client';
+import {Router} from '@lib/router/router';
 
-import { absoluteRootPath, absoluteUri, taskPath } from '@core/routing/routes';
-import { LocalStore } from '@core/storage/syncer/localStore';
+import {absoluteRootPath, absoluteUri, taskPath} from '@core/routing/routes';
+import {LocalStore} from '@core/storage/syncer/localStore';
 
 export class TeamyThirdPartyAppClient implements ThirdPartyAppClient {
     constructor(
         private localStore: LocalStore,
         private router: Router,
         private identityClient: IdentityClient,
-        private dynamicFeedbackRef: RefObject<DynamicFeedbackUI>,
-    ) {}
+        private feedbackRef: RefObject<TeamyThirdPartyAppFeedbackUI>,
+    ) {
+    }
 
     getAccessToken(): string {
         return getAccessToken();
     }
 
     getResourceUrl(appPacketRelativePath: string): string {
-        return `http://localhost:8082/app/${appPacketRelativePath}`;
+        return `http://localhost:8082/apps/github/${appPacketRelativePath}`;
     }
 
     getTeamId(): number | undefined {
@@ -39,7 +40,7 @@ export class TeamyThirdPartyAppClient implements ThirdPartyAppClient {
         return `${absoluteRootPath}${taskPath(teamId, taskId)}`;
     }
 
-    showDynamicFeedback(feedbackView: ReactNode): void {
-        this.dynamicFeedbackRef.current?.show(feedbackView);
+    showDynamicFeedback(renderFunc: RenderFunc): void {
+        this.feedbackRef.current?.show(renderFunc);
     }
 }

@@ -1,4 +1,4 @@
-import React, { Component, ReactNode } from 'react';
+import React, {Component, createRef, ReactNode} from 'react';
 
 import { FeedbackUI } from './Feedback';
 
@@ -9,7 +9,7 @@ interface State {
 }
 
 export class DynamicFeedbackUI extends Component<any, State> {
-    private feedbackUIRef = React.createRef<FeedbackUI>();
+    private feedbackUIRef = createRef<FeedbackUI>();
 
     constructor(props: any) {
         super(props);
@@ -20,10 +20,11 @@ export class DynamicFeedbackUI extends Component<any, State> {
         return (
             <FeedbackUI
                 ref={this.feedbackUIRef}
-                children={this.state.children}
                 actionLabel={this.state.actionLabel}
                 onActionClick={this.state.onActionClick}
-            />
+            >
+                {this.state.children}
+            </FeedbackUI>
         );
     }
 
