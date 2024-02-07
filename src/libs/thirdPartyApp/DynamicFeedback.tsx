@@ -1,7 +1,7 @@
-import {RenderFunc} from '@teamyapp/ext';
-import React, {Component, createRef} from 'react';
+import { RenderFunc } from '@teamyapp/ext';
+import React, { Component, createRef } from 'react';
 
-import {FeedbackUI} from './../ui/Feedback';
+import { FeedbackUI } from './../ui/Feedback';
 
 interface State {
     onFeedbackClose?: () => void;
@@ -22,14 +22,12 @@ export class TeamyThirdPartyAppFeedbackUI extends Component<any, State> {
                 ref={this.feedbackUIRef}
                 onFeedbackClose={this.props.onFeedbackClose}
             >
-                <div ref={this.contentElRef}/>
+                <div ref={this.contentElRef} />
             </FeedbackUI>
         );
     }
 
-    public show(
-        renderFunc: RenderFunc,
-    ) {
+    public show(renderFunc: RenderFunc) {
         if (!this.contentElRef.current) {
             return;
         }

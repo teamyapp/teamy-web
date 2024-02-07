@@ -79,11 +79,14 @@ export class ContextMenuComponent extends Component<Props, State> {
     };
 
     private close = () => {
-        this.setState({
-            show: false,
-            top: 0,
-            left: 0,
-        });
+        this.setState(
+            {
+                show: false,
+                top: 0,
+                left: 0,
+            },
+            this.props.afterClose,
+        );
     };
 
     private onItemClick = (action: () => void) => () => {

@@ -2,13 +2,13 @@ export type GroupType = 'STATIC' | 'FILTER';
 
 export class GroupState {
     constructor(
-    public id: number,
-    public type: GroupType,
-    public name: string,
-    public createdAt: Date,
-    public rolloutIds: number[],
-    public appId: number,
-    public updatedAt?: Date,
+        public id: number,
+        public type: GroupType,
+        public name: string,
+        public createdAt: Date,
+        public rolloutIds: number[],
+        public appId: number,
+        public updatedAt?: Date,
     ) {}
 
     public static fromMutationPayload(json: any): GroupState {
@@ -37,22 +37,13 @@ export class GroupState {
 }
 
 export class FilterGroupState {
-    constructor(
-        public filter: string,
-        public memberCount: number,
-    ) {}
+    constructor(public filter: string, public memberCount: number) {}
 
     public static fromMutationPayload(json: any): FilterGroupState {
-        return new FilterGroupState(
-            json.Filter,
-            json.MemberCount,
-        );
+        return new FilterGroupState(json.Filter, json.MemberCount);
     }
 
     public static fromJson(json: any): FilterGroupState {
-        return new FilterGroupState(
-            json.filter,
-            json.memberCount,
-        );
+        return new FilterGroupState(json.filter, json.memberCount);
     }
 }

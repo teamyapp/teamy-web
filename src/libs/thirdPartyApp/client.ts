@@ -1,12 +1,12 @@
-import {TeamyThirdPartyAppFeedbackUI} from '@lib/thirdPartyApp/DynamicFeedback';
-import {RenderFunc, ThirdPartyAppClient} from '@teamyapp/ext';
-import {RefObject} from 'react';
+import { RenderFunc, ThirdPartyAppClient } from '@teamyapp/ext';
+import { RefObject } from 'react';
 
-import {IdentityClient, getAccessToken} from '@lib/identity/Identity.client';
-import {Router} from '@lib/router/router';
+import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
+import { Router } from '@lib/router/router';
+import { TeamyThirdPartyAppFeedbackUI } from '@lib/thirdPartyApp/DynamicFeedback';
 
-import {absoluteRootPath, absoluteUri, taskPath} from '@core/routing/routes';
-import {LocalStore} from '@core/storage/syncer/localStore';
+import { absoluteRootPath, absoluteUri, taskPath } from '@core/routing/routes';
+import { LocalStore } from '@core/storage/syncer/localStore';
 
 export class TeamyThirdPartyAppClient implements ThirdPartyAppClient {
     constructor(
@@ -14,8 +14,7 @@ export class TeamyThirdPartyAppClient implements ThirdPartyAppClient {
         private router: Router,
         private identityClient: IdentityClient,
         private feedbackRef: RefObject<TeamyThirdPartyAppFeedbackUI>,
-    ) {
-    }
+    ) {}
 
     getAccessToken(): string {
         return getAccessToken();

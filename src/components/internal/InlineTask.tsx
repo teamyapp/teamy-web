@@ -1,4 +1,4 @@
-import {CleanupFunc, RenderFunc, ThirdPartyAppEventHub} from '@teamyapp/ext';
+import { CleanupFunc, RenderFunc, ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, {
     ChangeEvent,
@@ -6,7 +6,8 @@ import React, {
     KeyboardEvent,
     MouseEvent,
     ReactNode,
-    createRef, RefObject,
+    RefObject,
+    createRef,
 } from 'react';
 
 import { Duration } from '@lib/entity/duration';
@@ -261,7 +262,10 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onTaskIdContextMenu = async (event: MouseEvent) => {
         event.preventDefault();
-        await this.taskIdContextMenuRef.current?.open(event.clientY, event.clientX);
+        await this.taskIdContextMenuRef.current?.open(
+            event.clientY,
+            event.clientX,
+        );
         this.contextMenuItemViews.forEach((item) => {
             if (item.viewRef.current) {
                 const cleanupFunc = item.renderFunc(item.viewRef.current);
@@ -539,7 +543,7 @@ export class InlineTaskUI extends Component<Props, State> {
                 const viewRef = createRef<HTMLDivElement>();
                 menuItems.push({
                     key: `${hub.appId}/${action.key}`,
-                    label: <div ref={viewRef}/>,
+                    label: <div ref={viewRef} />,
                     action: () => action.execute(),
                 });
                 this.contextMenuItemViews.push({

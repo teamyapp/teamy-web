@@ -1,14 +1,22 @@
-import { FilterGroup, GroupInfo, GroupType, StaticGroup } from '@core/entity/group';
+import {
+    FilterGroup,
+    GroupInfo,
+    GroupType,
+    StaticGroup,
+} from '@core/entity/group';
 
 import { FilterGroupState, GroupState } from '../states/group.state';
 import { MemberGroupRelationState } from '../states/memberGroupRelation.state';
 import { LocalStore } from '../syncer/localStore';
 import { AppNode } from './app.node';
 import { RolloutNode } from './rollout.node';
-import { UserNode } from './user.node';
 import { TeamNode } from './team.node';
+import { UserNode } from './user.node';
 
-export type GroupNode = FilterGroupNode | StaticGroupNode<UserNode> | StaticGroupNode<TeamNode>;
+export type GroupNode =
+    | FilterGroupNode
+    | StaticGroupNode<UserNode>
+    | StaticGroupNode<TeamNode>;
 
 class GroupInfoNode implements GroupInfo {
     constructor(

@@ -1,5 +1,4 @@
 import { CloudComponent } from '@cloud/Cloud.component';
-import {TeamyThirdPartyAppFeedbackUI} from '@lib/thirdPartyApp/DynamicFeedback';
 import {
     RequiredAction,
     ThirdPartyApp,
@@ -15,6 +14,7 @@ import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
+import { TeamyThirdPartyAppFeedbackUI } from '@lib/thirdPartyApp/DynamicFeedback';
 import { TeamyThirdPartyAppClient } from '@lib/thirdPartyApp/client';
 import { BannerUI } from '@lib/ui/Banner';
 import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
@@ -134,7 +134,8 @@ export class AppComponent extends Component<Props, State> {
         createRef<RequiredActionsModalComponent>();
     private readonly backlogRef = createRef<BacklogComponent>();
     private readonly dynamicFeedbackRef = createRef<DynamicFeedbackUI>();
-    private readonly thirdPartyAppFeedbackRef = createRef<TeamyThirdPartyAppFeedbackUI>();
+    private readonly thirdPartyAppFeedbackRef =
+        createRef<TeamyThirdPartyAppFeedbackUI>();
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
@@ -299,7 +300,10 @@ export class AppComponent extends Component<Props, State> {
                                                 taskFilters={
                                                     this.state.taskFilters
                                                 }
-                                                thirdPartyAppEventHubs={this.state.thirdPartyAppEventHubs}
+                                                thirdPartyAppEventHubs={
+                                                    this.state
+                                                        .thirdPartyAppEventHubs
+                                                }
                                                 onViewTaskDetail={
                                                     this.onViewTaskDetail
                                                 }
@@ -371,7 +375,7 @@ export class AppComponent extends Component<Props, State> {
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
-                    onClose={this.onTaskDetailModalClose}
+                    afterClose={this.afterTaskDetailModalClose}
                 />
                 <CreateTeamModalComponent
                     ref={this.createTeamModalRef}
@@ -401,7 +405,9 @@ export class AppComponent extends Component<Props, State> {
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
                 <AppSecretCopiedFeedbackComponent deps={this.props.deps} />
                 <DynamicFeedbackUI ref={this.dynamicFeedbackRef} />
-                <TeamyThirdPartyAppFeedbackUI ref={this.thirdPartyAppFeedbackRef}/>
+                <TeamyThirdPartyAppFeedbackUI
+                    ref={this.thirdPartyAppFeedbackRef}
+                />
                 <RequiredActionsModalComponent
                     ref={this.requiredActionsModalRef}
                 />
@@ -694,7 +700,7 @@ export class AppComponent extends Component<Props, State> {
         });
     };
 
-    private onTaskDetailModalClose = () => {
+    private afterTaskDetailModalClose = () => {
         const teamIdParam = getTeamId(this.router.currentRouteUpdate.params);
         if (teamIdParam) {
             const teamId = parseInt(teamIdParam);
@@ -802,8 +808,7 @@ export class AppComponent extends Component<Props, State> {
             index < this.thirdPartyAppEventHubs.length;
             index++
         ) {
-            const thirdPartyAppEventHub =
-                this.thirdPartyAppEventHubs[index];
+            const thirdPartyAppEventHub = this.thirdPartyAppEventHubs[index];
             const requiredActions =
                 await thirdPartyAppEventHub.onShowRequiredActions(
                     this.onRequireActionComplete,

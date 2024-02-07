@@ -13,7 +13,7 @@ interface Props {
     level?: number;
     ariaLabel?: string;
     disableClose?: boolean;
-    onClose?: () => void;
+    afterClose?: () => void;
 }
 
 interface State {
@@ -85,12 +85,15 @@ export class ModalUI extends Component<Props, State> {
         }
 
         return new Promise((resolve) => {
-            this.setState({
-                fullyClosed: false,
-                isVisible: true,
-            }, ()=>{
-                resolve();
-            });
+            this.setState(
+                {
+                    fullyClosed: false,
+                    isVisible: true,
+                },
+                () => {
+                    resolve();
+                },
+            );
 
             setTimeout(() => {
                 this.setState({
@@ -124,7 +127,7 @@ export class ModalUI extends Component<Props, State> {
                 isAnimating: false,
                 fullyClosed: true,
             });
-            this.props.onClose?.call(null);
+            this.props.afterClose?.call(null);
         }, transitionDurationMilliseconds);
     }
 

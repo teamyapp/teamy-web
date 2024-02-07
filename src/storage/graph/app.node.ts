@@ -1,15 +1,15 @@
 import { App } from '@core/entity/app';
+import { StaticGroup } from '@core/entity/group';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { AppInstallationNode } from './appInstallation.node';
 import { AppSecretNode } from './appSecret.node';
 import { AppVersionNode } from './appVersion.node';
-import { TeamNode } from './team.node';
-import { TagNode } from './tag.node';
-import { StaticGroup } from '@core/entity/group';
 import { FilterGroupNode, StaticGroupNode } from './group.node';
 import { RolloutNode } from './rollout.node';
+import { TagNode } from './tag.node';
+import { TeamNode } from './team.node';
 import { UserNode } from './user.node';
 
 export class AppNode implements App {
@@ -70,40 +70,56 @@ export class AppNode implements App {
 
     public get userGroups(): (StaticGroupNode<UserNode> | FilterGroupNode)[] {
         const appState = this.localStore.getState();
-        const app = appState.apps[this.app.id]; 
+        const app = appState.apps[this.app.id];
         return app.userGroupIds.map((groupId) => {
             const group = appState.groups[groupId];
             switch (group.type) {
                 case 'STATIC':
                     return new StaticGroupNode<UserNode>(
-                        this.localStore, 
-                        group, 
-                        appState.userGroupRelations, 
-                        (userId: number) => new UserNode(this.localStore, appState.users[userId])
+                        this.localStore,
+                        group,
+                        appState.userGroupRelations,
+                        (userId: number) =>
+                            new UserNode(
+                                this.localStore,
+                                appState.users[userId],
+                            ),
                     );
                 case 'FILTER':
                     const filterGroup = appState.filterGroups[groupId];
-                    return new FilterGroupNode(this.localStore, group, filterGroup);
+                    return new FilterGroupNode(
+                        this.localStore,
+                        group,
+                        filterGroup,
+                    );
             }
         });
     }
 
     public get teamGroups(): (StaticGroup<TeamNode> | FilterGroupNode)[] {
         const appState = this.localStore.getState();
-        const app = appState.apps[this.app.id]; 
+        const app = appState.apps[this.app.id];
         return app.teamGroupIds.map((groupId) => {
-            const group =  appState.groups[groupId];
+            const group = appState.groups[groupId];
             switch (group.type) {
                 case 'STATIC':
                     return new StaticGroupNode<TeamNode>(
-                        this.localStore, 
-                        group, 
-                        appState.teamGroupRelations, 
-                        (teamId: number) => new TeamNode(this.localStore, appState.teams[teamId])
-                    )
+                        this.localStore,
+                        group,
+                        appState.teamGroupRelations,
+                        (teamId: number) =>
+                            new TeamNode(
+                                this.localStore,
+                                appState.teams[teamId],
+                            ),
+                    );
                 case 'FILTER':
                     const filterGroup = appState.filterGroups[groupId];
-                    return new FilterGroupNode(this.localStore, group, filterGroup);
+                    return new FilterGroupNode(
+                        this.localStore,
+                        group,
+                        filterGroup,
+                    );
             }
         });
     }

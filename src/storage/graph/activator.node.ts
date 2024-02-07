@@ -1,8 +1,25 @@
-import { MaxViewersActivator, PercentageActivator, TimeRangeActivator, StaticActivator, ActivatorInfo, ActivatorType } from "@core/entity/rollout";
-import { LocalStore } from "../syncer/localStore";
-import { ActivatorState, MaxViewersActivatorState, PercentageActivatorState, TimeRangeActivatorState } from "../states/activator.state";
+import {
+    ActivatorInfo,
+    ActivatorType,
+    MaxViewersActivator,
+    PercentageActivator,
+    StaticActivator,
+    TimeRangeActivator,
+} from '@core/entity/rollout';
 
-export type ActivatorNode = StaticActivatorNode | TimeRangeActivatorNode | MaxViewersActivatorNode | PercentageActivatorNode;
+import {
+    ActivatorState,
+    MaxViewersActivatorState,
+    PercentageActivatorState,
+    TimeRangeActivatorState,
+} from '../states/activator.state';
+import { LocalStore } from '../syncer/localStore';
+
+export type ActivatorNode =
+    | StaticActivatorNode
+    | TimeRangeActivatorNode
+    | MaxViewersActivatorNode
+    | PercentageActivatorNode;
 
 export class ActivatorInfoNode implements ActivatorInfo {
     constructor(
@@ -27,13 +44,19 @@ export class ActivatorInfoNode implements ActivatorInfo {
     }
 }
 
-export class StaticActivatorNode extends ActivatorInfoNode implements StaticActivator {
+export class StaticActivatorNode
+    extends ActivatorInfoNode
+    implements StaticActivator
+{
     get type(): 'STATIC' {
-        return 'STATIC'
+        return 'STATIC';
     }
 }
 
-export class TimeRangeActivatorNode extends ActivatorInfoNode implements TimeRangeActivator {
+export class TimeRangeActivatorNode
+    extends ActivatorInfoNode
+    implements TimeRangeActivator
+{
     constructor(
         protected localStore: LocalStore,
         protected activator: ActivatorState,
@@ -55,7 +78,10 @@ export class TimeRangeActivatorNode extends ActivatorInfoNode implements TimeRan
     }
 }
 
-export class MaxViewersActivatorNode extends ActivatorInfoNode implements MaxViewersActivator {
+export class MaxViewersActivatorNode
+    extends ActivatorInfoNode
+    implements MaxViewersActivator
+{
     constructor(
         protected localStore: LocalStore,
         protected activator: ActivatorState,
@@ -65,7 +91,7 @@ export class MaxViewersActivatorNode extends ActivatorInfoNode implements MaxVie
     }
 
     get type(): 'MAX_VIEWERS' {
-        return 'MAX_VIEWERS'
+        return 'MAX_VIEWERS';
     }
 
     get maxViewers(): number {
@@ -85,7 +111,7 @@ export class PercentageActivatorNode implements PercentageActivator {
     }
 
     get type(): 'PERCENTAGE' {
-        return 'PERCENTAGE'
+        return 'PERCENTAGE';
     }
 
     get percentage(): number {

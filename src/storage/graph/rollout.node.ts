@@ -9,8 +9,11 @@ import {
     StaticActivatorNode,
     TimeRangeActivatorNode,
 } from './activator.node';
-import { ExperimentVersionSelectorNode, StaticVersionSelectorNode } from './versionSelector.node';
 import { FilterGroupNode, GroupNode } from './group.node';
+import {
+    ExperimentVersionSelectorNode,
+    StaticVersionSelectorNode,
+} from './versionSelector.node';
 
 export class RolloutNode implements Rollout {
     constructor(
@@ -39,42 +42,73 @@ export class RolloutNode implements Rollout {
     }
 
     get activator(): ActivatorNode {
-            const appState = this.localStore.getState();
-            const activator = appState.activators[this.rollout.activatorId];
-
-            switch (activator.type) {
-                case 'STATIC':
-                    return new StaticActivatorNode(this.localStore, activator);
-                case 'TIME_RANGE':
-                    const timeRangeActivator = appState.timeRangeActivators[activator.id];
-                    return new TimeRangeActivatorNode(this.localStore, activator, timeRangeActivator);
-                case 'MAX_VIEWERS':
-                    const maxViewersActivator = appState.maxViewersActivators[activator.id];
-                    return new MaxViewersActivatorNode(this.localStore, activator, maxViewersActivator);
-                case 'PERCENTAGE':
-                    const percentageActivator = appState.percentageActivators[activator.id];
-                    return new PercentageActivatorNode(this.localStore, activator, percentageActivator);
-            }
-    }
-
-    get versionSelector(): StaticVersionSelectorNode | ExperimentVersionSelectorNode {
         const appState = this.localStore.getState();
-        const versionSelector = appState.versionSelectors[this.rollout.versionSelectorId];
+        const activator = appState.activators[this.rollout.activatorId];
 
-        switch (versionSelector.type) {
+        switch (activator.type) {
             case 'STATIC':
-                const staticVersionSelector = appState.staticVersionSelectors[versionSelector.id];
-                return new StaticVersionSelectorNode(this.localStore, versionSelector, staticVersionSelector);
-            case 'EXPERIMENT':
-                const experimentVersionSelector = appState.experimentVersionSelectors[versionSelector.id];
-                return new ExperimentVersionSelectorNode(this.localStore, versionSelector, experimentVersionSelector);
+                return new StaticActivatorNode(this.localStore, activator);
+            case 'TIME_RANGE':
+                const timeRangeActivator =
+                    appState.timeRangeActivators[activator.id];
+                return new TimeRangeActivatorNode(
+                    this.localStore,
+                    activator,
+                    timeRangeActivator,
+                );
+            case 'MAX_VIEWERS':
+                const maxViewersActivator =
+                    appState.maxViewersActivators[activator.id];
+                return new MaxViewersActivatorNode(
+                    this.localStore,
+                    activator,
+                    maxViewersActivator,
+                );
+            case 'PERCENTAGE':
+                const percentageActivator =
+                    appState.percentageActivators[activator.id];
+                return new PercentageActivatorNode(
+                    this.localStore,
+                    activator,
+                    percentageActivator,
+                );
         }
     }
 
+    get versionSelector():
+        | StaticVersionSelectorNode
+        | ExperimentVersionSelectorNode {
+        const appState = this.localStore.getState();
+        const versionSelector =
+            appState.versionSelectors[this.rollout.versionSelectorId];
+
+        switch (versionSelector.type) {
+            case 'STATIC':
+                const staticVersionSelector =
+                    appState.staticVersionSelectors[versionSelector.id];
+                return new StaticVersionSelectorNode(
+                    this.localStore,
+                    versionSelector,
+                    staticVersionSelector,
+                );
+            case 'EXPERIMENT':
+                const experimentVersionSelector =
+                    appState.experimentVersionSelectors[versionSelector.id];
+                return new ExperimentVersionSelectorNode(
+                    this.localStore,
+                    versionSelector,
+                    experimentVersionSelector,
+                );
+        }
+    }
 
     get group(): GroupNode {
         //TODO: We need to figure out how to get the group from the rollout.
         const appState = this.localStore.getState();
-        return new FilterGroupNode(this.localStore, appState.groups[0], appState.filterGroups[0]);
+        return new FilterGroupNode(
+            this.localStore,
+            appState.groups[0],
+            appState.filterGroups[0],
+        );
     }
 }

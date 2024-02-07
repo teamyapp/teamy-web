@@ -1,12 +1,11 @@
-import { App } from "./app";
-import { Rollout } from "./rollout";
-import { Team } from "./team";
-import { User } from "./user";
-
+import { App } from './app';
+import { Rollout } from './rollout';
+import { Team } from './team';
+import { User } from './user';
 
 export type Group = StaticGroup<User> | StaticGroup<Team> | FilterGroup;
 
-export type GroupType = 'STATIC' | 'FILTER'
+export type GroupType = 'STATIC' | 'FILTER';
 
 export interface GroupInfo {
     id: number;

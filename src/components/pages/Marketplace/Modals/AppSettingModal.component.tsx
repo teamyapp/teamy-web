@@ -1,8 +1,8 @@
-import {ThirdPartyAppEventHub} from '@teamyapp/ext';
-import React, {Component, RefObject, createRef} from 'react';
+import { CleanupFunc, ThirdPartyAppEventHub } from '@teamyapp/ext';
+import React, { Component, RefObject, createRef } from 'react';
 
-import {MaterialIconUI} from '@lib/ui/MaterialIcon';
-import {ModalUI} from '@lib/ui/Modal';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { ModalUI } from '@lib/ui/Modal';
 
 import styles from './AppSettingModal.component.module.scss';
 
@@ -28,13 +28,12 @@ interface Props {
 
 interface State {
     app?: App;
-    onModalClose?: () => void;
 }
 
 export class AppSettingModalComponent extends Component<Props, State> {
     private readonly modalRef: RefObject<ModalUI> = createRef();
     private readonly contentRef = createRef<HTMLDivElement>();
-
+    private cleanupFunc?: CleanupFunc;
 
     constructor(props: Props) {
         super(props);
@@ -44,8 +43,7 @@ export class AppSettingModalComponent extends Component<Props, State> {
     render() {
         return (
             this.state.app && (
-                <ModalUI ref={this.modalRef}
-                         onClose={this.state.onModalClose}>
+                <ModalUI ref={this.modalRef} afterClose={this.afterModalClose}>
                     <div className={styles.Header}>
                         Settings for {this.state.app.name}
                         <div
@@ -57,7 +55,7 @@ export class AppSettingModalComponent extends Component<Props, State> {
                             <MaterialIconUI>cancel</MaterialIconUI>
                         </div>
                     </div>
-                    <div className={styles.Content} ref={this.contentRef}/>
+                    <div className={styles.Content} ref={this.contentRef} />
                 </ModalUI>
             )
         );
@@ -75,16 +73,20 @@ export class AppSettingModalComponent extends Component<Props, State> {
                     return;
                 }
 
-                const thirdPartyAppEventHub = this.props.thirdPartyAppEventHubs.find(
-                    (hub) => hub.appId === this.state.app?.id,
+                const thirdPartyAppEventHub =
+                    this.props.thirdPartyAppEventHubs.find(
+                        (hub) => hub.appId === this.state.app?.id,
+                    );
+                this.cleanupFunc = thirdPartyAppEventHub?.onShowAppSetting(
+                    this.contentRef.current,
                 );
-                const cleanup = thirdPartyAppEventHub?.onShowAppSetting(this.contentRef.current);
-                this.setState({
-                    onModalClose: cleanup,
-                });
             },
         );
     }
+
+    private afterModalClose = () => {
+        this.cleanupFunc?.();
+    };
 
     close() {
         this.modalRef.current?.close();
