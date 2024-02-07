@@ -9,6 +9,7 @@ import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteSprintParticipant } from '@core/client/entity/remoteSprintParticipant';
+import { RemoteTag } from '@core/client/entity/remoteTag';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTaskActivity } from '@core/client/entity/remoteTaskActivity';
 import { RemoteTaskLink } from '@core/client/entity/remoteTaskLink';
@@ -39,12 +40,11 @@ import { AppInstallationState } from '../states/appInstallation.state';
 import { AppSecretState } from '../states/appSecret.state';
 import { ClientState } from '../states/client.state';
 import { DragTaskActivityState } from '../states/dragTaskActivity.state';
+import { TagState } from '../states/tag.state';
 import { TaskActivityState } from '../states/taskActivity.state';
 import { TaskLinkState } from '../states/taskLink.state';
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { Mutation } from './mutation';
-import { RemoteTag } from '@core/client/entity/remoteTag';
-import { TagState } from '../states/tag.state';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -514,9 +514,9 @@ export function mergeApp(
             remoteApp.installations?.map(
                 (installation) => toInt(installation.id)!,
             ) || localOldApp.installationIds,
-        tagIds: new Set(
-            remoteApp.tags?.map((tag) => toInt(tag.id)!),
-        ) || localOldApp.tagIds,
+        tagIds:
+            new Set(remoteApp.tags?.map((tag) => toInt(tag.id)!)) ||
+            localOldApp.tagIds,
         versions: localOldApp.versions || {},
     };
 
@@ -542,7 +542,7 @@ export function mergeApp(
 
     remoteApp.tags?.forEach((tag) => {
         currAppState = mergeTag(currAppState, tag);
-    })
+    });
 
     currAppState.apps[remoteAppId] = localNewApp;
 
@@ -638,7 +638,6 @@ export function mergeTag(
     currAppState.tags[remoteTagId] = localNewTag;
     return currAppState;
 }
-
 
 export function mergeAppInstallation(
     currAppState: AppState,

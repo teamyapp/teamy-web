@@ -2,9 +2,9 @@ import { AppSecret } from './appSecret';
 import { AppVersion } from './appVersion';
 import { Group } from './group';
 import { Rollout } from './rollout';
+import { Tag } from './tag';
 import { Team } from './team';
 import { TeamAppInstallation } from './teamAppInstallation';
-import { Tag } from './tag';
 
 export interface App {
     id: number;

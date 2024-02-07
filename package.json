@@ -20,7 +20,7 @@
         "build-storybook": "build-storybook -o docs"
     },
     "dependencies": {
-        "@teamyapp/ext": "^0.0.12",
+        "@teamyapp/ext": "^0.0.16",
         "classnames": "^2.3.1",
         "graphql": "^16.8.1",
         "js-cookie": "^3.0.1",

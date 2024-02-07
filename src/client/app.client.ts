@@ -131,7 +131,6 @@ export class AppClient {
                 },
             })
             .then(({ addTagToApp }) => addTagToApp);
-
     }
 
     removeTagFromApp(appId: string, tagId: string): Promise<void> {

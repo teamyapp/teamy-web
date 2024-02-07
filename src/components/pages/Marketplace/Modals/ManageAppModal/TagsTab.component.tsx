@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
+
 import { ItemListUI } from '@lib/ui/ItemList';
 
-import styles from './TagsTab.component.module.scss';
 import { Deps } from '@core/dep/deps';
 import { Tag } from '@core/entity/tag';
+
+import styles from './TagsTab.component.module.scss';
 
 interface Props {
     appId: number;
@@ -11,16 +13,13 @@ interface Props {
     deps: Deps;
 }
 
-
 export function TagsTabComponent(props: Props) {
     const [tags, setTags] = React.useState<Tag[]>(props.tags);
     useEffect(() => {
         const stateChangeChan = props.deps.localStore.subscribeStateChange();
         (async () => {
             while (true) {
-                console.log(
-                    '[TagsTabComponent] waiting for state changes',
-                );
+                console.log('[TagsTabComponent] waiting for state changes');
                 const hasChanged = await stateChangeChan!.pop();
                 if (hasChanged === undefined) {
                     // check undefined instead of falsy because
@@ -42,20 +41,20 @@ export function TagsTabComponent(props: Props) {
         return <div className={styles.Tag}>{tag.value}</div>;
     };
 
-    const parseNewTag = (tag: string)=> {
-        return tag.trim()
+    const parseNewTag = (tag: string) => {
+        return tag.trim();
     };
 
     const isTagValid = (tag: string) => {
-        return true
+        return true;
     };
 
     const isTagDuplicate = (value: string) => {
-        return props.tags.some(t => t.value === value);
+        return props.tags.some((t) => t.value === value);
     };
 
     const onAddTag = (value: string) => {
-        props.deps.stateSyncer.addTagToApp(props.appId, value);        
+        props.deps.stateSyncer.addTagToApp(props.appId, value);
     };
 
     const onRemoveTag = (tag: Tag) => {

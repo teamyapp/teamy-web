@@ -1457,10 +1457,10 @@
   resolved "https://registry.yarnpkg.com/@swc/types/-/types-0.1.5.tgz#043b731d4f56a79b4897a3de1af35e75d56bc63a"
   integrity sha512-myfUej5naTBWnqOCc/MdVOLVjXUXtIA+NpDrDBKJtLLg2shUjBu3cZmB/85RyitKc55+lUUyl7oRfLOvkr2hsw==
 
-"@teamyapp/ext@^0.0.12":
-  version "0.0.12"
-  resolved "https://registry.yarnpkg.com/@teamyapp/ext/-/ext-0.0.12.tgz#50e6da59a1a9b0c21d7f998d18aa9f33f0aba15d"
-  integrity sha512-Nibvo9lvERZE+vMEb7SlWh8/XxNgAugU5VPv1JLPehE8GOtdqyWfUqfQ4c8VlULgPWCy/2yoQQ8Q0aX92vQ3WQ==
+"@teamyapp/ext@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@teamyapp/ext/-/ext-0.0.16.tgz#4fd91bd6cd8d3f4bd8464a0420942e6a7a16d734"
+  integrity sha512-7nUOO2S/sLUkoF258ePlSlEU1O2c1+mong/5O9fuCRq7zLYys4PEbOeT1fPb3CmbH3zpLJ+8m4/e3BQjNitVeA==
 
 "@tootallnate/once@2":
   version "2.0.0"

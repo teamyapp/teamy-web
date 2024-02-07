@@ -1,11 +1,11 @@
-export type VersionSelectorType = 'STATIC' | 'EXPERIMENT'
+export type VersionSelectorType = 'STATIC' | 'EXPERIMENT';
 
 export class VersionSelectorState {
     constructor(
         public id: number,
         public type: VersionSelectorType,
         public createdAt: Date,
-        public updatedAt?: Date,  
+        public updatedAt?: Date,
     ) {}
 
     public static fromMutationPayload(json: any): VersionSelectorState {
@@ -28,37 +28,27 @@ export class VersionSelectorState {
 }
 
 export class StaticVersionSelectorState {
-    constructor (
-        public versionNumber: number,
-    ) {}
+    constructor(public versionNumber: number) {}
 
     public static fromMutationPayload(json: any): StaticVersionSelectorState {
-        return new StaticVersionSelectorState(
-            json.VersionNumber,
-        );
+        return new StaticVersionSelectorState(json.VersionNumber);
     }
 
     public static fromJson(json: any): StaticVersionSelectorState {
-        return new StaticVersionSelectorState(
-            json.versionNumber,
-        );
+        return new StaticVersionSelectorState(json.versionNumber);
     }
 }
 
 export class ExperimentVersionSelectorState {
-    constructor (
-        public versionNumbers: number[]
-    ) {}
+    constructor(public versionNumbers: number[]) {}
 
-    public static fromMutationPayload(json: any): ExperimentVersionSelectorState {
-        return new ExperimentVersionSelectorState(
-            json.VersionNumbers,
-        );
+    public static fromMutationPayload(
+        json: any,
+    ): ExperimentVersionSelectorState {
+        return new ExperimentVersionSelectorState(json.VersionNumbers);
     }
 
     public static fromJson(json: any): ExperimentVersionSelectorState {
-        return new ExperimentVersionSelectorState(
-            json.versionNumbers,
-        );
+        return new ExperimentVersionSelectorState(json.versionNumbers);
     }
 }

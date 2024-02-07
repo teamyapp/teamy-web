@@ -47,7 +47,6 @@ const tabs: Tab<TabKey>[] = [
     },
 ];
 
-
 interface Props {
     deps: Deps;
 }
@@ -210,12 +209,14 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 />
             );
         } else if (this.state.showTabViews['tags']) {
-            return this.state.app && (
-                <TagsTabComponent
-                    appId={this.state.app.id}
-                    tags={this.state.app.tags}
-                    deps={this.props.deps}
-                />
+            return (
+                this.state.app && (
+                    <TagsTabComponent
+                        appId={this.state.app.id}
+                        tags={this.state.app.tags}
+                        deps={this.props.deps}
+                    />
+                )
             );
         }
 
@@ -296,6 +297,9 @@ export class ManageAppModalComponent extends Component<Props, State> {
             return;
         }
 
-        this.props.deps.stateSyncer.deleteAppVersion(this.state.app.id, versionNumber); 
-    }
+        this.props.deps.stateSyncer.deleteAppVersion(
+            this.state.app.id,
+            versionNumber,
+        );
+    };
 }

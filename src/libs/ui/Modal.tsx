@@ -13,7 +13,7 @@ interface Props {
     level?: number;
     ariaLabel?: string;
     disableClose?: boolean;
-    onClose?: () => void;
+    afterClose?: () => void;
 }
 
 interface State {
@@ -79,27 +79,35 @@ export class ModalUI extends Component<Props, State> {
         );
     }
 
-    public open(): void {
+    public open(): Promise<void> {
         if (this.state.isAnimating) {
-            return;
+            return Promise.resolve();
         }
 
-        this.setState({
-            fullyClosed: false,
-            isVisible: true,
-        });
-        setTimeout(() => {
-            this.setState({
-                isOpen: true,
-                isAnimating: true,
+        return new Promise((resolve) => {
+            this.setState(
+                {
+                    fullyClosed: false,
+                    isVisible: true,
+                },
+                () => {
+                    resolve();
+                },
+            );
+
+            setTimeout(() => {
+                this.setState({
+                    isOpen: true,
+                    isAnimating: true,
+                });
             });
+            setTimeout(() => {
+                this.setState({
+                    isAnimating: false,
+                    fullyOpened: true,
+                });
+            }, transitionDurationMilliseconds);
         });
-        setTimeout(() => {
-            this.setState({
-                isAnimating: false,
-                fullyOpened: true,
-            });
-        }, transitionDurationMilliseconds);
     }
 
     public close(): void {
@@ -112,7 +120,6 @@ export class ModalUI extends Component<Props, State> {
             fullyClosed: false,
             isAnimating: true,
         });
-        this.props.onClose?.call(null);
 
         setTimeout(() => {
             this.setState({
@@ -120,6 +127,7 @@ export class ModalUI extends Component<Props, State> {
                 isAnimating: false,
                 fullyClosed: true,
             });
+            this.props.afterClose?.call(null);
         }, transitionDurationMilliseconds);
     }
 

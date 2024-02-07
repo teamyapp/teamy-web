@@ -1,7 +1,7 @@
-import { Tag } from "@core/entity/tag";
-import { LocalStore } from "../syncer/localStore";
-import { TagState } from "../states/tag.state";
+import { Tag } from '@core/entity/tag';
 
+import { TagState } from '../states/tag.state';
+import { LocalStore } from '../syncer/localStore';
 
 export class TagNode implements Tag {
     constructor(private localStore: LocalStore, private tag: TagState) {}

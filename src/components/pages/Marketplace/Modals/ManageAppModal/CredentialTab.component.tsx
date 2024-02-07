@@ -33,9 +33,8 @@ export function CredentialTabComponent(props: Props) {
         return tmpApiSecretInputs;
     };
 
-    const [apiSecretInputs, setApiSecretInputs] = React.useState<
-        Record<number, ApiSecretInput>
-    >(tmpApiSecretInputs);
+    const [apiSecretInputs, setApiSecretInputs] =
+        React.useState<Record<number, ApiSecretInput>>(tmpApiSecretInputs);
 
     useEffect(() => {
         const stateChangeChan = props.deps.localStore.subscribeStateChange();
