@@ -544,7 +544,7 @@ export class InlineTaskUI extends Component<Props, State> {
                 menuItems.push({
                     key: `${hub.appId}/${action.key}`,
                     label: <div ref={viewRef} />,
-                    action: () => action.execute(),
+                    action: action.execute,
                 });
                 this.contextMenuItemViews.push({
                     viewRef,
