@@ -3,10 +3,10 @@ import { RemoteRolloutActivatorType } from './remoteRolloutActivatorType';
 export interface RemoteRolloutActivator {
     id: string;
     type: RemoteRolloutActivatorType;
-    createdAt: Date;
-    updatedAt?: Date;
-    startedAt?: Date;
-    endedAt?: Date;
+    createdAt: string;
+    updatedAt?: string;
+    startAt?: string;
+    endAt?: string;
     maxViewers?: number;
     percentage?: number;
 }

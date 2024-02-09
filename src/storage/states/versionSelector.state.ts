@@ -27,38 +27,24 @@ export class VersionSelectorState {
     }
 }
 
-export class StaticVersionSelectorState {
-    constructor (
+
+export class VersionSelectorVersionRelationState {
+    constructor(
+        public versionSelectorId: number,
         public versionNumber: number,
     ) {}
 
-    public static fromMutationPayload(json: any): StaticVersionSelectorState {
-        return new StaticVersionSelectorState(
+    public static fromMutationPayload(json: any): VersionSelectorVersionRelationState {
+        return new VersionSelectorVersionRelationState(
+            json.VersionSelectorID,
             json.VersionNumber,
         );
     }
 
-    public static fromJson(json: any): StaticVersionSelectorState {
-        return new StaticVersionSelectorState(
+    public static fromJson(json: any): VersionSelectorVersionRelationState {
+        return new VersionSelectorVersionRelationState(
+            json.versionSelectorId,
             json.versionNumber,
-        );
-    }
-}
-
-export class ExperimentVersionSelectorState {
-    constructor (
-        public versionNumbers: number[]
-    ) {}
-
-    public static fromMutationPayload(json: any): ExperimentVersionSelectorState {
-        return new ExperimentVersionSelectorState(
-            json.VersionNumbers,
-        );
-    }
-
-    public static fromJson(json: any): ExperimentVersionSelectorState {
-        return new ExperimentVersionSelectorState(
-            json.versionNumbers,
         );
     }
 }

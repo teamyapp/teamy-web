@@ -139,6 +139,7 @@ export class TeamClient {
                                 groups {
                                     id
                                     type
+                                    memberType
                                     name
                                     ... on StaticUserGroup{
                                         users {
@@ -163,6 +164,7 @@ export class TeamClient {
                                         rollout {
                                             id
                                         }
+                                        orderIndex
                                     }
                                     apps {
                                         id

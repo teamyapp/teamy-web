@@ -101,6 +101,7 @@ export class CreateUserGroupModalComponent extends Component<Props> {
         await this.stateSyncer.createStaticUserGroup(this.props.appId, {
             groupName,
             memberIds: userIds,
+            rolloutIds: [],
         });
         this.modalRef.current?.close();
     };
@@ -109,9 +110,11 @@ export class CreateUserGroupModalComponent extends Component<Props> {
         groupName: string,
         filter: string,
     ) => {
-        await this.stateSyncer.createFilterUserGroup(this.props.appId, {
+        await this.stateSyncer.createFilterGroup(this.props.appId, {
             groupName,
             filter,
+            groupMemberType: 'USER',
+            rolloutIds: [],
         });
         this.modalRef.current?.close();
     };

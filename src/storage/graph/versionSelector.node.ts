@@ -6,8 +6,7 @@ import {
 } from '@core/entity/rollout';
 
 import {
-    ExperimentVersionSelectorState,
-    StaticVersionSelectorState,
+    VersionSelectorVersionRelationState,
     VersionSelectorState,
 } from '../states/versionSelector.state';
 import { LocalStore } from '../syncer/localStore';
@@ -42,7 +41,7 @@ export class StaticVersionSelectorNode
     constructor(
         protected localStore: LocalStore,
         protected versionSelector: VersionSelectorState,
-        private staticVersionSelector: StaticVersionSelectorState,
+        private versionSelectorVersionRelations: VersionSelectorVersionRelationState[],
     ) {
         super(localStore, versionSelector);
     }
@@ -52,7 +51,7 @@ export class StaticVersionSelectorNode
     }
 
     get versionNumber(): number {
-        return this.staticVersionSelector.versionNumber;
+        return this.versionSelectorVersionRelations.find(relation => relation.versionSelectorId === this.id)!.versionNumber;        
     }
 }
 
@@ -63,7 +62,7 @@ export class ExperimentVersionSelectorNode
     constructor(
         protected localStore: LocalStore,
         protected versionSelector: VersionSelectorState,
-        private experimentVersionSelector: ExperimentVersionSelectorState,
+        private versionSelectorVersionRelations: VersionSelectorVersionRelationState[],
     ) {
         super(localStore, versionSelector);
     }
@@ -73,6 +72,8 @@ export class ExperimentVersionSelectorNode
     }
 
     get versionNumbers(): number[] {
-        return this.experimentVersionSelector.versionNumbers;
+        return this.versionSelectorVersionRelations
+            .filter(relation => relation.versionSelectorId === this.id)
+            .map(relation => relation.versionNumber);
     }
 }

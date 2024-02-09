@@ -7,6 +7,9 @@ export interface RemoteRollout {
     isEnabled: boolean;
     activator: RemoteRolloutActivator;
     versionSelector: RemoteRolloutVersionSelector;
-    createdAt: Date;
-    updatedAt?: Date;
+    createdAt: string;
+    updatedAt?: string;
 }
+
+
+export type RemoteAppRolloutType = 'USER' | 'TEAM';

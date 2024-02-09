@@ -65,11 +65,9 @@ export class RolloutNode implements Rollout {
 
         switch (versionSelector.type) {
             case 'STATIC':
-                const staticVersionSelector = appState.staticVersionSelectors[versionSelector.id];
-                return new StaticVersionSelectorNode(this.localStore, versionSelector, staticVersionSelector);
+                return new StaticVersionSelectorNode(this.localStore, versionSelector, appState.versionSelectorVersionRelations);
             case 'EXPERIMENT':
-                const experimentVersionSelector = appState.experimentVersionSelectors[versionSelector.id];
-                return new ExperimentVersionSelectorNode(this.localStore, versionSelector, experimentVersionSelector);
+                return new ExperimentVersionSelectorNode(this.localStore, versionSelector, appState.versionSelectorVersionRelations);
         }
     }
 

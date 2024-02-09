@@ -113,19 +113,23 @@ export class AppNode implements App {
     public get userRollouts(): RolloutNode[] {
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id];
-        return app.userRolloutIds.map((rolloutId) => {
-            const rollout = appState.rollouts[rolloutId];
-            return new RolloutNode(this.localStore, rollout);
-        });
+        
+        return appState.appRolloutRelations.filter((appRolloutRelation) => {
+            return appRolloutRelation.appId === this.app.id && appRolloutRelation.type === 'USER';
+        }).map((appRolloutRelation) => {
+            return new RolloutNode(this.localStore, appState.rollouts[appRolloutRelation.rolloutId]);
+        })
     }
 
     public get teamRollouts(): RolloutNode[] {
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id];
-        return app.teamRolloutIds.map((rolloutId) => {
-            const rollout = appState.rollouts[rolloutId];
-            return new RolloutNode(this.localStore, rollout);
-        });
+        
+        return appState.appRolloutRelations.filter((appRolloutRelation) => {
+            return appRolloutRelation.appId === this.app.id && appRolloutRelation.type === 'TEAM';
+        }).map((appRolloutRelation) => {
+            return new RolloutNode(this.localStore, appState.rollouts[appRolloutRelation.rolloutId]);
+        })
     }
 
     public latestVersionForTeam(teamId?: number): AppVersionNode | undefined {

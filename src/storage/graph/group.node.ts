@@ -42,9 +42,10 @@ class GroupInfoNode implements GroupInfo {
         const appState = this.localStore.getState();
         return appState.groupRolloutRelations
         .filter((relation) => relation.groupId === this.group.id)
+        .sort((relationA, relationB) => relationA.orderIndex - relationB.orderIndex)
         .map((relation) => {
             return new RolloutNode(this.localStore, appState.rollouts[relation.rolloutId]);
-        });
+        })
     }
 
     public get apps(): AppNode[] {
@@ -96,7 +97,7 @@ export class StaticGroupNode<MemberNode>
 
     public get members(): MemberNode[] {
         const appState = this.localStore.getState();
-        const groupMemberRelations = appState.memberGroupRelations;
+        const groupMemberRelations = appState.groupMemberRelations;
 
         return groupMemberRelations.filter((relation) => {
             return relation.groupId === this.group.id;

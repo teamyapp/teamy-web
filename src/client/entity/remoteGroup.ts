@@ -3,6 +3,7 @@ import { RemoteGroupMemberType } from './remoteGroupMemberType';
 import { RemoteGroupRolloutRelation } from './remoteGroupRolloutRelation';
 import { RemoteGroupType } from './remoteGroupType';
 import { RemoteTeam } from './remoteTeam';
+import { RemoteUser } from './remoteUser';
 
 export interface RemoteGroup {
     id: string;
@@ -11,7 +12,7 @@ export interface RemoteGroup {
     name: string;
     filter?: string;
     teams?: RemoteTeam[];
-    users?: string[];
+    users?: RemoteUser[];
     memberCount?: number;
     createdAt: string;
     updatedAt?: string;

@@ -14,8 +14,8 @@ import styles from './CreateTeamGroupModal.component.module.scss';
 interface Props {
     deps: Deps;
     appId: number;
-    onCreateStaticGroupClick?: (groupName: string, userIds: number[]) => void;
-    onCreateFilterGroupClick?: (groupName: string, filter: string) => void;
+    onCreateStaticGroupClick?: (groupName: string, userIds: number[], rolloutIds: number[]) => void;
+    onCreateFilterGroupClick?: (groupName: string, filter: string, rolloutIds: number[]) => void;
 }
 
 export class CreateTeamGroupModalComponent extends Component<Props> {
@@ -103,6 +103,7 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
         await this.stateSyncer.createStaticTeamGroup(this.props.appId, {
             groupName,
             memberIds: userIds,
+            rolloutIds: [],
         });
         this.modalRef.current?.close();
     };
@@ -111,9 +112,11 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
         groupName: string,
         filter: string,
     ) => {
-        await this.stateSyncer.createFilterTeamGroup(this.props.appId, {
+        await this.stateSyncer.createFilterGroup(this.props.appId, {
             groupName,
             filter,
+            groupMemberType: 'TEAM',
+            rolloutIds: [],
         });
         this.modalRef.current?.close();
     };
