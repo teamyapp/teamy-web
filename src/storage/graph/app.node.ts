@@ -91,7 +91,8 @@ export class AppNode implements App {
 
     public get teamGroups(): (StaticGroupNode<TeamNode> | FilterGroupNode)[] {
         const appState = this.localStore.getState();
-        return appState.appGroupRelations.filter((appGroupRelation) => {
+        return appState.appGroupRelations
+            .filter((appGroupRelation) => {
             const group = appState.groups[appGroupRelation.groupId];
             return appGroupRelation.appId === this.app.id && 
             group.memberType === 'TEAM';

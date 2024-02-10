@@ -529,7 +529,6 @@ export function mergeAppRolloutRelation(
     return currAppState;
 }
 
-
 export function mergeApp(
     currAppState: AppState,
     remoteApp: RemoteApp,
