@@ -387,7 +387,7 @@ export function EditRolloutViewComponent() {
             };
 
             const onIsEnabledChange = (isEnabled: boolean) => {
-                setIsEnabled(!isEnabled);
+                setIsEnabled(isEnabled);
             };
 
             const renderActivatorDetailSection = () => {
