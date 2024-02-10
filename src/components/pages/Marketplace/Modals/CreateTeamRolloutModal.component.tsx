@@ -2,86 +2,19 @@ import React, { Component, RefObject, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
-
-import { Group } from '@core/entity/group';
-import { CreateAppRolloutInput } from '@core/entity/input';
-import { Team } from '@core/entity/team';
+import { CreateActivatorInput, CreateAppRolloutInput, CreateVersionSelectorInput } from '@core/entity/input';
 
 import { CreateRolloutViewComponent } from './CreateRolloutView.component';
 import styles from './CreateTeamRolloutModal.component.module.scss';
-
-const teamGroups: Group<Team>[] = [
-    {
-        id: 1,
-        type: 'static',
-        name: '1st party partners',
-        members: [
-            {
-                id: 1,
-                name: 'Teamy',
-                iconUrl: 'https://cloud.staging.teamyapp.com/file/files/3469',
-                creator: {
-                    id: 1,
-                    firstName: 'Harry',
-                    lastName: 'Liu',
-                    fullName: 'Harry Liu',
-                    profileUrl:
-                        'https://cloud.staging.teamyapp.com/file/files/23133',
-                    teams: [],
-                    linkedUsers: [],
-                },
-                owner: {
-                    id: 1,
-                    firstName: 'Harry',
-                    lastName: 'Liu',
-                    fullName: 'Harry Liu',
-                    profileUrl:
-                        'https://cloud.staging.teamyapp.com/file/files/23133',
-                    teams: [],
-                    linkedUsers: [],
-                },
-            },
-            {
-                id: 2,
-                name: 'Test',
-                iconUrl: '',
-                creator: {
-                    id: 1,
-                    firstName: 'Harry',
-                    lastName: 'Liu',
-                    fullName: 'Harry Liu',
-                    profileUrl:
-                        'https://cloud.staging.teamyapp.com/file/files/23133',
-                    teams: [],
-                    linkedUsers: [],
-                },
-                owner: {
-                    id: 1,
-                    firstName: 'Harry',
-                    lastName: 'Liu',
-                    fullName: 'Harry Liu',
-                    profileUrl:
-                        'https://cloud.staging.teamyapp.com/file/files/23133',
-                    teams: [],
-                    linkedUsers: [],
-                },
-            },
-        ],
-        createdAt: new Date(),
-        rollouts: [],
-    },
-    {
-        id: 2,
-        type: 'filter',
-        name: 'US Massachusetts',
-        filter: '(country=US) AND (state=MA)',
-        createdAt: new Date(),
-        rollouts: [],
-    },
-];
+import { Deps } from '@core/dep/deps';
 
 interface Props {
+    deps: Deps;
+    appId: number;
     isValidVersionNumber: (versionNumber: number) => boolean;
+    onCreateRolloutClick: (rollout: CreateAppRolloutInput) => void;
+    createActivator: (input: CreateActivatorInput) => Promise<number>;
+    createVersionSelector: (input: CreateVersionSelectorInput) => Promise<number>;
 }
 
 export class CreateTeamRolloutModalComponent extends Component<Props> {
@@ -104,10 +37,13 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
                 <div className={styles.Content}>
                     <CreateRolloutViewComponent
                         groupLabel={'Team'}
+                        appRolloutType='TEAM'
                         renderInlineGroup={this.renderInlineTeamGroup}
                         isValidGroup={this.isValidTeamGroup}
                         isValidVersionNumber={this.props.isValidVersionNumber}
-                        onCreateClick={this.onCreateRolloutClick}
+                        onCreateRolloutClick={this.handleCreateRolloutClick}
+                        createActivator={this.props.createActivator}
+                        createVersionSelector={this.props.createVersionSelector}
                     />
                 </div>
             </ModalUI>
@@ -123,7 +59,8 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
     };
 
     private renderInlineTeamGroup = (groupId: number) => {
-        const group = teamGroups.find((group) => group.id === groupId);
+        const app = this.props.deps.graphSource.app(this.props.appId);
+        const group = app?.teamGroups.find((group) => group.id === groupId);
         if (!group) {
             return null;
         }
@@ -132,8 +69,13 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
     };
 
     private isValidTeamGroup = (groupId: number): boolean => {
-        return teamGroups.some((group) => group.id === groupId);
+        const app = this.props.deps.graphSource.app(this.props.appId);
+        return app?.teamGroups.some((group) => group.id === groupId) || false;
     };
 
-    private onCreateRolloutClick = (rollout: CreateAppRolloutInput) => {};
+    private handleCreateRolloutClick = (rollout: CreateAppRolloutInput) => {
+        this.props.onCreateRolloutClick(rollout);
+        this.modalRef.current?.close();
+    };
+
 }

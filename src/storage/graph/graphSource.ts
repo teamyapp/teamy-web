@@ -7,6 +7,7 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { AppNode } from './app.node';
 import { AppVersionNode } from './appVersion.node';
+import { RolloutNode } from './rollout.node';
 
 export class GraphSource {
     constructor(private localStore: LocalStore) {}
@@ -91,6 +92,14 @@ export class GraphSource {
         const app = appState.apps[appId];
         if (app) {
             return new AppNode(this.localStore, app);
+        }
+    }
+
+    public rollout(rolloutId: number): RolloutNode | undefined {
+        const appState = this.localStore.getState();
+        const rollout = appState.rollouts[rolloutId];
+        if (rollout) {
+            return new RolloutNode(this.localStore, rollout);
         }
     }
 }

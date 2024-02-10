@@ -6,11 +6,9 @@ export type Activator =
     | MaxViewersActivator
     | PercentageActivator;
 
-export type ActivatorType =
-    | 'STATIC'
-    | 'TIME_RANGE'
-    | 'MAX_VIEWERS'
-    | 'PERCENTAGE';
+
+export type ActivatorType = 'STATIC' | 'TIME_RANGE' | 'MAX_VIEWERS' | 'PERCENTAGE';
+export type AppRolloutType = 'USER' | 'TEAM';
 
 export interface ActivatorInfo {
     id: number;
@@ -46,6 +44,7 @@ export type VersionSelectorType = 'STATIC' | 'EXPERIMENT';
 export interface VersionSelectorInfo {
     id: number;
     type: VersionSelectorType;
+    createdAt: Date;
     updatedAt?: Date;
 }
 
@@ -67,5 +66,5 @@ export interface Rollout {
     isEnabled: boolean;
     createdAt: Date;
     updatedAt?: Date;
-    group: Group;
+    groups: Group[];
 }

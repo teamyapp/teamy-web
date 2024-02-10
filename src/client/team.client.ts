@@ -136,52 +136,42 @@ export class TeamClient {
                                 managedByTeam {
                                     id
                                 }
-                                userGroups {
+                                groups {
                                     id
                                     type
+                                    memberType
                                     name
                                     ... on StaticUserGroup{
                                         users {
                                             id
                                         }
                                     }
-                                    ... on FilterGroup {
-                                        filter
-                                        memberCount
-                                    }
-                                    createdAt
-                                    updatedAt
-                                    rollouts {
-                                        id
-                                    }
-                                    app {
-                                        id
-                                    }
-                                }
-                                teamGroups {
-                                    id
-                                    type
-                                    name
-                                    ... on StaticTeamGroup{ 
+                                    ... on StaticTeamGroup{
                                         teams {
                                             id
                                         }
                                     }
                                     ... on FilterGroup {
                                         filter
-                                        memberCount
                                     }
                                     createdAt
                                     updatedAt
-                                    rollouts {
-                                        id
+                                    groupRolloutRelations {
+                                        group {
+                                            id
+                                        }
+                                        rollout {
+                                            id
+                                        }
+                                        orderIndex
                                     }
-                                    app {
+                                    apps {
                                         id
                                     }
                                 }
                                 userRollouts {
                                     id
+                                    name
                                     isEnabled
                                     activator {
                                         id
@@ -214,6 +204,7 @@ export class TeamClient {
                                 }
                                 teamRollouts {
                                     id
+                                    name
                                     isEnabled
                                     activator {
                                         id

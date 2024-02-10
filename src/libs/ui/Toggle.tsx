@@ -47,6 +47,6 @@ export class ToggleUI extends Component<Props, State> {
         this.setState({
             status: !this.state.status,
         });
-        this.props.onStatusChange?.(this.state.status);
+        this.props.onStatusChange?.(!this.state.status);
     };
 }

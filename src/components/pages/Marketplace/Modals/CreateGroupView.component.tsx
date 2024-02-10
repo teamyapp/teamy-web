@@ -5,12 +5,13 @@ import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { ItemListUI } from '@lib/ui/ItemList';
 
 import styles from './CreateGroupView.component.module.scss';
+import { GroupType } from '@core/entity/group';
 
-type groupType = 'static' | 'filter';
+
 
 const groupTypeOptions: Option[] = [
-    { key: 'static', description: 'Static' },
-    { key: 'filter', description: 'Filter' },
+    { key: 'STATIC', description: 'Static' },
+    { key: 'FILTER', description: 'Filter' },
 ];
 
 interface StaticInput {
@@ -31,7 +32,7 @@ interface Props {
 }
 
 interface State {
-    selectedGroupType: groupType;
+    selectedGroupType: GroupType;
     staticInput?: StaticInput;
     filterInput?: FilterInput;
 }
@@ -45,7 +46,7 @@ export class CreateGroupViewComponent extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            selectedGroupType: 'static',
+            selectedGroupType: 'STATIC',
         };
     }
 
@@ -81,9 +82,9 @@ export class CreateGroupViewComponent extends Component<Props, State> {
 
     private renderGroupDetailSection(): ReactNode {
         switch (this.state.selectedGroupType) {
-            case 'static':
+            case 'STATIC':
                 return this.renderStaticGroupDetailSection();
-            case 'filter':
+            case 'FILTER':
                 return this.renderFilterGroupDetailSection();
         }
     }
@@ -146,7 +147,7 @@ export class CreateGroupViewComponent extends Component<Props, State> {
 
     private onSelectGroupType = (groupType: string) => {
         this.setState({
-            selectedGroupType: groupType as groupType,
+            selectedGroupType: groupType as GroupType,
         });
     };
 

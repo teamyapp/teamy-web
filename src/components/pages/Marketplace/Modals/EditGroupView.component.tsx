@@ -5,16 +5,14 @@ import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { ItemListUI } from '@lib/ui/ItemList';
 
-import { Entity } from '@core/entity/entity';
-import { Group } from '@core/entity/group';
+import { Group, GroupType } from '@core/entity/group';
 
 import styles from './EditGroupView.component.module.scss';
-
-type groupType = 'static' | 'filter';
+import { UpdateGroupInput } from '@core/entity/input';
 
 const groupTypeOptions: Option[] = [
-    { key: 'static', description: 'Static' },
-    { key: 'filter', description: 'Filter' },
+    { key: 'STATIC', description: 'Static' },
+    { key: 'FILTER', description: 'Filter' },
 ];
 
 interface StaticGroupInput {
@@ -25,8 +23,8 @@ interface FilterGroupInput {
     filter: string;
 }
 
-interface Props<GroupMember> {
-    group: Group<GroupMember>;
+interface Props {
+    group: Group;
     membersLabel: string;
     memberLabel: string;
     renderInlineGroupMember: (memberId: number) => ReactNode;
@@ -35,20 +33,20 @@ interface Props<GroupMember> {
     isValidRollout?: (rolloutId: number) => boolean;
     onCreateStaticGroup?: (groupName: string, memberIds: number[]) => void;
     onCreateFilterGroup?: (groupName: string, filter: string) => void;
+    onDeleteGroupClick?: (groupId: number) => void;
+    onSaveGroupClick?: (groupId: number, updatedGroup: UpdateGroupInput) => void;
 }
 
-interface State<GroupMember> {
-    group?: Group<GroupMember>;
-    selectedGroupType?: groupType;
+interface State {
+    group?: Group;
+    selectedGroupType?: GroupType;
     groupName?: string;
     staticGroupInput?: StaticGroupInput;
     filterGroupInput?: FilterGroupInput;
     rolloutIds: number[];
 }
 
-export class EditGroupViewComponent<
-    GroupMember extends Entity,
-> extends Component<Props<GroupMember>, State<GroupMember>> {
+export class EditGroupViewComponent extends Component<Props, State> {
     private readonly groupNameInputRef: React.RefObject<HTMLInputElement> =
         React.createRef();
     private readonly memberIdInputRef: React.RefObject<HTMLInputElement> =
@@ -60,7 +58,7 @@ export class EditGroupViewComponent<
     private readonly groupTypeDropdownRef: React.RefObject<DropDownList> =
         React.createRef();
 
-    constructor(props: Props<GroupMember>) {
+    constructor(props: Props) {
         super(props);
 
         this.state = {
@@ -136,10 +134,16 @@ export class EditGroupViewComponent<
                     </div>
                 </div>
                 <div className={styles.Actions}>
-                    <div className={styles.SaveAction}>
+                    <div
+                        className={styles.SaveAction}
+                        onClick={this.onSaveGroupClick}
+                    >
                         <ButtonUI label={'Save'} />
                     </div>
-                    <div className={styles.DeleteAction}>
+                    <div
+                        className={styles.DeleteAction}
+                        onClick={this.onDeleteGroupClick}
+                    >
                         <ButtonUI label={'Delete'} />
                     </div>
                 </div>
@@ -149,9 +153,9 @@ export class EditGroupViewComponent<
 
     private renderGroupDetailSection(): ReactNode {
         switch (this.state.selectedGroupType) {
-            case 'static':
+            case 'STATIC':
                 return this.renderStaticGroupDetailSection();
-            case 'filter':
+            case 'FILTER':
                 return this.renderFilterGroupDetailSection();
         }
     }
@@ -196,7 +200,7 @@ export class EditGroupViewComponent<
         );
     }
 
-    public show(group: Group<GroupMember>) {
+    public show(group: Group) {
         this.setState({
             group: group,
             groupName: group.name,
@@ -211,7 +215,7 @@ export class EditGroupViewComponent<
 
     private onSelectGroupType = (groupType: string) => {
         this.setState({
-            selectedGroupType: groupType as groupType,
+            selectedGroupType: groupType as GroupType,
         });
     };
 
@@ -268,8 +272,8 @@ export class EditGroupViewComponent<
         });
     };
 
-    toStaticGroupInput(group: Group<GroupMember>): StaticGroupInput {
-        if (group.type !== 'static') {
+    toStaticGroupInput(group: Group): StaticGroupInput {
+        if (group.type !== 'STATIC') {
             return {
                 memberIds: [],
             };
@@ -280,8 +284,8 @@ export class EditGroupViewComponent<
         };
     }
 
-    toFilterGroupInput(group: Group<GroupMember>): FilterGroupInput {
-        if (group.type !== 'filter') {
+    toFilterGroupInput(group: Group): FilterGroupInput {
+        if (group.type !== 'FILTER') {
             return {
                 filter: '',
             };
@@ -304,5 +308,20 @@ export class EditGroupViewComponent<
                 filter: event.target.value,
             },
         });
+    };
+
+    private onSaveGroupClick = () => {
+        this.props.onSaveGroupClick?.call(null, this.props.group.id, {
+            name: this.state.groupName || this.props.group.name,
+            type: this.state.selectedGroupType || this.props.group.type,
+            groupMemberType: this.props.group.memberType,
+            memberIds: this.state.staticGroupInput?.memberIds,
+            filter: this.state.filterGroupInput?.filter,
+            rolloutIds: this.state.rolloutIds,
+        });
+    };
+
+    private onDeleteGroupClick = () => {
+        this.props.onDeleteGroupClick?.call(null, this.state.group!.id);
     };
 }

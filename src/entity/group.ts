@@ -5,16 +5,18 @@ import { User } from './user';
 
 export type Group = StaticGroup<User> | StaticGroup<Team> | FilterGroup;
 
-export type GroupType = 'STATIC' | 'FILTER';
+export type GroupType = 'STATIC' | 'FILTER'
+export type GroupMemberType = 'USER' | 'TEAM'
 
 export interface GroupInfo {
     id: number;
     type: GroupType;
+    memberType: GroupMemberType;
     name: string;
     createdAt: Date;
     updatedAt?: Date;
     rollouts: Rollout[];
-    app: App;
+    apps: App[];
 }
 
 export interface StaticGroup<Member> extends GroupInfo {
@@ -25,5 +27,4 @@ export interface StaticGroup<Member> extends GroupInfo {
 export interface FilterGroup extends GroupInfo {
     type: 'FILTER';
     filter: string;
-    memberCount: number;
 }

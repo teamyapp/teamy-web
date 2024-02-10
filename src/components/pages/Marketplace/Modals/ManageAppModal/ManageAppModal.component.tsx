@@ -202,8 +202,10 @@ export class ManageAppModalComponent extends Component<Props, State> {
                 )
             );
         } else if (this.state.showTabViews['rollouts']) {
-            return (
+            return (this.state.app &&
                 <RolloutsTabComponent
+                    deps={this.props.deps}
+                    appId={this.state.app.id}
                     isValidVersionNumber={this.isValidVersionNumber}
                     renderInlineVersionNumber={this.renderInlineVersionNumber}
                 />

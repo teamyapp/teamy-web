@@ -8,6 +8,7 @@ import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
 import { AppClient } from '@core/client/app.client';
 import { RemoteTaskFilter } from '@core/client/entity/filter';
+import { RemoteRolloutActivator } from '@core/client/entity/remoteRolloutActivator';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
@@ -18,19 +19,29 @@ import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
 import { TaskFilter } from '@core/entity/filters';
 import {
+    CreateActivatorInput,
+    CreateAppInput,
+    CreateAppRolloutInput,
     CreateAppSecretInput,
     CreateAppVersionInput,
+    CreateFilterGroupInput,
     CreateInvitationInput,
     CreateMessageInput,
     CreateSprintInput,
+    CreateStaticGroupInput,
     CreateTaskInput,
     CreateTeamInput,
     CreateUserInput,
+    CreateVersionSelectorInput,
+    UpdateActivatorInput,
+    UpdateGroupInput,
     UpdateMessageInput,
+    UpdateRolloutInput,
     UpdateTaskInput,
     UpdateTeamInput,
     UpdateTeamMemberInput,
     UpdateUserInput,
+    UpdateVersionSelectorInput,
 } from '@core/entity/input';
 import { AppState } from '@core/storage/states/app.state';
 import { toDate, toInt } from '@core/storage/states/parser';
@@ -56,35 +67,26 @@ import {
     applyTeamMutation,
     applyUserMutation,
     deleteThread,
+    mergeActivator,
+    mergeAppRolloutRelation,
     mergeAppSecret,
     mergeAppVersion,
+    mergeGroup,
     mergeInvitation,
     mergeMessage,
+    mergeRollout,
     mergeSprint,
     mergeTag,
     mergeTask,
     mergeTeam,
     mergeUser,
+    mergeVersionSelector,
     removeOrMergeTeamMembers,
     replaceTeamInvitations,
     replaceTeamTaskActivities,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
-
-interface CreateAppInput {
-    name: string;
-}
-
-interface CreateStaticGroupInput {
-    groupName: string;
-    memberIds: number[];
-}
-
-interface CreateFilterGroupInput {
-    groupName: string;
-    filter: string;
-}
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -931,40 +933,278 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public createStaticUserGroup(
+    public async createStaticUserGroup(
         appId: number,
         input: CreateStaticGroupInput,
-    ): Promise<number> {
-        // TODO: integrate with create static user group API
-        console.log('createStaticUserGroup', appId, input);
-        return Promise.resolve(0);
+    ): Promise<void> {
+        const remoteGroup = await this.appClient.createStaticUserGroup(
+            `${appId}`,
+            {
+                name: input.groupName,
+                userIds: input.memberIds.map(String),
+                rolloutIds: input.rolloutIds.map(String),
+            },
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeGroup(appState, remoteGroup, appId);
+        this.localStore.updateState(appState);
     }
 
-    public createFilterUserGroup(
+    public async createFilterGroup(
         appId: number,
         input: CreateFilterGroupInput,
-    ): Promise<number> {
-        // TODO: integrate with create filter user group API
-        console.log('createFilterUserGroup', appId, input);
-        return Promise.resolve(0);
+    ): Promise<void> {
+        const remoteGroup = await this.appClient.createFilterGroup(`${appId}`, {
+            name: input.groupName,
+            filter: input.filter,
+            groupMemberType: input.groupMemberType,
+            rolloutIds: input.rolloutIds.map(String),
+        });
+
+        let appState = this.localStore.getState();
+        appState = mergeGroup(appState, remoteGroup, appId);
+        this.localStore.updateState(appState);
     }
 
-    public createStaticTeamGroup(
+    public async createStaticTeamGroup(
         appId: number,
         input: CreateStaticGroupInput,
-    ): Promise<number> {
-        // TODO: integrate with create static team group API
-        console.log('createStaticTeamGroup', appId, input);
-        return Promise.resolve(0);
+    ): Promise<void> {
+        const remoteGroup = await this.appClient.createStaticTeamGroup(
+            `${appId}`,
+            {
+                name: input.groupName,
+                teamIds: input.memberIds.map(String),
+                rolloutIds: input.rolloutIds.map(String),
+            },
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeGroup(appState, remoteGroup, appId);
+        this.localStore.updateState(appState);
     }
 
-    public createFilterTeamGroup(
+    public async updateGroup(
         appId: number,
-        input: CreateFilterGroupInput,
+        groupId: number,
+        input: UpdateGroupInput,
+    ): Promise<void> {
+        const remoteGroup = await this.appClient.updateGroup(
+            `${appId}`,
+            `${groupId}`,
+            {
+                name: input.name,
+                type: input.type,
+                groupMemberType: input.groupMemberType,
+                memberIds: input.memberIds?.map(String) ?? [],
+                rolloutIds: input.rolloutIds.map(String),
+                filter: input.filter,
+            },
+        );
+        let appState = this.localStore.getState();
+        appState = this._deleteGroup(appState, groupId);
+        appState = mergeGroup(appState, remoteGroup, appId);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteAppGroup(appId: number, groupId: number): Promise<void> {
+        await this.appClient.deleteAppGroup(`${appId}`, `${groupId}`);
+        let appState = this.localStore.getState();
+        appState = this._deleteGroup(appState, groupId);
+        this.localStore.updateState(appState);
+    }
+
+    public async createAppRollout(
+        appId: number,
+        input: CreateAppRolloutInput,
+    ): Promise<void> {
+        const remoteRollout = await this.appClient.createAppRollout(
+            `${appId}`,
+            input.type,
+            {
+                name: input.name,
+                activatorId: `${input.activatorId}`,
+                versionSelectorId: `${input.versionSelectorId}`,
+                isEnabled: input.isEnabled,
+                groupIds: input.groupIds.map(String),
+            },
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeRollout(appState, remoteRollout);
+        appState = mergeAppRolloutRelation(
+            appState,
+            appId,
+            toInt(remoteRollout.id)!,
+            input.type,
+        );
+        this.localStore.updateState(appState);
+    }
+
+    public async updateRollout(input: UpdateRolloutInput) {
+        const remoteRollout = await this.appClient.updateRollout(
+            `${input.id}`,
+            {
+                name: input.name,
+                activatorId: `${input.activatorId}`,
+                versionSelectorId: `${input.versionSelectorId}`,
+                isEnabled: input.isEnabled,
+                groupIds: input.groupIds.map(String),
+            },
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeRollout(appState, remoteRollout);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteRollout(rolloutId: number): Promise<void> {
+        await this.appClient.deleteRollout(`${rolloutId}`);
+        let appState = this.localStore.getState();
+        delete appState.rollouts[rolloutId];
+
+        appState.groupRolloutRelations = appState.groupRolloutRelations.filter(
+            (relation) => relation.rolloutId !== rolloutId,
+        );
+
+        appState.appRolloutRelations = appState.appRolloutRelations.filter(
+            (relation) => relation.rolloutId !== rolloutId,
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async createActivator(input: CreateActivatorInput): Promise<number> {
+        let remoteActivator: RemoteRolloutActivator;
+        switch (input.type) {
+            case 'STATIC': {
+                remoteActivator = await this.appClient.createStaticActivator();
+                break;
+            }
+            case 'MAX_VIEWERS': {
+                remoteActivator =
+                    await this.appClient.createMaxViewersActivator({
+                        maxViewers: input.maxViewers,
+                    });
+                break;
+            }
+            case 'TIME_RANGE': {
+                remoteActivator = await this.appClient.createTimeRangeActivator(
+                    {
+                        startAt: input.startAt,
+                        endAt: input.endAt,
+                    },
+                );
+                break;
+            }
+            case 'PERCENTAGE': {
+                remoteActivator =
+                    await this.appClient.createPercentageActivator({
+                        percentage: input.percentage,
+                    });
+                break;
+            }
+        }
+
+        let appState = this.localStore.getState();
+        appState = mergeActivator(appState, remoteActivator);
+        this.localStore.updateState(appState);
+        return toInt(remoteActivator.id)!;
+    }
+
+    public async updateActivator(
+        activatorId: number,
+        input: UpdateActivatorInput,
+    ): Promise<void> {
+        const remoteActivator = await this.appClient.updateActivator(
+            `${activatorId}`,
+            input,
+        );
+        let appState = this.localStore.getState();
+        delete appState.timeRangeActivators[activatorId];
+        delete appState.maxViewersActivators[activatorId];
+        delete appState.percentageActivators[activatorId];
+        appState = mergeActivator(appState, remoteActivator);
+        this.localStore.updateState(appState);
+    }
+
+    public async createVersionSelector(
+        appId: number,
+        input: CreateVersionSelectorInput,
     ): Promise<number> {
-        // TODO: integrate with create filter team group API
-        console.log('createFilterTeamGroup', appId, input);
-        return Promise.resolve(0);
+        let remoteVersionSelector;
+        switch (input.type) {
+            case 'STATIC': {
+                remoteVersionSelector =
+                    await this.appClient.createStaticVersionSelector(
+                        `${appId}`,
+                        {
+                            versionNumber: input.versionNumber,
+                        },
+                    );
+                break;
+            }
+            case 'EXPERIMENT': {
+                remoteVersionSelector =
+                    await this.appClient.createExperimentVersionSelector(
+                        `${appId}`,
+                        {
+                            versionNumbers: input.versionNumbers,
+                        },
+                    );
+                break;
+            }
+        }
+
+        let appState = this.localStore.getState();
+        appState = mergeVersionSelector(appState, remoteVersionSelector);
+        this.localStore.updateState(appState);
+        return toInt(remoteVersionSelector.id)!;
+    }
+
+    public async updateVersionSelector(
+        appId: number,
+        versionSelectorId: number,
+        input: UpdateVersionSelectorInput,
+    ): Promise<void> {
+        const remoteVersionSelector =
+            await this.appClient.updateVersionSelector(
+                `${appId}`,
+                `${versionSelectorId}`,
+                {
+                    type: input.type,
+                    versionNumber: input.versionNumber,
+                    versionNumbers: input.versionNumbers ?? [],
+                },
+            );
+        let appState = this.localStore.getState();
+        appState.versionSelectorVersionRelations =
+            appState.versionSelectorVersionRelations.filter(
+                (relation) => relation.versionSelectorId !== versionSelectorId,
+            );
+
+        appState = mergeVersionSelector(appState, remoteVersionSelector);
+        this.localStore.updateState(appState);
+    }
+
+    private _deleteGroup(appState: AppState, groupId: number) {
+        delete appState.groups[groupId];
+        delete appState.filterGroups[groupId];
+
+        appState.appGroupRelations = appState.appGroupRelations.filter(
+            (relation) => relation.groupId !== groupId,
+        );
+
+        appState.groupRolloutRelations = appState.groupRolloutRelations.filter(
+            (relation) => relation.groupId !== groupId,
+        );
+
+        appState.groupMemberRelations = appState.groupMemberRelations.filter(
+            (relation) => relation.groupId !== groupId,
+        );
+
+        return appState;
     }
 
     private _moveTaskToSprint(

@@ -1,24 +1,23 @@
 export type GroupType = 'STATIC' | 'FILTER';
+export type GroupMemberType = 'USER' | 'TEAM';
 
 export class GroupState {
     constructor(
-        public id: number,
-        public type: GroupType,
-        public name: string,
-        public createdAt: Date,
-        public rolloutIds: number[],
-        public appId: number,
-        public updatedAt?: Date,
+    public id: number,
+    public type: GroupType,
+    public memberType: GroupMemberType,
+    public name: string,
+    public createdAt: Date,
+    public updatedAt?: Date,
     ) {}
 
     public static fromMutationPayload(json: any): GroupState {
         return new GroupState(
             json.ID,
             json.Type,
+            json.MemberType,
             json.Name,
             new Date(json.CreatedAt),
-            json.RolloutIDs,
-            json.AppID,
             new Date(json.UpdatedAt),
         );
     }
@@ -27,23 +26,28 @@ export class GroupState {
         return new GroupState(
             json.id,
             json.type,
+            json.memberType,
             json.name,
             new Date(json.createdAt),
-            json.rolloutIds,
-            json.appId,
             new Date(json.updatedAt),
         );
     }
 }
 
 export class FilterGroupState {
-    constructor(public filter: string, public memberCount: number) {}
+    constructor(
+        public filter: string,
+    ) {}
 
     public static fromMutationPayload(json: any): FilterGroupState {
-        return new FilterGroupState(json.Filter, json.MemberCount);
+        return new FilterGroupState(
+            json.Filter
+        );
     }
 
     public static fromJson(json: any): FilterGroupState {
-        return new FilterGroupState(json.filter, json.memberCount);
+        return new FilterGroupState(
+            json.filter
+        );
     }
 }

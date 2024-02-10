@@ -5,4 +5,6 @@ export interface RemoteRolloutVersionSelector {
     type: RemoteRolloutVersionSelectorType;
     versionNumber?: number;
     versionNumbers?: number[];
+    createdAt: string;
+    updatedAt?: string;
 }

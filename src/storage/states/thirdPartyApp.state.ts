@@ -9,10 +9,6 @@ export class ThirdPartyAppState {
         public managedByTeamId: number,
         public tagIds: Set<number>,
         public versions: Record<number, AppVersionState>,
-        public userGroupIds: number[],
-        public teamGroupIds: number[],
-        public userRolloutIds: number[],
-        public teamRolloutIds: number[],
     ) {}
 
     public static fromMutationPayload(json: any): ThirdPartyAppState {
@@ -30,11 +26,7 @@ export class ThirdPartyAppState {
             json.TotalInstallations,
             json.ManagedByTeamID,
             json.TagIDs,
-            versions,
-            json.UserGroupIDs,
-            json.TeamGroupIDs,
-            json.UserRolloutIDs,
-            json.TeamRolloutIDs,
+            versions
         );
     }
 
@@ -51,11 +43,7 @@ export class ThirdPartyAppState {
             json.totalInstallations,
             json.managedByTeamId,
             json.tagIds,
-            versions,
-            json.userGroupIds,
-            json.teamGroupIds,
-            json.userRolloutIds,
-            json.teamRolloutIds,
+            versions
         );
     }
 }

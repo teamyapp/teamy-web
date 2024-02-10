@@ -1,6 +1,34 @@
 import { Duration } from '@lib/entity/duration';
 
 import { Priority } from '@core/entity/priority';
+import { AppRolloutType } from './rollout';
+import { GroupMemberType, GroupType } from './group';
+
+export interface CreateAppInput {
+    name: string;
+}
+
+export interface CreateStaticGroupInput {
+    groupName: string;
+    memberIds: number[];
+    rolloutIds: number[];
+}
+
+export interface CreateFilterGroupInput {
+    groupName: string;
+    filter: string;
+    groupMemberType: GroupMemberType;
+    rolloutIds: number[];
+}
+
+export interface UpdateGroupInput {
+    name: string;
+    type: GroupType;
+    groupMemberType: GroupMemberType;
+    rolloutIds: number[];
+    memberIds?: number[];
+    filter?: string;
+}
 
 export interface CreateUserInput {
     lastName: string;
@@ -77,44 +105,73 @@ export type CreateActivatorInput =
     | CreateMaxViewersActivatorInput
     | CreatePercentageActivatorInput;
 
+export type ActivatorType = 'STATIC' | 'TIME_RANGE' | 'MAX_VIEWERS' | 'PERCENTAGE';
+
 export interface CreateStaticActivatorInput {
-    type: 'static';
+    type: 'STATIC';
 }
 
 export interface CreateTimeRangeActivatorInput {
-    type: 'timeRange';
+    type: 'TIME_RANGE';
     startAt?: Date;
     endAt?: Date;
 }
 
 export interface CreateMaxViewersActivatorInput {
-    type: 'maxViewers';
+    type: 'MAX_VIEWERS';
     maxViewers: number;
 }
 
 export interface CreatePercentageActivatorInput {
-    type: 'percentage';
+    type: 'PERCENTAGE';
     percentage: number;
+}
+
+export interface UpdateActivatorInput {
+    type: ActivatorType;
+    startAt?: Date;
+    endAt?: Date;
+    maxViewers?: number;
+    percentage?: number;
 }
 
 export type CreateVersionSelectorInput =
     | CreateStaticVersionSelectorInput
     | CreateExperimentVersionSelectorInput;
 
+
+export type VersionSelectorType = 'STATIC' | 'EXPERIMENT';
 export interface CreateStaticVersionSelectorInput {
-    type: 'static';
+    type: 'STATIC';
     versionNumber: number;
 }
 
 export interface CreateExperimentVersionSelectorInput {
-    type: 'experiment';
+    type: 'EXPERIMENT';
     versionNumbers: number[];
+}
+
+export interface UpdateVersionSelectorInput {
+    type: VersionSelectorType;
+    versionNumber?: number;
+    versionNumbers?: number[];
 }
 
 export interface CreateAppRolloutInput {
     name: string;
-    activator: CreateActivatorInput;
-    versionSelector: CreateVersionSelectorInput;
+    type: AppRolloutType;
+    isEnabled: boolean;
+    activatorId: number;
+    versionSelectorId: number;
+    groupIds: number[];
+}
+
+export interface UpdateRolloutInput {
+    id: number;
+    name: string;
+    type: AppRolloutType;
+    activatorId: number;
+    versionSelectorId: number;
     isEnabled: boolean;
     groupIds: number[];
 }

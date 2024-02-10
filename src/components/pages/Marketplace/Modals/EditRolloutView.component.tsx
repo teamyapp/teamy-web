@@ -14,34 +14,61 @@ import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { ItemListUI } from '@lib/ui/ItemList';
 import { ToggleUI } from '@lib/ui/Toggle';
 
-import { Rollout } from '@core/entity/rollout';
+import {
+    CreateVersionSelectorInput,
+    UpdateActivatorInput,
+    UpdateRolloutInput,
+    UpdateVersionSelectorInput,
+} from '@core/entity/input';
+import {
+    ActivatorType,
+    AppRolloutType,
+    Rollout,
+    VersionSelectorType,
+} from '@core/entity/rollout';
 
 import styles from './EditRolloutView.component.module.scss';
 
 const activatorTypeOptions: Option[] = [
-    { key: 'static', description: 'Static' },
-    { key: 'timeRange', description: 'Time range' },
-    { key: 'percentage', description: 'Percentage' },
+    { key: 'STATIC', description: 'Static' },
+    { key: 'TIME_RANGE', description: 'Time range' },
+    { key: 'MAX_VIEWERS', description: 'Max reviewers' },
+    { key: 'PERCENTAGE', description: 'Percentage' },
 ];
 
 const versionSelectorTypeOptions: Option[] = [
-    { key: 'static', description: 'Static' },
-    { key: 'experiment', description: 'Experiment' },
+    { key: 'STATIC', description: 'Static' },
+    { key: 'EXPERIMENT', description: 'Experiment' },
 ];
 
-interface Props<GroupMember> {
-    rollout: Rollout<GroupMember>;
+interface Props {
+    rollout: Rollout;
+    appRolloutType: AppRolloutType;
     renderInlineVersionNumber: (versionNumber: number) => ReactNode;
     isValidVersionNumber?: (versionNumber: number) => boolean;
+    onSaveRolloutClick: (rollout: UpdateRolloutInput) => void;
+    onDeleteRolloutClick: (rolloutId: number) => void;
+    saveActivator: (
+        activatorId: number,
+        input: UpdateActivatorInput,
+    ) => Promise<void>;
+    saveVersionSelector: (
+        versionSelectorId: number,
+        input: UpdateVersionSelectorInput,
+    ) => Promise<void>;
 }
 
-export interface EditRolloutViewComponentHandle<GroupMember> {
-    show(rollout: Rollout<GroupMember>): void;
+export interface EditRolloutViewComponentHandle {
+    show(rollout: Rollout): void;
 }
 
 interface TimeRangeActivatorInput {
-    startTime?: string;
-    endTime?: string;
+    startAt?: string;
+    endAt?: string;
+}
+
+interface MaxViewersActivatorInput {
+    maxViewers: number;
 }
 
 interface PercentageActivatorInput {
@@ -56,12 +83,9 @@ interface ExperimentVersionSelectorInput {
     versionNumbers: number[];
 }
 
-export function EditRolloutViewComponent<GroupMember>() {
+export function EditRolloutViewComponent() {
     return forwardRef(
-        (
-            props: Props<GroupMember>,
-            ref: ForwardedRef<EditRolloutViewComponentHandle<GroupMember>>,
-        ) => {
+        (props: Props, ref: ForwardedRef<EditRolloutViewComponentHandle>) => {
             const rolloutNameInputRef = createRef<HTMLInputElement>();
             const activatorTypeRef = createRef<DropDownList>();
             const versionSelectorTypeRef = createRef<DropDownList>();
@@ -71,17 +95,17 @@ export function EditRolloutViewComponent<GroupMember>() {
                 createRef<HTMLInputElement>();
             const isEnabledToggleRef = createRef<ToggleUI>();
 
-            const [rollout, setRollout] = useState<Rollout<GroupMember>>(
-                props.rollout,
-            );
+            const [rollout, setRollout] = useState<Rollout>(props.rollout);
             const [rolloutName, setRolloutName] = useState<string>(
                 props.rollout.name,
             );
-            const [activatorType, setActivatorType] = useState<string>(
+            const [activatorType, setActivatorType] = useState<ActivatorType>(
                 props.rollout.activator.type,
             );
             const [versionSelectorType, setVersionSelectorType] =
-                useState<string>(props.rollout.versionSelector.type);
+                useState<VersionSelectorType>(
+                    props.rollout.versionSelector.type,
+                );
             const [timeRangeActivatorInput, setTimeRangeActivatorInput] =
                 useState<TimeRangeActivatorInput | undefined>(
                     getTimeRangeActivatorInput(props.rollout),
@@ -89,6 +113,10 @@ export function EditRolloutViewComponent<GroupMember>() {
             const [percentageActivatorInput, setPercentageActivatorInput] =
                 useState<PercentageActivatorInput | undefined>(
                     getPercentageActivatorInput(props.rollout),
+                );
+            const [maxViewersActivatorInput, setMaxViewersActivatorInput] =
+                useState<MaxViewersActivatorInput | undefined>(
+                    getMaxViewersActivatorInput(props.rollout),
                 );
             const [staticVersionSelectorInput, setStaticVersionSelectorInput] =
                 useState<StaticVersionSelectorInput | undefined>(
@@ -104,39 +132,125 @@ export function EditRolloutViewComponent<GroupMember>() {
                 props.rollout.isEnabled,
             );
 
-            function getTimeRangeActivatorInput(rollout: Rollout<GroupMember>) {
-                return rollout.activator.type === 'timeRange'
+            const handleDeleteClicked = () => {
+                props.onDeleteRolloutClick(rollout.id);
+            };
+
+            const getUpdateActivatorInput = (): UpdateActivatorInput => {
+                switch (activatorType) {
+                    case 'STATIC':
+                        return {
+                            type: 'STATIC',
+                        };
+                    case 'TIME_RANGE':
+                        const startTimeText = timeRangeActivatorInput?.startAt;
+                        const endTimeText = timeRangeActivatorInput?.endAt;
+                        return {
+                            type: 'TIME_RANGE',
+                            startAt: startTimeText
+                                ? moment(startTimeText).toDate()
+                                : undefined,
+                            endAt: endTimeText
+                                ? moment(endTimeText).toDate()
+                                : undefined,
+                        };
+                    case 'PERCENTAGE':
+                        const percentageText =
+                            percentageActivatorInput?.percentage;
+                        return {
+                            type: 'PERCENTAGE',
+                            percentage: percentageText
+                                ? Number(percentageText)
+                                : 0,
+                        };
+                    case 'MAX_VIEWERS':
+                        const maxViewersText =
+                            maxViewersActivatorInput?.maxViewers;
+                        return {
+                            type: 'MAX_VIEWERS',
+                            maxViewers: maxViewersText
+                                ? Number(maxViewersText)
+                                : 0,
+                        };
+                }
+            };
+
+            const getUpdateVersionSelectorInput =
+                (): CreateVersionSelectorInput => {
+                    switch (versionSelectorType) {
+                        case 'STATIC':
+                            return {
+                                type: 'STATIC',
+                                versionNumber:
+                                    staticVersionSelectorInput?.versionNumber ||
+                                    0,
+                            };
+                        case 'EXPERIMENT':
+                            return {
+                                type: 'EXPERIMENT',
+                                versionNumbers:
+                                    experimentVersionSelectorInput?.versionNumbers || [],
+                            };
+                    }
+                };
+
+            const handleSaveClicked = async () => {
+                await props.saveActivator(
+                    rollout.activator.id,
+                    getUpdateActivatorInput(),
+                );
+
+                await props.saveVersionSelector(
+                    rollout.versionSelector.id,
+                    getUpdateVersionSelectorInput(),
+                );
+
+                props.onSaveRolloutClick({
+                    id: rollout.id,
+                    name: rolloutName,
+                    type: props.appRolloutType,
+                    activatorId: rollout.activator.id,
+                    versionSelectorId: rollout.versionSelector.id,
+                    isEnabled: isEnabled,
+                    groupIds: rollout.groups.map((group) => group.id),
+                });
+            };
+
+            function getTimeRangeActivatorInput(rollout: Rollout) {
+                return rollout.activator.type === 'TIME_RANGE'
                     ? {
-                          startTime: formatDate(rollout.activator.startAt),
-                          endTime: formatDate(rollout.activator.endAt),
+                          startAt: formatDate(rollout.activator.startAt),
+                          endAt: formatDate(rollout.activator.endAt),
                       }
                     : undefined;
             }
 
-            function getPercentageActivatorInput(
-                rollout: Rollout<GroupMember>,
-            ) {
-                return rollout.activator.type === 'percentage'
+            function getPercentageActivatorInput(rollout: Rollout) {
+                return rollout.activator.type === 'PERCENTAGE'
                     ? {
                           percentage: rollout.activator.percentage,
                       }
                     : undefined;
             }
 
-            function getStaticVersionSelectorInput(
-                rollout: Rollout<GroupMember>,
-            ) {
-                return rollout.versionSelector.type === 'static'
+            function getMaxViewersActivatorInput(rollout: Rollout) {
+                return rollout.activator.type === 'MAX_VIEWERS'
+                    ? {
+                          maxViewers: rollout.activator.maxViewers,
+                      }
+                    : undefined;
+            }
+
+            function getStaticVersionSelectorInput(rollout: Rollout) {
+                return rollout.versionSelector.type === 'STATIC'
                     ? {
                           versionNumber: rollout.versionSelector.versionNumber,
                       }
                     : undefined;
             }
 
-            function getExperimentVersionSelectorInput(
-                rollout: Rollout<GroupMember>,
-            ) {
-                return rollout.versionSelector.type === 'experiment'
+            function getExperimentVersionSelectorInput(rollout: Rollout) {
+                return rollout.versionSelector.type === 'EXPERIMENT'
                     ? {
                           versionNumbers:
                               rollout.versionSelector.versionNumbers,
@@ -146,7 +260,7 @@ export function EditRolloutViewComponent<GroupMember>() {
 
             useImperativeHandle(ref, () => {
                 return {
-                    show(rollout: Rollout<GroupMember>) {
+                    show(rollout: Rollout) {
                         setRollout(rollout);
                         setRolloutName(rollout.name);
                         setActivatorType(rollout.activator.type);
@@ -156,6 +270,9 @@ export function EditRolloutViewComponent<GroupMember>() {
                         );
                         setPercentageActivatorInput(
                             getPercentageActivatorInput(rollout),
+                        );
+                        setMaxViewersActivatorInput(
+                            getMaxViewersActivatorInput(rollout),
                         );
                         setStaticVersionSelectorInput(
                             getStaticVersionSelectorInput(rollout),
@@ -184,13 +301,15 @@ export function EditRolloutViewComponent<GroupMember>() {
             };
 
             const onSelectActivatorType = (activatorType: string) => {
-                setActivatorType(activatorType);
+                setActivatorType(activatorType as ActivatorType);
             };
 
             const onSelectVersionSelectorType = (
                 versionSelectorType: string,
             ) => {
-                setVersionSelectorType(versionSelectorType);
+                setVersionSelectorType(
+                    versionSelectorType as VersionSelectorType,
+                );
             };
 
             const onTimeRangeActivatorStartTimeChange = (
@@ -198,7 +317,7 @@ export function EditRolloutViewComponent<GroupMember>() {
             ) => {
                 setTimeRangeActivatorInput({
                     ...timeRangeActivatorInput,
-                    startTime: event.target.value,
+                    startAt: event.target.value,
                 });
             };
 
@@ -207,7 +326,15 @@ export function EditRolloutViewComponent<GroupMember>() {
             ) => {
                 setTimeRangeActivatorInput({
                     ...timeRangeActivatorInput,
-                    endTime: event.target.value,
+                    endAt: event.target.value,
+                });
+            };
+
+            const onMaxViewersActivatorChange = (
+                event: ChangeEvent<HTMLInputElement>,
+            ) => {
+                setMaxViewersActivatorInput({
+                    maxViewers: Number(event.target.value),
                 });
             };
 
@@ -265,9 +392,9 @@ export function EditRolloutViewComponent<GroupMember>() {
 
             const renderActivatorDetailSection = () => {
                 switch (activatorType) {
-                    case 'static':
+                    case 'STATIC':
                         break;
-                    case 'timeRange':
+                    case 'TIME_RANGE':
                         return (
                             <div className={styles.Section}>
                                 <div
@@ -285,7 +412,7 @@ export function EditRolloutViewComponent<GroupMember>() {
                                         type={'text'}
                                         className={styles.TextField}
                                         value={
-                                            timeRangeActivatorInput?.startTime ||
+                                            timeRangeActivatorInput?.startAt ||
                                             ''
                                         }
                                         placeholder={'YYYY/MM/DD HH:MM:SS'}
@@ -306,8 +433,7 @@ export function EditRolloutViewComponent<GroupMember>() {
                                         type={'text'}
                                         className={styles.TextField}
                                         value={
-                                            timeRangeActivatorInput?.endTime ||
-                                            ''
+                                            timeRangeActivatorInput?.endAt || ''
                                         }
                                         placeholder={'YYYY/MM/DD HH:MM:SS'}
                                         onChange={
@@ -317,7 +443,7 @@ export function EditRolloutViewComponent<GroupMember>() {
                                 </div>
                             </div>
                         );
-                    case 'percentage':
+                    case 'PERCENTAGE':
                         return (
                             <div className={styles.Section}>
                                 <div
@@ -343,12 +469,34 @@ export function EditRolloutViewComponent<GroupMember>() {
                                 </div>
                             </div>
                         );
+                    case 'MAX_VIEWERS':
+                        return (
+                            <div className={styles.Section}>
+                                <div
+                                    className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
+                                >
+                                    <div
+                                        className={`${styles.Label} ${styles.SameRow}`}
+                                    >
+                                        Max Viewers:
+                                    </div>
+                                    <input
+                                        type='number'
+                                        className={styles.TextField}
+                                        value={
+                                            maxViewersActivatorInput?.maxViewers || ''
+                                        }
+                                        onChange={onMaxViewersActivatorChange}
+                                    />
+                                </div>
+                            </div>
+                        );
                 }
             };
 
             const renderVersionSelectorDetailSection = () => {
                 switch (versionSelectorType) {
-                    case 'static':
+                    case 'STATIC':
                         return (
                             <div className={styles.Section}>
                                 <div
@@ -376,7 +524,7 @@ export function EditRolloutViewComponent<GroupMember>() {
                                 </div>
                             </div>
                         );
-                    case 'experiment':
+                    case 'EXPERIMENT':
                         return (
                             <div className={styles.Section}>
                                 <div className={`${styles.Row}`}>
@@ -493,10 +641,16 @@ export function EditRolloutViewComponent<GroupMember>() {
                         </div>
                     </div>
                     <div className={styles.Actions}>
-                        <div className={styles.SaveAction}>
+                        <div
+                            className={styles.SaveAction}
+                            onClick={handleSaveClicked}
+                        >
                             <ButtonUI label={'Save'} />
                         </div>
-                        <div className={styles.DeleteAction}>
+                        <div
+                            className={styles.DeleteAction}
+                            onClick={handleDeleteClicked}
+                        >
                             <ButtonUI label={'Delete'} />
                         </div>
                     </div>

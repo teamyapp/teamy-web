@@ -1,22 +1,15 @@
 import classNames from 'classnames';
 import moment from 'moment/moment';
-import React, { ReactNode, createRef, useState } from 'react';
+import React, { ReactNode, createRef, useEffect, useState } from 'react';
 
 import { Deps } from '@core/dep/deps';
 import { Group } from '@core/entity/group';
-import { Team } from '@core/entity/team';
-import { User } from '@core/entity/user';
+import { UpdateGroupInput } from '@core/entity/input';
 
 import { CreateTeamGroupModalComponent } from '../CreateTeamGroupModal.component';
 import { CreateUserGroupModalComponent } from '../CreateUserGroupModal.component';
 import { EditGroupViewComponent } from '../EditGroupView.component';
 import styles from './GroupsTab.component.module.scss';
-import {
-    teamGroupRollouts,
-    teamGroups,
-    userGroupRollouts,
-    userGroups,
-} from './data';
 
 interface Tab<Key> {
     name: string;
@@ -46,7 +39,7 @@ interface Props {
 }
 
 export function GroupsTabComponent(props: Props) {
-    const editGroupViewRef = createRef<EditGroupViewComponent<User | Team>>();
+    const editGroupViewRef = createRef<EditGroupViewComponent>();
     const createUserGroupModalRef = createRef<CreateUserGroupModalComponent>();
     const createTeamGroupModalRef = createRef<CreateTeamGroupModalComponent>();
     const [showGroupTabViews, setShowGroupTabViews] = useState<{
@@ -56,15 +49,21 @@ export function GroupsTabComponent(props: Props) {
         teams: false,
     });
 
-    const [selectedUserGroup, setSelectedUserGroup] = useState<Group<User>>();
-    const [selectedTeamGroup, setSelectedTeamGroup] = useState<Group<Team>>();
+    const [selectedUserGroup, setSelectedUserGroup] = useState<Group>();
+    const [selectedTeamGroup, setSelectedTeamGroup] = useState<Group>();
 
     const isValidRollout = (rolloutId: number): boolean => {
-        // TODO: pull rollout and read from store
-        return (
-            userGroupRollouts.some((rollout) => rollout.id == rolloutId) ||
-            teamGroupRollouts.some((rollout) => rollout.id == rolloutId)
-        );
+        const appState = props.deps.localStore.getState();
+        if(!appState.rollouts[rolloutId]) {
+            return false;
+        }
+
+        const appRolloutRelationType = selectedUserGroup ? 'USER' : 'TEAM';
+        return appState.appRolloutRelations.some(relation => {
+            return relation.rolloutId === rolloutId && 
+            relation.appId === props.appId && 
+            relation.type === appRolloutRelationType;
+        })
     };
 
     const onCreateUserGroupClick = () => {
@@ -75,16 +74,18 @@ export function GroupsTabComponent(props: Props) {
         createTeamGroupModalRef.current?.open();
     };
 
-    const onInlineUserGroupClickHandler = (group: Group<User>) => {
+    const onInlineUserGroupClickHandler = (group: Group) => {
         return () => {
             setSelectedUserGroup(group);
+            setSelectedTeamGroup(undefined);
             editGroupViewRef.current?.show(group);
         };
     };
 
-    const onInlineTeamGroupClickHandler = (group: Group<Team>) => {
+    const onInlineTeamGroupClickHandler = (group: Group) => {
         return () => {
             setSelectedTeamGroup(group);
+            setSelectedUserGroup(undefined);
             editGroupViewRef.current?.show(group);
         };
     };
@@ -109,11 +110,22 @@ export function GroupsTabComponent(props: Props) {
         };
     };
 
+    const onDeleteGroupClick = (groupId: number) => {
+        props.deps.stateSyncer.deleteAppGroup(props.appId, groupId);
+
+        if (selectedUserGroup?.id === groupId) {
+            setSelectedUserGroup(undefined);
+        } else if (selectedTeamGroup?.id === groupId) {
+            setSelectedTeamGroup(undefined);
+        }
+    };
+
+    const onSaveGroupClick = (groupId: number, group: UpdateGroupInput) => {
+        props.deps.stateSyncer.updateGroup(props.appId, groupId, group);
+    };
+
     const renderInlineRolloutForEdit = (rolloutId: number): ReactNode => {
-        // TODO: pull team
-        const rollout =
-            userGroupRollouts.find((rollout) => rollout.id == rolloutId) ||
-            teamGroupRollouts.find((rollout) => rollout.id == rolloutId);
+        const rollout = props.deps.graphSource.rollout(rolloutId);
         return (
             rollout && (
                 <div className={styles.InlineRollout}>
@@ -124,10 +136,10 @@ export function GroupsTabComponent(props: Props) {
         );
     };
 
-    const renderInlineGroup = <GroupMember,>(
-        group: Group<GroupMember>,
-        onInlineGroupClickHandler: (group: Group<GroupMember>) => () => void,
-        selectedGroup?: Group<GroupMember>,
+    const renderInlineGroup = (
+        group: Group,
+        onInlineGroupClickHandler: (group: Group) => () => void,
+        selectedGroup?: Group,
     ) => {
         return (
             <div
@@ -151,6 +163,10 @@ export function GroupsTabComponent(props: Props) {
     };
 
     const renderGroupsSection = (): ReactNode => {
+        const app = props.deps.graphSource.app(props.appId);
+        const userGroups = app?.userGroups || [];
+        const teamGroups = app?.teamGroups || [];
+
         if (showGroupTabViews['users']) {
             return (
                 <>
@@ -208,6 +224,8 @@ export function GroupsTabComponent(props: Props) {
                             renderInlineRollout={renderInlineRolloutForEdit}
                             isValidMember={props.isValidUser}
                             isValidRollout={isValidRollout}
+                            onDeleteGroupClick={onDeleteGroupClick}
+                            onSaveGroupClick={onSaveGroupClick}
                         />
                     </div>
                 )
@@ -225,6 +243,8 @@ export function GroupsTabComponent(props: Props) {
                             renderInlineRollout={renderInlineRolloutForEdit}
                             isValidMember={props.isValidTeam}
                             isValidRollout={isValidRollout}
+                            onDeleteGroupClick={onDeleteGroupClick}
+                            onSaveGroupClick={onSaveGroupClick}
                         />
                     </div>
                 )
