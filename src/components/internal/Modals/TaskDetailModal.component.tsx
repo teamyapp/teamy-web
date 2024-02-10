@@ -35,7 +35,7 @@ const DURATION_INPUT_Z_INDEX = 1000;
 
 interface Props {
     deps: Deps;
-    onClose?: () => void;
+    afterClose?: () => void;
 }
 
 interface State {
@@ -80,7 +80,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             : undefined;
         return (
             <>
-                <ModalUI ref={this.modalRef} onClose={this.props.onClose}>
+                <ModalUI ref={this.modalRef} afterClose={this.props.afterClose}>
                     {this.state.updatedTask && this.state.task && (
                         <div
                             className={styles.ModalContent}

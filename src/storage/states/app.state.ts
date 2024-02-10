@@ -13,26 +13,31 @@ import { ThirdPartyAppState } from '@core/storage/states/thirdPartyApp.state';
 import { UserState } from '@core/storage/states/user.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
+import {
+    ActivatorState,
+    MaxViewersActivatorState,
+    PercentageActivatorState,
+    TimeRangeActivatorState,
+} from './activator.state';
 import { AppInstallationState } from './appInstallation.state';
 import { AppSecretState } from './appSecret.state';
+import { RolloutState } from './rollout.state';
+import { TagState } from './tag.state';
 import { TaskLinkState } from './taskLink.state';
 import { TeamAppVersionState } from './teamAppVersion.state';
-import { TagState } from './tag.state';
 import { FilterGroupState, GroupState } from './group.state';
-import { ActivatorState, MaxViewersActivatorState, PercentageActivatorState, TimeRangeActivatorState } from './activator.state';
 import { VersionSelectorState, VersionSelectorVersionRelationState } from './versionSelector.state';
-import { RolloutState } from './rollout.state';
 import { GroupMemberRelationState } from './groupMemberRelation.state';
 import { AppGroupRelationState } from './appGroupRelation.state';
 import { AppRolloutRelationState } from './appRolloutRelation.state';
 
 interface PersistedState {
-    teamSelectedSprint: Record<number, number>,
+    teamSelectedSprint: Record<number, number>;
     currUserId?: number;
     currTeamId?: number;
     currSprintId?: number;
     currClientId?: number;
-} 
+}
 
 export class AppState {
     public apps: Record<number, ThirdPartyAppState> = {};
@@ -59,7 +64,7 @@ export class AppState {
     public teamMembers: TeamMemberState[] = [];
     public taskAwaitForRelations: TaskAwaitForRelationState[] = [];
     public userLinks: UserLinkState[] = [];
-    public sprintTaskRelations: SprintTaskRelationState[] = []; 
+    public sprintTaskRelations: SprintTaskRelationState[] = [];
     public sprintParticipants: SprintParticipantState[] = [];
     public taskActivities: TaskActivityState[] = [];
     public teamAppVersions: TeamAppVersionState[] = [];
@@ -76,20 +81,21 @@ export class AppState {
     public fetchedMeData?: boolean;
     public fetchedTeamData?: boolean;
 
-    constructor(state: PersistedState = {
-        teamSelectedSprint: {},
-        currUserId: undefined,
-        currTeamId: undefined,
-        currSprintId: undefined,
-        currClientId: undefined,
-    }) {
+    constructor(
+        state: PersistedState = {
+            teamSelectedSprint: {},
+            currUserId: undefined,
+            currTeamId: undefined,
+            currSprintId: undefined,
+            currClientId: undefined,
+        },
+    ) {
         this.currUserId = state.currUserId;
         this.currTeamId = state.currTeamId;
         this.currSprintId = state.currSprintId;
         this.currClientId = state.currClientId;
         this.teamSelectedSprint = state.teamSelectedSprint;
     }
-
 
     public static fromJson(json: any): AppState {
         return new AppState({

@@ -238,7 +238,7 @@ export class UserSettingsModalComponent extends Component<Props, State> {
     ): ReactNode => {
         const linkedUser = this.state.linkedUsers.get(authProvider);
         return (
-            <div className={styles.ExternalAccount} key={linkedUser?.id}>
+            <div className={styles.ExternalAccount} key={authProvider}>
                 <div className={styles.AccountProvider}>
                     <div className={styles.Logo}>
                         <img

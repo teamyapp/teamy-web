@@ -1,11 +1,11 @@
-export type VersionSelectorType = 'STATIC' | 'EXPERIMENT'
+export type VersionSelectorType = 'STATIC' | 'EXPERIMENT';
 
 export class VersionSelectorState {
     constructor(
         public id: number,
         public type: VersionSelectorType,
         public createdAt: Date,
-        public updatedAt?: Date,  
+        public updatedAt?: Date,
     ) {}
 
     public static fromMutationPayload(json: any): VersionSelectorState {

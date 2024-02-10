@@ -1,4 +1,4 @@
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
+import { CleanupFunc, RenderFunc, ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, {
     ChangeEvent,
@@ -6,6 +6,7 @@ import React, {
     KeyboardEvent,
     MouseEvent,
     ReactNode,
+    RefObject,
     createRef,
 } from 'react';
 
@@ -79,6 +80,11 @@ const optionKeyToPriority: Record<string, Priority> = {
     low: 'LOW',
 };
 
+interface ContextMenuItemView {
+    viewRef: RefObject<HTMLDivElement>;
+    renderFunc: RenderFunc;
+}
+
 interface Props {
     deps: Deps;
     relativeLayout: RelativeLayout;
@@ -110,6 +116,8 @@ export class InlineTaskUI extends Component<Props, State> {
     private readonly selectTaskOwnersPopupRef =
         createRef<SelectTaskOwnersPopupComponent>();
     private readonly taskIdContextMenuRef = createRef<ContextMenuComponent>();
+    private contextMenuItemViews: ContextMenuItemView[] = [];
+    private contextMenuItemViewCleanups: CleanupFunc[] = [];
 
     constructor(props: Props) {
         super(props);
@@ -223,7 +231,8 @@ export class InlineTaskUI extends Component<Props, State> {
                 />
                 <ContextMenuComponent
                     ref={this.taskIdContextMenuRef}
-                    menuItems={this.renderContextMenuItems()}
+                    menuItems={this.renderTaskIdContextMenuItems()}
+                    afterClose={this.onTaskIdContextMenuClose}
                 />
             </>
         );
@@ -251,9 +260,23 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     }
 
-    private onTaskIdContextMenu = (event: MouseEvent) => {
+    private onTaskIdContextMenu = async (event: MouseEvent) => {
         event.preventDefault();
-        this.taskIdContextMenuRef.current?.open(event.clientY, event.clientX);
+        await this.taskIdContextMenuRef.current?.open(
+            event.clientY,
+            event.clientX,
+        );
+        this.contextMenuItemViews.forEach((item) => {
+            if (item.viewRef.current) {
+                const cleanupFunc = item.renderFunc(item.viewRef.current);
+                this.contextMenuItemViewCleanups.push(cleanupFunc);
+            }
+        });
+    };
+
+    private onTaskIdContextMenuClose = () => {
+        this.contextMenuItemViewCleanups.forEach((cleanup) => cleanup());
+        this.contextMenuItemViewCleanups = [];
     };
 
     private renderDueAt = () => {
@@ -513,14 +536,19 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     }
 
-    private renderContextMenuItems = (): MenuItem[] => {
+    private renderTaskIdContextMenuItems = (): MenuItem[] => {
         const menuItems: MenuItem[] = [];
         this.props.thirdPartyAppEventHubs.forEach((hub) => {
             hub.onShowTaskIdActions(this.props.task.id).forEach((action) => {
+                const viewRef = createRef<HTMLDivElement>();
                 menuItems.push({
                     key: `${hub.appId}/${action.key}`,
-                    label: action.view,
-                    action: () => action.execute(this.props.task.id),
+                    label: <div ref={viewRef} />,
+                    action: action.execute,
+                });
+                this.contextMenuItemViews.push({
+                    viewRef,
+                    renderFunc: action.renderView,
                 });
             });
         });

@@ -1,14 +1,15 @@
 import { App } from '@core/entity/app';
+import { StaticGroup } from '@core/entity/group';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { AppInstallationNode } from './appInstallation.node';
 import { AppSecretNode } from './appSecret.node';
 import { AppVersionNode } from './appVersion.node';
-import { TeamNode } from './team.node';
-import { TagNode } from './tag.node';
 import { FilterGroupNode, StaticGroupNode } from './group.node';
 import { RolloutNode } from './rollout.node';
+import { TagNode } from './tag.node';
+import { TeamNode } from './team.node';
 import { UserNode } from './user.node';
 
 export class AppNode implements App {

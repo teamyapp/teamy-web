@@ -1,4 +1,4 @@
-import { Group } from "./group";
+import { Group } from './group';
 
 export type Activator =
     | StaticActivator
@@ -21,18 +21,18 @@ export interface StaticActivator extends ActivatorInfo {
     type: 'STATIC';
 }
 
-export interface TimeRangeActivator extends ActivatorInfo{
+export interface TimeRangeActivator extends ActivatorInfo {
     type: 'TIME_RANGE';
     startAt?: Date;
     endAt?: Date;
 }
 
-export interface MaxViewersActivator extends ActivatorInfo{
+export interface MaxViewersActivator extends ActivatorInfo {
     type: 'MAX_VIEWERS';
     maxViewers: number;
 }
 
-export interface PercentageActivator extends ActivatorInfo{
+export interface PercentageActivator extends ActivatorInfo {
     type: 'PERCENTAGE';
     percentage: number;
 }

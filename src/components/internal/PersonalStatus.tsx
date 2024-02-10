@@ -126,7 +126,9 @@ export class PersonalStatusUI extends Component<Props> {
                                 this.props.deps.dragAndDropController
                             }
                             tasks={deliveredTasks}
-                            thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                            thirdPartyAppEventHubs={
+                                this.props.thirdPartyAppEventHubs
+                            }
                             currentClientId={this.props.currentClientId}
                             onUpdateTask={this.props.onUpdateTask}
                             onStartTask={this.props.onStartTask}
