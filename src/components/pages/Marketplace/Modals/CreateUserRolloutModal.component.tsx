@@ -29,7 +29,7 @@ export class CreateUserRolloutModalComponent extends Component<Props> {
                         role={'button'}
                         aria-label={'Close'}
                         className={styles.CloseButton}
-                        onClick={this.close}
+                        onClick={this.onCloseButtonClick}
                     >
                         <MaterialIconUI>cancel</MaterialIconUI>
                     </div>
@@ -41,7 +41,7 @@ export class CreateUserRolloutModalComponent extends Component<Props> {
                         renderInlineGroup={this.renderInlineUserGroup}
                         isValidGroup={this.isValidUserGroup}
                         isValidVersionNumber={this.props.isValidVersionNumber}
-                        onCreateRolloutClick={this.props.onCreateRolloutClick}
+                        onCreateRolloutClick={this.handleCreateRolloutClick}
                         createActivator={this.props.createActivator}
                         createVersionSelector={this.props.createVersionSelector}
                     />
@@ -79,6 +79,11 @@ export class CreateUserRolloutModalComponent extends Component<Props> {
         }
         
         return app.userGroups.some((group) => group.id === groupId);
+    };
+
+    private handleCreateRolloutClick = (rollout: CreateAppRolloutInput) => {
+        this.props.onCreateRolloutClick(rollout);
+        this.modalRef.current?.close();
     };
 
 }

@@ -29,7 +29,7 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
                         role={'button'}
                         aria-label={'Close'}
                         className={styles.CloseButton}
-                        onClick={this.close}
+                        onClick={this.onCloseButtonClick}
                     >
                         <MaterialIconUI>cancel</MaterialIconUI>
                     </div>
@@ -41,7 +41,7 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
                         renderInlineGroup={this.renderInlineTeamGroup}
                         isValidGroup={this.isValidTeamGroup}
                         isValidVersionNumber={this.props.isValidVersionNumber}
-                        onCreateRolloutClick={this.props.onCreateRolloutClick}
+                        onCreateRolloutClick={this.handleCreateRolloutClick}
                         createActivator={this.props.createActivator}
                         createVersionSelector={this.props.createVersionSelector}
                     />
@@ -71,6 +71,11 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
     private isValidTeamGroup = (groupId: number): boolean => {
         const app = this.props.deps.graphSource.app(this.props.appId);
         return app?.teamGroups.some((group) => group.id === groupId) || false;
+    };
+
+    private handleCreateRolloutClick = (rollout: CreateAppRolloutInput) => {
+        this.props.onCreateRolloutClick(rollout);
+        this.modalRef.current?.close();
     };
 
 }

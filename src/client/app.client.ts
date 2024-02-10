@@ -266,7 +266,6 @@ export class AppClient {
                             memberType
                             name
                             filter
-                            memberCount
                             createdAt
                             updatedAt
                             groupRolloutRelations {
@@ -318,7 +317,6 @@ export class AppClient {
                             }
                             ... on FilterGroup {
                                 filter
-                                memberCount
                             }
                             createdAt
                             updatedAt

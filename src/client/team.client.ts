@@ -153,7 +153,6 @@ export class TeamClient {
                                     }
                                     ... on FilterGroup {
                                         filter
-                                        memberCount
                                     }
                                     createdAt
                                     updatedAt

@@ -13,7 +13,6 @@ export interface RemoteGroup {
     filter?: string;
     teams?: RemoteTeam[];
     users?: RemoteUser[];
-    memberCount?: number;
     createdAt: string;
     updatedAt?: string;
     groupRolloutRelations: RemoteGroupRolloutRelation[];

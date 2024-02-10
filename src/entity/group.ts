@@ -28,5 +28,4 @@ export interface StaticGroup<Member> extends GroupInfo {
 export interface FilterGroup extends GroupInfo {
     type: 'FILTER';
     filter: string;
-    memberCount: number;
 }

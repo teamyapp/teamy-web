@@ -37,20 +37,17 @@ export class GroupState {
 export class FilterGroupState {
     constructor(
         public filter: string,
-        public memberCount: number,
     ) {}
 
     public static fromMutationPayload(json: any): FilterGroupState {
         return new FilterGroupState(
-            json.Filter,
-            json.MemberCount,
+            json.Filter
         );
     }
 
     public static fromJson(json: any): FilterGroupState {
         return new FilterGroupState(
-            json.filter,
-            json.memberCount,
+            json.filter
         );
     }
 }

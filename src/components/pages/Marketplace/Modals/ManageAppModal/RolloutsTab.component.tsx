@@ -86,8 +86,6 @@ export function RolloutsTabComponent(props: Props) {
     }
 
     const createActivator = (input: CreateActivatorInput) => {
-        createUserRolloutModalRef.current?.close();
-        createTeamRolloutModalRef.current?.close();
         return props.deps.stateSyncer.createActivator(input);
     }
 

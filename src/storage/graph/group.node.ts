@@ -73,10 +73,6 @@ export class FilterGroupNode extends GroupInfoNode implements FilterGroup {
     public get filter(): string {
         return this.filterGroup.filter;
     }
-
-    public get memberCount(): number {
-        return this.filterGroup.memberCount;
-    }
 }
 
 export class StaticGroupNode<MemberNode>

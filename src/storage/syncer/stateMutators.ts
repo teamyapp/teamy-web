@@ -858,8 +858,6 @@ export function mergeGroup(
             currAppState.filterGroups[remoteGroupId] || {};
         const localNewFilterGroup: FilterGroupState = {
             filter: remoteGroup.filter || localOldFilterGroup.filter,
-            memberCount:
-                remoteGroup.memberCount,
         };
         currAppState.filterGroups[remoteGroupId] = localNewFilterGroup;
     } else {
