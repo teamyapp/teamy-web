@@ -71,7 +71,8 @@ export class AppNode implements App {
         const appState = this.localStore.getState();
         return appState.appGroupRelations.filter((appGroupRelation) => {
             const group = appState.groups[appGroupRelation.groupId];
-            return appGroupRelation.appId === this.app.id && group.memberType === 'USER';
+            return appGroupRelation.appId === this.app.id && 
+            group.memberType === 'USER';
         })
         .map((appGroupRelation) => {
             const group = appState.groups[appGroupRelation.groupId];
@@ -92,7 +93,8 @@ export class AppNode implements App {
         const appState = this.localStore.getState();
         return appState.appGroupRelations.filter((appGroupRelation) => {
             const group = appState.groups[appGroupRelation.groupId];
-            return appGroupRelation.appId === this.app.id && group.memberType === 'TEAM';
+            return appGroupRelation.appId === this.app.id && 
+            group.memberType === 'TEAM';
         })
         .map((appGroupRelation) => {
             const group = appState.groups[appGroupRelation.groupId];
@@ -114,7 +116,8 @@ export class AppNode implements App {
         const app = appState.apps[this.app.id];
         return appState.appRolloutRelations
             .filter((appRolloutRelation) => {
-            return appRolloutRelation.appId === this.app.id && appRolloutRelation.type === 'USER';
+            return appRolloutRelation.appId === this.app.id && 
+            appRolloutRelation.type === 'USER';
         })
             .map((appRolloutRelation) => {
             return new RolloutNode(this.localStore, appState.rollouts[appRolloutRelation.rolloutId]);
@@ -126,7 +129,8 @@ export class AppNode implements App {
         const app = appState.apps[this.app.id];
         return appState.appRolloutRelations
             .filter((appRolloutRelation) => {
-            return appRolloutRelation.appId === this.app.id && appRolloutRelation.type === 'TEAM';
+            return appRolloutRelation.appId === this.app.id && 
+            appRolloutRelation.type === 'TEAM';
         })
             .map((appRolloutRelation) => {
             return new RolloutNode(this.localStore, appState.rollouts[appRolloutRelation.rolloutId]);
