@@ -54,7 +54,7 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
         this.modalRef.current?.open();
     }
 
-    close = () => {
+    onCloseButtonClick = () => {
         this.modalRef.current?.close();
     };
 
