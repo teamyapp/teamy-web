@@ -705,7 +705,7 @@ export function mergeRollout(
         versionSelectorId:
             toInt(remoteRollout.versionSelector.id) ||
             localOldRollout.versionSelectorId,
-        isEnabled: remoteRollout.isEnabled || localOldRollout.isEnabled,
+        isEnabled: remoteRollout.isEnabled,
         createdAt: toDate(remoteRollout.createdAt) || localOldRollout.createdAt,
         updatedAt: toDate(remoteRollout.updatedAt) || localOldRollout.updatedAt,
     };
@@ -859,7 +859,7 @@ export function mergeGroup(
         const localNewFilterGroup: FilterGroupState = {
             filter: remoteGroup.filter || localOldFilterGroup.filter,
             memberCount:
-                remoteGroup.memberCount || localOldFilterGroup.memberCount,
+                remoteGroup.memberCount,
         };
         currAppState.filterGroups[remoteGroupId] = localNewFilterGroup;
     } else {

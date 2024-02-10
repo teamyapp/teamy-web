@@ -74,10 +74,11 @@ export class RolloutNode implements Rollout {
 
     get groups(): GroupNode[] {
         const appState = this.localStore.getState();
-        
-        return appState.groupRolloutRelations.filter((groupRolloutRelation) => {
+        return appState.groupRolloutRelations
+            .filter((groupRolloutRelation) => {
             return groupRolloutRelation.rolloutId === this.rollout.id;
-        }).map((groupRolloutRelation) => {
+        })
+            .map((groupRolloutRelation) => {
             const group = appState.groups[groupRolloutRelation.groupId];
 
             switch (group.type) {

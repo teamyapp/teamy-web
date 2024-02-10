@@ -11,5 +11,4 @@ export interface RemoteRollout {
     updatedAt?: string;
 }
 
-
 export type RemoteAppRolloutType = 'USER' | 'TEAM';

@@ -27,7 +27,6 @@ export class VersionSelectorState {
     }
 }
 
-
 export class VersionSelectorVersionRelationState {
     constructor(
         public versionSelectorId: number,

@@ -63,7 +63,6 @@ export function RolloutsTabComponent(props: Props) {
     const [selectedTeamGroupRollout, setSelectedTeamGroupRollout] =
         useState<Rollout>();
 
-
     const onCreateRolloutClick = (rollout: CreateAppRolloutInput) => {
         props.deps.stateSyncer.createAppRollout(props.appId, rollout);
     }
@@ -89,7 +88,6 @@ export function RolloutsTabComponent(props: Props) {
     const createActivator = (input: CreateActivatorInput) => {
         createUserRolloutModalRef.current?.close();
         createTeamRolloutModalRef.current?.close();
-
         return props.deps.stateSyncer.createActivator(input);
     }
 

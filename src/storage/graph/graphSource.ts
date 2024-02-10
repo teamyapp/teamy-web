@@ -97,9 +97,6 @@ export class GraphSource {
 
     public rollout(rolloutId: number): RolloutNode | undefined {
         const appState = this.localStore.getState();
-
-
-        debugger
         const rollout = appState.rollouts[rolloutId];
         if (rollout) {
             return new RolloutNode(this.localStore, rollout);

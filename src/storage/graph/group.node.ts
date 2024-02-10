@@ -41,20 +41,20 @@ class GroupInfoNode implements GroupInfo {
     public get rollouts(): RolloutNode[] {
         const appState = this.localStore.getState();
         return appState.groupRolloutRelations
-        .filter((relation) => relation.groupId === this.group.id)
-        .sort((relationA, relationB) => relationA.orderIndex - relationB.orderIndex)
-        .map((relation) => {
-            return new RolloutNode(this.localStore, appState.rollouts[relation.rolloutId]);
-        })
+            .filter((relation) => relation.groupId === this.group.id)
+            .sort((relationA, relationB) => relationA.orderIndex - relationB.orderIndex)
+            .map((relation) => {
+                return new RolloutNode(this.localStore, appState.rollouts[relation.rolloutId]);
+            })
     }
 
     public get apps(): AppNode[] {
         const appState = this.localStore.getState();
         return appState.appGroupRelations
-        .filter((relation) => relation.groupId === this.group.id)
-        .map((relation) => {
-            return new AppNode(this.localStore, appState.apps[relation.appId]);
-        });
+            .filter((relation) => relation.groupId === this.group.id)
+            .map((relation) => {
+                return new AppNode(this.localStore, appState.apps[relation.appId]);
+            });
     }
 }
 export class FilterGroupNode extends GroupInfoNode implements FilterGroup {
@@ -98,10 +98,11 @@ export class StaticGroupNode<MemberNode>
     public get members(): MemberNode[] {
         const appState = this.localStore.getState();
         const groupMemberRelations = appState.groupMemberRelations;
-
-        return groupMemberRelations.filter((relation) => {
+        return groupMemberRelations
+            .filter((relation) => {
             return relation.groupId === this.group.id;
-        }).map((relation) => {
+        })
+            .map((relation) => {
             return this.makeMemberNode(relation.memberId);
         })
     }

@@ -77,6 +77,7 @@ export class CreateUserRolloutModalComponent extends Component<Props> {
         if (!app) {
             return false;
         }
+        
         return app.userGroups.some((group) => group.id === groupId);
     };
 

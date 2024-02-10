@@ -67,7 +67,6 @@ export class AppNode implements App {
         });
     }
 
-
     public get userGroups(): (StaticGroupNode<UserNode>  | FilterGroupNode)[] {
         const appState = this.localStore.getState();
         return appState.appGroupRelations.filter((appGroupRelation) => {
@@ -113,10 +112,11 @@ export class AppNode implements App {
     public get userRollouts(): RolloutNode[] {
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id];
-        
-        return appState.appRolloutRelations.filter((appRolloutRelation) => {
+        return appState.appRolloutRelations
+            .filter((appRolloutRelation) => {
             return appRolloutRelation.appId === this.app.id && appRolloutRelation.type === 'USER';
-        }).map((appRolloutRelation) => {
+        })
+            .map((appRolloutRelation) => {
             return new RolloutNode(this.localStore, appState.rollouts[appRolloutRelation.rolloutId]);
         })
     }
@@ -124,10 +124,11 @@ export class AppNode implements App {
     public get teamRollouts(): RolloutNode[] {
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id];
-        
-        return appState.appRolloutRelations.filter((appRolloutRelation) => {
+        return appState.appRolloutRelations
+            .filter((appRolloutRelation) => {
             return appRolloutRelation.appId === this.app.id && appRolloutRelation.type === 'TEAM';
-        }).map((appRolloutRelation) => {
+        })
+            .map((appRolloutRelation) => {
             return new RolloutNode(this.localStore, appState.rollouts[appRolloutRelation.rolloutId]);
         })
     }

@@ -1,6 +1,3 @@
-
-
-
 class GroupRolloutRelationState {
     constructor(
         public groupId: number,

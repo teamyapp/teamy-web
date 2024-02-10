@@ -83,7 +83,6 @@ export interface RemoteCreateAppVersionInput {
     description: string;
 }
 
-
 export interface RemoteCreateStaticUserGroupInput {
     name: string;
     userIds: string[];
@@ -120,7 +119,6 @@ export interface RemoteCreateFilterGroupInput {
     rolloutIds: string[];
 }
 
-
 export interface RemoteCreateTimeRangeActivatorInput {
     startAt?: Date;
     endAt?: Date;
@@ -133,7 +131,6 @@ export interface RemoteCreateMaxViewersActivatorInput {
 export interface RemoteCreatePercentageActivatorInput {
     percentage: number;
 }
-
 
 export interface RemoteCreateStaticVersionSelectorInput {
     versionNumber: number;
