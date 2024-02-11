@@ -379,7 +379,7 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
         return Number(input);
     }
 
-    isGroupDuplicate(groupId: number): boolean {
+    isGroupDuplicate = (groupId: number): boolean => {
         return this.state.selectedGroupIds.includes(groupId);
     }
 
