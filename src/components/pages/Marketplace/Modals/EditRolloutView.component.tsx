@@ -189,7 +189,8 @@ export function EditRolloutViewComponent() {
                             return {
                                 type: 'EXPERIMENT',
                                 versionNumbers:
-                                    experimentVersionSelectorInput?.versionNumbers || [],
+                                    experimentVersionSelectorInput?.versionNumbers ||
+                                    [],
                             };
                     }
                 };
@@ -484,7 +485,8 @@ export function EditRolloutViewComponent() {
                                         type='number'
                                         className={styles.TextField}
                                         value={
-                                            maxViewersActivatorInput?.maxViewers || ''
+                                            maxViewersActivatorInput?.maxViewers ||
+                                            ''
                                         }
                                         onChange={onMaxViewersActivatorChange}
                                     />

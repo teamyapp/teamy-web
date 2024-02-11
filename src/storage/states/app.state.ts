@@ -19,17 +19,20 @@ import {
     PercentageActivatorState,
     TimeRangeActivatorState,
 } from './activator.state';
+import { AppGroupRelationState } from './appGroupRelation.state';
 import { AppInstallationState } from './appInstallation.state';
+import { AppRolloutRelationState } from './appRolloutRelation.state';
 import { AppSecretState } from './appSecret.state';
+import { FilterGroupState, GroupState } from './group.state';
+import { GroupMemberRelationState } from './groupMemberRelation.state';
 import { RolloutState } from './rollout.state';
 import { TagState } from './tag.state';
 import { TaskLinkState } from './taskLink.state';
 import { TeamAppVersionState } from './teamAppVersion.state';
-import { FilterGroupState, GroupState } from './group.state';
-import { VersionSelectorState, VersionSelectorVersionRelationState } from './versionSelector.state';
-import { GroupMemberRelationState } from './groupMemberRelation.state';
-import { AppGroupRelationState } from './appGroupRelation.state';
-import { AppRolloutRelationState } from './appRolloutRelation.state';
+import {
+    VersionSelectorState,
+    VersionSelectorVersionRelationState,
+} from './versionSelector.state';
 
 interface PersistedState {
     teamSelectedSprint: Record<number, number>;
@@ -70,8 +73,9 @@ export class AppState {
     public teamAppVersions: TeamAppVersionState[] = [];
     public groupMemberRelations: GroupMemberRelationState[] = [];
     public appGroupRelations: AppGroupRelationState[] = [];
-    public groupRolloutRelations:GroupRolloutRelationState[] = [];
-    public versionSelectorVersionRelations: VersionSelectorVersionRelationState[] = [];
+    public groupRolloutRelations: GroupRolloutRelationState[] = [];
+    public versionSelectorVersionRelations: VersionSelectorVersionRelationState[] =
+        [];
     public appRolloutRelations: AppRolloutRelationState[] = [];
     public currUserId?: number;
     public currTeamId?: number;

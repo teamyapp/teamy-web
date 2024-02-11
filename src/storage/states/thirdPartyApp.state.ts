@@ -26,7 +26,7 @@ export class ThirdPartyAppState {
             json.TotalInstallations,
             json.ManagedByTeamID,
             json.TagIDs,
-            versions
+            versions,
         );
     }
 
@@ -43,7 +43,7 @@ export class ThirdPartyAppState {
             json.totalInstallations,
             json.managedByTeamId,
             json.tagIds,
-            versions
+            versions,
         );
     }
 }

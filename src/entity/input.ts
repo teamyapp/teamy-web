@@ -1,8 +1,9 @@
 import { Duration } from '@lib/entity/duration';
 
 import { Priority } from '@core/entity/priority';
-import { AppRolloutType } from './rollout';
+
 import { GroupMemberType, GroupType } from './group';
+import { AppRolloutType } from './rollout';
 
 export interface CreateAppInput {
     name: string;
@@ -105,7 +106,11 @@ export type CreateActivatorInput =
     | CreateMaxViewersActivatorInput
     | CreatePercentageActivatorInput;
 
-export type ActivatorType = 'STATIC' | 'TIME_RANGE' | 'MAX_VIEWERS' | 'PERCENTAGE';
+export type ActivatorType =
+    | 'STATIC'
+    | 'TIME_RANGE'
+    | 'MAX_VIEWERS'
+    | 'PERCENTAGE';
 
 export interface CreateStaticActivatorInput {
     type: 'STATIC';
@@ -138,7 +143,6 @@ export interface UpdateActivatorInput {
 export type CreateVersionSelectorInput =
     | CreateStaticVersionSelectorInput
     | CreateExperimentVersionSelectorInput;
-
 
 export type VersionSelectorType = 'STATIC' | 'EXPERIMENT';
 export interface CreateStaticVersionSelectorInput {

@@ -5,8 +5,8 @@ import { User } from './user';
 
 export type Group = StaticGroup<User> | StaticGroup<Team> | FilterGroup;
 
-export type GroupType = 'STATIC' | 'FILTER'
-export type GroupMemberType = 'USER' | 'TEAM'
+export type GroupType = 'STATIC' | 'FILTER';
+export type GroupMemberType = 'USER' | 'TEAM';
 
 export interface GroupInfo {
     id: number;

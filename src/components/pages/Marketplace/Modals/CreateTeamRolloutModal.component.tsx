@@ -2,11 +2,16 @@ import React, { Component, RefObject, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
-import { CreateActivatorInput, CreateAppRolloutInput, CreateVersionSelectorInput } from '@core/entity/input';
+
+import { Deps } from '@core/dep/deps';
+import {
+    CreateActivatorInput,
+    CreateAppRolloutInput,
+    CreateVersionSelectorInput,
+} from '@core/entity/input';
 
 import { CreateRolloutViewComponent } from './CreateRolloutView.component';
 import styles from './CreateTeamRolloutModal.component.module.scss';
-import { Deps } from '@core/dep/deps';
 
 interface Props {
     deps: Deps;
@@ -14,7 +19,9 @@ interface Props {
     isValidVersionNumber: (versionNumber: number) => boolean;
     onCreateRolloutClick: (rollout: CreateAppRolloutInput) => void;
     createActivator: (input: CreateActivatorInput) => Promise<number>;
-    createVersionSelector: (input: CreateVersionSelectorInput) => Promise<number>;
+    createVersionSelector: (
+        input: CreateVersionSelectorInput,
+    ) => Promise<number>;
 }
 
 export class CreateTeamRolloutModalComponent extends Component<Props> {
@@ -77,5 +84,4 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
         this.props.onCreateRolloutClick(rollout);
         this.modalRef.current?.close();
     };
-
 }

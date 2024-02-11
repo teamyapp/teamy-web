@@ -6,9 +6,9 @@ import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { ItemListUI } from '@lib/ui/ItemList';
 
 import { Group, GroupType } from '@core/entity/group';
+import { UpdateGroupInput } from '@core/entity/input';
 
 import styles from './EditGroupView.component.module.scss';
-import { UpdateGroupInput } from '@core/entity/input';
 
 const groupTypeOptions: Option[] = [
     { key: 'STATIC', description: 'Static' },
@@ -34,7 +34,10 @@ interface Props {
     onCreateStaticGroup?: (groupName: string, memberIds: number[]) => void;
     onCreateFilterGroup?: (groupName: string, filter: string) => void;
     onDeleteGroupClick?: (groupId: number) => void;
-    onSaveGroupClick?: (groupId: number, updatedGroup: UpdateGroupInput) => void;
+    onSaveGroupClick?: (
+        groupId: number,
+        updatedGroup: UpdateGroupInput,
+    ) => void;
 }
 
 interface State {

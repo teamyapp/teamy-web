@@ -4,7 +4,6 @@ import React, { ChangeEvent, createRef, useEffect } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
-import { AppSecret } from '@core/entity/appSecret';
 
 import { getUserShortName } from '../../../../internal/format';
 import { CreateAppSecretModalComponent } from '../CreateAppSecretModal.component';
@@ -123,12 +122,8 @@ export function CredentialTabComponent(props: Props) {
                     <table className={`${styles.Table} ${styles.Secret}`}>
                         <thead>
                             <tr>
-                                <th className={`${styles.Cell} ${styles.Id}`}>
-                                    ID
-                                </th>
-                                <th className={`${styles.Cell} ${styles.Name}`}>
-                                    Name
-                                </th>
+                                <th>ID</th>
+                                <th className={styles.Name}>Name</th>
                                 <th>Added at</th>
                                 <th>Added by</th>
                                 <th>Last used</th>
@@ -142,9 +137,7 @@ export function CredentialTabComponent(props: Props) {
                                     className={styles.SecretRow}
                                 >
                                     <td>{secret.id}</td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Name}`}
-                                    >
+                                    <td className={styles.Name}>
                                         <input
                                             type={'text'}
                                             className={styles.TextField}
@@ -170,9 +163,7 @@ export function CredentialTabComponent(props: Props) {
                                               ).fromNow()
                                             : 'Never'}
                                     </td>
-                                    <td
-                                        className={`${styles.Cell} ${styles.Actions}`}
-                                    >
+                                    <td className={styles.Actions}>
                                         <div
                                             className={`${styles.RowAction} ${styles.Copy}`}
                                             onClick={onCopySecretClickHandler(

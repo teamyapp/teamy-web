@@ -33,7 +33,9 @@ export class VersionSelectorVersionRelationState {
         public versionNumber: number,
     ) {}
 
-    public static fromMutationPayload(json: any): VersionSelectorVersionRelationState {
+    public static fromMutationPayload(
+        json: any,
+    ): VersionSelectorVersionRelationState {
         return new VersionSelectorVersionRelationState(
             json.VersionSelectorID,
             json.VersionNumber,

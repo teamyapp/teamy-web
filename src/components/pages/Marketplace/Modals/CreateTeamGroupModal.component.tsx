@@ -14,8 +14,16 @@ import styles from './CreateTeamGroupModal.component.module.scss';
 interface Props {
     deps: Deps;
     appId: number;
-    onCreateStaticGroupClick?: (groupName: string, userIds: number[], rolloutIds: number[]) => void;
-    onCreateFilterGroupClick?: (groupName: string, filter: string, rolloutIds: number[]) => void;
+    onCreateStaticGroupClick?: (
+        groupName: string,
+        userIds: number[],
+        rolloutIds: number[],
+    ) => void;
+    onCreateFilterGroupClick?: (
+        groupName: string,
+        filter: string,
+        rolloutIds: number[],
+    ) => void;
 }
 
 export class CreateTeamGroupModalComponent extends Component<Props> {

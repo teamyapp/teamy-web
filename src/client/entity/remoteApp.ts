@@ -13,7 +13,7 @@ export interface RemoteApp {
     installations: RemoteAppInstallation[];
     latestVersionForTeam?: RemoteAppVersion;
     versions: RemoteAppVersion[];
-    groups: RemoteGroup[],
+    groups: RemoteGroup[];
     userRollouts: RemoteRollout[];
     teamRollouts: RemoteRollout[];
     managedByTeam: RemoteTeam;
