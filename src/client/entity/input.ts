@@ -1,4 +1,5 @@
 import { Priority } from '@core/entity/priority';
+
 import { RemoteGroupMemberType } from './remoteGroupMemberType';
 import { RemoteGroupType } from './remoteGroupType';
 import { RemoteRolloutActivatorType } from './remoteRolloutActivatorType';

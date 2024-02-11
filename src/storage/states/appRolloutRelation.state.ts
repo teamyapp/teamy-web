@@ -1,5 +1,4 @@
-
-export type AppRolloutRelationType = 'USER' | 'TEAM'
+export type AppRolloutRelationType = 'USER' | 'TEAM';
 
 export class AppRolloutRelationState {
     constructor(
@@ -9,10 +8,18 @@ export class AppRolloutRelationState {
     ) {}
 
     public static fromJson(json: any): AppRolloutRelationState {
-        return new AppRolloutRelationState(json.appId, json.rolloutId, json.type);
+        return new AppRolloutRelationState(
+            json.appId,
+            json.rolloutId,
+            json.type,
+        );
     }
 
     public static fromMutationPayload(json: any): AppRolloutRelationState {
-        return new AppRolloutRelationState(json.AppID, json.RolloutID, json.Type);
+        return new AppRolloutRelationState(
+            json.AppID,
+            json.RolloutID,
+            json.Type,
+        );
     }
 }

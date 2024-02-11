@@ -2,19 +2,26 @@ import React, { Component, ReactNode, RefObject, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
-import { CreateActivatorInput, CreateAppRolloutInput, CreateVersionSelectorInput } from '@core/entity/input';
+
+import { Deps } from '@core/dep/deps';
+import {
+    CreateActivatorInput,
+    CreateAppRolloutInput,
+    CreateVersionSelectorInput,
+} from '@core/entity/input';
 
 import { CreateRolloutViewComponent } from './CreateRolloutView.component';
 import styles from './CreateUserRolloutModal.component.module.scss';
-import { Deps } from '@core/dep/deps';
 
 interface Props {
     deps: Deps;
-    appId: number
+    appId: number;
     isValidVersionNumber: (versionNumber: number) => boolean;
     onCreateRolloutClick: (rollout: CreateAppRolloutInput) => void;
     createActivator: (input: CreateActivatorInput) => Promise<number>;
-    createVersionSelector: (input: CreateVersionSelectorInput) => Promise<number>;
+    createVersionSelector: (
+        input: CreateVersionSelectorInput,
+    ) => Promise<number>;
 }
 
 export class CreateUserRolloutModalComponent extends Component<Props> {
@@ -77,7 +84,7 @@ export class CreateUserRolloutModalComponent extends Component<Props> {
         if (!app) {
             return false;
         }
-        
+
         return app.userGroups.some((group) => group.id === groupId);
     };
 
@@ -85,5 +92,4 @@ export class CreateUserRolloutModalComponent extends Component<Props> {
         this.props.onCreateRolloutClick(rollout);
         this.modalRef.current?.close();
     };
-
 }

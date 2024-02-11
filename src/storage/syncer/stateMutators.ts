@@ -8,7 +8,10 @@ import { RemoteClient } from '@core/client/entity/remoteClient';
 import { RemoteGroup } from '@core/client/entity/remoteGroup';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
-import { RemoteAppRolloutType, RemoteRollout } from '@core/client/entity/remoteRollout';
+import {
+    RemoteAppRolloutType,
+    RemoteRollout,
+} from '@core/client/entity/remoteRollout';
 import { RemoteRolloutActivator } from '@core/client/entity/remoteRolloutActivator';
 import { RemoteRolloutVersionSelector } from '@core/client/entity/remoteRolloutVersionSelector';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
@@ -589,12 +592,22 @@ export function mergeApp(
 
     remoteApp.userRollouts?.forEach((rollout) => {
         currAppState = mergeRollout(currAppState, rollout);
-        currAppState = mergeAppRolloutRelation(currAppState, remoteAppId, toInt(rollout.id)!, 'USER');
+        currAppState = mergeAppRolloutRelation(
+            currAppState,
+            remoteAppId,
+            toInt(rollout.id)!,
+            'USER',
+        );
     });
 
     remoteApp.teamRollouts?.forEach((rollout) => {
         currAppState = mergeRollout(currAppState, rollout);
-        currAppState = mergeAppRolloutRelation(currAppState, remoteAppId, toInt(rollout.id)!, 'TEAM');
+        currAppState = mergeAppRolloutRelation(
+            currAppState,
+            remoteAppId,
+            toInt(rollout.id)!,
+            'TEAM',
+        );
     });
 
     remoteApp.groups?.forEach((group) => {

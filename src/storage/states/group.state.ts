@@ -3,12 +3,12 @@ export type GroupMemberType = 'USER' | 'TEAM';
 
 export class GroupState {
     constructor(
-    public id: number,
-    public type: GroupType,
-    public memberType: GroupMemberType,
-    public name: string,
-    public createdAt: Date,
-    public updatedAt?: Date,
+        public id: number,
+        public type: GroupType,
+        public memberType: GroupMemberType,
+        public name: string,
+        public createdAt: Date,
+        public updatedAt?: Date,
     ) {}
 
     public static fromMutationPayload(json: any): GroupState {
@@ -35,19 +35,13 @@ export class GroupState {
 }
 
 export class FilterGroupState {
-    constructor(
-        public filter: string,
-    ) {}
+    constructor(public filter: string) {}
 
     public static fromMutationPayload(json: any): FilterGroupState {
-        return new FilterGroupState(
-            json.Filter
-        );
+        return new FilterGroupState(json.Filter);
     }
 
     public static fromJson(json: any): FilterGroupState {
-        return new FilterGroupState(
-            json.filter
-        );
+        return new FilterGroupState(json.filter);
     }
 }

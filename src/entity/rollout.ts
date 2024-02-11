@@ -6,8 +6,11 @@ export type Activator =
     | MaxViewersActivator
     | PercentageActivator;
 
-
-export type ActivatorType = 'STATIC' | 'TIME_RANGE' | 'MAX_VIEWERS' | 'PERCENTAGE';
+export type ActivatorType =
+    | 'STATIC'
+    | 'TIME_RANGE'
+    | 'MAX_VIEWERS'
+    | 'PERCENTAGE';
 export type AppRolloutType = 'USER' | 'TEAM';
 
 export interface ActivatorInfo {

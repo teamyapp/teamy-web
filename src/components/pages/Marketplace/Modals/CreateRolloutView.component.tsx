@@ -381,7 +381,7 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
 
     isGroupDuplicate = (groupId: number): boolean => {
         return this.state.selectedGroupIds.includes(groupId);
-    }
+    };
 
     onAddGroup = (groupId: number) => {
         this.setState({
@@ -413,8 +413,6 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
             groupIds: this.state.selectedGroupIds,
             isEnabled: this.rolloutEnableToggleRef.current?.status || false,
         });
-
-        
     };
 
     onTimeRangeActivatorStartTimeChange = (

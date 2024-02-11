@@ -2,6 +2,15 @@ import classNames from 'classnames';
 import moment from 'moment/moment';
 import React, { ReactNode, createRef, useState } from 'react';
 
+import { Deps } from '@core/dep/deps';
+import {
+    CreateActivatorInput,
+    CreateAppRolloutInput,
+    CreateVersionSelectorInput,
+    UpdateActivatorInput,
+    UpdateRolloutInput,
+    UpdateVersionSelectorInput,
+} from '@core/entity/input';
 import { Rollout } from '@core/entity/rollout';
 
 import { CreateTeamRolloutModalComponent } from '../CreateTeamRolloutModal.component';
@@ -11,8 +20,6 @@ import {
     EditRolloutViewComponentHandle,
 } from '../EditRolloutView.component';
 import styles from './RolloutsTab.component.module.scss';
-import { Deps } from '@core/dep/deps';
-import { CreateActivatorInput, CreateAppRolloutInput, CreateVersionSelectorInput, UpdateActivatorInput, UpdateRolloutInput, UpdateVersionSelectorInput } from '@core/entity/input';
 
 interface Tab<Key> {
     name: string;
@@ -65,33 +72,43 @@ export function RolloutsTabComponent(props: Props) {
 
     const onCreateRolloutClick = (rollout: CreateAppRolloutInput) => {
         props.deps.stateSyncer.createAppRollout(props.appId, rollout);
-    }
+    };
 
     const onSaveRolloutClick = (rollout: UpdateRolloutInput) => {
         props.deps.stateSyncer.updateRollout(rollout);
-    }
+    };
 
-    const saveActivator = async (activatorId: number, input: UpdateActivatorInput) => {
+    const saveActivator = async (
+        activatorId: number,
+        input: UpdateActivatorInput,
+    ) => {
         props.deps.stateSyncer.updateActivator(activatorId, input);
-    }
+    };
 
-    const saveVersionSelector = async (versionSelectorId: number, input: UpdateVersionSelectorInput) => {
-        props.deps.stateSyncer.updateVersionSelector(props.appId, versionSelectorId, input);
-    }
+    const saveVersionSelector = async (
+        versionSelectorId: number,
+        input: UpdateVersionSelectorInput,
+    ) => {
+        props.deps.stateSyncer.updateVersionSelector(
+            props.appId,
+            versionSelectorId,
+            input,
+        );
+    };
 
     const onDeleteRolloutClick = (rolloutId: number) => {
         setSelectedTeamGroupRollout(undefined);
         setSelectedUserGroupRollout(undefined);
         props.deps.stateSyncer.deleteRollout(rolloutId);
-    }
+    };
 
     const createActivator = (input: CreateActivatorInput) => {
         return props.deps.stateSyncer.createActivator(input);
-    }
+    };
 
     const createVersionSelector = (input: CreateVersionSelectorInput) => {
         return props.deps.stateSyncer.createVersionSelector(props.appId, input);
-    }
+    };
 
     const onRolloutGroupTabClickHandler = (tab: Tab<RolloutGroupTabKey>) => {
         return () => {
@@ -264,15 +281,14 @@ export function RolloutsTabComponent(props: Props) {
                     {renderRolloutDetail()}
                 </div>
             </div>
-            <CreateUserRolloutModalComponent 
-                ref={createUserRolloutModalRef} 
-                deps={props.deps} 
+            <CreateUserRolloutModalComponent
+                ref={createUserRolloutModalRef}
+                deps={props.deps}
                 appId={props.appId}
                 isValidVersionNumber={props.isValidVersionNumber}
                 onCreateRolloutClick={onCreateRolloutClick}
                 createActivator={createActivator}
                 createVersionSelector={createVersionSelector}
-                
             />
             <CreateTeamRolloutModalComponent
                 ref={createTeamRolloutModalRef}

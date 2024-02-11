@@ -54,16 +54,18 @@ export function GroupsTabComponent(props: Props) {
 
     const isValidRollout = (rolloutId: number): boolean => {
         const appState = props.deps.localStore.getState();
-        if(!appState.rollouts[rolloutId]) {
+        if (!appState.rollouts[rolloutId]) {
             return false;
         }
 
         const appRolloutRelationType = selectedUserGroup ? 'USER' : 'TEAM';
-        return appState.appRolloutRelations.some(relation => {
-            return relation.rolloutId === rolloutId && 
-            relation.appId === props.appId && 
-            relation.type === appRolloutRelationType;
-        })
+        return appState.appRolloutRelations.some((relation) => {
+            return (
+                relation.rolloutId === rolloutId &&
+                relation.appId === props.appId &&
+                relation.type === appRolloutRelationType
+            );
+        });
     };
 
     const onCreateUserGroupClick = () => {

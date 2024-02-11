@@ -1,4 +1,11 @@
-import { FilterGroup, GroupInfo, GroupType, GroupMemberType, StaticGroup } from '@core/entity/group';
+import {
+    FilterGroup,
+    GroupInfo,
+    GroupMemberType,
+    GroupType,
+    StaticGroup,
+} from '@core/entity/group';
+
 import { FilterGroupState, GroupState } from '../states/group.state';
 import { LocalStore } from '../syncer/localStore';
 import { AppNode } from './app.node';
@@ -45,10 +52,16 @@ class GroupInfoNode implements GroupInfo {
         const appState = this.localStore.getState();
         return appState.groupRolloutRelations
             .filter((relation) => relation.groupId === this.group.id)
-            .sort((relationA, relationB) => relationA.orderIndex - relationB.orderIndex)
+            .sort(
+                (relationA, relationB) =>
+                    relationA.orderIndex - relationB.orderIndex,
+            )
             .map((relation) => {
-                return new RolloutNode(this.localStore, appState.rollouts[relation.rolloutId]);
-            })
+                return new RolloutNode(
+                    this.localStore,
+                    appState.rollouts[relation.rolloutId],
+                );
+            });
     }
 
     public get apps(): AppNode[] {
@@ -56,7 +69,10 @@ class GroupInfoNode implements GroupInfo {
         return appState.appGroupRelations
             .filter((relation) => relation.groupId === this.group.id)
             .map((relation) => {
-                return new AppNode(this.localStore, appState.apps[relation.appId]);
+                return new AppNode(
+                    this.localStore,
+                    appState.apps[relation.appId],
+                );
             });
     }
 }
@@ -99,10 +115,10 @@ export class StaticGroupNode<MemberNode>
         const groupMemberRelations = appState.groupMemberRelations;
         return groupMemberRelations
             .filter((relation) => {
-            return relation.groupId === this.group.id;
-        })
+                return relation.groupId === this.group.id;
+            })
             .map((relation) => {
-            return this.makeMemberNode(relation.memberId);
-        })
+                return this.makeMemberNode(relation.memberId);
+            });
     }
 }

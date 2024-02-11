@@ -4,10 +4,9 @@ import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { ItemListUI } from '@lib/ui/ItemList';
 
-import styles from './CreateGroupView.component.module.scss';
 import { GroupType } from '@core/entity/group';
 
-
+import styles from './CreateGroupView.component.module.scss';
 
 const groupTypeOptions: Option[] = [
     { key: 'STATIC', description: 'Static' },
