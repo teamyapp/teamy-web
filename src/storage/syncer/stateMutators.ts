@@ -1,5 +1,3 @@
-import { merge } from 'lodash';
-
 import { Duration } from '@lib/entity/duration';
 
 import { RemoteApp } from '@core/client/entity/remoteApp';
