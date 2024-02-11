@@ -199,6 +199,15 @@ export class TeamClient {
                                             versionNumbers
                                         }
                                     }
+                                    groupRolloutRelations {
+                                        group {
+                                            id
+                                        }
+                                        rollout {
+                                            id
+                                        }
+                                        orderIndex
+                                    }
                                     createdAt
                                     updatedAt
                                 }
@@ -231,6 +240,15 @@ export class TeamClient {
                                         ... on ExperimentVersionSelector {
                                             versionNumbers
                                         }
+                                    }
+                                    groupRolloutRelations {
+                                        group {
+                                            id
+                                        }
+                                        rollout {
+                                            id
+                                        }
+                                        orderIndex
                                     }
                                     createdAt
                                     updatedAt

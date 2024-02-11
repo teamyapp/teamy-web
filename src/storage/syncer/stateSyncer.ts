@@ -72,6 +72,7 @@ import {
     mergeAppSecret,
     mergeAppVersion,
     mergeGroup,
+    mergeGroupRolloutRelation,
     mergeInvitation,
     mergeMessage,
     mergeRollout,
@@ -1039,6 +1040,16 @@ export class StateSyncer {
             toInt(remoteRollout.id)!,
             input.type,
         );
+        
+        remoteRollout.groupRolloutRelations.forEach((relation) => {
+            appState = mergeGroupRolloutRelation(
+                appState,
+                toInt(relation.group.id)!,
+                toInt(remoteRollout.id)!,
+                relation.orderIndex,
+            )
+        })
+
         this.localStore.updateState(appState);
     }
 
