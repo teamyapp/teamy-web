@@ -81,15 +81,15 @@ export function RolloutsTabComponent(props: Props) {
     const saveActivator = async (
         activatorId: number,
         input: UpdateActivatorInput,
-    ) => {
-        return props.deps.stateSyncer.updateActivator(activatorId, input);
+    ): Promise<void> => {
+        await props.deps.stateSyncer.updateActivator(activatorId, input);
     };
 
     const saveVersionSelector = async (
         versionSelectorId: number,
         input: UpdateVersionSelectorInput,
-    ) => {
-        return props.deps.stateSyncer.updateVersionSelector(
+    ): Promise<void> => {
+        await props.deps.stateSyncer.updateVersionSelector(
             props.appId,
             versionSelectorId,
             input,

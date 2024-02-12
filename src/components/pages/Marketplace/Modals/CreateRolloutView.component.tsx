@@ -398,8 +398,14 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
     };
 
     onCreateRolloutClick = async () => {
-        if (!this.state.staticVersionSelectorInput?.versionNumber 
-        && !this.state.experimentVersionSelectorInput?.versionNumbers?.length) {
+        const hasVersionNumbers =
+            this.state.experimentVersionSelectorInput?.versionNumbers &&
+            this.state.experimentVersionSelectorInput.versionNumbers.length > 0;
+
+        if (
+            !this.state.staticVersionSelectorInput?.versionNumber &&
+            !hasVersionNumbers
+        ) {
             alert('Please enter version number');
             return;
         }

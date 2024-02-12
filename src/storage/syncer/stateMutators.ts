@@ -930,14 +930,16 @@ export function mergeGroupRolloutRelation(
     remoteRolloutId: number,
     orderIndex: number,
 ) {
-    if (
-        !currAppState.groupRolloutRelations.some((groupRolloutRelation) => {
+    const isRelationExisted = currAppState.groupRolloutRelations.some(
+        (groupRolloutRelation) => {
             return (
                 groupRolloutRelation.groupId === remoteGroupId &&
                 groupRolloutRelation.rolloutId === remoteRolloutId
             );
-        })
-    ) {
+        },
+    );
+
+    if (!isRelationExisted) {
         currAppState.groupRolloutRelations.push({
             groupId: remoteGroupId,
             rolloutId: remoteRolloutId,
