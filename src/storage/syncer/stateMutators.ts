@@ -6,6 +6,7 @@ import { RemoteAppSecret } from '@core/client/entity/remoteAppSecret';
 import { RemoteAppVersion } from '@core/client/entity/remoteAppVersion';
 import { RemoteClient } from '@core/client/entity/remoteClient';
 import { RemoteGroup } from '@core/client/entity/remoteGroup';
+import { RemoteGroupRolloutRelation } from '@core/client/entity/remoteGroupRolloutRelation';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
 import {
@@ -908,26 +909,42 @@ export function mergeGroup(
             });
         }
     }
-
     remoteGroup.groupRolloutRelations?.forEach((remoteGroupRolloutRelation) => {
-        if (
-            !currAppState.groupRolloutRelations.some((groupRolloutRelation) => {
-                return (
-                    groupRolloutRelation.groupId === remoteGroupId &&
-                    groupRolloutRelation.rolloutId ===
-                        toInt(remoteGroupRolloutRelation.rollout.id)
-                );
-            })
-        ) {
-            currAppState.groupRolloutRelations.push({
-                groupId: remoteGroupId,
-                rolloutId: toInt(remoteGroupRolloutRelation.rollout.id)!,
-                orderIndex: remoteGroupRolloutRelation.orderIndex,
-            });
-        }
+        currAppState = mergeGroupRolloutRelation(
+            currAppState,
+            remoteGroupId,
+            toInt(remoteGroupRolloutRelation.rollout.id)!,
+            remoteGroupRolloutRelation.orderIndex,
+        );
     });
 
     currAppState.groups[remoteGroupId] = localNewGroup;
+    return currAppState;
+}
+
+export function mergeGroupRolloutRelation(
+    currAppState: AppState,
+    remoteGroupId: number,
+    remoteRolloutId: number,
+    orderIndex: number,
+) {
+    const isRelationExisted = currAppState.groupRolloutRelations.some(
+        (groupRolloutRelation) => {
+            return (
+                groupRolloutRelation.groupId === remoteGroupId &&
+                groupRolloutRelation.rolloutId === remoteRolloutId
+            );
+        },
+    );
+
+    if (!isRelationExisted) {
+        currAppState.groupRolloutRelations.push({
+            groupId: remoteGroupId,
+            rolloutId: remoteRolloutId,
+            orderIndex,
+        });
+    }
+
     return currAppState;
 }
 

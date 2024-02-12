@@ -196,6 +196,18 @@ export function EditRolloutViewComponent() {
                 };
 
             const handleSaveClicked = async () => {
+                const hasVersionNumbers =
+                    experimentVersionSelectorInput?.versionNumbers &&
+                    experimentVersionSelectorInput?.versionNumbers.length > 0;
+
+                if (
+                    !staticVersionSelectorInput?.versionNumber &&
+                    !hasVersionNumbers
+                ) {
+                    alert('Version number is required');
+                    return;
+                }
+
                 await props.saveActivator(
                     rollout.activator.id,
                     getUpdateActivatorInput(),

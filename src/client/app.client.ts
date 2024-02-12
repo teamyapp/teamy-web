@@ -610,6 +610,15 @@ export class AppClient {
                                     versionNumbers
                                 }
                             }
+                            groupRolloutRelations {
+                                group {
+                                    id
+                                }
+                                rollout {
+                                    id
+                                }
+                                orderIndex
+                            }
                             createdAt
                             updatedAt
                         }
@@ -661,6 +670,15 @@ export class AppClient {
                                 ... on ExperimentVersionSelector {
                                     versionNumbers
                                 }
+                            }
+                            groupRolloutRelations {
+                                group {
+                                    id
+                                }
+                                rollout {
+                                    id
+                                }
+                                orderIndex
                             }
                             createdAt
                             updatedAt
