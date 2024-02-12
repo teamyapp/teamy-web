@@ -23,6 +23,13 @@
                 }
             }
 
+            &.Lock {
+                --icon-size: 48px;
+                --icon-color: #9E9E9E;
+                display: flex;
+                justify-content: center;
+            }
+
             &.Text {
                 align-items: center;
             }

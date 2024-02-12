@@ -79,6 +79,11 @@ export class EditGroupViewComponent extends Component<Props, State> {
         return (
             <div className={styles.EditGroupView}>
                 <div className={`${styles.Info}`}>
+                    {this.state.group?.locked && (
+                        <div className={`${styles.Row} ${styles.Lock}`}>
+                            <MaterialIconUI>lock</MaterialIconUI>
+                        </div>
+                    )}
                     <div
                         className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
                     >
@@ -86,13 +91,6 @@ export class EditGroupViewComponent extends Component<Props, State> {
                             ID:
                         </div>
                         <div>{this.state.group?.id}</div>
-                        {this.state.group?.locked && (
-                            <div>
-                                <MaterialIconUI color='gray'>
-                                    lock
-                                </MaterialIconUI>
-                            </div>
-                        )}
                     </div>
                     <div
                         className={`${styles.Row} ${styles.Inline} ${styles.Text}`}

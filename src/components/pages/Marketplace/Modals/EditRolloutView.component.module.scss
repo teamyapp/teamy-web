@@ -15,6 +15,13 @@
             --drop-down-button-color: rgba(0, 0, 0, 0.2);
             --drop-down-color: #1565c0;
 
+            &.Lock {
+                --icon-size: 48px;
+                --icon-color: #9E9E9E;
+                display: flex;
+                justify-content: center;
+            }
+
             &.Inline {
                 display: flex;
 

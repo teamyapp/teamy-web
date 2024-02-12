@@ -576,6 +576,11 @@ export function EditRolloutViewComponent() {
             return (
                 <div className={styles.EditRolloutView}>
                     <div className={`${styles.Info}`}>
+                        {rollout.locked && (
+                            <div className={`${styles.Row} ${styles.Lock}`}>
+                                <MaterialIconUI>lock</MaterialIconUI>
+                            </div>
+                        )}
                         <div
                             className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
                         >
@@ -585,14 +590,6 @@ export function EditRolloutViewComponent() {
                                 ID:
                             </div>
                             <div>{rollout?.id}</div>
-
-                            {rollout.locked && (
-                                <div>
-                                    <MaterialIconUI color='gray'>
-                                        lock
-                                    </MaterialIconUI>
-                                </div>
-                            )}
                         </div>
                         <div
                             className={`${styles.Row} ${styles.Inline} ${styles.Text}`}

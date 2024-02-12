@@ -104,14 +104,17 @@ export function VersionsTabComponent(props: Props) {
         return (
             selectedAppVersion && (
                 <div className={`${styles.Box} ${styles.VersionDetail}`}>
+                    {selectedAppVersion.locked && (
+                        <div className={`${styles.Row} ${styles.Lock}`}>
+                            <MaterialIconUI>lock</MaterialIconUI>
+                        </div>
+                    )}
+
                     <div className={`${styles.Row} ${styles.Icon}`}>
                         <img
                             className={styles.Icon}
                             src={selectedAppVersion.iconUrl}
                         />
-                        {selectedAppVersion.locked && (
-                            <MaterialIconUI color='gray'>lock</MaterialIconUI>
-                        )}
                     </div>
                     <div className={`${styles.Row} ${styles.Name}`}>
                         <span className={`${styles.Label} ${styles.SameRow}`}>

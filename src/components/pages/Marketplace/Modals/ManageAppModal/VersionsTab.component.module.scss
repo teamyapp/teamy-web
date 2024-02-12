@@ -95,6 +95,14 @@
                     }
                 }
 
+                &.Lock {
+                    --icon-size: 48px;
+                    --icon-color: #9E9E9E;
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 30px;
+                }
+
                 &.Name,
                 &.Description,
                 &.Changes,
