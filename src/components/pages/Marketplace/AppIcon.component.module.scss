@@ -1,0 +1,5 @@
+@import './shared';
+
+.Icon {
+    @include AppIcon(60px);
+}

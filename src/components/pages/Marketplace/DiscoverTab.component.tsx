@@ -2,6 +2,7 @@ import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, createRef } from 'react';
 
 import { Deps } from '@core/dep/deps';
+import {AppIconComponent} from './AppIcon.component';
 
 import styles from './DiscoveredTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
@@ -187,9 +188,9 @@ export class DiscoverTabComponent extends Component<Props, State> {
                     {items.map((item) => (
                         <div key={item.id} className={styles.InlineItem}>
                             <div className={styles.LeftSection}>
-                                <div className={styles.Icon}>
-                                    <img src={item.iconUrl} />
-                                </div>
+                                <AppIconComponent
+                                    appName={item.name}
+                                    appIconUrl={item.iconUrl}/>
                             </div>
                             <div className={styles.MiddleSection}>
                                 <div className={styles.Name}>{item.name}</div>

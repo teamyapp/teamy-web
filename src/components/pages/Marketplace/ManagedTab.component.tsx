@@ -4,6 +4,7 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
 import { GraphSource } from '@core/storage/graph/graphSource';
+import {AppIconComponent} from './AppIcon.component';
 
 import styles from './ManagedTab.component.module.scss';
 import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
@@ -44,11 +45,9 @@ export class ManagedTabComponent extends Component<Props> {
                         return (
                             <div className={styles.InlineItem} key={app.id}>
                                 <div className={styles.LeftSection}>
-                                    <div className={styles.Icon}>
-                                        <img
-                                            src={currentTeamAppVersion.iconUrl}
-                                        />
-                                    </div>
+                                    <AppIconComponent
+                                        appName={currentTeamAppVersion.appName}
+                                        appIconUrl={currentTeamAppVersion.iconUrl}/>
                                 </div>
                                 <div className={styles.MiddleSection}>
                                     <div className={styles.Name}>
