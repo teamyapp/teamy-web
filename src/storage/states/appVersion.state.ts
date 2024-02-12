@@ -12,6 +12,7 @@ export class AppVersionState {
         public iconUrl: string,
         public prices: MoneyState[],
         public isReady: boolean,
+        public locked: boolean,
         public appId: number,
     ) {}
 
@@ -26,6 +27,7 @@ export class AppVersionState {
             json.IconUrl,
             json.Prices.map(MoneyState.fromMutationPayload),
             json.IsReady,
+            json.Locked,
             json.AppID,
         );
     }
@@ -41,6 +43,7 @@ export class AppVersionState {
             json.iconUrl,
             json.prices.map(MoneyState.fromJson),
             json.isReady,
+            json.locked,
             json.appId,
         );
     }

@@ -11,6 +11,7 @@ export type GroupMemberType = 'USER' | 'TEAM';
 export interface GroupInfo {
     id: number;
     type: GroupType;
+    locked: boolean;
     memberType: GroupMemberType;
     name: string;
     createdAt: Date;

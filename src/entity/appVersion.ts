@@ -13,5 +13,6 @@ export interface AppVersion {
     iconUrl: string;
     prices: Money[];
     isReady: boolean;
+    locked: boolean;
     app: App;
 }

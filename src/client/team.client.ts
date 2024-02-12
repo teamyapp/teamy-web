@@ -62,6 +62,7 @@ export class TeamClient {
                                         id
                                     }
                                     isReady
+                                    locked
                                     iconUrl
                                 }
                             }
@@ -112,6 +113,7 @@ export class TeamClient {
                                         id
                                     }
                                     isReady
+                                    locked
                                     iconUrl
                                 }
                                 versions {
@@ -131,6 +133,7 @@ export class TeamClient {
                                         id
                                     }
                                     isReady
+                                    locked
                                     iconUrl
                                 }
                                 managedByTeam {
@@ -139,6 +142,7 @@ export class TeamClient {
                                 groups {
                                     id
                                     type
+                                    locked
                                     memberType
                                     name
                                     ... on StaticUserGroup{
@@ -173,6 +177,7 @@ export class TeamClient {
                                     id
                                     name
                                     isEnabled
+                                    locked
                                     activator {
                                         id
                                         type
@@ -215,6 +220,7 @@ export class TeamClient {
                                     id
                                     name
                                     isEnabled
+                                    locked
                                     activator {
                                         id
                                         type

@@ -4,6 +4,7 @@ import React, { ChangeEvent, Component, ReactNode } from 'react';
 import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { ItemListUI } from '@lib/ui/ItemList';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Group, GroupType } from '@core/entity/group';
 import { UpdateGroupInput } from '@core/entity/input';
@@ -78,6 +79,11 @@ export class EditGroupViewComponent extends Component<Props, State> {
         return (
             <div className={styles.EditGroupView}>
                 <div className={`${styles.Info}`}>
+                    {this.state.group?.locked && (
+                        <div className={`${styles.Row} ${styles.Lock}`}>
+                            <MaterialIconUI>lock</MaterialIconUI>
+                        </div>
+                    )}
                     <div
                         className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
                     >
@@ -136,20 +142,22 @@ export class EditGroupViewComponent extends Component<Props, State> {
                         />
                     </div>
                 </div>
-                <div className={styles.Actions}>
-                    <div
-                        className={styles.SaveAction}
-                        onClick={this.onSaveGroupClick}
-                    >
-                        <ButtonUI label={'Save'} />
+                {!this.state.group?.locked && (
+                    <div className={styles.Actions}>
+                        <div
+                            className={styles.SaveAction}
+                            onClick={this.onSaveGroupClick}
+                        >
+                            <ButtonUI label={'Save'} />
+                        </div>
+                        <div
+                            className={styles.DeleteAction}
+                            onClick={this.onDeleteGroupClick}
+                        >
+                            <ButtonUI label={'Delete'} />
+                        </div>
                     </div>
-                    <div
-                        className={styles.DeleteAction}
-                        onClick={this.onDeleteGroupClick}
-                    >
-                        <ButtonUI label={'Delete'} />
-                    </div>
-                </div>
+                )}
             </div>
         );
     }
