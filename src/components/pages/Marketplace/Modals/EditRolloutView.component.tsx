@@ -196,7 +196,14 @@ export function EditRolloutViewComponent() {
                 };
 
             const handleSaveClicked = async () => {
-                if (!staticVersionSelectorInput?.versionNumber && !experimentVersionSelectorInput?.versionNumbers.length) {
+                const hasVersionNumbers =
+                    experimentVersionSelectorInput?.versionNumbers &&
+                    experimentVersionSelectorInput?.versionNumbers.length > 0;
+
+                if (
+                    !staticVersionSelectorInput?.versionNumber &&
+                    !hasVersionNumbers
+                ) {
                     alert('Version number is required');
                     return;
                 }
