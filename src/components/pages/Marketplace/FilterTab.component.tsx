@@ -6,6 +6,7 @@ import { RouteUpdate, Router } from '@lib/router/router';
 
 import { Deps } from '@core/dep/deps';
 import { getTag, marketplaceFilterRoutePattern } from '@core/routing/routes';
+import {AppIconComponent} from './AppIcon.component';
 
 import styles from './FilterTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
@@ -218,9 +219,9 @@ export class FilterTabComponent extends Component<Props, State> {
                     {filterItemsByTag(items, this.state.tag).map((item) => (
                         <div key={item.id} className={styles.InlineItem}>
                             <div className={styles.LeftSection}>
-                                <div className={styles.Icon}>
-                                    <img src={item.iconUrl} />
-                                </div>
+                                <AppIconComponent
+                                    appName={item.name}
+                                    appIconUrl={item.iconUrl}/>
                             </div>
                             <div className={styles.MiddleSection}>
                                 <div className={styles.Name}>{item.name}</div>

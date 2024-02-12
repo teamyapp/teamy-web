@@ -1,8 +1,9 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
-import { Component, createRef } from 'react';
+import React, { Component, createRef } from 'react';
 
 import { Deps } from '@core/dep/deps';
 import { GraphSource } from '@core/storage/graph/graphSource';
+import {AppIconComponent} from './AppIcon.component';
 
 import styles from './InstalledTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
@@ -38,9 +39,9 @@ export class InstalledTabComponent extends Component<Props, State> {
                     {installations.map((item) => (
                         <div className={styles.InlineItem} key={item.id}>
                             <div className={styles.LeftSection}>
-                                <div className={styles.Icon}>
-                                    <img src={item.activeAppVersion.iconUrl} />
-                                </div>
+                                <AppIconComponent
+                                    appName={item.activeAppVersion.appName}
+                                    appIconUrl={item.activeAppVersion.iconUrl}/>
                             </div>
                             <div className={styles.MiddleSection}>
                                 <div className={styles.Name}>

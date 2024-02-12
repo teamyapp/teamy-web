@@ -1,5 +1,4 @@
 import { App } from '@core/entity/app';
-import { StaticGroup } from '@core/entity/group';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
