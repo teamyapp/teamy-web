@@ -36,6 +36,10 @@ class GroupInfoNode implements GroupInfo {
         return this.group.memberType;
     }
 
+    public get locked(): boolean {
+        return this.group.locked;
+    }
+
     public get name(): string {
         return this.group.name;
     }

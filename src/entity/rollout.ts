@@ -67,6 +67,7 @@ export interface Rollout {
     activator: Activator;
     versionSelector: VersionSelector;
     isEnabled: boolean;
+    locked: boolean;
     createdAt: Date;
     updatedAt?: Date;
     groups: Group[];

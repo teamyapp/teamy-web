@@ -11,6 +11,7 @@ export interface RemoteAppVersion {
     createdBy: RemoteUser;
     prices: RemoteMoney[];
     isReady: boolean;
+    locked: boolean;
     iconUrl: string;
     app: RemoteApp;
 }

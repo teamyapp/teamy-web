@@ -8,6 +8,7 @@ import { RemoteUser } from './remoteUser';
 export interface RemoteGroup {
     id: string;
     type: RemoteGroupType;
+    locked: boolean;
     memberType: RemoteGroupMemberType;
     name: string;
     filter?: string;

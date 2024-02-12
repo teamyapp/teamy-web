@@ -35,6 +35,10 @@ export class RolloutNode implements Rollout {
         return this.rollout.isEnabled;
     }
 
+    get locked(): boolean {
+        return this.rollout.locked;
+    }
+
     get createdAt(): Date {
         return this.rollout.createdAt;
     }

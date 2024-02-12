@@ -12,6 +12,7 @@ import React, {
 import { ButtonUI } from '@lib/ui/Button';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { ItemListUI } from '@lib/ui/ItemList';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ToggleUI } from '@lib/ui/Toggle';
 
 import {
@@ -584,6 +585,14 @@ export function EditRolloutViewComponent() {
                                 ID:
                             </div>
                             <div>{rollout?.id}</div>
+
+                            {rollout.locked && (
+                                <div>
+                                    <MaterialIconUI color='gray'>
+                                        lock
+                                    </MaterialIconUI>
+                                </div>
+                            )}
                         </div>
                         <div
                             className={`${styles.Row} ${styles.Inline} ${styles.Text}`}
@@ -654,20 +663,22 @@ export function EditRolloutViewComponent() {
                             />
                         </div>
                     </div>
-                    <div className={styles.Actions}>
-                        <div
-                            className={styles.SaveAction}
-                            onClick={handleSaveClicked}
-                        >
-                            <ButtonUI label={'Save'} />
+                    {!rollout.locked && (
+                        <div className={styles.Actions}>
+                            <div
+                                className={styles.SaveAction}
+                                onClick={handleSaveClicked}
+                            >
+                                <ButtonUI label={'Save'} />
+                            </div>
+                            <div
+                                className={styles.DeleteAction}
+                                onClick={handleDeleteClicked}
+                            >
+                                <ButtonUI label={'Delete'} />
+                            </div>
                         </div>
-                        <div
-                            className={styles.DeleteAction}
-                            onClick={handleDeleteClicked}
-                        >
-                            <ButtonUI label={'Delete'} />
-                        </div>
-                    </div>
+                    )}
                 </div>
             );
         },

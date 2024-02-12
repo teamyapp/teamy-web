@@ -638,7 +638,8 @@ export function mergeAppVersion(
         changes: version.changes || localOldVersion.changes,
         description: version.description || localOldVersion.description,
         iconUrl: version.iconUrl || localOldVersion.iconUrl,
-        isReady: version.isReady || localOldVersion.isReady,
+        isReady: version.isReady,
+        locked: version.locked,
         prices: version.prices || localOldVersion.prices,
     };
 
@@ -721,6 +722,7 @@ export function mergeRollout(
             toInt(remoteRollout.versionSelector.id) ||
             localOldRollout.versionSelectorId,
         isEnabled: remoteRollout.isEnabled,
+        locked: remoteRollout.locked,
         createdAt: toDate(remoteRollout.createdAt) || localOldRollout.createdAt,
         updatedAt: toDate(remoteRollout.updatedAt) || localOldRollout.updatedAt,
     };
@@ -861,9 +863,10 @@ export function mergeGroup(
     const localOldGroup = currAppState.groups[remoteGroupId] || {};
     const localNewGroup: GroupState = {
         id: remoteGroupId,
-        type: remoteGroup.type,
-        memberType: remoteGroup.memberType,
-        name: remoteGroup.name,
+        type: remoteGroup.type || localOldGroup.type,
+        memberType: remoteGroup.memberType || localOldGroup.memberType,
+        name: remoteGroup.name || localOldGroup.name,
+        locked: remoteGroup.locked,
         createdAt: toDate(remoteGroup.createdAt) || localOldGroup.createdAt,
         updatedAt: toDate(remoteGroup.updatedAt),
     };

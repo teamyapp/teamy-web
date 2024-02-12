@@ -6,6 +6,7 @@ export interface RemoteRollout {
     id: string;
     name: string;
     isEnabled: boolean;
+    locked: boolean;
     activator: RemoteRolloutActivator;
     versionSelector: RemoteRolloutVersionSelector;
     groupRolloutRelations: RemoteGroupRolloutRelation[];

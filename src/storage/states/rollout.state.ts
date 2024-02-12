@@ -5,6 +5,7 @@ export class RolloutState {
         public activatorId: number,
         public versionSelectorId: number,
         public isEnabled: boolean,
+        public locked: boolean,
         public createdAt: Date,
         public updatedAt?: Date,
     ) {}
@@ -16,6 +17,7 @@ export class RolloutState {
             json.ActivatorID,
             json.VersionSelectorID,
             json.IsEnabled,
+            json.Locked,
             new Date(json.CreatedAt),
             new Date(json.UpdatedAt),
         );
@@ -28,6 +30,7 @@ export class RolloutState {
             json.activatorId,
             json.versionSelectorId,
             json.isEnabled,
+            json.locked,
             new Date(json.createdAt),
             new Date(json.updatedAt),
         );

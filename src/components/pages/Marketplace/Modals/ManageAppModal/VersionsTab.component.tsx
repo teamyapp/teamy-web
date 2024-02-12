@@ -109,6 +109,9 @@ export function VersionsTabComponent(props: Props) {
                             className={styles.Icon}
                             src={selectedAppVersion.iconUrl}
                         />
+                        {selectedAppVersion.locked && (
+                            <MaterialIconUI color='gray'>lock</MaterialIconUI>
+                        )}
                     </div>
                     <div className={`${styles.Row} ${styles.Name}`}>
                         <span className={`${styles.Label} ${styles.SameRow}`}>
@@ -146,12 +149,14 @@ export function VersionsTabComponent(props: Props) {
                         <div className={styles.Download}>
                             <ButtonUI label={'Download'} />
                         </div>
-                        <div
-                            className={styles.Delete}
-                            onClick={onDeleteVersionClick}
-                        >
-                            <ButtonUI label={'Delete'} />
-                        </div>
+                        {!selectedAppVersion.locked && (
+                            <div
+                                className={styles.Delete}
+                                onClick={onDeleteVersionClick}
+                            >
+                                <ButtonUI label={'Delete'} />
+                            </div>
+                        )}
                     </div>
                 </div>
             )

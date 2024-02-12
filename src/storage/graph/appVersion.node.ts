@@ -51,6 +51,10 @@ export class AppVersionNode implements AppVersion {
         return this.appVersion.isReady;
     }
 
+    public get locked(): boolean {
+        return this.appVersion.locked;
+    }
+
     public get app(): AppNode {
         return new AppNode(
             this.localStore,

@@ -5,6 +5,7 @@ export class GroupState {
     constructor(
         public id: number,
         public type: GroupType,
+        public locked: boolean,
         public memberType: GroupMemberType,
         public name: string,
         public createdAt: Date,
@@ -15,6 +16,7 @@ export class GroupState {
         return new GroupState(
             json.ID,
             json.Type,
+            json.Locked,
             json.MemberType,
             json.Name,
             new Date(json.CreatedAt),
@@ -26,6 +28,7 @@ export class GroupState {
         return new GroupState(
             json.id,
             json.type,
+            json.locked,
             json.memberType,
             json.name,
             new Date(json.createdAt),

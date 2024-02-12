@@ -181,6 +181,7 @@ export class AppClient {
                         createStaticUserGroup(appId: $appId, input: $input) {
                             id
                             type
+                            locked
                             memberType
                             name
                             users {
@@ -222,6 +223,7 @@ export class AppClient {
                         createStaticTeamGroup(appId: $appId, input: $input) {
                             id
                             type
+                            locked
                             memberType
                             name
                             teams {
@@ -263,6 +265,7 @@ export class AppClient {
                         createFilterGroup(appId: $appId, input: $input) {
                             id
                             type
+                            locked
                             memberType
                             name
                             filter
@@ -303,6 +306,7 @@ export class AppClient {
                         updateGroup(appId: $appId, groupId: $groupId, input: $input) {
                             id
                             type
+                            locked
                             memberType
                             name
                             ... on StaticUserGroup{
@@ -584,6 +588,7 @@ export class AppClient {
                             id
                             name
                             isEnabled
+                            locked
                             activator {
                                 id
                                 type
@@ -645,6 +650,7 @@ export class AppClient {
                             id
                             name
                             isEnabled
+                            locked
                             activator {
                                 id
                                 type
