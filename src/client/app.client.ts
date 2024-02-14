@@ -1,6 +1,7 @@
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import {
+    RemoteCreateAppInput,
     RemoteCreateAppSecretInput,
     RemoteCreateAppVersionInput,
     RemoteCreateExperimentVersionSelectorInput,
@@ -26,6 +27,7 @@ import { RemoteRollout } from './entity/remoteRollout';
 import { RemoteRolloutActivator } from './entity/remoteRolloutActivator';
 import { RemoteRolloutVersionSelector } from './entity/remoteRolloutVersionSelector';
 import { RemoteTag } from './entity/remoteTag';
+import { RemoteApp } from './entity/remoteApp';
 
 export class AppClient {
     private readonly graphQLClient: GraphQLClient;
@@ -33,6 +35,238 @@ export class AppClient {
     constructor(graphQLClient: GraphQLClient) {
         this.graphQLClient = graphQLClient;
     }
+
+    createApp(
+        teamId: string,
+        input: RemoteCreateAppInput,
+    ): Promise<RemoteApp> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation createApp($teamId: ID!, $input: CreateAppInput!) {
+                        createApp(teamId: $teamId, input: $input) {
+                            id
+                            tags {
+                                id
+                                value
+                            }
+                            secrets {
+                                id
+                                name
+                                addedAt
+                                addedBy {
+                                    id
+                                }
+                                app {
+                                    id
+                                }
+                            }
+                            totalInstallations
+                            installations {
+                                id
+                                installedTeam {
+                                    id
+                                }
+                                activeAppVersion {
+                                    app {
+                                        id
+                                    }
+                                    number
+                                }
+                            }
+                            latestVersionForTeam(teamId: $teamId) {
+                                app {
+                                    id
+                                }
+                                number
+                                appName
+                                description
+                                changes
+                                prices {
+                                    amount
+                                    currency
+                                }
+                                createdAt
+                                createdBy {
+                                    id
+                                }
+                                isReady
+                                iconUrl
+                            }
+                            versions {
+                                app {
+                                    id
+                                }
+                                number
+                                appName
+                                description
+                                changes
+                                prices {
+                                    amount
+                                    currency
+                                }
+                                createdAt
+                                createdBy {
+                                    id
+                                }
+                                isReady
+                                iconUrl
+                            }
+                            managedByTeam {
+                                id
+                                managedApps {
+                                    id
+                                }
+                            }
+                            groups {
+                                id
+                                type
+                                memberType
+                                name
+                                locked
+                                ... on StaticUserGroup{
+                                    users {
+                                        id
+                                    }
+                                }
+                                ... on StaticTeamGroup{
+                                    teams {
+                                        id
+                                    }
+                                }
+                                ... on FilterGroup {
+                                    filter
+                                }
+                                createdAt
+                                updatedAt
+                                groupRolloutRelations {
+                                    group {
+                                        id
+                                    }
+                                    rollout {
+                                        id
+                                    }
+                                    orderIndex
+                                }
+                                apps {
+                                    id
+                                }
+                            }
+                            userRollouts {
+                                id
+                                name
+                                isEnabled
+                                locked
+                                activator {
+                                    id
+                                    type
+                                    createdAt
+                                    updatedAt
+                                    ... on TimeRangeActivator {
+                                        startAt
+                                        endAt
+                                    }
+                                    ... on MaxViewersActivator {
+                                        maxViewers
+                                    }
+                                    ... on PercentageActivator {
+                                        percentage
+                                    }
+                                }
+                                versionSelector {
+                                    id
+                                    type
+                                    ... on StaticVersionSelector {
+                                        versionNumber
+                                    }
+                                    ... on ExperimentVersionSelector {
+                                        versionNumbers
+                                    }
+                                }
+                                groupRolloutRelations {
+                                    group {
+                                        id
+                                    }
+                                    rollout {
+                                        id
+                                    }
+                                    orderIndex
+                                }
+                                createdAt
+                                updatedAt
+                            }
+                            teamRollouts {
+                                id
+                                name
+                                isEnabled
+                                locked
+                                activator {
+                                    id
+                                    type
+                                    createdAt
+                                    updatedAt
+                                    ... on TimeRangeActivator {
+                                        startAt
+                                        endAt
+                                    }
+                                    ... on MaxViewersActivator {
+                                        maxViewers
+                                    }
+                                    ... on PercentageActivator {
+                                        percentage
+                                    }
+                                }
+                                versionSelector {
+                                    id
+                                    type
+                                    ... on StaticVersionSelector {
+                                        versionNumber
+                                    }
+                                    ... on ExperimentVersionSelector {
+                                        versionNumbers
+                                    }
+                                }
+                                groupRolloutRelations {
+                                    group {
+                                        id
+                                    }
+                                    rollout {
+                                        id
+                                    }
+                                    orderIndex
+                                }
+                                createdAt
+                                updatedAt
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    teamId,
+                    input,
+                },
+            })
+            .then(({ createApp }) => createApp);
+    }
+
+
+    deleteApp(appId: string): Promise<RemoteApp> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation deleteApp($appId: ID!) {
+                        deleteApp(appId: $appId) {
+                            id
+                        }
+                    }
+                `,
+                variables: {
+                    appId,
+                },
+            })
+            .then(({ deleteApp }) => deleteApp);
+    }
+
 
     createAppVersion(
         appId: string,
@@ -699,7 +933,7 @@ export class AppClient {
             .then(({ updateRollout }) => updateRollout);
     }
 
-    deleteRollout(rolloutId: string): Promise<void> {
+    deleteRollout(rolloutId: string): Promise<RemoteRollout> {
         return this.graphQLClient
             .mutate({
                 mutation: `

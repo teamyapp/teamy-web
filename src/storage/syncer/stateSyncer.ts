@@ -68,6 +68,7 @@ import {
     applyUserMutation,
     deleteThread,
     mergeActivator,
+    mergeApp,
     mergeAppRolloutRelation,
     mergeAppSecret,
     mergeAppVersion,
@@ -850,10 +851,44 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public createApp(teamId: number, input: CreateAppInput): Promise<number> {
-        // TODO: integrate with create app API
-        console.log('createApp', teamId, input);
-        return Promise.resolve(0);
+    public async createApp(
+        teamId: number,
+        input: CreateAppInput,
+    ): Promise<void> {
+        const remoteApp = await this.appClient.createApp(`${teamId}`, input);
+        let appState = this.localStore.getState();
+        appState = mergeApp(appState, remoteApp, teamId);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteApp(appId: number): Promise<void> {
+        await this.appClient.deleteApp(`${appId}`);
+        let appState = this.localStore.getState();
+
+        for (let appSecretId of appState.apps[appId].secretIds) {
+            delete appState.appSecrets[appSecretId];
+        }
+
+        for (let appInstallationId of appState.apps[appId].installationIds) {
+            delete appState.appInstallations[appInstallationId];
+        }
+
+        appState.appGroupRelations.forEach((relation) => {
+            if (relation.appId === appId) {
+                this._deleteGroup(appState, relation.groupId);
+            }
+        });
+
+        appState.appRolloutRelations.forEach((relation) => {
+            if (relation.appId === appId) {
+                const rollout = appState.rollouts[relation.rolloutId];
+                this._deleteRollout(appState, relation.rolloutId, rollout.activatorId, rollout.versionSelectorId);
+            }
+        });
+
+        appState.teamAppVersions = appState.teamAppVersions.filter((relation) => relation.appId !== appId)
+        delete appState.apps[appId];
+        this.localStore.updateState(appState);
     }
 
     public async createAppSecret(
@@ -1040,15 +1075,15 @@ export class StateSyncer {
             toInt(remoteRollout.id)!,
             input.type,
         );
-        
+
         remoteRollout.groupRolloutRelations.forEach((relation) => {
             appState = mergeGroupRolloutRelation(
                 appState,
                 toInt(relation.group.id)!,
                 toInt(remoteRollout.id)!,
                 relation.orderIndex,
-            )
-        })
+            );
+        });
 
         this.localStore.updateState(appState);
     }
@@ -1071,19 +1106,48 @@ export class StateSyncer {
     }
 
     public async deleteRollout(rolloutId: number): Promise<void> {
-        await this.appClient.deleteRollout(`${rolloutId}`);
+        await this.appClient.deleteRollout(
+            `${rolloutId}`,
+        );
         let appState = this.localStore.getState();
+        const rollout = appState.rollouts[rolloutId];
+        const activatorId = rollout.activatorId;
+        const versionSelectorId = rollout.versionSelectorId;
+        appState = this._deleteRollout(
+            appState,
+            rolloutId,
+            activatorId,
+            versionSelectorId,
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    private _deleteRollout(
+        appState: AppState,
+        rolloutId: number,
+        activatorId: number,
+        versionSelectorId: number,
+    ): AppState {
         delete appState.rollouts[rolloutId];
+        delete appState.activators[activatorId];
+        delete appState.timeRangeActivators[activatorId];
+        delete appState.maxViewersActivators[activatorId];
+        delete appState.percentageActivators[activatorId];
+        delete appState.versionSelectors[versionSelectorId];
+
+        appState.versionSelectorVersionRelations = appState.versionSelectorVersionRelations.filter(
+            (relation) => relation.versionSelectorId !== versionSelectorId,
+        );
 
         appState.groupRolloutRelations = appState.groupRolloutRelations.filter(
             (relation) => relation.rolloutId !== rolloutId,
         );
-
         appState.appRolloutRelations = appState.appRolloutRelations.filter(
             (relation) => relation.rolloutId !== rolloutId,
         );
 
-        this.localStore.updateState(appState);
+        return appState;
     }
 
     public async createActivator(input: CreateActivatorInput): Promise<number> {
