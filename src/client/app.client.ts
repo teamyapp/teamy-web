@@ -582,18 +582,17 @@ export class AppClient {
             .then(({ updateGroup }) => updateGroup);
     }
 
-    deleteAppGroup(appId: string, groupId: string): Promise<void> {
+    deleteGroup(groupId: string): Promise<void> {
         return this.graphQLClient
             .mutate({
                 mutation: `
-                    mutation deleteAppGroup($appId: ID!, $groupId: ID!) {
-                        deleteAppGroup(appId: $appId, groupId: $groupId) {
+                    mutation deleteGroup($groupId: ID!) {
+                        deleteGroup(groupId: $groupId) {
                             id
                         }
                     }
                 `,
                 variables: {
-                    appId,
                     groupId,
                 },
             })

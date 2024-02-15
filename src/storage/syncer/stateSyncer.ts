@@ -873,20 +873,27 @@ export class StateSyncer {
             delete appState.appInstallations[appInstallationId];
         }
 
-        appState.appGroupRelations.forEach((relation) => {
-            if (relation.appId === appId) {
+        appState.appGroupRelations
+            .filter((relation) => relation.appId === appId)
+            .forEach((relation) => {
                 this._deleteGroup(appState, relation.groupId);
-            }
-        });
+            });
 
-        appState.appRolloutRelations.forEach((relation) => {
-            if (relation.appId === appId) {
+        appState.appRolloutRelations
+            .filter((relation) => relation.appId === appId)
+            .forEach((relation) => {
                 const rollout = appState.rollouts[relation.rolloutId];
-                this._deleteRollout(appState, relation.rolloutId, rollout.activatorId, rollout.versionSelectorId);
-            }
-        });
+                this._deleteRollout(
+                    appState,
+                    relation.rolloutId,
+                    rollout.activatorId,
+                    rollout.versionSelectorId,
+                );
+            });
 
-        appState.teamAppVersions = appState.teamAppVersions.filter((relation) => relation.appId !== appId)
+        appState.teamAppVersions = appState.teamAppVersions.filter(
+            (relation) => relation.appId !== appId,
+        );
         delete appState.apps[appId];
         this.localStore.updateState(appState);
     }
@@ -1044,8 +1051,8 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async deleteAppGroup(appId: number, groupId: number): Promise<void> {
-        await this.appClient.deleteAppGroup(`${appId}`, `${groupId}`);
+    public async deleteGroup(groupId: number): Promise<void> {
+        await this.appClient.deleteGroup(`${groupId}`);
         let appState = this.localStore.getState();
         appState = this._deleteGroup(appState, groupId);
         this.localStore.updateState(appState);
@@ -1106,9 +1113,7 @@ export class StateSyncer {
     }
 
     public async deleteRollout(rolloutId: number): Promise<void> {
-        await this.appClient.deleteRollout(
-            `${rolloutId}`,
-        );
+        await this.appClient.deleteRollout(`${rolloutId}`);
         let appState = this.localStore.getState();
         const rollout = appState.rollouts[rolloutId];
         const activatorId = rollout.activatorId;
@@ -1136,9 +1141,10 @@ export class StateSyncer {
         delete appState.percentageActivators[activatorId];
         delete appState.versionSelectors[versionSelectorId];
 
-        appState.versionSelectorVersionRelations = appState.versionSelectorVersionRelations.filter(
-            (relation) => relation.versionSelectorId !== versionSelectorId,
-        );
+        appState.versionSelectorVersionRelations =
+            appState.versionSelectorVersionRelations.filter(
+                (relation) => relation.versionSelectorId !== versionSelectorId,
+            );
 
         appState.groupRolloutRelations = appState.groupRolloutRelations.filter(
             (relation) => relation.rolloutId !== rolloutId,

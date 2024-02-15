@@ -1,5 +1,3 @@
-import { merge } from 'lodash';
-
 import { Duration } from '@lib/entity/duration';
 
 import { RemoteApp } from '@core/client/entity/remoteApp';
@@ -8,7 +6,6 @@ import { RemoteAppSecret } from '@core/client/entity/remoteAppSecret';
 import { RemoteAppVersion } from '@core/client/entity/remoteAppVersion';
 import { RemoteClient } from '@core/client/entity/remoteClient';
 import { RemoteGroup } from '@core/client/entity/remoteGroup';
-import { RemoteGroupRolloutRelation } from '@core/client/entity/remoteGroupRolloutRelation';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
 import {
