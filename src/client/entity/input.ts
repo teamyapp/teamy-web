@@ -75,10 +75,10 @@ export interface RemoteCreateSprintInput {
     endAt: Date;
 }
 
-
 export interface RemoteCreateAppInput{
     name: string;
 }
+
 export interface RemoteCreateAppSecretInput {
     name: string;
 }
