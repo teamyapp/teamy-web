@@ -756,7 +756,7 @@ export class AppClient {
             .mutate({
                 mutation: `
                     mutation createExperimentVersionSelector($appId: ID!, $input: CreateExperimentVersionSelectorInput!) {
-                        createExperimentVersionSelector(input: $input) {
+                        createExperimentVersionSelector(appId: $appId, input: $input) {
                             id
                             type
                             createdAt
