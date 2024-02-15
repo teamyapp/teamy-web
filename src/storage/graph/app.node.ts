@@ -180,6 +180,10 @@ export class AppNode implements App {
             return undefined;
         }
 
+        if (!this.app) {
+            return undefined;
+        }
+
         const appState = this.localStore.getState();
         const teamAppVersion = appState.teamAppVersions.find(
             (teamAppVersion) =>

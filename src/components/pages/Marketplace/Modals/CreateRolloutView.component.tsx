@@ -343,7 +343,7 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
         return Number(versionNumber);
     }
 
-    isVersionNumberDuplicate(versionNumber: number): boolean {
+    isVersionNumberDuplicate = (versionNumber: number): boolean => {
         return (
             this.state.experimentVersionSelectorInput?.versionNumbers.includes(
                 versionNumber,

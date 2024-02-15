@@ -65,6 +65,7 @@ export class ManagedTabComponent extends Component<Props> {
                                     </div>
                                     <div
                                         className={`${styles.Button}  ${styles.Delete}`}
+                                        onClick={this.onDeleteButtonClickHandler(app.id)}
                                     >
                                         Delete
                                     </div>
@@ -98,6 +99,12 @@ export class ManagedTabComponent extends Component<Props> {
     private onManageButtonClickHandler(itemId: number) {
         return () => {
             this.manageAppModalRef.current?.open(itemId);
+        };
+    }
+
+    private onDeleteButtonClickHandler(itemId: number) {
+        return () => {
+            this.props.deps.stateSyncer.deleteApp(itemId);
         };
     }
 }

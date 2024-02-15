@@ -101,11 +101,19 @@ export function GroupsTabComponent(props: Props) {
             });
             switch (tab.key) {
                 case 'users': {
-                    editGroupViewRef.current?.show(selectedUserGroup!);
+                    if (!selectedUserGroup) {
+                        return;
+                    }
+
+                    editGroupViewRef.current?.show(selectedUserGroup);
                     break;
                 }
                 case 'teams': {
-                    editGroupViewRef.current?.show(selectedTeamGroup!);
+                    if (!selectedTeamGroup) {
+                        return;
+                    }
+
+                    editGroupViewRef.current?.show(selectedTeamGroup);
                     break;
                 }
             }
@@ -113,7 +121,7 @@ export function GroupsTabComponent(props: Props) {
     };
 
     const onDeleteGroupClick = (groupId: number) => {
-        props.deps.stateSyncer.deleteAppGroup(props.appId, groupId);
+        props.deps.stateSyncer.deleteGroup(groupId);
 
         if (selectedUserGroup?.id === groupId) {
             setSelectedUserGroup(undefined);
