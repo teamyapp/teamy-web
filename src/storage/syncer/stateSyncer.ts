@@ -932,7 +932,6 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-
     public async deleteAppSecret(
         appId: number,
         secretId: number,
