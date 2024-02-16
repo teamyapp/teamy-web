@@ -177,7 +177,7 @@ export function CredentialTabComponent(props: Props) {
                                             : 'Never'}
                                     </td>
                                     <td className={styles.Actions}>
-                                        {secret.token && <div
+                                        {secret.token && (<div
                                             className={`${styles.RowAction} ${styles.Copy}`}
                                             onClick={onCopySecretClickHandler(
                                                 secret,
@@ -188,7 +188,7 @@ export function CredentialTabComponent(props: Props) {
                                             >
                                                 content_copy
                                             </MaterialIconUI>
-                                        </div>}
+                                        </div>)}
                                         <div
                                             className={`${styles.RowAction} ${styles.Save}`}
                                             onClick={onSaveSecretClickHandler(
