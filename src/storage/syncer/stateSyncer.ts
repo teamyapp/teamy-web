@@ -34,6 +34,7 @@ import {
     CreateUserInput,
     CreateVersionSelectorInput,
     UpdateActivatorInput,
+    UpdateAppSecretInput,
     UpdateGroupInput,
     UpdateMessageInput,
     UpdateRolloutInput,
@@ -917,6 +918,20 @@ export class StateSyncer {
         app.secretIds.push(secretId);
         this.localStore.updateState(appState);
     }
+
+    public async updateAppSecret(
+        secretId: number,
+        secret: UpdateAppSecretInput
+    ): Promise<void> {
+        const remoteAppSecret = await this.appClient.updateAppSecret(
+            `${secretId}`,
+            secret,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeAppSecret(appState, remoteAppSecret);
+        this.localStore.updateState(appState);
+    }
+
 
     public async deleteAppSecret(
         appId: number,

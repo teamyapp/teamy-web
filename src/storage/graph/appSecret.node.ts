@@ -40,4 +40,8 @@ export class AppSecretNode implements AppSecret {
             this.localStore.getState().apps[this.appSecret.appId],
         );
     }
+
+    public get token(): string | undefined {
+        return this.appSecret.token;
+    }
 }

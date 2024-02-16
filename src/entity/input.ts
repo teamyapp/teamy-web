@@ -78,6 +78,10 @@ export interface UpdateMessageInput {
     body: string;
 }
 
+export interface UpdateAppSecretInput {
+    name: string;
+}
+
 export interface CreateInvitationInput {
     receiverFirstName?: string;
     receiverLastName?: string;
