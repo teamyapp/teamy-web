@@ -683,6 +683,7 @@ export function mergeAppSecret(
         appId: toInt(remoteAppSecret.app.id) || localOldAppSecret.appId,
         lastUsedAt:
             toDate(remoteAppSecret.lastUsedAt) || localOldAppSecret.lastUsedAt,
+        token: remoteAppSecret.token,
     };
 
     currAppState.appSecrets[remoteAppSecretId] = localNewAppSecret;

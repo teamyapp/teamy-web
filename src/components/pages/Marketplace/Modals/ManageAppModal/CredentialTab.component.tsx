@@ -8,9 +8,11 @@ import { Deps } from '@core/dep/deps';
 import { getUserShortName } from '../../../../internal/format';
 import { CreateAppSecretModalComponent } from '../CreateAppSecretModal.component';
 import styles from './CredentialTab.component.module.scss';
+import { AppSecret } from '@core/entity/appSecret';
 
 interface ApiSecretInput {
     name: string;
+    token?: string;
 }
 
 interface Props {
@@ -27,6 +29,7 @@ export function CredentialTabComponent(props: Props) {
         app?.secrets.forEach((secret) => {
             tmpApiSecretInputs[secret.id] = {
                 name: secret.name,
+                token: secret.token,
             };
         });
         return tmpApiSecretInputs;
@@ -73,19 +76,29 @@ export function CredentialTabComponent(props: Props) {
         };
     };
 
-    const onCopySecretClickHandler = (appSecretId: number) => {
+    const onCopySecretClickHandler = (secret: AppSecret) => {
         return async () => {
-            // TODO: copy secret
+            if (!secret.token) {
+                return;
+            }
+
+            navigator.clipboard.writeText(secret.token!);
+
             await feedbackPubSub.publish({
                 type: 'AppSecretCopied',
-                appSecretId: appSecretId,
+                appSecretId: secret.id,
             });
         };
     };
 
     const onSaveSecretClickHandler = (apiSecretId: number) => {
         return async () => {
-            // TODO: save secret
+            props.deps.stateSyncer.updateAppSecret(
+                apiSecretId,
+                {
+                    name: apiSecretInputs[apiSecretId].name,
+                }
+            )
         };
     };
 
@@ -164,10 +177,10 @@ export function CredentialTabComponent(props: Props) {
                                             : 'Never'}
                                     </td>
                                     <td className={styles.Actions}>
-                                        <div
+                                        {secret.token && (<div
                                             className={`${styles.RowAction} ${styles.Copy}`}
                                             onClick={onCopySecretClickHandler(
-                                                secret.id,
+                                                secret,
                                             )}
                                         >
                                             <MaterialIconUI
@@ -175,7 +188,7 @@ export function CredentialTabComponent(props: Props) {
                                             >
                                                 content_copy
                                             </MaterialIconUI>
-                                        </div>
+                                        </div>)}
                                         <div
                                             className={`${styles.RowAction} ${styles.Save}`}
                                             onClick={onSaveSecretClickHandler(

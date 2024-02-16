@@ -3,6 +3,7 @@ import { GraphQLClient } from '@lib/network/GraphQL.client';
 import {
     RemoteCreateAppInput,
     RemoteCreateAppSecretInput,
+    RemoteUpdateAppSecretInput,
     RemoteCreateAppVersionInput,
     RemoteCreateExperimentVersionSelectorInput,
     RemoteCreateFilterGroupInput,
@@ -335,6 +336,7 @@ export class AppClient {
                                 profileUrl
                             }
                             lastUsedAt
+                            token
                             app {
                                 id
                             }
@@ -347,6 +349,28 @@ export class AppClient {
                 },
             })
             .then(({ createAppSecret }) => createAppSecret);
+    }
+
+    updateAppSecret(
+        secretId: string,
+        input: RemoteUpdateAppSecretInput,
+    ): Promise<RemoteAppSecret> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation updateAppSecret($secretId: ID!, $input: UpdateAppSecretInput!) {
+                        updateAppSecret(secretId: $secretId, input: $input) {
+                            id
+                            name
+                        }
+                    }
+                `,
+                variables: {
+                    secretId,
+                    input,
+                },
+            })
+            .then(({ updateAppSecret }) => updateAppSecret);
     }
 
     deleteAppSecret(secretId: string): Promise<void> {

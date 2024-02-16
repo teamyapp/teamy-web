@@ -7,5 +7,6 @@ export interface RemoteAppSecret {
     addedAt: string;
     addedBy: RemoteUser;
     lastUsedAt?: string;
+    token?: string;
     app: RemoteApp;
 }

@@ -83,6 +83,10 @@ export interface RemoteCreateAppSecretInput {
     name: string;
 }
 
+export interface RemoteUpdateAppSecretInput {
+    name: string;
+}
+
 export interface RemoteCreateAppVersionInput {
     appName: string;
     description: string;

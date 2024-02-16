@@ -8,6 +8,7 @@ export class AppSecretState {
         public addedByUserId: number,
         public appId: number,
         public lastUsedAt?: Date,
+        public token?: string,
     ) {}
 
     public static fromMutationPayload(json: any): AppSecretState {
@@ -18,6 +19,7 @@ export class AppSecretState {
             json.AddedByUserID,
             json.AppID,
             toDate(json.LastUsedAt),
+            json.Token,
         );
     }
 
@@ -29,6 +31,7 @@ export class AppSecretState {
             json.addedByUserId,
             json.appId,
             toDate(json.lastUsedAt),
+            json.token,
         );
     }
 }
