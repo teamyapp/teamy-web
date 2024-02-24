@@ -4,7 +4,6 @@ import {
     RemoteCreateAppInput,
     RemoteCreateAppSecretInput,
     RemoteUpdateAppSecretInput,
-    RemoteCreateAppVersionInput,
     RemoteCreateExperimentVersionSelectorInput,
     RemoteCreateFilterGroupInput,
     RemoteCreateMaxViewersActivatorInput,
@@ -22,7 +21,6 @@ import {
 import { AppRolloutType } from '@core/entity/rollout';
 
 import { RemoteAppSecret } from './entity/remoteAppSecret';
-import { RemoteAppVersion } from './entity/remoteAppVersion';
 import { RemoteGroup } from './entity/remoteGroup';
 import { RemoteRollout } from './entity/remoteRollout';
 import { RemoteRolloutActivator } from './entity/remoteRolloutActivator';
@@ -79,6 +77,7 @@ export class AppClient {
                                 app {
                                     id
                                 }
+                                locked
                                 number
                                 appName
                                 description
@@ -91,13 +90,14 @@ export class AppClient {
                                 createdBy {
                                     id
                                 }
-                                isReady
-                                iconUrl
+                                status
+                                errorMessage
                             }
                             versions {
                                 app {
                                     id
                                 }
+                                locked
                                 number
                                 appName
                                 description
@@ -110,8 +110,8 @@ export class AppClient {
                                 createdBy {
                                     id
                                 }
-                                isReady
-                                iconUrl
+                                status
+                                errorMessage
                             }
                             managedByTeam {
                                 id
@@ -268,54 +268,6 @@ export class AppClient {
             .then(({ deleteApp }) => deleteApp);
     }
 
-
-    createAppVersion(
-        appId: string,
-        input: RemoteCreateAppVersionInput,
-    ): Promise<RemoteAppVersion> {
-        return this.graphQLClient
-            .mutate({
-                mutation: `
-                    mutation createAppVersion($appId: ID!, $input: CreateAppVersionInput!) {
-                        createAppVersion(appId: $appId, input: $input) {
-                            number
-                            appName
-                            description
-                            createdAt
-                            createdBy {
-                                id
-                            }
-                            app {
-                                id
-                            }
-                        }
-                    }
-                `,
-                variables: {
-                    appId,
-                    input,
-                },
-            })
-            .then(({ createAppVersion }) => createAppVersion);
-    }
-
-    deleteAppVersion(appId: string, versionNumber: number): Promise<void> {
-        return this.graphQLClient
-            .mutate({
-                mutation: `
-                    mutation deleteAppVersion($appId: ID!, $versionNumber: Int!) {
-                        deleteAppVersion(appId: $appId, versionNumber: $versionNumber) {
-                            number
-                        }
-                    }
-                `,
-                variables: {
-                    appId,
-                    versionNumber,
-                },
-            })
-            .then(({ deleteAppVersion }) => deleteAppVersion);
-    }
 
     createAppSecret(
         appId: string,

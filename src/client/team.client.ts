@@ -61,9 +61,9 @@ export class TeamClient {
                                     createdBy {
                                         id
                                     }
-                                    isReady
+                                    status
+                                    errorMessage
                                     locked
-                                    iconUrl
                                 }
                             }
                             managedApps {
@@ -112,9 +112,9 @@ export class TeamClient {
                                     createdBy {
                                         id
                                     }
-                                    isReady
+                                    status
+                                    errorMessage
                                     locked
-                                    iconUrl
                                 }
                                 versions {
                                     app {
@@ -132,9 +132,9 @@ export class TeamClient {
                                     createdBy {
                                         id
                                     }
-                                    isReady
+                                    status
+                                    errorMessage
                                     locked
-                                    iconUrl
                                 }
                                 managedByTeam {
                                     id

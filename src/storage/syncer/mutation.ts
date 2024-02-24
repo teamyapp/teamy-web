@@ -1,4 +1,6 @@
 export type CollectionType =
+    | 'AppVersion'
+    | 'AppVersionChange'
     | 'Task'
     | 'Sprint'
     | 'TaskLink'

@@ -4,6 +4,7 @@ import { RemoteGroupMemberType } from './remoteGroupMemberType';
 import { RemoteGroupType } from './remoteGroupType';
 import { RemoteRolloutActivatorType } from './remoteRolloutActivatorType';
 import { RemoteRolloutVersionSelectorType } from './remoteRolloutVersionSelectorType';
+import { RemoteAppVersionStatus } from './remoteAppVersion';
 
 export interface RemoteCreateUserInput {
     lastName: string;
@@ -87,9 +88,8 @@ export interface RemoteUpdateAppSecretInput {
     name: string;
 }
 
-export interface RemoteCreateAppVersionInput {
-    appName: string;
-    description: string;
+export interface RemoteUpdateAppVersionInput {
+    status: RemoteAppVersionStatus;
 }
 
 export interface RemoteCreateStaticUserGroupInput {

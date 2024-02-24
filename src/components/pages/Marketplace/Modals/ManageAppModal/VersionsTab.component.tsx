@@ -1,30 +1,130 @@
 import classNames from 'classnames';
 import moment from 'moment/moment';
-import React, { ReactNode, useState } from 'react';
+import React, { ChangeEvent, ReactNode, useEffect, useState } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
+import { Deps } from '@core/dep/deps';
 import { AppVersion } from '@core/entity/appVersion';
 
 import styles from './VersionsTab.component.module.scss';
-
-type AppPackageStatus = 'selecting' | 'uploading' | 'processing' | 'ready';
+import { LinkButtonUI } from '@lib/ui/LinkButton';
 
 interface Props {
-    onCreateVersionClick: () => number;
+    onCreateVersionClick: () => Promise<number>;
     onDeleteVersionClick: (versionNumber: number) => void;
-    appVersions?: AppVersion[];
+    appId: number;
+    deps: Deps;
 }
 
 export function VersionsTabComponent(props: Props) {
     const [selectedAppVersion, setSelectedAppVersion] = useState<AppVersion>();
-    const [appPackageStatus, setAppPackageStatus] =
-        useState<AppPackageStatus>('processing');
+    const [uploadProgress, setUploadProgress] = useState({
+        newBytesUploaded: 0,
+        totalPercentage: 0,
+    });
+
+    useEffect(() => {
+        const stateChangeChan = props.deps.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                console.log('[VersionsTabComponent] waiting for state changes');
+                const hasChanged = await stateChangeChan!.pop();
+                if (hasChanged === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+
+                if (selectedAppVersion) {
+                    const app = props.deps.graphSource.app(props.appId);
+                    const appVersion = app?.versions.find(
+                        (appVersion) =>
+                            appVersion.number === selectedAppVersion.number,
+                    );
+                    setSelectedAppVersion(appVersion);
+                }
+            }
+        })().then();
+
+        return () => {
+            stateChangeChan?.close();
+        };
+    }, [
+        selectedAppVersion?.number,
+        selectedAppVersion?.errorMessage,
+        selectedAppVersion?.status,
+    ]);
+
+    const handleUploadAppPackageErrorTabBackClick = () => {
+        props.deps.stateSyncer.updateAppVersion(
+            props.appId,
+            selectedAppVersion!.number,
+            {
+                status: 'INIT',
+            },
+        );
+    };
 
     const onCreateVersionClick = async () => {
-        props.onCreateVersionClick();
-        // TODO: show newly created version
+        const versionNumber = await props.onCreateVersionClick();
+        const app = props.deps.graphSource.app(props.appId);
+        const appVersion = app?.versions.find(
+            (appVersion) => appVersion.number === versionNumber,
+        );
+        setSelectedAppVersion(appVersion);
+    };
+
+    const handleAppVersionFileChange = async (
+        event: ChangeEvent<HTMLInputElement>,
+    ) => {
+        if (!selectedAppVersion) {
+            return;
+        }
+
+        const files = event.target.files;
+        if (!files || files.length < 1) {
+            return;
+        }
+
+        const file = files[0];
+        const fileUploadSessionId =
+            await props.deps.stateSyncer.createAppPackageUploadSession(
+                selectedAppVersion.app.id,
+                selectedAppVersion.number,
+            );
+
+        setUploadProgress({
+            newBytesUploaded: 0,
+            totalPercentage: 0,
+        });
+
+        const uploadSession =
+            props.deps.fileUploadSessionFactory.createFileUploadSession(
+                fileUploadSessionId,
+            );
+        const onNewProgressCh = uploadSession.subscribeNewProgress();
+        (async () => {
+            while (true) {
+                const progress = await onNewProgressCh.pop();
+                if (progress === undefined) {
+                    return;
+                }
+
+                setUploadProgress(progress);
+            }
+        })().then();
+        const error = await uploadSession.uploadFile(file);
+        if (error) {
+            alert('Fail to upload file');
+        } else {
+            await props.deps.stateSyncer.finishAppPackageUploadSession(
+                selectedAppVersion.app.id,
+                selectedAppVersion.number,
+                fileUploadSessionId,
+            );
+        }
     };
 
     const onVersionNumberClickHandler = (appVersion: AppVersion) => {
@@ -42,14 +142,66 @@ export function VersionsTabComponent(props: Props) {
     };
 
     const renderSelectingAppPackageTab = (): ReactNode => {
+        if (!selectedAppVersion) {
+            return;
+        }
+
         return (
             <>
-                <div className={styles.Title}>Select App Package</div>
+                <div className={styles.Title}>Upload App Package</div>
                 <div className={`${styles.Button} ${styles.SelectFile}`}>
                     <div className={styles.Icon}>
                         <MaterialIconUI>upload_file</MaterialIconUI>
                     </div>
-                    <input type={'file'} className={styles.FileInput} />
+                    <input
+                        type={'file'}
+                        className={styles.FileInput}
+                        onChange={handleAppVersionFileChange}
+                    />
+                </div>
+                <div className={`${styles.Row} ${styles.Buttons}`}>
+                    {!selectedAppVersion.locked && (
+                        <div
+                            className={styles.Delete}
+                            onClick={onDeleteVersionClick}
+                        >
+                            <ButtonUI label={'Delete'} />
+                        </div>
+                    )}
+                </div>
+            </>
+        );
+    };
+
+    const renderUploadAppPackageErrorTab = (
+        errorMessage?: string,
+    ): ReactNode => {
+        if (!selectedAppVersion) {
+            return;
+        }
+
+        return (
+            <>
+                <div className={`${styles.Title} ${styles.TitleError}`}>
+                    <div>Failed to Upload App Package</div>
+                    <div>Try again</div>
+                </div>
+                <div className={styles.ErrorMessage}>{errorMessage}</div>
+                <div className={`${styles.Row} ${styles.Buttons}`}>
+                    <div className={styles.Download}>
+                        <ButtonUI
+                            label={'Back'}
+                            onClick={handleUploadAppPackageErrorTabBackClick}
+                        />
+                    </div>
+                    {!selectedAppVersion.locked && (
+                        <div
+                            className={styles.Delete}
+                            onClick={onDeleteVersionClick}
+                        >
+                            <ButtonUI label={'Delete'} />
+                        </div>
+                    )}
                 </div>
             </>
         );
@@ -60,7 +212,10 @@ export function VersionsTabComponent(props: Props) {
             <>
                 <div className={styles.Title}>Uploading App Package</div>
                 <div className={styles.ProgressBar}>
-                    <div className={styles.Progress} />
+                    <div
+                        className={styles.Progress}
+                        style={{ width: `${uploadProgress.totalPercentage}%` }}
+                    />
                 </div>
             </>
         );
@@ -82,12 +237,16 @@ export function VersionsTabComponent(props: Props) {
     };
 
     const renderUploadAppPackageTabContent = (): ReactNode => {
-        switch (appPackageStatus) {
-            case 'selecting':
+        switch (selectedAppVersion?.status) {
+            case 'INIT':
                 return renderSelectingAppPackageTab();
-            case 'uploading':
+            case 'ERROR':
+                return renderUploadAppPackageErrorTab(
+                    selectedAppVersion?.errorMessage,
+                );
+            case 'UPLOADING':
                 return renderUploadingAppPackageTab();
-            case 'processing':
+            case 'PROCESSING':
                 return renderProcessingAppPackageTab();
         }
     };
@@ -113,7 +272,9 @@ export function VersionsTabComponent(props: Props) {
                     <div className={`${styles.Row} ${styles.Icon}`}>
                         <img
                             className={styles.Icon}
-                            src={selectedAppVersion.iconUrl}
+                            src={props.deps.fileClient.getRemoteFileUrl(
+                                selectedAppVersion.iconPath,
+                            )}
                         />
                     </div>
                     <div className={`${styles.Row} ${styles.Name}`}>
@@ -133,8 +294,8 @@ export function VersionsTabComponent(props: Props) {
                             Changes:
                         </div>
                         <div className={styles.ChangeList}>
-                            {selectedAppVersion.changes.map(
-                                (index: string, change) => (
+                            {selectedAppVersion.changes?.map(
+                                (change, index) => (
                                     <div key={index} className={styles.Change}>
                                         {change}
                                     </div>
@@ -150,7 +311,12 @@ export function VersionsTabComponent(props: Props) {
                     </div>
                     <div className={`${styles.Row} ${styles.Buttons}`}>
                         <div className={styles.Download}>
-                            <ButtonUI label={'Download'} />
+                            <LinkButtonUI
+                                label={'Download'}
+                                href={props.deps.fileClient.getRemoteFolderDownloadUrl(
+                                    selectedAppVersion.packagePath,
+                                )}
+                            />
                         </div>
                         {!selectedAppVersion.locked && (
                             <div
@@ -166,6 +332,7 @@ export function VersionsTabComponent(props: Props) {
         );
     };
 
+    const app = props.deps.graphSource.app(props.appId);
     return (
         <div className={styles.VersionsTab}>
             <div className={styles.VersionsSection}>
@@ -176,7 +343,7 @@ export function VersionsTabComponent(props: Props) {
                     Create Version
                 </div>
                 <div className={styles.VersionList}>
-                    {props.appVersions
+                    {app?.versions
                         ?.sort(
                             (appVersion1, appVersion2) =>
                                 appVersion2.number - appVersion1.number,
@@ -200,7 +367,7 @@ export function VersionsTabComponent(props: Props) {
             </div>
             <div className={styles.AppVersionDetail}>
                 {selectedAppVersion &&
-                    (selectedAppVersion.isReady
+                    (selectedAppVersion.status === 'READY'
                         ? renderAppVersionDetail()
                         : renderUploadAppVersionPackage())}
             </div>

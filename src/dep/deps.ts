@@ -36,7 +36,8 @@ import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
-import { Config, getConfig } from '@core/config/config';
+import { Config } from '@core/config/config';
+import { AppVersionClient } from '@core/client/appVersion.client';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { shortcuts } from '@core/config/shortcut';
 import { FeatureToggle, getFeatureToggle } from '@core/config/toggle';
@@ -47,6 +48,7 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { FileClient } from '@core/client/file.client';
 
 export interface Deps {
     featureToggle: FeatureToggle;
@@ -62,6 +64,7 @@ export interface Deps {
     feedbackPubSub: PubSub<Feedback>;
     fileUploadSessionFactory: FileUploadSessionFactory;
     keyBoardEventMonitor: KeyBoardEventMonitor;
+    fileClient: FileClient;
 }
 
 export function initDeps(config: Config): Deps {
@@ -125,6 +128,7 @@ export function initDeps(config: Config): Deps {
         httpWithLogger,
         identityConfig,
     );
+    const fileClient = new FileClient(config.cloudWebAPIEndpoint);
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,
         httpWithLogger,
@@ -137,6 +141,7 @@ export function initDeps(config: Config): Deps {
     const invitationClient = new InvitationClient(teamyGraphQLClient);
     const messageClient = new MessageClient(teamyGraphQLClient);
     const sprintClient = new SprintClient(teamyGraphQLClient);
+    const appVersionClient = new AppVersionClient(teamyGraphQLClient);
     const localStore = new LocalStore();
     const graphSource = new GraphSource(localStore);
     const stateSyncClient = new StateSyncClient(
@@ -154,6 +159,7 @@ export function initDeps(config: Config): Deps {
         teamClient,
         teamMemberClient,
         userClient,
+        appVersionClient,
         invitationClient,
         sprintClient,
     );
@@ -188,5 +194,6 @@ export function initDeps(config: Config): Deps {
         feedbackPubSub,
         fileUploadSessionFactory,
         featureToggle,
+        fileClient,
     };
 }

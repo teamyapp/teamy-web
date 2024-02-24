@@ -182,11 +182,12 @@ export class ManageAppModalComponent extends Component<Props, State> {
             );
         } else if (this.state.showTabViews['versions']) {
             return (
-                <VersionsTabComponent
-                    appVersions={this.state.app?.versions}
+                this.state.app && (<VersionsTabComponent
+                    deps={this.props.deps}
+                    appId={this.state.app.id}
                     onCreateVersionClick={this.onCreateVersionClick}
                     onDeleteVersionClick={this.onDeleteVersionClick}
-                />
+                />)
             );
         } else if (this.state.showTabViews['groups']) {
             return (
@@ -293,9 +294,8 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     };
 
-    private onCreateVersionClick = (): number => {
-        //TODO: create new version
-        return 0;
+    private onCreateVersionClick = async (): Promise<number> => {
+        return await this.props.deps.stateSyncer.createAppVersion(this.state.app!.id);
     };
 
     private onDeleteVersionClick = (versionNumber: number) => {

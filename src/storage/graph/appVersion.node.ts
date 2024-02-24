@@ -1,10 +1,11 @@
-import { AppVersion } from '@core/entity/appVersion';
+import { AppVersion, AppVersionStatus } from '@core/entity/appVersion';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { AppVersionState } from '../states/appVersion.state';
 import { AppNode } from './app.node';
 import { MoneyNode } from './money.node';
 import { UserNode } from './user.node';
+const APP_VERSION_ICON_NAME = '100x100.jpg';
 
 export class AppVersionNode implements AppVersion {
     constructor(
@@ -25,7 +26,14 @@ export class AppVersionNode implements AppVersion {
     }
 
     public get changes(): string[] {
-        return this.appVersion.changes;
+        const appState = this.localStore.getState();
+        return appState.appVersionChanges
+            .filter(
+                (change) =>
+                    change.versionNumber === this.appVersion.number &&
+                    change.appId === this.appVersion.appId,
+            )
+            .map(({change}) => change);
     }
 
     public get createdAt(): Date {
@@ -39,16 +47,26 @@ export class AppVersionNode implements AppVersion {
         );
     }
 
-    public get iconUrl(): string {
-        return this.appVersion.iconUrl;
+    public get iconPath(): string {
+       return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/icons/${APP_VERSION_ICON_NAME}`;        
     }
 
     public get prices(): MoneyNode[] {
-        return this.appVersion.prices.map((price) => new MoneyNode(price));
+        const appState = this.localStore.getState();
+
+        return appState.appVersionPrices
+            .filter(
+                (price) =>
+                    price.versionNumber === this.appVersion.number &&
+                    price.appId === this.appVersion.appId,
+            )
+            .map((price) => {
+                return new MoneyNode(price.price, price.currency);
+            });
     }
 
-    public get isReady(): boolean {
-        return this.appVersion.isReady;
+    public get status(): AppVersionStatus {
+        return this.appVersion.status;
     }
 
     public get locked(): boolean {
@@ -60,5 +78,13 @@ export class AppVersionNode implements AppVersion {
             this.localStore,
             this.localStore.getState().apps[this.appVersion.appId],
         );
+    }
+
+    public get errorMessage(): string | undefined {
+        return this.appVersion.errorMessage;
+    }
+
+    public get packagePath(): string {
+        return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/`;
     }
 }

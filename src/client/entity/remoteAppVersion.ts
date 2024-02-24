@@ -2,6 +2,8 @@ import { RemoteApp } from './remoteApp';
 import { RemoteMoney } from './remoteMoney';
 import { RemoteUser } from './remoteUser';
 
+export type RemoteAppVersionStatus = 'INIT' | 'UPLOADING' | 'PROCESSING' | 'READY' | 'ERROR';
+
 export interface RemoteAppVersion {
     number: number;
     appName: string;
@@ -10,8 +12,8 @@ export interface RemoteAppVersion {
     createdAt: string;
     createdBy: RemoteUser;
     prices: RemoteMoney[];
-    isReady: boolean;
+    status: RemoteAppVersionStatus;
     locked: boolean;
-    iconUrl: string;
     app: RemoteApp;
+    errorMessage?: string;
 }

@@ -142,6 +142,13 @@
                     font-weight: bold;
                 }
 
+                .TitleError {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    margin-bottom: 36px;
+                }
+
                 .SelectFile {
                     &.Button {
                         position: relative;
@@ -175,13 +182,19 @@
                     }
                 }
 
+                .ErrorMessage {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: red;
+                    margin-bottom: 24px;
+                }
+
                 .ProgressBar {
                     width: 260px;
                     height: 10px;
                     background-color: #0000001a;
 
                     .Progress {
-                        width: 50%;
                         height: 100%;
                         background-color: #2770ff;
                     }

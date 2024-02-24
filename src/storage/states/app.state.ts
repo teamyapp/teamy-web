@@ -33,6 +33,7 @@ import {
     VersionSelectorState,
     VersionSelectorVersionRelationState,
 } from './versionSelector.state';
+import { AppVersionChangeState, AppVersionPriceState } from './appVersion.state';
 
 interface PersistedState {
     teamSelectedSprint: Record<number, number>;
@@ -66,6 +67,8 @@ export class AppState {
     public teamSelectedSprint: Record<number, number> = {};
     public teamMembers: TeamMemberState[] = [];
     public taskAwaitForRelations: TaskAwaitForRelationState[] = [];
+    public appVersionPrices: AppVersionPriceState[] = [];
+    public appVersionChanges: AppVersionChangeState[] = [];
     public userLinks: UserLinkState[] = [];
     public sprintTaskRelations: SprintTaskRelationState[] = [];
     public sprintParticipants: SprintParticipantState[] = [];

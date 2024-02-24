@@ -1,0 +1,24 @@
+$backgroundColor: var(--background-color, #455a64);
+$borderColor: var(--border-color, #37474f);
+$width: var(--width, 100%);
+
+.LinkButton {
+    width: $width;
+    text-decoration: none;
+    padding: 6px 20px;
+    border: 2px solid $borderColor;
+    border-radius: 6px;
+    background-color: $backgroundColor;
+    color: white;
+    font-size: 20px;
+    font-weight: 500;
+    text-align: center;
+    box-sizing: border-box;
+    user-select: none;
+    display: block;
+
+    &:hover {
+        cursor: pointer;
+        opacity: 0.9;
+    }
+}
