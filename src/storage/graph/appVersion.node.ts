@@ -46,7 +46,7 @@ export class AppVersionNode implements AppVersion {
         );
     }
 
-    public get iconPath(size: number): string {
+    public iconPath(size: number): string {
        return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/icons/${size}.png`;        
     }
 
