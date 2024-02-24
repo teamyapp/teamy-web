@@ -12,6 +12,6 @@ export class FileClient {
 
     public getRemoteFolderDownloadUrl(filePath: string): string {
         const encodedFilePath = encodeURIComponent(filePath);
-        return `${this.cloudWebAPIEndpoint}/file/download-folder?path=${encodedFilePath}`;
+        return `${this.cloudWebAPIEndpoint}/file/download?path=${encodedFilePath}`;
     }
 }

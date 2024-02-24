@@ -194,7 +194,6 @@ export interface CreateAppVersionInput {
     description: string;
 }
 
-
 export interface UpdateAppVersionInput {
     status: AppVersionStatus;
 }

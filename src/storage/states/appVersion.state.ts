@@ -44,7 +44,6 @@ export class AppVersionState {
     }
 }
 
-
 export class AppVersionPriceState {
     public constructor(
         public appId: number,
@@ -71,7 +70,6 @@ export class AppVersionPriceState {
         );
     }
 }
-
 
 export class AppVersionChangeState {
     public constructor(

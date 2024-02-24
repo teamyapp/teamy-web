@@ -54,8 +54,8 @@ export class AppVersionClient {
                             versionNumber: $versionNumber
                             input: $input
                         ) {
-                            locked
                             number
+                            locked
                             status
                             errorMessage
                             app {

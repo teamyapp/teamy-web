@@ -741,7 +741,6 @@ export function mergeAppVersionChange(
 }
 
 
-
 export function mergeTeamAppVersion(
     currAppState: AppState,
     teamId: number,

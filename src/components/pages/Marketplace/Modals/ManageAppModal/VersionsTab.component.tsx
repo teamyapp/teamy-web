@@ -76,7 +76,7 @@ export function VersionsTabComponent(props: Props) {
         setSelectedAppVersion(appVersion);
     };
 
-    const handleAppVersionFileChange = async (
+    const onAppVersionFileChange = async (
         event: ChangeEvent<HTMLInputElement>,
     ) => {
         if (!selectedAppVersion) {
@@ -118,13 +118,12 @@ export function VersionsTabComponent(props: Props) {
         const error = await uploadSession.uploadFile(file);
         if (error) {
             alert('Fail to upload file');
-        } else {
+        }
             await props.deps.stateSyncer.finishAppPackageUploadSession(
                 selectedAppVersion.app.id,
                 selectedAppVersion.number,
                 fileUploadSessionId,
             );
-        }
     };
 
     const onVersionNumberClickHandler = (appVersion: AppVersion) => {
@@ -313,7 +312,7 @@ export function VersionsTabComponent(props: Props) {
                         <div className={styles.Download}>
                             <LinkButtonUI
                                 label={'Download'}
-                                href={props.deps.fileClient.getRemoteFolderDownloadUrl(
+                                href={props.deps.fileClient.getDownloadUrl(
                                     selectedAppVersion.packagePath,
                                 )}
                             />

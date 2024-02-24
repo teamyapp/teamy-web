@@ -5,7 +5,6 @@ import { AppVersionState } from '../states/appVersion.state';
 import { AppNode } from './app.node';
 import { MoneyNode } from './money.node';
 import { UserNode } from './user.node';
-const APP_VERSION_ICON_NAME = '100x100.jpg';
 
 export class AppVersionNode implements AppVersion {
     constructor(
@@ -47,13 +46,12 @@ export class AppVersionNode implements AppVersion {
         );
     }
 
-    public get iconPath(): string {
-       return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/icons/${APP_VERSION_ICON_NAME}`;        
+    public get iconPath(size: number): string {
+       return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/icons/${size}.png`;        
     }
 
     public get prices(): MoneyNode[] {
         const appState = this.localStore.getState();
-
         return appState.appVersionPrices
             .filter(
                 (price) =>
