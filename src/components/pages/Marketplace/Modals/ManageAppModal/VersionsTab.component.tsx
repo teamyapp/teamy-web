@@ -9,7 +9,6 @@ import React, {
 } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
-import { LinkButtonUI } from '@lib/ui/LinkButton';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
@@ -326,12 +325,17 @@ export function VersionsTabComponent(props: Props) {
                     </div>
                     <div className={`${styles.Row} ${styles.Buttons}`}>
                         <div className={styles.Download}>
-                            <LinkButtonUI
-                                label={'Download'}
-                                href={props.deps.fileClient.getRemoteFolderDownloadUrl(
-                                    selectedAppVersion.packagePath,
-                                )}
-                            />
+                            <div
+                                className={styles.Download}
+                            >
+                                <ButtonUI label={'Download'} >
+                                    <a href={props.deps.fileClient.getRemoteFolderDownloadUrl(
+                                        selectedAppVersion.packagePath,
+                                    )} download>
+                                        Download
+                                    </a>
+                                </ButtonUI>
+                            </div>
                         </div>
                         {!selectedAppVersion.locked && (
                             <div

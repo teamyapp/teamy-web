@@ -259,6 +259,11 @@
         .Download {
             --background-color: #388e3c;
             --border-color: #2e7d32;
+
+            a {
+                color: white;
+                text-decoration: none;
+            }
         }
 
         .Delete {

@@ -85,6 +85,6 @@ export class AppVersionNode implements AppVersion {
     }
 
     public get packagePath(): string {
-        return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/`;
+        return `files/apps/${this.appVersion.appId}/${this.appVersion.number}`;
     }
 }
