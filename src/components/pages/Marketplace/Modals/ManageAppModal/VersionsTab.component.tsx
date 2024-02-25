@@ -1,16 +1,23 @@
 import classNames from 'classnames';
 import moment from 'moment/moment';
-import React, { ChangeEvent, ReactNode, useEffect, useState } from 'react';
+import React, {
+    ChangeEvent,
+    ReactNode,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
+import { LinkButtonUI } from '@lib/ui/LinkButton';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
 import { AppVersion } from '@core/entity/appVersion';
 
 import styles from './VersionsTab.component.module.scss';
-import { LinkButtonUI } from '@lib/ui/LinkButton';
 
+const APP_VERSION_ICON_SIZE = 100;
 interface Props {
     onCreateVersionClick: () => Promise<number>;
     onDeleteVersionClick: (versionNumber: number) => void;
@@ -19,6 +26,7 @@ interface Props {
 }
 
 export function VersionsTabComponent(props: Props) {
+    const selectedAppVersionMutRef = useRef<AppVersion>();
     const [selectedAppVersion, setSelectedAppVersion] = useState<AppVersion>();
     const [uploadProgress, setUploadProgress] = useState({
         newBytesUploaded: 0,
@@ -37,12 +45,14 @@ export function VersionsTabComponent(props: Props) {
                     return;
                 }
 
-                if (selectedAppVersion) {
+                if (selectedAppVersionMutRef.current) {
                     const app = props.deps.graphSource.app(props.appId);
                     const appVersion = app?.versions.find(
                         (appVersion) =>
-                            appVersion.number === selectedAppVersion.number,
+                            appVersion.number === selectedAppVersionMutRef.current?.number,
                     );
+
+                    selectedAppVersionMutRef.current = appVersion;
                     setSelectedAppVersion(appVersion);
                 }
             }
@@ -51,21 +61,26 @@ export function VersionsTabComponent(props: Props) {
         return () => {
             stateChangeChan?.close();
         };
-    }, [
-        selectedAppVersion?.number,
-        selectedAppVersion?.errorMessage,
-        selectedAppVersion?.status,
-    ]);
+    }, []);
 
     const handleUploadAppPackageErrorTabBackClick = () => {
+        if (!selectedAppVersion) {
+            return;
+        }
+
         props.deps.stateSyncer.updateAppVersion(
             props.appId,
-            selectedAppVersion!.number,
+            selectedAppVersion.number,
             {
                 status: 'INIT',
             },
         );
     };
+
+    const updateSelectedAppVersion = (appVersion?: AppVersion) => {
+        selectedAppVersionMutRef.current = appVersion;
+        setSelectedAppVersion(appVersion);
+    }
 
     const onCreateVersionClick = async () => {
         const versionNumber = await props.onCreateVersionClick();
@@ -73,10 +88,11 @@ export function VersionsTabComponent(props: Props) {
         const appVersion = app?.versions.find(
             (appVersion) => appVersion.number === versionNumber,
         );
-        setSelectedAppVersion(appVersion);
+
+        updateSelectedAppVersion(appVersion);
     };
 
-    const onAppVersionFileChange = async (
+    const handleAppVersionFileChange = async (
         event: ChangeEvent<HTMLInputElement>,
     ) => {
         if (!selectedAppVersion) {
@@ -119,16 +135,16 @@ export function VersionsTabComponent(props: Props) {
         if (error) {
             alert('Fail to upload file');
         }
-            await props.deps.stateSyncer.finishAppPackageUploadSession(
-                selectedAppVersion.app.id,
-                selectedAppVersion.number,
-                fileUploadSessionId,
-            );
+        await props.deps.stateSyncer.finishAppPackageUploadSession(
+            selectedAppVersion.app.id,
+            selectedAppVersion.number,
+            fileUploadSessionId,
+        );
     };
 
     const onVersionNumberClickHandler = (appVersion: AppVersion) => {
         return () => {
-            setSelectedAppVersion(appVersion);
+            updateSelectedAppVersion(appVersion);
         };
     };
 
@@ -272,7 +288,7 @@ export function VersionsTabComponent(props: Props) {
                         <img
                             className={styles.Icon}
                             src={props.deps.fileClient.getRemoteFileUrl(
-                                selectedAppVersion.iconPath,
+                                selectedAppVersion.iconPath(APP_VERSION_ICON_SIZE),
                             )}
                         />
                     </div>
@@ -312,7 +328,7 @@ export function VersionsTabComponent(props: Props) {
                         <div className={styles.Download}>
                             <LinkButtonUI
                                 label={'Download'}
-                                href={props.deps.fileClient.getDownloadUrl(
+                                href={props.deps.fileClient.getRemoteFolderDownloadUrl(
                                     selectedAppVersion.packagePath,
                                 )}
                             />

@@ -61,8 +61,10 @@ import { TaskLinkState } from '../states/taskLink.state';
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { VersionSelectorState } from '../states/versionSelector.state';
 import { Mutation } from './mutation';
-import { AppVersionChangeState, AppVersionState } from '../states/appVersion.state';
+import { AppVersionState } from '../states/appVersion.state';
+import { AppVersionChangeState } from '../states/appVersionChange.state';
 import { RemoteMoney } from '@core/client/entity/remoteMoney';
+import { RemoteAppVersionChange } from '@core/client/entity/remoteAppVersionChange';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -340,7 +342,7 @@ export function applyAppVersionChangeMutation(
             const appVersionChange = AppVersionChangeState.fromMutationPayload(
                 mutation.payload,
             );
-            currState.appVersionChanges.push(appVersionChange);
+            currState.appVersionChanges[appVersionChange.id] = appVersionChange;
             break;
         }
     }
@@ -677,7 +679,7 @@ export function mergeAppVersion(
     };
 
     version.changes?.forEach((change) => {
-        currAppState = mergeAppVersionChange(currAppState, remoteAppId, version.number, change);
+        currAppState = mergeAppVersionChange(currAppState, change);
     });
 
     version.prices?.forEach((price) => {
@@ -693,15 +695,16 @@ export function mergeAppVersionPrice(
     versionNumber: number,
     price: RemoteMoney,
 ) {
+    const localAppVersionPrice =  currAppState.appVersionPrices.find((appVersionPrice) => {
+        return (
+            appVersionPrice.appId === remoteAppId &&
+            appVersionPrice.versionNumber === versionNumber &&
+            appVersionPrice.currency === price.currency
+        );
+    })
+
     if (
-        !currAppState.appVersionPrices.some((appVersionPrice) => {
-            return (
-                appVersionPrice.appId === remoteAppId &&
-                appVersionPrice.versionNumber === versionNumber &&
-                appVersionPrice.currency === price.currency &&
-                appVersionPrice.price === price.amount
-            );
-        })
+       !localAppVersionPrice
     ) {
         currAppState.appVersionPrices.push({
             appId: remoteAppId,
@@ -709,34 +712,28 @@ export function mergeAppVersionPrice(
             currency: price.currency,
             price: price.amount,
         });
+    } else {
+        localAppVersionPrice.price = price.amount;
     }
 
     return currAppState;
-
 }
 
 export function mergeAppVersionChange(
     currAppState: AppState,
-    remoteAppId: number,
-    versionNumber: number,
-    change: string,
+    appVersionChange: RemoteAppVersionChange
 ): AppState {
-    if (
-        !currAppState.appVersionChanges.some((appVersionChange) => {
-            return (
-                appVersionChange.appId === remoteAppId &&
-                appVersionChange.versionNumber === versionNumber &&
-                appVersionChange.change === change
-            );
-        })
-    ) {
-        currAppState.appVersionChanges.push({
-            appId: remoteAppId,
-            versionNumber: versionNumber,
-            change: change,
-        });
-    }
+    const appVersionChangeId = toInt(appVersionChange.id)!;
+    const localOldAppVersionChange = currAppState.appVersionChanges[appVersionChangeId] || {};
 
+    const localNewAppVersionChange: AppVersionChangeState = {
+        id: appVersionChangeId,
+        versionNumber: appVersionChange.appVersion.number || localOldAppVersionChange.versionNumber,
+        appId: toInt(appVersionChange.appVersion.app.id)! || localOldAppVersionChange.appId,
+        change: appVersionChange.change || localOldAppVersionChange.change,
+    };
+
+    currAppState.appVersionChanges[appVersionChangeId] = localNewAppVersionChange;
     return currAppState;
 }
 

@@ -52,7 +52,16 @@ export class TeamClient {
                                     number
                                     appName
                                     description
-                                    changes
+                                    changes {
+                                        id
+                                        appVersion {
+                                            number
+                                            app {
+                                                id
+                                            }
+                                        }
+                                        change
+                                    }
                                     prices {
                                         amount
                                         currency
@@ -103,7 +112,16 @@ export class TeamClient {
                                     number
                                     appName
                                     description
-                                    changes
+                                    changes {
+                                        id
+                                        appVersion {
+                                            number
+                                            app {
+                                                id
+                                            }
+                                        }
+                                        change
+                                    }
                                     prices {
                                         amount
                                         currency
@@ -123,7 +141,16 @@ export class TeamClient {
                                     number
                                     appName
                                     description
-                                    changes
+                                    changes {
+                                        id
+                                        appVersion {
+                                            number
+                                            app {
+                                                id
+                                            }
+                                        }
+                                        change
+                                    }
                                     prices {
                                         amount
                                         currency

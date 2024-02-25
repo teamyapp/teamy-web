@@ -81,7 +81,16 @@ export class AppClient {
                                 number
                                 appName
                                 description
-                                changes
+                                changes {
+                                    id
+                                    appVersion {
+                                        number
+                                        app {
+                                            id
+                                        }
+                                    }
+                                    change
+                                }
                                 prices {
                                     amount
                                     currency
@@ -101,7 +110,16 @@ export class AppClient {
                                 number
                                 appName
                                 description
-                                changes
+                                changes {
+                                    id
+                                    appVersion {
+                                        number
+                                        app {
+                                            id
+                                        }
+                                    }
+                                    change
+                                }
                                 prices {
                                     amount
                                     currency

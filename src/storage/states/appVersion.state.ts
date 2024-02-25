@@ -1,5 +1,4 @@
 import { toDate } from './parser';
-import { Currency } from "./currency";
 export type AppVersionStatus = 'INIT' | 'UPLOADING' | 'PROCESSING' | 'READY' | 'ERROR';
 
 export class AppVersionState {
@@ -40,57 +39,6 @@ export class AppVersionState {
             json.locked,
             json.appId,
             json.errorMessage,
-        );
-    }
-}
-
-export class AppVersionPriceState {
-    public constructor(
-        public appId: number,
-        public versionNumber: number,
-        public currency: Currency,
-        public price: number,
-    ) {}
-
-    public static fromMutationPayload(json: any): AppVersionPriceState {
-        return new AppVersionPriceState(
-            json.AppID,
-            json.VersionNumber,
-            json.Currency,
-            json.Price,
-        );
-    }
-
-    public static fromJson(json: any): AppVersionPriceState {
-        return new AppVersionPriceState(
-            json.appId,
-            json.versionNumber,
-            json.currency,
-            json.price,
-        );
-    }
-}
-
-export class AppVersionChangeState {
-    public constructor(
-        public appId: number,
-        public versionNumber: number,
-        public change: string,
-    ) {}
-
-    public static fromMutationPayload(json: any): AppVersionChangeState {
-        return new AppVersionChangeState(
-            json.AppID,
-            json.VersionNumber,
-            json.Change,
-        );
-    }
-
-    public static fromJson(json: any): AppVersionChangeState {
-        return new AppVersionChangeState(
-            json.appId,
-            json.versionNumber,
-            json.change,
         );
     }
 }

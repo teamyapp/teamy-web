@@ -26,13 +26,15 @@ export class AppVersionNode implements AppVersion {
 
     public get changes(): string[] {
         const appState = this.localStore.getState();
-        return appState.appVersionChanges
-            .filter(
-                (change) =>
-                    change.versionNumber === this.appVersion.number &&
-                    change.appId === this.appVersion.appId,
-            )
-            .map(({change}) => change);
+        const changes = []
+        for (const changeId in appState.appVersionChanges) {
+            if (appState.appVersionChanges[changeId].versionNumber === this.appVersion.number &&
+                appState.appVersionChanges[changeId].appId === this.appVersion.appId) {
+                changes.push(appState.appVersionChanges[changeId].change);
+            }
+        }
+
+        return changes;
     }
 
     public get createdAt(): Date {

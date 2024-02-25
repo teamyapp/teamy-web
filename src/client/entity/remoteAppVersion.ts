@@ -1,4 +1,5 @@
 import { RemoteApp } from './remoteApp';
+import { RemoteAppVersionChange } from './remoteAppVersionChange';
 import { RemoteMoney } from './remoteMoney';
 import { RemoteUser } from './remoteUser';
 
@@ -8,7 +9,7 @@ export interface RemoteAppVersion {
     number: number;
     appName: string;
     description: string;
-    changes: string[];
+    changes: RemoteAppVersionChange[];
     createdAt: string;
     createdBy: RemoteUser;
     prices: RemoteMoney[];

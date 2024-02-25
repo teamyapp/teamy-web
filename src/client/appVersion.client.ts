@@ -61,7 +61,16 @@ export class AppVersionClient {
                             app {
                                 id
                             }
-                            changes
+                            changes {
+                                id
+                                appVersion {
+                                    number
+                                    app {
+                                        id
+                                    }
+                                }
+                                change
+                            }
                             prices {
                                 currency
                                 amount
@@ -144,7 +153,16 @@ export class AppVersionClient {
                         ) {
                             number
                             status
-                            changes
+                            changes {
+                                id
+                                appVersion {
+                                    number
+                                    app {
+                                        id
+                                    }
+                                }
+                                change
+                            }
                             prices {
                                 currency
                                 amount
