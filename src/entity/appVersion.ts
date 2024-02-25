@@ -3,7 +3,12 @@ import { User } from '@core/entity/user';
 
 import { App } from './app';
 
-export type AppVersionStatus = 'INIT' | 'UPLOADING' | 'PROCESSING' | 'READY' | 'ERROR';
+export type AppVersionStatus = 
+    'INIT' | 
+    'UPLOADING' | 
+    'PROCESSING' | 
+    'READY' | 
+    'ERROR';
 
 export interface AppVersion {
     number: number;

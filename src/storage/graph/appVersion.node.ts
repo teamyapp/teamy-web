@@ -29,7 +29,7 @@ export class AppVersionNode implements AppVersion {
         const changes = []
         for (const changeId in appState.appVersionChanges) {
             if (appState.appVersionChanges[changeId].versionNumber === this.appVersion.number &&
-                appState.appVersionChanges[changeId].appId === this.appVersion.appId) {
+                (appState.appVersionChanges[changeId].appId === this.appVersion.appId)) {
                 changes.push(appState.appVersionChanges[changeId].change);
             }
         }
