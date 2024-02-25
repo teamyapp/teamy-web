@@ -51,8 +51,7 @@ export function VersionsTabComponent(props: Props) {
                             appVersion.number === selectedAppVersionMutRef.current?.number,
                     );
 
-                    selectedAppVersionMutRef.current = appVersion;
-                    setSelectedAppVersion(appVersion);
+                    updateSelectedAppVersion(appVersion);
                 }
             }
         })().then();
