@@ -61,6 +61,10 @@ import { TaskLinkState } from '../states/taskLink.state';
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { VersionSelectorState } from '../states/versionSelector.state';
 import { Mutation } from './mutation';
+import { AppVersionState } from '../states/appVersion.state';
+import { AppVersionChangeState } from '../states/appVersionChange.state';
+import { RemoteMoney } from '@core/client/entity/remoteMoney';
+import { RemoteAppVersionChange } from '@core/client/entity/remoteAppVersionChange';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -76,6 +80,25 @@ export function applyTaskMutation(
         case 'Delete': {
             const taskId = mutation.payload;
             delete currState.tasks[taskId];
+            break;
+        }
+    }
+
+    return currState;
+}
+
+export function applyAppVersionMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create':
+        case 'Update': {
+            const appVersion = AppVersionState.fromMutationPayload(mutation.payload);
+            currState.apps[appVersion.appId].versions[appVersion.number] = appVersion;
+            break;
+        }
+        case 'Delete': {
             break;
         }
     }
@@ -303,6 +326,23 @@ export async function applyTeamMemberMutation(
                 currState.currUserId = undefined;
             }
 
+            break;
+        }
+    }
+
+    return currState;
+}
+
+export function applyAppVersionChangeMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create': {
+            const appVersionChange = AppVersionChangeState.fromMutationPayload(
+                mutation.payload,
+            );
+            currState.appVersionChanges[appVersionChange.id] = appVersionChange;
             break;
         }
     }
@@ -632,14 +672,68 @@ export function mergeAppVersion(
         createdAt: toDate(version.createdAt) || localOldVersion.createdAt,
         creatorUserId:
             toInt(version.createdBy.id) || localOldVersion.creatorUserId,
-        changes: version.changes || localOldVersion.changes,
         description: version.description || localOldVersion.description,
-        iconUrl: version.iconUrl || localOldVersion.iconUrl,
-        isReady: version.isReady,
+        status: version.status || localOldVersion.status,
         locked: version.locked,
-        prices: version.prices || localOldVersion.prices,
+        errorMessage: version.errorMessage || localOldVersion.errorMessage,
     };
 
+    version.changes?.forEach((change) => {
+        currAppState = mergeAppVersionChange(currAppState, change);
+    });
+
+    version.prices?.forEach((price) => {
+        currAppState = mergeAppVersionPrice(currAppState, remoteAppId, version.number, price);
+    });
+
+    return currAppState;
+}
+
+export function mergeAppVersionPrice(
+    currAppState: AppState,
+    remoteAppId: number,
+    versionNumber: number,
+    price: RemoteMoney,
+) {
+    const localAppVersionPrice =  currAppState.appVersionPrices.find((appVersionPrice) => {
+        return (
+            appVersionPrice.appId === remoteAppId &&
+            appVersionPrice.versionNumber === versionNumber &&
+            appVersionPrice.currency === price.currency
+        );
+    })
+
+    if (
+       !localAppVersionPrice
+    ) {
+        currAppState.appVersionPrices.push({
+            appId: remoteAppId,
+            versionNumber: versionNumber,
+            currency: price.currency,
+            price: price.amount,
+        });
+    } else {
+        localAppVersionPrice.price = price.amount;
+    }
+
+    return currAppState;
+}
+
+export function mergeAppVersionChange(
+    currAppState: AppState,
+    appVersionChange: RemoteAppVersionChange
+): AppState {
+    const appVersionChangeId = toInt(appVersionChange.id)!;
+    const localOldAppVersionChange = currAppState.appVersionChanges[appVersionChangeId] || {};
+
+    const localNewAppVersionChange: AppVersionChangeState = {
+        id: appVersionChangeId,
+        versionNumber: appVersionChange.appVersion.number || localOldAppVersionChange.versionNumber,
+        appId: toInt(appVersionChange.appVersion.app.id)! || localOldAppVersionChange.appId,
+        change: appVersionChange.change || localOldAppVersionChange.change,
+    };
+
+    currAppState.appVersionChanges[appVersionChangeId] = localNewAppVersionChange;
     return currAppState;
 }
 

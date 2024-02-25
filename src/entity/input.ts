@@ -4,6 +4,7 @@ import { Priority } from '@core/entity/priority';
 
 import { GroupMemberType, GroupType } from './group';
 import { AppRolloutType } from './rollout';
+import { AppVersionStatus } from './appVersion';
 
 export interface CreateAppInput {
     name: string;
@@ -191,4 +192,8 @@ export interface CreateAppSecretInput {
 export interface CreateAppVersionInput {
     appName: string;
     description: string;
+}
+
+export interface UpdateAppVersionInput {
+    status: AppVersionStatus;
 }

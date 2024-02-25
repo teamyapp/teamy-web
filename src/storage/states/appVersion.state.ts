@@ -1,19 +1,22 @@
-import { MoneyState } from './money.state';
 import { toDate } from './parser';
+export type AppVersionStatus = 
+    'INIT' | 
+    'UPLOADING' | 
+    'PROCESSING' | 
+    'READY' | 
+    'ERROR';
 
 export class AppVersionState {
     public constructor(
         public number: number,
         public appName: string,
         public description: string,
-        public changes: string[],
         public createdAt: Date,
         public creatorUserId: number,
-        public iconUrl: string,
-        public prices: MoneyState[],
-        public isReady: boolean,
+        public status: AppVersionStatus,
         public locked: boolean,
         public appId: number,
+        public errorMessage?: string,
     ) {}
 
     public static fromMutationPayload(json: any): AppVersionState {
@@ -21,14 +24,12 @@ export class AppVersionState {
             json.Number,
             json.AppName,
             json.Description,
-            json.Changes,
             toDate(json.CreatedAt)!,
             json.CreatorUserID,
-            json.IconUrl,
-            json.Prices.map(MoneyState.fromMutationPayload),
-            json.IsReady,
+            json.Status,
             json.Locked,
             json.AppID,
+            json.ErrorMessage,
         );
     }
 
@@ -37,14 +38,12 @@ export class AppVersionState {
             json.number,
             json.appName,
             json.description,
-            json.changes,
             toDate(json.createdAt)!,
             json.creatorUserId,
-            json.iconUrl,
-            json.prices.map(MoneyState.fromJson),
-            json.isReady,
+            json.status,
             json.locked,
             json.appId,
+            json.errorMessage,
         );
     }
 }

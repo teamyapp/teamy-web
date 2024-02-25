@@ -52,7 +52,16 @@ export class TeamClient {
                                     number
                                     appName
                                     description
-                                    changes
+                                    changes {
+                                        id
+                                        appVersion {
+                                            number
+                                            app {
+                                                id
+                                            }
+                                        }
+                                        change
+                                    }
                                     prices {
                                         amount
                                         currency
@@ -61,9 +70,9 @@ export class TeamClient {
                                     createdBy {
                                         id
                                     }
-                                    isReady
+                                    status
+                                    errorMessage
                                     locked
-                                    iconUrl
                                 }
                             }
                             managedApps {
@@ -103,7 +112,16 @@ export class TeamClient {
                                     number
                                     appName
                                     description
-                                    changes
+                                    changes {
+                                        id
+                                        appVersion {
+                                            number
+                                            app {
+                                                id
+                                            }
+                                        }
+                                        change
+                                    }
                                     prices {
                                         amount
                                         currency
@@ -112,9 +130,9 @@ export class TeamClient {
                                     createdBy {
                                         id
                                     }
-                                    isReady
+                                    status
+                                    errorMessage
                                     locked
-                                    iconUrl
                                 }
                                 versions {
                                     app {
@@ -123,7 +141,16 @@ export class TeamClient {
                                     number
                                     appName
                                     description
-                                    changes
+                                    changes {
+                                        id
+                                        appVersion {
+                                            number
+                                            app {
+                                                id
+                                            }
+                                        }
+                                        change
+                                    }
                                     prices {
                                         amount
                                         currency
@@ -132,9 +159,9 @@ export class TeamClient {
                                     createdBy {
                                         id
                                     }
-                                    isReady
+                                    status
+                                    errorMessage
                                     locked
-                                    iconUrl
                                 }
                                 managedByTeam {
                                     id
