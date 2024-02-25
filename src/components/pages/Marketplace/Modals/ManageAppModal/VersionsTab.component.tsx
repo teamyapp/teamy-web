@@ -328,7 +328,7 @@ export function VersionsTabComponent(props: Props) {
                                 className={styles.Download}
                             >
                                 <ButtonUI label={'Download'} >
-                                    <a href={props.deps.fileClient.getRemoteFolderDownloadUrl(
+                                    <a href={props.deps.fileClient.getRemoteDownloadUrl(
                                         selectedAppVersion.packagePath,
                                     )} download>
                                         Download
