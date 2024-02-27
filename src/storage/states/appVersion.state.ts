@@ -1,10 +1,11 @@
 import { toDate } from './parser';
-export type AppVersionStatus = 
-    'INIT' | 
-    'UPLOADING' | 
-    'PROCESSING' | 
-    'READY' | 
-    'ERROR';
+
+export type AppVersionStatus =
+    | 'INIT'
+    | 'UPLOADING'
+    | 'PROCESSING'
+    | 'READY'
+    | 'ERROR';
 
 export class AppVersionState {
     public constructor(

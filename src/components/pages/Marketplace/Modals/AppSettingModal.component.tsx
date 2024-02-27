@@ -18,7 +18,7 @@ const apps: Record<number, App> = {
     },
     2: {
         id: 2,
-        name: 'Slack',
+        name: 'Github',
     },
 };
 
@@ -69,11 +69,13 @@ export class AppSettingModalComponent extends Component<Props, State> {
             },
             async () => {
                 await this.modalRef.current?.open();
-                if (!this.contentRef.current || !(this.contentRef.current instanceof Element)) {
+                if (
+                    !this.contentRef.current ||
+                    !(this.contentRef.current instanceof Element)
+                ) {
                     return;
                 }
 
-                debugger
                 const thirdPartyAppEventHub =
                     this.props.thirdPartyAppEventHubs.find(
                         (hub) => hub.appId === this.state.app?.id,

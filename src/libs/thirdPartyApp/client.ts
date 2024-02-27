@@ -5,9 +5,9 @@ import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Router } from '@lib/router/router';
 import { TeamyThirdPartyAppFeedbackUI } from '@lib/thirdPartyApp/DynamicFeedback';
 
+import { FileClient } from '@core/client/file.client';
 import { absoluteRootPath, absoluteUri, taskPath } from '@core/routing/routes';
 import { LocalStore } from '@core/storage/syncer/localStore';
-import { FileClient } from '@core/client/file.client';
 
 export class TeamyThirdPartyAppClient implements ThirdPartyAppClient {
     constructor(
@@ -16,16 +16,17 @@ export class TeamyThirdPartyAppClient implements ThirdPartyAppClient {
         private router: Router,
         private identityClient: IdentityClient,
         private feedbackRef: RefObject<TeamyThirdPartyAppFeedbackUI>,
+        private appId: number,
+        private versionNumber: number,
     ) {}
 
     getAccessToken(): string {
         return getAccessToken();
     }
 
-    getResourceUrl(appId: number, versionNumber: number): string {
-        return this.fileClient.getRemoteFileUrl(
-            `files/apps/${appId}/${versionNumber}/app.js`,
-        );
+    getResourceUrl(appPacketRelativePath: string): string {
+        const filePath = `files/apps/${this.appId}/${this.versionNumber}/${appPacketRelativePath}`;
+        return this.fileClient.getRemoteFileUrl(filePath);
     }
 
     getTeamId(): number | undefined {

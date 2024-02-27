@@ -1,18 +1,18 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, createRef } from 'react';
 
+import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
-import {AppIconComponent} from './AppIcon.component';
+import { AppNode } from '@core/storage/graph/app.node';
+import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { AppIconComponent } from './AppIcon.component';
 import styles from './DiscoveredTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import githubBannerImg from './assets/github_ads.png';
 import { formatCount, formatPrice } from './format';
-import { GraphSource } from '@core/storage/graph/graphSource';
-import { FileClient } from '@core/client/file.client';
-import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { AppNode } from '@core/storage/graph/app.node';
 
 interface Props {
     deps: Deps;
@@ -23,8 +23,8 @@ interface State {}
 
 export class DiscoverTabComponent extends Component<Props, State> {
     private readonly appSettingModalRef = createRef<AppSettingModalComponent>();
-    private readonly graphSource: GraphSource
-    private readonly stateSyncer: StateSyncer
+    private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
     private readonly fileClient: FileClient;
 
     constructor(props: Props) {
@@ -34,25 +34,32 @@ export class DiscoverTabComponent extends Component<Props, State> {
         this.fileClient = props.deps.fileClient;
     }
 
-    private handleAppInstallBtnClicked = (appId: number, currentTeamId: number) => {
+    private handleAppInstallBtnClicked = (
+        appId: number,
+        currentTeamId: number,
+    ) => {
         return () => {
             this.stateSyncer.installAppToTeam(appId, currentTeamId);
         };
     };
 
-    private handleAppRemoveBtnClicked = (app: AppNode, currentTeamId: number) => {
+    private handleAppRemoveBtnClicked = (
+        app: AppNode,
+        currentTeamId: number,
+    ) => {
         return () => {
             const appTeamInstallation = app.installations.find(
-                (installation) => installation.installedTeam.id === currentTeamId,
+                (installation) =>
+                    installation.installedTeam.id === currentTeamId,
             );
-            
+
             if (!appTeamInstallation) {
                 return;
             }
 
             this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
-        }
-    }
+        };
+    };
 
     render() {
         const currentTeamId = this.graphSource.currentTeam()?.id;
@@ -60,7 +67,8 @@ export class DiscoverTabComponent extends Component<Props, State> {
             return null;
         }
 
-        const latestAppVersions = this.graphSource.latestAppVersions(currentTeamId);
+        const latestAppVersions =
+            this.graphSource.latestAppVersions(currentTeamId);
         return (
             <>
                 <div className={styles.BannerSection}>
@@ -78,16 +86,29 @@ export class DiscoverTabComponent extends Component<Props, State> {
                 </div>
                 <div className={styles.ItemList}>
                     {latestAppVersions.map((appVersion) => (
-                        <div key={appVersion.app.id} className={styles.InlineItem}>
+                        <div
+                            key={appVersion.app.id}
+                            className={styles.InlineItem}
+                        >
                             <div className={styles.LeftSection}>
                                 <AppIconComponent
                                     appName={appVersion.appName}
-                                    appIconUrl={this.fileClient.getRemoteFileUrl(appVersion.iconPath(APP_VERSION_ICON_SIZE))}/>
+                                    appIconUrl={this.fileClient.getRemoteFileUrl(
+                                        appVersion.iconPath(
+                                            APP_VERSION_ICON_SIZE,
+                                        ),
+                                    )}
+                                />
                             </div>
                             <div className={styles.MiddleSection}>
-                                <div className={styles.Name}>{appVersion.appName}</div>
+                                <div className={styles.Name}>
+                                    {appVersion.appName}
+                                </div>
                                 <div className={styles.Installations}>
-                                    {formatCount(appVersion.app.installations.length)} installed
+                                    {formatCount(
+                                        appVersion.app.totalInstallations,
+                                    )}{' '}
+                                    installed
                                 </div>
                             </div>
                             <div className={styles.RightSection}>
@@ -103,7 +124,10 @@ export class DiscoverTabComponent extends Component<Props, State> {
                                         </div>
                                         <div
                                             className={`${styles.Button}  ${styles.Remove}`}
-                                            onClick={this.handleAppRemoveBtnClicked(appVersion.app, currentTeamId)}
+                                            onClick={this.handleAppRemoveBtnClicked(
+                                                appVersion.app,
+                                                currentTeamId,
+                                            )}
                                         >
                                             Remove
                                         </div>
@@ -112,9 +136,20 @@ export class DiscoverTabComponent extends Component<Props, State> {
                                 {!appVersion.app.isInstalled(currentTeamId) && (
                                     <>
                                         <div className={styles.Price}>
-                                            {appVersion.localPrice ? formatPrice(appVersion.localPrice.amount) : 'Free'}
+                                            {appVersion.localPrice
+                                                ? formatPrice(
+                                                      appVersion.localPrice
+                                                          .amount,
+                                                  )
+                                                : 'Free'}
                                         </div>
-                                        <div className={`${styles.Button}`} onClick={this.handleAppInstallBtnClicked(appVersion.app.id, currentTeamId)}>
+                                        <div
+                                            className={`${styles.Button}`}
+                                            onClick={this.handleAppInstallBtnClicked(
+                                                appVersion.app.id,
+                                                currentTeamId,
+                                            )}
+                                        >
                                             Install
                                         </div>
                                     </>
@@ -133,7 +168,6 @@ export class DiscoverTabComponent extends Component<Props, State> {
 
     private onAppSettingButtonClickHandler = (appId: number) => {
         return () => {
-            debugger
             this.appSettingModalRef.current?.open(appId);
         };
     };

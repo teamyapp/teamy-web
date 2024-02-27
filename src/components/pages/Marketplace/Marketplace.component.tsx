@@ -20,13 +20,13 @@ import {
     marketplaceManagedRoutePattern,
 } from '@core/routing/routes';
 import { LocalStore } from '@core/storage/syncer/localStore';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { DiscoverTabComponent } from './DiscoverTab.component';
 import { FilterTabComponent } from './FilterTab.component';
 import { InstalledTabComponent } from './InstalledTab.component';
 import { ManagedTabComponent } from './ManagedTab.component';
 import styles from './Marketplace.component.module.scss';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 interface Tab<Key> {
     name: string;
@@ -71,34 +71,33 @@ const lowerTabs: Tab<LowerTabKey>[] = [
         name: 'Developer Tools',
         key: formatFilterTabKey(['developer-tools']),
         getRoute: (localStore: LocalStore) =>
-            marketplaceFilterPath(
-                localStore.getState().currTeamId!,
-                ['developer-tools'],
-            ),
+            marketplaceFilterPath(localStore.getState().currTeamId!, [
+                'developer-tools',
+            ]),
     },
     {
         name: 'Automation',
         key: formatFilterTabKey(['automation']),
         getRoute: (localStore: LocalStore) =>
-            marketplaceFilterPath(
-                localStore.getState().currTeamId!,
-                ['automation'],
-            ),
+            marketplaceFilterPath(localStore.getState().currTeamId!, [
+                'automation',
+            ]),
     },
     {
         name: 'Communication',
         key: formatFilterTabKey(['communication']),
         getRoute: (localStore: LocalStore) =>
-            marketplaceFilterPath(
-                localStore.getState().currTeamId!,
-                ['communication'],
-            ),
+            marketplaceFilterPath(localStore.getState().currTeamId!, [
+                'communication',
+            ]),
     },
     {
         name: 'Design',
         key: formatFilterTabKey(['design']),
         getRoute: (localStore: LocalStore) =>
-            marketplaceFilterPath(localStore.getState().currTeamId!, ['design']),
+            marketplaceFilterPath(localStore.getState().currTeamId!, [
+                'design',
+            ]),
     },
     {
         name: 'Sales',
@@ -110,10 +109,9 @@ const lowerTabs: Tab<LowerTabKey>[] = [
         name: 'Productivity',
         key: formatFilterTabKey(['productivity']),
         getRoute: (localStore: LocalStore) =>
-            marketplaceFilterPath(
-                localStore.getState().currTeamId!,
-               [ 'productivity'],
-            ),
+            marketplaceFilterPath(localStore.getState().currTeamId!, [
+                'productivity',
+            ]),
     },
 ];
 
@@ -129,7 +127,7 @@ interface State {
 export class MarketplaceComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly localStore: LocalStore;
-    private readonly stateSyncer: StateSyncer
+    private readonly stateSyncer: StateSyncer;
 
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
 

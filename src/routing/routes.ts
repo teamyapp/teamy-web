@@ -20,8 +20,8 @@ export const getInvitationId = (params?: Params) =>
 export const getInvitationCode = (params?: Params) =>
     params?.queryParams[invitationCodeParam];
 export const getTags = (params?: Params): string[] => {
-    const tagsString = params?.queryParams[tagsParam]
-    return tagsString ? tagsString.split(',') : []
+    const tagsString = params?.queryParams[tagsParam];
+    return tagsString ? tagsString.split(',') : [];
 };
 
 export const rootRoutePattern = '/';

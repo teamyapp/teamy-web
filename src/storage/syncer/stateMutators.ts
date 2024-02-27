@@ -4,10 +4,12 @@ import { RemoteApp } from '@core/client/entity/remoteApp';
 import { RemoteAppInstallation } from '@core/client/entity/remoteAppInstallation';
 import { RemoteAppSecret } from '@core/client/entity/remoteAppSecret';
 import { RemoteAppVersion } from '@core/client/entity/remoteAppVersion';
+import { RemoteAppVersionChange } from '@core/client/entity/remoteAppVersionChange';
 import { RemoteClient } from '@core/client/entity/remoteClient';
 import { RemoteGroup } from '@core/client/entity/remoteGroup';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
+import { RemoteMoney } from '@core/client/entity/remoteMoney';
 import {
     RemoteAppRolloutType,
     RemoteRollout,
@@ -51,6 +53,8 @@ import {
 } from '../states/activator.state';
 import { AppInstallationState } from '../states/appInstallation.state';
 import { AppSecretState } from '../states/appSecret.state';
+import { AppVersionState } from '../states/appVersion.state';
+import { AppVersionChangeState } from '../states/appVersionChange.state';
 import { ClientState } from '../states/client.state';
 import { DragTaskActivityState } from '../states/dragTaskActivity.state';
 import { FilterGroupState, GroupState } from '../states/group.state';
@@ -61,10 +65,6 @@ import { TaskLinkState } from '../states/taskLink.state';
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { VersionSelectorState } from '../states/versionSelector.state';
 import { Mutation } from './mutation';
-import { AppVersionState } from '../states/appVersion.state';
-import { AppVersionChangeState } from '../states/appVersionChange.state';
-import { RemoteMoney } from '@core/client/entity/remoteMoney';
-import { RemoteAppVersionChange } from '@core/client/entity/remoteAppVersionChange';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -94,8 +94,11 @@ export function applyAppVersionMutation(
     switch (mutation.mutationType) {
         case 'Create':
         case 'Update': {
-            const appVersion = AppVersionState.fromMutationPayload(mutation.payload);
-            currState.apps[appVersion.appId].versions[appVersion.number] = appVersion;
+            const appVersion = AppVersionState.fromMutationPayload(
+                mutation.payload,
+            );
+            currState.apps[appVersion.appId].versions[appVersion.number] =
+                appVersion;
             break;
         }
         case 'Delete': {
@@ -584,7 +587,9 @@ export function mergeApp(
     const localNewApp: ThirdPartyAppState = {
         id: remoteAppId,
         totalInstallations:
-            remoteApp.totalInstallations || localOldApp.totalInstallations,
+            remoteApp.totalInstallations == undefined
+                ? localOldApp.totalInstallations
+                : remoteApp.totalInstallations,
         managedByTeamId:
             toInt(remoteApp.managedByTeam?.id) || localOldApp.managedByTeamId,
         secretIds:
@@ -683,7 +688,12 @@ export function mergeAppVersion(
     });
 
     version.prices?.forEach((price) => {
-        currAppState = mergeAppVersionPrice(currAppState, remoteAppId, version.number, price);
+        currAppState = mergeAppVersionPrice(
+            currAppState,
+            remoteAppId,
+            version.number,
+            price,
+        );
     });
 
     return currAppState;
@@ -695,17 +705,17 @@ export function mergeAppVersionPrice(
     versionNumber: number,
     price: RemoteMoney,
 ) {
-    const localAppVersionPrice =  currAppState.appVersionPrices.find((appVersionPrice) => {
-        return (
-            appVersionPrice.appId === remoteAppId &&
-            appVersionPrice.versionNumber === versionNumber &&
-            appVersionPrice.currency === price.currency
-        );
-    })
+    const localAppVersionPrice = currAppState.appVersionPrices.find(
+        (appVersionPrice) => {
+            return (
+                appVersionPrice.appId === remoteAppId &&
+                appVersionPrice.versionNumber === versionNumber &&
+                appVersionPrice.currency === price.currency
+            );
+        },
+    );
 
-    if (
-       !localAppVersionPrice
-    ) {
+    if (!localAppVersionPrice) {
         currAppState.appVersionPrices.push({
             appId: remoteAppId,
             versionNumber: versionNumber,
@@ -721,19 +731,25 @@ export function mergeAppVersionPrice(
 
 export function mergeAppVersionChange(
     currAppState: AppState,
-    appVersionChange: RemoteAppVersionChange
+    appVersionChange: RemoteAppVersionChange,
 ): AppState {
     const appVersionChangeId = toInt(appVersionChange.id)!;
-    const localOldAppVersionChange = currAppState.appVersionChanges[appVersionChangeId] || {};
+    const localOldAppVersionChange =
+        currAppState.appVersionChanges[appVersionChangeId] || {};
 
     const localNewAppVersionChange: AppVersionChangeState = {
         id: appVersionChangeId,
-        versionNumber: appVersionChange.appVersion.number || localOldAppVersionChange.versionNumber,
-        appId: toInt(appVersionChange.appVersion.app.id)! || localOldAppVersionChange.appId,
+        versionNumber:
+            appVersionChange.appVersion.number ||
+            localOldAppVersionChange.versionNumber,
+        appId:
+            toInt(appVersionChange.appVersion.app.id)! ||
+            localOldAppVersionChange.appId,
         change: appVersionChange.change || localOldAppVersionChange.change,
     };
 
-    currAppState.appVersionChanges[appVersionChangeId] = localNewAppVersionChange;
+    currAppState.appVersionChanges[appVersionChangeId] =
+        localNewAppVersionChange;
     return currAppState;
 }
 

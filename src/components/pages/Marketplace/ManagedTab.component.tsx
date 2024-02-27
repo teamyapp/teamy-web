@@ -2,15 +2,15 @@ import { Component, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
+import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
+import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 import { GraphSource } from '@core/storage/graph/graphSource';
-import {AppIconComponent} from './AppIcon.component';
 
+import { AppIconComponent } from './AppIcon.component';
 import styles from './ManagedTab.component.module.scss';
 import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
 import { ManageAppModalComponent } from './Modals/ManageAppModal/ManageAppModal.component';
-import { FileClient } from '@core/client/file.client';
-import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 
 interface Props {
     deps: Deps;
@@ -51,7 +51,12 @@ export class ManagedTabComponent extends Component<Props> {
                                 <div className={styles.LeftSection}>
                                     <AppIconComponent
                                         appName={currentTeamAppVersion.appName}
-                                        appIconUrl={this.fileClient.getRemoteFileUrl(currentTeamAppVersion.iconPath(APP_VERSION_ICON_SIZE))}/>
+                                        appIconUrl={this.fileClient.getRemoteFileUrl(
+                                            currentTeamAppVersion.iconPath(
+                                                APP_VERSION_ICON_SIZE,
+                                            ),
+                                        )}
+                                    />
                                 </div>
                                 <div className={styles.MiddleSection}>
                                     <div className={styles.Name}>
@@ -69,7 +74,9 @@ export class ManagedTabComponent extends Component<Props> {
                                     </div>
                                     <div
                                         className={`${styles.Button}  ${styles.Delete}`}
-                                        onClick={this.onDeleteButtonClickHandler(app.id)}
+                                        onClick={this.onDeleteButtonClickHandler(
+                                            app.id,
+                                        )}
                                     >
                                         Delete
                                     </div>

@@ -1,15 +1,15 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
-import React, { Component, createRef } from 'react';
+import React, { Component, ReactElement, createRef } from 'react';
 
+import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
+import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 import { GraphSource } from '@core/storage/graph/graphSource';
-import {AppIconComponent} from './AppIcon.component';
 
+import { AppIconComponent } from './AppIcon.component';
 import styles from './InstalledTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import { formatCount } from './format';
-import { FileClient } from '@core/client/file.client';
-import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 
 interface Props {
     deps: Deps;
@@ -43,7 +43,12 @@ export class InstalledTabComponent extends Component<Props, State> {
                             <div className={styles.LeftSection}>
                                 <AppIconComponent
                                     appName={item.activeAppVersion.appName}
-                                    appIconUrl={this.fileClient.getRemoteFileUrl(item.activeAppVersion.iconPath(APP_VERSION_ICON_SIZE))}/>
+                                    appIconUrl={this.fileClient.getRemoteFileUrl(
+                                        item.activeAppVersion.iconPath(
+                                            APP_VERSION_ICON_SIZE,
+                                        ),
+                                    )}
+                                />
                             </div>
                             <div className={styles.MiddleSection}>
                                 <div className={styles.Name}>

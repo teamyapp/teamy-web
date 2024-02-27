@@ -5,7 +5,6 @@ export interface Money {
     amount: number;
 }
 
-
 export const getLocalCurrency = (): Currency => {
-    return 'USD'
-}
+    return 'USD';
+};

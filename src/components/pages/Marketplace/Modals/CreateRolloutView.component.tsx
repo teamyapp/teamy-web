@@ -137,7 +137,7 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
                     <ItemListUI
                         items={this.state.selectedGroupIds}
                         renderInlineItem={this.props.renderInlineGroup}
-                        newItemInputLabel={`Enter ${this.props.groupLabel} ID`}
+                        newItemInputLabel={`Enter group ID`}
                         parseNewItem={this.parseNewGroup}
                         isItemDuplicate={this.isGroupDuplicate}
                         isItemValid={this.props.isValidGroup}
@@ -349,7 +349,7 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
                 versionNumber,
             ) || false
         );
-    }
+    };
 
     onAddVersionNumber = (versionNumber: number) => {
         this.setState({

@@ -95,21 +95,27 @@ export class GraphSource {
         }
     }
 
-    public latestAppVersions(teamId: number, tagValues?: string[]): AppVersionNode[] {
+    public latestAppVersions(
+        teamId: number,
+        tagValues?: string[],
+    ): AppVersionNode[] {
         const appState = this.localStore.getState();
         const appVersions: AppVersionNode[] = [];
-        for  (const appId in appState.apps) {
+        for (const appId in appState.apps) {
             const app = appState.apps[appId];
             const appNode = this.app(app.id);
             if (!appNode) {
                 continue;
             }
 
-            if (tagValues && !appNode.tags.some((tag) => tagValues.includes(tag.value))) {
-                continue;   
+            if (
+                tagValues &&
+                !appNode.tags.some((tag) => tagValues.includes(tag.value))
+            ) {
+                continue;
             }
 
-            const appVersionNode = appNode?.latestVersionForTeam(teamId)
+            const appVersionNode = appNode?.latestVersionForTeam(teamId);
             if (appVersionNode) {
                 appVersions.push(appVersionNode);
             }
@@ -117,7 +123,6 @@ export class GraphSource {
 
         return appVersions;
     }
-
 
     public rollout(rolloutId: number): RolloutNode | undefined {
         const appState = this.localStore.getState();
