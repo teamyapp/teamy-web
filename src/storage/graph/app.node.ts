@@ -198,4 +198,14 @@ export class AppNode implements App {
             (version) => version.number === teamAppVersion.appVersion,
         );
     }
+
+    public isInstalled(teamId: number): boolean {
+        const appState = this.localStore.getState();
+        return this.app.installationIds.some((installationId) => {
+            const installation = appState.appInstallations[
+                installationId
+            ];
+            return installation.installedTeamId === teamId;
+        });
+    }
 }

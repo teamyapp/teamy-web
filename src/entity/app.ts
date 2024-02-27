@@ -15,6 +15,7 @@ export interface App {
     versions: AppVersion[];
     tags: Tag[];
     latestVersionForTeam(teamId?: number): AppVersion | undefined;
+    isInstalled(teamId: number): boolean;
     userGroups: Group[];
     teamGroups: Group[];
     userRollouts: Rollout[];

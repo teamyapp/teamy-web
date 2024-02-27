@@ -9,6 +9,8 @@ import {AppIconComponent} from './AppIcon.component';
 import styles from './ManagedTab.component.module.scss';
 import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
 import { ManageAppModalComponent } from './Modals/ManageAppModal/ManageAppModal.component';
+import { FileClient } from '@core/client/file.client';
+import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 
 interface Props {
     deps: Deps;
@@ -18,10 +20,12 @@ export class ManagedTabComponent extends Component<Props> {
     private readonly createAppModalRef = createRef<CreateAppModalComponent>();
     private readonly manageAppModalRef = createRef<ManageAppModalComponent>();
     private readonly graphSource: GraphSource;
+    private readonly fileClient: FileClient;
 
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
+        this.fileClient = props.deps.fileClient;
         this.state = {};
     }
 
@@ -47,7 +51,7 @@ export class ManagedTabComponent extends Component<Props> {
                                 <div className={styles.LeftSection}>
                                     <AppIconComponent
                                         appName={currentTeamAppVersion.appName}
-                                        appIconUrl={currentTeamAppVersion.iconUrl}/>
+                                        appIconUrl={this.fileClient.getRemoteFileUrl(currentTeamAppVersion.iconPath(APP_VERSION_ICON_SIZE))}/>
                                 </div>
                                 <div className={styles.MiddleSection}>
                                     <div className={styles.Name}>

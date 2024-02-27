@@ -90,6 +90,7 @@ import {
     removeOrMergeTeamMembers,
     replaceTeamInvitations,
     replaceTeamTaskActivities,
+    mergeAppInstallation,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
@@ -884,6 +885,34 @@ export class StateSyncer {
         const remoteApp = await this.appClient.createApp(`${teamId}`, input);
         let appState = this.localStore.getState();
         appState = mergeApp(appState, remoteApp, teamId);
+        this.localStore.updateState(appState);
+    }
+
+
+    public async installAppToTeam(appId: number, teamId: number) {
+        const remoteInstallation = await this.appClient.installAppToTeam(
+            `${appId}`,
+            `${teamId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeAppInstallation(appState, remoteInstallation);
+        this.localStore.updateState(appState);
+    }
+
+    public async uninstallAppFromTeam(installationId: number) {
+        await this.appClient.uninstallAppFromTeam(`${installationId}`);
+        let appState = this.localStore.getState();
+        delete appState.appInstallations[installationId];
+        this.localStore.updateState(appState);
+    }
+
+    public async getApps(teamId: number): Promise<void> {
+        const remoteApps = await this.appClient.getApps(`${teamId}`);
+        let appState = this.localStore.getState();
+        appState = remoteApps.reduce(
+            (appState, remoteApp) => mergeApp(appState, remoteApp),
+            appState,
+        );
         this.localStore.updateState(appState);
     }
 

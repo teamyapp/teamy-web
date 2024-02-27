@@ -7,10 +7,12 @@ import { TeamyThirdPartyAppFeedbackUI } from '@lib/thirdPartyApp/DynamicFeedback
 
 import { absoluteRootPath, absoluteUri, taskPath } from '@core/routing/routes';
 import { LocalStore } from '@core/storage/syncer/localStore';
+import { FileClient } from '@core/client/file.client';
 
 export class TeamyThirdPartyAppClient implements ThirdPartyAppClient {
     constructor(
         private localStore: LocalStore,
+        private fileClient: FileClient,
         private router: Router,
         private identityClient: IdentityClient,
         private feedbackRef: RefObject<TeamyThirdPartyAppFeedbackUI>,
@@ -20,8 +22,10 @@ export class TeamyThirdPartyAppClient implements ThirdPartyAppClient {
         return getAccessToken();
     }
 
-    getResourceUrl(appPacketRelativePath: string): string {
-        return `http://localhost:8082/apps/github/${appPacketRelativePath}`;
+    getResourceUrl(appId: number, versionNumber: number): string {
+        return this.fileClient.getRemoteFileUrl(
+            `files/apps/${appId}/${versionNumber}/app.js`,
+        );
     }
 
     getTeamId(): number | undefined {

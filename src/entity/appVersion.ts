@@ -18,6 +18,7 @@ export interface AppVersion {
     createdAt: Date;
     createdBy: User;
     prices: Money[];
+    localPrice?: Money;
     status: AppVersionStatus;
     locked: boolean;
     app: App;

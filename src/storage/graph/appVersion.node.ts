@@ -5,7 +5,9 @@ import { AppVersionState } from '../states/appVersion.state';
 import { AppNode } from './app.node';
 import { MoneyNode } from './money.node';
 import { UserNode } from './user.node';
+import { getLocalCurrency } from '@core/entity/money';
 
+export const APP_VERSION_ICON_SIZE = 100;
 export class AppVersionNode implements AppVersion {
     constructor(
         private localStore: LocalStore,
@@ -86,5 +88,10 @@ export class AppVersionNode implements AppVersion {
 
     public get packagePath(): string {
         return `files/apps/${this.appVersion.appId}/${this.appVersion.number}`;
+    }
+
+    public get localPrice(): MoneyNode | undefined {
+        const localCurrency = getLocalCurrency();
+        return this.prices.find((price) => price.currency === localCurrency);
     }
 }

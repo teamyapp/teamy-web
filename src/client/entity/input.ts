@@ -6,6 +6,11 @@ import { RemoteRolloutActivatorType } from './remoteRolloutActivatorType';
 import { RemoteRolloutVersionSelectorType } from './remoteRolloutVersionSelectorType';
 import { RemoteAppVersionStatus } from './remoteAppVersion';
 
+
+export interface RemoteAppFilter {
+    tagValues: string[];
+}
+
 export interface RemoteCreateUserInput {
     lastName: string;
     firstName: string;

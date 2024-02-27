@@ -13,10 +13,11 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
 import { AppVersion } from '@core/entity/appVersion';
+import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 
+import { AppIconComponent } from '../../AppIcon.component';
 import styles from './VersionsTab.component.module.scss';
 
-const APP_VERSION_ICON_SIZE = 100;
 interface Props {
     onCreateVersionClick: () => Promise<number>;
     onDeleteVersionClick: (versionNumber: number) => void;
@@ -48,7 +49,8 @@ export function VersionsTabComponent(props: Props) {
                     const app = props.deps.graphSource.app(props.appId);
                     const appVersion = app?.versions.find(
                         (appVersion) =>
-                            appVersion.number === selectedAppVersionMutRef.current?.number,
+                            appVersion.number ===
+                            selectedAppVersionMutRef.current?.number,
                     );
 
                     updateSelectedAppVersion(appVersion);
@@ -78,7 +80,7 @@ export function VersionsTabComponent(props: Props) {
     const updateSelectedAppVersion = (appVersion?: AppVersion) => {
         selectedAppVersionMutRef.current = appVersion;
         setSelectedAppVersion(appVersion);
-    }
+    };
 
     const onCreateVersionClick = async () => {
         const versionNumber = await props.onCreateVersionClick();
@@ -283,10 +285,12 @@ export function VersionsTabComponent(props: Props) {
                     )}
 
                     <div className={`${styles.Row} ${styles.Icon}`}>
-                        <img
-                            className={styles.Icon}
-                            src={props.deps.fileClient.getRemoteFileUrl(
-                                selectedAppVersion.iconPath(APP_VERSION_ICON_SIZE),
+                        <AppIconComponent
+                            appName={selectedAppVersion.appName}
+                            appIconUrl={props.deps.fileClient.getRemoteFileUrl(
+                                selectedAppVersion.iconPath(
+                                    APP_VERSION_ICON_SIZE,
+                                ),
                             )}
                         />
                     </div>
@@ -324,13 +328,14 @@ export function VersionsTabComponent(props: Props) {
                     </div>
                     <div className={`${styles.Row} ${styles.Buttons}`}>
                         <div className={styles.Download}>
-                            <div
-                                className={styles.Download}
-                            >
-                                <ButtonUI label={'Download'} >
-                                    <a href={props.deps.fileClient.getRemoteDownloadUrl(
-                                        selectedAppVersion.packagePath,
-                                    )} download>
+                            <div className={styles.Download}>
+                                <ButtonUI label={'Download'}>
+                                    <a
+                                        href={props.deps.fileClient.getRemoteDownloadUrl(
+                                            selectedAppVersion.packagePath,
+                                        )}
+                                        download
+                                    >
                                         Download
                                     </a>
                                 </ButtonUI>

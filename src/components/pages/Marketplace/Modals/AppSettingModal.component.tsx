@@ -12,8 +12,8 @@ interface App {
 }
 
 const apps: Record<number, App> = {
-    1: {
-        id: 1,
+    33: {
+        id: 33,
         name: 'Github',
     },
     2: {
@@ -69,10 +69,11 @@ export class AppSettingModalComponent extends Component<Props, State> {
             },
             async () => {
                 await this.modalRef.current?.open();
-                if (!this.contentRef.current) {
+                if (!this.contentRef.current || !(this.contentRef.current instanceof Element)) {
                     return;
                 }
 
+                debugger
                 const thirdPartyAppEventHub =
                     this.props.thirdPartyAppEventHubs.find(
                         (hub) => hub.appId === this.state.app?.id,
