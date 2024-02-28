@@ -12,8 +12,8 @@ interface App {
 }
 
 const apps: Record<number, App> = {
-    33: {
-        id: 33,
+    35: {
+        id: 35,
         name: 'Github',
     },
     2: {

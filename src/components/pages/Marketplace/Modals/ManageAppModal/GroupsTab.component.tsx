@@ -20,13 +20,13 @@ type GroupTabKey = 'users' | 'teams';
 
 const groupTabs: Tab<GroupTabKey>[] = [
     {
-        name: 'Users',
-        key: 'users',
-    },
-    {
         name: 'Teams',
         key: 'teams',
     },
+    {
+        name: 'Users',
+        key: 'users',
+    }
 ];
 
 interface Props {
@@ -45,8 +45,8 @@ export function GroupsTabComponent(props: Props) {
     const [showGroupTabViews, setShowGroupTabViews] = useState<{
         [key in GroupTabKey]: boolean;
     }>({
-        users: true,
-        teams: false,
+        users: false,
+        teams: true,
     });
 
     const [selectedUserGroup, setSelectedUserGroup] = useState<Group>();

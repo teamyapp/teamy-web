@@ -30,12 +30,12 @@ type RolloutGroupTabKey = 'users' | 'teams';
 
 const rolloutGroupTabs: Tab<RolloutGroupTabKey>[] = [
     {
-        name: 'Users',
-        key: 'users',
-    },
-    {
         name: 'Teams',
         key: 'teams',
+    },
+    {
+        name: 'Users',
+        key: 'users',
     },
 ];
 
@@ -62,8 +62,8 @@ export function RolloutsTabComponent(props: Props) {
     const [showRolloutGroupTabViews, setShowRolloutGroupTabViews] = useState<{
         [key in RolloutGroupTabKey]: boolean;
     }>({
-        users: true,
-        teams: false,
+        users: false,
+        teams: true,
     });
     const [selectedUserGroupRollout, setSelectedUserGroupRollout] =
         useState<Rollout>();
