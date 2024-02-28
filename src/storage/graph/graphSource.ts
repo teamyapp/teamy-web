@@ -102,7 +102,6 @@ export class GraphSource {
         const appState = this.localStore.getState();
         const appVersions: AppVersionNode[] = [];
         for (const appId in appState.apps) {
-            const app = appState.apps[appId];
             const appNode = this.app(app.id);
             if (!appNode) {
                 continue;
