@@ -3,6 +3,7 @@ import React, { Component, createRef } from 'react';
 
 import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
+import { App } from '@core/entity/app';
 import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -12,7 +13,6 @@ import styles from './DiscoveredTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import githubBannerImg from './assets/github_ads.png';
 import { formatCount, formatPrice } from './format';
-import { App } from '@core/entity/app';
 
 interface Props {
     deps: Deps;
@@ -43,10 +43,7 @@ export class DiscoverTabComponent extends Component<Props, State> {
         };
     };
 
-    private handleAppRemoveBtnClicked = (
-        app: App,
-        currentTeamId: number,
-    ) => {
+    private handleAppRemoveBtnClicked = (app: App, currentTeamId: number) => {
         return () => {
             const appTeamInstallation = app.installations.find(
                 (installation) =>

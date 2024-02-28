@@ -88,6 +88,7 @@ export class AppState {
     public activeSprintTabIndex?: number;
     public fetchedMeData?: boolean;
     public fetchedTeamData?: boolean;
+    public sprintTabReady?: boolean;
 
     constructor(
         state: PersistedState = {

@@ -3,15 +3,15 @@ import React, { Component, ReactElement, createRef } from 'react';
 
 import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
+import { App } from '@core/entity/app';
 import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 import { GraphSource } from '@core/storage/graph/graphSource';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { AppIconComponent } from './AppIcon.component';
 import styles from './InstalledTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import { formatCount } from './format';
-import { App } from '@core/entity/app';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;
@@ -33,10 +33,7 @@ export class InstalledTabComponent extends Component<Props, State> {
         this.fileClient = props.deps.fileClient;
     }
 
-    private handleAppRemoveBtnClicked = (
-        app: App,
-        currentTeamId: number,
-    ) => {
+    private handleAppRemoveBtnClicked = (app: App, currentTeamId: number) => {
         return () => {
             const appTeamInstallation = app.installations.find(
                 (installation) =>
@@ -79,7 +76,7 @@ export class InstalledTabComponent extends Component<Props, State> {
                                 <div className={styles.Installations}>
                                     {formatCount(
                                         item.activeAppVersion.app
-                                        .totalInstallations,
+                                            .totalInstallations,
                                     )}{' '}
                                     installed
                                 </div>

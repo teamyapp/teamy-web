@@ -1,4 +1,4 @@
-import { Component, createRef } from 'react';
+import React, { Component, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
@@ -11,6 +11,7 @@ import { AppIconComponent } from './AppIcon.component';
 import styles from './ManagedTab.component.module.scss';
 import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
 import { ManageAppModalComponent } from './Modals/ManageAppModal/ManageAppModal.component';
+import { formatCount } from './format';
 
 interface Props {
     deps: Deps;
@@ -61,6 +62,13 @@ export class ManagedTabComponent extends Component<Props> {
                                 <div className={styles.MiddleSection}>
                                     <div className={styles.Name}>
                                         {currentTeamAppVersion.appName}
+                                    </div>
+                                    <div className={styles.Installations}>
+                                        {formatCount(
+                                            currentTeamAppVersion.app
+                                                .totalInstallations,
+                                        )}{' '}
+                                        installed
                                     </div>
                                 </div>
                                 <div className={styles.RightSection}>

@@ -74,9 +74,7 @@ export class AppSettingModalComponent extends Component<Props, State> {
             },
             async () => {
                 await this.modalRef.current?.open();
-                if (
-                    !this.contentRef.current
-                ) {
+                if (!this.contentRef.current) {
                     return;
                 }
 

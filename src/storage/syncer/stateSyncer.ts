@@ -903,7 +903,10 @@ export class StateSyncer {
         );
         let appState = this.localStore.getState();
         if (remoteInstallation.activeAppVersion?.app) {
-        appState = mergeApp(appState, remoteInstallation.activeAppVersion.app);
+            appState = mergeApp(
+                appState,
+                remoteInstallation.activeAppVersion.app,
+            );
         }
 
         appState = mergeTeam(appState, remoteInstallation.installedTeam);
@@ -917,9 +920,13 @@ export class StateSyncer {
         const installation = appState.appInstallations[installationId];
         const app = appState.apps[installation.appId];
         const team = appState.teams[installation.installedTeamId];
-        app.installationIds = app.installationIds.filter(installationId => installationId !== installation.id);
-        team.appInstallationIds = team.appInstallationIds?.filter(installationId => installationId !== installation.id);
-        app.totalInstallations -= 1
+        app.installationIds = app.installationIds.filter(
+            (installationId) => installationId !== installation.id,
+        );
+        team.appInstallationIds = team.appInstallationIds?.filter(
+            (installationId) => installationId !== installation.id,
+        );
+        app.totalInstallations -= 1;
         delete appState.appInstallations[installationId];
         this.localStore.updateState(appState);
     }

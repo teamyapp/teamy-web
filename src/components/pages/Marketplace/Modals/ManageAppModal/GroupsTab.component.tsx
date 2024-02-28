@@ -26,7 +26,7 @@ const groupTabs: Tab<GroupTabKey>[] = [
     {
         name: 'Users',
         key: 'users',
-    }
+    },
 ];
 
 interface Props {
