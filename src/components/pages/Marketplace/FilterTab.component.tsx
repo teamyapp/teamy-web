@@ -126,7 +126,7 @@ export class FilterTabComponent extends Component<Props, State> {
                                 </div>
                                 <div className={styles.Installations}>
                                     {formatCount(
-                                        appVersion.app.totalInstallations,
+                               appVersion.app.totalInstallations,
                                     )}{' '}
                                     installed
                                 </div>
@@ -180,6 +180,7 @@ export class FilterTabComponent extends Component<Props, State> {
                 </div>
                 <AppSettingModalComponent
                     ref={this.appSettingModalRef}
+                    deps={this.props.deps}
                     thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                 />
             </>

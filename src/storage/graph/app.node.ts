@@ -34,6 +34,7 @@ export class AppNode implements App {
         });
     }
 
+
     public get secrets(): AppSecretNode[] {
         const appState = this.localStore.getState();
         const app = appState.apps[this.app.id];
@@ -203,7 +204,7 @@ export class AppNode implements App {
         const appState = this.localStore.getState();
         return this.app.installationIds.some((installationId) => {
             const installation = appState.appInstallations[installationId];
-            return installation.installedTeamId === teamId;
+            return installation?.installedTeamId === teamId;
         });
     }
 }

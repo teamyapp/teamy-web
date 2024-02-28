@@ -599,9 +599,9 @@ export function mergeApp(
             remoteApp.installations?.map(
                 (installation) => toInt(installation.id)!,
             ) || localOldApp.installationIds,
-        tagIds:
-            new Set(remoteApp.tags?.map((tag) => toInt(tag.id)!)) ||
-            localOldApp.tagIds,
+        tagIds: remoteApp.tags
+            ? new Set(remoteApp.tags?.map((tag) => toInt(tag.id)!))
+            : localOldApp.tagIds,
         versions: localOldApp.versions || {},
     };
 

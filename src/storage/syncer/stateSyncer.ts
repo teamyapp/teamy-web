@@ -902,6 +902,11 @@ export class StateSyncer {
             `${teamId}`,
         );
         let appState = this.localStore.getState();
+        if (remoteInstallation.activeAppVersion?.app) {
+        appState = mergeApp(appState, remoteInstallation.activeAppVersion.app);
+        }
+
+        appState = mergeTeam(appState, remoteInstallation.installedTeam);
         appState = mergeAppInstallation(appState, remoteInstallation);
         this.localStore.updateState(appState);
     }
@@ -909,6 +914,12 @@ export class StateSyncer {
     public async uninstallAppFromTeam(installationId: number) {
         await this.appClient.uninstallAppFromTeam(`${installationId}`);
         let appState = this.localStore.getState();
+        const installation = appState.appInstallations[installationId];
+        const app = appState.apps[installation.appId];
+        const team = appState.teams[installation.installedTeamId];
+        app.installationIds = app.installationIds.filter(installationId => installationId !== installation.id);
+        team.appInstallationIds = team.appInstallationIds?.filter(installationId => installationId !== installation.id);
+        app.totalInstallations -= 1
         delete appState.appInstallations[installationId];
         this.localStore.updateState(appState);
     }

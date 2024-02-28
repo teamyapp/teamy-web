@@ -10,6 +10,8 @@ import { AppIconComponent } from './AppIcon.component';
 import styles from './InstalledTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import { formatCount } from './format';
+import { App } from '@core/entity/app';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 interface Props {
     deps: Deps;
@@ -21,13 +23,33 @@ interface State {}
 export class InstalledTabComponent extends Component<Props, State> {
     private readonly appSettingModalRef = createRef<AppSettingModalComponent>();
     private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
     private readonly fileClient: FileClient;
 
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.fileClient = props.deps.fileClient;
     }
+
+    private handleAppRemoveBtnClicked = (
+        app: App,
+        currentTeamId: number,
+    ) => {
+        return () => {
+            const appTeamInstallation = app.installations.find(
+                (installation) =>
+                    installation.installedTeam.id === currentTeamId,
+            );
+
+            if (!appTeamInstallation) {
+                return;
+            }
+
+            this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
+        };
+    };
 
     render() {
         const installations = this.graphSource.currentTeam()?.appInstallations;
@@ -57,7 +79,7 @@ export class InstalledTabComponent extends Component<Props, State> {
                                 <div className={styles.Installations}>
                                     {formatCount(
                                         item.activeAppVersion.app
-                                            .totalInstallations,
+                                        .totalInstallations,
                                     )}{' '}
                                     installed
                                 </div>
@@ -66,13 +88,17 @@ export class InstalledTabComponent extends Component<Props, State> {
                                 <div
                                     className={`${styles.Button} ${styles.Setting}`}
                                     onClick={this.onAppSettingButtonClickHandler(
-                                        item.id,
+                                        item.activeAppVersion.app.id,
                                     )}
                                 >
                                     Setting
                                 </div>
                                 <div
                                     className={`${styles.Button}  ${styles.Remove}`}
+                                    onClick={this.handleAppRemoveBtnClicked(
+                                        item.activeAppVersion.app,
+                                        item.installedTeam.id,
+                                    )}
                                 >
                                     Remove
                                 </div>
@@ -82,6 +108,7 @@ export class InstalledTabComponent extends Component<Props, State> {
                 </div>
                 <AppSettingModalComponent
                     ref={this.appSettingModalRef}
+                    deps={this.props.deps}
                     thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                 />
             </>

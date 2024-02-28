@@ -1182,10 +1182,35 @@ export class AppClient {
                             id
                             installedTeam {
                                 id
+                                appInstallations {
+                                    id
+                                    installedTeam {
+                                        id
+                                    }
+                                    activeAppVersion {
+                                        app {
+                                            id
+                                        }
+                                        number
+                                    }
+                                }
                             }
                             activeAppVersion {
                                 app {
                                     id
+                                    totalInstallations
+                                    installations {
+                                        id
+                                        installedTeam {
+                                            id
+                                        }
+                                        activeAppVersion {
+                                            app {
+                                                id
+                                            }
+                                            number
+                                        }
+                                    }
                                 }
                                 number
                             }
@@ -1211,10 +1236,35 @@ export class AppClient {
                             id
                             installedTeam {
                                 id
+                                appInstallations {
+                                    id
+                                    installedTeam {
+                                        id
+                                    }
+                                    activeAppVersion {
+                                        app {
+                                            id
+                                        }
+                                        number
+                                    }
+                                }
                             }
                             activeAppVersion {
                                 app {
                                     id
+                                    totalInstallations
+                                    installations {
+                                        id
+                                        installedTeam {
+                                            id
+                                        }
+                                        activeAppVersion {
+                                            app {
+                                                id
+                                            }
+                                            number
+                                        }
+                                    }
                                 }
                                 number
                             }

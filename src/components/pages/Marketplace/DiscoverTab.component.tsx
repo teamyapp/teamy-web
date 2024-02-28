@@ -3,7 +3,6 @@ import React, { Component, createRef } from 'react';
 
 import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
-import { AppNode } from '@core/storage/graph/app.node';
 import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
@@ -13,6 +12,7 @@ import styles from './DiscoveredTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import githubBannerImg from './assets/github_ads.png';
 import { formatCount, formatPrice } from './format';
+import { App } from '@core/entity/app';
 
 interface Props {
     deps: Deps;
@@ -44,7 +44,7 @@ export class DiscoverTabComponent extends Component<Props, State> {
     };
 
     private handleAppRemoveBtnClicked = (
-        app: AppNode,
+        app: App,
         currentTeamId: number,
     ) => {
         return () => {
@@ -160,6 +160,7 @@ export class DiscoverTabComponent extends Component<Props, State> {
                 </div>
                 <AppSettingModalComponent
                     ref={this.appSettingModalRef}
+                    deps={this.props.deps}
                     thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                 />
             </>
