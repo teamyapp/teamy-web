@@ -7,7 +7,6 @@ import { AppNode } from './app.node';
 import { MoneyNode } from './money.node';
 import { UserNode } from './user.node';
 
-export const APP_VERSION_ICON_SIZE = 100;
 export class AppVersionNode implements AppVersion {
     constructor(
         private localStore: LocalStore,

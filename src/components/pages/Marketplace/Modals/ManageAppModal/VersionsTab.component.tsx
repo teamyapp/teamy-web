@@ -13,10 +13,11 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
 import { AppVersion } from '@core/entity/appVersion';
-import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 
 import { AppIconComponent } from '../../AppIcon.component';
 import styles from './VersionsTab.component.module.scss';
+
+export const APP_VERSION_ICON_SIZE = 100;
 
 interface Props {
     onCreateVersionClick: () => Promise<number>;

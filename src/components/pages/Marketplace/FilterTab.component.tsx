@@ -8,7 +8,6 @@ import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
 import { getTags, marketplaceFilterRoutePattern } from '@core/routing/routes';
 import { AppNode } from '@core/storage/graph/app.node';
-import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
@@ -16,6 +15,8 @@ import { AppIconComponent } from './AppIcon.component';
 import styles from './FilterTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import { formatCount, formatPrice } from './format';
+
+export const APP_VERSION_ICON_SIZE = 100;
 
 interface Props {
     deps: Deps;
@@ -65,7 +66,7 @@ export class FilterTabComponent extends Component<Props, State> {
         })().then();
     }
 
-    private handleAppInstallBtnClicked = (
+    private onInstallAppButtonClick = (
         appId: number,
         currentTeamId: number,
     ) => {
@@ -74,7 +75,7 @@ export class FilterTabComponent extends Component<Props, State> {
         };
     };
 
-    private handleAppRemoveBtnClicked = (
+    private onRemoveAppButtonClick = (
         app: AppNode,
         currentTeamId: number,
     ) => {
@@ -144,7 +145,7 @@ export class FilterTabComponent extends Component<Props, State> {
                                         </div>
                                         <div
                                             className={`${styles.Button}  ${styles.Remove}`}
-                                            onClick={this.handleAppRemoveBtnClicked(
+                                            onClick={this.onRemoveAppButtonClick(
                                                 appVersion.app,
                                                 currentTeamId,
                                             )}
@@ -165,7 +166,7 @@ export class FilterTabComponent extends Component<Props, State> {
                                         </div>
                                         <div
                                             className={`${styles.Button}`}
-                                            onClick={this.handleAppInstallBtnClicked(
+                                            onClick={this.onInstallAppButtonClick(
                                                 appVersion.app.id,
                                                 currentTeamId,
                                             )}

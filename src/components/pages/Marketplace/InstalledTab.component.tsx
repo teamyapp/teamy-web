@@ -4,7 +4,6 @@ import React, { Component, ReactElement, createRef } from 'react';
 import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
 import { App } from '@core/entity/app';
-import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
@@ -12,6 +11,8 @@ import { AppIconComponent } from './AppIcon.component';
 import styles from './InstalledTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import { formatCount } from './format';
+
+export const APP_VERSION_ICON_SIZE = 100;
 
 interface Props {
     deps: Deps;
@@ -33,7 +34,7 @@ export class InstalledTabComponent extends Component<Props, State> {
         this.fileClient = props.deps.fileClient;
     }
 
-    private handleAppRemoveBtnClicked = (app: App, currentTeamId: number) => {
+    private onRemoveAppButtonClick = (app: App, currentTeamId: number) => {
         return () => {
             const appTeamInstallation = app.installations.find(
                 (installation) =>
@@ -92,7 +93,7 @@ export class InstalledTabComponent extends Component<Props, State> {
                                 </div>
                                 <div
                                     className={`${styles.Button}  ${styles.Remove}`}
-                                    onClick={this.handleAppRemoveBtnClicked(
+                                    onClick={this.onRemoveAppButtonClick(
                                         item.activeAppVersion.app,
                                         item.installedTeam.id,
                                     )}

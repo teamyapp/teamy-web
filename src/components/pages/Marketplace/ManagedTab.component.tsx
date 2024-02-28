@@ -4,7 +4,6 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
-import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 import { GraphSource } from '@core/storage/graph/graphSource';
 
 import { AppIconComponent } from './AppIcon.component';
@@ -12,6 +11,8 @@ import styles from './ManagedTab.component.module.scss';
 import { CreateAppModalComponent } from './Modals/CreateAppModal.component';
 import { ManageAppModalComponent } from './Modals/ManageAppModal/ManageAppModal.component';
 import { formatCount } from './format';
+
+export const APP_VERSION_ICON_SIZE = 100;
 
 interface Props {
     deps: Deps;

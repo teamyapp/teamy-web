@@ -4,7 +4,6 @@ import React, { Component, createRef } from 'react';
 import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
 import { App } from '@core/entity/app';
-import { APP_VERSION_ICON_SIZE } from '@core/storage/graph/appVersion.node';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
@@ -13,6 +12,8 @@ import styles from './DiscoveredTab.component.module.scss';
 import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import githubBannerImg from './assets/github_ads.png';
 import { formatCount, formatPrice } from './format';
+
+export const APP_VERSION_ICON_SIZE = 100;
 
 interface Props {
     deps: Deps;
@@ -34,7 +35,7 @@ export class DiscoverTabComponent extends Component<Props, State> {
         this.fileClient = props.deps.fileClient;
     }
 
-    private handleAppInstallBtnClicked = (
+    private onInstallAppButtonClick = (
         appId: number,
         currentTeamId: number,
     ) => {
@@ -43,7 +44,7 @@ export class DiscoverTabComponent extends Component<Props, State> {
         };
     };
 
-    private handleAppRemoveBtnClicked = (app: App, currentTeamId: number) => {
+    private onRemoveAppButtonClick = (app: App, currentTeamId: number) => {
         return () => {
             const appTeamInstallation = app.installations.find(
                 (installation) =>
@@ -121,7 +122,7 @@ export class DiscoverTabComponent extends Component<Props, State> {
                                         </div>
                                         <div
                                             className={`${styles.Button}  ${styles.Remove}`}
-                                            onClick={this.handleAppRemoveBtnClicked(
+                                            onClick={this.onRemoveAppButtonClick(
                                                 appVersion.app,
                                                 currentTeamId,
                                             )}
@@ -142,7 +143,7 @@ export class DiscoverTabComponent extends Component<Props, State> {
                                         </div>
                                         <div
                                             className={`${styles.Button}`}
-                                            onClick={this.handleAppInstallBtnClicked(
+                                            onClick={this.onInstallAppButtonClick(
                                                 appVersion.app.id,
                                                 currentTeamId,
                                             )}
