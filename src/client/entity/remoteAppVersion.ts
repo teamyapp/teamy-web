@@ -20,6 +20,7 @@ export interface RemoteAppVersion {
     prices: RemoteMoney[];
     status: RemoteAppVersionStatus;
     locked: boolean;
+    hasUiExtension: boolean;
     errorMessage?: string;
     app: RemoteApp;
 }

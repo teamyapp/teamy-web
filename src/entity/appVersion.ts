@@ -25,4 +25,5 @@ export interface AppVersion {
     iconPath(size: number): string;
     packagePath: string;
     errorMessage?: string;
+    hasUiExtension: boolean;
 }

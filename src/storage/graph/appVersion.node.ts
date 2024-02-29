@@ -97,4 +97,8 @@ export class AppVersionNode implements AppVersion {
         const localCurrency = getLocalCurrency();
         return this.prices.find((price) => price.currency === localCurrency);
     }
+
+    public get hasUiExtension(): boolean {
+        return this.appVersion.hasUiExtension;
+    }
 }

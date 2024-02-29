@@ -909,7 +909,6 @@ export class StateSyncer {
             );
         }
 
-        appState = mergeTeam(appState, remoteInstallation.installedTeam);
         appState = mergeAppInstallation(appState, remoteInstallation);
         this.localStore.updateState(appState);
     }

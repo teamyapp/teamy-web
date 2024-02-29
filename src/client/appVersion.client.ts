@@ -56,6 +56,7 @@ export class AppVersionClient {
                         ) {
                             number
                             locked
+                            hasUiExtension
                             status
                             errorMessage
                             app {

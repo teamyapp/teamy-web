@@ -835,36 +835,41 @@ export class AppComponent extends Component<Props, State> {
         }
 
         await Promise.all(
-            teamAppInstallations.map(async (teamAppInstallation) => {
-                const appId = teamAppInstallation.activeAppVersion.app.id;
-                const versionNumber =
-                    teamAppInstallation.activeAppVersion.number;
-                const client: ThirdPartyAppClient =
-                    new TeamyThirdPartyAppClient(
-                        this.localStore,
-                        this.props.deps.fileClient,
-                        this.router,
-                        this.identityClient,
-                        this.thirdPartyAppFeedbackRef,
-                        appId,
-                        versionNumber,
+            teamAppInstallations
+                .filter(
+                    (teamAppInstallation) =>
+                        teamAppInstallation.activeAppVersion.hasUiExtension,
+                )
+                .map(async (teamAppInstallation) => {
+                    const appId = teamAppInstallation.activeAppVersion.app.id;
+                    const versionNumber =
+                        teamAppInstallation.activeAppVersion.number;
+                    const client: ThirdPartyAppClient =
+                        new TeamyThirdPartyAppClient(
+                            this.localStore,
+                            this.props.deps.fileClient,
+                            this.router,
+                            this.identityClient,
+                            this.thirdPartyAppFeedbackRef,
+                            appId,
+                            versionNumber,
+                        );
+                    const extensionEntryPoint = client.getResourceUrl('app.js');
+                    let { App } = await importModule(extensionEntryPoint);
+                    const app: ThirdPartyApp = new App();
+
+                    const thirdPartyAppEventHub = new ThirdPartyAppEventHub(
+                        teamAppInstallation.activeAppVersion.app.id,
                     );
-                const extensionEntryPoint = client.getResourceUrl('app.js');
-                let { App } = await importModule(extensionEntryPoint);
-                const app: ThirdPartyApp = new App();
+                    this.thirdPartyAppEventHubs.push(thirdPartyAppEventHub);
 
-                const thirdPartyAppEventHub = new ThirdPartyAppEventHub(
-                    teamAppInstallation.activeAppVersion.app.id,
-                );
-                this.thirdPartyAppEventHubs.push(thirdPartyAppEventHub);
-
-                app.init({
-                    eventListener: thirdPartyAppEventHub,
-                    client,
-                });
-                console.log(`[Extension][${app.name()}] Loaded`);
-                return app;
-            }),
+                    app.init({
+                        eventListener: thirdPartyAppEventHub,
+                        client,
+                    });
+                    console.log(`[Extension][${app.name()}] Loaded`);
+                    return app;
+                }),
         );
         this.setState({
             thirdPartyAppEventHubs: this.thirdPartyAppEventHubs,

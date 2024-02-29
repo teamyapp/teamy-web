@@ -73,6 +73,7 @@ export class TeamClient {
                                     status
                                     errorMessage
                                     locked
+                                    hasUiExtension
                                 }
                             }
                             managedApps {
@@ -133,6 +134,7 @@ export class TeamClient {
                                     status
                                     errorMessage
                                     locked
+                                    hasUiExtension
                                 }
                                 versions {
                                     app {
@@ -162,6 +164,7 @@ export class TeamClient {
                                     status
                                     errorMessage
                                     locked
+                                    hasUiExtension
                                 }
                                 managedByTeam {
                                     id

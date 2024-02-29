@@ -676,6 +676,7 @@ export function mergeAppVersion(
         description: version.description || localOldVersion.description,
         status: version.status || localOldVersion.status,
         locked: version.locked,
+        hasUiExtension: version.hasUiExtension,
         errorMessage: version.errorMessage || localOldVersion.errorMessage,
     };
 
