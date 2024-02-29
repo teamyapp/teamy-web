@@ -6,6 +6,6 @@ export interface Money {
 }
 
 export const getLocalCurrency = (): Currency => {
-    // TODO: Implement logic to get the local currency
+    // TODO: Get local currency using IP address
     return 'USD';
 };
