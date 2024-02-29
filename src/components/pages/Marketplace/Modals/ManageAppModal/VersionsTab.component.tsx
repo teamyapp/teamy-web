@@ -17,7 +17,7 @@ import { AppVersion } from '@core/entity/appVersion';
 import { AppIconComponent } from '../../AppIcon.component';
 import styles from './VersionsTab.component.module.scss';
 
-export const APP_VERSION_ICON_SIZE = 100;
+export const APP_VERSION_ICON_SIZE = 120;
 
 interface Props {
     onCreateVersionClick: () => Promise<number>;
