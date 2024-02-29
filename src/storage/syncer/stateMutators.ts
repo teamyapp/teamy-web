@@ -595,10 +595,6 @@ export function mergeApp(
         secretIds:
             remoteApp.secrets?.map((secret) => toInt(secret.id)!) ||
             localOldApp.secretIds,
-        installationIds:
-            remoteApp.installations?.map(
-                (installation) => toInt(installation.id)!,
-            ) || localOldApp.installationIds,
         tagIds: remoteApp.tags
             ? new Set(remoteApp.tags?.map((tag) => toInt(tag.id)!))
             : localOldApp.tagIds,
@@ -1224,10 +1220,6 @@ export function mergeTeam(
         managedAppIds:
             remoteTeam.managedApps?.map((app) => toInt(app.id)!) ||
             localOldTeam.managedAppIds,
-        appInstallationIds:
-            remoteTeam.appInstallations?.map(
-                (appInstallation) => toInt(appInstallation.id)!,
-            ) || localOldTeam.appInstallationIds,
     };
 
     if (remoteTeam.creator) {

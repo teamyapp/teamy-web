@@ -4,7 +4,6 @@ export class ThirdPartyAppState {
     public constructor(
         public id: number,
         public secretIds: number[],
-        public installationIds: number[],
         public totalInstallations: number,
         public managedByTeamId: number,
         public tagIds: Set<number>,
@@ -22,7 +21,6 @@ export class ThirdPartyAppState {
         return new ThirdPartyAppState(
             json.ID,
             json.SecretIDs,
-            json.InstallationIDs,
             json.TotalInstallations,
             json.ManagedByTeamID,
             json.TagIDs,
@@ -39,7 +37,6 @@ export class ThirdPartyAppState {
         return new ThirdPartyAppState(
             json.id,
             json.secretIds,
-            json.installationIds,
             json.totalInstallations,
             json.managedByTeamId,
             json.tagIds,

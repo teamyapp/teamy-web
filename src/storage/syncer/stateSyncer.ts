@@ -919,14 +919,7 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         const installation = appState.appInstallations[installationId];
         const app = appState.apps[installation.appId];
-        const team = appState.teams[installation.installedTeamId];
-        app.installationIds = app.installationIds.filter(
-            (installationId) => installationId !== installation.id,
-        );
-        team.appInstallationIds = team.appInstallationIds?.filter(
-            (installationId) => installationId !== installation.id,
-        );
-        app.totalInstallations -= 1;
+        app.totalInstallations -= 1
         delete appState.appInstallations[installationId];
         this.localStore.updateState(appState);
     }
@@ -949,8 +942,10 @@ export class StateSyncer {
             delete appState.appSecrets[appSecretId];
         }
 
-        for (let appInstallationId of appState.apps[appId].installationIds) {
-            delete appState.appInstallations[appInstallationId];
+        for (let appInstallation in appState.appInstallations) {
+            if (appState.appInstallations[appInstallation].appId === appId) {
+                delete appState.appInstallations[appInstallation];
+            }
         }
 
         appState.appGroupRelations

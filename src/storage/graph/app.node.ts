@@ -27,11 +27,15 @@ export class AppNode implements App {
 
     public get installations(): AppInstallationNode[] {
         const appState = this.localStore.getState();
-        const app = appState.apps[this.app.id];
-        return app.installationIds.map((installationId) => {
+        const appInstallations = []
+        for (let installationId in appState.appInstallations) {
             const installation = appState.appInstallations[installationId];
-            return new AppInstallationNode(this.localStore, installation);
-        });
+            if (installation.appId === this.app.id) {
+                appInstallations.push(new AppInstallationNode(this.localStore, installation));
+            }
+        }
+
+        return appInstallations;
     }
 
     public get secrets(): AppSecretNode[] {
@@ -201,9 +205,14 @@ export class AppNode implements App {
 
     public isInstalled(teamId: number): boolean {
         const appState = this.localStore.getState();
-        return this.app.installationIds.some((installationId) => {
+        
+        for (let installationId in appState.appInstallations) {
             const installation = appState.appInstallations[installationId];
-            return installation?.installedTeamId === teamId;
-        });
+            if (installation.appId === this.app.id && installation.installedTeamId === teamId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
