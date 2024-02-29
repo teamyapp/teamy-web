@@ -75,10 +75,7 @@ export class FilterTabComponent extends Component<Props, State> {
         };
     };
 
-    private onRemoveAppButtonClick = (
-        app: AppNode,
-        currentTeamId: number,
-    ) => {
+    private onRemoveAppButtonClick = (app: AppNode, currentTeamId: number) => {
         return () => {
             const appTeamInstallation = app.installations.find(
                 (installation) =>

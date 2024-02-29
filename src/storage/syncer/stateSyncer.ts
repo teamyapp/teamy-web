@@ -919,7 +919,7 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         const installation = appState.appInstallations[installationId];
         const app = appState.apps[installation.appId];
-        app.totalInstallations -= 1
+        app.totalInstallations -= 1;
         delete appState.appInstallations[installationId];
         this.localStore.updateState(appState);
     }

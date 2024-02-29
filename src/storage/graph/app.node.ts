@@ -27,11 +27,13 @@ export class AppNode implements App {
 
     public get installations(): AppInstallationNode[] {
         const appState = this.localStore.getState();
-        const appInstallations = []
+        const appInstallations = [];
         for (let installationId in appState.appInstallations) {
             const installation = appState.appInstallations[installationId];
             if (installation.appId === this.app.id) {
-                appInstallations.push(new AppInstallationNode(this.localStore, installation));
+                appInstallations.push(
+                    new AppInstallationNode(this.localStore, installation),
+                );
             }
         }
 
@@ -205,10 +207,13 @@ export class AppNode implements App {
 
     public isInstalled(teamId: number): boolean {
         const appState = this.localStore.getState();
-        
+
         for (let installationId in appState.appInstallations) {
             const installation = appState.appInstallations[installationId];
-            if (installation.appId === this.app.id && installation.installedTeamId === teamId) {
+            if (
+                installation.appId === this.app.id &&
+                installation.installedTeamId === teamId
+            ) {
                 return true;
             }
         }
