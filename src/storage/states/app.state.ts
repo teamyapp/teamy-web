@@ -23,6 +23,8 @@ import { AppGroupRelationState } from './appGroupRelation.state';
 import { AppInstallationState } from './appInstallation.state';
 import { AppRolloutRelationState } from './appRolloutRelation.state';
 import { AppSecretState } from './appSecret.state';
+import { AppVersionChangeState } from './appVersionChange.state';
+import { AppVersionPriceState } from './appVersionPrice.state';
 import { FilterGroupState, GroupState } from './group.state';
 import { GroupMemberRelationState } from './groupMemberRelation.state';
 import { RolloutState } from './rollout.state';
@@ -33,8 +35,6 @@ import {
     VersionSelectorState,
     VersionSelectorVersionRelationState,
 } from './versionSelector.state';
-import { AppVersionPriceState } from './appVersionPrice.state';
-import { AppVersionChangeState } from './appVersionChange.state';
 
 interface PersistedState {
     teamSelectedSprint: Record<number, number>;
@@ -88,6 +88,7 @@ export class AppState {
     public activeSprintTabIndex?: number;
     public fetchedMeData?: boolean;
     public fetchedTeamData?: boolean;
+    public sprintTabReady?: boolean;
 
     constructor(
         state: PersistedState = {

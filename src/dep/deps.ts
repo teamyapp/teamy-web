@@ -29,6 +29,8 @@ import { logWithRequestId } from '@lib/telemetry/middleware/logWithRequestId';
 import { logWithServiceName } from '@lib/telemetry/middleware/logWithServiceName';
 
 import { AppClient } from '@core/client/app.client';
+import { AppVersionClient } from '@core/client/appVersion.client';
+import { FileClient } from '@core/client/file.client';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
 import { SprintClient } from '@core/client/sprint.client';
@@ -37,7 +39,6 @@ import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
 import { Config } from '@core/config/config';
-import { AppVersionClient } from '@core/client/appVersion.client';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { shortcuts } from '@core/config/shortcut';
 import { FeatureToggle, getFeatureToggle } from '@core/config/toggle';
@@ -48,7 +49,6 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { FileClient } from '@core/client/file.client';
 
 export interface Deps {
     featureToggle: FeatureToggle;

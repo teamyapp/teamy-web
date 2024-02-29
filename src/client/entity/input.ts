@@ -1,10 +1,14 @@
 import { Priority } from '@core/entity/priority';
 
+import { RemoteAppVersionStatus } from './remoteAppVersion';
 import { RemoteGroupMemberType } from './remoteGroupMemberType';
 import { RemoteGroupType } from './remoteGroupType';
 import { RemoteRolloutActivatorType } from './remoteRolloutActivatorType';
 import { RemoteRolloutVersionSelectorType } from './remoteRolloutVersionSelectorType';
-import { RemoteAppVersionStatus } from './remoteAppVersion';
+
+export interface RemoteAppFilter {
+    tagValues: string[];
+}
 
 export interface RemoteCreateUserInput {
     lastName: string;
@@ -76,7 +80,7 @@ export interface RemoteCreateSprintInput {
     endAt: Date;
 }
 
-export interface RemoteCreateAppInput{
+export interface RemoteCreateAppInput {
     name: string;
 }
 

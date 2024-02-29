@@ -243,7 +243,6 @@ describe('select on read/receive/pop operation', () => {
                     ],
                 ],
                 async () => {
-                    // console.log(i);
                     return 'default';
                 },
             );

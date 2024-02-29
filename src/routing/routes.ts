@@ -8,7 +8,7 @@ const tabIdParam = 'tabId';
 const taskIdParam = 'taskId';
 const invitationIdParam = 'id';
 const invitationCodeParam = 'code';
-const tagParam = 'tag';
+const tagsParam = 'tags';
 
 export const getTeamId = (params?: Params) => params?.pathParams[teamIdParam];
 export const getSprintId = (params?: Params) =>
@@ -19,7 +19,10 @@ export const getInvitationId = (params?: Params) =>
     params?.queryParams[invitationIdParam];
 export const getInvitationCode = (params?: Params) =>
     params?.queryParams[invitationCodeParam];
-export const getTag = (params?: Params) => params?.queryParams[tagParam];
+export const getTags = (params?: Params): string[] => {
+    const tagsString = params?.queryParams[tagsParam];
+    return tagsString ? tagsString.split(',') : [];
+};
 
 export const rootRoutePattern = '/';
 export const teamsRoutePattern = `${rootRoutePattern}teams`;
@@ -69,8 +72,8 @@ export const marketplaceInstalledPath = (teamId: number) =>
     `${marketplacePath(teamId)}/installed`;
 export const marketplaceDiscoverPath = (teamId: number) =>
     `${marketplacePath(teamId)}/discover`;
-export const marketplaceFilterPath = (teamId: number, tag: string) =>
-    `${marketplacePath(teamId)}/filter?tag=${tag}`;
+export const marketplaceFilterPath = (teamId: number, tags: string[]) =>
+    `${marketplacePath(teamId)}/filter?tags=${tags.join(',')}`;
 
 export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`;
 

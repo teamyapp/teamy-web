@@ -4,11 +4,11 @@ import React, { ChangeEvent, createRef, useEffect } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
+import { AppSecret } from '@core/entity/appSecret';
 
 import { getUserShortName } from '../../../../internal/format';
 import { CreateAppSecretModalComponent } from '../CreateAppSecretModal.component';
 import styles from './CredentialTab.component.module.scss';
-import { AppSecret } from '@core/entity/appSecret';
 
 interface ApiSecretInput {
     name: string;
@@ -93,12 +93,9 @@ export function CredentialTabComponent(props: Props) {
 
     const onSaveSecretClickHandler = (apiSecretId: number) => {
         return async () => {
-            props.deps.stateSyncer.updateAppSecret(
-                apiSecretId,
-                {
-                    name: apiSecretInputs[apiSecretId].name,
-                }
-            )
+            props.deps.stateSyncer.updateAppSecret(apiSecretId, {
+                name: apiSecretInputs[apiSecretId].name,
+            });
         };
     };
 
@@ -177,18 +174,20 @@ export function CredentialTabComponent(props: Props) {
                                             : 'Never'}
                                     </td>
                                     <td className={styles.Actions}>
-                                        {secret.token && (<div
-                                            className={`${styles.RowAction} ${styles.Copy}`}
-                                            onClick={onCopySecretClickHandler(
-                                                secret,
-                                            )}
-                                        >
-                                            <MaterialIconUI
-                                                iconStyle={'outlined'}
+                                        {secret.token && (
+                                            <div
+                                                className={`${styles.RowAction} ${styles.Copy}`}
+                                                onClick={onCopySecretClickHandler(
+                                                    secret,
+                                                )}
                                             >
-                                                content_copy
-                                            </MaterialIconUI>
-                                        </div>)}
+                                                <MaterialIconUI
+                                                    iconStyle={'outlined'}
+                                                >
+                                                    content_copy
+                                                </MaterialIconUI>
+                                            </div>
+                                        )}
                                         <div
                                             className={`${styles.RowAction} ${styles.Save}`}
                                             onClick={onSaveSecretClickHandler(

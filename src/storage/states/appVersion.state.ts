@@ -1,10 +1,11 @@
 import { toDate } from './parser';
-export type AppVersionStatus = 
-    'INIT' | 
-    'UPLOADING' | 
-    'PROCESSING' | 
-    'READY' | 
-    'ERROR';
+
+export type AppVersionStatus =
+    | 'INIT'
+    | 'UPLOADING'
+    | 'PROCESSING'
+    | 'READY'
+    | 'ERROR';
 
 export class AppVersionState {
     public constructor(
@@ -15,6 +16,7 @@ export class AppVersionState {
         public creatorUserId: number,
         public status: AppVersionStatus,
         public locked: boolean,
+        public hasUiExtension: boolean,
         public appId: number,
         public errorMessage?: string,
     ) {}
@@ -28,6 +30,7 @@ export class AppVersionState {
             json.CreatorUserID,
             json.Status,
             json.Locked,
+            json.HasUiExtension,
             json.AppID,
             json.ErrorMessage,
         );
@@ -42,6 +45,7 @@ export class AppVersionState {
             json.creatorUserId,
             json.status,
             json.locked,
+            json.hasUiExtension,
             json.appId,
             json.errorMessage,
         );

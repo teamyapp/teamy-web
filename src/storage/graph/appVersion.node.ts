@@ -1,4 +1,5 @@
 import { AppVersion, AppVersionStatus } from '@core/entity/appVersion';
+import { getLocalCurrency } from '@core/entity/money';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { AppVersionState } from '../states/appVersion.state';
@@ -26,10 +27,14 @@ export class AppVersionNode implements AppVersion {
 
     public get changes(): string[] {
         const appState = this.localStore.getState();
-        const changes = []
+        const changes = [];
         for (const changeId in appState.appVersionChanges) {
-            if ((appState.appVersionChanges[changeId].versionNumber === this.appVersion.number ) &&
-                (appState.appVersionChanges[changeId].appId === this.appVersion.appId)) {
+            if (
+                appState.appVersionChanges[changeId].versionNumber ===
+                    this.appVersion.number &&
+                appState.appVersionChanges[changeId].appId ===
+                    this.appVersion.appId
+            ) {
                 changes.push(appState.appVersionChanges[changeId].change);
             }
         }
@@ -49,7 +54,7 @@ export class AppVersionNode implements AppVersion {
     }
 
     public iconPath(size: number): string {
-       return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/icons/${size}.png`;        
+        return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/assets/icons/${size}.png`;
     }
 
     public get prices(): MoneyNode[] {
@@ -86,5 +91,14 @@ export class AppVersionNode implements AppVersion {
 
     public get packagePath(): string {
         return `files/apps/${this.appVersion.appId}/${this.appVersion.number}`;
+    }
+
+    public get localPrice(): MoneyNode | undefined {
+        const localCurrency = getLocalCurrency();
+        return this.prices.find((price) => price.currency === localCurrency);
+    }
+
+    public get hasUiExtension(): boolean {
+        return this.appVersion.hasUiExtension;
     }
 }

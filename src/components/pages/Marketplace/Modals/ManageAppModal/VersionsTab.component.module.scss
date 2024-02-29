@@ -1,6 +1,7 @@
 @import '../../shared';
 
 .VersionsTab {
+    --app-icon-size: 120px;
     display: flex;
     height: 100%;
 
@@ -97,7 +98,7 @@
 
                 &.Lock {
                     --icon-size: 48px;
-                    --icon-color: #9E9E9E;
+                    --icon-color: #9e9e9e;
                     display: flex;
                     justify-content: center;
                     margin-bottom: 30px;

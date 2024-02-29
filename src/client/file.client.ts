@@ -1,5 +1,5 @@
 export class FileClient {
-    private readonly cloudWebAPIEndpoint: string;   
+    private readonly cloudWebAPIEndpoint: string;
 
     constructor(cloudWebAPIEndpoint: string) {
         this.cloudWebAPIEndpoint = cloudWebAPIEndpoint;

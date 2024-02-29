@@ -95,6 +95,35 @@ export class GraphSource {
         }
     }
 
+    public apps(): AppNode[] {
+        const appState = this.localStore.getState();
+        return Object.values(appState.apps).map(
+            (app) => new AppNode(this.localStore, app),
+        );
+    }
+
+    public latestAppVersions(
+        teamId: number,
+        tagValues?: string[],
+    ): AppVersionNode[] {
+        const appVersionNodes: AppVersionNode[] = [];
+        let filteredAppNodes: AppNode[] = this.apps();
+        if (tagValues && tagValues.length > 0) {
+            filteredAppNodes = filteredAppNodes.filter((appNode) =>
+                appNode.tags.some((tag) => tagValues.includes(tag.value)),
+            );
+        }
+
+        for (const appNode of filteredAppNodes) {
+            const appVersionNode = appNode.latestVersionForTeam(teamId);
+            if (appVersionNode) {
+                appVersionNodes.push(appVersionNode);
+            }
+        }
+
+        return appVersionNodes;
+    }
+
     public rollout(rolloutId: number): RolloutNode | undefined {
         const appState = this.localStore.getState();
         const rollout = appState.rollouts[rolloutId];

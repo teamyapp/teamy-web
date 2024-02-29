@@ -7,6 +7,7 @@ import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
 
 import { AppClient } from '@core/client/app.client';
+import { AppVersionClient } from '@core/client/appVersion.client';
 import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { RemoteRolloutActivator } from '@core/client/entity/remoteRolloutActivator';
 import { RemoteTask } from '@core/client/entity/remoteTask';
@@ -18,7 +19,6 @@ import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
 import { TaskFilter } from '@core/entity/filters';
-import { AppVersionClient } from '@core/client/appVersion.client';
 import {
     CreateActivatorInput,
     CreateAppInput,
@@ -56,11 +56,11 @@ import { LocalStore } from './localStore';
 import { Message } from './message';
 import { Metadata } from './metadata';
 import {
+    applyAppVersionChangeMutation,
+    applyAppVersionMutation,
     applyInvitationMutation,
     applyMessageMutation,
     applySprintMutation,
-    applyAppVersionMutation,
-    applyAppVersionChangeMutation,
     applySprintParticipantMutation,
     applySprintTaskMutation,
     applyTaskActivityMutation,
@@ -73,6 +73,7 @@ import {
     deleteThread,
     mergeActivator,
     mergeApp,
+    mergeAppInstallation,
     mergeAppRolloutRelation,
     mergeAppSecret,
     mergeAppVersion,
@@ -650,10 +651,17 @@ export class StateSyncer {
         return parseInt(remoteSessionID);
     };
 
-    public createAppPackageUploadSession = async (appId: number, versionNumber: number): Promise<number> => {
-        const remoteSessionID = await this.appVersionClient.createAppPackageUploadSession(`${appId}`, versionNumber);
+    public createAppPackageUploadSession = async (
+        appId: number,
+        versionNumber: number,
+    ): Promise<number> => {
+        const remoteSessionID =
+            await this.appVersionClient.createAppPackageUploadSession(
+                `${appId}`,
+                versionNumber,
+            );
         return parseInt(remoteSessionID);
-    }
+    };
 
     public async finishUserProfileUpdateSession(
         fileUploadSessionId: number,
@@ -671,12 +679,13 @@ export class StateSyncer {
         versionNumber: number,
         fileUploadSessionId: number,
     ): Promise<void> {
-        const remoteAppVersion = await this.appVersionClient.finishAppPackageUploadSession(
-            `${appId}`,
-            versionNumber,
-            `${fileUploadSessionId}`,
-        );
-       
+        const remoteAppVersion =
+            await this.appVersionClient.finishAppPackageUploadSession(
+                `${appId}`,
+                versionNumber,
+                `${fileUploadSessionId}`,
+            );
+
         let appState = this.localStore.getState();
         appState = mergeAppVersion(appState, appId, remoteAppVersion);
         this.localStore.updateState(appState);
@@ -887,6 +896,43 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async installAppToTeam(appId: number, teamId: number) {
+        const remoteInstallation = await this.appClient.installAppToTeam(
+            `${appId}`,
+            `${teamId}`,
+        );
+        let appState = this.localStore.getState();
+        if (remoteInstallation.activeAppVersion?.app) {
+            appState = mergeApp(
+                appState,
+                remoteInstallation.activeAppVersion.app,
+            );
+        }
+
+        appState = mergeAppInstallation(appState, remoteInstallation);
+        this.localStore.updateState(appState);
+    }
+
+    public async uninstallAppFromTeam(installationId: number) {
+        await this.appClient.uninstallAppFromTeam(`${installationId}`);
+        let appState = this.localStore.getState();
+        const installation = appState.appInstallations[installationId];
+        const app = appState.apps[installation.appId];
+        app.totalInstallations -= 1;
+        delete appState.appInstallations[installationId];
+        this.localStore.updateState(appState);
+    }
+
+    public async getApps(teamId: number): Promise<void> {
+        const remoteApps = await this.appClient.getApps(`${teamId}`);
+        let appState = this.localStore.getState();
+        appState = remoteApps.reduce(
+            (appState, remoteApp) => mergeApp(appState, remoteApp),
+            appState,
+        );
+        this.localStore.updateState(appState);
+    }
+
     public async deleteApp(appId: number): Promise<void> {
         await this.appClient.deleteApp(`${appId}`);
         let appState = this.localStore.getState();
@@ -895,8 +941,10 @@ export class StateSyncer {
             delete appState.appSecrets[appSecretId];
         }
 
-        for (let appInstallationId of appState.apps[appId].installationIds) {
-            delete appState.appInstallations[appInstallationId];
+        for (let appInstallation in appState.appInstallations) {
+            if (appState.appInstallations[appInstallation].appId === appId) {
+                delete appState.appInstallations[appInstallation];
+            }
         }
 
         appState.appGroupRelations
@@ -946,7 +994,7 @@ export class StateSyncer {
 
     public async updateAppSecret(
         secretId: number,
-        secret: UpdateAppSecretInput
+        secret: UpdateAppSecretInput,
     ): Promise<void> {
         const remoteAppSecret = await this.appClient.updateAppSecret(
             `${secretId}`,
@@ -969,22 +1017,20 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async createAppVersion(
-        appId: number
-    ): Promise<number> {
+    public async createAppVersion(appId: number): Promise<number> {
         const appVersion = await this.appVersionClient.createAppVersion(
             `${appId}`,
         );
         let appState = this.localStore.getState();
         appState = mergeAppVersion(appState, appId, appVersion);
         this.localStore.updateState(appState);
-        return appVersion.number
+        return appVersion.number;
     }
 
     public async updateAppVersion(
         appId: number,
         versionNumber: number,
-        input: UpdateAppVersionInput
+        input: UpdateAppVersionInput,
     ) {
         const remoteAppVersion = await this.appVersionClient.updateAppVersion(
             `${appId}`,
@@ -1423,7 +1469,10 @@ export class StateSyncer {
                     break;
                 }
                 case 'AppVersionChange': {
-                    appState = applyAppVersionChangeMutation(appState, mutation);
+                    appState = applyAppVersionChangeMutation(
+                        appState,
+                        mutation,
+                    );
                     break;
                 }
                 case 'Sprint': {

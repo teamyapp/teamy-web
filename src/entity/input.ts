@@ -2,9 +2,9 @@ import { Duration } from '@lib/entity/duration';
 
 import { Priority } from '@core/entity/priority';
 
+import { AppVersionStatus } from './appVersion';
 import { GroupMemberType, GroupType } from './group';
 import { AppRolloutType } from './rollout';
-import { AppVersionStatus } from './appVersion';
 
 export interface CreateAppInput {
     name: string;
