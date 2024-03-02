@@ -578,7 +578,7 @@ export function mergeAppRolloutRelation(
 export function mergeApp(
     currAppState: AppState,
     remoteApp: RemoteApp,
-    remoteTeamId?: number,
+    remoteTeamId: number,
 ): AppState {
     const remoteAppId = toInt(remoteApp.id)!;
     const localOldApp: ThirdPartyAppState =
@@ -601,7 +601,7 @@ export function mergeApp(
         versions: localOldApp.versions || {},
     };
 
-    if (remoteApp.latestVersionForTeam && remoteTeamId) {
+    if (remoteApp.latestVersionForTeam) {
         currAppState = mergeTeamAppVersion(
             currAppState,
             remoteTeamId,

@@ -906,6 +906,7 @@ export class StateSyncer {
             appState = mergeApp(
                 appState,
                 remoteInstallation.activeAppVersion.app,
+                teamId,
             );
         }
 
@@ -927,7 +928,7 @@ export class StateSyncer {
         const remoteApps = await this.appClient.getApps(`${teamId}`);
         let appState = this.localStore.getState();
         appState = remoteApps.reduce(
-            (appState, remoteApp) => mergeApp(appState, remoteApp),
+            (appState, remoteApp) => mergeApp(appState, remoteApp, appState.currTeamId!),
             appState,
         );
         this.localStore.updateState(appState);
