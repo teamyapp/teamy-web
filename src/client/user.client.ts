@@ -10,7 +10,6 @@ export class UserClient {
         this.graphQLClient = graphQLClient;
     }
 
-
     public getUser(userId: string): Promise<RemoteUser> {
         return this.graphQLClient
             .query({
@@ -51,7 +50,6 @@ export class UserClient {
                 },
             })
             .then((payload: any) => payload?.user);
-
     }
 
     public getMeWithTeams(): Promise<RemoteUser> {

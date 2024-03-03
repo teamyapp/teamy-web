@@ -8,7 +8,6 @@ import createAppVersion from "./graphql/mutation/createAppVersion.graphql"
 import updateAppVersion from "./graphql/mutation/updateAppVersion.graphql"
 import finishAppPackageUploadSession from "./graphql/mutation/finishAppPackageUploadSession.graphql"
 
-
 export class AppVersionClient {
     private readonly graphQLClient: GraphQLClient;
 

@@ -6,6 +6,5 @@ declare const BUILD_INJECT_LINE_NUMBER;
 declare module '*.graphql' {
     import { DocumentNode } from 'graphql';
     const Schema: DocumentNode;
-  
     export = Schema;
   }
