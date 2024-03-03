@@ -1,5 +1,5 @@
-#import "../fragment/Team.graphql"
-#import "../fragment/AppVersion.graphql"
+#import "../fragment/team.graphql"
+#import "../fragment/appVersion.graphql"
 
 query getTeam($teamId: ID!) {
     teams(filter: { teamId: $teamId }) {

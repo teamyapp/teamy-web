@@ -1,4 +1,4 @@
-#import '../fragment/App.graphql'
+#import '../fragment/app.graphql'
 
 mutation createApp($teamId: ID!, $input: CreateAppInput!) {
     createApp(teamId: $teamId, input: $input) {
