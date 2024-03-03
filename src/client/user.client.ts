@@ -1,14 +1,16 @@
-import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { print } from 'graphql';
+
+import { GraphQLClient } from '@lib/network/GraphQL.client';
+
 import { RemoteUser } from '@core/client/entity/remoteUser';
 import { CreateUserInput, UpdateUserInput } from '@core/entity/input';
-import getUserWithTeams from './graphql/query/getUserWithTeams.graphql';
-import getMeWithTeams from './graphql/query/getMeWithTeams.graphql';
-import getMe from './graphql/query/getMe.graphql';
-import updateUser from './graphql/mutation/updateUser.graphql';
+
 import createUser from './graphql/mutation/createUser.graphql';
 import finishUserProfileUploadSession from './graphql/mutation/finishUserProfileUploadSession.graphql';
-
+import updateUser from './graphql/mutation/updateUser.graphql';
+import getMe from './graphql/query/getMe.graphql';
+import getMeWithTeams from './graphql/query/getMeWithTeams.graphql';
+import getUserWithTeams from './graphql/query/getUserWithTeams.graphql';
 
 export class UserClient {
     private readonly graphQLClient: GraphQLClient;

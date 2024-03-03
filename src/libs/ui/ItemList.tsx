@@ -18,7 +18,9 @@ interface Props<Item, ItemValue> {
 export function ItemListUI<Item, ItemValue>(props: Props<Item, ItemValue>) {
     const newItemInputRef = createRef<HTMLInputElement>();
 
-    const onNewItemInputKeydown = async (event: KeyboardEvent<HTMLInputElement>) => {
+    const onNewItemInputKeydown = async (
+        event: KeyboardEvent<HTMLInputElement>,
+    ) => {
         if (event.key === 'Enter') {
             const itemValue = props.parseNewItem(
                 newItemInputRef.current?.value || '',

@@ -1,12 +1,15 @@
 import { print } from 'graphql';
+
 import { GraphQLClient } from '@lib/network/GraphQL.client';
+
 import { RemoteTaskFilter } from '@core/client/entity/filter';
 import {
     RemoteCreateTeamInput,
     RemoteUpdateTeamInput,
 } from '@core/client/entity/input';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
-import getTeamWithSprintPreviews from './graphql/query/getTeamWithSprintPreviews.graphql'
+
+import getTeamWithSprintPreviews from './graphql/query/getTeamWithSprintPreviews.graphql';
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;

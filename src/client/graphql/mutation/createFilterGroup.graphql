@@ -1,5 +1,5 @@
 #import '../fragment/filterGroup.graphql'
- 
+
 mutation createFilterGroup($appId: ID!, $input: CreateFilterGroupInput!) {
     createFilterGroup(appId: $appId, input: $input) {
         ...FilterGroupFragment

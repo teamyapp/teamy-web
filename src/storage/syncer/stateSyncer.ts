@@ -258,7 +258,9 @@ export class StateSyncer {
     }
 
     public async pullTeam(teamId: number) {
-        const remoteTeam = await this.teamClient.getTeamWithSprintPreviews(`${teamId}`);
+        const remoteTeam = await this.teamClient.getTeamWithSprintPreviews(
+            `${teamId}`,
+        );
         let appState = this.localStore.getState();
         appState = mergeTeam(appState, remoteTeam);
         this.localStore.updateState(appState);
@@ -944,7 +946,8 @@ export class StateSyncer {
         const remoteApps = await this.appClient.getApps(`${teamId}`);
         let appState = this.localStore.getState();
         appState = remoteApps.reduce(
-            (appState, remoteApp) => mergeApp(appState, remoteApp, appState.currTeamId!),
+            (appState, remoteApp) =>
+                mergeApp(appState, remoteApp, appState.currTeamId!),
             appState,
         );
         this.localStore.updateState(appState);

@@ -100,7 +100,7 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
     };
 
     private isValidTeam = async (teamId: number): Promise<boolean> => {
-        await this.stateSyncer.pullTeam(teamId)
+        await this.stateSyncer.pullTeam(teamId);
         return Boolean(this.graphSource.team(teamId));
     };
 
