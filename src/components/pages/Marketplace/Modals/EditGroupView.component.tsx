@@ -30,8 +30,8 @@ interface Props {
     memberLabel: string;
     renderInlineGroupMember: (memberId: number) => ReactNode;
     renderInlineRollout: (rolloutId: number) => ReactNode;
-    isValidMember?: (memberId: number) => boolean;
-    isValidRollout?: (rolloutId: number) => boolean;
+    isValidMember?: (memberId: number) => Promise<boolean>;
+    isValidRollout?: (rolloutId: number) => Promise<boolean>;
     onCreateStaticGroup?: (groupName: string, memberIds: number[]) => void;
     onCreateFilterGroup?: (groupName: string, filter: string) => void;
     onDeleteGroupClick?: (groupId: number) => void;
@@ -136,7 +136,7 @@ export class EditGroupViewComponent extends Component<Props, State> {
                             newItemInputLabel={'Enter rollout ID'}
                             parseNewItem={this.parseNewRollout}
                             isItemDuplicate={this.isRolloutDuplicate}
-                            isItemValid={this.isRolloutValid}
+                            isItemValid={this.props.isValidRollout}
                             onAddItem={this.onAddRollout}
                             onRemoveItem={this.onRemoveRollout}
                         />
@@ -236,10 +236,6 @@ export class EditGroupViewComponent extends Component<Props, State> {
 
     private isRolloutDuplicate = (rolloutId: number): boolean => {
         return this.state.rolloutIds.includes(rolloutId);
-    };
-
-    private isRolloutValid = (rolloutId: number): boolean => {
-        return this.props.isValidRollout?.call(null, rolloutId) || false;
     };
 
     private onAddRollout = (rolloutId: number) => {

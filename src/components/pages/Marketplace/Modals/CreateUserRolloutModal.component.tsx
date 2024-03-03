@@ -16,7 +16,7 @@ import styles from './CreateUserRolloutModal.component.module.scss';
 interface Props {
     deps: Deps;
     appId: number;
-    isValidVersionNumber: (versionNumber: number) => boolean;
+    isValidVersionNumber: (versionNumber: number) => Promise<boolean>;
     onCreateRolloutClick: (rollout: CreateAppRolloutInput) => void;
     createActivator: (input: CreateActivatorInput) => Promise<number>;
     createVersionSelector: (
@@ -79,7 +79,7 @@ export class CreateUserRolloutModalComponent extends Component<Props> {
         return <div className={styles.InlineGroup}>{group.name}</div>;
     };
 
-    private isValidUserGroup = (groupId: number): boolean => {
+    private isValidUserGroup = async (groupId: number): Promise<boolean> => {
         const app = this.props.deps.graphSource.app(this.props.appId);
         if (!app) {
             return false;

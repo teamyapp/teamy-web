@@ -1,8 +1,12 @@
+import { print } from 'graphql';
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteAppVersion } from '@core/client/entity/remoteAppVersion';
 
 import { RemoteUpdateAppVersionInput } from './entity/input';
+import createAppVersion from "./graphql/mutation/createAppVersion.graphql"
+import updateAppVersion from "./graphql/mutation/updateAppVersion.graphql"
+import finishAppPackageUploadSession from "./graphql/mutation/finishAppPackageUploadSession.graphql"
 
 export class AppVersionClient {
     private readonly graphQLClient: GraphQLClient;
@@ -14,21 +18,7 @@ export class AppVersionClient {
     createAppVersion(appId: string): Promise<RemoteAppVersion> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation createAppVersion($appId: ID!) {
-                        createAppVersion(appId: $appId) {
-                            number
-                            createdBy {
-                                id
-                            }
-                            app {
-                                id
-                            }
-                            status
-                            errorMessage
-                        }
-                    }
-                `,
+                mutation: print(createAppVersion),
                 variables: {
                     appId,
                 },
@@ -43,45 +33,7 @@ export class AppVersionClient {
     ): Promise<RemoteAppVersion> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation updateAppVersion(
-                        $appId: ID!
-                        $versionNumber: Int!
-                        $input: UpdateAppVersionInput!
-                    ) {
-                        updateAppVersion(
-                            appId: $appId
-                            versionNumber: $versionNumber
-                            input: $input
-                        ) {
-                            number
-                            locked
-                            hasUiExtension
-                            status
-                            errorMessage
-                            app {
-                                id
-                            }
-                            changes {
-                                id
-                                appVersion {
-                                    number
-                                    app {
-                                        id
-                                    }
-                                }
-                                change
-                            }
-                            prices {
-                                currency
-                                amount
-                            }
-                            createdBy {
-                                id
-                            }
-                        }
-                    }
-                `,
+                mutation: print(updateAppVersion),
                 variables: {
                     appId,
                     versionNumber,
@@ -141,43 +93,7 @@ export class AppVersionClient {
     ): Promise<RemoteAppVersion> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation finishAppPackageUploadSession(
-                        $appId: ID!
-                        $versionNumber: Int!
-                        $fileUploadSessionId: ID!
-                    ) {
-                        finishAppPackageUploadSession(
-                            appId: $appId
-                            versionNumber: $versionNumber
-                            fileUploadSessionId: $fileUploadSessionId
-                        ) {
-                            number
-                            status
-                            changes {
-                                id
-                                appVersion {
-                                    number
-                                    app {
-                                        id
-                                    }
-                                }
-                                change
-                            }
-                            prices {
-                                currency
-                                amount
-                            }
-                            errorMessage
-                            app {
-                                id
-                            }
-                            createdBy {
-                                id
-                            }
-                        }
-                    }
-                `,
+                mutation: print(finishAppPackageUploadSession),
                 variables: {
                     appId,
                     versionNumber,

@@ -20,7 +20,7 @@ import {
     RemoteUpdateVersionSelectorInput,
 } from '@core/client/entity/input';
 import { AppRolloutType } from '@core/entity/rollout';
-
+import { print } from 'graphql';
 import { RemoteApp } from './entity/remoteApp';
 import { RemoteAppInstallation } from './entity/remoteAppInstallation';
 import { RemoteAppSecret } from './entity/remoteAppSecret';
@@ -29,6 +29,13 @@ import { RemoteRollout } from './entity/remoteRollout';
 import { RemoteRolloutActivator } from './entity/remoteRolloutActivator';
 import { RemoteRolloutVersionSelector } from './entity/remoteRolloutVersionSelector';
 import { RemoteTag } from './entity/remoteTag';
+import getApps from './graphql/query/getApps.graphql';
+import createApp from './graphql/mutation/createApp.graphql';
+import createStaticUserGroup from './graphql/mutation/createStaticUserGroup.graphql';
+import createStaticTeamGroup from './graphql/mutation/createStaticTeamGroup.graphql';
+import createFilterGroup from './graphql/mutation/createFilterGroup.graphql';
+import updateGroup from './graphql/mutation/updateGroup.graphql';
+
 
 export class AppClient {
     private readonly graphQLClient: GraphQLClient;
@@ -40,227 +47,7 @@ export class AppClient {
     getApps(teamId: string, filter?: RemoteAppFilter): Promise<RemoteApp[]> {
         return this.graphQLClient
             .query({
-                query: `
-                query getApps($teamId: ID!, $filter: AppFilter) {
-                    apps (filter: $filter) {
-                        id
-                        tags {
-                            id
-                            value
-                        }
-                        secrets {
-                            id
-                            name
-                            addedAt
-                            addedBy {
-                                id
-                            }
-                            app {
-                                id
-                            }
-                        }
-                        totalInstallations
-                        installations {
-                            id
-                            installedTeam {
-                                id
-                            }
-                            activeAppVersion {
-                                app {
-                                    id
-                                }
-                                number
-                            }
-                        }
-                        latestVersionForTeam(teamId: $teamId) {
-                            app {
-                                id
-                            }
-                            locked
-                            hasUiExtension
-                            number
-                            appName
-                            description
-                            changes {
-                                id
-                                appVersion {
-                                    number
-                                    app {
-                                        id
-                                    }
-                                }
-                                change
-                            }
-                            prices {
-                                amount
-                                currency
-                            }
-                            createdAt
-                            createdBy {
-                                id
-                            }
-                            status
-                            errorMessage
-                        }
-                        versions {
-                            app {
-                                id
-                            }
-                            locked
-                            hasUiExtension
-                            number
-                            appName
-                            description
-                            changes {
-                                id
-                                appVersion {
-                                    number
-                                    app {
-                                        id
-                                    }
-                                }
-                                change
-                            }
-                            prices {
-                                amount
-                                currency
-                            }
-                            createdAt
-                            createdBy {
-                                id
-                            }
-                            status
-                            errorMessage
-                        }
-                        managedByTeam {
-                            id
-                            managedApps {
-                                id
-                            }
-                        }
-                        groups {
-                            id
-                            type
-                            memberType
-                            name
-                            locked
-                            ... on StaticUserGroup{
-                                users {
-                                    id
-                                }
-                            }
-                            ... on StaticTeamGroup{
-                                teams {
-                                    id
-                                }
-                            }
-                            ... on FilterGroup {
-                                filter
-                            }
-                            createdAt
-                            updatedAt
-                            groupRolloutRelations {
-                                group {
-                                    id
-                                }
-                                rollout {
-                                    id
-                                }
-                                orderIndex
-                            }
-                            apps {
-                                id
-                            }
-                        }
-                        userRollouts {
-                            id
-                            name
-                            isEnabled
-                            locked
-                            activator {
-                                id
-                                type
-                                createdAt
-                                updatedAt
-                                ... on TimeRangeActivator {
-                                    startAt
-                                    endAt
-                                }
-                                ... on MaxViewersActivator {
-                                    maxViewers
-                                }
-                                ... on PercentageActivator {
-                                    percentage
-                                }
-                            }
-                            versionSelector {
-                                id
-                                type
-                                ... on StaticVersionSelector {
-                                    versionNumber
-                                }
-                                ... on ExperimentVersionSelector {
-                                    versionNumbers
-                                }
-                            }
-                            groupRolloutRelations {
-                                group {
-                                    id
-                                }
-                                rollout {
-                                    id
-                                }
-                                orderIndex
-                            }
-                            createdAt
-                            updatedAt
-                        }
-                        teamRollouts {
-                            id
-                            name
-                            isEnabled
-                            locked
-                            activator {
-                                id
-                                type
-                                createdAt
-                                updatedAt
-                                ... on TimeRangeActivator {
-                                    startAt
-                                    endAt
-                                }
-                                ... on MaxViewersActivator {
-                                    maxViewers
-                                }
-                                ... on PercentageActivator {
-                                    percentage
-                                }
-                            }
-                            versionSelector {
-                                id
-                                type
-                                ... on StaticVersionSelector {
-                                    versionNumber
-                                }
-                                ... on ExperimentVersionSelector {
-                                    versionNumbers
-                                }
-                            }
-                            groupRolloutRelations {
-                                group {
-                                    id
-                                }
-                                rollout {
-                                    id
-                                }
-                                orderIndex
-                            }
-                            createdAt
-                            updatedAt
-                        }
-                    }
-                }
-            `,
+                query: print(getApps),
                 variables: {
                     teamId,
                     filter,
@@ -272,227 +59,7 @@ export class AppClient {
     createApp(teamId: string, input: RemoteCreateAppInput): Promise<RemoteApp> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation createApp($teamId: ID!, $input: CreateAppInput!) {
-                        createApp(teamId: $teamId, input: $input) {
-                            id
-                            tags {
-                                id
-                                value
-                            }
-                            secrets {
-                                id
-                                name
-                                addedAt
-                                addedBy {
-                                    id
-                                }
-                                app {
-                                    id
-                                }
-                            }
-                            totalInstallations
-                            installations {
-                                id
-                                installedTeam {
-                                    id
-                                }
-                                activeAppVersion {
-                                    app {
-                                        id
-                                    }
-                                    number
-                                }
-                            }
-                            latestVersionForTeam(teamId: $teamId) {
-                                app {
-                                    id
-                                }
-                                locked
-                                hasUiExtension
-                                number
-                                appName
-                                description
-                                changes {
-                                    id
-                                    appVersion {
-                                        number
-                                        app {
-                                            id
-                                        }
-                                    }
-                                    change
-                                }
-                                prices {
-                                    amount
-                                    currency
-                                }
-                                createdAt
-                                createdBy {
-                                    id
-                                }
-                                status
-                                errorMessage
-                            }
-                            versions {
-                                app {
-                                    id
-                                }
-                                locked
-                                hasUiExtension
-                                number
-                                appName
-                                description
-                                changes {
-                                    id
-                                    appVersion {
-                                        number
-                                        app {
-                                            id
-                                        }
-                                    }
-                                    change
-                                }
-                                prices {
-                                    amount
-                                    currency
-                                }
-                                createdAt
-                                createdBy {
-                                    id
-                                }
-                                status
-                                errorMessage
-                            }
-                            managedByTeam {
-                                id
-                                managedApps {
-                                    id
-                                }
-                            }
-                            groups {
-                                id
-                                type
-                                memberType
-                                name
-                                locked
-                                ... on StaticUserGroup{
-                                    users {
-                                        id
-                                    }
-                                }
-                                ... on StaticTeamGroup{
-                                    teams {
-                                        id
-                                    }
-                                }
-                                ... on FilterGroup {
-                                    filter
-                                }
-                                createdAt
-                                updatedAt
-                                groupRolloutRelations {
-                                    group {
-                                        id
-                                    }
-                                    rollout {
-                                        id
-                                    }
-                                    orderIndex
-                                }
-                                apps {
-                                    id
-                                }
-                            }
-                            userRollouts {
-                                id
-                                name
-                                isEnabled
-                                locked
-                                activator {
-                                    id
-                                    type
-                                    createdAt
-                                    updatedAt
-                                    ... on TimeRangeActivator {
-                                        startAt
-                                        endAt
-                                    }
-                                    ... on MaxViewersActivator {
-                                        maxViewers
-                                    }
-                                    ... on PercentageActivator {
-                                        percentage
-                                    }
-                                }
-                                versionSelector {
-                                    id
-                                    type
-                                    ... on StaticVersionSelector {
-                                        versionNumber
-                                    }
-                                    ... on ExperimentVersionSelector {
-                                        versionNumbers
-                                    }
-                                }
-                                groupRolloutRelations {
-                                    group {
-                                        id
-                                    }
-                                    rollout {
-                                        id
-                                    }
-                                    orderIndex
-                                }
-                                createdAt
-                                updatedAt
-                            }
-                            teamRollouts {
-                                id
-                                name
-                                isEnabled
-                                locked
-                                activator {
-                                    id
-                                    type
-                                    createdAt
-                                    updatedAt
-                                    ... on TimeRangeActivator {
-                                        startAt
-                                        endAt
-                                    }
-                                    ... on MaxViewersActivator {
-                                        maxViewers
-                                    }
-                                    ... on PercentageActivator {
-                                        percentage
-                                    }
-                                }
-                                versionSelector {
-                                    id
-                                    type
-                                    ... on StaticVersionSelector {
-                                        versionNumber
-                                    }
-                                    ... on ExperimentVersionSelector {
-                                        versionNumbers
-                                    }
-                                }
-                                groupRolloutRelations {
-                                    group {
-                                        id
-                                    }
-                                    rollout {
-                                        id
-                                    }
-                                    orderIndex
-                                }
-                                createdAt
-                                updatedAt
-                            }
-                        }
-                    }
-                `,
+                mutation: print(createApp),
                 variables: {
                     teamId,
                     input,
@@ -635,34 +202,7 @@ export class AppClient {
     ): Promise<RemoteGroup> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation createStaticUserGroup($appId: ID!, $input: CreateStaticUserGroupInput!) {
-                        createStaticUserGroup(appId: $appId, input: $input) {
-                            id
-                            type
-                            locked
-                            memberType
-                            name
-                            users {
-                                id
-                            }
-                            createdAt
-                            updatedAt
-                            groupRolloutRelations {
-                                group {
-                                    id
-                                }
-                                rollout {
-                                    id
-                                }
-                                orderIndex
-                            }
-                            apps {
-                                id
-                            }
-                        }
-                    }
-                `,
+                mutation: print(createStaticUserGroup),
                 variables: {
                     appId,
                     input,
@@ -677,34 +217,7 @@ export class AppClient {
     ): Promise<RemoteGroup> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation createStaticTeamGroup($appId: ID!, $input: CreateStaticTeamGroupInput!) {
-                        createStaticTeamGroup(appId: $appId, input: $input) {
-                            id
-                            type
-                            locked
-                            memberType
-                            name
-                            teams {
-                                id
-                            }
-                            createdAt
-                            updatedAt
-                            groupRolloutRelations {
-                                group {
-                                    id
-                                }
-                                rollout {
-                                    id
-                                }
-                                orderIndex
-                            }
-                            apps {
-                                id
-                            }
-                        }
-                    }
-                `,
+                mutation: print(createStaticTeamGroup),
                 variables: {
                     appId,
                     input,
@@ -719,32 +232,7 @@ export class AppClient {
     ): Promise<RemoteGroup> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation createFilterGroup($appId: ID!, $input: CreateFilterGroupInput!) {
-                        createFilterGroup(appId: $appId, input: $input) {
-                            id
-                            type
-                            locked
-                            memberType
-                            name
-                            filter
-                            createdAt
-                            updatedAt
-                            groupRolloutRelations {
-                                group {
-                                    id
-                                }
-                                rollout {
-                                    id
-                                }
-                                orderIndex
-                            }
-                            apps {
-                                id
-                            }
-                        }
-                    }
-                `,
+                mutation: print(createFilterGroup),
                 variables: {
                     appId,
                     input,
@@ -760,44 +248,7 @@ export class AppClient {
     ): Promise<RemoteGroup> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation updateGroup($appId: ID!, $groupId: ID!, $input: UpdateGroupInput!) {
-                        updateGroup(appId: $appId, groupId: $groupId, input: $input) {
-                            id
-                            type
-                            locked
-                            memberType
-                            name
-                            ... on StaticUserGroup{
-                                users {
-                                    id
-                                }
-                            }
-                            ... on StaticTeamGroup{
-                                teams {
-                                    id
-                                }
-                            }
-                            ... on FilterGroup {
-                                filter
-                            }
-                            createdAt
-                            updatedAt
-                            groupRolloutRelations {
-                                group {
-                                    id
-                                }
-                                rollout {
-                                    id
-                                }
-                                orderIndex
-                            }
-                            apps {
-                                id
-                            }
-                        }
-                    }
-                `,
+                mutation: print(updateGroup),
                 variables: {
                     appId,
                     groupId,

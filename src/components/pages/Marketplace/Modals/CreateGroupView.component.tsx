@@ -25,7 +25,7 @@ interface Props {
     membersLabel: string;
     memberLabel: string;
     renderInlineGroupMember: (memberId: number) => ReactNode;
-    isValidMember?: (memberId: number) => boolean;
+    isValidMember?: (memberId: number) => Promise<boolean>;
     onCreateStaticGroup?: (groupName: string, memberIds: number[]) => void;
     onCreateFilterGroup?: (groupName: string, filter: string) => void;
 }

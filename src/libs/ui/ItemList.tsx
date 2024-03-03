@@ -9,7 +9,7 @@ interface Props<Item, ItemValue> {
     renderInlineItem: (item: Item) => ReactNode;
     newItemInputLabel: string;
     parseNewItem(input: string): ItemValue;
-    isItemValid?: (itemValue: ItemValue) => boolean;
+    isItemValid?: (itemValue: ItemValue) => Promise<boolean>;
     isItemDuplicate: (itemValue: ItemValue) => boolean;
     onAddItem?: (itemValue: ItemValue) => void;
     onRemoveItem?: (item: Item) => void;
@@ -18,12 +18,12 @@ interface Props<Item, ItemValue> {
 export function ItemListUI<Item, ItemValue>(props: Props<Item, ItemValue>) {
     const newItemInputRef = createRef<HTMLInputElement>();
 
-    const onNewItemInputKeydown = (event: KeyboardEvent<HTMLInputElement>) => {
+    const onNewItemInputKeydown = async (event: KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             const itemValue = props.parseNewItem(
                 newItemInputRef.current?.value || '',
             );
-            if (props.isItemValid?.(itemValue)) {
+            if (await props.isItemValid?.(itemValue)) {
                 if (!props.isItemDuplicate?.(itemValue)) {
                     props.onAddItem?.(itemValue);
                 }

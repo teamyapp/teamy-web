@@ -1,0 +1,15 @@
+#import '../fragment/appVersion.graphql'
+
+mutation finishAppPackageUploadSession(
+    $appId: ID!
+    $versionNumber: Int!
+    $fileUploadSessionId: ID!
+) {
+    finishAppPackageUploadSession(
+        appId: $appId
+        versionNumber: $versionNumber
+        fileUploadSessionId: $fileUploadSessionId
+    ) {
+        ...AppVersionFragment
+    }
+}

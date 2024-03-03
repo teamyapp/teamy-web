@@ -10,7 +10,6 @@ export class TeamState {
         public iconUrl?: string,
         public updatedAt?: Date,
         public activeSprintId?: number,
-        public managedAppIds?: number[],
     ) {}
 
     public static fromMutationPayload(json: any): TeamState {
@@ -23,7 +22,6 @@ export class TeamState {
             json.IconURL,
             toDate(json.UpdatedAt),
             json.ActiveSprintID,
-            json.ManagedAppIDs,
         );
     }
 
@@ -37,7 +35,6 @@ export class TeamState {
             json.iconUrl,
             toDate(json.updatedAt),
             json.activeSprintId,
-            json.managedAppIds,
         );
     }
 }

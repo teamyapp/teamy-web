@@ -32,8 +32,8 @@ const groupTabs: Tab<GroupTabKey>[] = [
 interface Props {
     deps: Deps;
     appId: number;
-    isValidUser?: (userId: number) => boolean;
-    isValidTeam?: (teamId: number) => boolean;
+    isValidUser?: (userId: number) => Promise<boolean>;
+    isValidTeam?: (teamId: number) => Promise<boolean>;
     renderInlineUser: (userId: number) => ReactNode;
     renderInlineTeam: (teamId: number) => ReactNode;
 }
@@ -52,7 +52,7 @@ export function GroupsTabComponent(props: Props) {
     const [selectedUserGroup, setSelectedUserGroup] = useState<Group>();
     const [selectedTeamGroup, setSelectedTeamGroup] = useState<Group>();
 
-    const isValidRollout = (rolloutId: number): boolean => {
+    const isValidRollout = async (rolloutId: number): Promise<boolean> => {
         const appState = props.deps.localStore.getState();
         if (!appState.rollouts[rolloutId]) {
             return false;

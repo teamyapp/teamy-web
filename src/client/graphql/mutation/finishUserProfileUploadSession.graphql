@@ -1,0 +1,7 @@
+#import '../fragment/user.graphql'
+
+mutation finishUserProfileUploadSession($fileUploadSessionId: ID!) {
+    finishUserProfileUploadSession(fileUploadSessionId: $fileUploadSessionId) {
+        ...UserFragment
+    }
+}

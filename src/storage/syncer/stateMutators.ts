@@ -984,6 +984,13 @@ export function mergeGroup(
         };
         currAppState.filterGroups[remoteGroupId] = localNewFilterGroup;
     } else {
+        remoteGroup.teams?.forEach((team) => {
+            currAppState = mergeTeam(currAppState, team);
+        });
+        remoteGroup.users?.forEach((user) => {
+            currAppState = mergeUser(currAppState, user);
+        });
+
         const memberAttr =
             remoteGroup.memberType === 'USER' ? 'users' : 'teams';
         const otherGroupMemberRelations =
@@ -1218,9 +1225,6 @@ export function mergeTeam(
         ownerUserId: toInt(remoteTeam.owner?.id) || localOldTeam.ownerUserId,
         activeSprintId:
             toInt(remoteTeam.activeSprint?.id) || localOldTeam.activeSprintId,
-        managedAppIds:
-            remoteTeam.managedApps?.map((app) => toInt(app.id)!) ||
-            localOldTeam.managedAppIds,
     };
 
     if (remoteTeam.creator) {

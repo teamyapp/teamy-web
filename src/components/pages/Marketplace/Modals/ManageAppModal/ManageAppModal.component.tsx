@@ -16,6 +16,7 @@ import styles from './ManageAppModal.component.module.scss';
 import { RolloutsTabComponent } from './RolloutsTab.component';
 import { TagsTabComponent } from './TagsTab.component';
 import { VersionsTabComponent } from './VersionsTab.component';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts' | 'tags';
 
@@ -59,10 +60,12 @@ interface State {
 export class ManageAppModalComponent extends Component<Props, State> {
     private readonly modalRef = createRef<ModalUI>();
     private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
 
     constructor(props: Props) {
         super(props);
         this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             showTabViews: {
                 credentials: true,
@@ -198,7 +201,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
                         deps={this.props.deps}
                         appId={this.state.app.id}
                         isValidUser={this.isValidUser}
-                        isValidTeam={this.isValidUser}
+                        isValidTeam={this.isValidTeam}
                         renderInlineUser={this.renderInlineUser}
                         renderInlineTeam={this.renderInlineTeam}
                     />
@@ -233,7 +236,6 @@ export class ManageAppModalComponent extends Component<Props, State> {
     }
 
     private renderInlineUser = (userId: number): ReactNode => {
-        // TODO: pull user
         let user = this.graphSource.user(userId);
         return (
             user && (
@@ -249,13 +251,18 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     };
 
-    private isValidUser = (userId: number): boolean => {
-        // TODO: pull user
-        return this.graphSource.user(userId) !== undefined;
+    private isValidUser = async (userId: number): Promise<boolean> => { 
+        await this.stateSyncer.pullUser(userId);
+        return Boolean(this.graphSource.user(userId));
     };
 
+    private isValidTeam = async (teamId: number): Promise<boolean> => {
+        await this.stateSyncer.pullTeam(teamId)
+        return Boolean(this.graphSource.team(teamId));
+    }
+
+
     private renderInlineTeam = (teamId: number): ReactNode => {
-        // TODO: pull team
         let team = this.graphSource.team(teamId);
         return (
             team && (
@@ -275,7 +282,7 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     };
 
-    private isValidVersionNumber = (versionNumber: number): boolean => {
+    private isValidVersionNumber = async (versionNumber: number): Promise<boolean> => {
         return (
             this.state.app?.versions.some(
                 (appVersion) => appVersion.number == versionNumber,

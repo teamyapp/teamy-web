@@ -1,0 +1,37 @@
+#import "./user.graphql"
+#import "./team.graphql"
+
+fragment GroupFragment on Group {
+    id
+    type
+    locked
+    memberType
+    name
+    ... on StaticUserGroup {
+        users {
+            ...UserFragment
+        }
+    }
+    ... on StaticTeamGroup {
+        teams {
+            ...TeamFragment
+        }
+    }
+    ... on FilterGroup {
+        filter
+    }
+    createdAt
+    updatedAt
+    groupRolloutRelations {
+        group {
+            id
+        }
+        rollout {
+            id
+        }
+        orderIndex
+    }
+    apps {
+        id
+    }
+}

@@ -16,7 +16,7 @@ import styles from './CreateTeamRolloutModal.component.module.scss';
 interface Props {
     deps: Deps;
     appId: number;
-    isValidVersionNumber: (versionNumber: number) => boolean;
+    isValidVersionNumber: (versionNumber: number) => Promise<boolean>;
     onCreateRolloutClick: (rollout: CreateAppRolloutInput) => void;
     createActivator: (input: CreateActivatorInput) => Promise<number>;
     createVersionSelector: (
@@ -75,7 +75,7 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
         return <div className={styles.InlineGroup}>{group.name}</div>;
     };
 
-    private isValidTeamGroup = (groupId: number): boolean => {
+    private isValidTeamGroup = async (groupId: number): Promise<boolean> => {
         const app = this.props.deps.graphSource.app(this.props.appId);
         return app?.teamGroups.some((group) => group.id === groupId) || false;
     };
