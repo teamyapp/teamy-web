@@ -1,0 +1,19 @@
+#import '../fragment/user.graphql'
+#import '../fragment/team.graphql'
+
+query getUserWithTeam($userId: ID!) {
+    user(userId: $userId) {
+        ...UserFragment
+        teams {
+            ...TeamFragment
+            owner {
+                ...UserFragment
+            }
+            members {
+                user {
+                    ...UserFragment
+                }
+            }
+        }
+    }
+}

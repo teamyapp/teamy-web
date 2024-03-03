@@ -1,0 +1,19 @@
+#import '../fragment/user.graphql'
+#import '../fragment/team.graphql'
+
+query getMeWithTeams {
+    me {
+        ...UserFragment
+        teams {
+            ...TeamFragment
+            owner {
+                ...UserFragment
+            }
+            members {
+                user {
+                    ...UserFragment
+                }
+            }
+        }
+    }
+}
