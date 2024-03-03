@@ -15,9 +15,7 @@
         "preview": "vite preview",
         "test": "vitest",
         "test:e2e": "playwright test",
-        "format": "yarn prettier --write .",
-        "storybook": "start-storybook -p 6006",
-        "build-storybook": "build-storybook -o docs"
+        "format": "yarn prettier --write ."
     },
     "dependencies": {
         "@teamyapp/ext": "^0.0.16",
@@ -37,12 +35,6 @@
     "devDependencies": {
         "@playwright/test": "^1.23.1",
         "@rollup/plugin-graphql": "^2.0.4",
-        "@storybook/addon-actions": "^6.5.16",
-        "@storybook/addon-essentials": "^7.6.10",
-        "@storybook/addon-links": "^6.5.16",
-        "@storybook/builder-vite": "^7.6.10",
-        "@storybook/node-logger": "^6.5.16",
-        "@storybook/react": "^7.6.10",
         "@trivago/prettier-plugin-sort-imports": "^4.3.0",
         "@types/js-cookie": "^3.0.0",
         "@types/lodash-es": "^4.17.5",
@@ -64,16 +56,6 @@
     "eslintConfig": {
         "extends": [
             "react-app"
-        ],
-        "overrides": [
-            {
-                "files": [
-                    "**/*.stories.*"
-                ],
-                "rules": {
-                    "import/no-anonymous-default-export": "off"
-                }
-            }
         ]
     },
     "browserslist": {

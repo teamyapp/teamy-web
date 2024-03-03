@@ -107,7 +107,7 @@ export class TeamNode implements Team {
 
     public get managedApps(): AppNode[] {
         const appState = this.localStore.getState();
-        const apps = []
+        const apps = [];
         for (let appId in appState.apps) {
             const app = appState.apps[appId];
             if (app.managedByTeamId === this.teamState.id) {

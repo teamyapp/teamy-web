@@ -1,3 +1,5 @@
+import { print } from 'graphql';
+
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import {
@@ -20,7 +22,7 @@ import {
     RemoteUpdateVersionSelectorInput,
 } from '@core/client/entity/input';
 import { AppRolloutType } from '@core/entity/rollout';
-import { print } from 'graphql';
+
 import { RemoteApp } from './entity/remoteApp';
 import { RemoteAppInstallation } from './entity/remoteAppInstallation';
 import { RemoteAppSecret } from './entity/remoteAppSecret';
@@ -29,13 +31,12 @@ import { RemoteRollout } from './entity/remoteRollout';
 import { RemoteRolloutActivator } from './entity/remoteRolloutActivator';
 import { RemoteRolloutVersionSelector } from './entity/remoteRolloutVersionSelector';
 import { RemoteTag } from './entity/remoteTag';
-import getApps from './graphql/query/getApps.graphql';
 import createApp from './graphql/mutation/createApp.graphql';
-import createStaticUserGroup from './graphql/mutation/createStaticUserGroup.graphql';
-import createStaticTeamGroup from './graphql/mutation/createStaticTeamGroup.graphql';
 import createFilterGroup from './graphql/mutation/createFilterGroup.graphql';
+import createStaticTeamGroup from './graphql/mutation/createStaticTeamGroup.graphql';
+import createStaticUserGroup from './graphql/mutation/createStaticUserGroup.graphql';
 import updateGroup from './graphql/mutation/updateGroup.graphql';
-
+import getApps from './graphql/query/getApps.graphql';
 
 export class AppClient {
     private readonly graphQLClient: GraphQLClient;

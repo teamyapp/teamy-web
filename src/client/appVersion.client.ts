@@ -1,12 +1,13 @@
 import { print } from 'graphql';
+
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteAppVersion } from '@core/client/entity/remoteAppVersion';
 
 import { RemoteUpdateAppVersionInput } from './entity/input';
-import createAppVersion from "./graphql/mutation/createAppVersion.graphql"
-import updateAppVersion from "./graphql/mutation/updateAppVersion.graphql"
-import finishAppPackageUploadSession from "./graphql/mutation/finishAppPackageUploadSession.graphql"
+import createAppVersion from './graphql/mutation/createAppVersion.graphql';
+import finishAppPackageUploadSession from './graphql/mutation/finishAppPackageUploadSession.graphql';
+import updateAppVersion from './graphql/mutation/updateAppVersion.graphql';
 
 export class AppVersionClient {
     private readonly graphQLClient: GraphQLClient;

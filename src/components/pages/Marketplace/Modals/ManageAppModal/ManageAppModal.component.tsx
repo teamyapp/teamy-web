@@ -7,6 +7,7 @@ import { ModalUI } from '@lib/ui/Modal';
 import { Deps } from '@core/dep/deps';
 import { App } from '@core/entity/app';
 import { GraphSource } from '@core/storage/graph/graphSource';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { UserProfileUI } from '../../../../internal/UserProfile';
 import { getUserShortName } from '../../../../internal/format';
@@ -16,7 +17,6 @@ import styles from './ManageAppModal.component.module.scss';
 import { RolloutsTabComponent } from './RolloutsTab.component';
 import { TagsTabComponent } from './TagsTab.component';
 import { VersionsTabComponent } from './VersionsTab.component';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 type TabKey = 'credentials' | 'versions' | 'groups' | 'rollouts' | 'tags';
 
@@ -251,16 +251,15 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     };
 
-    private isValidUser = async (userId: number): Promise<boolean> => { 
+    private isValidUser = async (userId: number): Promise<boolean> => {
         await this.stateSyncer.pullUser(userId);
         return Boolean(this.graphSource.user(userId));
     };
 
     private isValidTeam = async (teamId: number): Promise<boolean> => {
-        await this.stateSyncer.pullTeam(teamId)
+        await this.stateSyncer.pullTeam(teamId);
         return Boolean(this.graphSource.team(teamId));
-    }
-
+    };
 
     private renderInlineTeam = (teamId: number): ReactNode => {
         let team = this.graphSource.team(teamId);
@@ -282,7 +281,9 @@ export class ManageAppModalComponent extends Component<Props, State> {
         );
     };
 
-    private isValidVersionNumber = async (versionNumber: number): Promise<boolean> => {
+    private isValidVersionNumber = async (
+        versionNumber: number,
+    ): Promise<boolean> => {
         return (
             this.state.app?.versions.some(
                 (appVersion) => appVersion.number == versionNumber,
