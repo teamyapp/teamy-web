@@ -46,7 +46,7 @@ interface Props {
     rollout: Rollout;
     appRolloutType: AppRolloutType;
     renderInlineVersionNumber: (versionNumber: number) => ReactNode;
-    isValidVersionNumber?: (versionNumber: number) => boolean;
+    isValidVersionNumber?: (versionNumber: number) => Promise<boolean>;
     onSaveRolloutClick: (rollout: UpdateRolloutInput) => void;
     onDeleteRolloutClick: (rolloutId: number) => void;
     saveActivator: (

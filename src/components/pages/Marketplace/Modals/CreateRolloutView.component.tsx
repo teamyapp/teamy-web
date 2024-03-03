@@ -56,8 +56,8 @@ interface Props {
     groupLabel: string;
     appRolloutType: AppRolloutType;
     renderInlineGroup: (groupId: number) => ReactNode;
-    isValidGroup?: (groupId: number) => boolean;
-    isValidVersionNumber?: (versionNumber: number) => boolean;
+    isValidGroup?: (groupId: number) => Promise<boolean>;
+    isValidVersionNumber?: (versionNumber: number) => Promise<boolean>;
     onCreateRolloutClick: (input: CreateAppRolloutInput) => void;
     createActivator: (input: CreateActivatorInput) => Promise<number>;
     createVersionSelector: (

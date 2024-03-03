@@ -107,12 +107,15 @@ export class TeamNode implements Team {
 
     public get managedApps(): AppNode[] {
         const appState = this.localStore.getState();
-        return (
-            this.teamState.managedAppIds?.map((appId) => {
-                const app = appState.apps[appId];
-                return new AppNode(this.localStore, app);
-            }) || []
-        );
+        const apps = []
+        for (let appId in appState.apps) {
+            const app = appState.apps[appId];
+            if (app.managedByTeamId === this.teamState.id) {
+                apps.push(new AppNode(this.localStore, app));
+            }
+        }
+
+        return apps;
     }
 
     public get appInstallations(): AppInstallationNode[] {

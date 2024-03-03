@@ -1,0 +1,7 @@
+#import '../fragment/appVersion.graphql'
+
+mutation createAppVersion($appId: ID!) {
+    createAppVersion(appId: $appId) {
+        ...AppVersionFragment
+    }
+}

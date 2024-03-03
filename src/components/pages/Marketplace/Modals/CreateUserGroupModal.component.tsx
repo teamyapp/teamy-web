@@ -89,9 +89,9 @@ export class CreateUserGroupModalComponent extends Component<Props> {
         );
     };
 
-    private isValidUser = (userId: number): boolean => {
-        // TODO: pull user
-        return this.graphSource.user(userId) !== undefined;
+    private isValidUser = async (userId: number): Promise<boolean> => {
+        await this.stateSyncer.pullUser(userId);
+        return Boolean(this.graphSource.user(userId));
     };
 
     private onCreateStaticGroupClick = async (

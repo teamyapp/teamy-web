@@ -1,0 +1,8 @@
+
+#import '../fragment/App.graphql'
+
+mutation createApp($teamId: ID!, $input: CreateAppInput!) {
+    createApp(teamId: $teamId, input: $input) {
+        ...AppFragment
+    }
+}

@@ -10,6 +10,50 @@ export class UserClient {
         this.graphQLClient = graphQLClient;
     }
 
+
+    public getUser(userId: string): Promise<RemoteUser> {
+        return this.graphQLClient
+            .query({
+                query: `
+                    query getUser($userId: ID!) {
+                        user(userId: $userId) {
+                            id
+                            firstName
+                            lastName
+                            profileUrl
+                            createdAt
+                            updatedAt
+                            teams {
+                                id
+                                name
+                                iconUrl
+                                owner {
+                                    id
+                                }
+                                activeSprint {
+                                    id
+                                }
+                                members {
+                                    user {
+                                        id
+                                        lastName
+                                        firstName
+                                        profileUrl
+                                        createdAt
+                                    }
+                                }
+                            }
+                        }
+                    }
+                `,
+                variables: {
+                    userId,
+                },
+            })
+            .then((payload: any) => payload?.user);
+
+    }
+
     public getMeWithTeams(): Promise<RemoteUser> {
         return this.graphQLClient
             .query({

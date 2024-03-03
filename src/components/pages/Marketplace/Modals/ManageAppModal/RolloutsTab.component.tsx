@@ -45,7 +45,7 @@ const EditTeamGroupRolloutViewComponent = EditRolloutViewComponent();
 interface Props {
     appId: number;
     deps: Deps;
-    isValidVersionNumber: (versionNumber: number) => boolean;
+    isValidVersionNumber: (versionNumber: number) => Promise<boolean>;
     renderInlineVersionNumber: (versionNumber: number) => ReactNode;
 }
 

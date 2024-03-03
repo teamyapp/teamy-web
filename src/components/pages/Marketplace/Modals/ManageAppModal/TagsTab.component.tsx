@@ -45,7 +45,7 @@ export function TagsTabComponent(props: Props) {
         return tag.trim();
     };
 
-    const isTagValid = (tag: string) => {
+    const isTagValid = async (_: string) => {
         return true;
     };
 

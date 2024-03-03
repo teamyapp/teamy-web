@@ -99,9 +99,9 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
         );
     };
 
-    private isValidTeam = (teamId: number): boolean => {
-        // TODO: pull team
-        return this.graphSource.team(teamId) !== undefined;
+    private isValidTeam = async (teamId: number): Promise<boolean> => {
+        await this.stateSyncer.pullTeam(teamId)
+        return Boolean(this.graphSource.team(teamId));
     };
 
     private onCreateStaticGroupClick = async (

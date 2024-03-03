@@ -257,6 +257,14 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async pullTeam(teamId: number) {
+        const remoteTeam = await this.teamClient.getTeamWithSprintPreviews(`${teamId}`);
+        let appState = this.localStore.getState();
+        appState = mergeTeam(appState, remoteTeam);
+        this.localStore.updateState(appState);
+    }
+
+
     public async pullCurrentTeam(): Promise<void> {
         let appState = this.localStore.getState();
         const currTeamId = appState.currTeamId;
@@ -380,6 +388,15 @@ export class StateSyncer {
         if (remoteTask) {
             let appState = this.localStore.getState();
             appState = mergeTask(appState, remoteTask);
+            this.localStore.updateState(appState);
+        }
+    }
+
+    public async pullUser(userId: number): Promise<void> {
+        const remoteUser = await this.userClient.getUser(`${userId}`);
+        if (remoteUser) {
+            let appState = this.localStore.getState();
+            appState = mergeUser(appState, remoteUser);
             this.localStore.updateState(appState);
         }
     }
@@ -892,6 +909,7 @@ export class StateSyncer {
     ): Promise<void> {
         const remoteApp = await this.appClient.createApp(`${teamId}`, input);
         let appState = this.localStore.getState();
+        debugger;
         appState = mergeApp(appState, remoteApp, teamId);
         this.localStore.updateState(appState);
     }
@@ -1080,6 +1098,7 @@ export class StateSyncer {
         appId: number,
         input: CreateStaticGroupInput,
     ): Promise<void> {
+        debugger
         const remoteGroup = await this.appClient.createStaticUserGroup(
             `${appId}`,
             {

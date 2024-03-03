@@ -36,6 +36,7 @@
     },
     "devDependencies": {
         "@playwright/test": "^1.23.1",
+        "@rollup/plugin-graphql": "^2.0.4",
         "@storybook/addon-actions": "^6.5.16",
         "@storybook/addon-essentials": "^7.6.10",
         "@storybook/addon-links": "^6.5.16",

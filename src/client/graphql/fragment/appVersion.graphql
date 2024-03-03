@@ -1,0 +1,30 @@
+fragment AppVersionFragment on AppVersion {
+    app {
+        id
+    }
+    number
+    appName
+    description
+    changes {
+        id
+        appVersion {
+            number
+            app {
+                id
+            }
+        }
+        change
+    }
+    prices {
+        amount
+        currency
+    }
+    createdAt
+    createdBy {
+        id
+    }
+    status
+    errorMessage
+    locked
+    hasUiExtension
+}
