@@ -1,0 +1,168 @@
+.Planning {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+    .Location {
+        align-items: center;
+        background-color: white;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        display: flex;
+        padding: 10px 14px;
+        position: relative;
+        z-index: 1;
+
+        .Separator {
+            border-bottom: 6px solid transparent;
+            border-left: 6px solid #E64A19;
+            border-top: 6px solid transparent;
+            height: 0;
+            margin: 0 10px;
+            width: 0;
+        }
+
+        .Level {
+            color: #E64A19;
+            font-size: 14px;
+            font-weight: bold;
+
+            &:hover {
+                cursor: pointer;
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .ProjectView {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+        position: relative;
+        z-index: 0;
+
+        .PhaseListSection {
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+            padding: 0 10px;
+            width: 220px;
+            z-index: 1;
+
+            > .TopBar {
+                align-items: center;
+                display: flex;
+                justify-content: space-between;
+                padding: 20px 10px 10px 10px;
+
+                .Title {
+                    font-size: 20px;
+                    font-weight: bold;
+                }
+
+                .Add {
+                    border-radius: 4px;
+                    --icon-color: #E64A19;
+                    --icon-size: 24px;
+
+                    &:hover {
+                        background-color: #E64A19;
+                        --icon-color: white;
+                        cursor: pointer;
+                    }
+                }
+            }
+
+            .PhaseList {
+                box-sizing: border-box;
+                display: flex;
+                flex: 1;
+                flex-direction: column;
+                overflow-y: auto;
+                row-gap: 4px;
+
+                .Phase {
+                    border-radius: 4px;
+                    display: flex;
+                    flex-direction: column;
+                    padding: 10px;
+                    row-gap: 6px;
+
+                    &:hover {
+                        background-color: rgba(0, 0, 0, 0.05);
+                        cursor: pointer;
+                    }
+
+                    .Name {
+                        font-size: 14px;
+                        font-weight: bold;
+                    }
+
+                    .Status {
+                        color: #757575;
+                        font-size: 12px;
+                        font-weight: bold;
+                    }
+
+
+                    .Duration {
+                        color: #9E9E9E;
+                        font-size: 12px;
+                        font-weight: bold;
+                    }
+                }
+            }
+        }
+
+        .Timeline {
+            flex: 1;
+            overflow: hidden;
+            padding: 14px 0 0 0;
+            z-index: 0;
+
+            .Phase {
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                justify-content: center;
+                padding: 0 14px;
+                row-gap: 6px;
+
+                .ProgressBar {
+                    background-color: #EEEEEE;
+                    border-radius: 2px;
+                    height: 4px;
+                    overflow: hidden;
+
+                    .Progress {
+                        background-color: #66BB6A;
+                        border-radius: inherit;
+                        height: 100%;
+                    }
+                }
+
+                .Name {
+                    font-size: 14px;
+                    font-weight: bold;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+
+                .Status {
+                    color: #757575;
+                    font-size: 12px;
+                    font-weight: bold;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                }
+            }
+        }
+    }
+}

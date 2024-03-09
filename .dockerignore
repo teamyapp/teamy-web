@@ -3,5 +3,4 @@ README.md
 .gitignore
 node_modules
 docs
-src
 k8s
