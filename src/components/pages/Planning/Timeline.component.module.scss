@@ -4,7 +4,7 @@
     width: 100%;
 
     .Scrollable {
-        background-color: #ECEFF1;
+        background-color: #eceff1;
         display: flex;
         flex-direction: column;
         height: 100%;
@@ -80,19 +80,19 @@
                 width: fit-content;
 
                 .DayLine {
-                    border-left: 1px solid #E0E0E0;
+                    border-left: 1px solid #e0e0e0;
                     box-sizing: border-box;
                     flex-shrink: 0;
 
                     &:last-child {
-                        border-right: 1px solid #E0E0E0;
+                        border-right: 1px solid #e0e0e0;
                     }
                 }
             }
         }
 
         .Content {
-            background-color: #ECEFF1;
+            background-color: #eceff1;
             flex: 1;
             padding: 4px 14px;
             position: relative;
@@ -104,12 +104,12 @@
                 width: fit-content;
 
                 .DayLine {
-                    border-left: 1px solid #CFD8DC;
+                    border-left: 1px solid #cfd8dc;
                     box-sizing: border-box;
                     flex-shrink: 0;
 
                     &:last-child {
-                        border-right: 1px solid #CFD8DC;
+                        border-right: 1px solid #cfd8dc;
                     }
                 }
             }
@@ -140,9 +140,16 @@
                         height: 100%;
                         position: absolute;
 
+                        &.Selected {
+                            outline: 3px solid #ffc107;
+                        }
+
                         &:hover {
                             cursor: pointer;
-                            outline: 3px solid #FFC107;
+
+                            &:not(.Selected) {
+                                outline: 3px solid #ffc71e;
+                            }
                         }
                     }
                 }

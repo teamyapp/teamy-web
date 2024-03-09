@@ -1,8 +1,15 @@
-import {MaterialIconUI} from '@lib/ui/MaterialIcon';
+import classNames from 'classnames';
 import moment from 'moment';
-import {createRef, ReactElement} from 'react';
+import { ReactElement, createRef, useState } from 'react';
+
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
 import styles from './Planning.component.module.scss';
-import {Row, TimelineComponent} from './Timeline.component';
+import {
+    Row,
+    TimelineComponent,
+    TimelineComponentHandle,
+} from './Timeline.component';
 
 type PhaseStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
 type StoryStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
@@ -56,7 +63,7 @@ const phases: Phase[] = [
         creatorID: 1,
         totalStories: 50,
         deliveredStories: 6,
-        createdAt: new Date()
+        createdAt: new Date(),
     },
     {
         id: 2,
@@ -67,7 +74,7 @@ const phases: Phase[] = [
         creatorID: 1,
         totalStories: 60,
         deliveredStories: 10,
-        createdAt: new Date()
+        createdAt: new Date(),
     },
     {
         id: 3,
@@ -78,7 +85,7 @@ const phases: Phase[] = [
         creatorID: 1,
         totalStories: 70,
         deliveredStories: 15,
-        createdAt: new Date()
+        createdAt: new Date(),
     },
     {
         id: 4,
@@ -89,7 +96,7 @@ const phases: Phase[] = [
         creatorID: 1,
         totalStories: 80,
         deliveredStories: 20,
-        createdAt: new Date()
+        createdAt: new Date(),
     },
     {
         id: 5,
@@ -100,7 +107,7 @@ const phases: Phase[] = [
         creatorID: 1,
         totalStories: 90,
         deliveredStories: 25,
-        createdAt: new Date()
+        createdAt: new Date(),
     },
     {
         id: 6,
@@ -111,8 +118,8 @@ const phases: Phase[] = [
         creatorID: 1,
         totalStories: 100,
         deliveredStories: 30,
-        createdAt: new Date()
-    }
+        createdAt: new Date(),
+    },
 ];
 
 interface Level {
@@ -127,17 +134,20 @@ const location: Level[] = [
         name: 'Projects',
         onClick: () => {
             console.log('Projects');
-        }
+        },
     },
     {
         name: 'Project',
         onClick: () => {
             console.log('Project Name');
-        }
+        },
     },
 ];
 
 export function PlanningComponent() {
+    const timelineRef = createRef<TimelineComponentHandle>();
+    const [selectedPhaseIndex, setSelectedPhaseIndex] = useState<number>();
+
     const rows: Row[] = phases.map((phase, index) => {
         const ref = createRef<HTMLDivElement>();
         return {
@@ -148,87 +158,101 @@ export function PlanningComponent() {
                     view: (
                         <div className={styles.Phase} ref={ref}>
                             <div className={styles.ProgressBar}>
-                                <div className={styles.Progress} style={{
-                                    width: `${(phase.deliveredStories / phase.totalStories) * 100}%`
-                                }}/>
+                                <div
+                                    className={styles.Progress}
+                                    style={{
+                                        width: `${
+                                            (phase.deliveredStories /
+                                                phase.totalStories) *
+                                            100
+                                        }%`,
+                                    }}
+                                />
                             </div>
                             <div className={styles.Name}>{phase.name}</div>
-                            <div className={styles.Status}>{phase.deliveredStories} of {phase.totalStories} stories
-                                delivered
+                            <div className={styles.Status}>
+                                {phase.deliveredStories} of {phase.totalStories}{' '}
+                                stories delivered
                             </div>
                         </div>
                     ),
                     startAt: phase.expectedStartAt,
                     endAt: phase.expectedEndAt,
-                }
-            ]
+                },
+            ],
         };
     });
 
+    const renderPhase = (phase: Phase, index: number): ReactElement => {
+        return (
+            <div
+                key={index}
+                className={`${styles.Phase} ${classNames({
+                    [styles.Selected]: index === selectedPhaseIndex,
+                })}`}
+                onClick={onClickPhaseHandler(index)}
+            >
+                <div className={styles.Name}>{phase.name}</div>
+                <div className={styles.Status}>
+                    {phase.deliveredStories} of {phase.totalStories} stories
+                    delivered
+                </div>
+                <div className={styles.Duration}>
+                    {moment(phase.expectedStartAt).format('MMM DD')} -{' '}
+                    {moment(phase.expectedEndAt).format('MMM DD')}
+                </div>
+            </div>
+        );
+    };
+
     const onClickPhaseHandler = (phaseIndex: number) => {
         return () => {
-            rows[phaseIndex].items[0].ref.current?.scrollIntoView({
-                block: 'center',
-                inline: 'center',
-                behavior: 'smooth'
-            });
+            timelineRef.current?.showAndSelectItem(phaseIndex, 0);
+            setSelectedPhaseIndex(phaseIndex);
         };
+    };
+
+    const timelineItemSelect = (rowIndex: number, itemIndex: number) => {
+        setSelectedPhaseIndex(rowIndex);
     };
 
     return (
         <div className={styles.Planning}>
             <div className={styles.Location}>
-                {
-                    location.map((level, index) => {
-                        return (
-                            <>
-                                {index > 0 && <div className={styles.Separator}/>}
-                                <div key={index}
-                                     className={styles.Level}
-                                     onClick={level.onClick}>
-                                    {level.name}
-                                </div>
-                            </>
-                        );
-                    })
-                }
+                {location.map((level, index) => {
+                    return (
+                        <>
+                            {index > 0 && <div className={styles.Separator} />}
+                            <div
+                                key={index}
+                                className={styles.Level}
+                                onClick={level.onClick}
+                            >
+                                {level.name}
+                            </div>
+                        </>
+                    );
+                })}
             </div>
             <div className={styles.ProjectView}>
                 <div className={styles.PhaseListSection}>
                     <div className={styles.TopBar}>
-                        <div className={styles.Title}>
-                            Phases
-                        </div>
+                        <div className={styles.Title}>Phases</div>
                         <div className={styles.Add}>
-                            <MaterialIconUI>
-                                add
-                            </MaterialIconUI>
+                            <MaterialIconUI>add</MaterialIconUI>
                         </div>
                     </div>
                     <div className={styles.PhaseList}>
-                        {
-                            phases.map((phase, index) => {
-                                return (
-                                    <div key={index} className={styles.Phase}
-                                        onClick={onClickPhaseHandler(index)}>
-                                        <div className={styles.Name}>{phase.name}</div>
-                                        <div className={styles.Status}>
-                                            {phase.deliveredStories} of {phase.totalStories} stories delivered
-                                        </div>
-                                        <div className={styles.Duration}>
-                                            {moment(phase.expectedStartAt).format('MMM DD')} - {moment(phase.expectedEndAt).format('MMM DD')}
-                                        </div>
-                                    </div>
-                                );
-                            })
-                        }
+                        {phases.map(renderPhase)}
                     </div>
                 </div>
                 <div className={styles.Timeline}>
                     <TimelineComponent
+                        ref={timelineRef}
                         startAt={startAt}
                         endAt={endAt}
                         rows={rows}
+                        onItemSelect={timelineItemSelect}
                     />
                 </div>
             </div>
