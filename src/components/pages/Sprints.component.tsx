@@ -1,5 +1,6 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
+import { TaskDetailModalComponent } from 'components/internal/Modals/TaskDetailModal.component';
 import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -34,7 +35,7 @@ import { SortOrders } from '@core/entity/sortOrders';
 import { Sprint } from '@core/entity/sprint';
 import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
-import { sprintTabPath, sprintsPath } from '@core/routing/routes';
+import { sprintTabPath, sprintsPath, taskPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
@@ -115,8 +116,8 @@ export class SprintsComponent extends Component<Props, State> {
         const clientId = this.localStore.getState().currClientId;
         // TODO: will change when PersonalStatus is merged with Kanban
         return (
-            this.state.isPageReady &&
-            (this.state.selectedSprintId ? (
+            <>
+                {this.state.isPageReady && (this.state.selectedSprintId ? (
                 <div className={styles.Sprint}>
                     <div className={styles.Content}>
                         {this.renderTabContent(
@@ -125,9 +126,13 @@ export class SprintsComponent extends Component<Props, State> {
                         )}
                     </div>
                 </div>
-            ) : (
-                this.renderSelectSprint()
-            ))
+                ) : ( this.renderSelectSprint() ))}
+                <TaskDetailModalComponent
+                    ref={this.taskDetailModalRef}
+                    deps={this.props.deps}
+                    afterClose={this.afterTaskDetailModalClose}
+                />
+            </>
         );
     }
 
@@ -436,7 +441,7 @@ export class SprintsComponent extends Component<Props, State> {
                                 onStartTask={this.moveTaskToInProgress}
                                 onDeleteTask={this.onDeleteTask}
                                 onCompleteTask={this.moveTaskToDelivered}
-                                onViewTaskDetail={this.props.onViewTaskDetail}
+                                onViewTaskDetail={this.onViewTaskDetail}
                                 onReportTaskBlocked={this.onReportTaskBlocked}
                                 onSelectUpcomingOrder={
                                     this.onSelectUpcomingOrder
@@ -449,6 +454,14 @@ export class SprintsComponent extends Component<Props, State> {
                 return null;
         }
     }
+
+    private onViewTaskDetail = (taskId: number) => {
+        this.props.onViewTaskDetail?.call(null, taskId);
+
+        this.props.deps.router.navigateTo(
+            taskPath(this.localStore.getState().currTeamId!, taskId),
+        );
+    };
 
     private onMultiSelectionToggleClick = () => {
         this.isSelectionModePermanent = !this.state.allowMultiSelection;

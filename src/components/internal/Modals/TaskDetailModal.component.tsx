@@ -22,7 +22,7 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { DurationInputUI } from '../DurationInput.ui';
-import { SelectTaskOwnersPopupComponent } from '../SelectTaskOwnersPopupComponent';
+import { SelectOwnersPopupComponent } from '../SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from '../TaskLinkIcon';
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
@@ -55,7 +55,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private getBoundingClientRect?: () => DOMRect;
     private readonly modalRef = createRef<ModalUI>();
     private readonly selectTaskOwnersPopupRef =
-        createRef<SelectTaskOwnersPopupComponent>();
+        createRef<SelectOwnersPopupComponent>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
     private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
@@ -272,9 +272,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         </div>
                     )}
                 </ModalUI>
-                <SelectTaskOwnersPopupComponent
+                <SelectOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
-                    findTaskOwnersAlignTargetBoundBox={
+                    findOwnersAlignTargetBoundBox={
                         this.getBoundingClientRect
                     }
                     deps={this.props.deps}

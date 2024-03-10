@@ -5,6 +5,7 @@ import { Priority } from '@core/entity/priority';
 import { AppVersionStatus } from './appVersion';
 import { GroupMemberType, GroupType } from './group';
 import { AppRolloutType } from './rollout';
+import { StoryStatus } from './story';
 
 export interface CreateAppInput {
     name: string;
@@ -196,4 +197,18 @@ export interface CreateAppVersionInput {
 
 export interface UpdateAppVersionInput {
     status: AppVersionStatus;
+}
+
+
+export interface CreateStoryInput {
+    name: string;
+    ownerId: number;
+    priority?: Priority;
+}
+
+export interface UpdateStoryInput {
+    name: string;
+    ownerId: number;
+    status: StoryStatus;
+    priority?: Priority;
 }

@@ -8,6 +8,9 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { AppNode } from './app.node';
 import { AppVersionNode } from './appVersion.node';
 import { RolloutNode } from './rollout.node';
+import { StoryNode } from './story.node';
+import { PhaseNode } from './phase.node';
+import { ProjectNode } from './project.node';
 
 export class GraphSource {
     constructor(private localStore: LocalStore) {}
@@ -130,5 +133,38 @@ export class GraphSource {
         if (rollout) {
             return new RolloutNode(this.localStore, rollout);
         }
+    }
+
+    public story(storyId: number): StoryNode | undefined {
+        const appState = this.localStore.getState();
+        const story = appState.stories[storyId];
+        if (story) {
+            return new StoryNode(this.localStore, story);
+        }
+    }
+
+    public phase(phaseId: number): PhaseNode | undefined {
+        const appState = this.localStore.getState();
+        const phase = appState.phases[phaseId];
+        if (phase) {
+            return new PhaseNode(this.localStore, phase);
+        }
+    }
+
+    public project(projectId: number): ProjectNode | undefined {
+        const appState = this.localStore.getState();
+        const project = appState.projects[projectId];
+        if (project) {
+            return new ProjectNode(this.localStore, project);
+        }
+    }
+
+
+    //test
+    public projects(): ProjectNode[] {
+        const appState = this.localStore.getState();
+        return Object.values(appState.projects).map(
+            (project) => new ProjectNode(this.localStore, project),
+        );
     }
 }

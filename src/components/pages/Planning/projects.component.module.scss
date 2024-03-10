@@ -1,0 +1,17 @@
+.ProjectsSection {
+    display: flex;
+    flex-direction: column;
+
+
+    .Project {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        .Name {
+        }
+
+        .Creator {
+        }
+    }
+}

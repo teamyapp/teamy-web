@@ -1,0 +1,97 @@
+.Story {
+    display: flex;
+
+    .StoryDetailSection {
+        padding: 8px;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        
+
+        .Header {
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            padding: 16px;
+            align-items: center;
+            .Information {
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                .Description {
+                    color: #757575;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+            }
+
+            .Actions {
+                display: flex;
+                gap: 8px;
+                margin-left: auto;
+                .Add {
+                    --background-color: #4caf50;
+                    --border-color: #388e3c;
+                }
+
+                .Delete {
+                    --background-color: #d32f2f;
+                    --border-color: #c62828;
+                }
+            }
+        }
+    }
+
+    .TasksSection {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 16px;
+        column-gap: 8px;
+        .InlineTask {
+            width: 420px;
+        }
+    }
+
+    .TaskListSection {
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+        padding: 0 10px;
+        width: 420px;
+        z-index: 1;
+        > .TopBar {
+            align-items: center;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 10px 10px 10px;
+            .Title {
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+            .Add {
+                border-radius: 4px;
+                --icon-color: #e64a19;
+                --icon-size: 24px;
+                &:hover {
+                    background-color: #e64a19;
+                    --icon-color: white;
+                    cursor: pointer;
+                }
+            }
+        }
+
+        .TaskList{
+            box-sizing: border-box;
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            overflow-y: auto;
+            row-gap: 4px;
+        }
+    }
+
+}
