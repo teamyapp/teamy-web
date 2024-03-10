@@ -83,24 +83,17 @@ $sidePadding: 14px;
 
                 .DayLabel {
                     flex-shrink: 0;
-                    position: sticky;
-                    left: $sidePadding;
                     background-color: white;
 
                     .DayOfWeekLabel {
                         font-size: 12px;
                         font-weight: bold;
-
                     }
 
                     .DayOfMonthLabel {
                         font-size: 12px;
                         margin-top: 4px;
                     }
-                }
-
-                .DaySpacer {
-                    flex-shrink: 0;
                 }
             }
 

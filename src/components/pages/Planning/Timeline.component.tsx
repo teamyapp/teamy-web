@@ -308,7 +308,7 @@ export const TimelineComponent = forwardRef(
                                             key={index}
                                             className={styles.DayLabel}
                                             style={{
-                                                width: dayLabelWidth,
+                                                width: dayWidth,
                                             }}
                                         >
                                             <div className={styles.DayOfWeekLabel}>
@@ -318,13 +318,6 @@ export const TimelineComponent = forwardRef(
                                                 {day.dayOfMonth}
                                             </div>
                                         </div>
-                                        <div
-                                            key={index}
-                                            className={styles.DaySpacer}
-                                            style={{
-                                                width: dayWidth - dayLabelWidth,
-                                            }}
-                                        />
                                     </>
                                 );
                             })}
