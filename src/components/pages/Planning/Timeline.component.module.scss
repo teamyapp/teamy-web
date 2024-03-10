@@ -8,13 +8,34 @@
         display: flex;
         flex-direction: column;
         height: 100%;
-        -ms-overflow-style: none;
         overflow-x: auto;
         position: relative;
         width: 100%;
 
-        &::-webkit-scrollbar {
-            display: none;
+        &.Debug {
+            .YearLabel {
+                background-color: #1e88e5;
+            }
+
+            .YearSpacer {
+                background-color: #2ecc71;
+            }
+
+            .MonthOfYearLabel {
+                background-color: #1e88e5;
+            }
+
+            .MonthSpacer {
+                background-color: #2ecc71;
+            }
+
+            .DayLabel {
+                background-color: #1e88e5;
+            }
+
+            .DaySpacer {
+                background-color: #2ecc71;
+            }
         }
 
         .Labels {
@@ -31,7 +52,14 @@
                 font-weight: bold;
                 width: fit-content;
 
-                .Year {
+                .YearLabel {
+                    flex-shrink: 0;
+                    position: sticky;
+                    left: 14px;
+                    background-color: white;
+                }
+
+                .YearSpacer {
                     flex-shrink: 0;
                 }
             }
@@ -45,7 +73,14 @@
                 text-transform: uppercase;
                 width: fit-content;
 
-                .Month {
+                .MonthOfYearLabel {
+                    flex-shrink: 0;
+                    position: sticky;
+                    left: 14px;
+                    background-color: white;
+                }
+
+                .MonthSpacer {
                     flex-shrink: 0;
                 }
             }
@@ -56,18 +91,26 @@
                 padding-top: 6px;
                 width: fit-content;
 
-                .Day {
+                .DayLabel {
                     flex-shrink: 0;
+                    position: sticky;
+                    left: 14px;
+                    background-color: white;
 
                     .DayOfWeekLabel {
                         font-size: 12px;
                         font-weight: bold;
+
                     }
 
                     .DayOfMonthLabel {
                         font-size: 12px;
                         margin-top: 4px;
                     }
+                }
+
+                .DaySpacer {
+                    flex-shrink: 0;
                 }
             }
 
@@ -76,7 +119,6 @@
                 height: 8px;
                 margin-bottom: 4px;
                 margin-top: 6px;
-
                 width: fit-content;
 
                 .DayLine {

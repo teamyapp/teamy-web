@@ -29,6 +29,9 @@ const monthOfYearLabel = [
     'Dec',
 ];
 
+const yearLabelWidth = 50;
+const monthLabelWidth = 40;
+const dayLabelWidth = 30;
 const dayWidth = 50;
 
 interface Year {
@@ -246,60 +249,94 @@ export const TimelineComponent = forwardRef(
                         <div className={styles.Years}>
                             {years.map((year, index) => {
                                 return (
-                                    <div
-                                        key={index}
-                                        className={styles.Year}
-                                        style={{
-                                            width: dayWidth * year.totalDays,
-                                        }}
-                                    >
-                                        <div className={styles.YearLabel}>
+                                    <>
+                                        <div
+                                            key={index}
+                                            className={styles.YearLabel}
+                                            style={{
+                                                width: yearLabelWidth,
+                                            }}>
                                             {year.yearOf}
                                         </div>
-                                    </div>
+                                        <div
+                                            key={index}
+                                            className={styles.YearSpacer}
+                                            style={{
+                                                width: dayWidth * year.totalDays - yearLabelWidth,
+                                            }}
+                                        />
+                                    </>
                                 );
                             })}
                         </div>
                         <div className={styles.Months}>
                             {months.map((month, index) => {
                                 return (
-                                    <div
-                                        key={index}
-                                        className={styles.Month}
-                                        style={{
-                                            width: dayWidth * month.totalDays,
-                                        }}
-                                    >
+                                    <>
                                         <div
+                                            key={index}
                                             className={styles.MonthOfYearLabel}
+                                            style={{
+                                                width: monthLabelWidth,
+                                            }}
                                         >
                                             {
                                                 monthOfYearLabel[
                                                     month.monthOfYear
-                                                ]
+                                                    ]
                                             }
                                         </div>
-                                    </div>
+                                        <div
+                                            key={index}
+                                            className={styles.MonthSpacer}
+                                            style={{
+                                                width: dayWidth * month.totalDays - monthLabelWidth,
+                                            }}
+                                        />
+                                    </>
                                 );
                             })}
                         </div>
                         <div className={styles.Days}>
                             {days.map((day, index) => {
                                 return (
-                                    <div
-                                        key={index}
-                                        className={styles.Day}
-                                        style={{
-                                            width: dayWidth,
-                                        }}
-                                    >
-                                        <div className={styles.DayOfWeekLabel}>
-                                            {dayOfWeekLabel[day.dayOfWeek - 1]}
+                                    // <div
+                                    //     key={index}
+                                    //     className={styles.Day}
+                                    //     style={{
+                                    //         width: dayWidth,
+                                    //     }}
+                                    // >
+                                    //     <div className={styles.DayOfWeekLabel}>
+                                    //         {dayOfWeekLabel[day.dayOfWeek - 1]}
+                                    //     </div>
+                                    //     <div className={styles.DayOfMonthLabel}>
+                                    //         {day.dayOfMonth}
+                                    //     </div>
+                                    // </div>
+                                    <>
+                                        <div
+                                            key={index}
+                                            className={styles.DayLabel}
+                                            style={{
+                                                width: dayLabelWidth,
+                                            }}
+                                        >
+                                            <div className={styles.DayOfWeekLabel}>
+                                                {dayOfWeekLabel[day.dayOfWeek - 1]}
+                                            </div>
+                                            <div className={styles.DayOfMonthLabel}>
+                                                {day.dayOfMonth}
+                                            </div>
                                         </div>
-                                        <div className={styles.DayOfMonthLabel}>
-                                            {day.dayOfMonth}
-                                        </div>
-                                    </div>
+                                        <div
+                                            key={index}
+                                            className={styles.DaySpacer}
+                                            style={{
+                                                width: dayWidth - dayLabelWidth,
+                                            }}
+                                        />
+                                    </>
                                 );
                             })}
                         </div>
@@ -341,8 +378,8 @@ export const TimelineComponent = forwardRef(
                             left: currentTimeLeftOffset,
                         }}
                     >
-                        <div className={styles.Marker} />
-                        <div className={styles.Line} />
+                        <div className={styles.Marker}/>
+                        <div className={styles.Line}/>
                     </div>
                 </div>
             </div>
