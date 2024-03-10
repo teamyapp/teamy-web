@@ -1,3 +1,4 @@
+import {fail} from 'assert';
 import classNames from 'classnames';
 import moment from 'moment';
 import {
@@ -30,8 +31,8 @@ const monthOfYearLabel = [
 ];
 
 const yearLabelWidth = 50;
-const monthLabelWidth = 40;
-const dayLabelWidth = 30;
+const monthLabelWidth = 50;
+const dayLabelWidth = 50;
 const dayWidth = 50;
 
 interface Year {
@@ -244,7 +245,9 @@ export const TimelineComponent = forwardRef(
         const currentTimeLeftOffset = dayWidth * currentTimeDiff.asDays();
         return (
             <div className={styles.Timeline}>
-                <div className={styles.Scrollable}>
+                <div className={`${styles.Scrollable} ${classNames({
+                    [styles.Debug]: false,
+                })}`}>
                     <div className={styles.Labels}>
                         <div className={styles.Years}>
                             {years.map((year, index) => {
@@ -300,20 +303,6 @@ export const TimelineComponent = forwardRef(
                         <div className={styles.Days}>
                             {days.map((day, index) => {
                                 return (
-                                    // <div
-                                    //     key={index}
-                                    //     className={styles.Day}
-                                    //     style={{
-                                    //         width: dayWidth,
-                                    //     }}
-                                    // >
-                                    //     <div className={styles.DayOfWeekLabel}>
-                                    //         {dayOfWeekLabel[day.dayOfWeek - 1]}
-                                    //     </div>
-                                    //     <div className={styles.DayOfMonthLabel}>
-                                    //         {day.dayOfMonth}
-                                    //     </div>
-                                    // </div>
                                     <>
                                         <div
                                             key={index}
