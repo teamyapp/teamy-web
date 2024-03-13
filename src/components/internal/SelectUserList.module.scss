@@ -1,13 +1,13 @@
 .SelectUserList {
-    min-width: 140px;
-    max-height: 184px;
     background-color: white;
+    max-height: 184px;
+    min-width: 140px;
     overflow-y: auto;
 
     .UserRow {
         display: flex;
-        padding: 6px 16px;
         --profile-height: 34px;
+        padding: 6px 16px;
         user-select: none;
         --profile-width: 34px;
 
@@ -21,21 +21,21 @@
         }
 
         .SelectionIndicator {
-            display: flex;
-            width: 36px;
-            font-weight: bold;
             align-items: center;
             --icon-color: #00897b;
+            display: flex;
+            font-weight: bold;
             --icon-size: 26px;
+            width: 36px;
         }
 
         .Name {
-            display: flex;
-            margin-left: 10px;
-            font-weight: bold;
-            white-space: nowrap;
             align-items: center;
+            display: flex;
             flex: 1;
+            font-weight: bold;
+            margin-left: 10px;
+            white-space: nowrap;
         }
     }
 }

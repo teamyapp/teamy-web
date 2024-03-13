@@ -15,34 +15,34 @@ $availableOptionsMarginSide: var(--drop-down-options-margin-side, 4px);
 $optionPadding: 8px;
 
 .DropDownList {
-    width: $width;
-    height: $height;
     color: $fontColor;
     font-size: $fontSize;
+    height: $height;
     user-select: none;
+    width: $width;
 
     &:focus {
         outline: none;
     }
 
     .SelectedOption {
-        display: flex;
-        width: $width;
-        height: $height;
-        border-radius: 4px;
         background-color: $dropDownColor;
+        border-radius: 4px;
+        display: flex;
+        height: $height;
         overflow: hidden;
+        width: $width;
 
         .Option {
-            display: flex;
-            height: 100%;
-            padding: 0 $optionPadding;
-            border-radius: 4px 0 0 4px;
-            font-weight: $fontWeight;
-            line-height: $fontSize;
             align-items: center;
+            border-radius: 4px 0 0 4px;
             box-sizing: border-box;
+            display: flex;
             flex: 1;
+            font-weight: $fontWeight;
+            height: 100%;
+            line-height: $fontSize;
+            padding: 0 $optionPadding;
 
             &:hover {
                 background-color: rgba(255, 255, 255, 0.08);
@@ -51,14 +51,14 @@ $optionPadding: 8px;
         }
 
         .DropDownButton {
-            display: flex;
-            width: $height;
-            height: $height;
-            background-color: $dropDownButtonColor;
             align-items: center;
+            background-color: $dropDownButtonColor;
             --icon-color: white;
+            display: flex;
+            height: $height;
             justify-content: center;
             --icon-size: #{$height - 6px};
+            width: $height;
 
             &:hover {
                 background-color: $dropDownButtonHoverColor;
@@ -68,21 +68,21 @@ $optionPadding: 8px;
     }
 
     .AvailableOptions {
-        position: relative;
+        background-color: white;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+        color: black;
+        font-weight: $fontWeight;
         margin: $availableOptionsMarginTop $availableOptionsMarginSide 0
             $availableOptionsMarginSide;
         outline: none;
-        background-color: white;
-        color: black;
-        font-weight: $fontWeight;
-        box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+        position: relative;
         z-index: 1000;
 
         .Option {
+            align-items: center;
             display: flex;
             height: $height;
             padding: 0 $optionPadding;
-            align-items: center;
 
             &:hover {
                 background-color: rgba(0, 0, 0, 0.05);

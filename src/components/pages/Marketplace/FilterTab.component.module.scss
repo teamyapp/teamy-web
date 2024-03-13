@@ -3,8 +3,8 @@
 .ItemList {
     display: flex;
     flex-wrap: wrap;
-    margin: 30px;
     gap: 30px 50px;
+    margin: 30px;
 
     @include ListItem;
 }

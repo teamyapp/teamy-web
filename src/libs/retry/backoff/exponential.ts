@@ -1,5 +1,5 @@
-import { Duration } from '@lib/entity/duration';
 import { RandomNumberGenerator } from '@lib/math/randomNumberGenerator';
+import { Duration } from '@lib/time/duration';
 
 import { BackOff } from './backoff';
 

@@ -9,36 +9,36 @@ $tableRowGap: 12px;
 
 .TeamSettingsModal {
     display: flex;
-    width: 1000px;
-    height: 700px;
     flex-direction: column;
+    height: 700px;
+    width: 1000px;
 
     .Tabs {
         background-color: #f5f5f5;
     }
 
     .TabContent {
-        overflow: hidden;
         flex: 1;
+        overflow: hidden;
     }
 
     .TeamProfileTab {
-        display: flex;
-        height: 100%;
-        padding: 20px;
-        background-color: #cfd8dc;
         align-items: center;
+        background-color: #cfd8dc;
         box-sizing: border-box;
+        display: flex;
         flex-direction: column;
+        height: 100%;
         justify-content: center;
+        padding: 20px;
 
         .TeamProfileTabContent {
-            display: flex;
-            padding: 40px;
-            border-radius: 6px;
-            background-color: white;
             align-items: center;
+            background-color: white;
+            border-radius: 6px;
+            display: flex;
             flex-direction: column;
+            padding: 40px;
 
             .TeamIconUploader {
                 --image-uploader-height: 150px;
@@ -46,13 +46,13 @@ $tableRowGap: 12px;
             }
 
             .TeamNameSection {
-                margin-top: 30px;
                 --border: 2px solid #757575;
+                margin-top: 30px;
             }
 
             .ActionsSection {
-                margin-top: 30px;
                 --width: 160px;
+                margin-top: 30px;
                 user-select: none;
 
                 .SaveAction {
@@ -61,68 +61,68 @@ $tableRowGap: 12px;
                 }
 
                 .DeleteTeamAction {
-                    margin-top: 6px;
                     --background-color: #d32f2f;
                     --border-color: #c62828;
+                    margin-top: 6px;
                 }
             }
         }
     }
 
     .TeamMembersTab {
-        height: 100%;
-        padding: 30px 6px;
-        overflow: hidden;
         box-sizing: border-box;
+        height: 100%;
+        overflow: hidden;
+        padding: 30px 6px;
 
         .Scrollable {
             height: 100%;
-            padding: 0 14px;
             overflow-y: auto;
+            padding: 0 14px;
 
             .TeamMemberList {
-                display: grid;
-                width: 100%;
-                column-gap: 20px;
                 box-sizing: border-box;
+                column-gap: 20px;
+                display: grid;
                 grid-template-columns: repeat(5, 1fr);
                 --profile-height: #{$memberProfileHeight};
                 row-gap: 40px;
                 --profile-width: #{$memberProfileWidth};
+                width: 100%;
 
                 .Cell {
-                    display: flex;
                     align-items: center;
+                    display: flex;
                     flex-direction: column;
 
                     .InvitedUserProfile {
-                        display: flex;
-                        width: $memberProfileWidth;
-                        height: $memberProfileHeight;
-                        border-radius: 50%;
+                        align-items: center;
                         background-color: #37474f;
+                        border-radius: 50%;
                         color: white;
+                        display: flex;
                         font-size: 36px;
                         font-weight: bold;
-                        align-items: center;
+                        height: $memberProfileHeight;
                         justify-content: center;
                         user-select: none;
+                        width: $memberProfileWidth;
                     }
 
                     .AddButton {
-                        display: flex;
-                        width: $memberProfileWidth;
-                        height: $memberProfileHeight;
-                        border-radius: 50%;
-                        background-color: #ad1457;
-                        cursor: pointer;
-                        font-weight: bold;
                         align-items: center;
+                        background-color: #ad1457;
+                        border-radius: 50%;
                         --icon-color: white;
-
+                        cursor: pointer;
+                        display: flex;
+                        font-weight: bold;
+                        height: $memberProfileHeight;
                         justify-content: center;
 
                         --icon-size: 30px;
+
+                        width: $memberProfileWidth;
 
                         &:hover {
                             opacity: 0.8;
@@ -130,9 +130,9 @@ $tableRowGap: 12px;
                     }
 
                     .MemberName {
-                        margin-top: 10px;
                         font-size: 18px;
                         font-weight: bold;
+                        margin-top: 10px;
                     }
 
                     .InvitationStatus {
@@ -153,8 +153,8 @@ $tableRowGap: 12px;
     }
 
     .Actions {
-        display: flex;
         column-gap: 10px;
+        display: flex;
         justify-content: center;
 
         .Action {
@@ -165,46 +165,46 @@ $tableRowGap: 12px;
         }
 
         .CopyLink {
-            display: flex;
-            width: 28px;
-            height: 28px;
-            margin: 3px;
-            border-radius: 50%;
-            background-color: #1976d2;
             align-items: center;
+            background-color: #1976d2;
+            border-radius: 50%;
             --icon-color: white;
+            display: flex;
+            height: 28px;
             justify-content: center;
+            margin: 3px;
             --icon-size: 19px;
+            width: 28px;
         }
 
         .Delete {
-            font-weight: 500;
             --icon-color: #ff0000;
+            font-weight: 500;
             --icon-size: 34px;
         }
     }
 
     .InvitationsTab,
     .BandwidthTab {
-        height: 100%;
-        padding: 20px 6px;
-        overflow: hidden;
         box-sizing: border-box;
+        height: 100%;
+        overflow: hidden;
+        padding: 20px 6px;
 
         .Scrollable {
             height: 100%;
-            padding: 0 14px;
             overflow-y: auto;
+            padding: 0 14px;
 
             .Table {
-                width: 100%;
                 border-collapse: collapse;
+                width: 100%;
 
                 th {
-                    position: sticky;
-                    top: 0;
                     background-color: #424242;
                     color: white;
+                    position: sticky;
+                    top: 0;
                 }
 
                 td,
@@ -231,8 +231,8 @@ $tableRowGap: 12px;
 
     .Invitation {
         .LastName {
-            margin-right: 10px;
             margin-left: 10px;
+            margin-right: 10px;
         }
 
         .InvitationStatus {
@@ -246,8 +246,8 @@ $tableRowGap: 12px;
             .Table {
                 .ProfileColumn {
                     .Profile {
-                        display: flex;
                         align-items: center;
+                        display: flex;
                         --profile-height: 40px;
                         justify-content: center;
                         --profile-width: 40px;
@@ -256,8 +256,8 @@ $tableRowGap: 12px;
 
                 .BandwidthColumn {
                     .Duration {
-                        display: flex;
                         --duration-background-color: #1565c0;
+                        display: flex;
                         justify-content: center;
                     }
                 }
@@ -266,13 +266,13 @@ $tableRowGap: 12px;
     }
 
     .InvitationStatus {
-        width: 100px;
-        padding: 4px 0;
         border-radius: 4px;
         font-size: 14px;
         font-weight: bold;
         line-height: 14px;
+        padding: 4px 0;
         text-align: center;
+        width: 100px;
 
         &.PENDING {
             background-color: #f57c00;

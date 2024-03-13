@@ -22,8 +22,9 @@ export interface AppVersion {
     status: AppVersionStatus;
     locked: boolean;
     app: App;
-    iconPath(size: number): string;
     packagePath: string;
     errorMessage?: string;
     hasUiExtension: boolean;
+
+    iconPath(size: number): string;
 }

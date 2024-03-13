@@ -35,30 +35,6 @@ export class DiscoverTabComponent extends Component<Props, State> {
         this.fileClient = props.deps.fileClient;
     }
 
-    private onInstallAppButtonClick = (
-        appId: number,
-        currentTeamId: number,
-    ) => {
-        return () => {
-            this.stateSyncer.installAppToTeam(appId, currentTeamId);
-        };
-    };
-
-    private onRemoveAppButtonClick = (app: App, currentTeamId: number) => {
-        return () => {
-            const appTeamInstallation = app.installations.find(
-                (installation) =>
-                    installation.installedTeam.id === currentTeamId,
-            );
-
-            if (!appTeamInstallation) {
-                return;
-            }
-
-            this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
-        };
-    };
-
     render() {
         const currentTeamId = this.graphSource.currentTeam()?.id;
         if (!currentTeamId) {
@@ -164,6 +140,30 @@ export class DiscoverTabComponent extends Component<Props, State> {
             </>
         );
     }
+
+    private onInstallAppButtonClick = (
+        appId: number,
+        currentTeamId: number,
+    ) => {
+        return () => {
+            this.stateSyncer.installAppToTeam(appId, currentTeamId);
+        };
+    };
+
+    private onRemoveAppButtonClick = (app: App, currentTeamId: number) => {
+        return () => {
+            const appTeamInstallation = app.installations.find(
+                (installation) =>
+                    installation.installedTeam.id === currentTeamId,
+            );
+
+            if (!appTeamInstallation) {
+                return;
+            }
+
+            this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
+        };
+    };
 
     private onAppSettingButtonClickHandler = (appId: number) => {
         return () => {

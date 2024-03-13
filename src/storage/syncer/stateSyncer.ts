@@ -1,10 +1,10 @@
 import moment from 'moment';
 
 import { PopChannel, chan, multi } from '@lib/csp/csp';
-import { Duration } from '@lib/entity/duration';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
+import { Duration } from '@lib/time/duration';
 
 import { AppClient } from '@core/client/app.client';
 import { AppVersionClient } from '@core/client/appVersion.client';
@@ -1247,34 +1247,6 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    private _deleteRollout(
-        appState: AppState,
-        rolloutId: number,
-        activatorId: number,
-        versionSelectorId: number,
-    ): AppState {
-        delete appState.rollouts[rolloutId];
-        delete appState.activators[activatorId];
-        delete appState.timeRangeActivators[activatorId];
-        delete appState.maxViewersActivators[activatorId];
-        delete appState.percentageActivators[activatorId];
-        delete appState.versionSelectors[versionSelectorId];
-
-        appState.versionSelectorVersionRelations =
-            appState.versionSelectorVersionRelations.filter(
-                (relation) => relation.versionSelectorId !== versionSelectorId,
-            );
-
-        appState.groupRolloutRelations = appState.groupRolloutRelations.filter(
-            (relation) => relation.rolloutId !== rolloutId,
-        );
-        appState.appRolloutRelations = appState.appRolloutRelations.filter(
-            (relation) => relation.rolloutId !== rolloutId,
-        );
-
-        return appState;
-    }
-
     public async createActivator(input: CreateActivatorInput): Promise<number> {
         let remoteActivator: RemoteRolloutActivator;
         switch (input.type) {
@@ -1386,6 +1358,34 @@ export class StateSyncer {
 
         appState = mergeVersionSelector(appState, remoteVersionSelector);
         this.localStore.updateState(appState);
+    }
+
+    private _deleteRollout(
+        appState: AppState,
+        rolloutId: number,
+        activatorId: number,
+        versionSelectorId: number,
+    ): AppState {
+        delete appState.rollouts[rolloutId];
+        delete appState.activators[activatorId];
+        delete appState.timeRangeActivators[activatorId];
+        delete appState.maxViewersActivators[activatorId];
+        delete appState.percentageActivators[activatorId];
+        delete appState.versionSelectors[versionSelectorId];
+
+        appState.versionSelectorVersionRelations =
+            appState.versionSelectorVersionRelations.filter(
+                (relation) => relation.versionSelectorId !== versionSelectorId,
+            );
+
+        appState.groupRolloutRelations = appState.groupRolloutRelations.filter(
+            (relation) => relation.rolloutId !== rolloutId,
+        );
+        appState.appRolloutRelations = appState.appRolloutRelations.filter(
+            (relation) => relation.rolloutId !== rolloutId,
+        );
+
+        return appState;
     }
 
     private _deleteGroup(appState: AppState, groupId: number) {

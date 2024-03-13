@@ -24,10 +24,7 @@ import {
     taskValueOrder,
     upcomingSortOrders,
 } from '@core/config/sortOrder';
-import {
-    flattenGroupedTasksByOwner,
-    groupByOwners,
-} from '@core/data/task.group';
+import { groupByOwners } from '@core/data/task.group';
 import {
     orderByDeadline,
     orderByEffort,

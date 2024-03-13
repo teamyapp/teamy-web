@@ -1,10 +1,10 @@
 .CreateGroupView {
-    display: flex;
-    width: 100%;
-    padding: 20px;
-    flex-direction: column;
-    row-gap: 10px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    row-gap: 10px;
+    width: 100%;
 
     .Row {
         --drop-down-button-color: rgba(0, 0, 0, 0.2);
@@ -37,18 +37,18 @@
 
         .TextField,
         .ItemList {
-            width: 100%;
-            border-radius: 4px;
             background-color: #ececec;
+            border-radius: 4px;
             box-sizing: border-box;
+            width: 100%;
         }
 
         .TextField {
-            padding: 6px 10px;
             border: none;
-            outline: none;
             font-size: 16px;
             letter-spacing: 1px;
+            outline: none;
+            padding: 6px 10px;
             resize: none;
 
             &.Filter {
@@ -58,23 +58,23 @@
 
         .ItemList {
             display: flex;
-            padding: 6px;
-            gap: 6px;
             flex-wrap: wrap;
+            gap: 6px;
+            padding: 6px;
 
             .Item {
+                align-items: center;
+                background-color: #3d3d3d;
+                border-radius: 4px;
+                color: white;
+                column-gap: 10px;
                 display: flex;
                 padding: 6px;
-                column-gap: 10px;
-                border-radius: 4px;
-                background-color: #3d3d3d;
-                color: white;
-                align-items: center;
 
                 .Remove {
+                    --icon-color: white;
                     opacity: 0.5;
                     --icon-size: 24px;
-                    --icon-color: white;
 
                     &:hover {
                         cursor: pointer;
@@ -84,25 +84,25 @@
             }
 
             .Input {
-                padding: 4px 0;
-                border: none;
-                outline: none;
                 background-color: transparent;
-                font-size: 16px;
+                border: none;
                 flex: 1;
+                font-size: 16px;
+                outline: none;
+                padding: 4px 0;
             }
         }
     }
 
     .Actions {
         display: flex;
-        margin-top: 10px;
         justify-content: center;
+        margin-top: 10px;
 
         .CreateAction {
-            width: 120px;
             --background-color: #388e3c;
             --border-color: #2e7d32;
+            width: 120px;
         }
     }
 }

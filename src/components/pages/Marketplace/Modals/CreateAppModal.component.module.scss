@@ -1,19 +1,19 @@
 @import '../../../internal/Modals/Modal.shared.module';
 
 .Content {
-    width: 340px;
-    padding: 30px;
     box-sizing: border-box;
+    padding: 30px;
+    width: 340px;
 
     .AppName {
-        width: 100%;
         margin: 0 auto;
+        width: 100%;
     }
 
     .CreateAction {
-        width: 120px;
-        margin: 30px auto 0 auto;
         --background-color: #388e3c;
         --border-color: #2e7d32;
+        margin: 30px auto 0 auto;
+        width: 120px;
     }
 }

@@ -59,7 +59,7 @@ const phases: Phase[] = [
         name: 'Discovery',
         status: 'TODO',
         expectedStartAt: moment('2024-03-01', 'YYYY-MM-DD').toDate(),
-        expectedEndAt: moment('2024-03-05', 'YYYY-MM-DD').toDate(),
+        expectedEndAt: moment('2024-03-20', 'YYYY-MM-DD').toDate(),
         creatorID: 1,
         totalStories: 50,
         deliveredStories: 6,
@@ -70,7 +70,7 @@ const phases: Phase[] = [
         name: 'Define & Hypothesize',
         status: 'TODO',
         expectedStartAt: moment('2024-03-07', 'YYYY-MM-DD').toDate(),
-        expectedEndAt: moment('2024-03-10', 'YYYY-MM-DD').toDate(),
+        expectedEndAt: moment('2024-03-18', 'YYYY-MM-DD').toDate(),
         creatorID: 1,
         totalStories: 60,
         deliveredStories: 10,
@@ -127,8 +127,8 @@ interface Level {
     onClick: () => void;
 }
 
-const startAt = moment('2024-01-01 00:00:00', 'YYYY-MM-DD hh:mm:ss').toDate();
-const endAt = moment('2026-5-1 00:00:00', 'YYYY-MM-DD hh:mm:ss').toDate();
+const startAt = moment('2023-11-19 00:00:00', 'YYYY-MM-DD hh:mm:ss').toDate();
+const endAt = moment('2025-04-01 00:00:00', 'YYYY-MM-DD hh:mm:ss').toDate();
 const location: Level[] = [
     {
         name: 'Projects',
@@ -156,7 +156,7 @@ export function PlanningComponent() {
                 {
                     ref,
                     view: (
-                        <div className={styles.Phase} ref={ref}>
+                        <div key={index} className={styles.Phase} ref={ref}>
                             <div className={styles.ProgressBar}>
                                 <div
                                     className={styles.Progress}
@@ -222,9 +222,14 @@ export function PlanningComponent() {
                 {location.map((level, index) => {
                     return (
                         <>
-                            {index > 0 && <div className={styles.Separator} />}
+                            {index > 0 && (
+                                <div
+                                    key={`seperator-${index}`}
+                                    className={styles.Separator}
+                                />
+                            )}
                             <div
-                                key={index}
+                                key={`level-${index}`}
                                 className={styles.Level}
                                 onClick={level.onClick}
                             >

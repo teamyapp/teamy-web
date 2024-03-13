@@ -80,6 +80,7 @@ class GroupInfoNode implements GroupInfo {
             });
     }
 }
+
 export class FilterGroupNode extends GroupInfoNode implements FilterGroup {
     constructor(
         protected localStore: LocalStore,

@@ -2,33 +2,33 @@
 @import '../../../libs/ui/styleguide/elevation';
 
 .Content {
-    display: flex;
-    width: 800px;
-    height: 450px;
     box-sizing: border-box;
+    display: flex;
     flex-direction: column;
+    height: 450px;
+    width: 800px;
 
     .Stepper {
+        background-color: #f1f1f1;
         display: flex;
         padding: 24px;
-        background-color: #f1f1f1;
 
         .Step {
-            display: flex;
-            text-align: center;
             align-items: center;
+            display: flex;
             flex: 1;
             flex-direction: column;
+            text-align: center;
 
             &:not(:last-child):after {
-                position: relative;
-                top: 15px;
-                left: 50%;
-                width: calc(100% - 50px);
-                height: 2px;
                 background-color: #9e9e9e;
                 content: '';
+                height: 2px;
+                left: 50%;
                 order: -1;
+                position: relative;
+                top: 15px;
+                width: calc(100% - 50px);
             }
 
             &.Completed {
@@ -45,24 +45,24 @@
             }
 
             .Icon {
-                display: flex;
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                background-color: #757575;
-                color: white;
-                font-weight: 600;
                 align-items: center;
+                background-color: #757575;
+                border-radius: 50%;
                 --icon-color: white;
+                color: white;
+                display: flex;
+                font-weight: 600;
+                height: 30px;
                 justify-content: center;
                 user-select: none;
+                width: 30px;
             }
 
             .ActionName {
-                width: 200px;
-                margin-top: 10px;
                 font-size: 16px;
                 font-weight: bold;
+                margin-top: 10px;
+                width: 200px;
                 word-break: break-word;
             }
         }

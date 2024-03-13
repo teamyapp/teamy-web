@@ -1,4 +1,4 @@
-import { Duration } from '@lib/entity/duration';
+import { Duration } from '@lib/time/duration';
 
 import { Priority } from '@core/entity/priority';
 import { Team } from '@core/entity/team';

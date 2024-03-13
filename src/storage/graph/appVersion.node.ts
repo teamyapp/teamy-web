@@ -53,10 +53,6 @@ export class AppVersionNode implements AppVersion {
         );
     }
 
-    public iconPath(size: number): string {
-        return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/assets/icons/${size}.png`;
-    }
-
     public get prices(): MoneyNode[] {
         const appState = this.localStore.getState();
         return appState.appVersionPrices
@@ -100,5 +96,9 @@ export class AppVersionNode implements AppVersion {
 
     public get hasUiExtension(): boolean {
         return this.appVersion.hasUiExtension;
+    }
+
+    public iconPath(size: number): string {
+        return `files/apps/${this.appVersion.appId}/${this.appVersion.number}/assets/icons/${size}.png`;
     }
 }

@@ -1,20 +1,20 @@
 .Insights {
-    display: flex;
-    width: 100%;
-    height: 100%;
     background-color: #eeeeee;
+    display: flex;
     flex-direction: column;
+    height: 100%;
+    width: 100%;
 
     .ToolBar {
-        display: flex;
-        width: 100%;
-        padding: 10px;
         background-color: white;
         box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
-        z-index: 10;
         box-sizing: border-box;
+        display: flex;
         --drop-down-color: #1565c0;
         flex-shrink: 0;
+        padding: 10px;
+        width: 100%;
+        z-index: 10;
 
         .Spacer {
             flex: 1;
@@ -22,26 +22,26 @@
     }
 
     .DashboardSection {
-        width: 100%;
-        padding: 10px;
         box-sizing: border-box;
         flex: 1;
         overflow-y: auto;
+        padding: 10px;
+        width: 100%;
 
         .Dashboards {
             display: flex;
-            width: 100%;
             flex-wrap: wrap;
             gap: 10px;
+            width: 100%;
 
             .Dashboard {
-                width: calc(50% - 5px);
-                height: 600px;
-                padding: 20px;
-                border-radius: 4px;
                 background-color: white;
+                border-radius: 4px;
                 box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
                 box-sizing: border-box;
+                height: 600px;
+                padding: 20px;
+                width: calc(50% - 5px);
             }
         }
     }

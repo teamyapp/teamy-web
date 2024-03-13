@@ -22,6 +22,7 @@ interface State {
 
 export class DropDownList extends Component<Props, State> {
     private readonly ref = createRef<HTMLDivElement>();
+
     constructor(props: Props) {
         super(props);
 
@@ -72,6 +73,14 @@ export class DropDownList extends Component<Props, State> {
         );
     }
 
+    public selectOption(optionKey: string) {
+        this.setState({
+            selectedOption: this.props.options.find((option) => {
+                return option.key === optionKey;
+            }),
+        });
+    }
+
     private renderOption = (option: Option, index: number) => {
         return (
             <div
@@ -118,12 +127,4 @@ export class DropDownList extends Component<Props, State> {
             showAvailableOptions: false,
         });
     };
-
-    public selectOption(optionKey: string) {
-        this.setState({
-            selectedOption: this.props.options.find((option) => {
-                return option.key === optionKey;
-            }),
-        });
-    }
 }

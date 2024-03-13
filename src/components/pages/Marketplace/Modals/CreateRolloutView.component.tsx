@@ -168,6 +168,162 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
         );
     }
 
+    onSelectActivatorType = (activatorType: string) => {
+        this.setState({
+            selectedActivatorType: activatorType as ActivatorType,
+        });
+    };
+
+    onSelectVersionSelectorType = (versionSelectorType: string) => {
+        this.setState({
+            selectedVersionSelectorType:
+                versionSelectorType as VersionSelectorType,
+        });
+    };
+
+    parseNewVersionNumber(versionNumber: string): number {
+        return Number(versionNumber);
+    }
+
+    isVersionNumberDuplicate = (versionNumber: number): boolean => {
+        return (
+            this.state.experimentVersionSelectorInput?.versionNumbers.includes(
+                versionNumber,
+            ) || false
+        );
+    };
+
+    onAddVersionNumber = (versionNumber: number) => {
+        this.setState({
+            experimentVersionSelectorInput: {
+                versionNumbers: [
+                    ...(this.state.experimentVersionSelectorInput
+                        ?.versionNumbers || []),
+                    versionNumber,
+                ],
+            },
+        });
+    };
+
+    onRemoveVersionNumber = (versionNumber: number) => {
+        this.setState({
+            experimentVersionSelectorInput: {
+                versionNumbers:
+                    this.state.experimentVersionSelectorInput?.versionNumbers.filter(
+                        (currVersionNumber) =>
+                            currVersionNumber !== versionNumber,
+                    ) || [],
+            },
+        });
+    };
+
+    parseNewGroup(input: string): number {
+        return Number(input);
+    }
+
+    isGroupDuplicate = (groupId: number): boolean => {
+        return this.state.selectedGroupIds.includes(groupId);
+    };
+
+    onAddGroup = (groupId: number) => {
+        this.setState({
+            selectedGroupIds: [...this.state.selectedGroupIds, groupId],
+        });
+    };
+
+    onRemoveGroup = (groupId: number) => {
+        this.setState({
+            selectedGroupIds: this.state.selectedGroupIds.filter(
+                (currGroupId) => currGroupId !== groupId,
+            ),
+        });
+    };
+
+    onCreateRolloutClick = async () => {
+        const hasVersionNumbers =
+            this.state.experimentVersionSelectorInput?.versionNumbers &&
+            this.state.experimentVersionSelectorInput.versionNumbers.length > 0;
+
+        if (
+            !this.state.staticVersionSelectorInput?.versionNumber &&
+            !hasVersionNumbers
+        ) {
+            alert('Please enter version number');
+            return;
+        }
+
+        const activatorId = await this.props.createActivator(
+            this.getCreateActivatorInput(),
+        );
+        const versionSelectorId = await this.props.createVersionSelector(
+            this.getCreateVersionSelectorInput(),
+        );
+
+        this.props.onCreateRolloutClick({
+            name: this.rolloutNameInputRef.current?.value || '',
+            type: this.props.appRolloutType,
+            activatorId: activatorId,
+            versionSelectorId: versionSelectorId,
+            groupIds: this.state.selectedGroupIds,
+            isEnabled: this.rolloutEnableToggleRef.current?.status || false,
+        });
+    };
+
+    onTimeRangeActivatorStartTimeChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        this.setState({
+            timeRangeActivatorInput: {
+                ...this.state.timeRangeActivatorInput,
+                startTime: event.target.value,
+            },
+        });
+    };
+
+    onTimeRangeActivatorEndTimeChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        this.setState({
+            timeRangeActivatorInput: {
+                ...this.state.timeRangeActivatorInput,
+                endTime: event.target.value,
+            },
+        });
+    };
+
+    onPercentageActivatorPercentageChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        this.setState({
+            percentageActivatorInput: {
+                ...this.state.percentageActivatorInput,
+                percentage: Number(event.target.value),
+            },
+        });
+    };
+
+    onMaxViewersActivatorMaxViewersChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        this.setState({
+            maxViewersActivatorInput: {
+                ...this.state.maxViewersActivatorInput,
+                maxViewers: Number(event.target.value),
+            },
+        });
+    };
+
+    onStaticVersionSelectorVersionNumberChange = (
+        event: React.ChangeEvent<HTMLInputElement>,
+    ) => {
+        this.setState({
+            staticVersionSelectorInput: {
+                ...this.state.staticVersionSelectorInput,
+                versionNumber: Number(event.target.value),
+            },
+        });
+    };
+
     private renderActivatorSection(): ReactNode {
         switch (this.state.selectedActivatorType) {
             case 'STATIC':
@@ -325,162 +481,6 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
             </div>
         );
     }
-
-    onSelectActivatorType = (activatorType: string) => {
-        this.setState({
-            selectedActivatorType: activatorType as ActivatorType,
-        });
-    };
-
-    onSelectVersionSelectorType = (versionSelectorType: string) => {
-        this.setState({
-            selectedVersionSelectorType:
-                versionSelectorType as VersionSelectorType,
-        });
-    };
-
-    parseNewVersionNumber(versionNumber: string): number {
-        return Number(versionNumber);
-    }
-
-    isVersionNumberDuplicate = (versionNumber: number): boolean => {
-        return (
-            this.state.experimentVersionSelectorInput?.versionNumbers.includes(
-                versionNumber,
-            ) || false
-        );
-    };
-
-    onAddVersionNumber = (versionNumber: number) => {
-        this.setState({
-            experimentVersionSelectorInput: {
-                versionNumbers: [
-                    ...(this.state.experimentVersionSelectorInput
-                        ?.versionNumbers || []),
-                    versionNumber,
-                ],
-            },
-        });
-    };
-
-    onRemoveVersionNumber = (versionNumber: number) => {
-        this.setState({
-            experimentVersionSelectorInput: {
-                versionNumbers:
-                    this.state.experimentVersionSelectorInput?.versionNumbers.filter(
-                        (currVersionNumber) =>
-                            currVersionNumber !== versionNumber,
-                    ) || [],
-            },
-        });
-    };
-
-    parseNewGroup(input: string): number {
-        return Number(input);
-    }
-
-    isGroupDuplicate = (groupId: number): boolean => {
-        return this.state.selectedGroupIds.includes(groupId);
-    };
-
-    onAddGroup = (groupId: number) => {
-        this.setState({
-            selectedGroupIds: [...this.state.selectedGroupIds, groupId],
-        });
-    };
-
-    onRemoveGroup = (groupId: number) => {
-        this.setState({
-            selectedGroupIds: this.state.selectedGroupIds.filter(
-                (currGroupId) => currGroupId !== groupId,
-            ),
-        });
-    };
-
-    onCreateRolloutClick = async () => {
-        const hasVersionNumbers =
-            this.state.experimentVersionSelectorInput?.versionNumbers &&
-            this.state.experimentVersionSelectorInput.versionNumbers.length > 0;
-
-        if (
-            !this.state.staticVersionSelectorInput?.versionNumber &&
-            !hasVersionNumbers
-        ) {
-            alert('Please enter version number');
-            return;
-        }
-
-        const activatorId = await this.props.createActivator(
-            this.getCreateActivatorInput(),
-        );
-        const versionSelectorId = await this.props.createVersionSelector(
-            this.getCreateVersionSelectorInput(),
-        );
-
-        this.props.onCreateRolloutClick({
-            name: this.rolloutNameInputRef.current?.value || '',
-            type: this.props.appRolloutType,
-            activatorId: activatorId,
-            versionSelectorId: versionSelectorId,
-            groupIds: this.state.selectedGroupIds,
-            isEnabled: this.rolloutEnableToggleRef.current?.status || false,
-        });
-    };
-
-    onTimeRangeActivatorStartTimeChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        this.setState({
-            timeRangeActivatorInput: {
-                ...this.state.timeRangeActivatorInput,
-                startTime: event.target.value,
-            },
-        });
-    };
-
-    onTimeRangeActivatorEndTimeChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        this.setState({
-            timeRangeActivatorInput: {
-                ...this.state.timeRangeActivatorInput,
-                endTime: event.target.value,
-            },
-        });
-    };
-
-    onPercentageActivatorPercentageChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        this.setState({
-            percentageActivatorInput: {
-                ...this.state.percentageActivatorInput,
-                percentage: Number(event.target.value),
-            },
-        });
-    };
-
-    onMaxViewersActivatorMaxViewersChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        this.setState({
-            maxViewersActivatorInput: {
-                ...this.state.maxViewersActivatorInput,
-                maxViewers: Number(event.target.value),
-            },
-        });
-    };
-
-    onStaticVersionSelectorVersionNumberChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        this.setState({
-            staticVersionSelectorInput: {
-                ...this.state.staticVersionSelectorInput,
-                versionNumber: Number(event.target.value),
-            },
-        });
-    };
 
     private getCreateActivatorInput(): CreateActivatorInput {
         switch (this.state.selectedActivatorType) {

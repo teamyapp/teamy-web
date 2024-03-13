@@ -2,43 +2,43 @@ $imageUploaderHeight: var(--image-uploader-height, 150px);
 $imageUploaderWidth: var(--image-uploader-width, 150px);
 
 .ImageUploader {
-    display: flex;
-    position: relative;
-    width: $imageUploaderWidth;
-    height: $imageUploaderHeight;
+    align-items: center;
+    background-color: #455a64;
     border: 4px solid #e0e0e0;
     border-radius: 50%;
-    background-color: #455a64;
-    overflow: hidden;
-    align-items: center;
+    display: flex;
+    height: $imageUploaderHeight;
     justify-content: center;
+    overflow: hidden;
+    position: relative;
+    width: $imageUploaderWidth;
 
     .ActiveImg,
     .Placeholder {
-        width: 100%;
-        height: 100%;
         border-radius: 50%;
         box-sizing: border-box;
+        height: 100%;
         justify-content: center;
+        width: 100%;
     }
 
     .Placeholder {
-        display: flex;
+        align-items: center;
         color: white;
+        display: flex;
         font-size: 100px;
         font-weight: bold;
         line-height: 100px;
-        align-items: center;
     }
 
     .UploadProgress {
+        background-color: rgba(0, 0, 0, 0.8);
+        height: 100%;
+        left: 0;
         position: absolute;
         top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
         transition: top 100ms ease-in-out;
-        background-color: rgba(0, 0, 0, 0.8);
+        width: 100%;
     }
 
     &:hover {
@@ -48,33 +48,33 @@ $imageUploaderWidth: var(--image-uploader-width, 150px);
     }
 
     .UploadButton {
-        display: flex;
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        padding: 0 10px;
+        align-items: center;
         background-color: #424242;
+        box-sizing: border-box;
         color: white;
+        display: flex;
         font-size: 20px;
         font-weight: bold;
-        text-align: center;
-        opacity: 0;
-        align-items: center;
-        box-sizing: border-box;
+        height: 100%;
         justify-content: center;
+        left: 0;
+        opacity: 0;
+        padding: 0 10px;
+        position: absolute;
+        text-align: center;
+        top: 0;
         user-select: none;
+        width: 100%;
 
         .FileInput {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             background-color: #3d7bf6;
-            text-align: center;
+            height: 100%;
+            left: 0;
             opacity: 0;
+            position: absolute;
+            text-align: center;
+            top: 0;
+            width: 100%;
 
             &:hover {
                 cursor: pointer;

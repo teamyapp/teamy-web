@@ -17,9 +17,9 @@ initRouter(deps, appRef);
 
 const root = createRoot(document.getElementById('root')!);
 root.render(
-    <React.StrictMode>
-        <AppComponent ref={appRef} deps={deps} config={config} />
-    </React.StrictMode>,
+    // <React.StrictMode>
+    <AppComponent ref={appRef} deps={deps} config={config} />,
+    // </React.StrictMode>,
 );
 
 // If you want to start measuring performance in your app, pass a function
