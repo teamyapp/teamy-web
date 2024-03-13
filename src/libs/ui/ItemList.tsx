@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, ReactNode, createRef, useState } from 'react';
+import React, { KeyboardEvent, ReactNode, createRef } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
@@ -8,11 +8,12 @@ interface Props<Item, ItemValue> {
     items: Item[];
     renderInlineItem: (item: Item) => ReactNode;
     newItemInputLabel: string;
-    parseNewItem(input: string): ItemValue;
     isItemValid?: (itemValue: ItemValue) => Promise<boolean>;
     isItemDuplicate: (itemValue: ItemValue) => boolean;
     onAddItem?: (itemValue: ItemValue) => void;
     onRemoveItem?: (item: Item) => void;
+
+    parseNewItem(input: string): ItemValue;
 }
 
 export function ItemListUI<Item, ItemValue>(props: Props<Item, ItemValue>) {

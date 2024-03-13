@@ -3,9 +3,9 @@ import React, { Component, MouseEvent, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { PubSub } from '@lib/pubSub/pubSub';
+import { Duration } from '@lib/time/duration';
 import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';

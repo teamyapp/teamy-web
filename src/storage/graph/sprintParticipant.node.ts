@@ -1,4 +1,4 @@
-import { Duration } from '@lib/entity/duration';
+import { Duration } from '@lib/time/duration';
 
 import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { SprintNode } from '@core/storage/graph/sprint.node';

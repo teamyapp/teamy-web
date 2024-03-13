@@ -1,7 +1,7 @@
 import React, { Component, ReactNode, createRef } from 'react';
 
-import { Duration } from '@lib/entity/duration';
 import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
+import { Duration } from '@lib/time/duration';
 import { ButtonUI } from '@lib/ui/Button';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { TextFieldUI } from '@lib/ui/TextField';

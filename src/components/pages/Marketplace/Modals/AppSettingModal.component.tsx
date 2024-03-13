@@ -89,15 +89,15 @@ export class AppSettingModalComponent extends Component<Props, State> {
         );
     }
 
-    private afterModalClose = () => {
-        this.cleanupFunc?.();
-    };
-
     close() {
         this.modalRef.current?.close();
     }
 
     onCloseButtonClick = () => {
         this.modalRef.current?.close();
+    };
+
+    private afterModalClose = () => {
+        this.cleanupFunc?.();
     };
 }

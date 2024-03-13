@@ -1,4 +1,4 @@
-import { Duration } from '@lib/entity/duration';
+import { Duration } from '@lib/time/duration';
 
 import { Priority } from '@core/entity/priority';
 
@@ -150,6 +150,7 @@ export type CreateVersionSelectorInput =
     | CreateExperimentVersionSelectorInput;
 
 export type VersionSelectorType = 'STATIC' | 'EXPERIMENT';
+
 export interface CreateStaticVersionSelectorInput {
     type: 'STATIC';
     versionNumber: number;

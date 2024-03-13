@@ -1,26 +1,26 @@
 .ItemList {
-    display: flex;
-    padding: 6px;
-    gap: 6px;
-    flex-wrap: wrap;
-    width: 100%;
-    border-radius: 4px;
     background-color: #ececec;
+    border-radius: 4px;
     box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 6px;
+    width: 100%;
 
     .Item {
+        align-items: center;
+        background-color: #3d3d3d;
+        border-radius: 4px;
+        color: white;
+        column-gap: 10px;
         display: flex;
         padding: 6px;
-        column-gap: 10px;
-        border-radius: 4px;
-        background-color: #3d3d3d;
-        color: white;
-        align-items: center;
 
         .Remove {
+            --icon-color: white;
             opacity: 0.5;
             --icon-size: 24px;
-            --icon-color: white;
 
             &:hover {
                 cursor: pointer;
@@ -30,11 +30,11 @@
     }
 
     .Input {
-        padding: 4px 0;
-        border: none;
-        outline: none;
         background-color: transparent;
-        font-size: 16px;
+        border: none;
         flex: 1;
+        font-size: 16px;
+        outline: none;
+        padding: 4px 0;
     }
 }

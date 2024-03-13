@@ -5,7 +5,7 @@ import { DataPoint, Range } from '@lib/chart/data';
 import { DataLine, LineChart } from '@lib/chart/line.chart';
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { Duration } from '@lib/entity/duration';
+import { Duration } from '@lib/time/duration';
 
 import { Deps } from '@core/dep/deps';
 import { Sprint } from '@core/entity/sprint';

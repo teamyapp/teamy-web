@@ -14,10 +14,12 @@ export interface App {
     managedByTeam: Team;
     versions: AppVersion[];
     tags: Tag[];
-    latestVersionForTeam(teamId?: number): AppVersion | undefined;
-    isInstalled(teamId: number): boolean;
     userGroups: Group[];
     teamGroups: Group[];
     userRollouts: Rollout[];
     teamRollouts: Rollout[];
+
+    latestVersionForTeam(teamId?: number): AppVersion | undefined;
+
+    isInstalled(teamId: number): boolean;
 }

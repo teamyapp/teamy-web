@@ -6,24 +6,24 @@ $padding: 2px;
 $onBackgroundColor: var(--toggle-on-background-color, #2ecc71);
 
 .Toggle {
-    position: relative;
-    width: $width;
+    background-color: #f0f0f0;
+    border-radius: calc(($height + $padding) / 2);
+    cursor: pointer;
     height: $height;
     padding: $padding;
+    position: relative;
     transition: background-color 0.2s ease-in-out;
-    border-radius: calc(($height + $padding) / 2);
-    background-color: #f0f0f0;
-    cursor: pointer;
+    width: $width;
 
     .Button {
+        background-color: white;
+        border-radius: 50%;
+        height: $height;
+        left: $padding;
         position: absolute;
         top: $padding;
-        left: $padding;
-        width: $height;
-        height: $height;
         transition: left 0.2s ease-in-out;
-        border-radius: 50%;
-        background-color: white;
+        width: $height;
     }
 
     &.Enabled {

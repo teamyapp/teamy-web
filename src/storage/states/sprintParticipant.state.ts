@@ -1,4 +1,4 @@
-import { Duration, MILLIS_IN_NANOS } from '@lib/entity/duration';
+import { Duration, MILLIS_IN_NANOS } from '@lib/time/duration';
 
 import { toDate } from '@core/storage/states/parser';
 
