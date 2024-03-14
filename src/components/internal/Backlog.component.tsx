@@ -28,7 +28,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import styles from './Backlog.component.module.scss';
 import { InlineCreateTaskUI } from './InlineCreateTask';
 import { TaskListItem } from './TaskListSections/TaskListItem';
-import { taskPath, teamPath } from '@core/routing/routes';
+import { taskPath } from '@core/routing/routes';
 import { TaskDetailModalComponent } from './Modals/TaskDetailModal.component';
 
 interface Props {
@@ -149,11 +149,6 @@ export class BacklogComponent extends Component<Props, State> {
                         </div>
                     </div>
                 </DragAndDropContainer>
-                <TaskDetailModalComponent
-                    ref={this.taskDetailModalRef}
-                    deps={this.props.deps}
-                    afterClose={this.afterTaskDetailModalClose}
-                />
             </div>
         );
     }

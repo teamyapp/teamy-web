@@ -24,12 +24,12 @@ import styles from './Planning.component.module.scss';
 import { ProjectComponent } from './Project.component';
 import { StoryComponent } from './Story.component';
 import { ProjectsComponent } from './projects.component';
+import { Fragment, useRef } from 'react';
 
 interface Props {
     deps: Deps;
     thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     numActionColumns: number;
-    onViewTaskDetail: (taskId: number) => void;
 }
 
 interface Level {
@@ -51,6 +51,11 @@ export function PlanningComponent(props: Props) {
     const project = projectId && props.deps.graphSource.project(projectId);
     const phase = phaseId ? props.deps.graphSource.phase(phaseId) : undefined;
     const story = storyId && props.deps.graphSource.story(storyId);
+
+    const taskDetailModalRef = useRef<TaskDetailModalComponent>(null);
+    const onViewTaskDetail = (taskId: number) => {
+        taskDetailModalRef.current?.open(taskId);
+    }
 
     const location: Level[] = [
         {
@@ -94,7 +99,7 @@ export function PlanningComponent(props: Props) {
             <div className={styles.Location}>
                 {location.map((level, index) => {
                     return (
-                        <>
+                        <Fragment key={`location-${index}`}>
                             {index > 0 && <div className={styles.Separator} />}
                             <div
                                 key={index}
@@ -103,7 +108,7 @@ export function PlanningComponent(props: Props) {
                             >
                                 {level.name}
                             </div>
-                        </>
+                        </Fragment>
                     );
                 })}
             </div>
@@ -147,7 +152,7 @@ export function PlanningComponent(props: Props) {
                         deps={props.deps}
                         thirdPartyAppEventHubs={props.thirdPartyAppEventHubs}
                         numActionColumns={props.numActionColumns}
-                        onViewTaskDetail={props.onViewTaskDetail}
+                        onViewTaskDetail={onViewTaskDetail}
                     />
                 )}
             </Route>
@@ -161,15 +166,13 @@ export function PlanningComponent(props: Props) {
                         deps={props.deps}
                         thirdPartyAppEventHubs={props.thirdPartyAppEventHubs}
                         numActionColumns={props.numActionColumns}
-                        onViewTaskDetail={props.onViewTaskDetail}
+                        onViewTaskDetail={onViewTaskDetail}
                     />
                 )}
             </Route>
-
             <TaskDetailModalComponent
-                ref={this.taskDetailModalRef}
-                deps={this.props.deps}
-                afterClose={this.afterTaskDetailModalClose}
+                ref={taskDetailModalRef}
+                deps={props.deps}
             />
         </div>
     );

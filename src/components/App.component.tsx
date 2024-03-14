@@ -353,9 +353,6 @@ export class AppComponent extends Component<Props, State> {
                                                     this.state
                                                         .thirdPartyAppEventHubs
                                                 }
-                                                onViewTaskDetail={
-                                                    this.onViewTaskDetail
-                                                }
                                                 numActionColumns={1}
                                             />
                                         </Route>
@@ -390,6 +387,11 @@ export class AppComponent extends Component<Props, State> {
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
                     onAddTeamMemberClick={this.onAddTeamMembersClick}
+                />
+                <TaskDetailModalComponent
+                    ref={this.taskDetailModalRef}
+                    deps={this.props.deps}
+                    afterClose={this.afterTaskDetailModalClose}
                 />
                 <TeamProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <AddTeamMembersModalComponent
