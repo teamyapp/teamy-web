@@ -48,7 +48,7 @@ const yearLabelWidth = 44;
 const monthLabelWidth = 34;
 const weekLabelWidth = 34;
 const dayWidth = 50;
-const weekDayWidth = 10;
+const weekDayWidth = 20;
 const monthDayWidth = 10;
 
 const sidePadding = 14;
@@ -522,7 +522,7 @@ export const TimelineComponent = forwardRef(
                 <div className={styles.Bottom} ref={bottomRef}>
                     <div
                         className={`${styles.Scrollable} ${classNames({
-                            [styles.Debug]: debug,
+                            
                         })}`}
                     >
                         <div className={styles.Labels}>
