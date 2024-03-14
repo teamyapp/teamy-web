@@ -127,8 +127,8 @@ interface Level {
     onClick: () => void;
 }
 
-const startAt = moment('2023-11-19 00:00:00', 'YYYY-MM-DD hh:mm:ss').toDate();
-const endAt = moment('2025-04-01 00:00:00', 'YYYY-MM-DD hh:mm:ss').toDate();
+const startAt = moment('2023-12-19 00:00:00', 'YYYY-MM-DD hh:mm:ss').toDate();
+const endAt = moment('2024-04-10 23:59:59', 'YYYY-MM-DD hh:mm:ss').toDate();
 const location: Level[] = [
     {
         name: 'Projects',

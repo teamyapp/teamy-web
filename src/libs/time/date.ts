@@ -43,6 +43,7 @@ export function getEndOfDay(endAt: Moment): Moment {
 }
 
 export function getDaysBetween(startAt: Moment, endAt: Moment): Day[] {
+    endAt = getEndOfDay(endAt);
     const totalDays = endAt.diff(startAt, 'days');
     let days: Day[] = [];
     for (let index = 0; index < totalDays; index++) {
@@ -59,6 +60,7 @@ export function getDaysBetween(startAt: Moment, endAt: Moment): Day[] {
 }
 
 export function getWeeksBetween(startAt: Moment, endAt: Moment): Week[] {
+    endAt = getEndOfDay(endAt);
     let remainingDaysAfterWeeks = endAt.diff(startAt, 'days');
     let weekStartDate = startAt.isoWeekday();
     let weeks: Week[] = [];
@@ -80,21 +82,19 @@ export function getWeeksBetween(startAt: Moment, endAt: Moment): Week[] {
 }
 
 export function getMonthsBetween(startAt: Moment, endAt: Moment): Month[] {
+    endAt = getEndOfDay(endAt);
     let monthStartDate = startAt.date();
     let remainingDaysAfterMonths = endAt.diff(startAt, 'days');
     let months: Month[] = [];
     for (let index = 0; remainingDaysAfterMonths > 0; index++) {
         let monthMoment = startAt.clone().add(index, 'month');
-        let daysInMonth = Math.min(
-            monthMoment.daysInMonth(),
-            remainingDaysAfterMonths,
-        );
-        daysInMonth = daysInMonth - monthStartDate + 1;
+        let maxDaysInMonth = monthMoment.daysInMonth() - monthStartDate + 1;
+        let daysInMonth = Math.min(maxDaysInMonth, remainingDaysAfterMonths);
         months.push({
             monthOfYear: monthMoment.month() + 1,
             totalDays: daysInMonth,
             includeStart: monthStartDate == 1,
-            includeEnd: daysInMonth == monthMoment.daysInMonth(),
+            includeEnd: daysInMonth == maxDaysInMonth,
         });
         monthStartDate = 1;
         remainingDaysAfterMonths -= daysInMonth;
@@ -104,19 +104,20 @@ export function getMonthsBetween(startAt: Moment, endAt: Moment): Month[] {
 }
 
 export function getYearsBetween(startAt: Moment, endAt: Moment): Year[] {
+    endAt = getEndOfDay(endAt);
     let yearStartDate = startAt.dayOfYear();
     let remainingDaysAfterYears = endAt.diff(startAt, 'days');
     let years: Year[] = [];
     for (let index = 0; remainingDaysAfterYears > 0; index++) {
         let yearMoment = startAt.clone().add(index, 'year');
-        let yearTotalDays = yearMoment.isLeapYear() ? 366 : 365;
-        let daysInYear = Math.min(yearTotalDays, remainingDaysAfterYears);
-        daysInYear = daysInYear - yearStartDate + 1;
+        let totalDaysInYear = yearMoment.isLeapYear() ? 366 : 365;
+        let maxDaysInYear = totalDaysInYear - yearStartDate + 1;
+        let daysInYear = Math.min(maxDaysInYear, remainingDaysAfterYears);
         years.push({
             yearOf: yearMoment.year(),
             totalDays: daysInYear,
             includeStart: yearStartDate == 1,
-            includeEnd: daysInYear == yearTotalDays,
+            includeEnd: daysInYear == maxDaysInYear,
         });
         yearStartDate = 1;
         remainingDaysAfterYears -= daysInYear;

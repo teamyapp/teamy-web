@@ -1,5 +1,6 @@
+import { fail } from 'assert';
 import classNames from 'classnames';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 import {
     ForwardedRef,
     ReactElement,
@@ -26,6 +27,8 @@ import { DropDownList, Option } from '@lib/ui/DropDownList';
 
 import styles from './Timeline.component.module.scss';
 
+const debug = false;
+
 const dayOfWeekLabel = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const monthOfYearLabel = [
     'Jan',
@@ -46,8 +49,11 @@ const yearLabelWidth = 44;
 const monthLabelWidth = 34;
 const weekLabelWidth = 34;
 const dayWidth = 50;
-const weekDayWidth = 20;
+const weekDayWidth = 10;
 const monthDayWidth = 10;
+
+const sidePadding = 14;
+const labelLineHeight = 8;
 
 interface Item {
     view: ReactElement;
@@ -86,6 +92,16 @@ export interface TimelineComponentHandle {
 
 export const TimelineComponent = forwardRef(
     (props: Props, ref: ForwardedRef<TimelineComponentHandle>) => {
+        const rowRefs: RefObject<any>[][] = props.rows.map((row) =>
+            row.items.map((item) => useRef()),
+        );
+        const labelsContentRef = useRef<HTMLDivElement>(null);
+        const labelsSpacerRef = useRef<HTMLDivElement>(null);
+        const linesRef = useRef<HTMLDivElement>(null);
+        const linesSpacerRef = useRef<HTMLDivElement>(null);
+        const bottomRef = useRef<HTMLDivElement>(null);
+        const currentTimeRef = useRef<HTMLDivElement>(null);
+
         let [days, setDays] = useState<Day[]>([]);
         let [weeks, setWeeks] = useState<Week[]>([]);
         let [months, setMonths] = useState<Month[]>([]);
@@ -94,13 +110,9 @@ export const TimelineComponent = forwardRef(
         let [selectedItem, setSelectedItem] = useState<SelectedItem>();
         let [selectedTimeUnit, setSelectedTimeUnit] = useState<TimeUnit>('day');
 
-        const refs: RefObject<any>[][] = props.rows.map((row) =>
-            row.items.map((item) => useRef()),
-        );
-
         const onItemClickHandler = (rowIndex: number, itemIndex: number) => {
             return () => {
-                refs[rowIndex][itemIndex].current.scrollIntoView({
+                rowRefs[rowIndex][itemIndex].current.scrollIntoView({
                     behavior: 'smooth',
                     block: 'center',
                     inline: 'center',
@@ -115,7 +127,7 @@ export const TimelineComponent = forwardRef(
 
         useImperativeHandle(ref, () => ({
             showAndSelectItem: (rowIndex: number, itemIndex: number) => {
-                refs[rowIndex][itemIndex].current.scrollIntoView({
+                rowRefs[rowIndex][itemIndex].current.scrollIntoView({
                     behavior: 'smooth',
                     block: 'center',
                     inline: 'center',
@@ -149,7 +161,7 @@ export const TimelineComponent = forwardRef(
 
         useEffect(() => {
             if (selectedItem) {
-                refs[selectedItem.rowIndex][
+                rowRefs[selectedItem.rowIndex][
                     selectedItem.itemIndex
                 ].current.scrollIntoView({
                     block: 'center',
@@ -158,16 +170,54 @@ export const TimelineComponent = forwardRef(
             }
         }, [selectedTimeUnit]);
 
-        const renderItem = (rowIndex: number) => {
+        useEffect(() => {
+            const resizeObserver = new ResizeObserver(resizeViews);
+            if (labelsContentRef.current) {
+                resizeObserver.observe(labelsContentRef.current);
+            }
+
+            return () => resizeObserver.disconnect();
+        }, [labelsContentRef]);
+        useEffect(() => {
+            const resizeObserver = new ResizeObserver(resizeViews);
+            if (linesRef.current) {
+                resizeObserver.observe(linesRef.current);
+            }
+
+            return () => resizeObserver.disconnect();
+        }, [linesRef]);
+        useEffect(() => {
+            const resizeObserver = new ResizeObserver(resizeViews);
+            if (bottomRef.current) {
+                resizeObserver.observe(bottomRef.current);
+            }
+
+            return () => resizeObserver.disconnect();
+        }, [bottomRef]);
+
+        const renderItem = (
+            rowIndex: number,
+            timelineStartAtMoment: Moment,
+            timelineEndAtMoment: Moment,
+        ) => {
             return (item: Item, index: number) => {
-                const startOffset = moment(item.startAt).diff(
-                    moment(props.startAt),
+                const itemStartAtMoment = moment(item.startAt);
+                const itemEndAtMoment = moment(item.endAt);
+                if (
+                    itemEndAtMoment.isBefore(timelineStartAtMoment) ||
+                    itemStartAtMoment.isAfter(timelineEndAtMoment)
+                ) {
+                    return null;
+                }
+
+                const startOffset = moment(itemStartAtMoment).diff(
+                    startAtMoment,
                     'days',
                 );
                 const scaledDayWidth = getDayWidth();
                 const left = scaledDayWidth * startOffset;
                 const duration = moment.duration(
-                    moment(item.endAt).diff(moment(item.startAt)),
+                    itemEndAtMoment.diff(itemStartAtMoment),
                 );
                 const width = scaledDayWidth * duration.asDays();
                 const selected =
@@ -176,7 +226,7 @@ export const TimelineComponent = forwardRef(
                 return (
                     <div
                         key={index}
-                        ref={refs[rowIndex][index]}
+                        ref={rowRefs[rowIndex][index]}
                         className={`${styles.Item} ${classNames({
                             [styles.Selected]: selected,
                         })}`}
@@ -192,18 +242,22 @@ export const TimelineComponent = forwardRef(
             };
         };
 
-        const renderRow = (row: Row, index: number) => {
-            return (
-                <div
-                    key={index}
-                    className={styles.Row}
-                    style={{
-                        height: row.height,
-                    }}
-                >
-                    {row.items.map(renderItem(index))}
-                </div>
-            );
+        const renderRow = (startAtMoment: Moment, endAtMoment: Moment) => {
+            return (row: Row, index: number) => {
+                return (
+                    <div
+                        key={index}
+                        className={styles.Row}
+                        style={{
+                            height: row.height,
+                        }}
+                    >
+                        {row.items.map(
+                            renderItem(index, startAtMoment, endAtMoment),
+                        )}
+                    </div>
+                );
+            };
         };
 
         const renderYearLabels = () => {
@@ -216,10 +270,7 @@ export const TimelineComponent = forwardRef(
                                     key={`label-${index}`}
                                     className={styles.YearLabel}
                                     style={{
-                                        width: Math.min(
-                                            getDayWidth() * year.totalDays,
-                                            yearLabelWidth,
-                                        ),
+                                        width: yearLabelWidth,
                                     }}
                                 >
                                     {year.yearOf}
@@ -228,9 +279,11 @@ export const TimelineComponent = forwardRef(
                                     key={`spacer-${index}`}
                                     className={styles.YearSpacer}
                                     style={{
-                                        width:
+                                        width: Math.max(
                                             getDayWidth() * year.totalDays -
-                                            yearLabelWidth,
+                                                yearLabelWidth,
+                                            0,
+                                        ),
                                     }}
                                 />
                             </>
@@ -250,10 +303,7 @@ export const TimelineComponent = forwardRef(
                                     key={`label-${index}`}
                                     className={styles.MonthOfYearLabel}
                                     style={{
-                                        width: Math.min(
-                                            getDayWidth() * month.totalDays,
-                                            monthLabelWidth,
-                                        ),
+                                        width: monthLabelWidth,
                                     }}
                                 >
                                     {monthOfYearLabel[month.monthOfYear - 1]}
@@ -262,9 +312,11 @@ export const TimelineComponent = forwardRef(
                                     key={`spacer-${index}`}
                                     className={styles.MonthSpacer}
                                     style={{
-                                        width:
+                                        width: Math.max(
                                             getDayWidth() * month.totalDays -
-                                            monthLabelWidth,
+                                                monthLabelWidth,
+                                            0,
+                                        ),
                                     }}
                                 />
                             </>
@@ -284,10 +336,7 @@ export const TimelineComponent = forwardRef(
                                     key={`label-${index}`}
                                     className={styles.WeekOfYearLabel}
                                     style={{
-                                        width: Math.min(
-                                            getDayWidth() * week.totalDays,
-                                            weekLabelWidth,
-                                        ),
+                                        width: weekLabelWidth,
                                     }}
                                 >
                                     {`w${week.weekOfYear}`}
@@ -296,9 +345,11 @@ export const TimelineComponent = forwardRef(
                                     key={`spacer-${index}`}
                                     className={styles.WeekSpacer}
                                     style={{
-                                        width:
+                                        width: Math.max(
                                             getDayWidth() * week.totalDays -
-                                            weekLabelWidth,
+                                                weekLabelWidth,
+                                            0,
+                                        ),
                                     }}
                                 />
                             </>
@@ -401,10 +452,62 @@ export const TimelineComponent = forwardRef(
             setSelectedTimeUnit(optionKey as TimeUnit);
         };
 
-        const currentTimeDiff = moment.duration(
-            moment(currTime).diff(moment(props.startAt)),
-        );
-        const currentTimeLeftOffset = getDayWidth() * currentTimeDiff.asDays();
+        const resizeViews = () => {
+            const bottomWidth = bottomRef.current?.offsetWidth || 0;
+            const bottomHeight = bottomRef.current?.offsetHeight || 0;
+            const labelsContentHeight =
+                labelsContentRef.current?.offsetHeight || 0;
+            const totalSidePadding = 2 * sidePadding;
+
+            if (labelsSpacerRef.current) {
+                const labelContentWidth =
+                    labelsContentRef.current?.offsetWidth || 0;
+                if (labelContentWidth < bottomWidth) {
+                    let spacerWidth =
+                        bottomWidth - labelContentWidth - totalSidePadding;
+                    labelsSpacerRef.current.style.width = `${spacerWidth}px`;
+                } else {
+                    labelsSpacerRef.current.style.width = '0';
+                }
+            }
+
+            if (linesSpacerRef.current) {
+                const linesWidth = linesRef.current?.offsetWidth || 0;
+                if (linesWidth < bottomWidth) {
+                    linesSpacerRef.current.style.width = `${
+                        bottomWidth - linesWidth - totalSidePadding
+                    }px`;
+                } else {
+                    linesSpacerRef.current.style.width = '0';
+                }
+            }
+
+            if (currentTimeRef.current) {
+                const currentTimeHeight =
+                    bottomHeight -
+                    labelsContentHeight -
+                    sidePadding +
+                    labelLineHeight;
+                currentTimeRef.current.style.height = `${currentTimeHeight}px`;
+            }
+        };
+
+        const currentTimeMoment = moment(currTime);
+        const startAtMoment = moment(props.startAt);
+        const endAtMoment = moment(props.endAt);
+
+        let showCurrentTime = false;
+        let currentTimeLeftOffset = 0;
+        if (
+            startAtMoment.isSameOrBefore(currentTimeMoment) &&
+            endAtMoment.isSameOrAfter(currentTimeMoment)
+        ) {
+            const currentTimeDiff = moment.duration(
+                moment(currTime).diff(moment(props.startAt)),
+            );
+            currentTimeLeftOffset = getDayWidth() * currentTimeDiff.asDays();
+            showCurrentTime = true;
+        }
 
         return (
             <div className={styles.Timeline}>
@@ -417,44 +520,70 @@ export const TimelineComponent = forwardRef(
                         />
                     </div>
                 </div>
-                <div
-                    className={`${styles.Scrollable} ${classNames({
-                        [styles.Debug]: false,
-                    })}`}
-                >
+                <div className={styles.Bottom} ref={bottomRef}>
                     <div
-                        className={`${styles.Labels} ${classNames({
-                            [styles.Sticky]: true,
+                        className={`${styles.Scrollable} ${classNames({
+                            [styles.Debug]: debug,
                         })}`}
                     >
-                        {renderYearLabels()}
-                        {renderMonthLabels()}
-                        {selectedTimeUnit == 'week' && renderWeekLabels()}
-                        {selectedTimeUnit == 'day' && renderDayLabels()}
-                        <div className={styles.Lines}>
-                            {selectedTimeUnit == 'day' && renderDayLines()}
-                            {selectedTimeUnit == 'week' && renderWeekLines()}
-                            {selectedTimeUnit == 'month' && renderMonthLines()}
+                        <div className={styles.Labels}>
+                            <div
+                                className={`${
+                                    styles.LabelsContent
+                                } ${classNames({
+                                    [styles.Sticky]: true,
+                                })}`}
+                                ref={labelsContentRef}
+                            >
+                                {renderYearLabels()}
+                                {renderMonthLabels()}
+                                {selectedTimeUnit == 'week' &&
+                                    renderWeekLabels()}
+                                {selectedTimeUnit == 'day' && renderDayLabels()}
+                                <div className={styles.Lines}>
+                                    {selectedTimeUnit == 'day' &&
+                                        renderDayLines()}
+                                    {selectedTimeUnit == 'week' &&
+                                        renderWeekLines()}
+                                    {selectedTimeUnit == 'month' &&
+                                        renderMonthLines()}
+                                </div>
+                            </div>
+                            <div
+                                className={styles.LabelsSpacer}
+                                ref={labelsSpacerRef}
+                            />
                         </div>
-                    </div>
-                    <div className={styles.Content}>
-                        <div className={styles.Lines}>
-                            {selectedTimeUnit == 'day' && renderDayLines()}
-                            {selectedTimeUnit == 'week' && renderWeekLines()}
-                            {selectedTimeUnit == 'month' && renderMonthLines()}
+                        <div className={styles.Content}>
+                            <div className={styles.Lines} ref={linesRef}>
+                                {selectedTimeUnit == 'day' && renderDayLines()}
+                                {selectedTimeUnit == 'week' &&
+                                    renderWeekLines()}
+                                {selectedTimeUnit == 'month' &&
+                                    renderMonthLines()}
+                            </div>
+                            <div
+                                className={styles.LinesSpacer}
+                                ref={linesSpacerRef}
+                            />
+                            <div className={styles.Rows}>
+                                {props.rows.map(
+                                    renderRow(startAtMoment, endAtMoment),
+                                )}
+                            </div>
                         </div>
-                        <div className={styles.Rows}>
-                            {props.rows.map(renderRow)}
+                        <div
+                            ref={currentTimeRef}
+                            className={`${styles.CurrentTime} ${classNames({
+                                [styles.Show]: showCurrentTime,
+                            })}`}
+                            style={{
+                                left: currentTimeLeftOffset,
+                            }}
+                        >
+                            <div className={styles.Marker} />
+                            <div className={styles.Line} />
                         </div>
-                    </div>
-                    <div
-                        className={styles.CurrentTime}
-                        style={{
-                            left: currentTimeLeftOffset,
-                        }}
-                    >
-                        <div className={styles.Marker} />
-                        <div className={styles.Line} />
                     </div>
                 </div>
             </div>
