@@ -17,13 +17,13 @@ $sidePadding: 14px;
 }
 
 .Timeline {
+    background-color: #eceff1;
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow-x: hidden;
     overflow-y: hidden;
     width: 100%;
-    background-color: #eceff1;
 
     .Controls {
         align-items: center;
@@ -40,17 +40,17 @@ $sidePadding: 14px;
     }
 
     .Bottom {
-        position: relative;
         flex: 1;
+        position: relative;
 
         .Scrollable {
             box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
-            overflow-x: auto;
-            width: 100%;
             height: 100%;
+            overflow-x: auto;
             position: relative;
+            width: 100%;
 
             &.Debug {
                 .YearSpacer {
@@ -79,13 +79,13 @@ $sidePadding: 14px;
             }
 
             .Labels {
-                box-sizing: border-box;
-                z-index: 1;
-                padding: 14px $sidePadding 0 $sidePadding;
-                width: fit-content;
-                display: flex;
                 background-color: white;
                 box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+                box-sizing: border-box;
+                display: flex;
+                padding: 14px $sidePadding 0 $sidePadding;
+                width: fit-content;
+                z-index: 1;
 
                 .LabelsContent {
                     user-select: none;
@@ -192,12 +192,12 @@ $sidePadding: 14px;
             }
 
             .Content {
+                box-sizing: border-box;
+                display: flex;
                 flex: 1;
                 padding: 4px $sidePadding;
                 position: relative;
                 width: fit-content;
-                box-sizing: border-box;
-                display: flex;
 
                 .Lines {
                     display: flex;
@@ -212,8 +212,8 @@ $sidePadding: 14px;
                     flex-direction: column;
                     height: 100%;
                     left: 0;
-                    overflow-y: auto;
                     overflow-x: hidden;
+                    overflow-y: auto;
                     padding: 20px $sidePadding;
                     position: absolute;
                     row-gap: 20px;

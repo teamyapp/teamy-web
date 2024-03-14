@@ -1,4 +1,3 @@
-import { fail } from 'assert';
 import classNames from 'classnames';
 import moment, { Moment } from 'moment';
 import {
