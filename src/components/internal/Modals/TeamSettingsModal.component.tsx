@@ -3,9 +3,9 @@ import React, { Component, ReactNode, createRef } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout';
 import { Router } from '@lib/router/router';
+import { Duration } from '@lib/time/duration';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';

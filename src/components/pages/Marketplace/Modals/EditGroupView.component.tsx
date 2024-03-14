@@ -162,6 +162,43 @@ export class EditGroupViewComponent extends Component<Props, State> {
         );
     }
 
+    public show(group: Group) {
+        this.setState({
+            group: group,
+            groupName: group.name,
+            selectedGroupType: group.type,
+            staticGroupInput: this.toStaticGroupInput(group),
+            filterGroupInput: this.toFilterGroupInput(group),
+            rolloutIds: group.rollouts.map((rollout) => rollout.id),
+        });
+
+        this.groupTypeDropdownRef.current?.selectOption(group.type);
+    }
+
+    toStaticGroupInput(group: Group): StaticGroupInput {
+        if (group.type !== 'STATIC') {
+            return {
+                memberIds: [],
+            };
+        }
+
+        return {
+            memberIds: group.members.map((member) => member.id),
+        };
+    }
+
+    toFilterGroupInput(group: Group): FilterGroupInput {
+        if (group.type !== 'FILTER') {
+            return {
+                filter: '',
+            };
+        }
+
+        return {
+            filter: group.filter,
+        };
+    }
+
     private renderGroupDetailSection(): ReactNode {
         switch (this.state.selectedGroupType) {
             case 'STATIC':
@@ -209,19 +246,6 @@ export class EditGroupViewComponent extends Component<Props, State> {
                 </div>
             </div>
         );
-    }
-
-    public show(group: Group) {
-        this.setState({
-            group: group,
-            groupName: group.name,
-            selectedGroupType: group.type,
-            staticGroupInput: this.toStaticGroupInput(group),
-            filterGroupInput: this.toFilterGroupInput(group),
-            rolloutIds: group.rollouts.map((rollout) => rollout.id),
-        });
-
-        this.groupTypeDropdownRef.current?.selectOption(group.type);
     }
 
     private onSelectGroupType = (groupType: string) => {
@@ -278,30 +302,6 @@ export class EditGroupViewComponent extends Component<Props, State> {
             },
         });
     };
-
-    toStaticGroupInput(group: Group): StaticGroupInput {
-        if (group.type !== 'STATIC') {
-            return {
-                memberIds: [],
-            };
-        }
-
-        return {
-            memberIds: group.members.map((member) => member.id),
-        };
-    }
-
-    toFilterGroupInput(group: Group): FilterGroupInput {
-        if (group.type !== 'FILTER') {
-            return {
-                filter: '',
-            };
-        }
-
-        return {
-            filter: group.filter,
-        };
-    }
 
     private onGroupNameChange = (event: ChangeEvent<HTMLInputElement>) => {
         this.setState({

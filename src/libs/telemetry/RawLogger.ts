@@ -1,5 +1,5 @@
-import { Duration } from '@lib/entity/duration';
 import { Runtime } from '@lib/runtime/runtime';
+import { Duration } from '@lib/time/duration';
 
 import { LOG_LEVEL_RANKS, LogLevel } from './LogLevel';
 import { Logger } from './Logger';

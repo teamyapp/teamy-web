@@ -1,40 +1,84 @@
 $sidePadding: 14px;
 
+@mixin drawLine() {
+    .Line,
+    .Spacer {
+        box-sizing: border-box;
+        flex-shrink: 0;
+    }
+
+    .IncludeStart {
+        border-left: 1px solid #e0e0e0;
+    }
+
+    .IncludeEnd:last-child {
+        border-right: 1px solid #e0e0e0;
+    }
+}
+
 .Timeline {
+    display: flex;
+    flex-direction: column;
     height: 100%;
     overflow-x: hidden;
+    overflow-y: hidden;
     width: 100%;
+
+    .Controls {
+        align-items: center;
+        background-color: #f5f5f5;
+        display: flex;
+        justify-content: flex-end;
+        padding: 14px;
+
+        .TimeUnitDropdown {
+            --drop-down-color: #1565c0;
+            margin-left: 14px;
+            width: 100px;
+        }
+    }
 
     .Scrollable {
         background-color: #eceff1;
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
         display: flex;
+        flex: 1;
         flex-direction: column;
-        height: 100%;
         overflow-x: auto;
         position: relative;
         width: 100%;
 
         &.Debug {
             .YearSpacer {
-                background-color: #2ecc71;
+                background-color: #d81b60;
             }
 
             .MonthSpacer {
-                background-color: #2ecc71;
+                background-color: #1976d2;
             }
 
-            .DaySpacer {
-                background-color: #2ecc71;
+            .WeekSpacer {
+                background-color: #4caf50;
             }
         }
 
         .Labels {
             background-color: white;
             box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-            padding: 0 $sidePadding;
+            padding: 14px $sidePadding 0 $sidePadding;
             user-select: none;
             width: fit-content;
             z-index: 1;
+
+            &.Sticky {
+                .YearLabel,
+                .MonthOfYearLabel,
+                .WeekOfYearLabel,
+                .DayLabel {
+                    left: $sidePadding;
+                    position: sticky;
+                }
+            }
 
             .Years {
                 display: flex;
@@ -43,10 +87,9 @@ $sidePadding: 14px;
                 width: fit-content;
 
                 .YearLabel {
-                    flex-shrink: 0;
-                    position: sticky;
-                    left: $sidePadding;
                     background-color: white;
+                    flex-shrink: 0;
+                    overflow-x: hidden;
                 }
 
                 .YearSpacer {
@@ -64,13 +107,32 @@ $sidePadding: 14px;
                 width: fit-content;
 
                 .MonthOfYearLabel {
-                    flex-shrink: 0;
-                    position: sticky;
-                    left: $sidePadding;
                     background-color: white;
+                    flex-shrink: 0;
+                    overflow-x: hidden;
                 }
 
                 .MonthSpacer {
+                    flex-shrink: 0;
+                }
+            }
+
+            .Weeks {
+                color: #424242;
+                display: flex;
+                font-size: 14px;
+                font-weight: bold;
+                padding-top: 6px;
+                text-transform: uppercase;
+                width: fit-content;
+
+                .WeekOfYearLabel {
+                    background-color: white;
+                    flex-shrink: 0;
+                    overflow-x: hidden;
+                }
+
+                .WeekSpacer {
                     flex-shrink: 0;
                 }
             }
@@ -82,8 +144,8 @@ $sidePadding: 14px;
                 width: fit-content;
 
                 .DayLabel {
-                    flex-shrink: 0;
                     background-color: white;
+                    flex-shrink: 0;
 
                     .DayOfWeekLabel {
                         font-size: 12px;
@@ -103,21 +165,11 @@ $sidePadding: 14px;
                 margin-bottom: 4px;
                 margin-top: 6px;
                 width: fit-content;
-
-                .DayLine {
-                    border-left: 1px solid #e0e0e0;
-                    box-sizing: border-box;
-                    flex-shrink: 0;
-
-                    &:last-child {
-                        border-right: 1px solid #e0e0e0;
-                    }
-                }
+                @include drawLine();
             }
         }
 
         .Content {
-            background-color: #eceff1;
             flex: 1;
             padding: 4px $sidePadding;
             position: relative;
@@ -127,16 +179,7 @@ $sidePadding: 14px;
                 display: flex;
                 height: 100%;
                 width: fit-content;
-
-                .DayLine {
-                    border-left: 1px solid #cfd8dc;
-                    box-sizing: border-box;
-                    flex-shrink: 0;
-
-                    &:last-child {
-                        border-right: 1px solid #cfd8dc;
-                    }
-                }
+                @include drawLine();
             }
 
             .Rows {
@@ -189,7 +232,6 @@ $sidePadding: 14px;
             height: calc(100% - 62px);
             position: absolute;
             transform: translateX(-50%);
-            transition: left 100ms ease-in-out;
             width: 2px;
             z-index: 3;
 

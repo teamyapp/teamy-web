@@ -1,5 +1,5 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
-import React, { Component, ReactElement, createRef } from 'react';
+import React, { Component, createRef } from 'react';
 
 import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
@@ -33,21 +33,6 @@ export class InstalledTabComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.fileClient = props.deps.fileClient;
     }
-
-    private onRemoveAppButtonClick = (app: App, currentTeamId: number) => {
-        return () => {
-            const appTeamInstallation = app.installations.find(
-                (installation) =>
-                    installation.installedTeam.id === currentTeamId,
-            );
-
-            if (!appTeamInstallation) {
-                return;
-            }
-
-            this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
-        };
-    };
 
     render() {
         const installations = this.graphSource.currentTeam()?.appInstallations;
@@ -112,6 +97,21 @@ export class InstalledTabComponent extends Component<Props, State> {
             </>
         );
     }
+
+    private onRemoveAppButtonClick = (app: App, currentTeamId: number) => {
+        return () => {
+            const appTeamInstallation = app.installations.find(
+                (installation) =>
+                    installation.installedTeam.id === currentTeamId,
+            );
+
+            if (!appTeamInstallation) {
+                return;
+            }
+
+            this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
+        };
+    };
 
     private onAppSettingButtonClickHandler = (appId: number) => {
         return () => {

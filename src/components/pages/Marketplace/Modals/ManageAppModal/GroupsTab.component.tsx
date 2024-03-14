@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import moment from 'moment/moment';
-import React, { ReactNode, createRef, useEffect, useState } from 'react';
+import React, { ReactNode, createRef, useState } from 'react';
 
 import { Deps } from '@core/dep/deps';
 import { Group } from '@core/entity/group';

@@ -3,12 +3,12 @@
 $inProgressPrimary: #ff612d;
 
 .TaskListSection {
-    display: flex;
-    width: 100%;
-    height: 100%;
-
     --background-color: #fff8e1;
     --title-color: #{$inProgressPrimary};
+    display: flex;
+
+    height: 100%;
+    width: 100%;
 
     .SectionTopBar {
         .TaskCounter {

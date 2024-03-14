@@ -1,4 +1,4 @@
-import { Duration } from '@lib/entity/duration';
+import { Duration } from '@lib/time/duration';
 
 import { RemoteApp } from '@core/client/entity/remoteApp';
 import { RemoteAppInstallation } from '@core/client/entity/remoteAppInstallation';

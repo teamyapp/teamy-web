@@ -1,4 +1,4 @@
-import { Duration } from '@lib/entity/duration';
+import { Duration } from '@lib/time/duration';
 
 import { Sprint } from '@core/entity/sprint';
 import { User } from '@core/entity/user';

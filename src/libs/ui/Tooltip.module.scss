@@ -8,15 +8,15 @@ $backgroundColor: #424242;
     }
 
     .Tooltip {
-        display: none;
-        position: absolute;
-        padding: 6px 10px;
-        border-radius: 3px;
         background-color: $backgroundColor;
+        border-radius: 3px;
         color: white;
+        display: none;
         font-weight: bold;
-        white-space: nowrap;
+        padding: 6px 10px;
+        position: absolute;
         visibility: hidden;
+        white-space: nowrap;
         z-index: 100;
 
         &.Show {
@@ -30,10 +30,10 @@ $backgroundColor: #424242;
         &.Top,
         &.Bottom {
             .Triangle {
+                border-left: transparent solid 8px;
+                border-right: transparent solid 8px;
                 left: 50%;
                 transform: translateX(-50%);
-                border-right: transparent solid 8px;
-                border-left: transparent solid 8px;
             }
         }
 
@@ -41,8 +41,8 @@ $backgroundColor: #424242;
             margin-top: -8px;
 
             .Triangle {
-                bottom: -6px;
                 border-top: $backgroundColor solid 6px;
+                bottom: -6px;
             }
         }
 
@@ -50,18 +50,18 @@ $backgroundColor: #424242;
             margin-top: 8px;
 
             .Triangle {
-                top: -6px;
                 border-bottom: $backgroundColor solid 6px;
+                top: -6px;
             }
         }
 
         &.Left,
         &.Right {
             .Triangle {
+                border-bottom: transparent solid 8px;
+                border-top: transparent solid 8px;
                 top: 50%;
                 transform: translateY(-50%);
-                border-top: transparent solid 8px;
-                border-bottom: transparent solid 8px;
             }
         }
 
@@ -69,8 +69,8 @@ $backgroundColor: #424242;
             margin-left: -8px;
 
             .Triangle {
-                right: -6px;
                 border-left: $backgroundColor solid 6px;
+                right: -6px;
             }
         }
 
@@ -78,8 +78,8 @@ $backgroundColor: #424242;
             margin-left: 8px;
 
             .Triangle {
-                left: -6px;
                 border-right: $backgroundColor solid 6px;
+                left: -6px;
             }
         }
     }

@@ -1,4 +1,3 @@
-import {fail} from 'assert';
 import classNames from 'classnames';
 import moment from 'moment';
 import {
@@ -11,6 +10,19 @@ import {
     useRef,
     useState,
 } from 'react';
+
+import {
+    Day,
+    Month,
+    Week,
+    Year,
+    getDaysBetween,
+    getEndOfDay,
+    getMonthsBetween,
+    getWeeksBetween,
+    getYearsBetween,
+} from '@lib/time/date';
+import { DropDownList, Option } from '@lib/ui/DropDownList';
 
 import styles from './Timeline.component.module.scss';
 
@@ -30,25 +42,12 @@ const monthOfYearLabel = [
     'Dec',
 ];
 
-const yearLabelWidth = 50;
-const monthLabelWidth = 50;
-const dayLabelWidth = 50;
+const yearLabelWidth = 44;
+const monthLabelWidth = 34;
+const weekLabelWidth = 34;
 const dayWidth = 50;
-
-interface Year {
-    yearOf: number;
-    totalDays: number;
-}
-
-interface Month {
-    monthOfYear: number;
-    totalDays: number;
-}
-
-interface Day {
-    dayOfMonth: number;
-    dayOfWeek: number;
-}
+const weekDayWidth = 20;
+const monthDayWidth = 10;
 
 interface Item {
     view: ReactElement;
@@ -61,6 +60,19 @@ export interface Row {
     items: Item[];
 }
 
+interface SelectedItem {
+    rowIndex: number;
+    itemIndex: number;
+}
+
+type TimeUnit = 'day' | 'week' | 'month';
+
+const timeUnits: Option[] = [
+    { key: 'day', description: 'Day' },
+    { key: 'week', description: 'Week' },
+    { key: 'month', description: 'Month' },
+];
+
 interface Props {
     startAt: Date;
     endAt: Date;
@@ -72,18 +84,15 @@ export interface TimelineComponentHandle {
     showAndSelectItem: (rowIndex: number, itemIndex: number) => void;
 }
 
-interface SelectedItem {
-    rowIndex: number;
-    itemIndex: number;
-}
-
 export const TimelineComponent = forwardRef(
     (props: Props, ref: ForwardedRef<TimelineComponentHandle>) => {
-        let [years, setYears] = useState<Year[]>([]);
-        let [months, setMonths] = useState<Month[]>([]);
         let [days, setDays] = useState<Day[]>([]);
+        let [weeks, setWeeks] = useState<Week[]>([]);
+        let [months, setMonths] = useState<Month[]>([]);
+        let [years, setYears] = useState<Year[]>([]);
         let [currTime, setCurrTime] = useState<Date>(new Date());
         let [selectedItem, setSelectedItem] = useState<SelectedItem>();
+        let [selectedTimeUnit, setSelectedTimeUnit] = useState<TimeUnit>('day');
 
         const refs: RefObject<any>[][] = props.rows.map((row) =>
             row.items.map((item) => useRef()),
@@ -120,71 +129,17 @@ export const TimelineComponent = forwardRef(
 
         useEffect(() => {
             const startMoment = moment(props.startAt);
-            let endMoment = moment(props.endAt);
-            let shouldAddOneDay =
-                endMoment.hours() > 0 ||
-                endMoment.minutes() > 0 ||
-                endMoment.seconds() > 0 ||
-                endMoment.milliseconds() > 0;
-            endMoment = endMoment.startOf('day');
-            if (shouldAddOneDay) {
-                endMoment.add(1, 'day');
-            }
+            const endMoment = getEndOfDay(moment(props.endAt));
 
-            let totalDays = endMoment.diff(startMoment, 'days');
-            let totalMonths = endMoment.diff(startMoment, 'months');
-            let totalYears = endMoment.diff(startMoment, 'years');
+            const totalDays = getDaysBetween(startMoment, endMoment);
+            const totalWeeks = getWeeksBetween(startMoment, endMoment);
+            const totalMonths = getMonthsBetween(startMoment, endMoment);
+            const totalYears = getYearsBetween(startMoment, endMoment);
 
-            let tmpDays: Day[] = [];
-            for (let index = 0; index < totalDays; index++) {
-                let dayMoment = startMoment.clone().add(index, 'day');
-                tmpDays.push({
-                    dayOfMonth: dayMoment.date(),
-                    dayOfWeek: dayMoment.isoWeekday(),
-                });
-            }
-
-            let tmpMonths: Month[] = [];
-            let remainingDaysAfterMonths = totalDays;
-            for (let index = 0; index < totalMonths; index++) {
-                let monthMoment = startMoment.clone().add(index, 'month');
-                let daysInMonth = monthMoment.daysInMonth();
-                tmpMonths.push({
-                    monthOfYear: monthMoment.month(),
-                    totalDays: daysInMonth,
-                });
-                remainingDaysAfterMonths -= daysInMonth;
-            }
-
-            if (remainingDaysAfterMonths > 0) {
-                tmpMonths.push({
-                    monthOfYear: endMoment.month(),
-                    totalDays: remainingDaysAfterMonths,
-                });
-            }
-
-            let tmpYears: Year[] = [];
-            let remainingDaysAfterYears = totalDays;
-            for (let index = 0; index < totalYears; index++) {
-                let yearMoment = startMoment.clone().add(index, 'year');
-                let daysInYear = yearMoment.isLeapYear() ? 366 : 365;
-                tmpYears.push({
-                    yearOf: yearMoment.year(),
-                    totalDays: daysInYear,
-                });
-                remainingDaysAfterYears -= daysInYear;
-            }
-
-            if (remainingDaysAfterYears > 0) {
-                tmpYears.push({
-                    yearOf: endMoment.year(),
-                    totalDays: remainingDaysAfterYears,
-                });
-            }
-
-            setYears(tmpYears);
-            setMonths(tmpMonths);
-            setDays(tmpDays);
+            setDays(totalDays);
+            setWeeks(totalWeeks);
+            setMonths(totalMonths);
+            setYears(totalYears);
 
             const interval = setInterval(() => {
                 setCurrTime(new Date());
@@ -192,17 +147,29 @@ export const TimelineComponent = forwardRef(
             return () => clearInterval(interval);
         }, []);
 
+        useEffect(() => {
+            if (selectedItem) {
+                refs[selectedItem.rowIndex][
+                    selectedItem.itemIndex
+                ].current.scrollIntoView({
+                    block: 'center',
+                    inline: 'center',
+                });
+            }
+        }, [selectedTimeUnit]);
+
         const renderItem = (rowIndex: number) => {
             return (item: Item, index: number) => {
                 const startOffset = moment(item.startAt).diff(
                     moment(props.startAt),
                     'days',
                 );
-                const left = dayWidth * startOffset;
+                const scaledDayWidth = getDayWidth();
+                const left = scaledDayWidth * startOffset;
                 const duration = moment.duration(
                     moment(item.endAt).diff(moment(item.startAt)),
                 );
-                const width = dayWidth * duration.asDays();
+                const width = scaledDayWidth * duration.asDays();
                 const selected =
                     selectedItem?.rowIndex === rowIndex &&
                     selectedItem?.itemIndex === index;
@@ -239,116 +206,242 @@ export const TimelineComponent = forwardRef(
             );
         };
 
+        const renderYearLabels = () => {
+            return (
+                <div className={styles.Years}>
+                    {years.map((year, index) => {
+                        return (
+                            <>
+                                <div
+                                    key={`label-${index}`}
+                                    className={styles.YearLabel}
+                                    style={{
+                                        width: Math.min(
+                                            getDayWidth() * year.totalDays,
+                                            yearLabelWidth,
+                                        ),
+                                    }}
+                                >
+                                    {year.yearOf}
+                                </div>
+                                <div
+                                    key={`spacer-${index}`}
+                                    className={styles.YearSpacer}
+                                    style={{
+                                        width:
+                                            getDayWidth() * year.totalDays -
+                                            yearLabelWidth,
+                                    }}
+                                />
+                            </>
+                        );
+                    })}
+                </div>
+            );
+        };
+
+        const renderMonthLabels = () => {
+            return (
+                <div className={styles.Months}>
+                    {months.map((month, index) => {
+                        return (
+                            <>
+                                <div
+                                    key={`label-${index}`}
+                                    className={styles.MonthOfYearLabel}
+                                    style={{
+                                        width: Math.min(
+                                            getDayWidth() * month.totalDays,
+                                            monthLabelWidth,
+                                        ),
+                                    }}
+                                >
+                                    {monthOfYearLabel[month.monthOfYear - 1]}
+                                </div>
+                                <div
+                                    key={`spacer-${index}`}
+                                    className={styles.MonthSpacer}
+                                    style={{
+                                        width:
+                                            getDayWidth() * month.totalDays -
+                                            monthLabelWidth,
+                                    }}
+                                />
+                            </>
+                        );
+                    })}
+                </div>
+            );
+        };
+
+        const renderWeekLabels = () => {
+            return (
+                <div className={styles.Weeks}>
+                    {weeks.map((week, index) => {
+                        return (
+                            <>
+                                <div
+                                    key={`label-${index}`}
+                                    className={styles.WeekOfYearLabel}
+                                    style={{
+                                        width: Math.min(
+                                            getDayWidth() * week.totalDays,
+                                            weekLabelWidth,
+                                        ),
+                                    }}
+                                >
+                                    {`w${week.weekOfYear}`}
+                                </div>
+                                <div
+                                    key={`spacer-${index}`}
+                                    className={styles.WeekSpacer}
+                                    style={{
+                                        width:
+                                            getDayWidth() * week.totalDays -
+                                            weekLabelWidth,
+                                    }}
+                                />
+                            </>
+                        );
+                    })}
+                </div>
+            );
+        };
+
+        const renderDayLabels = () => {
+            return (
+                <div className={styles.Days}>
+                    {days.map((day, index) => {
+                        return (
+                            <>
+                                <div
+                                    key={index}
+                                    className={styles.DayLabel}
+                                    style={{
+                                        width: getDayWidth(),
+                                    }}
+                                >
+                                    <div className={styles.DayOfWeekLabel}>
+                                        {dayOfWeekLabel[day.dayOfWeek - 1]}
+                                    </div>
+                                    <div className={styles.DayOfMonthLabel}>
+                                        {day.dayOfMonth}
+                                    </div>
+                                </div>
+                            </>
+                        );
+                    })}
+                </div>
+            );
+        };
+
+        const renderDayLines = () => {
+            return days.map((day, index) => {
+                return (
+                    <div
+                        key={index}
+                        className={`${styles.Spacer} ${classNames({
+                            [styles.IncludeStart]: day.includeStart,
+                            [styles.IncludeEnd]: day.includeEnd,
+                        })}`}
+                        style={{
+                            width: dayWidth,
+                        }}
+                    />
+                );
+            });
+        };
+
+        const renderWeekLines = () => {
+            return weeks.map((week, index) => {
+                return (
+                    <div
+                        key={index}
+                        className={`${styles.Spacer} ${classNames({
+                            [styles.IncludeStart]: week.includeStart,
+                            [styles.IncludeEnd]: week.includeEnd,
+                        })}`}
+                        style={{
+                            width: weekDayWidth * week.totalDays,
+                        }}
+                    />
+                );
+            });
+        };
+
+        const renderMonthLines = () => {
+            return months.map((month, index) => {
+                return (
+                    <div
+                        key={index}
+                        className={`${styles.Spacer} ${classNames({
+                            [styles.IncludeStart]: month.includeStart,
+                            [styles.IncludeEnd]: month.includeEnd,
+                        })}`}
+                        style={{
+                            width: monthDayWidth * month.totalDays,
+                        }}
+                    />
+                );
+            });
+        };
+
+        const getDayWidth = () => {
+            switch (selectedTimeUnit) {
+                case 'day':
+                    return dayWidth;
+                case 'week':
+                    return weekDayWidth;
+                case 'month':
+                    return monthDayWidth;
+            }
+        };
+
+        const onSelectTimeUnitOption = (optionKey: string) => {
+            setSelectedTimeUnit(optionKey as TimeUnit);
+        };
+
         const currentTimeDiff = moment.duration(
             moment(currTime).diff(moment(props.startAt)),
         );
-        const currentTimeLeftOffset = dayWidth * currentTimeDiff.asDays();
+        const currentTimeLeftOffset = getDayWidth() * currentTimeDiff.asDays();
+
         return (
             <div className={styles.Timeline}>
-                <div className={`${styles.Scrollable} ${classNames({
-                    [styles.Debug]: false,
-                })}`}>
-                    <div className={styles.Labels}>
-                        <div className={styles.Years}>
-                            {years.map((year, index) => {
-                                return (
-                                    <>
-                                        <div
-                                            key={index}
-                                            className={styles.YearLabel}
-                                            style={{
-                                                width: yearLabelWidth,
-                                            }}>
-                                            {year.yearOf}
-                                        </div>
-                                        <div
-                                            key={index}
-                                            className={styles.YearSpacer}
-                                            style={{
-                                                width: dayWidth * year.totalDays - yearLabelWidth,
-                                            }}
-                                        />
-                                    </>
-                                );
-                            })}
-                        </div>
-                        <div className={styles.Months}>
-                            {months.map((month, index) => {
-                                return (
-                                    <>
-                                        <div
-                                            key={index}
-                                            className={styles.MonthOfYearLabel}
-                                            style={{
-                                                width: monthLabelWidth,
-                                            }}
-                                        >
-                                            {
-                                                monthOfYearLabel[
-                                                    month.monthOfYear
-                                                    ]
-                                            }
-                                        </div>
-                                        <div
-                                            key={index}
-                                            className={styles.MonthSpacer}
-                                            style={{
-                                                width: dayWidth * month.totalDays - monthLabelWidth,
-                                            }}
-                                        />
-                                    </>
-                                );
-                            })}
-                        </div>
-                        <div className={styles.Days}>
-                            {days.map((day, index) => {
-                                return (
-                                    <>
-                                        <div
-                                            key={index}
-                                            className={styles.DayLabel}
-                                            style={{
-                                                width: dayWidth,
-                                            }}
-                                        >
-                                            <div className={styles.DayOfWeekLabel}>
-                                                {dayOfWeekLabel[day.dayOfWeek - 1]}
-                                            </div>
-                                            <div className={styles.DayOfMonthLabel}>
-                                                {day.dayOfMonth}
-                                            </div>
-                                        </div>
-                                    </>
-                                );
-                            })}
-                        </div>
+                <div className={styles.Controls}>
+                    <div className={styles.TimeUnitDropdown}>
+                        <DropDownList
+                            options={timeUnits}
+                            selectOptionKey={selectedTimeUnit}
+                            onSelectOption={onSelectTimeUnitOption}
+                        />
+                    </div>
+                </div>
+                <div
+                    className={`${styles.Scrollable} ${classNames({
+                        [styles.Debug]: false,
+                    })}`}
+                >
+                    <div
+                        className={`${styles.Labels} ${classNames({
+                            [styles.Sticky]: true,
+                        })}`}
+                    >
+                        {renderYearLabels()}
+                        {renderMonthLabels()}
+                        {selectedTimeUnit == 'week' && renderWeekLabels()}
+                        {selectedTimeUnit == 'day' && renderDayLabels()}
                         <div className={styles.Lines}>
-                            {days.map((day, index) => {
-                                return (
-                                    <div
-                                        key={index}
-                                        className={styles.DayLine}
-                                        style={{
-                                            width: dayWidth,
-                                        }}
-                                    />
-                                );
-                            })}
+                            {selectedTimeUnit == 'day' && renderDayLines()}
+                            {selectedTimeUnit == 'week' && renderWeekLines()}
+                            {selectedTimeUnit == 'month' && renderMonthLines()}
                         </div>
                     </div>
                     <div className={styles.Content}>
                         <div className={styles.Lines}>
-                            {days.map((day, index) => {
-                                return (
-                                    <div
-                                        key={index}
-                                        className={styles.DayLine}
-                                        style={{
-                                            width: dayWidth,
-                                        }}
-                                    />
-                                );
-                            })}
+                            {selectedTimeUnit == 'day' && renderDayLines()}
+                            {selectedTimeUnit == 'week' && renderWeekLines()}
+                            {selectedTimeUnit == 'month' && renderMonthLines()}
                         </div>
                         <div className={styles.Rows}>
                             {props.rows.map(renderRow)}
@@ -360,8 +453,8 @@ export const TimelineComponent = forwardRef(
                             left: currentTimeLeftOffset,
                         }}
                     >
-                        <div className={styles.Marker}/>
-                        <div className={styles.Line}/>
+                        <div className={styles.Marker} />
+                        <div className={styles.Line} />
                     </div>
                 </div>
             </div>
