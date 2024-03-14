@@ -28,8 +28,6 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import styles from './Backlog.component.module.scss';
 import { InlineCreateTaskUI } from './InlineCreateTask';
 import { TaskListItem } from './TaskListSections/TaskListItem';
-import { taskPath } from '@core/routing/routes';
-import { TaskDetailModalComponent } from './Modals/TaskDetailModal.component';
 
 interface Props {
     children?: React.ReactNode;
@@ -185,22 +183,11 @@ export class BacklogComponent extends Component<Props, State> {
                     thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                     onUpdateTask={this.onUpdateTask}
                     onDeleteTask={this.onDeleteTask}
-                    onViewTaskDetail={this.onViewTaskDetail}
+                    onViewTaskDetail={this.props.onViewTaskDetail}
                 />
             </div>
         );
     };
-
-    private onViewTaskDetail = (taskId: number) => {
-        this.props.onViewTaskDetail?.call(null, taskId);
-
-        this.props.deps.router.navigateTo(
-            taskPath(
-                this.localStore.getState().currTeamId!,
-                taskId,
-            )
-        )
-    }
 
     private onUpdateTask = async (taskId: number, task: UpdateTaskInput) => {
         await this.stateSyncer.updateTask(taskId, task);

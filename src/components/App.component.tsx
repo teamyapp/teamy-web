@@ -379,6 +379,11 @@ export class AppComponent extends Component<Props, State> {
                 <Route router={this.router} pattern={invitationRoutePattern}>
                     <InvitationComponent deps={this.props.deps} />
                 </Route>
+                <TaskDetailModalComponent
+                    ref={this.taskDetailModalRef}
+                    deps={this.props.deps}
+                    afterClose={this.afterTaskDetailModalClose}
+                />
                 <CreateTeamModalComponent
                     ref={this.createTeamModalRef}
                     deps={this.props.deps}
@@ -387,11 +392,6 @@ export class AppComponent extends Component<Props, State> {
                     deps={this.props.deps}
                     ref={this.teamSettingsModalRef}
                     onAddTeamMemberClick={this.onAddTeamMembersClick}
-                />
-                <TaskDetailModalComponent
-                    ref={this.taskDetailModalRef}
-                    deps={this.props.deps}
-                    afterClose={this.afterTaskDetailModalClose}
                 />
                 <TeamProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <AddTeamMembersModalComponent
@@ -484,6 +484,11 @@ export class AppComponent extends Component<Props, State> {
 
     public onViewTaskDetail = (taskId: number) => {
         this.taskDetailModalRef.current?.open(taskId);
+        if (this.state.activeTeamId) {
+            this.router.navigateTo(taskPath(this.state.activeTeamId, taskId), {
+                notifyRouteChange: false,
+            });
+        }
     };
 
     public async onTeamInit() {
