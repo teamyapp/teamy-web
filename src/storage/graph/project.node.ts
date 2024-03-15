@@ -79,4 +79,12 @@ export class ProjectNode implements Project {
             });
     }
 
+    get totalPhases(): number {
+        return this.phases.length;
+    }
+
+    get deliveredPhases(): number {
+        return this.phases.filter((phase) => phase.status === 'COMPLETED').length;
+    }
+
 }

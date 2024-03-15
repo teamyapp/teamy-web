@@ -14,4 +14,6 @@ export interface Project {
     updatedAt?: Date;
     phases: Phase[];
     stories: Story[];
+    totalPhases: number;
+    deliveredPhases: number;
 }

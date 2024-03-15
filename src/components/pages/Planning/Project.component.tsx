@@ -182,13 +182,15 @@ export function ProjectComponent(props: Props) {
                         />
                     )}
                     {props.project.stories.map((story) => (
-                        <StoryInlineItemComponent
-                            story={story}
-                            key={story.id}
-                            onClickStoryDetailHandler={
-                                onClickStoryDetailHandler
-                            }
-                        />
+                        <div className={styles.ListItem} key={story.id}>
+                            <StoryInlineItemComponent
+                                story={story}
+                                key={story.id}
+                                onClickStoryDetailHandler={
+                                    onClickStoryDetailHandler
+                                }
+                            />
+                        </div>
                     ))}
                 </div>
             </div>

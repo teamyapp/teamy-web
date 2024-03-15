@@ -58,81 +58,109 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
         };
 
         return (
-            <div className={styles.InlineStory}>
-                <div className={styles.LeftSection}>
-                    <div className={styles.TopRow}>
-                        <div className={`${styles.Attribute} ${styles.Id}`}>
-                            {props.story.id}
-                        </div>
+            
+                <div>
+                    <div className={styles.InlineStory}>
+                        <div className={styles.Story}>
+                            <div className={styles.LeftSection}>
+                                <div className={styles.TopRow}>
+                                    <div
+                                        className={`${styles.Attribute} ${styles.Id}`}
+                                    >
+                                        {props.story.id}
+                                    </div>
 
-                        <div
-                            className={`${styles.Attribute} ${styles.Status} ${
-                                styles[props.story.status]
-                            }`}
-                        >
-                            {statusNames[props.story.status]}
-                        </div>
-                    </div>
-                    <div className={styles.Goal}>{props.story.name}</div>
-                    <div className={styles.CompletionStatus}>
-                        {props.story.completedTasks} of {props.story.totalTasks}{' '}
-                        tasks completed
-                    </div>
+                                    <div
+                                        className={`${styles.Attribute} ${
+                                            styles.Status
+                                        } ${styles[props.story.status]}`}
+                                    >
+                                        {statusNames[props.story.status]}
+                                    </div>
+                                </div>
+                                <div className={styles.Goal}>
+                                    {props.story.name}
+                                </div>
+                                <div className={styles.CompletionStatus}>
+                                    {props.story.completedTasks} of{' '}
+                                    {props.story.totalTasks} tasks completed
+                                </div>
 
-                    <div className={styles.BottomRow}>
-                        <div
-                            className={`${styles.Attribute} ${
-                                styles.Priority
-                            } ${classNames({
-                                [styles[priorityStyle]]: true,
-                            })}`}
-                        >
-                            <DropDownList
-                                selectOptionKey={toOptionKey(
-                                    props.story.priority,
-                                )}
-                                options={priorityOptions}
-                                onSelectOption={handlePriorityChange}
-                            />
-                        </div>
-                    </div>
-                </div>
-                <div className={styles.ActionsSection}>
-                    <TooltipUI message={'Delete'}>
-                        <div className={styles.Action}>
-                            <div className={styles.DeleteStoryIcon}>
-                                <MaterialIconUI>close</MaterialIconUI>
-                            </div>
-                        </div>
-                    </TooltipUI>
-
-                    <div className={styles.AssignOwner}>
-                        <TooltipUI message={props.story.owner.fullName}>
-                            <div className={styles.Action}>
-                                <div className={styles.AssignOwnerIcon}>
-                                    {props.story.owner ? (
-                                        <UserProfileUI
-                                            user={props.story.owner}
+                                <div className={styles.BottomRow}>
+                                    <div
+                                        className={`${styles.Attribute} ${
+                                            styles.Priority
+                                        } ${classNames({
+                                            [styles[priorityStyle]]: true,
+                                        })}`}
+                                    >
+                                        <DropDownList
+                                            selectOptionKey={toOptionKey(
+                                                props.story.priority,
+                                            )}
+                                            options={priorityOptions}
+                                            onSelectOption={
+                                                handlePriorityChange
+                                            }
                                         />
-                                    ) : (
-                                        <MaterialIconUI>face</MaterialIconUI>
-                                    )}
+                                    </div>
                                 </div>
                             </div>
-                        </TooltipUI>
-                    </div>
-                    <TooltipUI message={'Detail'}>
-                        <div
-                            className={styles.Action}
-                            onClick={handleStoryDetailClick}
-                        >
-                            <div className={styles.ViewStoryDetailIcon}>
-                                <MaterialIconUI>settings</MaterialIconUI>
+                            <div className={styles.ActionsSection}>
+                                <TooltipUI message={'Delete'}>
+                                    <div className={styles.Action}>
+                                        <div className={styles.DeleteStoryIcon}>
+                                            <MaterialIconUI>
+                                                close
+                                            </MaterialIconUI>
+                                        </div>
+                                    </div>
+                                </TooltipUI>
+
+                                <div className={styles.AssignOwner}>
+                                    <TooltipUI
+                                        message={props.story.owner.fullName}
+                                    >
+                                        <div className={styles.Action}>
+                                            <div
+                                                className={
+                                                    styles.AssignOwnerIcon
+                                                }
+                                            >
+                                                {props.story.owner ? (
+                                                    <UserProfileUI
+                                                        user={props.story.owner}
+                                                    />
+                                                ) : (
+                                                    <MaterialIconUI>
+                                                        face
+                                                    </MaterialIconUI>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </TooltipUI>
+                                </div>
+                                <TooltipUI message={'Detail'}>
+                                    <div
+                                        className={styles.Action}
+                                        onClick={handleStoryDetailClick}
+                                    >
+                                        <div
+                                            className={
+                                                styles.ViewStoryDetailIcon
+                                            }
+                                        >
+                                            <MaterialIconUI>
+                                                settings
+                                            </MaterialIconUI>
+                                        </div>
+                                    </div>
+                                </TooltipUI>
                             </div>
                         </div>
-                    </TooltipUI>
+                    </div>
                 </div>
-            </div>
+      
         );
     };
 

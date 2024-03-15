@@ -139,13 +139,15 @@ export function PhaseComponent(props: Props) {
                         />
                     )}
                     {props.project.stories.map((story) => (
-                        <StoryInlineItemComponent
-                            story={story}
-                            key={story.id}
-                            onClickStoryDetailHandler={
-                                onClickStoryDetailHandler
-                            }
-                        />
+                        <div key={story.id} className={styles.ListItem}>
+                            <StoryInlineItemComponent
+                                story={story}
+                                key={story.id}
+                                onClickStoryDetailHandler={
+                                    onClickStoryDetailHandler
+                                }
+                            />
+                        </div>
                     ))}
                 </div>
             </div>

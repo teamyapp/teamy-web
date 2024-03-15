@@ -44,6 +44,7 @@ import {
     VersionSelectorState,
     VersionSelectorVersionRelationState,
 } from './versionSelector.state';
+import { TeamProjectRelationState } from './teamProjectRelation.state';
 
 interface PersistedState {
     teamSelectedSprint: Record<number, number>;
@@ -60,6 +61,7 @@ interface PersistedState {
     projectPhaseRelations: ProjectPhaseRelationState[];
     projectStoryRelations: ProjectStoryRelationState[];
     phaseStoryRelations: PhaseStoryRelationState[];
+    teamProjectRelations: TeamProjectRelationState[];
 }
 
 export class AppState {
@@ -87,7 +89,8 @@ export class AppState {
     public stories: Record<number, StoryState> = {};
     public phases: Record<number, PhaseState> = {};
     public projects: Record<number, ProjectState> = {};
-    public projectPhaseRelations: ProjectPhaseRelationState[] = []
+    public teamProjectRelations: TeamProjectRelationState[] = []
+    public projectPhaseRelations: ProjectPhaseRelationState[] = [];
     public projectStoryRelations: ProjectStoryRelationState[] = [];
     public phaseStoryRelations: PhaseStoryRelationState[] = [];
     public storyTaskRelations: StoryTaskRelationState[] = [];
@@ -129,6 +132,7 @@ export class AppState {
             projectPhaseRelations: [],
             projectStoryRelations: [],
             phaseStoryRelations: [],
+            teamProjectRelations: [],
         },
     ) {
         this.currUserId = state.currUserId;
@@ -143,6 +147,7 @@ export class AppState {
         this.projectStoryRelations = state.projectStoryRelations;
         this.phaseStoryRelations = state.phaseStoryRelations;
         this.phases = state.phases;
+        this.teamProjectRelations = state.teamProjectRelations;
     }
 
     public static fromJson(json: any): AppState {
@@ -152,6 +157,32 @@ export class AppState {
             currTeamId: json.currTeamId,
             currUserId: json.currUserId,
             teamSelectedSprint: json.teamSelectedSprint,
+            teamProjectRelations: [
+                {
+                    teamId: 1,
+                    projectId: 1,
+                },
+                {
+                    teamId: 1,
+                    projectId: 2,
+                },
+                {
+                    teamId: 1,
+                    projectId: 3,
+                },
+                {
+                    teamId: 1,
+                    projectId: 4,
+                },
+                {
+                    teamId: 1,
+                    projectId: 5,
+                },
+                {
+                    teamId: 1,
+                    projectId: 6,
+                },  
+            ],
             storyTaskRelations: [
                 {
                     storyId: 1,
@@ -198,7 +229,57 @@ export class AppState {
                     creatorId: 1,
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                }
+                },
+                3: {
+                    id: 3,
+                    name: 'story 3',
+                    ownerId: 1,
+                    status: 'TODO',
+                    priority: 'HIGH',
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                4: {
+                    id: 4,
+                    name: 'story 4',
+                    ownerId: 1,
+                    status: 'TODO',
+                    priority: 'HIGH',
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                5: {
+                    id: 5,
+                    name: 'story 5',
+                    ownerId: 1,
+                    status: 'TODO',
+                    priority: 'HIGH',
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                6: {
+                    id: 6,
+                    name: 'story 6',
+                    ownerId: 1,
+                    status: 'TODO',
+                    priority: 'HIGH',
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                7: {
+                    id: 7,
+                    name: 'story 7',
+                    ownerId: 1,
+                    status: 'TODO',
+                    priority: 'HIGH',
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
             },
 
             phaseStoryRelations: [
@@ -285,12 +366,75 @@ export class AppState {
                 1: {
                     id: 1,
                     name: 'project 1',
-                    expectedStartAt: new Date(),
-                    expectedEndAt: new Date(),
+                    expectedStartAt: moment(
+                        '2024-03-01',
+                        'YYYY-MM-DD',
+                    ).toDate(),
+                    expectedEndAt: moment('2024-03-05', 'YYYY-MM-DD').toDate(),
                     creatorId: 1,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
+                2: {
+                    id: 2,
+                    name: 'project 2',
+                    expectedStartAt: moment(
+                        '2024-03-07',
+                        'YYYY-MM-DD',
+                    ).toDate(),
+                    expectedEndAt: moment('2024-03-10', 'YYYY-MM-DD').toDate(),
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                3: {
+                    id: 3,
+                    name: 'project 3',
+                    expectedStartAt: moment(
+                        '2024-03-15',
+                        'YYYY-MM-DD',
+                    ).toDate(),
+                    expectedEndAt: moment('2024-03-20', 'YYYY-MM-DD').toDate(),
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                4 : {
+                    id: 4,
+                    name: 'project 4',
+                    expectedStartAt: moment(
+                        '2024-03-04',
+                        'YYYY-MM-DD',
+                    ).toDate(),
+                    expectedEndAt: moment('2024-03-08', 'YYYY-MM-DD').toDate(),
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                5 : {
+                    id: 5,
+                    name: 'project 5',
+                    expectedStartAt: moment(
+                        '2024-03-12',
+                        'YYYY-MM-DD',
+                    ).toDate(),
+                    expectedEndAt: moment('2024-03-15', 'YYYY-MM-DD').toDate(),
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                },
+                6: {
+                    id: 6,
+                    name: 'project 6',
+                    expectedStartAt: moment(
+                        '2024-03-18',
+                        'YYYY-MM-DD',
+                    ).toDate(),
+                    expectedEndAt: moment('2024-03-22', 'YYYY-MM-DD').toDate(),
+                    creatorId: 1,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                }
             },
             projectPhaseRelations: [
                 {
@@ -326,6 +470,26 @@ export class AppState {
                 {
                     projectId: 1,
                     storyId: 2,
+                },
+                {
+                    projectId: 1,
+                    storyId: 3,
+                },
+                {
+                    projectId: 1,
+                    storyId: 4,
+                },
+                {
+                    projectId: 1,
+                    storyId: 5,
+                },
+                {
+                    projectId: 1,
+                    storyId: 6,
+                },
+                {
+                    projectId: 1,
+                    storyId: 7,
                 },
             ],
         });

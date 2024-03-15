@@ -5,7 +5,6 @@
     width: 100%;
 
     .ProjectView {
-
         display: flex;
         flex: 1;
         overflow: hidden;
@@ -182,11 +181,14 @@
 
         .StoryList {
             box-sizing: border-box;
-            display: flex;
             flex: 1;
-            flex-direction: column;
-            overflow-y: auto;
-            row-gap: 4px;
+            overflow-y: scroll;
+            margin-top: 10px;
+            padding: 0 4px 4px 4px;
+
+            .ListItem:not(:first-child) {
+                margin-top: 10px;
+            }
         }
     }
 }

@@ -158,13 +158,4 @@ export class GraphSource {
             return new ProjectNode(this.localStore, project);
         }
     }
-
-
-    //test
-    public projects(): ProjectNode[] {
-        const appState = this.localStore.getState();
-        return Object.values(appState.projects).map(
-            (project) => new ProjectNode(this.localStore, project),
-        );
-    }
 }
