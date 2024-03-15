@@ -628,7 +628,7 @@ export function mergeApp(
     currAppState.apps[remoteAppId] = localNewApp;
 
     remoteApp.versions?.forEach((version) => {
-        currAppState = mergeAppVersion(currAppState, remoteAppId, version);
+        currAppState = mergeAppVersion(currAppState, remoteApp.id, version);
     });
 
     remoteApp.userRollouts?.forEach((rollout) => {
