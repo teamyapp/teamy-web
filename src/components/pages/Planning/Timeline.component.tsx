@@ -522,7 +522,7 @@ export const TimelineComponent = forwardRef(
                 <div className={styles.Bottom} ref={bottomRef}>
                     <div
                         className={`${styles.Scrollable} ${classNames({
-                            
+                            [styles.Debug]: debug
                         })}`}
                     >
                         <div className={styles.Labels}>

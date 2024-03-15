@@ -2,9 +2,16 @@ import { PopChannel, chan, multi } from '@lib/csp/csp';
 
 type KeyboardEventType = 'keydown' | 'keyup';
 
-type KeyboardKey = 'Control' | 'Meta';
+type KeyboardKey = 'Control';
 
-const keyMap: Record<string, KeyboardKey> = {
+type InternalKeyboardKey = 'Control' | 'Meta';
+
+const InternalToPublicKeyMap: Record<InternalKeyboardKey, KeyboardKey> = {
+    Control: 'Control',
+    Meta: 'Control',
+};
+
+const keyMap: Record<string, InternalKeyboardKey> = {
     Control: 'Control',
 };
 
@@ -16,7 +23,7 @@ export interface InternalKeyboardEvent {
 export class KeyBoardEventMonitor {
     private keyEventChan = chan<InternalKeyboardEvent>();
     private keyEventMultiChan = multi<InternalKeyboardEvent>(this.keyEventChan);
-    private holdKeySet = new Set<KeyboardKey>();
+    private holdKeySet = new Set<InternalKeyboardKey>();
 
     public subscribe(): PopChannel<InternalKeyboardEvent | undefined> {
         return this.keyEventMultiChan.copy();
@@ -32,43 +39,53 @@ export class KeyBoardEventMonitor {
         document.removeEventListener('keyup', this.onKeyUp);
     }
 
-    public isKeyHold(key: KeyboardKey): boolean {
+    private isKeyHold(key: InternalKeyboardKey): boolean {
         return this.holdKeySet.has(key);
     }
 
     private onKeyUp = (event: KeyboardEvent) => {
-        let keyboardKey: KeyboardKey;
+        let internalKeyboardKey: InternalKeyboardKey;
+
         if (!event.metaKey && this.isKeyHold('Meta')) {
-            keyboardKey = 'Meta';
+            internalKeyboardKey = 'Meta';
         } else {
-            keyboardKey = keyMap[event.key];
+            internalKeyboardKey = keyMap[event.key];
         }
 
-        if (keyboardKey) {
-            this.holdKeySet.delete(keyboardKey);
+        const publicKey = InternalToPublicKeyMap[internalKeyboardKey];
+
+        if (publicKey) {
+            this.holdKeySet.delete(internalKeyboardKey);
             this.keyEventChan.put({
-                key: keyboardKey,
+                key: publicKey,
                 eventType: 'keyup',
             });
         }
     };
 
     private onKeyDown = (event: KeyboardEvent) => {
-        let keyboardKey: KeyboardKey;
+        let internalKeyboardKey: InternalKeyboardKey;
         if (event.metaKey && !this.isKeyHold('Meta')) {
-            keyboardKey = 'Meta';
+            internalKeyboardKey = 'Meta';
         } else {
-            keyboardKey = keyMap[event.key];
+            internalKeyboardKey = keyMap[event.key];
         }
 
-        if (keyboardKey === undefined || this.isKeyHold(keyboardKey)) {
+        if (
+            internalKeyboardKey === undefined ||
+            this.isKeyHold(internalKeyboardKey)
+        ) {
             return;
         }
 
-        this.holdKeySet.add(keyboardKey);
-        this.keyEventChan.put({
-            key: keyboardKey,
-            eventType: 'keydown',
-        });
+        const publicKey = InternalToPublicKeyMap[internalKeyboardKey];
+
+        if (publicKey) {
+            this.holdKeySet.add(internalKeyboardKey);
+            this.keyEventChan.put({
+                key: publicKey,
+                eventType: 'keydown',
+            });
+        }
     };
 }

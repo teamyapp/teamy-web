@@ -225,22 +225,26 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
+                if (this.isSelectionModePermanent) {
+                    continue
+                }
+
                 const { key, eventType } = keyboardEvent;
-                const platform = getPlatform();
+                if (key === 'Control') {
+                    let allowMultiSelection = false
 
-                if (
-                    (platform === 'Windows' && key === 'Control') ||
-                    (platform === 'Mac' && key === 'Meta')
-                ) {
-                    if (['keydown', 'keyup'].includes(eventType)) {
-                        if (this.isSelectionModePermanent) {
-                            continue;
-                        }
-
-                        this.setState({
-                            allowMultiSelection: eventType === 'keydown',
-                        });
+                    switch (eventType) {
+                        case 'keydown':
+                            allowMultiSelection = true
+                            break
+                        case 'keyup':
+                            allowMultiSelection = false
+                            break
                     }
+
+                    this.setState({
+                        allowMultiSelection,
+                    });
                 }
             }
         })();

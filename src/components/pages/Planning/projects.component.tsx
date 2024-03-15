@@ -49,7 +49,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                             <div className={styles.Name}>{project.name}</div>
                             <div className={styles.Status}>
                                 {project.deliveredPhases} of{' '}
-                                {project.totalPhases} stories delivered
+                                {project.totalPhases} phases delivered
                             </div>
                         </div>
                     ),
@@ -72,7 +72,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
             >
                 <div className={styles.Name}>{project.name}</div>
                 <div className={styles.Status}>
-                    {project.deliveredPhases} of {project.totalPhases} stories
+                    {project.deliveredPhases} of {project.totalPhases} phases
                     delivered
                 </div>
                 <div className={styles.Duration}>

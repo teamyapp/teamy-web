@@ -1,5 +1,5 @@
 export function getPlatform(): Platform {
-    if (navigator.platform.indexOf('Mac') > -1) {
+    if (navigator.userAgent.includes('Mac')) {
         return 'Mac';
     }
 
