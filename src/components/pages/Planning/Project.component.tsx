@@ -87,7 +87,7 @@ export function ProjectComponent(props: Props) {
                 }
 
                 if (selectedPhases) {
-                    setSelectedPhaseIndexes(selectedPhases);
+                    setSelectedPhaseIndexes(new Set(selectedPhases));
                 }
             }
         })();
