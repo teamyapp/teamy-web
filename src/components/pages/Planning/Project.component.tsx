@@ -11,7 +11,6 @@ import {
 
 import {
     ItemsSelector,
-    MonitorKeyPressed,
 } from '@lib/event/keyBoardEventMoniter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
@@ -52,25 +51,20 @@ export function ProjectComponent(props: Props) {
         Set<string>
     >(new Set());
     const ctrlKeyPressedRef = useRef(false);
-
-   
-
-    const storySelector = new ItemsSelector(
+    const [storySelector, setStorySelector] = useState<ItemsSelector>(new ItemsSelector(
         ctrlKeyPressedRef.current,
         selectedStoryIds,
-    );
-    const phaseSelector = new ItemsSelector(
+    ));
+    const [phaseSelector, setPhaseSelector] = useState<ItemsSelector>(new ItemsSelector(
         ctrlKeyPressedRef.current,
         selectedPhaseIndexes,
-    );
+    ));
 
     console.log("test count")
 
     useEffect(() => {
         const selectedStoriesChan = storySelector.subscribeSelectedItemsChanged();
         const selectedPhasesChan = phaseSelector.subscribeSelectedItemsChanged();
-
-
 
         (async () => {
             while (true) {
@@ -80,7 +74,7 @@ export function ProjectComponent(props: Props) {
                 }
 
                 if (selectedStories) {
-                    setSelectedStoryIds(selectedStories);
+                    setSelectedStoryIds(new Set(selectedStories));
                 }
             }
         })();
@@ -101,7 +95,6 @@ export function ProjectComponent(props: Props) {
 
         const keyBoardEventChan = props.deps.keyBoardEventMonitor.subscribe();
         (async () => {
-            
             while (true) {
                 console.log(
                     `[projectComponent] waiting for keyboard event`,

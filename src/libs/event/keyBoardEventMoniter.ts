@@ -106,10 +106,12 @@ export class ItemsSelector {
     }
 
     public subscribeSelectedItemsChanged(): PopChannel<Set<string> | undefined> {
-        return this.selectedItemsEventMultiChan.copy();
+        const copy = this.selectedItemsEventMultiChan.copy();
+        return copy;
     }
 
     public setMultiSelectionEnabled = (enabled: boolean) => {
+        console.log('setMultiSelectionEnabled', enabled);
         this.multiSelectionEnabled = enabled;
     };
 
@@ -136,8 +138,6 @@ export class ItemsSelector {
                 this.selectedItemKeys = new Set([key]);
             }
         }
-
-        debugger
 
         this.selectedItemsChangedChan.put(this.selectedItemKeys);
     };
