@@ -56,11 +56,11 @@ describe('ItemSelector', () => {
 
         {
             name: '[multi selection]: can select one item',
-            initialSelectedItems: new Set([]),
+            initialSelectedItems: new Set(["1"]),
             multiSelectionEnabled: true,
             action: (itemSelector: ItemsSelector) =>
-                itemSelector.selectItem('1'),
-            expected: new Set(['1']),
+                itemSelector.selectItem('2'),
+            expected: new Set(['1', "2"]),
         },
         {
             name: '[multi selection]: can deselect one item',
