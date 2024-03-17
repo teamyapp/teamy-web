@@ -90,83 +90,23 @@ export class KeyBoardEventMonitor {
     };
 }
 
-export class MonitorKeyPressed {
-    private cleanup: (() => void) | undefined;
-    private listenerEnabled: boolean;
-
-    constructor(
-        private keyBoardEventMonitor: KeyBoardEventMonitor,
-        private componentName: string,
-        private keyboardKey: KeyboardKey,
-        private onKeyPressed: (keyPressed: boolean) => void,
-        listenerEnabled: boolean = true,
-    ) {
-        this.listenerEnabled = listenerEnabled;
-    }
-
-    setListenerEnabled(enabled: boolean) {
-        this.listenerEnabled = enabled;
-    }
-
-    subscribe() {
-        const keyBoardEventChan = this.keyBoardEventMonitor.subscribe();
-        (async () => {
-            debugger
-            while (true) {
-                console.log(
-                    `[${this.componentName}] waiting for keyboard event`,
-                );
-                const keyboardEvent = await keyBoardEventChan!.pop();
-                if (keyboardEvent === undefined) {
-                    return;
-                }
-
-                debugger;
-                if (!this.listenerEnabled) {
-                    continue;
-                }
-
-                const { key, eventType } = keyboardEvent;
-                if (key === this.keyboardKey) {
-                    let keyPressed = false;
-
-                    switch (eventType) {
-                        case 'keydown':
-                            keyPressed = true;
-                            break;
-                        case 'keyup':
-                            keyPressed = false;
-                            break;
-                    }
-
-                    this.onKeyPressed(keyPressed);
-                }
-            }
-        })();
-
-        this.cleanup = () => {
-            keyBoardEventChan?.close();
-        };
-    }
-
-    unsubscribe() {
-        this.cleanup?.();
-    }
-}
-
 export class ItemsSelector {
     private selectedItemKeys: Set<string> = new Set();
     private multiSelectionEnabled: boolean;
 
+    private selectedItemsChangedChan = chan<Set<string>>();
+    private selectedItemsEventMultiChan = multi<Set<string>>(this.selectedItemsChangedChan);
+
     constructor(
-        private onSelectedItemKeysChanged: (
-            selectedItemKeys: Set<string>,
-        ) => void,
         multiSelectionEnabled: boolean,
         selectedItemKeys: Set<string>,
     ) {
         this.multiSelectionEnabled = multiSelectionEnabled;
         this.selectedItemKeys = new Set(selectedItemKeys);
+    }
+
+    public subscribeSelectedItemsChanged(): PopChannel<Set<string> | undefined> {
+        return this.selectedItemsEventMultiChan.copy();
     }
 
     public setMultiSelectionEnabled = (enabled: boolean) => {
@@ -177,26 +117,28 @@ export class ItemsSelector {
         this.selectedItemKeys = selectedItemKeys;
     };
 
-    public selectItem = (id: string) => {
+    public selectItem = (key: string) => {
         if (this.multiSelectionEnabled) {
-            if (this.selectedItemKeys.has(id)) {
-                this.selectedItemKeys.delete(id);
+            if (this.selectedItemKeys.has(key)) {
+                this.selectedItemKeys.delete(key);
             } else {
-                this.selectedItemKeys.add(id);
+                this.selectedItemKeys.add(key);
             }
         } else {
             if (
-                this.selectedItemKeys.has(id) &&
+                this.selectedItemKeys.has(key) &&
                 this.selectedItemKeys.size > 1
             ) {
-                this.selectedItemKeys = new Set([id]);
-            } else if (this.selectedItemKeys.has(id)) {
+                this.selectedItemKeys = new Set([key]);
+            } else if (this.selectedItemKeys.has(key)) {
                 this.selectedItemKeys = new Set([]);
             } else {
-                this.selectedItemKeys = new Set([id]);
+                this.selectedItemKeys = new Set([key]);
             }
         }
 
-        this.onSelectedItemKeysChanged(this.selectedItemKeys);
+        debugger
+
+        this.selectedItemsChangedChan.put(this.selectedItemKeys);
     };
 }

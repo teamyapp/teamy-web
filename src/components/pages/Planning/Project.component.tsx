@@ -56,38 +56,89 @@ export function ProjectComponent(props: Props) {
    
 
     const storySelector = new ItemsSelector(
-        setSelectedStoryIds,
         ctrlKeyPressedRef.current,
         selectedStoryIds,
     );
     const phaseSelector = new ItemsSelector(
-        setSelectedPhaseIndexes,
         ctrlKeyPressedRef.current,
         selectedPhaseIndexes,
     );
 
-    const onKeyPressedChanged = (keyPressed: boolean) => {
-        debugger
-        ctrlKeyPressedRef.current = keyPressed;
-        storySelector.setMultiSelectionEnabled(keyPressed);
-        phaseSelector.setMultiSelectionEnabled(keyPressed);
-    }
-
-    const ctrlKeyPressedMonitor = new MonitorKeyPressed(
-        props.deps.keyBoardEventMonitor,
-        'ProjectComponent',
-        'Control',
-        onKeyPressedChanged,
-    );
+    console.log("test count")
 
     useEffect(() => {
-        ctrlKeyPressedMonitor.subscribe();
+        const selectedStoriesChan = storySelector.subscribeSelectedItemsChanged();
+        const selectedPhasesChan = phaseSelector.subscribeSelectedItemsChanged();
 
-        return ctrlKeyPressedMonitor.unsubscribe();
-    }, [ctrlKeyPressedMonitor.subscribe, ctrlKeyPressedMonitor.unsubscribe]);
+
+
+        (async () => {
+            while (true) {
+                const selectedStories = await selectedStoriesChan.pop();
+                if (selectedStories === undefined) {
+                    return;
+                }
+
+                if (selectedStories) {
+                    setSelectedStoryIds(selectedStories);
+                }
+            }
+        })();
+
+        (async () => {
+            while (true) {
+                const selectedPhases = await selectedPhasesChan.pop();
+                if (selectedPhases === undefined) {
+                    return;
+                }
+
+                if (selectedPhases) {
+                    setSelectedPhaseIndexes(selectedPhases);
+                }
+            }
+        })();
+
+
+        const keyBoardEventChan = props.deps.keyBoardEventMonitor.subscribe();
+        (async () => {
+            
+            while (true) {
+                console.log(
+                    `[projectComponent] waiting for keyboard event`,
+                );
+                const keyboardEvent = await keyBoardEventChan!.pop();
+                if (keyboardEvent === undefined) {
+                    return;
+                }
+
+                const { key, eventType } = keyboardEvent;
+                if (key === 'Control') {
+                    let keyPressed = false;
+
+                    switch (eventType) {
+                        case 'keydown':
+                            keyPressed = true;
+                            break;
+                        case 'keyup':
+                            keyPressed = false;
+                            break;
+                    }
+
+                    ctrlKeyPressedRef.current = keyPressed;
+                    storySelector.setMultiSelectionEnabled(keyPressed);
+                    phaseSelector.setMultiSelectionEnabled(keyPressed);
+                }
+            }
+        })();
+
+        return () => {
+            selectedStoriesChan?.close();
+            selectedPhasesChan?.close();
+            keyBoardEventChan?.close();
+        }
+    }, [])
 
     const onStorySelectHandler = (storyIdNumber: number) => {
-        debugger
         storySelector.selectItem(storyIdNumber.toString());
 
         // if (updatedSelectedStoryIds.length > 0 && selectedPhaseIndexes.length > 1) {
