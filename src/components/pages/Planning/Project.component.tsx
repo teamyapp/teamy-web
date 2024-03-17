@@ -9,9 +9,8 @@ import {
     useState,
 } from 'react';
 
-import {
-    ItemsSelector,
-} from '@lib/event/keyBoardEventMoniter';
+import { ItemsSelector } from '@lib/event/keyBoardEventMoniter';
+import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
@@ -40,9 +39,8 @@ const endAt = moment().add(1, 'months').toDate();
 export function ProjectComponent(props: Props) {
     const [onEditingNewStoryInBacklog, setOnEditingNewStoryInBacklog] =
         useState(false);
-    const timelineRef = createRef<TimelineComponentHandle>();
+    const timelineRef = useRef<TimelineComponentHandle>(null);
     const currentTeam = props.deps.graphSource.currentTeam();
-    const storyListRef = useRef<HTMLDivElement>(null);
 
     const [selectedStoryIds, setSelectedStoryIds] = useState<Set<string>>(
         new Set(),
@@ -50,21 +48,24 @@ export function ProjectComponent(props: Props) {
     const [selectedPhaseIndexes, setSelectedPhaseIndexes] = useState<
         Set<string>
     >(new Set());
-    const ctrlKeyPressedRef = useRef(false);
-    const [storySelector, setStorySelector] = useState<ItemsSelector>(new ItemsSelector(
-        ctrlKeyPressedRef.current,
-        selectedStoryIds,
-    ));
-    const [phaseSelector, setPhaseSelector] = useState<ItemsSelector>(new ItemsSelector(
-        ctrlKeyPressedRef.current,
-        selectedPhaseIndexes,
-    ));
 
-    console.log("test count")
+    const selectedStoryIdsRef = useRef(selectedStoryIds);
+    const selectedPhaseIndexesRef = useRef(selectedPhaseIndexes);
+
+    const ctrlKeyPressedRef = useRef(false);
+    const storySelectorRef = useRef<ItemsSelector>(
+        new ItemsSelector(ctrlKeyPressedRef.current, selectedStoryIds),
+    );
+    const phaseSelectorRef = useRef<ItemsSelector>(
+        new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseIndexes),
+    );
 
     useEffect(() => {
-        const selectedStoriesChan = storySelector.subscribeSelectedItemsChanged();
-        const selectedPhasesChan = phaseSelector.subscribeSelectedItemsChanged();
+        const selectedStoriesChan =
+            storySelectorRef.current.subscribeSelectedItemsChanged();
+        const selectedPhasesChan =
+            phaseSelectorRef.current.subscribeSelectedItemsChanged();
+        const keyBoardEventChan = props.deps.keyBoardEventMonitor.subscribe();
 
         (async () => {
             while (true) {
@@ -73,9 +74,16 @@ export function ProjectComponent(props: Props) {
                     return;
                 }
 
-                if (selectedStories) {
-                    setSelectedStoryIds(new Set(selectedStories));
+                if (
+                    selectedStories.size > 0 &&
+                    selectedPhaseIndexesRef.current.size > 1
+                ) {
+                    await phaseSelectorRef.current.reset();
                 }
+
+                const updatedSelectedStories = new Set(selectedStories);
+                setSelectedStoryIds(updatedSelectedStories);
+                selectedStoryIdsRef.current = updatedSelectedStories;
             }
         })();
 
@@ -86,40 +94,44 @@ export function ProjectComponent(props: Props) {
                     return;
                 }
 
-                if (selectedPhases) {
-                    setSelectedPhaseIndexes(new Set(selectedPhases));
+                if (
+                    selectedStoryIdsRef.current.size > 0 &&
+                    selectedPhases.size > 1
+                ) {
+                    await storySelectorRef.current.reset();
                 }
+
+                const updatedSelectedPhases = new Set(selectedPhases);
+                setSelectedPhaseIndexes(updatedSelectedPhases);
+                selectedPhaseIndexesRef.current = updatedSelectedPhases;
             }
         })();
 
-
-        const keyBoardEventChan = props.deps.keyBoardEventMonitor.subscribe();
         (async () => {
             while (true) {
-                console.log(
-                    `[projectComponent] waiting for keyboard event`,
-                );
-                const keyboardEvent = await keyBoardEventChan!.pop();
+                console.log(`[projectComponent] waiting for keyboard event`);
+                const keyboardEvent = await keyBoardEventChan.pop();
                 if (keyboardEvent === undefined) {
                     return;
                 }
 
                 const { key, eventType } = keyboardEvent;
-                if (key === 'Control') {
-                    let keyPressed = false;
 
-                    switch (eventType) {
-                        case 'keydown':
-                            keyPressed = true;
-                            break;
-                        case 'keyup':
-                            keyPressed = false;
-                            break;
+                const platform = getPlatform();
+                if (
+                    (platform === 'Mac' && key === 'Meta') ||
+                    (platform === 'Windows' && key === 'Control')
+                ) {
+                    if (['keydown', 'keyup'].includes(eventType)) {
+                        const keyPressed = eventType === 'keydown';
+                        ctrlKeyPressedRef.current = keyPressed;
+                        storySelectorRef.current.setMultiSelectionEnabled(
+                            keyPressed,
+                        );
+                        phaseSelectorRef.current.setMultiSelectionEnabled(
+                            keyPressed,
+                        );
                     }
-
-                    ctrlKeyPressedRef.current = keyPressed;
-                    storySelector.setMultiSelectionEnabled(keyPressed);
-                    phaseSelector.setMultiSelectionEnabled(keyPressed);
                 }
             }
         })();
@@ -128,30 +140,22 @@ export function ProjectComponent(props: Props) {
             selectedStoriesChan?.close();
             selectedPhasesChan?.close();
             keyBoardEventChan?.close();
-        }
-    }, [])
+        };
+    }, []);
+
+    if (!currentTeam) {
+        return null;
+    }
 
     const onStorySelectHandler = (storyIdNumber: number) => {
-        storySelector.selectItem(storyIdNumber.toString());
-
-        // if (updatedSelectedStoryIds.length > 0 && selectedPhaseIndexes.length > 1) {
-        //     handlePhaseIdsReset();
-        // }
+        storySelectorRef.current.selectItem(storyIdNumber.toString());
     };
 
     const onPhaseSelectHandler =
         (phaseIndexNumber: number) => (event: MouseEvent) => {
             event.stopPropagation();
-            phaseSelector.selectItem(phaseIndexNumber.toString());
-
-            // if (selectedStoryIds.length > 0 && updatedSelectedPhaseIndexes.length > 1) {
-            //     handleStoryIdsReset();
-            // }
+            phaseSelectorRef.current.selectItem(phaseIndexNumber.toString());
         };
-
-    if (!currentTeam) {
-        return null;
-    }
 
     const rows: Row[] = props.project.phases.map((phase, index) => {
         const ref = createRef<HTMLDivElement>();
@@ -193,7 +197,9 @@ export function ProjectComponent(props: Props) {
             <div
                 key={index}
                 className={`${styles.Phase} ${classNames({
-                    [styles.Selected]: selectedPhaseIndexes.has(index.toString()),
+                    [styles.Selected]: selectedPhaseIndexes.has(
+                        index.toString(),
+                    ),
                 })}`}
                 onDoubleClick={onDoubleClickPhaseHandler(phase.id)}
                 onClick={onPhaseSelectHandler(index)}
@@ -298,7 +304,7 @@ export function ProjectComponent(props: Props) {
                         </div>
                     </div>
                 </div>
-                <div className={styles.StoryList} ref={storyListRef}>
+                <div className={styles.StoryList}>
                     {onEditingNewStoryInBacklog && (
                         <InlineCreateStory
                             deps={props.deps}
@@ -311,7 +317,9 @@ export function ProjectComponent(props: Props) {
                             <StoryInlineItemComponent
                                 story={story}
                                 key={story.id}
-                                isSelected={selectedStoryIds.has(story.id.toString())}
+                                isSelected={selectedStoryIds.has(
+                                    story.id.toString(),
+                                )}
                                 onStorySelectHandler={onStorySelectHandler}
                                 onClickStoryDetailHandler={
                                     onClickStoryDetailHandler

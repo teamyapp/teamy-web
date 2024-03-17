@@ -35,10 +35,7 @@ import { SortOrders } from '@core/entity/sortOrders';
 import { Sprint } from '@core/entity/sprint';
 import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
-import {
-    sprintTabPath,
-    sprintsPath,
-} from '@core/routing/routes';
+import { sprintTabPath, sprintsPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { SprintParticipantNode } from '@core/storage/graph/sprintParticipant.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
@@ -226,25 +223,20 @@ export class SprintsComponent extends Component<Props, State> {
                 }
 
                 if (this.isSelectionModePermanent) {
-                    continue
+                    continue;
                 }
 
-                const { key, eventType } = keyboardEvent;
-                if (key === 'Control') {
-                    let allowMultiSelection = false
-
-                    switch (eventType) {
-                        case 'keydown':
-                            allowMultiSelection = true
-                            break
-                        case 'keyup':
-                            allowMultiSelection = false
-                            break
+                const { eventType, key } = keyboardEvent;
+                const platform = getPlatform();
+                if (
+                    (platform === 'Mac' && key === 'Meta') ||
+                    (platform === 'Windows' && key === 'Control')
+                ) {
+                    if (['keydown', 'keyup'].includes(eventType)) {
+                        this.setState({
+                            allowMultiSelection: eventType === 'keydown',
+                        });
                     }
-
-                    this.setState({
-                        allowMultiSelection,
-                    });
                 }
             }
         })();

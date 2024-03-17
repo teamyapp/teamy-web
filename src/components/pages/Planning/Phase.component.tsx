@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -12,6 +12,7 @@ import { storyPath } from '@core/routing/routes';
 import { InlineCreateStory } from './InlineCreateStory.component';
 import styles from './Phase.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
+import { ItemsSelector } from '@lib/event/keyBoardEventMoniter';
 
 interface Props {
     deps: Deps;
@@ -25,8 +26,71 @@ export function PhaseComponent(props: Props) {
     const [onEditingNewStoryInPhase, setOnEditingNewStoryInPhase] =
         useState(false);
     const currentTeam = props.deps.graphSource.currentTeam();
-    // const [selectedStoryIds, setSelectedStoryIds] = useState<number[]>([]);
-    // const [_, allowMultiSelectionRefValue] = useKeyPressed(props.deps, "ProjectComponent", 'Control')
+    const [selectedBacklogStoryIds, setSelectedBacklogStoryIds] = useState<Set<string>>(new Set());
+    const [selectedPhaseStoryIds, setSelectedPhaseStoryIds] = useState<Set<string>>(new Set());
+    const selectedBacklogStoryIdsRef = useRef(selectedBacklogStoryIds);
+    const selectedPhaseStoryIdsRef = useRef(selectedPhaseStoryIds);
+
+    const ctrlKeyPressedRef = useRef(false);
+    const backlogStorySelectorRef = useRef<ItemsSelector>(new ItemsSelector(
+        ctrlKeyPressedRef.current,
+        selectedBacklogStoryIds,
+    ));
+
+    const phaseStorySelectorRef = useRef<ItemsSelector>(new ItemsSelector(
+        ctrlKeyPressedRef.current,
+        selectedPhaseStoryIds,
+    ));
+
+    useEffect(() => {
+        const selectedBacklogStoryChan = backlogStorySelectorRef.current.subscribeSelectedItemsChanged();
+        const selectedPhaseStoryChan = phaseStorySelectorRef.current.subscribeSelectedItemsChanged();
+        const keyBoardEventChan = props.deps.keyBoardEventMonitor.subscribe();
+        
+        (async () => {
+            while (true) {
+                const selectedBacklogStoryIds = await selectedBacklogStoryChan.pop();
+                if (selectedBacklogStoryIds === undefined) {
+                    return;
+                }
+
+                setSelectedBacklogStoryIds(selectedBacklogStoryIds);
+                selectedBacklogStoryIdsRef.current = selectedBacklogStoryIds;                
+            }
+        })();
+
+        (async () => {
+            while (true) {
+                const selectedPhaseStoryIds = await selectedPhaseStoryChan.pop();
+                if (selectedPhaseStoryIds === undefined) {
+                    return;
+                }
+
+                setSelectedPhaseStoryIds(selectedPhaseStoryIds);
+                selectedPhaseStoryIdsRef.current = selectedPhaseStoryIds;
+            }
+        })();
+
+        (async () => {
+            while(true) {
+
+            }
+        })();
+    }, [])
+
+
+    if (!currentTeam) {
+        return null;
+    }
+
+    const onBacklogStorySelect = (storyIdNumber: number) => {
+        backlogStorySelectorRef.current.selectItem(storyIdNumber.toString());
+    }
+
+    const onPhaseStorySelect = (storyIdNumber: number) => {
+        phaseStorySelectorRef.current.selectItem(storyIdNumber.toString());
+    }
+    
 
     const onClickStoryDetailHandler = async (storyId: number) => {
         await props.deps.stateSyncer.pullCurrentTeamTaskPreview({

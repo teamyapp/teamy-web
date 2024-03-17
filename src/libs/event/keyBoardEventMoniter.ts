@@ -2,17 +2,11 @@ import { PopChannel, chan, multi } from '@lib/csp/csp';
 
 type KeyboardEventType = 'keydown' | 'keyup';
 
-type KeyboardKey = 'Control';
+type KeyboardKey = 'Control' | 'Meta';
 
-type InternalKeyboardKey = 'Control' | 'Meta';
-
-const InternalToPublicKeyMap: Record<InternalKeyboardKey, KeyboardKey> = {
+const keyMap: Record<string, KeyboardKey> = {
     Control: 'Control',
-    Meta: 'Control',
-};
-
-const keyMap: Record<string, InternalKeyboardKey> = {
-    Control: 'Control',
+    Meta: 'Meta',
 };
 
 export interface InternalKeyboardEvent {
@@ -23,7 +17,7 @@ export interface InternalKeyboardEvent {
 export class KeyBoardEventMonitor {
     private keyEventChan = chan<InternalKeyboardEvent>();
     private keyEventMultiChan = multi<InternalKeyboardEvent>(this.keyEventChan);
-    private holdKeySet = new Set<InternalKeyboardKey>();
+    private holdKeySet = new Set<KeyboardKey>();
 
     public subscribe(): PopChannel<InternalKeyboardEvent | undefined> {
         return this.keyEventMultiChan.copy();
@@ -39,51 +33,44 @@ export class KeyBoardEventMonitor {
         document.removeEventListener('keyup', this.onKeyUp);
     }
 
-    private isKeyHold(key: InternalKeyboardKey): boolean {
+    private isKeyHold(key: KeyboardKey): boolean {
         return this.holdKeySet.has(key);
     }
 
     private onKeyUp = (event: KeyboardEvent) => {
-        let internalKeyboardKey: InternalKeyboardKey;
+        let keyboardKey: KeyboardKey;
 
         if (!event.metaKey && this.isKeyHold('Meta')) {
-            internalKeyboardKey = 'Meta';
+            keyboardKey = 'Meta';
         } else {
-            internalKeyboardKey = keyMap[event.key];
+            keyboardKey = keyMap[event.key];
         }
 
-        const publicKey = InternalToPublicKeyMap[internalKeyboardKey];
-
-        if (publicKey) {
-            this.holdKeySet.delete(internalKeyboardKey);
+        if (keyboardKey) {
+            this.holdKeySet.delete(keyboardKey);
             this.keyEventChan.put({
-                key: publicKey,
+                key: keyboardKey,
                 eventType: 'keyup',
             });
         }
     };
 
     private onKeyDown = (event: KeyboardEvent) => {
-        let internalKeyboardKey: InternalKeyboardKey;
+        let keyboardKey: KeyboardKey;
         if (event.metaKey && !this.isKeyHold('Meta')) {
-            internalKeyboardKey = 'Meta';
+            keyboardKey = 'Meta';
         } else {
-            internalKeyboardKey = keyMap[event.key];
+            keyboardKey = keyMap[event.key];
         }
 
-        if (
-            internalKeyboardKey === undefined ||
-            this.isKeyHold(internalKeyboardKey)
-        ) {
+        if (keyboardKey === undefined || this.isKeyHold(keyboardKey)) {
             return;
         }
 
-        const publicKey = InternalToPublicKeyMap[internalKeyboardKey];
-
-        if (publicKey) {
-            this.holdKeySet.add(internalKeyboardKey);
+        if (keyboardKey) {
+            this.holdKeySet.add(keyboardKey);
             this.keyEventChan.put({
-                key: publicKey,
+                key: keyboardKey,
                 eventType: 'keydown',
             });
         }
@@ -93,30 +80,24 @@ export class KeyBoardEventMonitor {
 export class ItemsSelector {
     private selectedItemKeys: Set<string> = new Set();
     private multiSelectionEnabled: boolean;
-
     private selectedItemsChangedChan = chan<Set<string>>();
-    private selectedItemsEventMultiChan = multi<Set<string>>(this.selectedItemsChangedChan);
+    private selectedItemsEventMultiChan = multi<Set<string>>(
+        this.selectedItemsChangedChan,
+    );
 
-    constructor(
-        multiSelectionEnabled: boolean,
-        selectedItemKeys: Set<string>,
-    ) {
+    constructor(multiSelectionEnabled: boolean, selectedItemKeys: Set<string>) {
         this.multiSelectionEnabled = multiSelectionEnabled;
         this.selectedItemKeys = new Set(selectedItemKeys);
     }
 
-    public subscribeSelectedItemsChanged(): PopChannel<Set<string> | undefined> {
-        const copy = this.selectedItemsEventMultiChan.copy();
-        return copy;
+    public subscribeSelectedItemsChanged(): PopChannel<
+        Set<string> | undefined
+    > {
+        return this.selectedItemsEventMultiChan.copy();
     }
 
     public setMultiSelectionEnabled = (enabled: boolean) => {
-        console.log('setMultiSelectionEnabled', enabled);
         this.multiSelectionEnabled = enabled;
-    };
-
-    public setSelectedItemKeys = (selectedItemKeys: Set<string>) => {
-        this.selectedItemKeys = selectedItemKeys;
     };
 
     public selectItem = (key: string) => {
@@ -128,17 +109,22 @@ export class ItemsSelector {
             }
         } else {
             if (
-                this.selectedItemKeys.has(key) &&
-                this.selectedItemKeys.size > 1
+                this.selectedItemKeys.size === 0 ||
+                (this.selectedItemKeys.has(key) &&
+                    this.selectedItemKeys.size > 1)
             ) {
                 this.selectedItemKeys = new Set([key]);
-            } else if (this.selectedItemKeys.has(key)) {
-                this.selectedItemKeys = new Set([]);
             } else {
-                this.selectedItemKeys = new Set([key]);
+                this.selectedItemKeys = new Set([]);
             }
         }
 
-        this.selectedItemsChangedChan.put(this.selectedItemKeys);
+        return this.selectedItemsChangedChan.put(this.selectedItemKeys);
     };
+
+    public reset() {
+        this.selectedItemKeys = new Set();
+        return this.selectedItemsChangedChan.put(this.selectedItemKeys);
+    }
+
 }
