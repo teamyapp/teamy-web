@@ -1,7 +1,18 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import { ReactElement, createRef, useState } from 'react';
+import {
+    MouseEvent,
+    ReactElement,
+    createRef,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
+import {
+    ItemsSelector,
+    MonitorKeyPressed,
+} from '@lib/event/keyBoardEventMoniter';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
@@ -31,8 +42,69 @@ export function ProjectComponent(props: Props) {
     const [onEditingNewStoryInBacklog, setOnEditingNewStoryInBacklog] =
         useState(false);
     const timelineRef = createRef<TimelineComponentHandle>();
-    const [selectedPhaseIndex, setSelectedPhaseIndex] = useState<number>();
     const currentTeam = props.deps.graphSource.currentTeam();
+    const storyListRef = useRef<HTMLDivElement>(null);
+
+    const [selectedStoryIds, setSelectedStoryIds] = useState<Set<string>>(
+        new Set(),
+    );
+    const [selectedPhaseIndexes, setSelectedPhaseIndexes] = useState<
+        Set<string>
+    >(new Set());
+    const ctrlKeyPressedRef = useRef(false);
+
+   
+
+    const storySelector = new ItemsSelector(
+        setSelectedStoryIds,
+        ctrlKeyPressedRef.current,
+        selectedStoryIds,
+    );
+    const phaseSelector = new ItemsSelector(
+        setSelectedPhaseIndexes,
+        ctrlKeyPressedRef.current,
+        selectedPhaseIndexes,
+    );
+
+    const onKeyPressedChanged = (keyPressed: boolean) => {
+        debugger
+        ctrlKeyPressedRef.current = keyPressed;
+        storySelector.setMultiSelectionEnabled(keyPressed);
+        phaseSelector.setMultiSelectionEnabled(keyPressed);
+    }
+
+    const ctrlKeyPressedMonitor = new MonitorKeyPressed(
+        props.deps.keyBoardEventMonitor,
+        'ProjectComponent',
+        'Control',
+        onKeyPressedChanged,
+    );
+
+    useEffect(() => {
+        ctrlKeyPressedMonitor.subscribe();
+
+        return ctrlKeyPressedMonitor.unsubscribe();
+    }, [ctrlKeyPressedMonitor.subscribe, ctrlKeyPressedMonitor.unsubscribe]);
+
+    const onStorySelectHandler = (storyIdNumber: number) => {
+        debugger
+        storySelector.selectItem(storyIdNumber.toString());
+
+        // if (updatedSelectedStoryIds.length > 0 && selectedPhaseIndexes.length > 1) {
+        //     handlePhaseIdsReset();
+        // }
+    };
+
+    const onPhaseSelectHandler =
+        (phaseIndexNumber: number) => (event: MouseEvent) => {
+            event.stopPropagation();
+            phaseSelector.selectItem(phaseIndexNumber.toString());
+
+            // if (selectedStoryIds.length > 0 && updatedSelectedPhaseIndexes.length > 1) {
+            //     handleStoryIdsReset();
+            // }
+        };
+
     if (!currentTeam) {
         return null;
     }
@@ -77,10 +149,10 @@ export function ProjectComponent(props: Props) {
             <div
                 key={index}
                 className={`${styles.Phase} ${classNames({
-                    [styles.Selected]: index === selectedPhaseIndex,
+                    [styles.Selected]: selectedPhaseIndexes.has(index.toString()),
                 })}`}
                 onDoubleClick={onDoubleClickPhaseHandler(phase.id)}
-                onClick={onClickPhaseHandler(index)}
+                onClick={onPhaseSelectHandler(index)}
             >
                 <div className={styles.Name}>{phase.name}</div>
                 <div className={styles.Status}>
@@ -103,15 +175,9 @@ export function ProjectComponent(props: Props) {
         );
     };
 
-    const onClickPhaseHandler = (phaseIndex: number) => {
-        return () => {
-            timelineRef.current?.showAndSelectItem(phaseIndex, 0);
-            setSelectedPhaseIndex(phaseIndex);
-        };
-    };
-
     const onDoubleClickPhaseHandler = (phaseId: number) => {
-        return () => {
+        return (event: MouseEvent) => {
+            event.stopPropagation();
             props.deps.router.navigateTo(
                 phasePath(currentTeam.id, props.project.id, phaseId),
             );
@@ -119,7 +185,7 @@ export function ProjectComponent(props: Props) {
     };
 
     const timelineItemSelect = (rowIndex: number, itemIndex: number) => {
-        setSelectedPhaseIndex(rowIndex);
+        onPhaseSelectHandler(rowIndex);
     };
 
     const onAddStoryInBacklogClick = () => {
@@ -166,14 +232,29 @@ export function ProjectComponent(props: Props) {
             <div className={styles.StoryListSection}>
                 <div className={styles.TopBar}>
                     <div className={styles.Title}>Stories</div>
-                    <div
-                        className={styles.Add}
-                        onClick={onAddStoryInBacklogClick}
-                    >
-                        <MaterialIconUI>add</MaterialIconUI>
+                    <div className={styles.Actions}>
+                        {selectedStoryIds.size > 0 &&
+                            selectedPhaseIndexes.size > 0 && (
+                                <div className={styles.Move}>
+                                    <MaterialIconUI>
+                                        arrow_right_alt
+                                    </MaterialIconUI>
+                                </div>
+                            )}
+                        {selectedStoryIds.size > 0 && (
+                            <div className={styles.Delete}>
+                                <MaterialIconUI>delete</MaterialIconUI>
+                            </div>
+                        )}
+                        <div
+                            className={styles.Add}
+                            onClick={onAddStoryInBacklogClick}
+                        >
+                            <MaterialIconUI>add</MaterialIconUI>
+                        </div>
                     </div>
                 </div>
-                <div className={styles.StoryList}>
+                <div className={styles.StoryList} ref={storyListRef}>
                     {onEditingNewStoryInBacklog && (
                         <InlineCreateStory
                             deps={props.deps}
@@ -186,6 +267,8 @@ export function ProjectComponent(props: Props) {
                             <StoryInlineItemComponent
                                 story={story}
                                 key={story.id}
+                                isSelected={selectedStoryIds.has(story.id.toString())}
+                                onStorySelectHandler={onStorySelectHandler}
                                 onClickStoryDetailHandler={
                                     onClickStoryDetailHandler
                                 }

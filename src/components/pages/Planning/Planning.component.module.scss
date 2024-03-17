@@ -34,4 +34,9 @@
             }
         }
     }
+
+    .Content {
+        flex: 1;
+        overflow-y: hidden;
+    }
 }

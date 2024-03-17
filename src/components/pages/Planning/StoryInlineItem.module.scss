@@ -23,6 +23,11 @@ $actionIconSize: 28px;
         background-color: white;
         word-break: break-word;
 
+        &.Selected {
+           outline: 3px solid #ffc107;
+        }
+
+
         &:hover {
             cursor: pointer;
         }

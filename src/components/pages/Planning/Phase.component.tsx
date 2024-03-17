@@ -12,6 +12,7 @@ import { storyPath } from '@core/routing/routes';
 import { InlineCreateStory } from './InlineCreateStory.component';
 import styles from './Phase.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
+import { useKeyPressed } from '@lib/event/keyBoardEventMoniter';
 
 interface Props {
     deps: Deps;
@@ -25,6 +26,13 @@ export function PhaseComponent(props: Props) {
     const [onEditingNewStoryInPhase, setOnEditingNewStoryInPhase] =
         useState(false);
     const currentTeam = props.deps.graphSource.currentTeam();
+    
+    // const [selectedStoryIds, setSelectedStoryIds] = useState<number[]>([]);
+    // const [_, allowMultiSelectionRefValue] = useKeyPressed(props.deps, "ProjectComponent", 'Control')
+
+
+
+
 
     const onClickStoryDetailHandler = async (storyId: number) => {
         await props.deps.stateSyncer.pullCurrentTeamTaskPreview({

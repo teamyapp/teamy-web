@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, MouseEvent } from 'react';
 
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
@@ -15,7 +15,9 @@ import styles from './StoryInlineItem.module.scss';
 
 interface StoryInlineItemComponentProps {
     story: Story;
+    isSelected?: boolean;
     onClickStoryDetailHandler: (storyId: number) => void;
+    onStorySelectHandler: (storyId: number) => void;
 }
 
 const statusNames: Record<StoryStatus, string> = {
@@ -53,15 +55,22 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
         const priorityStyle = toOptionKey(props.story.priority);
         const handlePriorityChange = (optionKey: string) => {};
 
-        const handleStoryDetailClick = () => {
+        const handleStoryDetailClick = (event: MouseEvent) => {
+            event.stopPropagation();
             props.onClickStoryDetailHandler(props.story.id);
         };
 
+        const handleStoryClick = (event: MouseEvent ) => {
+            event.stopPropagation();
+            props.onStorySelectHandler(props.story.id);
+        }
+
         return (
-            
                 <div>
-                    <div className={styles.InlineStory}>
-                        <div className={styles.Story}>
+                    <div className={styles.InlineStory} onClick={handleStoryClick}>
+                        <div className={`${styles.Story} ${classNames({
+                            [styles.Selected]: props.isSelected,
+                        })}`}>
                             <div className={styles.LeftSection}>
                                 <div className={styles.TopRow}>
                                     <div
