@@ -8,8 +8,7 @@ import {
     useRef,
     useState,
 } from 'react';
-
-import { ItemsSelector } from '@lib/event/keyBoardEventMoniter';
+import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
@@ -109,7 +108,7 @@ export function ProjectComponent(props: Props) {
 
         (async () => {
             while (true) {
-                console.log(`[projectComponent] waiting for keyboard event`);
+                console.log(`[ProjectComponent] waiting for keyboard event`);
                 const keyboardEvent = await keyBoardEventChan.pop();
                 if (keyboardEvent === undefined) {
                     return;
@@ -137,9 +136,9 @@ export function ProjectComponent(props: Props) {
         })();
 
         return () => {
-            selectedStoriesChan?.close();
-            selectedPhasesChan?.close();
-            keyBoardEventChan?.close();
+            storySelectorRef.current.dispose();
+            phaseSelectorRef.current.dispose();
+            keyBoardEventChan.close();
         };
     }, []);
 
