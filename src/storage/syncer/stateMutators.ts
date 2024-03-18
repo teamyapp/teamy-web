@@ -628,7 +628,7 @@ export function mergeApp(
     currAppState.apps[remoteAppId] = localNewApp;
 
     remoteApp.versions?.forEach((version) => {
-        currAppState = mergeAppVersion(currAppState, remoteAppId, version);
+        currAppState = mergeAppVersion(currAppState, remoteApp.id, version);
     });
 
     remoteApp.userRollouts?.forEach((rollout) => {
@@ -660,16 +660,21 @@ export function mergeApp(
 
 export function mergeAppVersion(
     currAppState: AppState,
-    remoteAppId: number,
+    remoteAppId: string,
     version: RemoteAppVersion,
 ): AppState {
-    const app = currAppState.apps[remoteAppId];
+    const appId = toInt(remoteAppId)!;
+    if (version.app) {
+        currAppState = mergeApp(currAppState, version.app, appId);
+    }
+
+    const app = currAppState.apps[appId];
     const localOldVersion = app.versions[version.number] || {};
 
     app.versions[version.number] = {
         number: version.number,
         appName: version.appName || localOldVersion.appName,
-        appId: remoteAppId,
+        appId: appId,
         createdAt: toDate(version.createdAt) || localOldVersion.createdAt,
         creatorUserId:
             toInt(version.createdBy.id) || localOldVersion.creatorUserId,
@@ -687,7 +692,7 @@ export function mergeAppVersion(
     version.prices?.forEach((price) => {
         currAppState = mergeAppVersionPrice(
             currAppState,
-            remoteAppId,
+            appId,
             version.number,
             price,
         );
@@ -1085,6 +1090,10 @@ export function mergeAppInstallation(
             remoteAppInstallation.activeAppVersion?.number ||
             localOldAppInstallation.appVersionNumber,
     };
+
+    if (remoteAppInstallation.activeAppVersion) {
+        mergeAppVersion(currAppState, remoteAppInstallation.activeAppVersion.app.id, remoteAppInstallation.activeAppVersion);
+    }
 
     currAppState.appInstallations[remoteAppInstallationId] =
         localNewAppInstallation;

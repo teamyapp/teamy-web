@@ -705,7 +705,7 @@ export class StateSyncer {
             );
 
         let appState = this.localStore.getState();
-        appState = mergeAppVersion(appState, appId, remoteAppVersion);
+        appState = mergeAppVersion(appState, `${appId}`, remoteAppVersion);
         this.localStore.updateState(appState);
     }
 
@@ -1042,7 +1042,7 @@ export class StateSyncer {
             `${appId}`,
         );
         let appState = this.localStore.getState();
-        appState = mergeAppVersion(appState, appId, appVersion);
+        appState = mergeAppVersion(appState, `${appId}`, appVersion);
         this.localStore.updateState(appState);
         return appVersion.number;
     }
@@ -1058,7 +1058,7 @@ export class StateSyncer {
             input,
         );
         let appState = this.localStore.getState();
-        appState = mergeAppVersion(appState, appId, remoteAppVersion);
+        appState = mergeAppVersion(appState, `${appId}`, remoteAppVersion);
         this.localStore.updateState(appState);
     }
 
