@@ -1,6 +1,7 @@
 import { PopChannel, chan, multi } from '@lib/csp/csp';
+import { Disposable } from '@lib/lifeCycle/disposable';
 
-export class ItemsSelector {
+export class ItemsSelector implements Disposable {
     private selectedItemKeys: Set<string> = new Set();
     private multiSelectionEnabled: boolean;
     private selectedItemsChangedChan = chan<Set<string>>();
@@ -23,7 +24,12 @@ export class ItemsSelector {
         this.multiSelectionEnabled = enabled;
     };
 
-    public selectItem = (key: string) {
+    public reset() {
+        this.selectedItemKeys = new Set();
+        return this.selectedItemsChangedChan.put(this.selectedItemKeys);
+    }
+
+    public selectItem(key: string) {
         if (this.multiSelectionEnabled) {
             if (this.selectedItemKeys.has(key)) {
                 this.selectedItemKeys.delete(key);
@@ -44,8 +50,7 @@ export class ItemsSelector {
         return this.selectedItemsChangedChan.put(this.selectedItemKeys);
     };
 
-    public reset() {
-        this.selectedItemKeys = new Set();
-        return this.selectedItemsChangedChan.put(this.selectedItemKeys);
+    public dispose() {
+        return this.selectedItemsChangedChan.close()
     }
 }
