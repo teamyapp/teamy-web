@@ -47,7 +47,7 @@ describe('ItemSelector', () => {
             name: '[single selection]: turn on multi selection mode',
             initialSelectedItems: new Set(['1', '2', '3']),
             multiSelectionEnabled: false,
-            action: (itemSelector: ItemsSelector) => {
+            act: (itemSelector: ItemsSelector) => {
                 itemSelector.setMultiSelectionEnabled(true);
                 itemSelector.selectItem('4');
             },
@@ -58,7 +58,7 @@ describe('ItemSelector', () => {
             name: '[multi selection]: select one extra item when multiSelection mode is on by default',
             initialSelectedItems: new Set(["1"]),
             multiSelectionEnabled: true,
-            action: (itemSelector: ItemsSelector) =>
+            act: (itemSelector: ItemsSelector) =>
                 itemSelector.selectItem('2'),
             expected: new Set(['1', "2"]),
         },
@@ -87,10 +87,10 @@ describe('ItemSelector', () => {
             },
             expected: new Set(['4']),
         },
-    ])('$name', async ({ initialSelectedItems, multiSelectionEnabled, action, expected }) => {
+    ])('$name', async ({ initialSelectedItems, multiSelectionEnabled, act, expected }) => {
         const itemSelector = new ItemsSelector(multiSelectionEnabled, initialSelectedItems);
         const chan = itemSelector.subscribeSelectedItemsChanged();
-        action(itemSelector);
+        act(itemSelector);
 
         const updatedSelectedItems = await chan.pop();
         expect(updatedSelectedItems).toEqual(expected);
