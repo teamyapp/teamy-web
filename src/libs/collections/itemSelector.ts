@@ -14,15 +14,9 @@ export class ItemsSelector implements Disposable {
         this.selectedItemKeys = new Set(selectedItemKeys);
     }
 
-    public subscribeSelectedItemsChanged(): PopChannel<
-        Set<string> | undefined
-    > {
-        return this.selectedItemsEventMultiChan.copy();
-    }
-
     public setMultiSelectionEnabled(enabled: boolean) {
         this.multiSelectionEnabled = enabled;
-    };
+    }
 
     public reset() {
         this.selectedItemKeys = new Set();
@@ -38,7 +32,7 @@ export class ItemsSelector implements Disposable {
             }
         } else {
             if (
-                this.selectedItemKeys.has(key) && 
+                this.selectedItemKeys.has(key) &&
                 this.selectedItemKeys.size === 1
             ) {
                 this.selectedItemKeys = new Set([]);
@@ -48,9 +42,15 @@ export class ItemsSelector implements Disposable {
         }
 
         return this.selectedItemsChangedChan.put(this.selectedItemKeys);
-    };
+    }
+
+    public subscribeSelectedItemsChanged(): PopChannel<
+        Set<string> | undefined
+    > {
+        return this.selectedItemsEventMultiChan.copy();
+    }
 
     public dispose() {
-        return this.selectedItemsChangedChan.close()
+        return this.selectedItemsChangedChan.close();
     }
 }
