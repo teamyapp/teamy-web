@@ -5,46 +5,46 @@ import { ItemsSelector } from './itemSelector';
 describe('ItemSelector', () => {
     it.each([
         {
-            name: '[single selection]: can select one item',
+            name: '[single selection]: select one item',
             initialSelectedItems: new Set([]),
             multiSelectionEnabled: false,
-            action: (itemSelector: ItemsSelector) =>
+            act: (itemSelector: ItemsSelector) =>
                 itemSelector.selectItem('1'),
             expected: new Set(['1']),
         },
         {
-            name: '[single selection]: can deselect one item only if there is one selected item',
+            name: '[single selection]: deselect one item',
             initialSelectedItems: new Set(['1']),
             multiSelectionEnabled: false,
-            action: (itemSelector: ItemsSelector) =>
+            act: (itemSelector: ItemsSelector) =>
                 itemSelector.selectItem('1'),
             expected: new Set([]),
         },
         {
-            name: '[single selection]: can select one item if there are multiple selected items and it is selected',
+            name: '[single selection]: keep 1 selected item and deselect the rest when multiSelection is disabled',
             initialSelectedItems: new Set(['1', '2', '3']),
             multiSelectionEnabled: false,
-            action: (itemSelector: ItemsSelector) =>
+            act: (itemSelector: ItemsSelector) =>
                 itemSelector.selectItem('1'),
             expected: new Set(['1']),
         },
         {
-            name: '[single selection]: can select one item if there are multiple selected items and it is not selected',
+            name: '[single selection]: select new item and deselect the rest when multiSelection is disabled',
             initialSelectedItems: new Set(['1', '2', '3']),
             multiSelectionEnabled: false,
-            action: (itemSelector: ItemsSelector) =>
+            act: (itemSelector: ItemsSelector) =>
                 itemSelector.selectItem('4'),
             expected: new Set(['4']),
         },
         {
-            name: '[single selection]: can reset selected items',
+            name: '[single selection]: reset selected items',
             initialSelectedItems: new Set(['1', '2', '3']),
             multiSelectionEnabled: false,
-            action: (itemSelector: ItemsSelector) => itemSelector.reset(),
+            act: (itemSelector: ItemsSelector) => itemSelector.reset(),
             expected: new Set([]),
         },
         {
-            name: '[single selection]: can change multi selection mode',
+            name: '[single selection]: turn on multi selection mode',
             initialSelectedItems: new Set(['1', '2', '3']),
             multiSelectionEnabled: false,
             action: (itemSelector: ItemsSelector) => {
@@ -55,7 +55,7 @@ describe('ItemSelector', () => {
         },
 
         {
-            name: '[multi selection]: can select one item',
+            name: '[multi selection]: select one extra item when multiSelection mode is on by default',
             initialSelectedItems: new Set(["1"]),
             multiSelectionEnabled: true,
             action: (itemSelector: ItemsSelector) =>
@@ -63,25 +63,25 @@ describe('ItemSelector', () => {
             expected: new Set(['1', "2"]),
         },
         {
-            name: '[multi selection]: can deselect one item',
+            name: '[multi selection]: deselect one item when multiSelection mode is on',
             initialSelectedItems: new Set(['1', '2', '3']),
             multiSelectionEnabled: true,
-            action: (itemSelector: ItemsSelector) =>
+            act: (itemSelector: ItemsSelector) =>
                 itemSelector.selectItem('2'),
             expected: new Set(['1', '3']),
         },
         {
-            name: '[multi selection]: can reset selected items',
+            name: '[multi selection]: reset selected items',
             initialSelectedItems: new Set(['1', '2', '3']),
             multiSelectionEnabled: true,
-            action: (itemSelector: ItemsSelector) => itemSelector.reset(),
+            act: (itemSelector: ItemsSelector) => itemSelector.reset(),
             expected: new Set([]),
         },
         {
-            name: '[multi selection]: can change multi selection mode',
+            name: '[multi selection]: change multi selection mode',
             initialSelectedItems: new Set(['1', '2', '3']),
             multiSelectionEnabled: true,
-            action: (itemSelector: ItemsSelector) => {
+            act: (itemSelector: ItemsSelector) => {
                 itemSelector.setMultiSelectionEnabled(false);
                 itemSelector.selectItem('4');
             },
@@ -93,7 +93,6 @@ describe('ItemSelector', () => {
         action(itemSelector);
 
         const updatedSelectedItems = await chan.pop();
-
         expect(updatedSelectedItems).toEqual(expected);
     });
 });

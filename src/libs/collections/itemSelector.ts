@@ -19,11 +19,11 @@ export class ItemsSelector {
         return this.selectedItemsEventMultiChan.copy();
     }
 
-    public setMultiSelectionEnabled = (enabled: boolean) => {
+    public setMultiSelectionEnabled(enabled: boolean) {
         this.multiSelectionEnabled = enabled;
     };
 
-    public selectItem = (key: string) => {
+    public selectItem = (key: string) {
         if (this.multiSelectionEnabled) {
             if (this.selectedItemKeys.has(key)) {
                 this.selectedItemKeys.delete(key);
