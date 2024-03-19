@@ -10,8 +10,8 @@ import React, {
     createRef,
 } from 'react';
 
-import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { Duration } from '@lib/time/duration';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
