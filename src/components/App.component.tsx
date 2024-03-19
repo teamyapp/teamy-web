@@ -79,7 +79,7 @@ import { DebugComponent } from './pages/Debug.component';
 import { InsightsComponent } from './pages/Insights.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { MarketplaceComponent } from './pages/Marketplace/Marketplace.component';
-import { PlanningComponent } from './pages/Planning/Planning.component';
+import { PlanningComponent } from './pages/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
 
@@ -347,14 +347,7 @@ export class AppComponent extends Component<Props, State> {
                                             router={this.router}
                                             pattern={planningRoutePattern}
                                         >
-                                            <PlanningComponent
-                                                deps={this.props.deps}
-                                                thirdPartyAppEventHubs={
-                                                    this.state
-                                                        .thirdPartyAppEventHubs
-                                                }
-                                                numActionColumns={1}
-                                            />
+                                            <PlanningComponent />
                                         </Route>
                                         <Route
                                             router={this.router}

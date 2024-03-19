@@ -10,8 +10,8 @@ import React, {
     createRef,
 } from 'react';
 
+import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
-import { Duration } from '@lib/time/duration';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -29,7 +29,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { ContextMenuComponent, MenuItem } from './ContextMenu.component';
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
-import { SelectOwnersPopupComponent } from './SelectOwnersPopupComponent';
+import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
 import { TaskLinkIconUI } from './TaskLinkIcon';
 import { UserProfileUI } from './UserProfile';
 import { dueDate, getUserShortName } from './format';
@@ -114,7 +114,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
     private getBoundingClientRect?: () => DOMRect;
     private readonly selectTaskOwnersPopupRef =
-        createRef<SelectOwnersPopupComponent>();
+        createRef<SelectTaskOwnersPopupComponent>();
     private readonly taskIdContextMenuRef = createRef<ContextMenuComponent>();
     private contextMenuItemViews: ContextMenuItemView[] = [];
     private contextMenuItemViewCleanups: CleanupFunc[] = [];
@@ -219,10 +219,10 @@ export class InlineTaskUI extends Component<Props, State> {
                         </div>
                     )}
                 </div>
-                <SelectOwnersPopupComponent
+                <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
-                    findOwnersAlignTargetBoundBox={
+                    findTaskOwnersAlignTargetBoundBox={
                         this.getBoundingClientRect
                     }
                     onClose={this.onTaskOwnersPopupClose}

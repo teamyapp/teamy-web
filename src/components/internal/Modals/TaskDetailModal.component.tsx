@@ -3,9 +3,9 @@ import React, { Component, MouseEvent, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
+import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 import { PubSub } from '@lib/pubSub/pubSub';
-import { Duration } from '@lib/time/duration';
 import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -22,7 +22,7 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { DurationInputUI } from '../DurationInput.ui';
-import { SelectOwnersPopupComponent } from '../SelectOwnersPopupComponent';
+import { SelectTaskOwnersPopupComponent } from '../SelectTaskOwnersPopupComponent';
 import { TaskLinkIconUI } from '../TaskLinkIcon';
 import { ThreadUI } from '../Thread';
 import { UserProfileUI } from '../UserProfile';
@@ -55,7 +55,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private getBoundingClientRect?: () => DOMRect;
     private readonly modalRef = createRef<ModalUI>();
     private readonly selectTaskOwnersPopupRef =
-        createRef<SelectOwnersPopupComponent>();
+        createRef<SelectTaskOwnersPopupComponent>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
     private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
@@ -272,9 +272,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         </div>
                     )}
                 </ModalUI>
-                <SelectOwnersPopupComponent
+                <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
-                    findOwnersAlignTargetBoundBox={
+                    findTaskOwnersAlignTargetBoundBox={
                         this.getBoundingClientRect
                     }
                     deps={this.props.deps}
