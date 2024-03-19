@@ -36,7 +36,6 @@ export function PhaseComponent(props: Props) {
         ctrlKeyPressedRef.current,
         selectedBacklogStoryIds,
     ));
-
     const phaseStorySelectorRef = useRef<ItemsSelector>(new ItemsSelector(
         ctrlKeyPressedRef.current,
         selectedPhaseStoryIds,

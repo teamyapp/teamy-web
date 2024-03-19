@@ -1,6 +1,3 @@
-
-
-
 export class ProjectStoryRelationState {
     constructor(
         public projectId: number,

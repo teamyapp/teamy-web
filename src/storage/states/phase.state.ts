@@ -1,6 +1,5 @@
 export type PhaseStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
 
-
 export class PhaseState {
     constructor(
         public id: number,

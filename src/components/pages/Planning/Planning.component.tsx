@@ -120,7 +120,6 @@ export function PlanningComponent(props: Props) {
                 >
                     <ProjectsComponent deps={props.deps} />
                 </Route>
-
                 <Route
                     router={props.deps.router}
                     pattern={projectRoutePattern}
@@ -143,7 +142,6 @@ export function PlanningComponent(props: Props) {
                         />
                     )}
                 </Route>
-
                 <Route
                     router={props.deps.router}
                     pattern={standaloneStoryRoutePattern}
@@ -162,7 +160,6 @@ export function PlanningComponent(props: Props) {
                         />
                     )}
                 </Route>
-
                 <Route
                     router={props.deps.router}
                     pattern={storyRoutePattern}
