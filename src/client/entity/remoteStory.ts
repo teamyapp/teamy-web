@@ -3,7 +3,6 @@ import { RemoteTask } from "./remoteTask";
 import { RemoteUser } from "./remoteUser";
 
 export type RemoteStoryStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
-
 export interface RemoteStory {
     id: string;
     name: string;

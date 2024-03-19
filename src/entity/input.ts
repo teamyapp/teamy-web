@@ -200,7 +200,6 @@ export interface UpdateAppVersionInput {
     status: AppVersionStatus;
 }
 
-
 export interface CreateStoryInput {
     name: string;
     ownerId: number;

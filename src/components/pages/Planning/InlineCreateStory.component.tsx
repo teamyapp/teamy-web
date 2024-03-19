@@ -25,7 +25,6 @@ export const InlineCreateStory: FC<Props> = (props) => {
         ownerId: props.initialOwnerId || 0,
     });
     let getBoundingClientRect: (() => DOMRect) | undefined = undefined;
-
     const [isSelectingOwner, setIsSelectingOwner] = useState(false);
     const owner =
         props.initialOwnerId &&
@@ -99,7 +98,6 @@ export const InlineCreateStory: FC<Props> = (props) => {
     };
 
     const selectOwnerPopupRef = useRef<SelectOwnersPopupComponent>(null);
-
     return (
         <>
             <div className={styles.Story}>

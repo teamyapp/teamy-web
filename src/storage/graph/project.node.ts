@@ -1,4 +1,3 @@
-
 import {Project} from "@core/entity/project";
 import { LocalStore } from "../syncer/localStore";
 import { ProjectState } from "../states/project.state";

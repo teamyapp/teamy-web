@@ -6,7 +6,6 @@ type KeyboardKey = 'Control' | 'Meta';
 
 const keyMap: Record<string, KeyboardKey> = {
     Control: 'Control',
-    Meta: 'Meta',
 };
 
 export interface InternalKeyboardEvent {
@@ -39,7 +38,6 @@ export class KeyBoardEventMonitor {
 
     private onKeyUp = (event: KeyboardEvent) => {
         let keyboardKey: KeyboardKey;
-
         if (!event.metaKey && this.isKeyHold('Meta')) {
             keyboardKey = 'Meta';
         } else {
@@ -67,12 +65,10 @@ export class KeyBoardEventMonitor {
             return;
         }
 
-        if (keyboardKey) {
-            this.holdKeySet.add(keyboardKey);
-            this.keyEventChan.put({
-                key: keyboardKey,
-                eventType: 'keydown',
-            });
-        }
+       this.holdKeySet.add(keyboardKey);
+       this.keyEventChan.put({
+           key: keyboardKey,
+           eventType: 'keydown',
+       });
     };
 }

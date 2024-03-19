@@ -1,6 +1,3 @@
-
-
-
 export class TeamProjectRelationState {
     public constructor(public teamId: number, public projectId: number) {}
 

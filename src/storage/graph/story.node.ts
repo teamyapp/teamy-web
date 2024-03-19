@@ -8,7 +8,6 @@ import { LocalStore } from '../syncer/localStore';
 import { TaskNode } from './task.node';
 import { UserNode } from './user.node';
 
-
 export class StoryNode implements Story {
     constructor(private localStore: LocalStore, private story: StoryState) {}
 
@@ -61,14 +60,12 @@ export class StoryNode implements Story {
                     return null
                 }
 
-
                 return new TaskNode(
                     this.localStore,
                     state.tasks[relation.taskId],
                 );
             }).filter((task) => task !== null) as Task[];
     }
-
 
     get totalTasks(): number {
         return this.tasks.length;

@@ -1,6 +1,3 @@
-
-
-
 export class ProjectPhaseRelationState {
     constructor(
         public projectId: number,

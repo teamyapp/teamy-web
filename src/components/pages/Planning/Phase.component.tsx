@@ -71,11 +71,6 @@ export function PhaseComponent(props: Props) {
             }
         })();
 
-        (async () => {
-            while(true) {
-
-            }
-        })();
     }, [])
 
 

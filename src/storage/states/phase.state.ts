@@ -1,6 +1,3 @@
-
-
-
 export type PhaseStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
 
 

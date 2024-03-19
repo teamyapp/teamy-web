@@ -9,9 +9,7 @@ export class ProjectState {
         public actualStartAt?: Date,
         public actualEndAt?: Date,
         public updatedAt?: Date,
-    ) {
-
-    }
+    ) {}
 
     static fromJson(json: any): ProjectState {
         return new ProjectState(

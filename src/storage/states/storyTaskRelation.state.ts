@@ -1,6 +1,3 @@
-
-
-
 export class StoryTaskRelationState {
     public constructor(public storyId: number, public taskId: number) {}
 
