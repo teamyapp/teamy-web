@@ -1,16 +1,15 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
-import { TaskDetailModalComponent } from 'components/internal/Modals/TaskDetailModal.component';
 import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
+import { Duration } from '@lib/entity/duration';
 import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
 import { Router } from '@lib/router/router';
 import { getPlatform } from '@lib/runtime/os';
-import { Duration } from '@lib/time/duration';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
@@ -23,7 +22,7 @@ import {
     needAttentionSectionId,
     upcomingSectionId,
 } from '@core/config/sections';
-import { taskPriorityOrder } from '@core/config/sortOrder';
+import { taskDeadlineOrder, taskPriorityOrder } from '@core/config/sortOrder';
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import * as filters from '@core/data/task.filter';
@@ -222,17 +221,18 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                if (this.isSelectionModePermanent) {
-                    continue;
-                }
-
-                const { eventType, key } = keyboardEvent;
+                const { key, eventType } = keyboardEvent;
                 const platform = getPlatform();
+
                 if (
-                    (platform === 'Mac' && key === 'Meta') ||
-                    (platform === 'Windows' && key === 'Control')
+                    (platform === 'Windows' && key === 'Control') ||
+                    (platform === 'Mac' && key === 'Meta')
                 ) {
                     if (['keydown', 'keyup'].includes(eventType)) {
+                        if (this.isSelectionModePermanent) {
+                            continue;
+                        }
+
                         this.setState({
                             allowMultiSelection: eventType === 'keydown',
                         });

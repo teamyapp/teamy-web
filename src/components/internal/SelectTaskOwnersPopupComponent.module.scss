@@ -1,0 +1,33 @@
+@import '../../libs/ui/styleguide/elevation';
+
+.SelectTaskOwnersPopup {
+    position: fixed;
+    float: left;
+    background-color: white;
+    overflow: visible;
+    z-index: 5000;
+    @include elevation(6);
+
+    &:focus {
+        outline: none;
+    }
+
+    .SelectTaskOwnerListHeader {
+        display: flex;
+        padding: 4px;
+        background-color: #424242;
+        --icon-color: white;
+        justify-content: flex-end;
+        --icon-size: 22px;
+
+        .CloseButton {
+            padding: 2px;
+            border-radius: 50%;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                cursor: pointer;
+            }
+        }
+    }
+}
