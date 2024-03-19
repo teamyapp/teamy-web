@@ -3,7 +3,6 @@ import { RouteInterceptorResult, Router } from '@lib/router/router';
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import {
     marketplaceDiscoverPath,
-    projectsPath,
     sprintTabPath,
     sprintsPath,
     teamsRoutePattern,
@@ -60,13 +59,6 @@ export function redirectToMarketplaceFallback(router: Router, teamId: number) {
         `redirectToMarketplaceFallback:${marketplaceDiscoverPath(teamId)}`,
     );
     router.navigateTo(marketplaceDiscoverPath(teamId), {
-        notifyRouteChange: true,
-    });
-}
-
-export function redirectToPlanningFallback(router: Router, teamId: number) {
-    console.log(`redirectToPlanningFallback:${projectsPath(teamId)}`);
-    router.navigateTo(projectsPath(teamId), {
         notifyRouteChange: true,
     });
 }

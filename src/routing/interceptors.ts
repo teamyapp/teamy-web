@@ -23,7 +23,6 @@ import {
     marketplaceRoutePattern,
     marketplaceRoutes,
     planningRoutePattern,
-    planningRoutes,
     publicRoutes,
     signUpRoutePattern,
     sprintTabPath,
@@ -41,7 +40,6 @@ import { signUpRedirectKey } from '../components/pages/SignUp.component';
 import { exactMatch, includePrefix } from './match';
 import {
     redirectToMarketplaceFallback,
-    redirectToPlanningFallback,
     redirectToSprintTabFallback,
     redirectToTeamsFallback,
 } from './redirect';
@@ -295,31 +293,6 @@ const sprintsRouteInterceptor = (
     };
 };
 
-
-const planningRoutesInterceptor = (
-    localStore: LocalStore,
-): RouteInterceptor => {
-    return async (
-        router: Router,
-        routeUpdate: RouteUpdate,
-    ): Promise<RouteInterceptorResult> => {
-        if (!routeUpdate.routePattern.startsWith(planningRoutePattern)) {
-            return {};
-        }
-
-        if (!includePrefix(planningRoutes, routeUpdate.routePattern)) {
-            redirectToPlanningFallback(router, localStore.getState().currTeamId!);
-            return {
-                isRedirected: true
-            }
-        }
-
-        return {};
-    };
-
-}
-
-
 const marketplaceRoutesInterceptor = (
     localStore: LocalStore,
 ): RouteInterceptor => {
@@ -363,7 +336,6 @@ export function addRouteInterceptors(
         ),
         sprintsRouteInterceptor(deps.localStore, deps.stateSyncer),
         marketplaceRoutesInterceptor(deps.localStore),
-        planningRoutesInterceptor(deps.localStore),
     ];
     interceptors.forEach((interceptor) => {
         deps.router.addRouteInterceptor(interceptor);
