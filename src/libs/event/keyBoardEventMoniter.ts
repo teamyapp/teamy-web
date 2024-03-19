@@ -32,7 +32,7 @@ export class KeyBoardEventMonitor {
         document.removeEventListener('keyup', this.onKeyUp);
     }
 
-    private isKeyHold(key: KeyboardKey): boolean {
+    public isKeyHold(key: KeyboardKey): boolean {
         return this.holdKeySet.has(key);
     }
 
@@ -65,10 +65,10 @@ export class KeyBoardEventMonitor {
             return;
         }
 
-       this.holdKeySet.add(keyboardKey);
-       this.keyEventChan.put({
-           key: keyboardKey,
-           eventType: 'keydown',
-       });
+        this.holdKeySet.add(keyboardKey);
+        this.keyEventChan.put({
+            key: keyboardKey,
+            eventType: 'keydown',
+        });
     };
 }

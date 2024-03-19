@@ -1,6 +1,5 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
-import { TaskDetailModalComponent } from 'components/internal/Modals/TaskDetailModal.component';
 import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -222,17 +221,18 @@ export class SprintsComponent extends Component<Props, State> {
                     return;
                 }
 
-                if (this.isSelectionModePermanent) {
-                    continue;
-                }
-
-                const { eventType, key } = keyboardEvent;
+                const { key, eventType } = keyboardEvent;
                 const platform = getPlatform();
+
                 if (
-                    (platform === 'Mac' && key === 'Meta') ||
-                    (platform === 'Windows' && key === 'Control')
+                    (platform === 'Windows' && key === 'Control') ||
+                    (platform === 'Mac' && key === 'Meta')
                 ) {
                     if (['keydown', 'keyup'].includes(eventType)) {
+                        if (this.isSelectionModePermanent) {
+                            continue;
+                        }
+
                         this.setState({
                             allowMultiSelection: eventType === 'keydown',
                         });

@@ -9,7 +9,6 @@ import { AppInstallationNode } from './appInstallation.node';
 import { InvitationNode } from './invitation.node';
 import { TaskNode } from './task.node';
 import { UserNode } from './user.node';
-import { ProjectNode } from './project.node';
 
 export class TeamNode implements Team {
     constructor(private localStore: LocalStore, private teamState: TeamState) {}
@@ -136,16 +135,5 @@ export class TeamNode implements Team {
         }
 
         return appInstallations;
-    }
-
-    public get projects(): ProjectNode[] {
-        const appState = this.localStore.getState();
-
-        return appState.teamProjectRelations.map(
-            relation => {
-                const project = appState.projects[relation.projectId];
-                return new ProjectNode(this.localStore, project);
-            }
-        )
     }
 }

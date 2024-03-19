@@ -4,7 +4,6 @@ import { TeamMember } from '@core/entity/teamMember';
 import { App } from './app';
 import { TeamAppInstallation } from './teamAppInstallation';
 import { User } from './user';
-import { Project } from './project';
 
 export interface Team {
     id: number;
@@ -17,5 +16,4 @@ export interface Team {
     activeSprint?: Sprint;
     managedApps: App[];
     appInstallations: TeamAppInstallation[];
-    projects: Project[];
 }

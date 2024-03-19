@@ -1,189 +1,266 @@
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
-import { TaskDetailModalComponent } from 'components/internal/Modals/TaskDetailModal.component';
-import { Fragment, useRef } from 'react';
+import classNames from 'classnames';
+import moment from 'moment';
+import { ReactElement, createRef, useState } from 'react';
 
-import { Route } from '@lib/router/Route';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
-import { Deps } from '@core/dep/deps';
-import {
-    getPhaseId,
-    getProjectId,
-    getStoryId,
-    phasePath,
-    phaseRoutePattern,
-    projectPath,
-    projectRoutePattern,
-    projectsPath,
-    projectsRoutePattern,
-    standaloneStoryRoutePattern,
-    storyRoutePattern,
-} from '@core/routing/routes';
-import { toInt } from '@core/storage/states/parser';
-
-import { PhaseComponent } from './Phase.component';
 import styles from './Planning.component.module.scss';
-import { ProjectComponent } from './Project.component';
-import { ProjectsComponent } from './Projects.component';
-import { StoryComponent } from './Story.component';
+import {
+    Row,
+    TimelineComponent,
+    TimelineComponentHandle,
+} from './Timeline.component';
 
-interface Props {
-    deps: Deps;
-    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
-    numActionColumns: number;
+type PhaseStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
+type StoryStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
+type Priority = 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW';
+
+interface Phase {
+    id: number;
+    name: string;
+    status: PhaseStatus;
+    expectedStartAt: Date;
+    actualStartAt?: Date;
+    expectedEndAt: Date;
+    actualEndAt?: Date;
+    creatorID: number;
+    totalStories: number;
+    deliveredStories: number;
+    createdAt: Date;
+    updatedAt?: Date;
 }
+
+interface Project {
+    id: number;
+    name: string;
+    expectedStartAt?: Date;
+    actualStartAt?: Date;
+    expectedEndAt?: Date;
+    actualEndAt?: Date;
+    creatorID: number;
+    createdAt: Date;
+    updatedAt?: Date;
+}
+
+interface Story {
+    id: number;
+    name: string;
+    ownerID: number;
+    status: StoryStatus;
+    priority?: Priority;
+    creatorID: number;
+    createdAt: Date;
+    updatedAt?: Date;
+}
+
+const phases: Phase[] = [
+    {
+        id: 1,
+        name: 'Discovery',
+        status: 'TODO',
+        expectedStartAt: moment('2024-03-01', 'YYYY-MM-DD').toDate(),
+        expectedEndAt: moment('2024-03-20', 'YYYY-MM-DD').toDate(),
+        creatorID: 1,
+        totalStories: 50,
+        deliveredStories: 6,
+        createdAt: new Date(),
+    },
+    {
+        id: 2,
+        name: 'Define & Hypothesize',
+        status: 'TODO',
+        expectedStartAt: moment('2024-03-07', 'YYYY-MM-DD').toDate(),
+        expectedEndAt: moment('2024-03-18', 'YYYY-MM-DD').toDate(),
+        creatorID: 1,
+        totalStories: 60,
+        deliveredStories: 10,
+        createdAt: new Date(),
+    },
+    {
+        id: 3,
+        name: 'Prototyping',
+        status: 'TODO',
+        expectedStartAt: moment('2024-03-15', 'YYYY-MM-DD').toDate(),
+        expectedEndAt: moment('2024-03-20', 'YYYY-MM-DD').toDate(),
+        creatorID: 1,
+        totalStories: 70,
+        deliveredStories: 15,
+        createdAt: new Date(),
+    },
+    {
+        id: 4,
+        name: 'Visual Design',
+        status: 'TODO',
+        expectedStartAt: moment('2024-03-04', 'YYYY-MM-DD').toDate(),
+        expectedEndAt: moment('2024-03-08', 'YYYY-MM-DD').toDate(),
+        creatorID: 1,
+        totalStories: 80,
+        deliveredStories: 20,
+        createdAt: new Date(),
+    },
+    {
+        id: 5,
+        name: 'Development',
+        status: 'TODO',
+        expectedStartAt: moment('2024-03-12', 'YYYY-MM-DD').toDate(),
+        expectedEndAt: moment('2024-03-15', 'YYYY-MM-DD').toDate(),
+        creatorID: 1,
+        totalStories: 90,
+        deliveredStories: 25,
+        createdAt: new Date(),
+    },
+    {
+        id: 6,
+        name: 'Launch',
+        status: 'TODO',
+        expectedStartAt: moment('2024-03-18', 'YYYY-MM-DD').toDate(),
+        expectedEndAt: moment('2024-03-22', 'YYYY-MM-DD').toDate(),
+        creatorID: 1,
+        totalStories: 100,
+        deliveredStories: 30,
+        createdAt: new Date(),
+    },
+];
 
 interface Level {
     name: string;
-    onClick?: () => void;
+    onClick: () => void;
 }
 
-export function PlanningComponent(props: Props) {
-    const currentTeam = props.deps.graphSource.currentTeam();
-    if (!currentTeam) {
-        return null;
-    }
-    // TODO: intercept the route and get the project, phase, and story
-    const routeUpdateParams = props.deps.router.currentRouteUpdate.params;
-    const projectId = toInt(getProjectId(routeUpdateParams));
-    const phaseId = toInt(getPhaseId(routeUpdateParams));
-    const storyId = toInt(getStoryId(routeUpdateParams));
+const startAt = moment('2023-12-19 00:00:00', 'YYYY-MM-DD hh:mm:ss').toDate();
+const endAt = moment('2024-04-10 23:59:59', 'YYYY-MM-DD hh:mm:ss').toDate();
+const location: Level[] = [
+    {
+        name: 'Projects',
+        onClick: () => {
+            console.log('Projects');
+        },
+    },
+    {
+        name: 'Project',
+        onClick: () => {
+            console.log('Project Name');
+        },
+    },
+];
 
-    const project = projectId && props.deps.graphSource.project(projectId);
-    const phase = phaseId ? props.deps.graphSource.phase(phaseId) : undefined;
-    const story = storyId && props.deps.graphSource.story(storyId);
+export function PlanningComponent() {
+    const timelineRef = createRef<TimelineComponentHandle>();
+    const [selectedPhaseIndex, setSelectedPhaseIndex] = useState<number>();
 
-    const taskDetailModalRef = useRef<TaskDetailModalComponent>(null);
-    const onViewTaskDetail = (taskId: number) => {
-        taskDetailModalRef.current?.open(taskId);
+    const rows: Row[] = phases.map((phase, index) => {
+        const ref = createRef<HTMLDivElement>();
+        return {
+            height: 70,
+            items: [
+                {
+                    ref,
+                    view: (
+                        <div key={index} className={styles.Phase} ref={ref}>
+                            <div className={styles.ProgressBar}>
+                                <div
+                                    className={styles.Progress}
+                                    style={{
+                                        width: `${
+                                            (phase.deliveredStories /
+                                                phase.totalStories) *
+                                            100
+                                        }%`,
+                                    }}
+                                />
+                            </div>
+                            <div className={styles.Name}>{phase.name}</div>
+                            <div className={styles.Status}>
+                                {phase.deliveredStories} of {phase.totalStories}{' '}
+                                stories delivered
+                            </div>
+                        </div>
+                    ),
+                    startAt: phase.expectedStartAt,
+                    endAt: phase.expectedEndAt,
+                },
+            ],
+        };
+    });
+
+    const renderPhase = (phase: Phase, index: number): ReactElement => {
+        return (
+            <div
+                key={index}
+                className={`${styles.Phase} ${classNames({
+                    [styles.Selected]: index === selectedPhaseIndex,
+                })}`}
+                onClick={onClickPhaseHandler(index)}
+            >
+                <div className={styles.Name}>{phase.name}</div>
+                <div className={styles.Status}>
+                    {phase.deliveredStories} of {phase.totalStories} stories
+                    delivered
+                </div>
+                <div className={styles.Duration}>
+                    {moment(phase.expectedStartAt).format('MMM DD')} -{' '}
+                    {moment(phase.expectedEndAt).format('MMM DD')}
+                </div>
+            </div>
+        );
     };
 
-    const location: Level[] = [
-        {
-            name: 'Projects',
-            onClick: () => {
-                props.deps.router.navigateTo(projectsPath(currentTeam.id));
-            },
-        },
-    ];
+    const onClickPhaseHandler = (phaseIndex: number) => {
+        return () => {
+            timelineRef.current?.showAndSelectItem(phaseIndex, 0);
+            setSelectedPhaseIndex(phaseIndex);
+        };
+    };
 
-    if (project) {
-        location.push({
-            name: project.name,
-            onClick: () => {
-                props.deps.router.navigateTo(
-                    projectPath(currentTeam.id, project.id),
-                );
-            },
-        });
-
-        if (phase) {
-            location.push({
-                name: phase.name,
-                onClick: () => {
-                    props.deps.router.navigateTo(
-                        phasePath(currentTeam.id, project.id, phase.id),
-                    );
-                },
-            });
-        }
-
-        if (story) {
-            location.push({
-                name: story.name,
-            });
-        }
-    }
+    const timelineItemSelect = (rowIndex: number, itemIndex: number) => {
+        setSelectedPhaseIndex(rowIndex);
+    };
 
     return (
         <div className={styles.Planning}>
             <div className={styles.Location}>
                 {location.map((level, index) => {
                     return (
-                        <Fragment key={`location-${index}`}>
-                            {index > 0 && <div className={styles.Separator} />}
+                        <>
+                            {index > 0 && (
+                                <div
+                                    key={`seperator-${index}`}
+                                    className={styles.Separator}
+                                />
+                            )}
                             <div
-                                key={index}
+                                key={`level-${index}`}
                                 className={styles.Level}
                                 onClick={level.onClick}
                             >
                                 {level.name}
                             </div>
-                        </Fragment>
+                        </>
                     );
                 })}
             </div>
-            <div className={styles.Content}>
-                <Route
-                    router={props.deps.router}
-                    pattern={projectsRoutePattern}
-                    exact
-                >
-                    <ProjectsComponent deps={props.deps} />
-                </Route>
-                <Route
-                    router={props.deps.router}
-                    pattern={projectRoutePattern}
-                    exact
-                >
-                    {project && (
-                        <ProjectComponent project={project} deps={props.deps} />
-                    )}
-                </Route>
-                <Route
-                    router={props.deps.router}
-                    pattern={phaseRoutePattern}
-                    exact
-                >
-                    {project && phase && (
-                        <PhaseComponent
-                            project={project}
-                            phase={phase}
-                            deps={props.deps}
-                        />
-                    )}
-                </Route>
-                <Route
-                    router={props.deps.router}
-                    pattern={standaloneStoryRoutePattern}
-                    exact
-                >
-                    {project && story && (
-                        <StoryComponent
-                            project={project}
-                            story={story}
-                            deps={props.deps}
-                            thirdPartyAppEventHubs={
-                                props.thirdPartyAppEventHubs
-                            }
-                            numActionColumns={props.numActionColumns}
-                            onViewTaskDetail={onViewTaskDetail}
-                        />
-                    )}
-                </Route>
-                <Route
-                    router={props.deps.router}
-                    pattern={storyRoutePattern}
-                    exact
-                >
-                    {project && story && phase && (
-                        <StoryComponent
-                            project={project}
-                            phase={phase}
-                            story={story}
-                            deps={props.deps}
-                            thirdPartyAppEventHubs={
-                                props.thirdPartyAppEventHubs
-                            }
-                            numActionColumns={props.numActionColumns}
-                            onViewTaskDetail={onViewTaskDetail}
-                        />
-                    )}
-                </Route>
+            <div className={styles.ProjectView}>
+                <div className={styles.PhaseListSection}>
+                    <div className={styles.TopBar}>
+                        <div className={styles.Title}>Phases</div>
+                        <div className={styles.Add}>
+                            <MaterialIconUI>add</MaterialIconUI>
+                        </div>
+                    </div>
+                    <div className={styles.PhaseList}>
+                        {phases.map(renderPhase)}
+                    </div>
+                </div>
+                <div className={styles.Timeline}>
+                    <TimelineComponent
+                        ref={timelineRef}
+                        startAt={startAt}
+                        endAt={endAt}
+                        rows={rows}
+                        onItemSelect={timelineItemSelect}
+                    />
+                </div>
             </div>
-            <TaskDetailModalComponent
-                ref={taskDetailModalRef}
-                deps={props.deps}
-            />
         </div>
     );
 }
