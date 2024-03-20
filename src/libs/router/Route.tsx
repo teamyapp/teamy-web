@@ -55,10 +55,9 @@ export class Route extends Component<Props, State> {
                     return;
                 }
 
-                const matchFunction = this.props.exact ? exactMatchWith : startsWith;
-
+                const matcher = this.props.exact ? exactMatchWith : startsWith;
                 if (
-                    !matchFunction(
+                    !matcher(
                         route.routePattern.split(pathDelimiter),
                         routePattern.split(pathDelimiter),
                     )
@@ -111,16 +110,3 @@ function startsWith(long: string[], prefix: string[]): boolean {
     return true;
 }
 
-function exactMatchWith(long: string[], prefix: string[]): boolean {
-    if (long.length !== prefix.length) {
-        return false;
-    }
-
-    for (let index = 0; index < prefix.length; index++) {
-        if (long[index] !== prefix[index]) {
-            return false;
-        }
-    }
-
-    return true;
-}

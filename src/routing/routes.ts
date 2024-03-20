@@ -45,8 +45,8 @@ export const planningRoutePattern = `${teamRoutePattern}/planning`;
 export const projectsRoutePattern = `${planningRoutePattern}/projects`;
 export const projectRoutePattern = `${projectsRoutePattern}/{${projectIdParam}}`;
 export const phaseRoutePattern = `${projectRoutePattern}/phases/{${phaseIdParam}}`;
-export const storyRoutePattern = `${phaseRoutePattern}/stories/{${storyIdParam}}`;
-export const standaloneStoryRoutePattern = `${projectRoutePattern}/stories/{${storyIdParam}}`;
+export const phaseStoryRoutePattern = `${phaseRoutePattern}/stories/{${storyIdParam}}`;
+export const projectStoryRoutePattern = `${projectRoutePattern}/stories/{${storyIdParam}}`;
 
 export const knowledgeRoutePattern = `${teamRoutePattern}/knowledge`;
 export const helpCenterRoutePattern = `${teamRoutePattern}/help-center`;
@@ -78,14 +78,14 @@ export const projectPath = (teamId: number, projectId: number) =>
     `/teams/${teamId}/planning/projects/${projectId}`;
 export const phasePath = (teamId: number, projectId: number, phaseId: number) =>
     `/teams/${teamId}/planning/projects/${projectId}/phases/${phaseId}`;
-export const storyPath = (
+export const phaseStoryPath = (
     teamId: number,
     projectId: number,
     phaseId: number,
     storyId: number,
 ) =>
     `/teams/${teamId}/planning/projects/${projectId}/phases/${phaseId}/stories/${storyId}`;
-export const standaloneStoryPath = (
+export const projectStoryPath = (
     teamId: number,
     projectId: number,
     storyId: number,

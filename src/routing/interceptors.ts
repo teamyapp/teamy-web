@@ -295,7 +295,6 @@ const sprintsRouteInterceptor = (
     };
 };
 
-
 const planningRoutesInterceptor = (
     localStore: LocalStore,
 ): RouteInterceptor => {
@@ -316,9 +315,7 @@ const planningRoutesInterceptor = (
 
         return {};
     };
-
 }
-
 
 const marketplaceRoutesInterceptor = (
     localStore: LocalStore,
