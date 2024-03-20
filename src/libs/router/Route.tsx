@@ -74,7 +74,6 @@ export class Route extends Component<Props, State> {
                     });
                     continue;
                 }
-
                 this.setState({
                     shouldShow: true,
                     params: route.params,
