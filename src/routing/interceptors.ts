@@ -6,6 +6,8 @@ import {
     RouteInterceptorResult,
     RouteUpdate,
     Router,
+    exactMatch,
+    includePrefix,
 } from '@lib/router/router';
 
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
@@ -38,7 +40,6 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { AppComponent } from '../components/App.component';
 import { signUpRedirectKey } from '../components/pages/SignUp.component';
-import { exactMatch, includePrefix } from './match';
 import {
     redirectToMarketplaceFallback,
     redirectToPlanningFallback,
