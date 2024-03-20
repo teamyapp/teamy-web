@@ -53,7 +53,6 @@ export class PhaseNode implements Phase {
 
     get stories(): StoryNode[] {
         const state = this.localStore.getState();
-
         return state.phaseStoryRelations
             .filter((relation) => relation.phaseId === this.phase.id)
             .map((relation) => {

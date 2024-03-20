@@ -85,5 +85,4 @@ export class ProjectNode implements Project {
     get deliveredPhases(): number {
         return this.phases.filter((phase) => phase.status === 'COMPLETED').length;
     }
-
 }

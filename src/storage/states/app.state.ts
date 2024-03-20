@@ -53,7 +53,7 @@ interface PersistedState {
     currSprintId?: number;
     currClientId?: number;
 
-    // for testing
+    // for testing during development
     storyTaskRelations: StoryTaskRelationState[];
     stories: Record<number, StoryState>;
     phases: Record<number, PhaseState>;
