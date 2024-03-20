@@ -6,8 +6,6 @@ import {
     RouteInterceptorResult,
     RouteUpdate,
     Router,
-    exactMatch,
-    includePrefix,
 } from '@lib/router/router';
 
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
@@ -46,6 +44,7 @@ import {
     redirectToSprintTabFallback,
     redirectToTeamsFallback,
 } from './redirect';
+import { includePrefix, exactMatch } from '@lib/router/matcher';
 
 const publicRoutesInterceptor: RouteInterceptor = async (
     router: Router,

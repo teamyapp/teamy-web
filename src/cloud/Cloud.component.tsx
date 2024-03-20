@@ -7,7 +7,7 @@ import {
     accessTokenParam,
 } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
-import { RouteUpdate, Router, exactMatch } from '@lib/router/router';
+import { RouteUpdate, Router } from '@lib/router/router';
 
 import { Deps } from '@core/dep/deps';
 import {
@@ -16,6 +16,7 @@ import {
 } from '@core/routing/routes';
 
 import { SignInComponent } from './identity/SignIn.component';
+import { exactMatch } from '@lib/router/matcher';
 
 interface Props {
     deps: Deps;
