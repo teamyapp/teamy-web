@@ -349,5 +349,3 @@ function withDefaults(options?: NavigateOptions): NavigateOptions {
 
     return newOptions;
 }
-
-

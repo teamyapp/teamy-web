@@ -1,6 +1,7 @@
 import { RefObject } from 'react';
 
 import { IdentityClient } from '@lib/identity/Identity.client';
+import { exactMatch, includePrefix } from '@lib/router/matcher';
 import {
     RouteInterceptor,
     RouteInterceptorResult,
@@ -44,7 +45,6 @@ import {
     redirectToSprintTabFallback,
     redirectToTeamsFallback,
 } from './redirect';
-import { includePrefix, exactMatch } from '@lib/router/matcher';
 
 const publicRoutesInterceptor: RouteInterceptor = async (
     router: Router,
@@ -307,15 +307,18 @@ const planningRoutesInterceptor = (
         }
 
         if (!includePrefix(planningRoutes, routeUpdate.routePattern)) {
-            redirectToPlanningFallback(router, localStore.getState().currTeamId!);
+            redirectToPlanningFallback(
+                router,
+                localStore.getState().currTeamId!,
+            );
             return {
-                isRedirected: true
-            }
+                isRedirected: true,
+            };
         }
 
         return {};
     };
-}
+};
 
 const marketplaceRoutesInterceptor = (
     localStore: LocalStore,

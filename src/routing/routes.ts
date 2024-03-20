@@ -26,7 +26,8 @@ export const getTags = (params?: Params): string[] => {
     const tagsString = params?.queryParams[tagsParam];
     return tagsString ? tagsString.split(',') : [];
 };
-export const getProjectId = (params?: Params) => params?.pathParams[projectIdParam];
+export const getProjectId = (params?: Params) =>
+    params?.pathParams[projectIdParam];
 export const getPhaseId = (params?: Params) => params?.pathParams[phaseIdParam];
 export const getStoryId = (params?: Params) => params?.pathParams[storyIdParam];
 
@@ -73,7 +74,8 @@ export const taskPath = (teamId: number, taskId: number) =>
     `${teamPath(teamId)}/tasks/${taskId}`;
 export const insightsPath = (teamId: number) => `/teams/${teamId}/insights`;
 export const planningPath = (teamId: number) => `/teams/${teamId}/planning`;
-export const projectsPath = (teamId: number) => `/teams/${teamId}/planning/projects`;
+export const projectsPath = (teamId: number) =>
+    `/teams/${teamId}/planning/projects`;
 export const projectPath = (teamId: number, projectId: number) =>
     `/teams/${teamId}/planning/projects/${projectId}`;
 export const phasePath = (teamId: number, projectId: number, phaseId: number) =>

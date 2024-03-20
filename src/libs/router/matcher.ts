@@ -1,4 +1,4 @@
-import { RouteUpdate } from "./router";
+import { RouteUpdate } from './router';
 
 export function exactMatch(routeUpdate: RouteUpdate, pattern: string): boolean {
     const suffixLength = routeUpdate.suffix?.length || 0;
