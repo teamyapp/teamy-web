@@ -140,8 +140,8 @@ export const planningRoutes = [
     projectsRoutePattern,
     projectRoutePattern,
     phaseRoutePattern,
-    storyRoutePattern,
-    standaloneStoryRoutePattern,
+    phaseStoryRoutePattern,
+    projectStoryRoutePattern,
 ];
 
 export const marketplaceRoutes = [

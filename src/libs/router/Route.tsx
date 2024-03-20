@@ -2,6 +2,7 @@ import React, { Component, ReactNode } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
+import { exactMatch } from '@core/routing/match';
 
 import {
     Errors,
@@ -55,9 +56,9 @@ export class Route extends Component<Props, State> {
                     return;
                 }
 
-                const matcher = this.props.exact ? exactMatchWith : startsWith;
                 if (
-                    !matcher(
+                    (this.props.exact && !exactMatch(route, routePattern)) ||
+                    !startsWith(
                         route.routePattern.split(pathDelimiter),
                         routePattern.split(pathDelimiter),
                     )
@@ -109,4 +110,3 @@ function startsWith(long: string[], prefix: string[]): boolean {
 
     return true;
 }
-
