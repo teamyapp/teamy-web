@@ -7,10 +7,10 @@ import {
     accessTokenParam,
 } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
+import { exactMatch } from '@lib/router/matcher';
 import { RouteUpdate, Router } from '@lib/router/router';
 
 import { Deps } from '@core/dep/deps';
-import { exactMatch } from '@core/routing/match';
 import {
     signInFinishRoutePattern,
     signInRoutePattern,

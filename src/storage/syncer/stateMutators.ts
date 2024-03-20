@@ -1092,7 +1092,11 @@ export function mergeAppInstallation(
     };
 
     if (remoteAppInstallation.activeAppVersion) {
-        mergeAppVersion(currAppState, remoteAppInstallation.activeAppVersion.app.id, remoteAppInstallation.activeAppVersion);
+        mergeAppVersion(
+            currAppState,
+            remoteAppInstallation.activeAppVersion.app.id,
+            remoteAppInstallation.activeAppVersion,
+        );
     }
 
     currAppState.appInstallations[remoteAppInstallationId] =
