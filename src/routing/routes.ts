@@ -9,9 +9,6 @@ const taskIdParam = 'taskId';
 const invitationIdParam = 'id';
 const invitationCodeParam = 'code';
 const tagsParam = 'tags';
-const projectIdParam = 'projectId';
-const phaseIdParam = 'phaseId';
-const storyIdParam = 'storyId';
 
 export const getTeamId = (params?: Params) => params?.pathParams[teamIdParam];
 export const getSprintId = (params?: Params) =>
@@ -26,9 +23,6 @@ export const getTags = (params?: Params): string[] => {
     const tagsString = params?.queryParams[tagsParam];
     return tagsString ? tagsString.split(',') : [];
 };
-export const getProjectId = (params?: Params) => params?.pathParams[projectIdParam];
-export const getPhaseId = (params?: Params) => params?.pathParams[phaseIdParam];
-export const getStoryId = (params?: Params) => params?.pathParams[storyIdParam];
 
 export const rootRoutePattern = '/';
 export const teamsRoutePattern = `${rootRoutePattern}teams`;
@@ -41,13 +35,6 @@ export const sprintRoutePattern = `${sprintsRoutePattern}/{${sprintIdParam}}`;
 export const sprintTabRoutePattern = `${sprintRoutePattern}/{${tabIdParam}}`;
 export const insightsRoutePattern = `${teamRoutePattern}/insights`;
 export const planningRoutePattern = `${teamRoutePattern}/planning`;
-
-export const projectsRoutePattern = `${planningRoutePattern}/projects`;
-export const projectRoutePattern = `${projectsRoutePattern}/{${projectIdParam}}`;
-export const phaseRoutePattern = `${projectRoutePattern}/phases/{${phaseIdParam}}`;
-export const storyRoutePattern = `${phaseRoutePattern}/stories/{${storyIdParam}}`;
-export const standaloneStoryRoutePattern = `${projectRoutePattern}/stories/{${storyIdParam}}`;
-
 export const knowledgeRoutePattern = `${teamRoutePattern}/knowledge`;
 export const helpCenterRoutePattern = `${teamRoutePattern}/help-center`;
 export const marketplaceRoutePattern = `${teamRoutePattern}/marketplace`;
@@ -73,23 +60,6 @@ export const taskPath = (teamId: number, taskId: number) =>
     `${teamPath(teamId)}/tasks/${taskId}`;
 export const insightsPath = (teamId: number) => `/teams/${teamId}/insights`;
 export const planningPath = (teamId: number) => `/teams/${teamId}/planning`;
-export const projectsPath = (teamId: number) => `/teams/${teamId}/planning/projects`;
-export const projectPath = (teamId: number, projectId: number) =>
-    `/teams/${teamId}/planning/projects/${projectId}`;
-export const phasePath = (teamId: number, projectId: number, phaseId: number) =>
-    `/teams/${teamId}/planning/projects/${projectId}/phases/${phaseId}`;
-export const storyPath = (
-    teamId: number,
-    projectId: number,
-    phaseId: number,
-    storyId: number,
-) =>
-    `/teams/${teamId}/planning/projects/${projectId}/phases/${phaseId}/stories/${storyId}`;
-export const standaloneStoryPath = (
-    teamId: number,
-    projectId: number,
-    storyId: number,
-) => `/teams/${teamId}/planning/projects/${projectId}/stories/${storyId}`;
 export const knowledgePath = (teamId: number) => `/teams/${teamId}/knowledge`;
 export const helpCenterPath = (teamId: number) =>
     `${teamPath(teamId)}/help-center`;
@@ -134,14 +104,6 @@ export const teamsRoutes = [
     invitationRoutePattern,
     marketplaceRoutePattern,
     taskRoutePattern,
-];
-
-export const planningRoutes = [
-    projectsRoutePattern,
-    projectRoutePattern,
-    phaseRoutePattern,
-    storyRoutePattern,
-    standaloneStoryRoutePattern,
 ];
 
 export const marketplaceRoutes = [

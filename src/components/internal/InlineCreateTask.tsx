@@ -16,7 +16,7 @@ import { CreateTaskInput } from '@core/entity/input';
 import { GraphSource } from '@core/storage/graph/graphSource';
 
 import styles from './InlineCreateTask.module.scss';
-import { SelectOwnersPopupComponent } from './SelectOwnersPopupComponent';
+import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
 import { UserProfileUI } from './UserProfile';
 import { getUserShortName } from './format';
 
@@ -37,7 +37,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
     private getBoundingClientRect?: () => DOMRect;
 
     private readonly selectTaskOwnersPopupRef =
-        createRef<SelectOwnersPopupComponent>();
+        createRef<SelectTaskOwnersPopupComponent>();
 
     constructor(props: Props) {
         super(props);
@@ -92,10 +92,10 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                         {this.renderAssignOwner()}
                     </div>
                 </div>
-                <SelectOwnersPopupComponent
+                <SelectTaskOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
-                    findOwnersAlignTargetBoundBox={
+                    findTaskOwnersAlignTargetBoundBox={
                         this.getBoundingClientRect
                     }
                     onClose={this.onTaskOwnersPopupClose}
