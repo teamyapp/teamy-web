@@ -56,10 +56,18 @@ export class Route extends Component<Props, State> {
                     return;
                 }
 
-                if (this.props.exact && !exactMatch(route, routePattern)) {
-                    this.setState({
-                        shouldShow: false,
-                    });
+                if (this.props.exact) {
+                    if (!exactMatch(route, routePattern)) {
+                        this.setState({
+                            shouldShow: false,
+                        });
+                    } else {
+                        this.setState({
+                            shouldShow: true,
+                            params: route.params,
+                        });
+                    }
+
                     continue;
                 }
 
