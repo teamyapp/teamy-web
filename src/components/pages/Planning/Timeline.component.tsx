@@ -87,6 +87,7 @@ interface Props {
 
 export interface TimelineComponentHandle {
     showAndSelectItem: (rowIndex: number, itemIndex: number) => void;
+    deselectItem: (rowIndex: number, itemIndex: number) => void;
 }
 
 export const TimelineComponent = forwardRef(
@@ -135,6 +136,9 @@ export const TimelineComponent = forwardRef(
                     rowIndex,
                     itemIndex,
                 });
+            },
+            deselectItem: (rowIndex: number, itemIndex: number) => {
+                setSelectedItem(undefined);
             },
         }));
 

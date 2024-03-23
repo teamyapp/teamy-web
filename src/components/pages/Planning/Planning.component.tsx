@@ -20,6 +20,7 @@ import {
 } from '@core/routing/routes';
 import { toInt } from '@core/storage/states/parser';
 
+import { ProjectComponent } from './Project.component';
 import { ProjectsComponent } from './Projects.component';
 import styles from './Planning.component.module.scss';
 
@@ -122,7 +123,9 @@ export function PlanningComponent(props: Props) {
                     pattern={projectRoutePattern}
                     exact
                 >
-                    project
+                    {project && (
+                        <ProjectComponent deps={props.deps} project={project} />
+                    )}
                 </Route>
                 <Route
                     router={props.deps.router}
