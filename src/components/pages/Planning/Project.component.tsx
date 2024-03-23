@@ -18,12 +18,12 @@ import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
 import { phasePath, projectStoryPath } from '@core/routing/routes';
 
-import styles from './Project.component.module.scss';
 import {
     Row,
     TimelineComponent,
     TimelineComponentHandle,
 } from './Timeline.component';
+import styles from './Project.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -34,7 +34,7 @@ const startAt = moment().subtract(1, 'months').toDate();
 const endAt = moment().add(1, 'months').toDate();
 
 export function ProjectComponent(props: Props) {
-    const [onEditingNewStoryInBacklog, setOnEditingNewStoryInBacklog] =
+    const [isEditingNewStoryInBacklog, setIsEditingNewStoryInBacklog] =
         useState(false);
     const timelineRef = useRef<TimelineComponentHandle>(null);
     const currentTeam = props.deps.graphSource.currentTeam();
@@ -113,14 +113,13 @@ export function ProjectComponent(props: Props) {
                 }
 
                 const { key, eventType } = keyboardEvent;
-
                 const platform = getPlatform();
                 if (
                     (platform === 'Mac' && key === 'Meta') ||
                     (platform === 'Windows' && key === 'Control')
                 ) {
                     if (['keydown', 'keyup'].includes(eventType)) {
-                        const keyPressed = eventType === 'keydown';
+                        const isKeyPressed = eventType === 'keydown';
                         ctrlKeyPressedRef.current = keyPressed;
                         storySelectorRef.current.setMultiSelectionEnabled(
                             keyPressed,
@@ -216,13 +215,13 @@ export function ProjectComponent(props: Props) {
                     delivered
                 </div>
                 <div className={styles.Duration}>
-                    {moment(phase.expectedStartAt).format('MMM DD')} -{' '}
+                    {moment(phase.expectedStartAt).format('MMM DD')}&nbsp;-&nbsp;
                     {moment(phase.expectedEndAt).format('MMM DD')}
                 </div>
             </div>
         );
     };
-    const onClickStoryDetailHandler = async (storyId: number) => {
+    const onStoryDetailClickHandler = async (storyId: number) => {
         await props.deps.stateSyncer.pullCurrentTeamTaskPreview({
             isPlanned: false,
         });
@@ -231,7 +230,7 @@ export function ProjectComponent(props: Props) {
         );
     };
 
-    const onDoubleClickPhaseHandler = (phaseId: number) => {
+    const onPhaseDoubleClickHandler = (phaseId: number) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
             props.deps.router.navigateTo(
@@ -240,7 +239,7 @@ export function ProjectComponent(props: Props) {
         };
     };
 
-    const timelineItemSelect = (rowIndex: number, itemIndex: number) => {
+    const onTimelineItemSelect = (rowIndex: number, itemIndex: number) => {
         phaseSelectorRef.current.selectItem(rowIndex.toString());
     };
 
@@ -249,10 +248,6 @@ export function ProjectComponent(props: Props) {
     };
 
     const onCreateStoryInBacklog = (story: CreateStoryInput) => {
-        // props.deps.stateSyncer.createStory(
-        //     props.deps.localStore.getState().currTeamId!,
-        //     story,
-        // );
         setOnEditingNewStoryInBacklog(false);
     };
 
@@ -312,26 +307,10 @@ export function ProjectComponent(props: Props) {
                 </div>
                 <div className={styles.StoryList}>
                     {onEditingNewStoryInBacklog && (
-                        // <InlineCreateStory
-                        //     deps={props.deps}
-                        //     onCreateStory={onCreateStoryInBacklog}
-                        //     onDiscardNewStory={onDiscardNewStoryInBacklog}
-                        // />
                         <></>
                     )}
                     {props.project.stories.map((story) => (
                         <div className={styles.ListItem} key={story.id}>
-                            {/* <StoryInlineItemComponent
-                                story={story}
-                                key={story.id}
-                                isSelected={selectedStoryIds.has(
-                                    story.id.toString(),
-                                )}
-                                onStorySelectHandler={onStorySelectHandler}
-                                onClickStoryDetailHandler={
-                                    onClickStoryDetailHandler
-                                }
-                            /> */}
                         </div>
                     ))}
                 </div>
