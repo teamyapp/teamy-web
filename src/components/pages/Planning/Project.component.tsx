@@ -8,6 +8,7 @@ import {
     useRef,
     useState,
 } from 'react';
+
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -18,12 +19,14 @@ import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
 import { phasePath, projectStoryPath } from '@core/routing/routes';
 
+import { InlineCreateStory } from './InlineCreateStory.component';
+import styles from './Project.component.module.scss';
+import { StoryInlineItemComponent } from './StoryInlineItem.component';
 import {
     Row,
     TimelineComponent,
     TimelineComponentHandle,
 } from './Timeline.component';
-import styles from './Project.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -215,7 +218,8 @@ export function ProjectComponent(props: Props) {
                     delivered
                 </div>
                 <div className={styles.Duration}>
-                    {moment(phase.expectedStartAt).format('MMM DD')}&nbsp;-&nbsp;
+                    {moment(phase.expectedStartAt).format('MMM DD')}
+                    &nbsp;-&nbsp;
                     {moment(phase.expectedEndAt).format('MMM DD')}
                 </div>
             </div>
@@ -307,10 +311,25 @@ export function ProjectComponent(props: Props) {
                 </div>
                 <div className={styles.StoryList}>
                     {isEditingNewStoryInBacklog && (
-                        <></>
+                        <InlineCreateStory
+                            deps={props.deps}
+                            onCreateStory={onCreateStoryInBacklog}
+                            onDiscardNewStory={onDiscardNewStoryInBacklog}
+                        />
                     )}
                     {props.project.stories.map((story) => (
                         <div className={styles.ListItem} key={story.id}>
+                            <StoryInlineItemComponent
+                                story={story}
+                                key={story.id}
+                                isSelected={selectedStoryIds.has(
+                                    story.id.toString(),
+                                )}
+                                onStorySelectHandler={onStorySelectHandler}
+                                onClickStoryDetailHandler={
+                                    onStoryDetailClickHandler
+                                }
+                            />
                         </div>
                     ))}
                 </div>

@@ -29,7 +29,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { ContextMenuComponent, MenuItem } from './ContextMenu.component';
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
-import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
+import { SelectOwnersPopupComponent } from './SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from './TaskLinkIcon';
 import { UserProfileUI } from './UserProfile';
 import { dueDate, getUserShortName } from './format';
@@ -114,7 +114,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
     private getBoundingClientRect?: () => DOMRect;
     private readonly selectTaskOwnersPopupRef =
-        createRef<SelectTaskOwnersPopupComponent>();
+        createRef<SelectOwnersPopupComponent>();
     private readonly taskIdContextMenuRef = createRef<ContextMenuComponent>();
     private contextMenuItemViews: ContextMenuItemView[] = [];
     private contextMenuItemViewCleanups: CleanupFunc[] = [];
@@ -219,10 +219,10 @@ export class InlineTaskUI extends Component<Props, State> {
                         </div>
                     )}
                 </div>
-                <SelectTaskOwnersPopupComponent
+                <SelectOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
-                    findTaskOwnersAlignTargetBoundBox={
+                    findOwnersAlignTargetBoundBox={
                         this.getBoundingClientRect
                     }
                     onClose={this.onTaskOwnersPopupClose}

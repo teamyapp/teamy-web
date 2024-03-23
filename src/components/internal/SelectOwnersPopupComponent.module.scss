@@ -1,6 +1,8 @@
 @import '../../libs/ui/styleguide/elevation';
 
-.SelectTaskOwnersPopup {
+.SelectOwnersPopup {
+    position: fixed;
+    float: left;
     background-color: white;
     float: left;
     overflow: visible;
@@ -12,7 +14,9 @@
         outline: none;
     }
 
-    .SelectTaskOwnerListHeader {
+    .SelectOwnerListHeader {
+        display: flex;
+        padding: 4px;
         background-color: #424242;
         --icon-color: white;
         display: flex;

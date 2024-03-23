@@ -1,0 +1,200 @@
+@import '../../../libs/ui/styleguide/elevation';
+@import '../../../libs/ui/styleguide/divider';
+
+$edgeSpace: 10px;
+$actionIconSize: 28px;
+
+@mixin actionIcon {
+    border-radius: 50%;
+    align-items: center;
+    display: flex;
+    --icon-color: white;
+}
+
+.InlineStory {
+    .Story {
+        border: 2px solid transparent;
+        @include elevation(4);
+        display: flex;
+        min-height: 80px;
+        padding: $edgeSpace;
+        border: 4px solid transparent;
+        border-radius: 6px;
+        background-color: white;
+        word-break: break-word;
+
+        &.Selected {
+           outline: 3px solid #ffc107;
+        }
+
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        .LeftSection {
+            padding-right: $edgeSpace;
+            flex: 1;
+
+            .Goal {
+                .Placeholder {
+                    color: #757575;
+                }
+            }
+
+            .TopRow {
+                display: flex;
+                height: 22px;
+                margin-bottom: 10px;
+                align-items: center;
+                gap: 6px;
+
+                .Attribute {
+                    display: flex;
+                    height: 100%;
+                    padding: 0 6px;
+                    border-radius: 4px;
+                    font-size: 14px;
+                    font-weight: 600;
+                    align-items: center;
+                }
+
+                .Id {
+                    background-color: #1976d2;
+                    color: white;
+                }
+
+                .Status {
+                    color: white;
+
+                    &.TODO {
+                        background-color: #1e88e5;
+                    }
+
+                    &.PAUSED {
+                        background-color: #7b1fa2;
+                    }
+
+                    &.IN_PROGRESS {
+                        background-color: #ff551b;
+                    }
+
+                    &.COMPLETED {
+                        background-color: #26882b;
+                    }
+                }
+
+                .Badge {
+                    color: white;
+                    &.TotalTasks {
+                        background-color: #cb6600;
+                    }
+
+                    &.CompletedTasks {
+                        background-color: #26882b;
+                    }
+                }
+            }
+
+            .CompletionStatus {
+                color: #757575;
+                font-size: 12px;
+                font-weight: bold;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                margin-top: 8px;
+            }
+
+            .BottomRow {
+                display: flex;
+                margin-top: 10px;
+                gap: 6px;
+
+                .Attribute {
+                    height: 25px;
+
+                    &.Priority {
+                        --drop-down-font-size: 14px;
+
+                        &.urgent {
+                            --drop-down-button-color: rgba(0, 0, 0, 0.12);
+                            --drop-down-color: #bb0600;
+                        }
+
+                        &.high {
+                            --drop-down-button-color: rgba(0, 0, 0, 0.1);
+                            --drop-down-color: #cb6600;
+                        }
+
+                        &.medium {
+                            --drop-down-button-color: rgba(0, 0, 0, 0.15);
+                            --drop-down-color: #1976d2;
+                        }
+
+                        &.low {
+                            --drop-down-button-color: rgba(0, 0, 0, 0.15);
+                            --drop-down-color: #038d08;
+                        }
+
+                        &.unset {
+                            --drop-down-color: #757575;
+                        }
+                    }
+                }
+            }
+        }
+
+        .ActionsSection {
+            display: grid;
+            padding-left: $edgeSpace;
+            border-left: 2px solid $dividerColor;
+            gap: 2px;
+            grid-auto-rows: min-content;
+            grid-template-columns: repeat(1, 1fr);
+
+            .AssignOwner {
+                --profile-height: #{$actionIconSize};
+                --profile-width: #{$actionIconSize};
+            }
+
+            .Action {
+                display: flex;
+                width: $actionIconSize;
+                height: $actionIconSize;
+                padding: 4px;
+                border-radius: 4px;
+                align-items: center;
+                --icon-box-size: #{$actionIconSize};
+                justify-content: center;
+                --icon-size: #{$actionIconSize};
+                user-select: none;
+
+                &.Active,
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.07);
+                }
+            }
+
+            .DeleteStoryIcon {
+                background-color: #e53935;
+                @include actionIcon;
+                --icon-size: #{$actionIconSize - 6px};
+            }
+
+            .ViewStoryDetailIcon {
+                background-color: #6d4c41;
+                @include actionIcon;
+                --icon-size: #{$actionIconSize - 12px};
+            }
+
+            .AssignOwnerIcon {
+                display: flex;
+                border-radius: 50%;
+                align-items: center;
+                --icon-color: #3d7bf6;
+                --icon-size: #{$actionIconSize + 4px};
+            }
+        }
+    }
+}
