@@ -7,10 +7,10 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 
 import { AppNode } from './app.node';
 import { AppVersionNode } from './appVersion.node';
-import { RolloutNode } from './rollout.node';
-import { StoryNode } from './story.node';
 import { PhaseNode } from './phase.node';
 import { ProjectNode } from './project.node';
+import { RolloutNode } from './rollout.node';
+import { StoryNode } from './story.node';
 
 export class GraphSource {
     constructor(private localStore: LocalStore) {}

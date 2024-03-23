@@ -1,6 +1,6 @@
-import { Priority } from "./priority";
-import { Task } from "./task";
-import { User } from "./user";
+import { Priority } from './priority';
+import { Task } from './task';
+import { User } from './user';
 
 export type StoryStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
 

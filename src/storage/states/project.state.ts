@@ -21,8 +21,8 @@ export class ProjectState {
             json.createdAt,
             json.actualStartAt,
             json.actualEndAt,
-            json.updatedAt
-        )
+            json.updatedAt,
+        );
     }
 
     static fromMutationPayload(json: any): ProjectState {
@@ -35,7 +35,7 @@ export class ProjectState {
             json.createdAt,
             json.actualStartAt,
             json.actualEndAt,
-            json.updatedAt
-        )
+            json.updatedAt,
+        );
     }
 }

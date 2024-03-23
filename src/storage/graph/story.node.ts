@@ -57,14 +57,15 @@ export class StoryNode implements Story {
             .map((relation) => {
                 const taskState = state.tasks[relation.taskId];
                 if (!taskState) {
-                    return null
+                    return null;
                 }
 
                 return new TaskNode(
                     this.localStore,
                     state.tasks[relation.taskId],
                 );
-            }).filter((task) => task !== null) as Task[];
+            })
+            .filter((task) => task !== null) as Task[];
     }
 
     get totalTasks(): number {

@@ -347,7 +347,14 @@ export class AppComponent extends Component<Props, State> {
                                             router={this.router}
                                             pattern={planningRoutePattern}
                                         >
-                                            <PlanningComponent />
+                                            <PlanningComponent
+                                                deps={this.props.deps}
+                                                thirdPartyAppEventHubs={
+                                                    this.state
+                                                        .thirdPartyAppEventHubs
+                                                }
+                                                numActionColumns={1}
+                                            />
                                         </Route>
                                         <Route
                                             router={this.router}
