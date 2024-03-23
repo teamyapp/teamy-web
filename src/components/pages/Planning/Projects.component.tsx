@@ -8,12 +8,12 @@ import { Deps } from '@core/dep/deps';
 import { Project } from '@core/entity/project';
 import { projectPath } from '@core/routing/routes';
 
-import styles from './Projects.component.module.scss';
 import {
     Row,
     TimelineComponent,
     TimelineComponentHandle,
 } from './Timeline.component';
+import styles from './Projects.component.module.scss';
 
 interface Props {
     deps: Deps;

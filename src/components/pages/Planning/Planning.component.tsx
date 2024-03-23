@@ -20,8 +20,8 @@ import {
 } from '@core/routing/routes';
 import { toInt } from '@core/storage/states/parser';
 
-import styles from './Planning.component.module.scss';
 import { ProjectsComponent } from './Projects.component';
+import styles from './Planning.component.module.scss';
 
 interface Props {
     deps: Deps;
