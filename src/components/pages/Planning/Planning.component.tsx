@@ -15,16 +15,14 @@ import {
     projectRoutePattern,
     projectsPath,
     projectsRoutePattern,
-    standaloneStoryRoutePattern,
-    storyRoutePattern,
+    phaseStoryRoutePattern,
+    projectStoryRoutePattern,
 } from '@core/routing/routes';
 import { toInt } from '@core/storage/states/parser';
 
-import { PhaseComponent } from './Phase.component';
+
 import styles from './Planning.component.module.scss';
-import { ProjectComponent } from './Project.component';
 import { ProjectsComponent } from './Projects.component';
-import { StoryComponent } from './Story.component';
 
 interface Props {
     deps: Deps;
@@ -125,59 +123,29 @@ export function PlanningComponent(props: Props) {
                     pattern={projectRoutePattern}
                     exact
                 >
-                    {project && (
-                        <ProjectComponent project={project} deps={props.deps} />
-                    )}
+                    
+                    project
                 </Route>
                 <Route
                     router={props.deps.router}
                     pattern={phaseRoutePattern}
                     exact
                 >
-                    {project && phase && (
-                        <PhaseComponent
-                            project={project}
-                            phase={phase}
-                            deps={props.deps}
-                        />
-                    )}
+                    phase
                 </Route>
                 <Route
                     router={props.deps.router}
-                    pattern={standaloneStoryRoutePattern}
+                    pattern={projectStoryRoutePattern}
                     exact
                 >
-                    {project && story && (
-                        <StoryComponent
-                            project={project}
-                            story={story}
-                            deps={props.deps}
-                            thirdPartyAppEventHubs={
-                                props.thirdPartyAppEventHubs
-                            }
-                            numActionColumns={props.numActionColumns}
-                            onViewTaskDetail={onViewTaskDetail}
-                        />
-                    )}
+                    story
                 </Route>
                 <Route
                     router={props.deps.router}
-                    pattern={storyRoutePattern}
+                    pattern={phaseStoryRoutePattern}
                     exact
                 >
-                    {project && story && phase && (
-                        <StoryComponent
-                            project={project}
-                            phase={phase}
-                            story={story}
-                            deps={props.deps}
-                            thirdPartyAppEventHubs={
-                                props.thirdPartyAppEventHubs
-                            }
-                            numActionColumns={props.numActionColumns}
-                            onViewTaskDetail={onViewTaskDetail}
-                        />
-                    )}
+                    story
                 </Route>
             </div>
             <TaskDetailModalComponent
