@@ -1,6 +1,6 @@
-import { RemotePriority } from "./remotePriority";
-import { RemoteTask } from "./remoteTask";
-import { RemoteUser } from "./remoteUser";
+import { RemotePriority } from './remotePriority';
+import { RemoteTask } from './remoteTask';
+import { RemoteUser } from './remoteUser';
 
 export type RemoteStoryStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
 

@@ -39,9 +39,9 @@
                     --icon-size: 24px;
 
                     &:hover {
+                        cursor: pointer;
                         background-color: #ff5722;
                         --icon-color: white;
-                        cursor: pointer;
                     }
                 }
             }

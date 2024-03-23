@@ -1,9 +1,10 @@
-import {Project} from "@core/entity/project";
-import { LocalStore } from "../syncer/localStore";
-import { ProjectState } from "../states/project.state";
-import { UserNode } from "./user.node";
-import { PhaseNode } from "./phase.node";
-import { StoryNode } from "./story.node";
+import { Project } from '@core/entity/project';
+
+import { ProjectState } from '../states/project.state';
+import { LocalStore } from '../syncer/localStore';
+import { PhaseNode } from './phase.node';
+import { StoryNode } from './story.node';
+import { UserNode } from './user.node';
 
 export class ProjectNode implements Project {
     constructor(
@@ -83,6 +84,7 @@ export class ProjectNode implements Project {
     }
 
     get deliveredPhases(): number {
-        return this.phases.filter((phase) => phase.status === 'COMPLETED').length;
+        return this.phases.filter((phase) => phase.status === 'COMPLETED')
+            .length;
     }
 }

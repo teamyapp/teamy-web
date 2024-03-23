@@ -1,5 +1,5 @@
-import { Story } from "./story";
-import { User } from "./user";
+import { Story } from './story';
+import { User } from './user';
 
 export type PhaseStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
 

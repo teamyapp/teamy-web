@@ -11,18 +11,17 @@ import {
     getStoryId,
     phasePath,
     phaseRoutePattern,
+    phaseStoryRoutePattern,
     projectPath,
     projectRoutePattern,
+    projectStoryRoutePattern,
     projectsPath,
     projectsRoutePattern,
-    phaseStoryRoutePattern,
-    projectStoryRoutePattern,
 } from '@core/routing/routes';
 import { toInt } from '@core/storage/states/parser';
 
-
-import { ProjectsComponent } from './Projects.component';
 import styles from './Planning.component.module.scss';
+import { ProjectsComponent } from './Projects.component';
 
 interface Props {
     deps: Deps;
@@ -40,7 +39,7 @@ export function PlanningComponent(props: Props) {
     if (!currentTeam) {
         return null;
     }
-    
+
     // TODO: intercept the route and get the project, phase, and story
     const routeUpdateParams = props.deps.router.currentRouteUpdate.params;
     const projectId = toInt(getProjectId(routeUpdateParams));

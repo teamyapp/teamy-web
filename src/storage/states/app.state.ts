@@ -40,11 +40,11 @@ import { StoryTaskRelationState } from './storyTaskRelation.state';
 import { TagState } from './tag.state';
 import { TaskLinkState } from './taskLink.state';
 import { TeamAppVersionState } from './teamAppVersion.state';
+import { TeamProjectRelationState } from './teamProjectRelation.state';
 import {
     VersionSelectorState,
     VersionSelectorVersionRelationState,
 } from './versionSelector.state';
-import { TeamProjectRelationState } from './teamProjectRelation.state';
 
 interface PersistedState {
     teamSelectedSprint: Record<number, number>;
@@ -89,7 +89,7 @@ export class AppState {
     public stories: Record<number, StoryState> = {};
     public phases: Record<number, PhaseState> = {};
     public projects: Record<number, ProjectState> = {};
-    public teamProjectRelations: TeamProjectRelationState[] = []
+    public teamProjectRelations: TeamProjectRelationState[] = [];
     public projectPhaseRelations: ProjectPhaseRelationState[] = [];
     public projectStoryRelations: ProjectStoryRelationState[] = [];
     public phaseStoryRelations: PhaseStoryRelationState[] = [];
@@ -181,7 +181,7 @@ export class AppState {
                 {
                     teamId: 1,
                     projectId: 6,
-                },  
+                },
             ],
             storyTaskRelations: [
                 {
@@ -399,7 +399,7 @@ export class AppState {
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
-                4 : {
+                4: {
                     id: 4,
                     name: 'project 4',
                     expectedStartAt: moment(
@@ -411,7 +411,7 @@ export class AppState {
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 },
-                5 : {
+                5: {
                     id: 5,
                     name: 'project 5',
                     expectedStartAt: moment(
@@ -434,7 +434,7 @@ export class AppState {
                     creatorId: 1,
                     createdAt: new Date(),
                     updatedAt: new Date(),
-                }
+                },
             },
             projectPhaseRelations: [
                 {

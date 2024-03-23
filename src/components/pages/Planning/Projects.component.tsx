@@ -2,13 +2,18 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { FC, ReactElement, createRef, useRef, useState } from 'react';
 
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
 import { Deps } from '@core/dep/deps';
 import { Project } from '@core/entity/project';
 import { projectPath } from '@core/routing/routes';
 
 import styles from './Projects.component.module.scss';
-import { Row, TimelineComponent, TimelineComponentHandle } from './Timeline.component';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import {
+    Row,
+    TimelineComponent,
+    TimelineComponentHandle,
+} from './Timeline.component';
 
 interface Props {
     deps: Deps;
@@ -67,8 +72,8 @@ export const ProjectsComponent: FC<Props> = (props) => {
                 className={`${styles.Project} ${classNames({
                     [styles.Selected]: index === selectedProjectIndex,
                 })}`}
-                onDoubleClick={onDoubleClickProjectHandler(project.id)}
-                onClick={onClickProjectHandler(index)}
+                onDoubleClick={onProjectDoubleClickHandler(project.id)}
+                onClick={onProjectClickHandler(index)}
             >
                 <div className={styles.Name}>{project.name}</div>
                 <div className={styles.Status}>
@@ -76,21 +81,21 @@ export const ProjectsComponent: FC<Props> = (props) => {
                     delivered
                 </div>
                 <div className={styles.Duration}>
-                    {moment(project.expectedStartAt).format('MMM DD')} -{' '}
+                    {moment(project.expectedStartAt).format('MMM DD')}&nbsp;-&nbsp;
                     {moment(project.expectedEndAt).format('MMM DD')}
                 </div>
             </div>
         );
     };
 
-    const onClickProjectHandler = (projectIndex: number) => {
+    const onProjectClickHandler = (projectIndex: number) => {
         return () => {
             timelineRef.current?.showAndSelectItem(projectIndex, 0);
             setSelectedProjectIndex(projectIndex);
         };
     };
 
-    const onDoubleClickProjectHandler = (projectId: number) => {
+    const onProjectDoubleClickHandler = (projectId: number) => {
         return () => {
             props.deps.router.navigateTo(
                 projectPath(currentTeam.id, projectId),
@@ -98,7 +103,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
         };
     };
 
-    const timelineItemSelect = (rowIndex: number, itemIndex: number) => {
+    const onTimelineItemSelect = (rowIndex: number, itemIndex: number) => {
         setSelectedProjectIndex(rowIndex);
     };
 
@@ -122,7 +127,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                         startAt={startAt}
                         endAt={endAt}
                         rows={rows}
-                        onItemSelect={timelineItemSelect}
+                        onItemSelect={onTimelineItemSelect}
                     />
                 </div>
             </div>

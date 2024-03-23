@@ -4,10 +4,10 @@ import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 import { RemoteApp } from './remoteApp';
 import { RemoteAppInstallation } from './remoteAppInstallation';
 import { RemoteInvitation } from './remoteInvitation';
+import { RemoteProject } from './remoteProject';
 import { RemoteTask } from './remoteTask';
 import { RemoteTaskActivity } from './remoteTaskActivity';
 import { RemoteUser } from './remoteUser';
-import { RemoteProject } from './remoteProject';
 
 export interface RemoteTeam {
     id: string;

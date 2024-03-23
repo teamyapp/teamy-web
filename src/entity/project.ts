@@ -1,6 +1,6 @@
-import { Phase } from "./phase";
-import { Story } from "./story";
-import { User } from "./user";
+import { Phase } from './phase';
+import { Story } from './story';
+import { User } from './user';
 
 export interface Project {
     id: number;

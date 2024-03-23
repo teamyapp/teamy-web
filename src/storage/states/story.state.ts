@@ -1,4 +1,4 @@
-import { toDate } from "./parser";
+import { toDate } from './parser';
 
 export type StoryStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
 export type Priority = 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW';

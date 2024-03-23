@@ -1,6 +1,6 @@
-import { RemotePhase } from "./remotePhase";
-import { RemoteStory } from "./remoteStory";
-import { RemoteUser } from "./remoteUser";
+import { RemotePhase } from './remotePhase';
+import { RemoteStory } from './remoteStory';
+import { RemoteUser } from './remoteUser';
 
 export interface RemoteProject {
     id: string;
