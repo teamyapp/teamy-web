@@ -54,7 +54,7 @@ const priorityOptions: Option[] = [
 
 export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponentProps> =
     (props: StoryInlineItemComponentProps) => {
-        // let getBoundingClientRect: (() => DOMRect) | undefined = undefined;
+        const getBindingClientRectRef = useRef<() => DOMRect>();
         const [isSelectingOwner, setIsSelectingOwner] = useState(false);
         const selectOwnerPopupRef = useRef<SelectOwnersPopupComponent>(null);
         const priorityStyle = toOptionKey(props.story.priority);
@@ -74,6 +74,9 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
             debugger;
             const element = event.currentTarget as HTMLDivElement;
             // getBoundingClientRect = element.getBoundingClientRect.bind(element);
+            getBindingClientRectRef.current = element.getBoundingClientRect.bind(
+                element,
+            );
 
             selectOwnerPopupRef.current?.show.call(null);
             setIsSelectingOwner(true);
@@ -206,7 +209,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                 <SelectOwnersPopupComponent
                     ref={selectOwnerPopupRef}
                     deps={props.deps}
-                    findOwnersAlignTargetBoundBox={getBoundingClientRect}
+                    findOwnersAlignTargetBoundBox={getBindingClientRectRef.current}
                     onClose={onStoryOwnersPopupClose}
                     onSelectOwner={onSelectStoryOwner}
                     selectedOwnerId={props.story.owner.id}
