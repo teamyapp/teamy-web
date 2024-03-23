@@ -1,9 +1,13 @@
 import classNames from 'classnames';
-import { FunctionComponent, MouseEvent } from 'react';
+import { SelectOwnersPopupComponent } from 'components/internal/SelectOwnersPopupComponent';
+import { getUserShortName } from 'components/internal/format';
+import { FunctionComponent, MouseEvent, useRef, useState } from 'react';
+
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
+import { Deps } from '@core/dep/deps';
 import { Priority } from '@core/entity/priority';
 import { Story, StoryStatus } from '@core/entity/story';
 
@@ -12,6 +16,7 @@ import styles from './StoryInlineStory.component.module.scss';
 
 interface StoryInlineItemComponentProps {
     story: Story;
+    deps: Deps;
     isSelected?: boolean;
     onClickStoryDetailHandler: (storyId: number) => void;
     onStorySelectHandler: (storyId: number) => void;
@@ -49,6 +54,9 @@ const priorityOptions: Option[] = [
 
 export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponentProps> =
     (props: StoryInlineItemComponentProps) => {
+        // let getBoundingClientRect: (() => DOMRect) | undefined = undefined;
+        const [isSelectingOwner, setIsSelectingOwner] = useState(false);
+        const selectOwnerPopupRef = useRef<SelectOwnersPopupComponent>(null);
         const priorityStyle = toOptionKey(props.story.priority);
         const handlePriorityChange = (optionKey: string) => {};
 
@@ -57,17 +65,69 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
             props.onClickStoryDetailHandler(props.story.id);
         };
 
-        const handleStoryClick = (event: MouseEvent ) => {
+        const handleStoryClick = (event: MouseEvent) => {
             event.stopPropagation();
             props.onStorySelectHandler(props.story.id);
-        }
+        };
+
+        const onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
+            debugger;
+            const element = event.currentTarget as HTMLDivElement;
+            // getBoundingClientRect = element.getBoundingClientRect.bind(element);
+
+            selectOwnerPopupRef.current?.show.call(null);
+            setIsSelectingOwner(true);
+        };
+
+        const onStoryOwnersPopupClose = () => {
+            setIsSelectingOwner(false);
+        };
+
+        const onSelectStoryOwner = (ownerId?: number) => {
+            setIsSelectingOwner(false);
+        };
+
+        const renderAssignOwner = () => {
+            const name = props.story.owner
+                ? getUserShortName(
+                      props.story.owner.firstName,
+                      props.story.owner.lastName,
+                  )
+                : 'Unassigned';
+            return (
+                <div className={styles.AssignOwner}>
+                    <TooltipUI message={name}>
+                        <div
+                            className={`${styles.Action} ${classNames({
+                                [styles.Active]: isSelectingOwner,
+                            })}`}
+                            onClick={onAssignOwnerClick}
+                        >
+                            <div className={styles.AssignOwnerIcon}>
+                                {props.story.owner ? (
+                                    <UserProfileUI user={props.story.owner} />
+                                ) : (
+                                    <MaterialIconUI>face</MaterialIconUI>
+                                )}
+                            </div>
+                        </div>
+                    </TooltipUI>
+                </div>
+            );
+        };
 
         return (
+            <>
                 <div>
-                    <div className={styles.InlineStory} onClick={handleStoryClick}>
-                        <div className={`${styles.Story} ${classNames({
-                            [styles.Selected]: props.isSelected,
-                        })}`}>
+                    <div
+                        className={styles.InlineStory}
+                        onClick={handleStoryClick}
+                    >
+                        <div
+                            className={`${styles.Story} ${classNames({
+                                [styles.Selected]: props.isSelected,
+                            })}`}
+                        >
                             <div className={styles.LeftSection}>
                                 <div className={styles.TopRow}>
                                     <div
@@ -122,30 +182,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                         </div>
                                     </div>
                                 </TooltipUI>
-
-                                <div className={styles.AssignOwner}>
-                                    <TooltipUI
-                                        message={props.story.owner.fullName}
-                                    >
-                                        <div className={styles.Action}>
-                                            <div
-                                                className={
-                                                    styles.AssignOwnerIcon
-                                                }
-                                            >
-                                                {props.story.owner ? (
-                                                    <UserProfileUI
-                                                        user={props.story.owner}
-                                                    />
-                                                ) : (
-                                                    <MaterialIconUI>
-                                                        face
-                                                    </MaterialIconUI>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </TooltipUI>
-                                </div>
+                                {renderAssignOwner()}
                                 <TooltipUI message={'Detail'}>
                                     <div
                                         className={styles.Action}
@@ -166,7 +203,15 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                         </div>
                     </div>
                 </div>
-
+                <SelectOwnersPopupComponent
+                    ref={selectOwnerPopupRef}
+                    deps={props.deps}
+                    findOwnersAlignTargetBoundBox={getBoundingClientRect}
+                    onClose={onStoryOwnersPopupClose}
+                    onSelectOwner={onSelectStoryOwner}
+                    selectedOwnerId={props.story.owner.id}
+                />
+            </>
         );
     };
 

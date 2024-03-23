@@ -61,7 +61,7 @@
         flex-direction: column;
         height: 100%;
         overflow: hidden;
-        padding: 0 10px;
+        padding:0 10px;
         width: 420px;
         z-index: 1;
 
@@ -76,15 +76,44 @@
                 font-weight: bold;
             }
 
-            .Add {
-                border-radius: 4px;
-                --icon-color: #e64a19;
-                --icon-size: 24px;
+            .Actions {
+                display: flex;
+                gap: 8px;
+                
+                .Add {
+                    border-radius: 4px;
+                    --icon-color: #e64a19;
+                    --icon-size: 24px;
 
-                &:hover {
-                    background-color: #e64a19;
-                    --icon-color: white;
-                    cursor: pointer;
+                    &:hover {
+                        background-color: #e64a19;
+                        --icon-color: white;
+                        cursor: pointer;
+                    }
+                }
+
+                .Move {
+                    border-radius: 4px;
+                    --icon-color: #388e3c;
+                    --icon-size: 24px;
+
+                    &:hover {
+                        background-color: #388e3c;
+                        --icon-color: white;
+                        cursor: pointer;
+                    }
+                }
+
+                .Delete {
+                    border-radius: 4px;
+                    --icon-color: #d32f2f;
+                    --icon-size: 24px;
+
+                    &:hover {
+                        background-color: #d32f2f;
+                        --icon-color: white;
+                        cursor: pointer;
+                    }
                 }
             }
         }
@@ -93,12 +122,10 @@
             box-sizing: border-box;
             flex: 1;
             overflow-y: scroll;
-            margin-top: 10px;
-            padding: 0 4px 4px 4px;
-
-            .ListItem:not(:first-child) {
-                margin-top: 10px;
-            }
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
     }
 }

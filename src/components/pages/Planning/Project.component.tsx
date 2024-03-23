@@ -200,7 +200,6 @@ export function ProjectComponent(props: Props) {
     });
 
     const renderPhase = (phase: Phase, index: number): ReactElement => {
-        debugger;
         return (
             <div
                 key={index}
@@ -322,6 +321,7 @@ export function ProjectComponent(props: Props) {
                             <StoryInlineItemComponent
                                 story={story}
                                 key={story.id}
+                                deps={props.deps}
                                 isSelected={selectedStoryIds.has(
                                     story.id.toString(),
                                 )}

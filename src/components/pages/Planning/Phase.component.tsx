@@ -219,6 +219,7 @@ export function PhaseComponent(props: Props) {
                         <div className={styles.InlineStory} key={story.id}>
                             <StoryInlineItemComponent
                                 story={story}
+                                deps={props.deps}
                                 isSelected={selectedPhaseStoryIds.has(
                                     story.id.toString(),
                                 )}
@@ -235,11 +236,13 @@ export function PhaseComponent(props: Props) {
             <div className={styles.StoryListSection}>
                 <div className={styles.TopBar}>
                     <div className={styles.Title}>Stories</div>
-                    <div
-                        className={styles.Add}
-                        onClick={onAddStoryInBacklogClick}
-                    >
-                        <MaterialIconUI>add</MaterialIconUI>
+                    <div className={styles.Actions}>
+                        <div
+                            className={styles.Add}
+                            onClick={onAddStoryInBacklogClick}
+                        >
+                            <MaterialIconUI>add</MaterialIconUI>
+                        </div>
                     </div>
                 </div>
                 <div className={styles.StoryList}>
@@ -254,6 +257,7 @@ export function PhaseComponent(props: Props) {
                         <div key={story.id} className={styles.ListItem}>
                             <StoryInlineItemComponent
                                 story={story}
+                                deps={props.deps}
                                 isSelected={selectedBacklogStoryIds.has(
                                     story.id.toString(),
                                 )}

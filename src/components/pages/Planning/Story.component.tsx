@@ -173,11 +173,13 @@ export function StoryComponent(props: Props) {
             <div className={styles.TaskListSection}>
                 <div className={styles.TopBar}>
                     <div className={styles.Title}>Tasks</div>
-                    <div
-                        className={styles.Add}
-                        onClick={onAddTaskInBacklogClick}
-                    >
-                        <MaterialIconUI>add</MaterialIconUI>
+                    <div className={styles.Actions}>
+                        <div
+                            className={styles.Add}
+                            onClick={onAddTaskInBacklogClick}
+                        >
+                            <MaterialIconUI>add</MaterialIconUI>
+                        </div>
                     </div>
                 </div>
                 <div className={styles.TaskList}>

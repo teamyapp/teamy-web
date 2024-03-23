@@ -29,6 +29,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
     const owner =
         props.initialOwnerId &&
         props.deps.graphSource.user(props.initialOwnerId);
+    const selectOwnerPopupRef = useRef<SelectOwnersPopupComponent>(null);
 
     const onNameChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setStory({
@@ -97,7 +98,6 @@ export const InlineCreateStory: FC<Props> = (props) => {
         );
     };
 
-    const selectOwnerPopupRef = useRef<SelectOwnersPopupComponent>(null);
     return (
         <>
             <div className={styles.Story}>
