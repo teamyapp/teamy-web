@@ -12,7 +12,7 @@ import { Priority } from '@core/entity/priority';
 import { Story, StoryStatus } from '@core/entity/story';
 
 import { UserProfileUI } from '../../internal/UserProfile';
-import styles from './StoryInlineStory.component.module.scss';
+import styles from './StoryInlineItem.component.module.scss';
 
 interface StoryInlineItemComponentProps {
     story: Story;

@@ -19,6 +19,7 @@ interface Props {
     relativeLayout: RelativeLayout;
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     sectionId: string;
+    isSelected?: boolean;
     task: Task;
     currentClientId?: number;
     filterTaskAction?: (action: TaskAction) => boolean;
@@ -30,6 +31,7 @@ interface Props {
     onDeleteTask?: (taskId: number) => void;
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
+    onTaskSelectHandler?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
 }
 
@@ -45,6 +47,7 @@ export class TaskListItem extends Component<Props> {
                 <InlineTaskUI
                     deps={this.props.deps}
                     relativeLayout={this.props.relativeLayout}
+                    isSelected={this.props.isSelected}
                     task={this.props.task}
                     currentClientId={this.props.currentClientId}
                     filterTaskAction={this.props.filterTaskAction}
@@ -57,6 +60,7 @@ export class TaskListItem extends Component<Props> {
                     onCompleteTask={this.props.onCompleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}
                     onReportTaskBlocked={this.props.onReportTaskBlocked}
+                    onTaskSelectHandler={this.props.onTaskSelectHandler}
                     onStartEditingTask={this.onStartEditingTask}
                     onFinishEditingTask={this.onFinishEditingTask}
                 />

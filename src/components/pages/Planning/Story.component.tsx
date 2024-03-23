@@ -3,6 +3,8 @@ import { InlineCreateTaskUI } from 'components/internal/InlineCreateTask';
 import { TaskListItem } from 'components/internal/TaskListSections/TaskListItem';
 import { useEffect, useRef, useState } from 'react';
 
+import { ItemsSelector } from '@lib/collections/itemSelector';
+import { getPlatform } from '@lib/runtime/os';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
@@ -38,8 +40,31 @@ export function StoryComponent(props: Props) {
     const currentClientId = props.deps.localStore.getState().currClientId;
     const unplannedTasksRef = useRef<Task[]>([]);
     const [unplannedTasks, setUnplannedTasks] = useState<Task[]>([]);
+    const [selectBacklogTaskIds, setSelectBacklogTaskIds] = useState<
+        Set<string>
+    >(new Set());
+
+    const [selectStoryTaskIds, setSelectStoryTaskIds] = useState<Set<string>>(
+        new Set(),
+    );
+    const selectBacklogTaskIdsRef = useRef(selectBacklogTaskIds);
+    const selectStoryTaskIdsRef = useRef(selectStoryTaskIds);
+    const ctrlKeyPressedRef = useRef(false);
+    const backlogTaskSelectorRef = useRef<ItemsSelector>(
+        new ItemsSelector(ctrlKeyPressedRef.current, selectBacklogTaskIds),
+    );
+
+    const storyTaskSelectorRef = useRef<ItemsSelector>(
+        new ItemsSelector(ctrlKeyPressedRef.current, selectStoryTaskIds),
+    );
 
     useEffect(() => {
+        const selectedBacklogTaskChan =
+            backlogTaskSelectorRef.current.subscribeSelectedItemsChanged();
+        const selectedStoryTaskChan =
+            storyTaskSelectorRef.current.subscribeSelectedItemsChanged();
+        const keyBoardEventChan = props.deps.keyBoardEventMonitor.subscribe();
+
         const stateChangeChan = props.deps.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -61,9 +86,81 @@ export function StoryComponent(props: Props) {
                     unplannedTasksRef.current = tasks;
                 }
             }
-        })().then();
+        })();
+
+        (async () => {
+            while (true) {
+                const selectedBacklogTaskIds =
+                    await selectedBacklogTaskChan.pop();
+                if (selectedBacklogTaskIds === undefined) {
+                    return;
+                }
+
+                if (
+                    selectedBacklogTaskIds.size > 0 &&
+                    selectStoryTaskIdsRef.current.size > 0
+                ) {
+                    await storyTaskSelectorRef.current.reset();
+                }
+
+                const updatedSelectedPhases = new Set(selectedBacklogTaskIds);
+                setSelectBacklogTaskIds(updatedSelectedPhases);
+                selectBacklogTaskIdsRef.current = updatedSelectedPhases;
+            }
+        })();
+
+        (async () => {
+            while (true) {
+                const selectedStoryTaskIds = await selectedStoryTaskChan.pop();
+                if (selectedStoryTaskIds === undefined) {
+                    return;
+                }
+
+                if (
+                    selectedStoryTaskIds.size > 0 &&
+                    selectBacklogTaskIdsRef.current.size > 0
+                ) {
+                    await backlogTaskSelectorRef.current.reset();
+                }
+
+                const updatedSelectedPhases = new Set(selectedStoryTaskIds);
+                setSelectStoryTaskIds(updatedSelectedPhases);
+                selectStoryTaskIdsRef.current = updatedSelectedPhases;
+            }
+        })();
+
+        (async () => {
+            while (true) {
+                console.log(`[StoryComponent] waiting for keyboard event`);
+                const keyboardEvent = await keyBoardEventChan.pop();
+                if (keyboardEvent === undefined) {
+                    return;
+                }
+
+                const { key, eventType } = keyboardEvent;
+                const platform = getPlatform();
+                if (
+                    (platform === 'Mac' && key === 'Meta') ||
+                    (platform === 'Windows' && key === 'Control')
+                ) {
+                    if (['keydown', 'keyup'].includes(eventType)) {
+                        const isKeyPressed = eventType === 'keydown';
+                        ctrlKeyPressedRef.current = isKeyPressed;
+                        backlogTaskSelectorRef.current.setMultiSelectionEnabled(
+                            isKeyPressed,
+                        );
+                        storyTaskSelectorRef.current.setMultiSelectionEnabled(
+                            isKeyPressed,
+                        );
+                    }
+                }
+            }
+        })();
 
         return () => {
+            backlogTaskSelectorRef.current.dispose();
+            storyTaskSelectorRef.current.dispose();
+            keyBoardEventChan.close();
             stateChangeChan?.close();
         };
     }, []);
@@ -87,6 +184,15 @@ export function StoryComponent(props: Props) {
     const onAddTaskInStoryClick = () => {
         setOnEditingNewTaskInStory(true);
     };
+
+    const onBacklogTaskSelectHandler = (taskId: number) => {
+        debugger
+        backlogTaskSelectorRef.current.selectItem(taskId.toString());
+    }
+
+    const onStoryTaskSelectHandler = (taskId: number) => {
+        storyTaskSelectorRef.current.selectItem(taskId.toString());
+    }
 
     const onCreateTaskInBacklog = (task: CreateTaskInput) => {
         props.deps.stateSyncer.createTask(
@@ -151,6 +257,8 @@ export function StoryComponent(props: Props) {
                                 relativeLayout={props.deps.relativeLayout}
                                 task={task}
                                 currentClientId={currentClientId}
+                                isSelected={selectStoryTaskIds.has(task.id.toString())}
+                                onTaskSelectHandler={onStoryTaskSelectHandler}
                                 filterTaskAction={filterTaskAction}
                                 numActionColumns={props.numActionColumns}
                                 showStatus={true}
@@ -199,6 +307,8 @@ export function StoryComponent(props: Props) {
                                 dragAndDropController={
                                     props.deps.dragAndDropController
                                 }
+                                onTaskSelectHandler={onBacklogTaskSelectHandler}
+                                isSelected={selectBacklogTaskIds.has(task.id.toString())}
                                 currentClientId={currentClientId}
                                 task={task}
                                 numActionColumns={1}

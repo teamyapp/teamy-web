@@ -24,6 +24,10 @@ $draggingColor: #00897b;
             border-radius: 6px 6px 0px 6px;
         }
 
+        &.IsSelected {
+            outline: 3px solid #ffc107;
+        }
+
         .LeftSection {
             .Goal {
                 @include goalText;
