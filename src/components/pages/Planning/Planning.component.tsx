@@ -48,7 +48,7 @@ export function PlanningComponent(props: Props) {
     const storyId = toInt(getStoryId(routeUpdateParams));
 
     const project = projectId && props.deps.graphSource.project(projectId);
-    const phase = phaseId ? props.deps.graphSource.phase(phaseId) : undefined;
+    const phase = phaseId && props.deps.graphSource.phase(phaseId);
     const story = storyId && props.deps.graphSource.story(storyId);
 
     const taskDetailModalRef = useRef<TaskDetailModalComponent>(null);
