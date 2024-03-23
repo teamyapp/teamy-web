@@ -120,12 +120,12 @@ export function ProjectComponent(props: Props) {
                 ) {
                     if (['keydown', 'keyup'].includes(eventType)) {
                         const isKeyPressed = eventType === 'keydown';
-                        ctrlKeyPressedRef.current = keyPressed;
+                        ctrlKeyPressedRef.current = isKeyPressed;
                         storySelectorRef.current.setMultiSelectionEnabled(
-                            keyPressed,
+                            isKeyPressed,
                         );
                         phaseSelectorRef.current.setMultiSelectionEnabled(
-                            keyPressed,
+                            isKeyPressed,
                         );
                     }
                 }
@@ -206,7 +206,7 @@ export function ProjectComponent(props: Props) {
                         index.toString(),
                     ),
                 })}`}
-                onDoubleClick={onDoubleClickPhaseHandler(phase.id)}
+                onDoubleClick={onPhaseDoubleClickHandler(phase.id)}
                 onClick={onPhaseSelectHandler(index)}
             >
                 <div className={styles.Name}>{phase.name}</div>
@@ -244,15 +244,15 @@ export function ProjectComponent(props: Props) {
     };
 
     const onAddStoryInBacklogClick = () => {
-        setOnEditingNewStoryInBacklog(true);
+        setIsEditingNewStoryInBacklog(true);
     };
 
     const onCreateStoryInBacklog = (story: CreateStoryInput) => {
-        setOnEditingNewStoryInBacklog(false);
+        setIsEditingNewStoryInBacklog(false);
     };
 
     const onDiscardNewStoryInBacklog = () => {
-        setOnEditingNewStoryInBacklog(false);
+        setIsEditingNewStoryInBacklog(false);
     };
 
     return (
@@ -275,7 +275,7 @@ export function ProjectComponent(props: Props) {
                         startAt={startAt}
                         endAt={endAt}
                         rows={rows}
-                        onItemSelect={timelineItemSelect}
+                        onItemSelect={onTimelineItemSelect}
                     />
                 </div>
             </div>
@@ -306,7 +306,7 @@ export function ProjectComponent(props: Props) {
                     </div>
                 </div>
                 <div className={styles.StoryList}>
-                    {onEditingNewStoryInBacklog && (
+                    {isEditingNewStoryInBacklog && (
                         <></>
                     )}
                     {props.project.stories.map((story) => (
