@@ -149,9 +149,17 @@ export function ProjectComponent(props: Props) {
     };
 
     const onPhaseSelectHandler =
-        (phaseIndexNumber: number) => (event: MouseEvent) => {
+        (phaseIndexNumber: number) => async (event: MouseEvent) => {
             event.stopPropagation();
-            phaseSelectorRef.current.selectItem(phaseIndexNumber.toString());
+            const isSelected = await phaseSelectorRef.current.selectItem(
+                phaseIndexNumber.toString(),
+            );
+
+            if (isSelected) {
+                timelineRef.current?.showAndSelectItem(phaseIndexNumber, 0);
+            } else {
+                timelineRef.current?.deselectItem(phaseIndexNumber, 0);
+            }
         };
 
     const rows: Row[] = props.project.phases.map((phase, index) => {
@@ -190,6 +198,7 @@ export function ProjectComponent(props: Props) {
     });
 
     const renderPhase = (phase: Phase, index: number): ReactElement => {
+        debugger;
         return (
             <div
                 key={index}
@@ -232,7 +241,7 @@ export function ProjectComponent(props: Props) {
     };
 
     const timelineItemSelect = (rowIndex: number, itemIndex: number) => {
-        onPhaseSelectHandler(rowIndex);
+        phaseSelectorRef.current.selectItem(rowIndex.toString());
     };
 
     const onAddStoryInBacklogClick = () => {
