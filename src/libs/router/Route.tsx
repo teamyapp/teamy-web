@@ -3,6 +3,7 @@ import React, { Component, ReactNode } from 'react';
 import { PopChannel } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 
+import { exactMatch } from './matcher';
 import {
     Errors,
     Params,
@@ -17,6 +18,7 @@ interface Props {
     router: Router;
     pattern: string;
     renderChild?: (params: Params) => ReactNode | null;
+    exact?: boolean;
 }
 
 interface State {
@@ -54,7 +56,14 @@ export class Route extends Component<Props, State> {
                     return;
                 }
 
-                if (
+                if (this.props.exact) {
+                    if (!exactMatch(route, routePattern)) {
+                        this.setState({
+                            shouldShow: false,
+                        });
+                        continue;
+                    }
+                } else if (
                     !startsWith(
                         route.routePattern.split(pathDelimiter),
                         routePattern.split(pathDelimiter),
@@ -65,6 +74,7 @@ export class Route extends Component<Props, State> {
                     });
                     continue;
                 }
+
                 this.setState({
                     shouldShow: true,
                     params: route.params,
