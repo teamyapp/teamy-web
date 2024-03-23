@@ -21,8 +21,8 @@ import {
 import { toInt } from '@core/storage/states/parser';
 
 
-import styles from './Planning.component.module.scss';
 import { ProjectsComponent } from './Projects.component';
+import styles from './Planning.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -40,6 +40,7 @@ export function PlanningComponent(props: Props) {
     if (!currentTeam) {
         return null;
     }
+    
     // TODO: intercept the route and get the project, phase, and story
     const routeUpdateParams = props.deps.router.currentRouteUpdate.params;
     const projectId = toInt(getProjectId(routeUpdateParams));
@@ -100,7 +101,6 @@ export function PlanningComponent(props: Props) {
                         <Fragment key={`location-${index}`}>
                             {index > 0 && <div className={styles.Separator} />}
                             <div
-                                key={index}
                                 className={styles.Level}
                                 onClick={level.onClick}
                             >
@@ -123,7 +123,6 @@ export function PlanningComponent(props: Props) {
                     pattern={projectRoutePattern}
                     exact
                 >
-                    
                     project
                 </Route>
                 <Route
