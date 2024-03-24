@@ -12,8 +12,8 @@ import { Project } from '@core/entity/project';
 import { phaseStoryPath } from '@core/routing/routes';
 
 import { InlineCreateStory } from './InlineCreateStory.component';
-import styles from './Phase.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
+import styles from './Phase.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -135,7 +135,7 @@ export function PhaseComponent(props: Props) {
         phaseStorySelectorRef.current.selectItem(storyIdNumber.toString());
     };
 
-    const onClickStoryDetailHandler = async (storyId: number) => {
+    const onStoryDetailClickHandler = async (storyId: number) => {
         props.deps.router.navigateTo(
             phaseStoryPath(
                 currentTeam!.id,

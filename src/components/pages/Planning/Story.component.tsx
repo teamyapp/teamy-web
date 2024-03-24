@@ -79,7 +79,7 @@ export function StoryComponent(props: Props) {
                 if (unplannedTasksRef.current) {
                     let tasks =
                         props.deps.graphSource.currentTeam()?.tasks || [];
-                        tasks = tasks
+                    tasks = tasks
                         .filter(unplanned)
                         .sort(orderByStatusUrgencyAsc);
                     setUnplannedTasks(tasks);

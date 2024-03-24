@@ -55,8 +55,8 @@ export class SelectOwnersPopupComponent extends Component<Props, State> {
                     ref={this.OwnersPopupRef}
                     className={styles.SelectOwnersPopup}
                     style={{
-                        left: this.state.OwnersListLeft,
-                        top: this.state.OwnersListTop,
+                        left: this.state.ownersListLeft,
+                        top: this.state.ownersListTop,
                         visibility: this.state.ownersListVisible
                             ? 'visible'
                             : 'hidden',
@@ -105,10 +105,10 @@ export class SelectOwnersPopupComponent extends Component<Props, State> {
 
         setTimeout(() => {
             this.setState({
-                OwnersListVisible: true,
+                ownersListVisible: true,
             });
 
-            this.OwnersPopupRef.current?.focus();
+            this.ownersPopupRef.current?.focus();
             this.updateOwnersListPosition();
         });
     };
