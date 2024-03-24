@@ -29,7 +29,7 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { ContextMenuComponent, MenuItem } from './ContextMenu.component';
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
-import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
+import { SelectOwnersPopupComponent } from './SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from './TaskLinkIcon';
 import { UserProfileUI } from './UserProfile';
 import { dueDate, getUserShortName } from './format';
@@ -93,6 +93,7 @@ interface Props {
     showStatus?: boolean;
     numActionColumns?: number;
     currentClientId?: number;
+    isSelected?: boolean;
     thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onStartEditingTask?: () => void;
     onFinishEditingTask?: () => void;
@@ -102,6 +103,7 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
+    onTaskSelectHandler?: (taskId: number) => void;
 }
 
 interface State {
@@ -114,7 +116,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
     private getBoundingClientRect?: () => DOMRect;
     private readonly selectTaskOwnersPopupRef =
-        createRef<SelectTaskOwnersPopupComponent>();
+        createRef<SelectOwnersPopupComponent>();
     private readonly taskIdContextMenuRef = createRef<ContextMenuComponent>();
     private contextMenuItemViews: ContextMenuItemView[] = [];
     private contextMenuItemViewCleanups: CleanupFunc[] = [];
@@ -129,17 +131,18 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     public render() {
-        const { draggingBy } = this.props.task;
+        const { draggingBy, id } = this.props.task;
 
         const showDraggingBy =
             draggingBy && draggingBy.id !== this.props.currentClientId;
         const priorityStyle = toOptionKey(this.props.task.priority);
         return (
             <>
-                <div className={styles.InlineTask}>
+                <div className={styles.InlineTask} onClick={this.onSelectTaskHandler}>
                     <div
                         className={`${styles.Task} ${classNames({
                             [styles.Dragging]: showDraggingBy,
+                            [styles.IsSelected]: this.props.isSelected,
                         })}`}
                     >
                         <div className={styles.LeftSection}>
@@ -219,10 +222,10 @@ export class InlineTaskUI extends Component<Props, State> {
                         </div>
                     )}
                 </div>
-                <SelectTaskOwnersPopupComponent
+                <SelectOwnersPopupComponent
                     ref={this.selectTaskOwnersPopupRef}
                     deps={this.props.deps}
-                    findTaskOwnersAlignTargetBoundBox={
+                    findOwnersAlignTargetBoundBox={
                         this.getBoundingClientRect
                     }
                     onClose={this.onTaskOwnersPopupClose}
@@ -258,6 +261,10 @@ export class InlineTaskUI extends Component<Props, State> {
                 )}
             </div>
         );
+    }
+
+    private onSelectTaskHandler = () => {
+        this.props.onTaskSelectHandler?.call(null, this.props.task.id);
     }
 
     private onTaskIdContextMenu = async (event: MouseEvent) => {

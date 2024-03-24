@@ -18,6 +18,8 @@ import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
 import { phasePath, projectStoryPath } from '@core/routing/routes';
 
+import { InlineCreateStory } from './InlineCreateStory.component';
+import { StoryInlineItemComponent } from './StoryInlineItem.component';
 import {
     Row,
     TimelineComponent,
@@ -197,7 +199,6 @@ export function ProjectComponent(props: Props) {
     });
 
     const renderPhase = (phase: Phase, index: number): ReactElement => {
-        debugger;
         return (
             <div
                 key={index}
@@ -215,16 +216,14 @@ export function ProjectComponent(props: Props) {
                     delivered
                 </div>
                 <div className={styles.Duration}>
-                    {moment(phase.expectedStartAt).format('MMM DD')}&nbsp;-&nbsp;
+                    {moment(phase.expectedStartAt).format('MMM DD')}
+                    &nbsp;-&nbsp;
                     {moment(phase.expectedEndAt).format('MMM DD')}
                 </div>
             </div>
         );
     };
     const onStoryDetailClickHandler = async (storyId: number) => {
-        await props.deps.stateSyncer.pullCurrentTeamTaskPreview({
-            isPlanned: false,
-        });
         props.deps.router.navigateTo(
             projectStoryPath(currentTeam.id, props.project.id, storyId),
         );
@@ -307,10 +306,26 @@ export function ProjectComponent(props: Props) {
                 </div>
                 <div className={styles.StoryList}>
                     {isEditingNewStoryInBacklog && (
-                        <></>
+                        <InlineCreateStory
+                            deps={props.deps}
+                            onCreateStory={onCreateStoryInBacklog}
+                            onDiscardNewStory={onDiscardNewStoryInBacklog}
+                        />
                     )}
                     {props.project.stories.map((story) => (
                         <div className={styles.ListItem} key={story.id}>
+                            <StoryInlineItemComponent
+                                story={story}
+                                key={story.id}
+                                deps={props.deps}
+                                isSelected={selectedStoryIds.has(
+                                    story.id.toString(),
+                                )}
+                                onStorySelectHandler={onStorySelectHandler}
+                                onStoryDetailClickHandler={
+                                    onStoryDetailClickHandler
+                                }
+                            />
                         </div>
                     ))}
                 </div>

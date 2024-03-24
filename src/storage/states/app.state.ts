@@ -52,16 +52,6 @@ interface PersistedState {
     currTeamId?: number;
     currSprintId?: number;
     currClientId?: number;
-
-    // for testing during development
-    storyTaskRelations: StoryTaskRelationState[];
-    stories: Record<number, StoryState>;
-    phases: Record<number, PhaseState>;
-    projects: Record<number, ProjectState>;
-    projectPhaseRelations: ProjectPhaseRelationState[];
-    projectStoryRelations: ProjectStoryRelationState[];
-    phaseStoryRelations: PhaseStoryRelationState[];
-    teamProjectRelations: TeamProjectRelationState[];
 }
 
 export class AppState {
@@ -125,14 +115,6 @@ export class AppState {
             currTeamId: undefined,
             currSprintId: undefined,
             currClientId: undefined,
-            storyTaskRelations: [],
-            stories: {},
-            phases: {},
-            projects: {},
-            projectPhaseRelations: [],
-            projectStoryRelations: [],
-            phaseStoryRelations: [],
-            teamProjectRelations: [],
         },
     ) {
         this.currUserId = state.currUserId;
@@ -140,303 +122,162 @@ export class AppState {
         this.currSprintId = state.currSprintId;
         this.currClientId = state.currClientId;
         this.teamSelectedSprint = state.teamSelectedSprint;
-        this.storyTaskRelations = state.storyTaskRelations;
-        this.stories = state.stories;
-        this.projects = state.projects;
-        this.projectPhaseRelations = state.projectPhaseRelations;
-        this.projectStoryRelations = state.projectStoryRelations;
-        this.phaseStoryRelations = state.phaseStoryRelations;
-        this.phases = state.phases;
-        this.teamProjectRelations = state.teamProjectRelations;
-    }
 
-    public static fromJson(json: any): AppState {
-        return new AppState({
-            currClientId: json.currClientId,
-            currSprintId: json.currSprintId,
-            currTeamId: json.currTeamId,
-            currUserId: json.currUserId,
-            teamSelectedSprint: json.teamSelectedSprint,
-            teamProjectRelations: [
-                {
-                    teamId: 1,
-                    projectId: 1,
-                },
-                {
-                    teamId: 1,
-                    projectId: 2,
-                },
-                {
-                    teamId: 1,
-                    projectId: 3,
-                },
-                {
-                    teamId: 1,
-                    projectId: 4,
-                },
-                {
-                    teamId: 1,
-                    projectId: 5,
-                },
-                {
-                    teamId: 1,
-                    projectId: 6,
-                },
-            ],
-            storyTaskRelations: [
-                {
-                    storyId: 1,
-                    taskId: 121,
-                },
-                {
-                    storyId: 1,
-                    taskId: 27,
-                },
-                {
-                    storyId: 1,
-                    taskId: 30,
-                },
-                {
-                    storyId: 1,
-                    taskId: 31,
-                },
-                {
-                    storyId: 1,
-                    taskId: 33,
-                },
-                {
-                    storyId: 1,
-                    taskId: 34,
-                },
-            ],
-            stories: {
-                1: {
-                    id: 1,
-                    name: 'story 1',
-                    ownerId: 1,
-                    status: 'TODO',
-                    priority: 'HIGH',
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                2: {
-                    id: 2,
-                    name: 'story 2',
-                    ownerId: 1,
-                    status: 'TODO',
-                    priority: 'HIGH',
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                3: {
-                    id: 3,
-                    name: 'story 3',
-                    ownerId: 1,
-                    status: 'TODO',
-                    priority: 'HIGH',
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                4: {
-                    id: 4,
-                    name: 'story 4',
-                    ownerId: 1,
-                    status: 'TODO',
-                    priority: 'HIGH',
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                5: {
-                    id: 5,
-                    name: 'story 5',
-                    ownerId: 1,
-                    status: 'TODO',
-                    priority: 'HIGH',
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                6: {
-                    id: 6,
-                    name: 'story 6',
-                    ownerId: 1,
-                    status: 'TODO',
-                    priority: 'HIGH',
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                7: {
-                    id: 7,
-                    name: 'story 7',
-                    ownerId: 1,
-                    status: 'TODO',
-                    priority: 'HIGH',
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
+        this.storyTaskRelations = [
+            {
+                storyId: 1,
+                taskId: 121,
             },
-
-            phaseStoryRelations: [
-                {
-                    phaseId: 1,
-                    storyId: 1,
-                },
-            ],
-            phases: {
-                1: {
-                    id: 1,
-                    name: 'Discovery',
-                    status: 'TODO',
-                    expectedStartAt: moment(
-                        '2024-03-01',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-05', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                },
-                2: {
-                    id: 2,
-                    name: 'Define & Hypothesize',
-                    status: 'TODO',
-                    expectedStartAt: moment(
-                        '2024-03-07',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-10', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                },
-                3: {
-                    id: 3,
-                    name: 'Prototyping',
-                    status: 'TODO',
-                    expectedStartAt: moment(
-                        '2024-03-15',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-20', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                },
-                4: {
-                    id: 4,
-                    name: 'Visual Design',
-                    status: 'TODO',
-                    expectedStartAt: moment(
-                        '2024-03-04',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-08', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                },
-                5: {
-                    id: 5,
-                    name: 'Development',
-                    status: 'TODO',
-                    expectedStartAt: moment(
-                        '2024-03-12',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-15', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                },
-                6: {
-                    id: 6,
-                    name: 'Launch',
-                    status: 'TODO',
-                    expectedStartAt: moment(
-                        '2024-03-18',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-22', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                },
+            {
+                storyId: 1,
+                taskId: 27,
             },
-            projects: {
-                1: {
-                    id: 1,
-                    name: 'project 1',
-                    expectedStartAt: moment(
-                        '2024-03-01',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-05', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                2: {
-                    id: 2,
-                    name: 'project 2',
-                    expectedStartAt: moment(
-                        '2024-03-07',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-10', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                3: {
-                    id: 3,
-                    name: 'project 3',
-                    expectedStartAt: moment(
-                        '2024-03-15',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-20', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                4: {
-                    id: 4,
-                    name: 'project 4',
-                    expectedStartAt: moment(
-                        '2024-03-04',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-08', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                5: {
-                    id: 5,
-                    name: 'project 5',
-                    expectedStartAt: moment(
-                        '2024-03-12',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-15', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
-                6: {
-                    id: 6,
-                    name: 'project 6',
-                    expectedStartAt: moment(
-                        '2024-03-18',
-                        'YYYY-MM-DD',
-                    ).toDate(),
-                    expectedEndAt: moment('2024-03-22', 'YYYY-MM-DD').toDate(),
-                    creatorId: 1,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                },
+            {
+                storyId: 1,
+                taskId: 30,
             },
-            projectPhaseRelations: [
+            {
+                storyId: 1,
+                taskId: 31,
+            },
+            {
+                storyId: 1,
+                taskId: 33,
+            },
+            {
+                storyId: 1,
+                taskId: 34,
+            },
+        ];
+        this.stories = {
+            1: {
+                id: 1,
+                name: 'story 1',
+                ownerId: 1,
+                status: 'TODO',
+                priority: 'HIGH',
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            2: {
+                id: 2,
+                name: 'story 2',
+                ownerId: 1,
+                status: 'TODO',
+                priority: 'HIGH',
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            3: {
+                id: 3,
+                name: 'story 3',
+                ownerId: 1,
+                status: 'TODO',
+                priority: 'HIGH',
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            4: {
+                id: 4,
+                name: 'story 4',
+                ownerId: 1,
+                status: 'TODO',
+                priority: 'HIGH',
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            5: {
+                id: 5,
+                name: 'story 5',
+                ownerId: 1,
+                status: 'TODO',
+                priority: 'HIGH',
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            6: {
+                id: 6,
+                name: 'story 6',
+                ownerId: 1,
+                status: 'TODO',
+                priority: 'HIGH',
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            7: {
+                id: 7,
+                name: 'story 7',
+                ownerId: 1,
+                status: 'TODO',
+                priority: 'HIGH',
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        };
+        (this.projects = {
+            1: {
+                id: 1,
+                name: 'project 1',
+                expectedStartAt: moment('2024-03-01', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-05', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            2: {
+                id: 2,
+                name: 'project 2',
+                expectedStartAt: moment('2024-03-07', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-10', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            3: {
+                id: 3,
+                name: 'project 3',
+                expectedStartAt: moment('2024-03-15', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-20', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            4: {
+                id: 4,
+                name: 'project 4',
+                expectedStartAt: moment('2024-03-04', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-08', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            5: {
+                id: 5,
+                name: 'project 5',
+                expectedStartAt: moment('2024-03-12', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-15', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+            6: {
+                id: 6,
+                name: 'project 6',
+                expectedStartAt: moment('2024-03-18', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-22', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            },
+        }),
+            (this.projectPhaseRelations = [
                 {
                     projectId: 1,
                     phaseId: 1,
@@ -461,37 +302,134 @@ export class AppState {
                     projectId: 1,
                     phaseId: 6,
                 },
-            ],
-            projectStoryRelations: [
-                {
-                    projectId: 1,
-                    storyId: 1,
-                },
-                {
-                    projectId: 1,
-                    storyId: 2,
-                },
-                {
-                    projectId: 1,
-                    storyId: 3,
-                },
-                {
-                    projectId: 1,
-                    storyId: 4,
-                },
-                {
-                    projectId: 1,
-                    storyId: 5,
-                },
-                {
-                    projectId: 1,
-                    storyId: 6,
-                },
-                {
-                    projectId: 1,
-                    storyId: 7,
-                },
-            ],
+            ]);
+        this.projectStoryRelations = [
+            {
+                projectId: 1,
+                storyId: 1,
+            },
+            {
+                projectId: 1,
+                storyId: 2,
+            },
+            {
+                projectId: 1,
+                storyId: 3,
+            },
+            {
+                projectId: 1,
+                storyId: 4,
+            },
+            {
+                projectId: 1,
+                storyId: 5,
+            },
+            {
+                projectId: 1,
+                storyId: 6,
+            },
+            {
+                projectId: 1,
+                storyId: 7,
+            },
+        ];
+        this.phaseStoryRelations = [
+            {
+                phaseId: 1,
+                storyId: 1,
+            },
+        ];
+        this.phases = {
+            1: {
+                id: 1,
+                name: 'Discovery',
+                status: 'TODO',
+                expectedStartAt: moment('2024-03-01', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-05', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+            },
+            2: {
+                id: 2,
+                name: 'Define & Hypothesize',
+                status: 'TODO',
+                expectedStartAt: moment('2024-03-07', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-10', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+            },
+            3: {
+                id: 3,
+                name: 'Prototyping',
+                status: 'TODO',
+                expectedStartAt: moment('2024-03-15', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-20', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+            },
+            4: {
+                id: 4,
+                name: 'Visual Design',
+                status: 'TODO',
+                expectedStartAt: moment('2024-03-04', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-08', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+            },
+            5: {
+                id: 5,
+                name: 'Development',
+                status: 'TODO',
+                expectedStartAt: moment('2024-03-12', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-15', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+            },
+            6: {
+                id: 6,
+                name: 'Launch',
+                status: 'TODO',
+                expectedStartAt: moment('2024-03-18', 'YYYY-MM-DD').toDate(),
+                expectedEndAt: moment('2024-03-22', 'YYYY-MM-DD').toDate(),
+                creatorId: 1,
+                createdAt: new Date(),
+            },
+        };
+        this.teamProjectRelations = [
+            {
+                teamId: 1,
+                projectId: 1,
+            },
+            {
+                teamId: 1,
+                projectId: 2,
+            },
+            {
+                teamId: 1,
+                projectId: 3,
+            },
+            {
+                teamId: 1,
+                projectId: 4,
+            },
+            {
+                teamId: 1,
+                projectId: 5,
+            },
+            {
+                teamId: 1,
+                projectId: 6,
+            },
+        ];
+    }
+
+    public static fromJson(json: any): AppState {
+        return new AppState({
+            currClientId: json.currClientId,
+            currSprintId: json.currSprintId,
+            currTeamId: json.currTeamId,
+            currUserId: json.currUserId,
+            teamSelectedSprint: json.teamSelectedSprint,
         });
     }
 }
