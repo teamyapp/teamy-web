@@ -18,7 +18,6 @@ import {
     getTabId,
     getTaskId,
     getTeamId,
-    helpCenterRoutePattern,
     insightsRoutePattern,
     knowledgeRoutePattern,
     marketplaceRoutePattern,
@@ -186,15 +185,6 @@ const teamsRoutesInterceptor = (
             }
         } else if (routeUpdate.routePattern.startsWith(knowledgeRoutePattern)) {
             if (!featureToggle.enableKnowledgeBase) {
-                redirectToTeamsFallback(router, localStore);
-                return {
-                    isRedirected: true,
-                };
-            }
-        } else if (
-            routeUpdate.routePattern.startsWith(helpCenterRoutePattern)
-        ) {
-            if (!featureToggle.enableHelpCenter) {
                 redirectToTeamsFallback(router, localStore);
                 return {
                     isRedirected: true,
