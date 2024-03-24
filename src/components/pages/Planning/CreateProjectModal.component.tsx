@@ -24,11 +24,11 @@ interface Props {
     deps: Deps;
 }
 
-export interface CreateProjectModalComponentHandler {
+export interface CreateProjectModalComponentHandle {
     open: () => void;
 }
 
-interface CreateProjectUIInput {
+interface CreateProjectInput {
     name: string;
     expectedStartDate?: string;
     expectedEndDate?: string;
@@ -66,7 +66,6 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
         const onCreateClick = async () => {
             const teamId = localStore.getState().currTeamId;
             if (teamId && createProjectInput?.name) {
-                console.log('createProjectInput', createProjectInput);
                 setCreateProjectInput({
                     name: '',
                 })
@@ -102,7 +101,6 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
                             label={'Name'}
                         />
                     </div>
-
                     <div className={styles.ProjectDate}>
                         <TextFieldUI
                             value={createProjectInput?.expectedEndDate}
@@ -116,7 +114,6 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
                             label='Expected Start Date'
                         />
                     </div>
-
                     <div className={styles.ProjectDate}>
                         <TextFieldUI
                             value={createProjectInput?.expectedEndDate}
@@ -130,7 +127,6 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
                             label='Expected End Date'
                         />
                     </div>
-
                     <div className={styles.CreateAction}>
                         <ButtonUI label={'Create'} onClick={onCreateClick} />
                     </div>

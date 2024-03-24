@@ -12,12 +12,12 @@ import {
     CreateProjectModalComponent,
     CreateProjectModalComponentHandler,
 } from './CreateProjectModal.component';
-import styles from './Projects.component.module.scss';
 import {
     Row,
     TimelineComponent,
     TimelineComponentHandle,
 } from './Timeline.component';
+import styles from './Projects.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -93,7 +93,6 @@ export const ProjectsComponent: FC<Props> = (props) => {
                         {moment(project.expectedEndAt).format('MMM DD')}
                     </div>
                 </div>
-
                 <div className={styles.RightSection}>
                     <div className={styles.DeleteIcon}>
                         <MaterialIconUI>close</MaterialIconUI>

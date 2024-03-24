@@ -24,13 +24,13 @@ import {
     CreatePhaseModalComponentHandler,
 } from './CreatePhaseModal.component';
 import { InlineCreateStory } from './InlineCreateStory.component';
-import styles from './Project.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
 import {
     Row,
     TimelineComponent,
     TimelineComponentHandle,
 } from './Timeline.component';
+import styles from './Project.component.module.scss';
 
 interface Props {
     deps: Deps;

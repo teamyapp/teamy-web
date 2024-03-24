@@ -24,11 +24,11 @@ interface Props {
     deps: Deps;
 }
 
-export interface CreatePhaseModalComponentHandler {
+export interface CreatePhaseModalComponentHandle {
     open: () => void;
 }
 
-interface CreateProjectUIInput {
+interface CreateProjectInput {
     name: string;
     expectedStartDate?: string;
     expectedEndDate?: string;
@@ -38,15 +38,14 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
     Props & React.RefAttributes<CreatePhaseModalComponentHandler>
 > = forwardRef(
     (props: Props, ref: ForwardedRef<CreatePhaseModalComponentHandler>) => {
+        const localStore: LocalStore = props.deps.localStore;
+        const stateSyncer: StateSyncer = props.deps.stateSyncer;
         const modalRef: RefObject<ModalUI> = createRef();
         const [createPhaseInput, setCreatePhaseInput] =
             useState<CreateProjectUIInput>({
                 name: '',
             });
         const phaseNameInputRef: RefObject<TextFieldUI> = useRef(null);
-
-        const localStore: LocalStore = props.deps.localStore;
-        const stateSyncer: StateSyncer = props.deps.stateSyncer;
 
         const open = () => {
             modalRef.current?.open();
@@ -66,7 +65,6 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
         const onCreateClick = async () => {
             const teamId = localStore.getState().currTeamId;
             if (teamId && createPhaseInput?.name) {
-                console.log('createPhaseInput', createPhaseInput);
                 setCreatePhaseInput({
                     name: '',
                 })
@@ -102,7 +100,6 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
                             label={'Name'}
                         />
                     </div>
-
                     <div className={styles.PhaseDate}>
                         <TextFieldUI
                             value={createPhaseInput?.expectedEndDate}
@@ -130,7 +127,6 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
                             label='Expected End Date'
                         />
                     </div>
-
                     <div className={styles.CreateAction}>
                         <ButtonUI label={'Create'} onClick={onCreateClick} />
                     </div>
