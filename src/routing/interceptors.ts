@@ -23,8 +23,10 @@ import {
     knowledgeRoutePattern,
     marketplaceRoutePattern,
     marketplaceRoutes,
+    phaseStoryRoutePattern,
     planningRoutePattern,
     planningRoutes,
+    projectStoryRoutePattern,
     publicRoutes,
     signUpRoutePattern,
     sprintTabPath,
@@ -297,6 +299,7 @@ const sprintsRouteInterceptor = (
 
 const planningRoutesInterceptor = (
     localStore: LocalStore,
+    stateSyncer: StateSyncer,
 ): RouteInterceptor => {
     return async (
         router: Router,
@@ -314,6 +317,13 @@ const planningRoutesInterceptor = (
             return {
                 isRedirected: true,
             };
+        }
+
+        if (
+            routeUpdate.routePattern.startsWith(projectStoryRoutePattern) ||
+            routeUpdate.routePattern.startsWith(phaseStoryRoutePattern)
+        ) {
+            await stateSyncer.pullCurrentTeamTaskPreview();
         }
 
         return {};
@@ -363,7 +373,7 @@ export function addRouteInterceptors(
         ),
         sprintsRouteInterceptor(deps.localStore, deps.stateSyncer),
         marketplaceRoutesInterceptor(deps.localStore),
-        planningRoutesInterceptor(deps.localStore),
+        planningRoutesInterceptor(deps.localStore, deps.stateSyncer),
     ];
     interceptors.forEach((interceptor) => {
         deps.router.addRouteInterceptor(interceptor);

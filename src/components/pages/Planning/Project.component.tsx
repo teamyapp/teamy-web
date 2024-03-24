@@ -225,9 +225,9 @@ export function ProjectComponent(props: Props) {
         );
     };
     const onStoryDetailClickHandler = async (storyId: number) => {
-        await props.deps.stateSyncer.pullCurrentTeamTaskPreview({
-            isPlanned: false,
-        });
+        // await props.deps.stateSyncer.pullCurrentTeamTaskPreview({
+        //     isPlanned: false,
+        // });
         props.deps.router.navigateTo(
             projectStoryPath(currentTeam.id, props.project.id, storyId),
         );

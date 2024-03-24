@@ -136,9 +136,9 @@ export function PhaseComponent(props: Props) {
     };
 
     const onClickStoryDetailHandler = async (storyId: number) => {
-        await props.deps.stateSyncer.pullCurrentTeamTaskPreview({
-            isPlanned: false,
-        });
+        // await props.deps.stateSyncer.pullCurrentTeamTaskPreview({
+        //     isPlanned: false,
+        // });
 
         props.deps.router.navigateTo(
             phaseStoryPath(
