@@ -9,6 +9,10 @@ import { Project } from '@core/entity/project';
 import { projectPath } from '@core/routing/routes';
 
 import {
+    CreateProjectModalComponent,
+    CreateProjectModalComponentHandle,
+} from './CreateProjectModal.component';
+import {
     Row,
     TimelineComponent,
     TimelineComponentHandle,
@@ -24,6 +28,8 @@ const endAt = moment().add(1, 'months').toDate();
 
 export const ProjectsComponent: FC<Props> = (props) => {
     const timelineRef = useRef<TimelineComponentHandle>(null);
+    const createProjectModalComponentRef =
+        useRef<CreateProjectModalComponentHandle>(null);
     const [selectedProjectIndex, setSelectedProjectIndex] = useState<number>();
     const currentTeam = props.deps.graphSource.currentTeam();
     if (!currentTeam) {
@@ -75,14 +81,22 @@ export const ProjectsComponent: FC<Props> = (props) => {
                 onDoubleClick={onProjectDoubleClickHandler(project.id)}
                 onClick={onProjectClickHandler(index)}
             >
-                <div className={styles.Name}>{project.name}</div>
-                <div className={styles.Status}>
-                    {project.deliveredPhases} of {project.totalPhases} phases
-                    delivered
+                <div className={styles.LeftSection}>
+                    <div className={styles.Name}>{project.name}</div>
+                    <div className={styles.Status}>
+                        {project.deliveredPhases} of {project.totalPhases}{' '}
+                        phases delivered
+                    </div>
+                    <div className={styles.Duration}>
+                        {moment(project.expectedStartAt).format('MMM DD')}
+                        &nbsp;-&nbsp;
+                        {moment(project.expectedEndAt).format('MMM DD')}
+                    </div>
                 </div>
-                <div className={styles.Duration}>
-                    {moment(project.expectedStartAt).format('MMM DD')}&nbsp;-&nbsp;
-                    {moment(project.expectedEndAt).format('MMM DD')}
+                <div className={styles.RightSection}>
+                    <div className={styles.DeleteIcon}>
+                        <MaterialIconUI>close</MaterialIconUI>
+                    </div>
                 </div>
             </div>
         );
@@ -107,13 +121,17 @@ export const ProjectsComponent: FC<Props> = (props) => {
         setSelectedProjectIndex(rowIndex);
     };
 
+    const onAddProjectClick = () => {
+        createProjectModalComponentRef.current?.open();
+    };
+
     return (
         <div className={styles.Projects}>
             <div className={styles.ProjectView}>
                 <div className={styles.ProjectListSection}>
                     <div className={styles.TopBar}>
                         <div className={styles.Title}>Projects</div>
-                        <div className={styles.Add}>
+                        <div className={styles.Add} onClick={onAddProjectClick}>
                             <MaterialIconUI>add</MaterialIconUI>
                         </div>
                     </div>
@@ -131,6 +149,10 @@ export const ProjectsComponent: FC<Props> = (props) => {
                     />
                 </div>
             </div>
+            <CreateProjectModalComponent
+                deps={props.deps}
+                ref={createProjectModalComponentRef}
+            />
         </div>
     );
 };

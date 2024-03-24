@@ -8,6 +8,7 @@ import {
     useRef,
     useState,
 } from 'react';
+
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -18,6 +19,10 @@ import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
 import { phasePath, projectStoryPath } from '@core/routing/routes';
 
+import {
+    CreatePhaseModalComponent,
+    CreatePhaseModalComponentHandle,
+} from './CreatePhaseModal.component';
 import { InlineCreateStory } from './InlineCreateStory.component';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
 import {
@@ -38,6 +43,8 @@ const endAt = moment().add(1, 'months').toDate();
 export function ProjectComponent(props: Props) {
     const [isEditingNewStoryInBacklog, setIsEditingNewStoryInBacklog] =
         useState(false);
+    const createPhaseModalComponentRef =
+        useRef<CreatePhaseModalComponentHandle>(null);
     const timelineRef = useRef<TimelineComponentHandle>(null);
     const currentTeam = props.deps.graphSource.currentTeam();
 
@@ -210,15 +217,22 @@ export function ProjectComponent(props: Props) {
                 onDoubleClick={onPhaseDoubleClickHandler(phase.id)}
                 onClick={onPhaseSelectHandler(index)}
             >
-                <div className={styles.Name}>{phase.name}</div>
-                <div className={styles.Status}>
-                    {phase.deliveredStories} of {phase.totalStories} stories
-                    delivered
+                <div className={styles.LeftSection}>
+                    <div className={styles.Name}>{phase.name}</div>
+                    <div className={styles.Status}>
+                        {phase.deliveredStories} of {phase.totalStories} stories
+                        delivered
+                    </div>
+                    <div className={styles.Duration}>
+                        {moment(phase.expectedStartAt).format('MMM DD')}
+                        &nbsp;-&nbsp;
+                        {moment(phase.expectedEndAt).format('MMM DD')}
+                    </div>
                 </div>
-                <div className={styles.Duration}>
-                    {moment(phase.expectedStartAt).format('MMM DD')}
-                    &nbsp;-&nbsp;
-                    {moment(phase.expectedEndAt).format('MMM DD')}
+                <div className={styles.RightSection}>
+                    <div className={styles.DeleteIcon}>
+                        <MaterialIconUI>close</MaterialIconUI>
+                    </div>
                 </div>
             </div>
         );
@@ -254,13 +268,17 @@ export function ProjectComponent(props: Props) {
         setIsEditingNewStoryInBacklog(false);
     };
 
+    const onAddPhaseClick = () => {
+        createPhaseModalComponentRef.current?.open();
+    };
+
     return (
         <div className={styles.Project}>
             <div className={styles.ProjectView}>
                 <div className={styles.PhaseListSection}>
                     <div className={styles.TopBar}>
                         <div className={styles.Title}>Phases</div>
-                        <div className={styles.Add}>
+                        <div className={styles.Add} onClick={onAddPhaseClick}>
                             <MaterialIconUI>add</MaterialIconUI>
                         </div>
                     </div>
@@ -330,6 +348,10 @@ export function ProjectComponent(props: Props) {
                     ))}
                 </div>
             </div>
+            <CreatePhaseModalComponent
+                deps={props.deps}
+                ref={createPhaseModalComponentRef}
+            />
         </div>
     );
 }
