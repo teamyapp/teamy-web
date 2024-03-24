@@ -21,7 +21,7 @@ import { phasePath, projectStoryPath } from '@core/routing/routes';
 
 import {
     CreatePhaseModalComponent,
-    CreatePhaseModalComponentHandler,
+    CreatePhaseModalComponentHandle,
 } from './CreatePhaseModal.component';
 import { InlineCreateStory } from './InlineCreateStory.component';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
@@ -44,7 +44,7 @@ export function ProjectComponent(props: Props) {
     const [isEditingNewStoryInBacklog, setIsEditingNewStoryInBacklog] =
         useState(false);
     const createPhaseModalComponentRef =
-        useRef<CreatePhaseModalComponentHandler>(null);
+        useRef<CreatePhaseModalComponentHandle>(null);
     const timelineRef = useRef<TimelineComponentHandle>(null);
     const currentTeam = props.deps.graphSource.currentTeam();
 

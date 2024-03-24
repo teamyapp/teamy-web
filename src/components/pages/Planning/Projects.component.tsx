@@ -10,7 +10,7 @@ import { projectPath } from '@core/routing/routes';
 
 import {
     CreateProjectModalComponent,
-    CreateProjectModalComponentHandler,
+    CreateProjectModalComponentHandle,
 } from './CreateProjectModal.component';
 import {
     Row,
@@ -29,7 +29,7 @@ const endAt = moment().add(1, 'months').toDate();
 export const ProjectsComponent: FC<Props> = (props) => {
     const timelineRef = useRef<TimelineComponentHandle>(null);
     const createProjectModalComponentRef =
-        useRef<CreateProjectModalComponentHandler>(null);
+        useRef<CreateProjectModalComponentHandle>(null);
     const [selectedProjectIndex, setSelectedProjectIndex] = useState<number>();
     const currentTeam = props.deps.graphSource.currentTeam();
     if (!currentTeam) {

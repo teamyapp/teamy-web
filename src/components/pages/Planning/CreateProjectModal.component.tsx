@@ -35,12 +35,12 @@ interface CreateProjectInput {
 }
 
 export const CreateProjectModalComponent: ForwardRefExoticComponent<
-    Props & React.RefAttributes<CreateProjectModalComponentHandler>
+    Props & React.RefAttributes<CreateProjectModalComponentHandle>
 > = forwardRef(
-    (props: Props, ref: ForwardedRef<CreateProjectModalComponentHandler>) => {
+    (props: Props, ref: ForwardedRef<CreateProjectModalComponentHandle>) => {
         const modalRef: RefObject<ModalUI> = createRef();
         const [createProjectInput, setCreateProjectInput] =
-            useState<CreateProjectUIInput>({
+            useState<CreateProjectInput>({
                 name: '',
             });
         const projectNameInputRef: RefObject<TextFieldUI> = useRef(null);
@@ -68,10 +68,31 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
             if (teamId && createProjectInput?.name) {
                 setCreateProjectInput({
                     name: '',
-                })
+                });
             }
 
             modalRef.current?.close();
+        };
+
+        const onNameChange = (name: string) => {
+            setCreateProjectInput({
+                ...createProjectInput,
+                name,
+            });
+        };
+
+        const onExpectedStartDateChange = (expectedStartDate: string) => {
+            setCreateProjectInput({
+                ...createProjectInput,
+                expectedStartDate,
+            });
+        };
+
+        const onExpectedEndDateChange = (expectedEndDate: string) => {
+            setCreateProjectInput({
+                ...createProjectInput,
+                expectedEndDate,
+            });
         };
 
         return (
@@ -91,40 +112,25 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
                     <div className={styles.ProjectName}>
                         <TextFieldUI
                             ref={projectNameInputRef}
-                            value={createProjectInput?.name}
-                            onChange={(newValue) =>
-                                setCreateProjectInput({
-                                    ...createProjectInput,
-                                    name: newValue,
-                                })
-                            }
                             label={'Name'}
+                            value={createProjectInput?.name}
+                            onChange={onNameChange}
                         />
                     </div>
                     <div className={styles.ProjectDate}>
                         <TextFieldUI
-                            value={createProjectInput?.expectedEndDate}
-                            onChange={(newValue) =>
-                                setCreateProjectInput({
-                                    ...createProjectInput,
-                                    expectedStartDate: newValue,
-                                })
-                            }
-                            placeholder='YYYY/MM/DD HH:MM:SS'
                             label='Expected Start Date'
+                            value={createProjectInput?.expectedStartDate}
+                            onChange={onExpectedStartDateChange}
+                            placeholder='YYYY/MM/DD HH:MM:SS'
                         />
                     </div>
                     <div className={styles.ProjectDate}>
                         <TextFieldUI
-                            value={createProjectInput?.expectedEndDate}
-                            onChange={(newValue) =>
-                                setCreateProjectInput({
-                                    ...createProjectInput,
-                                    expectedEndDate: newValue,
-                                })
-                            }
-                            placeholder='YYYY/MM/DD HH:MM:SS'
                             label='Expected End Date'
+                            value={createProjectInput?.expectedEndDate}
+                            onChange={onExpectedEndDateChange}
+                            placeholder='YYYY/MM/DD HH:MM:SS'
                         />
                     </div>
                     <div className={styles.CreateAction}>

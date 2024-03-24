@@ -35,14 +35,14 @@ interface CreateProjectInput {
 }
 
 export const CreatePhaseModalComponent: ForwardRefExoticComponent<
-    Props & React.RefAttributes<CreatePhaseModalComponentHandler>
+    Props & React.RefAttributes<CreatePhaseModalComponentHandle>
 > = forwardRef(
-    (props: Props, ref: ForwardedRef<CreatePhaseModalComponentHandler>) => {
+    (props: Props, ref: ForwardedRef<CreatePhaseModalComponentHandle>) => {
         const localStore: LocalStore = props.deps.localStore;
         const stateSyncer: StateSyncer = props.deps.stateSyncer;
         const modalRef: RefObject<ModalUI> = createRef();
         const [createPhaseInput, setCreatePhaseInput] =
-            useState<CreateProjectUIInput>({
+            useState<CreateProjectInput>({
                 name: '',
             });
         const phaseNameInputRef: RefObject<TextFieldUI> = useRef(null);
@@ -67,10 +67,31 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
             if (teamId && createPhaseInput?.name) {
                 setCreatePhaseInput({
                     name: '',
-                })
+                });
             }
 
             modalRef.current?.close();
+        };
+
+        const onNameChange = (name: string) => {
+            setCreatePhaseInput({
+                ...createPhaseInput,
+                name,
+            });
+        };
+
+        const onExpectedStartDateChange = (expectedStartDate: string) => {
+            setCreatePhaseInput({
+                ...createPhaseInput,
+                expectedStartDate,
+            });
+        };
+
+        const onExpectedEndDateChange = (expectedEndDate: string) => {
+            setCreatePhaseInput({
+                ...createPhaseInput,
+                expectedEndDate,
+            });
         };
 
         return (
@@ -90,41 +111,26 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
                     <div className={styles.PhaseName}>
                         <TextFieldUI
                             ref={phaseNameInputRef}
-                            value={createPhaseInput?.name}
-                            onChange={(newValue) =>
-                                setCreatePhaseInput({
-                                    ...createPhaseInput,
-                                    name: newValue,
-                                })
-                            }
                             label={'Name'}
+                            value={createPhaseInput?.name}
+                            onChange={onNameChange}
                         />
                     </div>
                     <div className={styles.PhaseDate}>
                         <TextFieldUI
-                            value={createPhaseInput?.expectedEndDate}
-                            onChange={(newValue) =>
-                                setCreatePhaseInput({
-                                    ...createPhaseInput,
-                                    expectedStartDate: newValue,
-                                })
-                            }
-                            placeholder='YYYY/MM/DD HH:MM:SS'
                             label='Expected Start Date'
+                            value={createPhaseInput?.expectedStartDate}
+                            onChange={onExpectedStartDateChange}
+                            placeholder='YYYY/MM/DD HH:MM:SS'
                         />
                     </div>
 
                     <div className={styles.PhaseDate}>
                         <TextFieldUI
-                            value={createPhaseInput?.expectedEndDate}
-                            onChange={(newValue) =>
-                                setCreatePhaseInput({
-                                    ...createPhaseInput,
-                                    expectedEndDate: newValue,
-                                })
-                            }
-                            placeholder='YYYY/MM/DD HH:MM:SS'
                             label='Expected End Date'
+                            value={createPhaseInput?.expectedEndDate}
+                            onChange={onExpectedEndDateChange}
+                            placeholder='YYYY/MM/DD HH:MM:SS'
                         />
                     </div>
                     <div className={styles.CreateAction}>
