@@ -4,10 +4,3 @@ export enum Environment {
     Staging = 'staging',
     Production = 'production',
 }
-
-export function getEnvironment(): Environment {
-    return (
-        (import.meta.env['VITE_ENVIRONMENT'] as Environment) ||
-        Environment.Development
-    );
-}

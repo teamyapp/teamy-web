@@ -177,7 +177,7 @@ const teamsRoutesInterceptor = (
                 };
             }
         } else if (routeUpdate.routePattern.startsWith(planningRoutePattern)) {
-            if (!featureToggle.enablePlanningDoc) {
+            if (!featureToggle.enablePlanning) {
                 redirectToTeamsFallback(router, localStore);
                 return {
                     isRedirected: true,

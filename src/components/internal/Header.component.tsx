@@ -230,7 +230,7 @@ export class HeaderComponent extends Component<Props, State> {
                                 <MaterialIconUI>sprint</MaterialIconUI>
                             </div>
                             {this.props.deps.featureToggle
-                                .enablePlanningDoc && (
+                                .enablePlanning && (
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
