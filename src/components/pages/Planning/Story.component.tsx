@@ -190,7 +190,6 @@ export function StoryComponent(props: Props) {
     };
 
     const onBacklogTaskSelectHandler = (taskId: number) => {
-        debugger
         backlogTaskSelectorRef.current.selectItem(taskId.toString());
     }
 
