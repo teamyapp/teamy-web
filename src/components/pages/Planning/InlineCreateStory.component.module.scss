@@ -68,8 +68,8 @@ $actionIconSize: 28px;
             padding: 4px;
             border-radius: 4px;
             align-items: center;
-            --icon-box-size: #{$actionIconSize};
             justify-content: center;
+            --icon-box-size: #{$actionIconSize};
             --icon-size: #{$actionIconSize};
             user-select: none;
 

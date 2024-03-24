@@ -8,8 +8,8 @@ import { User } from '@core/entity/user';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
-import styles from './SelectOwnersPopupComponent.module.scss';
 import { SelectUserListUI } from './SelectUserList';
+import styles from './SelectOwnersPopupComponent.module.scss';
 
 const ownersListVerticalOffset = 4;
 const ownersListHorizontalOffset = 10;
@@ -24,16 +24,16 @@ interface Props {
 
 interface State {
     showPotentialOwnersList: boolean;
-    OwnersListVisible: boolean;
-    OwnersListLeft: number;
-    OwnersListTop: number;
+    ownersListVisible: boolean;
+    ownersListLeft: number;
+    ownersListTop: number;
     potentialOwners: User[];
 }
 
 export class SelectOwnersPopupComponent extends Component<Props, State> {
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
-    private readonly OwnersPopupRef = createRef<HTMLDivElement>();
+    private readonly ownersPopupRef = createRef<HTMLDivElement>();
 
     constructor(props: Props) {
         super(props);
@@ -41,9 +41,9 @@ export class SelectOwnersPopupComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             showPotentialOwnersList: false,
-            OwnersListVisible: false,
-            OwnersListLeft: 0,
-            OwnersListTop: 0,
+            ownersListVisible: false,
+            ownersListLeft: 0,
+            ownersListTop: 0,
             potentialOwners: [],
         };
     }
@@ -57,7 +57,7 @@ export class SelectOwnersPopupComponent extends Component<Props, State> {
                     style={{
                         left: this.state.OwnersListLeft,
                         top: this.state.OwnersListTop,
-                        visibility: this.state.OwnersListVisible
+                        visibility: this.state.ownersListVisible
                             ? 'visible'
                             : 'hidden',
                     }}
@@ -123,8 +123,8 @@ export class SelectOwnersPopupComponent extends Component<Props, State> {
         }
 
         const boundingBox = this.props.findOwnersAlignTargetBoundBox();
-        const width = this.OwnersPopupRef.current?.offsetWidth || 0;
-        const height = this.OwnersPopupRef.current?.offsetHeight || 0;
+        const width = this.ownersPopupRef.current?.offsetWidth || 0;
+        const height = this.ownersPopupRef.current?.offsetHeight || 0;
         const left = Math.min(
             boundingBox.left,
             document.body.clientWidth - width - ownersListHorizontalOffset,

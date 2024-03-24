@@ -18,7 +18,7 @@ interface StoryInlineItemComponentProps {
     story: Story;
     deps: Deps;
     isSelected?: boolean;
-    onClickStoryDetailHandler: (storyId: number) => void;
+    onStoryDetailClickHandler: (storyId: number) => void;
     onStorySelectHandler: (storyId: number) => void;
 }
 

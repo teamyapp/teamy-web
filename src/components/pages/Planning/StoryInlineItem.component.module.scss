@@ -27,7 +27,6 @@ $actionIconSize: 28px;
            outline: 3px solid #ffc107;
         }
 
-
         &:hover {
             cursor: pointer;
         }
@@ -86,6 +85,7 @@ $actionIconSize: 28px;
 
                 .Badge {
                     color: white;
+
                     &.TotalTasks {
                         background-color: #cb6600;
                     }
