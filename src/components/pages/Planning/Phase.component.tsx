@@ -207,8 +207,8 @@ export function PhaseComponent(props: Props) {
                     {onEditingNewStoryInPhase && (
                         <InlineCreateStory
                             deps={props.deps}
-                            onCreateStory={onCreateStoryInBacklog}
-                            onDiscardNewStory={onDiscardNewStoryInBacklog}
+                            onCreateStory={onCreateStoryInPhase}
+                            onDiscardNewStory={onDiscardNewStoryInPhase}
                         />
                     )}
                     {props.phase.stories.map((story) => (
@@ -219,8 +219,8 @@ export function PhaseComponent(props: Props) {
                                 isSelected={selectedPhaseStoryIds.has(
                                     story.id.toString(),
                                 )}
-                                onClickStoryDetailHandler={
-                                    onClickStoryDetailHandler
+                                onStoryDetailClickHandler={
+                                    onStoryDetailClickHandler
                                 }
                                 onStorySelectHandler={onPhaseStorySelect}
                             />
@@ -257,8 +257,8 @@ export function PhaseComponent(props: Props) {
                                 isSelected={selectedBacklogStoryIds.has(
                                     story.id.toString(),
                                 )}
-                                onClickStoryDetailHandler={
-                                    onClickStoryDetailHandler
+                                onStoryDetailClickHandler={
+                                    onStoryDetailClickHandler
                                 }
                                 onStorySelectHandler={onBacklogStorySelect}
                             />

@@ -62,7 +62,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
 
         const handleStoryDetailClick = (event: MouseEvent) => {
             event.stopPropagation();
-            props.onClickStoryDetailHandler(props.story.id);
+            props.onStoryDetailClickHandler(props.story.id);
         };
 
         const handleStoryClick = (event: MouseEvent) => {

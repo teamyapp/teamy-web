@@ -322,7 +322,7 @@ export function ProjectComponent(props: Props) {
                                     story.id.toString(),
                                 )}
                                 onStorySelectHandler={onStorySelectHandler}
-                                onClickStoryDetailHandler={
+                                onStoryDetailClickHandler={
                                     onStoryDetailClickHandler
                                 }
                             />
