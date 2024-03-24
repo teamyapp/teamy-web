@@ -152,7 +152,6 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                     {props.story.completedTasks} of{' '}
                                     {props.story.totalTasks} tasks completed
                                 </div>
-
                                 <div className={styles.BottomRow}>
                                     <div
                                         className={`${styles.Attribute} ${

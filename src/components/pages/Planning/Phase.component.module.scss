@@ -1,12 +1,16 @@
+@import '../../../libs/ui/styleguide/elevation';
+@import "ItemListSection.module";
+
 .Phase {
     display: flex;
     height: 100%;
     
     .PhaseDetail {
         flex: 1;
-        padding: 8px;
+        padding: 10px;
         display: flex;
         flex-direction: column;
+        background-color: #ECEFF1;
 
         .Header {
             font-size: 16px;
@@ -14,6 +18,10 @@
             display: flex;
             padding: 16px;
             align-items: center;
+            background-color: white;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            @include elevation(4);
 
             .Information {
                 display: flex;
@@ -31,99 +39,66 @@
                 display: flex;
                 gap: 8px;
                 margin-left: auto;
-                .Add {
-                    --background-color: #4caf50;
-                    --border-color: #388e3c;
-                }
 
-                .Delete {
-                    --background-color: #d32f2f;
-                    --border-color: #c62828;
+                .Action {
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 4px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    &:hover {
+                        --icon-color: white;
+                        cursor: pointer;
+
+                        &.Add, &.Delete {
+                            --icon-color: white;
+                        }
+                    }
+
+                    &.Add {
+                        --icon-color: #1e88e5;
+                        --icon-size: 24px;
+
+                        &:hover {
+                            background-color: #1e88e5;
+                        }
+                    }
+
+                    &.Delete {
+                        --icon-color: #d32f2f;
+                        --icon-size: 22px;
+
+                        &:hover {
+                            background-color: #d32f2f;
+                        }
+                    }
                 }
             }
         }
-    }
 
-    .StoriesSection {
-        display: flex;
-        flex-wrap: wrap;
-        row-gap: 16px;
-        column-gap: 8px;
+        .StoriesSection {
+            display: flex;
+            flex-wrap: wrap;
+            row-gap: 16px;
+            column-gap: 8px;
 
-        .InlineStory {
-            width: 420px;
+            .InlineStory {
+                width: 420px;
+            }
         }
     }
 
     .StoryListSection {
-        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        overflow: hidden;
-        padding:0 10px;
-        width: 420px;
-        z-index: 1;
-
-        > .TopBar {
-            align-items: center;
-            display: flex;
-            justify-content: space-between;
-            padding: 20px 10px 10px 10px;
-
-            .Title {
-                font-size: 20px;
-                font-weight: bold;
-            }
-
-            .Actions {
-                display: flex;
-                gap: 8px;
-                
-                .Add {
-                    border-radius: 4px;
-                    --icon-color: #e64a19;
-                    --icon-size: 24px;
-
-                    &:hover {
-                        background-color: #e64a19;
-                        --icon-color: white;
-                        cursor: pointer;
-                    }
-                }
-
-                .Move {
-                    border-radius: 4px;
-                    --icon-color: #388e3c;
-                    --icon-size: 24px;
-
-                    &:hover {
-                        background-color: #388e3c;
-                        --icon-color: white;
-                        cursor: pointer;
-                    }
-                }
-
-                .Delete {
-                    border-radius: 4px;
-                    --icon-color: #d32f2f;
-                    --icon-size: 24px;
-
-                    &:hover {
-                        background-color: #d32f2f;
-                        --icon-color: white;
-                        cursor: pointer;
-                    }
-                }
-            }
-        }
+        @include ItemListSection;
 
         .StoryList {
             box-sizing: border-box;
             flex: 1;
             overflow-y: scroll;
-            padding: 4px;
+            padding: 6px 8px;
+            margin: 10px 0;
             display: flex;
             flex-direction: column;
             gap: 8px;

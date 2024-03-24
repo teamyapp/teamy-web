@@ -1,23 +1,23 @@
-import { ThirdPartyAppEventHub } from '@teamyapp/ext';
-import { InlineCreateTaskUI } from 'components/internal/InlineCreateTask';
-import { TaskListItem } from 'components/internal/TaskListSections/TaskListItem';
-import { useEffect, useRef, useState } from 'react';
+import {ThirdPartyAppEventHub} from '@teamyapp/ext';
+import {InlineCreateTaskUI} from 'components/internal/InlineCreateTask';
+import {TaskListItem} from 'components/internal/TaskListSections/TaskListItem';
+import {useEffect, useRef, useState} from 'react';
 
-import { ItemsSelector } from '@lib/collections/itemSelector';
-import { getPlatform } from '@lib/runtime/os';
-import { ButtonUI } from '@lib/ui/Button';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import {ItemsSelector} from '@lib/collections/itemSelector';
+import {getPlatform} from '@lib/runtime/os';
+import {ButtonUI} from '@lib/ui/Button';
+import {MaterialIconUI} from '@lib/ui/MaterialIcon';
 
-import { backlogSectionId } from '@core/config/sections';
-import { unplanned } from '@core/data/task.filter';
-import { orderByStatusUrgencyAsc } from '@core/data/task.order';
-import { Deps } from '@core/dep/deps';
-import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
-import { Phase } from '@core/entity/phase';
-import { Project } from '@core/entity/project';
-import { Story } from '@core/entity/story';
-import { Task } from '@core/entity/task';
-import { TaskAction } from '@core/entity/taskAction';
+import {backlogSectionId} from '@core/config/sections';
+import {unplanned} from '@core/data/task.filter';
+import {orderByStatusUrgencyAsc} from '@core/data/task.order';
+import {Deps} from '@core/dep/deps';
+import {CreateTaskInput, UpdateTaskInput} from '@core/entity/input';
+import {Phase} from '@core/entity/phase';
+import {Project} from '@core/entity/project';
+import {Story} from '@core/entity/story';
+import {Task} from '@core/entity/task';
+import {TaskAction} from '@core/entity/taskAction';
 
 import styles from './Story.component.module.scss';
 
@@ -137,7 +137,7 @@ export function StoryComponent(props: Props) {
                     return;
                 }
 
-                const { key, eventType } = keyboardEvent;
+                const {key, eventType} = keyboardEvent;
                 const platform = getPlatform();
                 if (
                     (platform === 'Mac' && key === 'Meta') ||
@@ -181,17 +181,20 @@ export function StoryComponent(props: Props) {
         setOnEditingNewTaskInBacklog(true);
     };
 
-    const onAddTaskInStoryClick = () => {
+    const onAddTaskToStoryClick = () => {
         setOnEditingNewTaskInStory(true);
+    };
+
+    const onDeleteTaskFromStoryClick = () => {
     };
 
     const onBacklogTaskSelectHandler = (taskId: number) => {
         backlogTaskSelectorRef.current.selectItem(taskId.toString());
-    }
+    };
 
     const onStoryTaskSelectHandler = (taskId: number) => {
         storyTaskSelectorRef.current.selectItem(taskId.toString());
-    }
+    };
 
     const onCreateTaskInBacklog = (task: CreateTaskInput) => {
         props.deps.stateSyncer.createTask(
@@ -228,16 +231,18 @@ export function StoryComponent(props: Props) {
                             {props.story.totalTasks} tasks completed
                         </div>
                     </div>
-
                     <div className={styles.Actions}>
                         <div
-                            className={styles.Add}
-                            onClick={onAddTaskInStoryClick}
+                            className={`${styles.Action} ${styles.Add}`}
+                            onClick={onAddTaskToStoryClick}
                         >
-                            <ButtonUI label='Add' />
+                            <MaterialIconUI>add</MaterialIconUI>
                         </div>
-                        <div className={styles.Delete}>
-                            <ButtonUI label='Delete' />
+                        <div
+                            className={`${styles.Action} ${styles.Delete}`}
+                            onClick={onDeleteTaskFromStoryClick}
+                        >
+                            <MaterialIconUI>close</MaterialIconUI>
                         </div>
                     </div>
                 </div>
@@ -245,6 +250,7 @@ export function StoryComponent(props: Props) {
                     {onEditingNewTaskInStory && (
                         <InlineCreateTaskUI
                             deps={props.deps}
+                            numActionColumns={props.numActionColumns}
                             onCreateTask={onCreateTaskInStory}
                             onDiscardNewTask={onDiscardNewTaskInStory}
                         />
@@ -264,7 +270,7 @@ export function StoryComponent(props: Props) {
                                 thirdPartyAppEventHubs={
                                     props.thirdPartyAppEventHubs
                                 }
-                                sectionId='StoryDetail'
+                                sectionId="StoryDetail"
                                 onUpdateTask={onUpdateTask}
                                 onDeleteTask={onDeleteTask}
                                 onViewTaskDetail={props.onViewTaskDetail}
@@ -282,7 +288,7 @@ export function StoryComponent(props: Props) {
                     <div className={styles.Title}>Tasks</div>
                     <div className={styles.Actions}>
                         <div
-                            className={styles.Add}
+                            className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddTaskInBacklogClick}
                         >
                             <MaterialIconUI>add</MaterialIconUI>
@@ -293,6 +299,7 @@ export function StoryComponent(props: Props) {
                     {onEditingNewTaskInBacklog && (
                         <InlineCreateTaskUI
                             deps={props.deps}
+                            numActionColumns={1}
                             onCreateTask={onCreateTaskInBacklog}
                             onDiscardNewTask={onDiscardNewTaskInBacklog}
                         />
