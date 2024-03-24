@@ -16,7 +16,6 @@ import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import {
-    helpCenterRoutePattern,
     insightsRoutePattern,
     knowledgeRoutePattern,
     marketplaceRoutePattern,
@@ -51,7 +50,6 @@ interface Props {
     onShowInsightsViewClick?: () => void;
     onShowPlanningViewClick?: () => void;
     onShowKnowledgeViewClick?: () => void;
-    onShowHelpCenterViewClick?: () => void;
     onShowMarketplaceViewClick?: () => void;
 }
 
@@ -64,7 +62,6 @@ interface State {
     showInsightsView: boolean;
     showPlanningView: boolean;
     showKnowledgeView: boolean;
-    showHelpCenterView: boolean;
     showMarketplaceView: boolean;
 }
 
@@ -91,7 +88,6 @@ export class HeaderComponent extends Component<Props, State> {
             showInsightsView: false,
             showPlanningView: false,
             showKnowledgeView: false,
-            showHelpCenterView: false,
             showMarketplaceView: false,
         };
     }
@@ -151,7 +147,7 @@ export class HeaderComponent extends Component<Props, State> {
                             },
                         ]}
                     />
-                    <Route router={this.router} pattern={teamRoutePattern}>
+                    <Route router={this.router} pattern={sprintsRoutePattern}>
                         <div className={styles.BacklogSection}>
                             <TooltipUI message={'Backlog'}>
                                 <div
@@ -233,19 +229,8 @@ export class HeaderComponent extends Component<Props, State> {
                             >
                                 <MaterialIconUI>sprint</MaterialIconUI>
                             </div>
-                            {this.props.deps.featureToggle.enableInsights && (
-                                <div
-                                    className={`${styles.Button} ${classNames({
-                                        [styles.Active]:
-                                            this.state.showInsightsView,
-                                    })}`}
-                                    onClick={this.onShowInsightsViewClick}
-                                >
-                                    <MaterialIconUI>insights</MaterialIconUI>
-                                </div>
-                            )}
                             {this.props.deps.featureToggle
-                                .enablePlanningDoc && (
+                                .enablePlanning && (
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
@@ -254,6 +239,17 @@ export class HeaderComponent extends Component<Props, State> {
                                     onClick={this.onShowPlanningViewClick}
                                 >
                                     <MaterialIconUI>flag</MaterialIconUI>
+                                </div>
+                            )}
+                            {this.props.deps.featureToggle.enableInsights && (
+                                <div
+                                    className={`${styles.Button} ${classNames({
+                                        [styles.Active]:
+                                        this.state.showInsightsView,
+                                    })}`}
+                                    onClick={this.onShowInsightsViewClick}
+                                >
+                                    <MaterialIconUI>insights</MaterialIconUI>
                                 </div>
                             )}
                             {this.props.deps.featureToggle
@@ -266,17 +262,6 @@ export class HeaderComponent extends Component<Props, State> {
                                     onClick={this.onShowKnowledgeViewClick}
                                 >
                                     <MaterialIconUI>school</MaterialIconUI>
-                                </div>
-                            )}
-                            {this.props.deps.featureToggle.enableHelpCenter && (
-                                <div
-                                    className={`${styles.Button} ${classNames({
-                                        [styles.Active]:
-                                            this.state.showHelpCenterView,
-                                    })}`}
-                                    onClick={this.onShowHelpCenterViewClick}
-                                >
-                                    <MaterialIconUI>forum</MaterialIconUI>
                                 </div>
                             )}
                             {this.props.deps.featureToggle
@@ -389,12 +374,6 @@ export class HeaderComponent extends Component<Props, State> {
                 ) {
                     this.setState({
                         showKnowledgeView: true,
-                    });
-                } else if (
-                    routeUpdate.routePattern.startsWith(helpCenterRoutePattern)
-                ) {
-                    this.setState({
-                        showHelpCenterView: true,
                     });
                 } else if (
                     routeUpdate.routePattern.startsWith(marketplaceRoutePattern)
@@ -521,14 +500,6 @@ export class HeaderComponent extends Component<Props, State> {
         this.props.onShowKnowledgeViewClick?.call(null);
     };
 
-    private onShowHelpCenterViewClick = () => {
-        this.resetViewButtons();
-        this.setState({
-            showHelpCenterView: true,
-        });
-        this.props.onShowHelpCenterViewClick?.call(null);
-    };
-
     private onShowMarketplaceViewClick = () => {
         this.resetViewButtons();
         this.setState({
@@ -543,7 +514,6 @@ export class HeaderComponent extends Component<Props, State> {
             showInsightsView: false,
             showPlanningView: false,
             showKnowledgeView: false,
-            showHelpCenterView: false,
             showMarketplaceView: false,
         });
     }

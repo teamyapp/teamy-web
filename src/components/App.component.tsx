@@ -40,7 +40,6 @@ import { UserActionEvent } from '@core/event/userAction';
 import {
     debugRoutePattern,
     getTeamId,
-    helpCenterPath,
     insightsPath,
     insightsRoutePattern,
     invitationRoutePattern,
@@ -271,9 +270,6 @@ export class AppComponent extends Component<Props, State> {
                                 }
                                 onShowKnowledgeViewClick={
                                     this.onShowKnowledgeViewClick
-                                }
-                                onShowHelpCenterViewClick={
-                                    this.onShowHelpCenterViewClick
                                 }
                                 onShowMarketplaceViewClick={
                                     this.onShowMarketplaceViewClick
@@ -739,12 +735,6 @@ export class AppComponent extends Component<Props, State> {
 
     private onShowKnowledgeViewClick = () => {
         this.router.navigateTo(knowledgePath(this.state.activeTeamId!), {
-            notifyRouteChange: true,
-        });
-    };
-
-    private onShowHelpCenterViewClick = () => {
-        this.router.navigateTo(helpCenterPath(this.state.activeTeamId!), {
             notifyRouteChange: true,
         });
     };

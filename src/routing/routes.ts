@@ -50,7 +50,6 @@ export const phaseStoryRoutePattern = `${phaseRoutePattern}/stories/{${storyIdPa
 export const projectStoryRoutePattern = `${projectRoutePattern}/stories/{${storyIdParam}}`;
 
 export const knowledgeRoutePattern = `${teamRoutePattern}/knowledge`;
-export const helpCenterRoutePattern = `${teamRoutePattern}/help-center`;
 export const marketplaceRoutePattern = `${teamRoutePattern}/marketplace`;
 
 export const marketplaceManagedRoutePattern = `${marketplaceRoutePattern}/managed`;
@@ -93,8 +92,6 @@ export const projectStoryPath = (
     storyId: number,
 ) => `/teams/${teamId}/planning/projects/${projectId}/stories/${storyId}`;
 export const knowledgePath = (teamId: number) => `/teams/${teamId}/knowledge`;
-export const helpCenterPath = (teamId: number) =>
-    `${teamPath(teamId)}/help-center`;
 export const marketplacePath = (teamId: number) =>
     `${teamPath(teamId)}/marketplace`;
 
@@ -132,7 +129,6 @@ export const teamsRoutes = [
     insightsRoutePattern,
     planningRoutePattern,
     knowledgeRoutePattern,
-    helpCenterRoutePattern,
     invitationRoutePattern,
     marketplaceRoutePattern,
     taskRoutePattern,
