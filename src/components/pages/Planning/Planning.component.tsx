@@ -21,10 +21,10 @@ import {
 import { toInt } from '@core/storage/states/parser';
 
 import { PhaseComponent } from './Phase.component';
-import styles from './Planning.component.module.scss';
 import { ProjectComponent } from './Project.component';
 import { ProjectsComponent } from './Projects.component';
 import { StoryComponent } from './Story.component';
+import styles from './Planning.component.module.scss';
 
 interface Props {
     deps: Deps;
