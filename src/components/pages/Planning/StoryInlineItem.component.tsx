@@ -72,7 +72,6 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
 
         const onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
             const element = event.currentTarget as HTMLDivElement;
-            // getBoundingClientRect = element.getBoundingClientRect.bind(element);
             getBindingClientRectRef.current = element.getBoundingClientRect.bind(
                 element,
             );

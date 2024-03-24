@@ -8,7 +8,6 @@ import {
     useRef,
     useState,
 } from 'react';
-
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -225,9 +224,6 @@ export function ProjectComponent(props: Props) {
         );
     };
     const onStoryDetailClickHandler = async (storyId: number) => {
-        // await props.deps.stateSyncer.pullCurrentTeamTaskPreview({
-        //     isPlanned: false,
-        // });
         props.deps.router.navigateTo(
             projectStoryPath(currentTeam.id, props.project.id, storyId),
         );

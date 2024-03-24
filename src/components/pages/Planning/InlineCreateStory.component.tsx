@@ -24,7 +24,6 @@ export const InlineCreateStory: FC<Props> = (props) => {
         name: '',
         ownerId: props.initialOwnerId || 0,
     });
-    // let getBoundingClientRect: (() => DOMRect) | undefined = undefined;
     const getBindingClientRectRef = useRef<() => DOMRect>();
     const [isSelectingOwner, setIsSelectingOwner] = useState(false);
     const owner =
