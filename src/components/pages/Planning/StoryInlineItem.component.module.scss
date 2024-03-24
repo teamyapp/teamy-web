@@ -13,12 +13,9 @@ $actionIconSize: 28px;
 
 .InlineStory {
     .Story {
-        border: 2px solid transparent;
         @include elevation(4);
         display: flex;
-        min-height: 80px;
         padding: $edgeSpace;
-        border: 4px solid transparent;
         border-radius: 6px;
         background-color: white;
         word-break: break-word;
@@ -82,18 +79,11 @@ $actionIconSize: 28px;
                         background-color: #26882b;
                     }
                 }
+            }
 
-                .Badge {
-                    color: white;
-
-                    &.TotalTasks {
-                        background-color: #cb6600;
-                    }
-
-                    &.CompletedTasks {
-                        background-color: #26882b;
-                    }
-                }
+            .Goal {
+                font-size: 16px;
+                font-weight: bold;
             }
 
             .CompletionStatus {

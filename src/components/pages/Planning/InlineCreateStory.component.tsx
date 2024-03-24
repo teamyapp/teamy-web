@@ -14,6 +14,7 @@ import styles from './InlineCreateStory.component.module.scss';
 const storyNameLengthLimit = 100;
 interface Props {
     deps: Deps;
+    numActionColumns?: number;
     initialOwnerId?: number;
     onCreateStory?: (story: CreateStoryInput) => void;
     onDiscardNewStory?: () => void;
@@ -103,14 +104,19 @@ export const InlineCreateStory: FC<Props> = (props) => {
             <div className={styles.Story}>
                 <div className={styles.LeftSection}>
                     <textarea
+                        className={styles.Goal}
                         autoFocus
                         maxLength={storyNameLengthLimit}
-                        className={styles.NameTextField}
                         value={story.name || ''}
                         onChange={onNameChange}
                     />
                 </div>
-                <div className={styles.ActionsSection}>
+                <div className={styles.ActionsSection}
+                     style={{
+                         gridTemplateColumns: `repeat(${
+                             props.numActionColumns || 3
+                         }, 1fr)`,
+                     }}>
                     <div>
                         <TooltipUI message={'Save'}>
                             <div

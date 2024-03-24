@@ -1,18 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import {MouseEvent, useEffect, useRef, useState} from 'react';
 
-import { ItemsSelector } from '@lib/collections/itemSelector';
-import { getPlatform } from '@lib/runtime/os';
-import { ButtonUI } from '@lib/ui/Button';
-import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import {ItemsSelector} from '@lib/collections/itemSelector';
+import {getPlatform} from '@lib/runtime/os';
+import {ButtonUI} from '@lib/ui/Button';
+import {MaterialIconUI} from '@lib/ui/MaterialIcon';
 
-import { Deps } from '@core/dep/deps';
-import { CreateStoryInput } from '@core/entity/input';
-import { Phase } from '@core/entity/phase';
-import { Project } from '@core/entity/project';
-import { phaseStoryPath } from '@core/routing/routes';
+import {Deps} from '@core/dep/deps';
+import {CreateStoryInput} from '@core/entity/input';
+import {Phase} from '@core/entity/phase';
+import {Project} from '@core/entity/project';
+import {phaseStoryPath} from '@core/routing/routes';
 
-import { InlineCreateStory } from './InlineCreateStory.component';
-import { StoryInlineItemComponent } from './StoryInlineItem.component';
+import {InlineCreateStory} from './InlineCreateStory.component';
+import {StoryInlineItemComponent} from './StoryInlineItem.component';
 import styles from './Phase.component.module.scss';
 
 interface Props {
@@ -101,7 +101,7 @@ export function PhaseComponent(props: Props) {
                     return;
                 }
 
-                const { key, eventType } = keyboardEvent;
+                const {key, eventType} = keyboardEvent;
                 const platform = getPlatform();
                 if (
                     (platform === 'Mac' && key === 'Meta') ||
@@ -135,7 +135,7 @@ export function PhaseComponent(props: Props) {
         phaseStorySelectorRef.current.selectItem(storyIdNumber.toString());
     };
 
-    const onStoryDetailClickHandler = async (storyId: number) => {
+    const onStoryDetailClickHandler = (storyId: number) => {
         props.deps.router.navigateTo(
             phaseStoryPath(
                 currentTeam!.id,
@@ -146,8 +146,24 @@ export function PhaseComponent(props: Props) {
         );
     };
 
+    const onStoryDoubleClickHandler = (storyId: number) => {
+        return (event: MouseEvent<HTMLDivElement>) => {
+            props.deps.router.navigateTo(
+                phaseStoryPath(
+                    currentTeam!.id,
+                    props.project.id,
+                    props.phase.id,
+                    storyId,
+                ),
+            );
+        };
+    };
+
     const onAddStoryInPhaseClick = () => {
         setOnEditingNewStoryInPhase(true);
+    };
+
+    const onDeleteStoryFromPhaseClick = () => {
     };
 
     const onAddStoryInBacklogClick = () => {
@@ -189,30 +205,33 @@ export function PhaseComponent(props: Props) {
                             {props.phase.totalStories} stories delivered
                         </div>
                     </div>
-
                     <div className={styles.Actions}>
-                        <div className={styles.Add}>
-                            <ButtonUI
-                                label='Add'
-                                onClick={onAddStoryInPhaseClick}
-                            />
+                        <div
+                            className={`${styles.Action} ${styles.Add}`}
+                            onClick={onAddStoryInPhaseClick}
+                        >
+                            <MaterialIconUI>add</MaterialIconUI>
                         </div>
-                        <div className={styles.Delete}>
-                            <ButtonUI label='Delete' />
+                        <div
+                            className={`${styles.Action} ${styles.Delete}`}
+                            onClick={onDeleteStoryFromPhaseClick}
+                        >
+                            <MaterialIconUI>close</MaterialIconUI>
                         </div>
                     </div>
                 </div>
-
                 <div className={styles.StoriesSection}>
                     {onEditingNewStoryInPhase && (
                         <InlineCreateStory
                             deps={props.deps}
+                            numActionColumns={1}
                             onCreateStory={onCreateStoryInPhase}
                             onDiscardNewStory={onDiscardNewStoryInPhase}
                         />
                     )}
                     {props.phase.stories.map((story) => (
-                        <div className={styles.InlineStory} key={story.id}>
+                        <div className={styles.InlineStory} key={story.id}
+                             onDoubleClick={onStoryDoubleClickHandler(story.id)}>
                             <StoryInlineItemComponent
                                 story={story}
                                 deps={props.deps}
@@ -234,7 +253,7 @@ export function PhaseComponent(props: Props) {
                     <div className={styles.Title}>Stories</div>
                     <div className={styles.Actions}>
                         <div
-                            className={styles.Add}
+                            className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddStoryInBacklogClick}
                         >
                             <MaterialIconUI>add</MaterialIconUI>
@@ -245,12 +264,15 @@ export function PhaseComponent(props: Props) {
                     {onEditingNewStoryInBacklog && (
                         <InlineCreateStory
                             deps={props.deps}
+                            numActionColumns={1}
                             onCreateStory={onCreateStoryInBacklog}
                             onDiscardNewStory={onDiscardNewStoryInBacklog}
                         />
                     )}
                     {props.project.stories.map((story) => (
-                        <div key={story.id} className={styles.ListItem}>
+                        <div key={story.id}
+                             className={styles.ListItem}
+                             onDoubleClick={onStoryDoubleClickHandler(story.id)}>
                             <StoryInlineItemComponent
                                 story={story}
                                 deps={props.deps}

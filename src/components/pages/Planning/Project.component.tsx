@@ -237,11 +237,19 @@ export function ProjectComponent(props: Props) {
             </div>
         );
     };
-    const onStoryDetailClickHandler = async (storyId: number) => {
+    const onStoryDetailClickHandler = (storyId: number) => {
         props.deps.router.navigateTo(
             projectStoryPath(currentTeam.id, props.project.id, storyId),
         );
     };
+    const onStoryDoubleClickHandler = (storyId: number) => {
+        return (event: MouseEvent) => {
+            event.stopPropagation();
+            props.deps.router.navigateTo(
+                projectStoryPath(currentTeam.id, props.project.id, storyId),
+            );
+        };
+    }
 
     const onPhaseDoubleClickHandler = (phaseId: number) => {
         return (event: MouseEvent) => {
@@ -303,22 +311,24 @@ export function ProjectComponent(props: Props) {
                     <div className={styles.Actions}>
                         {selectedStoryIds.size > 0 &&
                             selectedPhaseIndexes.size > 0 && (
-                                <div className={styles.Move}>
-                                    <MaterialIconUI>
-                                        arrow_right_alt
-                                    </MaterialIconUI>
+                                <div
+                                    className={`${styles.Action} ${styles.Move}`}
+                                >
+                                    <MaterialIconUI>read_more</MaterialIconUI>
                                 </div>
                             )}
                         {selectedStoryIds.size > 0 && (
-                            <div className={styles.Delete}>
-                                <MaterialIconUI>delete</MaterialIconUI>
+                            <div
+                                className={`${styles.Action} ${styles.Delete}`}
+                            >
+                                <MaterialIconUI>close</MaterialIconUI>
                             </div>
                         )}
                         <div
-                            className={styles.Add}
+                            className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddStoryInBacklogClick}
                         >
-                            <MaterialIconUI>add</MaterialIconUI>
+                                <MaterialIconUI>add</MaterialIconUI>
                         </div>
                     </div>
                 </div>
@@ -326,12 +336,14 @@ export function ProjectComponent(props: Props) {
                     {isEditingNewStoryInBacklog && (
                         <InlineCreateStory
                             deps={props.deps}
+                            numActionColumns={1}
                             onCreateStory={onCreateStoryInBacklog}
                             onDiscardNewStory={onDiscardNewStoryInBacklog}
                         />
                     )}
                     {props.project.stories.map((story) => (
-                        <div className={styles.ListItem} key={story.id}>
+                        <div className={styles.ListItem} key={story.id}
+                            onDoubleClick={onStoryDoubleClickHandler(story.id)}>
                             <StoryInlineItemComponent
                                 story={story}
                                 key={story.id}

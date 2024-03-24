@@ -137,6 +137,7 @@ export class BacklogComponent extends Component<Props, State> {
                             {this.state.onEditingNewTask && (
                                 <InlineCreateTaskUI
                                     deps={this.props.deps}
+                                    numActionColumns={1}
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
                                 />

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import { FC, ReactElement, createRef, useRef, useState } from 'react';
+import {FC, ReactElement, createRef, useRef, useState, MouseEvent} from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
@@ -71,6 +71,29 @@ export const ProjectsComponent: FC<Props> = (props) => {
         };
     });
 
+    const onProjectClickHandler = (projectIndex: number) => {
+        return () => {
+            timelineRef.current?.showAndSelectItem(projectIndex, 0);
+            setSelectedProjectIndex(projectIndex);
+        };
+    };
+
+    const onProjectDoubleClickHandler = (projectId: number) => {
+        return (event: MouseEvent) => {
+            props.deps.router.navigateTo(
+                projectPath(currentTeam.id, projectId),
+            );
+        };
+    };
+
+    const onTimelineItemSelect = (rowIndex: number, itemIndex: number) => {
+        setSelectedProjectIndex(rowIndex);
+    };
+
+    const onAddProjectClick = () => {
+        createProjectModalComponentRef.current?.open();
+    };
+
     const renderProject = (project: Project, index: number): ReactElement => {
         return (
             <div
@@ -100,29 +123,6 @@ export const ProjectsComponent: FC<Props> = (props) => {
                 </div>
             </div>
         );
-    };
-
-    const onProjectClickHandler = (projectIndex: number) => {
-        return () => {
-            timelineRef.current?.showAndSelectItem(projectIndex, 0);
-            setSelectedProjectIndex(projectIndex);
-        };
-    };
-
-    const onProjectDoubleClickHandler = (projectId: number) => {
-        return () => {
-            props.deps.router.navigateTo(
-                projectPath(currentTeam.id, projectId),
-            );
-        };
-    };
-
-    const onTimelineItemSelect = (rowIndex: number, itemIndex: number) => {
-        setSelectedProjectIndex(rowIndex);
-    };
-
-    const onAddProjectClick = () => {
-        createProjectModalComponentRef.current?.open();
     };
 
     return (

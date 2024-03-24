@@ -23,6 +23,7 @@ import { getUserShortName } from './format';
 interface Props {
     deps: Deps;
     initialTaskOwnerId?: number;
+    numActionColumns?: number;
     onCreateTask?: (task: CreateTaskInput) => void;
     onDiscardNewTask?: () => void;
 }
@@ -64,7 +65,12 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                             onChange={this.onGoalChange}
                         />
                     </div>
-                    <div className={styles.ActionsSection}>
+                    <div className={styles.ActionsSection}
+                         style={{
+                             gridTemplateColumns: `repeat(${
+                                 this.props.numActionColumns || 3
+                             }, 1fr)`,
+                         }}>
                         <div>
                             <TooltipUI message={'Save'}>
                                 <div
