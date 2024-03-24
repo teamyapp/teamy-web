@@ -254,6 +254,7 @@ export function PhaseComponent(props: Props) {
                     <div className={styles.Actions}>
                         <div
                             className={`${styles.Action} ${styles.Add}`}
+                            onClick={onAddStoryInBacklogClick}
                         >
                             <MaterialIconUI>add</MaterialIconUI>
                         </div>
