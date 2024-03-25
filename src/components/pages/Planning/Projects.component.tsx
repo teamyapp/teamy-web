@@ -21,12 +21,12 @@ import {
     CreateProjectModalComponent,
     CreateProjectModalComponentHandle,
 } from './CreateProjectModal.component';
-import styles from './Projects.component.module.scss';
 import {
     Row,
     TimelineComponent,
     TimelineComponentHandle,
 } from './Timeline.component';
+import styles from './Projects.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -42,12 +42,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
     const [selectedProjectIndex, setSelectedProjectIndex] = useState<number>();
     const [team, setTeam] = useState<Team>();
 
-    // const currentTeam = props.deps.graphSource.currentTeam();
-    // if (!currentTeam) {
-    //     return null;
-    // }
 
-    // const rows: Row[] = []
     const rows: Row[] = (team?.projects || []).map((project, index) => {
         return {
             height: 70,

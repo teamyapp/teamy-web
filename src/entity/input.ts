@@ -213,7 +213,6 @@ export interface UpdateStoryInput {
     priority?: Priority;
 }
 
-
 export interface CreateProjectInput {
     name: string;
     expectedStartAt: Date;
