@@ -38,11 +38,11 @@ interface Level {
 }
 
 export function PlanningComponent(props: Props) {
+    const taskDetailModalRef = useRef<TaskDetailModalComponent>(null);
     const currentTeam = props.deps.graphSource.currentTeam();
     if (!currentTeam) {
         return null;
     }
-
     // TODO: intercept the route and get the project, phase, and story
     const routeUpdateParams = props.deps.router.currentRouteUpdate.params;
     const projectId = toInt(getProjectId(routeUpdateParams));
@@ -53,7 +53,6 @@ export function PlanningComponent(props: Props) {
     const phase = phaseId && props.deps.graphSource.phase(phaseId);
     const story = storyId && props.deps.graphSource.story(storyId);
 
-    const taskDetailModalRef = useRef<TaskDetailModalComponent>(null);
     const onViewTaskDetail = (taskId: number) => {
         taskDetailModalRef.current?.open(taskId);
     };

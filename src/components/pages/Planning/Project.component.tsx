@@ -66,6 +66,41 @@ export function ProjectComponent(props: Props) {
         new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseIndexes),
     );
 
+    const rows: Row[] = props.project.phases.map((phase, index) => {
+        const ref = createRef<HTMLDivElement>();
+        return {
+            height: 70,
+            items: [
+                {
+                    ref,
+                    view: (
+                        <div className={styles.Phase} ref={ref}>
+                            <div className={styles.ProgressBar}>
+                                <div
+                                    className={styles.Progress}
+                                    style={{
+                                        width: `${
+                                            (phase.deliveredStories /
+                                                phase.totalStories) *
+                                            100
+                                        }%`,
+                                    }}
+                                />
+                            </div>
+                            <div className={styles.Name}>{phase.name}</div>
+                            <div className={styles.Status}>
+                                {phase.deliveredStories} of {phase.totalStories}{' '}
+                                stories delivered
+                            </div>
+                        </div>
+                    ),
+                    startAt: phase.expectedStartAt,
+                    endAt: phase.expectedEndAt,
+                },
+            ],
+        };
+    });
+
     useEffect(() => {
         const selectedStoriesChan =
             storySelectorRef.current.subscribeSelectedItemsChanged();
@@ -169,41 +204,6 @@ export function ProjectComponent(props: Props) {
                 timelineRef.current?.deselectItem(phaseIndexNumber, 0);
             }
         };
-
-    const rows: Row[] = props.project.phases.map((phase, index) => {
-        const ref = createRef<HTMLDivElement>();
-        return {
-            height: 70,
-            items: [
-                {
-                    ref,
-                    view: (
-                        <div className={styles.Phase} ref={ref}>
-                            <div className={styles.ProgressBar}>
-                                <div
-                                    className={styles.Progress}
-                                    style={{
-                                        width: `${
-                                            (phase.deliveredStories /
-                                                phase.totalStories) *
-                                            100
-                                        }%`,
-                                    }}
-                                />
-                            </div>
-                            <div className={styles.Name}>{phase.name}</div>
-                            <div className={styles.Status}>
-                                {phase.deliveredStories} of {phase.totalStories}{' '}
-                                stories delivered
-                            </div>
-                        </div>
-                    ),
-                    startAt: phase.expectedStartAt,
-                    endAt: phase.expectedEndAt,
-                },
-            ],
-        };
-    });
 
     const renderPhase = (phase: Phase, index: number): ReactElement => {
         return (

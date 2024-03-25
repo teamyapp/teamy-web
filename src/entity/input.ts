@@ -212,3 +212,16 @@ export interface UpdateStoryInput {
     status: StoryStatus;
     priority?: Priority;
 }
+
+
+export interface CreateProjectInput {
+    name: string;
+    expectedStartAt: Date;
+    expectedEndAt: Date; 
+}
+
+export interface UpdateProjectInput {
+    name: string;
+    expectedStartAt: Date;
+    expectedEndAt: Date;
+}

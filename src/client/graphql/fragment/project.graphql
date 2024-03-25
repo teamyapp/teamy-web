@@ -1,0 +1,27 @@
+#import "./user.graphql"
+#import "./phase.graphql"
+#import "./story.graphql"
+#import "./team.graphql"
+
+fragment ProjectFragment on Project {
+    id
+    name
+    expectedStartAt
+    actualStartAt
+    expectedEndAt
+    actualEndAt
+    creator {
+        ...UserFragment
+    }
+    createdAt
+    updatedAt
+    phases {
+        ...PhaseFragment
+    }
+    stories {
+        ...StoryFragment
+    }
+    team {
+        ...TeamFragment
+    }
+}

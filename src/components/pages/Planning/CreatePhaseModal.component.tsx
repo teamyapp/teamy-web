@@ -28,10 +28,10 @@ export interface CreatePhaseModalComponentHandle {
     open: () => void;
 }
 
-interface CreateProjectInput {
+interface CreatePhaseInput {
     name: string;
-    expectedStartDate?: string;
-    expectedEndDate?: string;
+    expectedStartAt: string;
+    expectedEndAt: string;
 }
 
 export const CreatePhaseModalComponent: ForwardRefExoticComponent<
@@ -42,8 +42,10 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
         const stateSyncer: StateSyncer = props.deps.stateSyncer;
         const modalRef: RefObject<ModalUI> = createRef();
         const [createPhaseInput, setCreatePhaseInput] =
-            useState<CreateProjectInput>({
+            useState<CreatePhaseInput>({
                 name: '',
+                expectedStartAt: '',
+                expectedEndAt: '',
             });
         const phaseNameInputRef: RefObject<TextFieldUI> = useRef(null);
 
@@ -67,6 +69,8 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
             if (teamId && createPhaseInput?.name) {
                 setCreatePhaseInput({
                     name: '',
+                    expectedStartAt: '',
+                    expectedEndAt: '',
                 });
             }
 
@@ -80,17 +84,17 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
             });
         };
 
-        const onExpectedStartDateChange = (expectedStartDate: string) => {
+        const onExpectedStartDateChange = (expectedStartAt: string) => {
             setCreatePhaseInput({
                 ...createPhaseInput,
-                expectedStartDate,
+                expectedStartAt,
             });
         };
 
-        const onExpectedEndDateChange = (expectedEndDate: string) => {
+        const onExpectedEndDateChange = (expectedEndAt: string) => {
             setCreatePhaseInput({
                 ...createPhaseInput,
-                expectedEndDate,
+                expectedEndAt,
             });
         };
 
@@ -119,7 +123,7 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
                     <div className={styles.PhaseDate}>
                         <TextFieldUI
                             label='Expected Start Date'
-                            value={createPhaseInput?.expectedStartDate}
+                            value={createPhaseInput?.expectedStartAt}
                             onChange={onExpectedStartDateChange}
                             placeholder='YYYY/MM/DD HH:MM:SS'
                         />
@@ -128,7 +132,7 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
                     <div className={styles.PhaseDate}>
                         <TextFieldUI
                             label='Expected End Date'
-                            value={createPhaseInput?.expectedEndDate}
+                            value={createPhaseInput?.expectedEndAt}
                             onChange={onExpectedEndDateChange}
                             placeholder='YYYY/MM/DD HH:MM:SS'
                         />

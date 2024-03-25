@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, {
     ForwardRefExoticComponent,
     ForwardedRef,
@@ -30,8 +31,8 @@ export interface CreateProjectModalComponentHandle {
 
 interface CreateProjectInput {
     name: string;
-    expectedStartDate?: string;
-    expectedEndDate?: string;
+    expectedStartAt: string;
+    expectedEndAt: string;
 }
 
 export const CreateProjectModalComponent: ForwardRefExoticComponent<
@@ -42,6 +43,8 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
         const [createProjectInput, setCreateProjectInput] =
             useState<CreateProjectInput>({
                 name: '',
+                expectedStartAt: '',
+                expectedEndAt: '',
             });
         const projectNameInputRef: RefObject<TextFieldUI> = useRef(null);
 
@@ -66,8 +69,16 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
         const onCreateClick = async () => {
             const teamId = localStore.getState().currTeamId;
             if (teamId && createProjectInput?.name) {
+                await props.deps.stateSyncer.createProject(teamId, {
+                    name: createProjectInput.name,
+                    expectedStartAt:  moment(createProjectInput.expectedStartAt).toDate(),
+                    expectedEndAt: moment(createProjectInput.expectedEndAt).toDate()
+                });
+
                 setCreateProjectInput({
                     name: '',
+                    expectedStartAt: '',
+                    expectedEndAt: '',
                 });
             }
 
@@ -81,17 +92,17 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
             });
         };
 
-        const onExpectedStartDateChange = (expectedStartDate: string) => {
+        const onExpectedStartDateChange = (expectedStartAt: string) => {
             setCreateProjectInput({
                 ...createProjectInput,
-                expectedStartDate,
+                expectedStartAt,
             });
         };
 
-        const onExpectedEndDateChange = (expectedEndDate: string) => {
+        const onExpectedEndDateChange = (expectedEndAt: string) => {
             setCreateProjectInput({
                 ...createProjectInput,
-                expectedEndDate,
+                expectedEndAt,
             });
         };
 
@@ -120,7 +131,7 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
                     <div className={styles.ProjectDate}>
                         <TextFieldUI
                             label='Expected Start Date'
-                            value={createProjectInput?.expectedStartDate}
+                            value={createProjectInput?.expectedStartAt}
                             onChange={onExpectedStartDateChange}
                             placeholder='YYYY/MM/DD HH:MM:SS'
                         />
@@ -128,7 +139,7 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
                     <div className={styles.ProjectDate}>
                         <TextFieldUI
                             label='Expected End Date'
-                            value={createProjectInput?.expectedEndDate}
+                            value={createProjectInput?.expectedEndAt}
                             onChange={onExpectedEndDateChange}
                             placeholder='YYYY/MM/DD HH:MM:SS'
                         />

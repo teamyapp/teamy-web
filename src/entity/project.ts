@@ -1,5 +1,6 @@
 import { Phase } from './phase';
 import { Story } from './story';
+import { Team } from './team';
 import { User } from './user';
 
 export interface Project {

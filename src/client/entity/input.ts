@@ -182,3 +182,16 @@ export interface RemoteUpdateRolloutInput {
     isEnabled: boolean;
     groupIds: string[];
 }
+
+
+export interface RemoteCreateProjectInput {
+    name: string;
+    expectedStartAt: Date;
+    expectedEndAt: Date;
+}
+
+export interface RemoteUpdateProjectInput {
+    name: string;
+    expectedStartAt: Date;
+    expectedEndAt: Date;
+}
