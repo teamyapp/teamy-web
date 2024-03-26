@@ -64,13 +64,13 @@ import { FilterGroupState, GroupState } from '../states/group.state';
 import { PhaseState } from '../states/phase.state';
 import { ProjectState } from '../states/project.state';
 import { RolloutState } from '../states/rollout.state';
+import { StoryState } from '../states/story.state';
 import { TagState } from '../states/tag.state';
 import { TaskActivityState } from '../states/taskActivity.state';
 import { TaskLinkState } from '../states/taskLink.state';
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { VersionSelectorState } from '../states/versionSelector.state';
 import { Mutation } from './mutation';
-import { StoryState } from '../states/story.state';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -594,16 +594,23 @@ export function mergeProject(
             toDate(remoteProject.expectedStartAt) ||
             localOldProject.expectedStartAt,
         actualStartAt:
-            toDate(remoteProject.actualStartAt) ||
-            localOldProject.actualStartAt,
+            remoteProject.actualStartAt === undefined
+                ? localOldProject.actualStartAt
+                : toDate(remoteProject.actualStartAt),
         expectedEndAt:
             toDate(remoteProject.expectedEndAt) ||
             localOldProject.expectedEndAt,
         actualEndAt:
-            toDate(remoteProject.actualEndAt) || localOldProject.actualEndAt,
+            remoteProject.actualEndAt === undefined
+                ? localOldProject.actualEndAt
+                : toDate(remoteProject.actualEndAt),
         createdAt: toDate(remoteProject.createdAt) || localOldProject.createdAt,
         creatorId: toInt(remoteProject.creator.id) || localOldProject.creatorId,
-        updatedAt: toDate(remoteProject.updatedAt) || localOldProject.updatedAt,
+        updatedAt:
+            remoteProject.updatedAt === undefined
+                ? localOldProject.updatedAt
+                : toDate(remoteProject.updatedAt),
+        teamId: toInt(remoteProject.team.id) || localOldProject.teamId,
     };
 
     remoteProject.phases?.forEach((phase) => {
@@ -615,7 +622,6 @@ export function mergeProject(
     });
 
     currAppState = mergeTeam(currAppState, remoteProject.team);
-    currAppState = mergeTeamProjectRelation(currAppState, remoteProject.team.id, remoteProject.id);
     currAppState.projects[remoteProjectId] = localNewProject;
     return currAppState;
 }
@@ -634,14 +640,21 @@ export function mergePhase(
             toDate(remotePhase.expectedStartAt) ||
             localOldPhase.expectedStartAt,
         actualStartAt:
-            toDate(remotePhase.actualStartAt) || localOldPhase.actualStartAt,
+            remotePhase.actualStartAt === undefined
+                ? localOldPhase.actualStartAt
+                : toDate(remotePhase.actualStartAt),
         expectedEndAt:
             toDate(remotePhase.expectedEndAt) || localOldPhase.expectedEndAt,
         actualEndAt:
-            toDate(remotePhase.actualEndAt) || localOldPhase.actualEndAt,
+            remotePhase.actualEndAt === undefined
+                ? localOldPhase.actualEndAt
+                : toDate(remotePhase.actualEndAt),
         creatorId: toInt(remotePhase.creator.id) || localOldPhase.creatorId,
         createdAt: toDate(remotePhase.createdAt) || localOldPhase.createdAt,
-        updatedAt: toDate(remotePhase.updatedAt) || localOldPhase.updatedAt,
+        updatedAt:
+            remotePhase.updatedAt === undefined
+                ? localOldPhase.updatedAt
+                : toDate(remotePhase.updatedAt),
     };
 
     remotePhase.stories?.forEach((story) => {
@@ -666,7 +679,10 @@ export function mergeStory(
         priority: remoteStory.priority || localOldStory.priority,
         creatorId: toInt(remoteStory.creator.id) || localOldStory.creatorId,
         createdAt: toDate(remoteStory.createdAt) || localOldStory.createdAt,
-        updatedAt: toDate(remoteStory.updatedAt) || localOldStory.updatedAt,
+        updatedAt:
+            remoteStory.updatedAt === undefined
+                ? localOldStory.updatedAt
+                : toDate(remoteStory.updatedAt),
     };
 
     remoteStory.tasks?.forEach((task) => {
@@ -1367,12 +1383,7 @@ export function mergeTeam(
 
     remoteTeam.projects?.forEach((project) => {
         currAppState = mergeProject(currAppState, project);
-        currAppState = mergeTeamProjectRelation(
-            currAppState,
-            remoteTeam.id,
-            project.id,
-        );
-    })
+    });
 
     if (remoteTeam.invitations) {
         currAppState = replaceTeamInvitations(
@@ -1395,30 +1406,6 @@ export function mergeTeam(
     }
 
     currAppState.teams[remoteTeamId] = localNewTeam;
-    return currAppState;
-}
-
-export function mergeTeamProjectRelation(
-    currAppState: AppState,
-    teamId: string,
-    projectId: string,
-): AppState {
-    const teamIdInt = toInt(teamId)!;
-    const projectIdInt = toInt(projectId)!;
-    if (
-        !currAppState.teamProjectRelations.some((teamProjectRelation) => {
-            return (
-                teamProjectRelation.teamId === teamIdInt &&
-                teamProjectRelation.projectId === projectIdInt
-            );
-        })
-    ) {
-        currAppState.teamProjectRelations.push({
-            teamId: teamIdInt,
-            projectId: projectIdInt,
-        });
-    }
-
     return currAppState;
 }
 

@@ -945,10 +945,6 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         delete appState.projects[projectId];
 
-        appState.teamProjectRelations = appState.teamProjectRelations.filter(
-            (relation) => relation.projectId !== projectId,
-        );
-
         appState.projectPhaseRelations.forEach((relation) => {
             if (relation.projectId === projectId) {
                 this._deletePhase(appState, relation.phaseId);

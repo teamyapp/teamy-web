@@ -2,7 +2,6 @@ import {MouseEvent, useEffect, useRef, useState} from 'react';
 
 import {ItemsSelector} from '@lib/collections/itemSelector';
 import {getPlatform} from '@lib/runtime/os';
-import {ButtonUI} from '@lib/ui/Button';
 import {MaterialIconUI} from '@lib/ui/MaterialIcon';
 
 import {Deps} from '@core/dep/deps';
@@ -123,10 +122,6 @@ export function PhaseComponent(props: Props) {
         })();
     }, []);
 
-    if (!currentTeam) {
-        return null;
-    }
-
     const onBacklogStorySelect = (storyIdNumber: number) => {
         backlogStorySelectorRef.current.selectItem(storyIdNumber.toString());
     };
@@ -148,6 +143,7 @@ export function PhaseComponent(props: Props) {
 
     const onStoryDoubleClickHandler = (storyId: number) => {
         return (event: MouseEvent<HTMLDivElement>) => {
+            event.stopPropagation();
             props.deps.router.navigateTo(
                 phaseStoryPath(
                     currentTeam!.id,
@@ -193,6 +189,10 @@ export function PhaseComponent(props: Props) {
     const onDiscardNewStoryInBacklog = () => {
         setOnEditingNewStoryInBacklog(false);
     };
+
+    if (!currentTeam) {
+        return null;
+    }
 
     return (
         <div className={styles.Phase}>

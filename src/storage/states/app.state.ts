@@ -40,7 +40,6 @@ import { StoryTaskRelationState } from './storyTaskRelation.state';
 import { TagState } from './tag.state';
 import { TaskLinkState } from './taskLink.state';
 import { TeamAppVersionState } from './teamAppVersion.state';
-import { TeamProjectRelationState } from './teamProjectRelation.state';
 import {
     VersionSelectorState,
     VersionSelectorVersionRelationState,
@@ -79,7 +78,6 @@ export class AppState {
     public stories: Record<number, StoryState> = {};
     public phases: Record<number, PhaseState> = {};
     public projects: Record<number, ProjectState> = {};
-    public teamProjectRelations: TeamProjectRelationState[] = [];
     public projectPhaseRelations: ProjectPhaseRelationState[] = [];
     public projectStoryRelations: ProjectStoryRelationState[] = [];
     public phaseStoryRelations: PhaseStoryRelationState[] = [];

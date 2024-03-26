@@ -140,9 +140,15 @@ export class TeamNode implements Team {
 
     public get projects(): ProjectNode[] {
         const appState = this.localStore.getState();
-        return appState.teamProjectRelations.map((relation) => {
-            const project = appState.projects[relation.projectId];
-            return new ProjectNode(this.localStore, project);
-        });
+        const projects = [];
+
+        for (let projectId in appState.projects) {
+            const project = appState.projects[projectId];
+            if (project.teamId === this.teamState.id) {
+                projects.push(new ProjectNode(this.localStore, project));
+            }
+        }
+
+        return projects;
     }
 }

@@ -6,9 +6,11 @@ export class ProjectState {
         public expectedEndAt: Date,
         public creatorId: number,
         public createdAt: Date,
+        public teamId: number,
         public actualStartAt?: Date,
         public actualEndAt?: Date,
         public updatedAt?: Date,
+
     ) {}
 
     static fromJson(json: any): ProjectState {
@@ -19,6 +21,7 @@ export class ProjectState {
             json.expectedEndAt,
             json.creatorId,
             json.createdAt,
+            json.teamId,
             json.actualStartAt,
             json.actualEndAt,
             json.updatedAt,
@@ -27,15 +30,16 @@ export class ProjectState {
 
     static fromMutationPayload(json: any): ProjectState {
         return new ProjectState(
-            json.id,
-            json.name,
-            json.expectedStartAt,
-            json.expectedEndAt,
-            json.creatorId,
-            json.createdAt,
-            json.actualStartAt,
-            json.actualEndAt,
-            json.updatedAt,
+            json.ID,
+            json.Name,
+            json.ExpectedStartAt,
+            json.ExpectedEndAt,
+            json.CreatorID,
+            json.CreatedAt,
+            json.TeamID,
+            json.ActualStartAt,
+            json.ActualEndAt,
+            json.UpdatedAt,
         );
     }
 }
