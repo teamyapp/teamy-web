@@ -11,5 +11,7 @@ export interface RemoteStory {
     status: RemoteStoryStatus;
     priority: RemotePriority;
     creator: RemoteUser;
+    createdAt: string;
+    updatedAt?: string;
     tasks: RemoteTask[];
 }

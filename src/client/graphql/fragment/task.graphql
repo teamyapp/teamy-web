@@ -1,0 +1,47 @@
+#import "./user.graphql"
+#import "./team.graphql"
+
+fragment TaskFragment on Task {
+    id
+    goal
+    dueAt
+    context
+    owner {
+        ...UserFragment
+    }
+    effort
+    priority
+    owningTeam {
+        ...TeamFragment
+    }
+    isPlanned
+    createdAt
+    deliveredAt
+    comments {
+        id
+        messages {
+            id
+            body
+            author {
+                id
+                firstName
+                lastName
+                profileUrl
+            }
+            thread {
+                id
+            }
+            createdAt
+            updatedAt
+        }
+    }
+    status
+    links {
+        id
+        taskId
+        title
+        url
+        iconUrl
+        iconHoverUrl
+    }
+}

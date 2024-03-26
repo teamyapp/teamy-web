@@ -7,12 +7,12 @@ export interface RemotePhase {
     id: string;
     name: string;
     status: RemotePhaseStatus;
-    expectedStartAt: Date;
-    actualStartAt?: Date;
-    expectedEndAt: Date;
-    actualEndAt?: Date;
+    expectedStartAt: string;
+    actualStartAt?: string;
+    expectedEndAt: string;
+    actualEndAt?: string;
     creator: RemoteUser;
-    createdAt: Date;
-    updatedAt?: Date;
+    createdAt: string;
+    updatedAt?: string;
     stories: RemoteStory[];
 }

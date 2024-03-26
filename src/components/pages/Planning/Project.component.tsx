@@ -148,37 +148,13 @@ export function ProjectComponent(props: Props) {
         };
     }, []);
 
-    if (!currentTeam) {
-        return null;
-    }
-
-    const onStorySelectHandler = (storyIdNumber: number) => {
-        storySelectorRef.current.selectItem(storyIdNumber.toString());
-    };
-
-    const onPhaseSelectHandler =
-        (phaseIndexNumber: number) => async (event: MouseEvent) => {
-            event.stopPropagation();
-            const isSelected = await phaseSelectorRef.current.selectItem(
-                phaseIndexNumber.toString(),
-            );
-
-            if (isSelected) {
-                timelineRef.current?.showAndSelectItem(phaseIndexNumber, 0);
-            } else {
-                timelineRef.current?.deselectItem(phaseIndexNumber, 0);
-            }
-        };
-
     const rows: Row[] = props.project.phases.map((phase, index) => {
-        const ref = createRef<HTMLDivElement>();
         return {
             height: 70,
             items: [
                 {
-                    ref,
                     view: (
-                        <div className={styles.Phase} ref={ref}>
+                        <div className={styles.Phase}>
                             <div className={styles.ProgressBar}>
                                 <div
                                     className={styles.Progress}
@@ -204,6 +180,24 @@ export function ProjectComponent(props: Props) {
             ],
         };
     });
+
+    const onStorySelectHandler = (storyIdNumber: number) => {
+        storySelectorRef.current.selectItem(storyIdNumber.toString());
+    };
+
+    const onPhaseSelectHandler =
+        (phaseIndexNumber: number) => async (event: MouseEvent) => {
+            event.stopPropagation();
+            const isSelected = await phaseSelectorRef.current.selectItem(
+                phaseIndexNumber.toString(),
+            );
+
+            if (isSelected) {
+                timelineRef.current?.showAndSelectItem(phaseIndexNumber, 0);
+            } else {
+                timelineRef.current?.deselectItem(phaseIndexNumber, 0);
+            }
+        };
 
     const renderPhase = (phase: Phase, index: number): ReactElement => {
         return (
@@ -238,6 +232,10 @@ export function ProjectComponent(props: Props) {
         );
     };
     const onStoryDetailClickHandler = (storyId: number) => {
+        if (!currentTeam) {
+            return;
+        }
+
         props.deps.router.navigateTo(
             projectStoryPath(currentTeam.id, props.project.id, storyId),
         );
@@ -245,6 +243,10 @@ export function ProjectComponent(props: Props) {
     const onStoryDoubleClickHandler = (storyId: number) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
+            if (!currentTeam) {
+                return;
+            }
+
             props.deps.router.navigateTo(
                 projectStoryPath(currentTeam.id, props.project.id, storyId),
             );
@@ -254,6 +256,10 @@ export function ProjectComponent(props: Props) {
     const onPhaseDoubleClickHandler = (phaseId: number) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
+            if (!currentTeam) {
+                return;
+            }
+
             props.deps.router.navigateTo(
                 phasePath(currentTeam.id, props.project.id, phaseId),
             );
@@ -279,6 +285,10 @@ export function ProjectComponent(props: Props) {
     const onAddPhaseClick = () => {
         createPhaseModalComponentRef.current?.open();
     };
+
+    if (!currentTeam) {
+        return null;
+    }
 
     return (
         <div className={styles.Project}>

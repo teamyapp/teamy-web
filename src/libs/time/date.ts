@@ -1,4 +1,4 @@
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 
 export interface Year {
     yearOf: number;
@@ -125,3 +125,8 @@ export function getYearsBetween(startAt: Moment, endAt: Moment): Year[] {
 
     return years;
 }
+
+export function formatDate(date: Date | undefined): string {
+    return date ? moment(date).format('MM/DD/YYYY h:mm:ss') : '';
+}
+

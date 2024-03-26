@@ -49,6 +49,7 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { ProjectClient } from '@core/client/project.client';
 
 export interface Deps {
     featureToggle: FeatureToggle;
@@ -134,6 +135,7 @@ export function initDeps(config: Config): Deps {
         httpWithLogger,
     );
     const appClient = new AppClient(teamyGraphQLClient);
+    const projectClient = new ProjectClient(teamyGraphQLClient);
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);
     const teamClient = new TeamClient(teamyGraphQLClient);
@@ -154,6 +156,7 @@ export function initDeps(config: Config): Deps {
         identityClient,
         localStore,
         appClient,
+        projectClient,
         taskClient,
         messageClient,
         teamClient,

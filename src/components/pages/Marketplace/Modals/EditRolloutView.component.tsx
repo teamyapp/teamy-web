@@ -29,6 +29,7 @@ import {
 } from '@core/entity/rollout';
 
 import styles from './EditRolloutView.component.module.scss';
+import { formatDate } from '@lib/time/date';
 
 const activatorTypeOptions: Option[] = [
     { key: 'STATIC', description: 'Static' },
@@ -680,8 +681,4 @@ export function EditRolloutViewComponent() {
             );
         },
     );
-}
-
-function formatDate(date: Date | undefined): string {
-    return date ? moment(date).format('MM/DD/YYYY h:mm:ss') : '';
 }

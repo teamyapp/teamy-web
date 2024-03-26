@@ -1,11 +1,20 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import {FC, ReactElement, createRef, useRef, useState, MouseEvent} from 'react';
+import {
+    FC,
+    MouseEvent,
+    ReactElement,
+    createRef,
+    useEffect,
+    useRef,
+    useState,
+} from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
 import { Project } from '@core/entity/project';
+import { Team } from '@core/entity/team';
 import { projectPath } from '@core/routing/routes';
 
 import {
@@ -31,20 +40,35 @@ export const ProjectsComponent: FC<Props> = (props) => {
     const createProjectModalComponentRef =
         useRef<CreateProjectModalComponentHandle>(null);
     const [selectedProjectIndex, setSelectedProjectIndex] = useState<number>();
-    const currentTeam = props.deps.graphSource.currentTeam();
-    if (!currentTeam) {
-        return null;
-    }
+    const [team, setTeam] = useState<Team>();
 
-    const rows: Row[] = currentTeam.projects.map((project, index) => {
-        const ref = createRef<HTMLDivElement>();
+    useEffect(() => {
+        const stateChangeChan = props.deps.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                console.log('[ProjectsComponent] waiting for state changes');
+                const hasChanged = await stateChangeChan!.pop();
+                if (hasChanged === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+
+                const currentTeam = props.deps.graphSource.currentTeam();
+                if (currentTeam) {
+                    setTeam(currentTeam);
+                }
+            }
+        })().then();
+    }, []);
+
+    const rows: Row[] = (team?.projects || []).map((project, index) => {
         return {
             height: 70,
             items: [
                 {
-                    ref,
                     view: (
-                        <div className={styles.Project} ref={ref}>
+                        <div className={styles.Project}>
                             <div className={styles.ProgressBar}>
                                 <div
                                     className={styles.Progress}
@@ -80,9 +104,12 @@ export const ProjectsComponent: FC<Props> = (props) => {
 
     const onProjectDoubleClickHandler = (projectId: number) => {
         return (event: MouseEvent) => {
-            props.deps.router.navigateTo(
-                projectPath(currentTeam.id, projectId),
-            );
+            event.stopPropagation();
+            if (!team) {
+                return;
+            }
+
+            props.deps.router.navigateTo(projectPath(team.id, projectId));
         };
     };
 
@@ -93,6 +120,12 @@ export const ProjectsComponent: FC<Props> = (props) => {
     const onAddProjectClick = () => {
         createProjectModalComponentRef.current?.open();
     };
+
+    const onDeleteProjectClickHandler =
+        (projectId: number) => (event: MouseEvent) => {
+            event.stopPropagation();
+            props.deps.stateSyncer.deleteProject(projectId);
+        };
 
     const renderProject = (project: Project, index: number): ReactElement => {
         return (
@@ -117,13 +150,20 @@ export const ProjectsComponent: FC<Props> = (props) => {
                     </div>
                 </div>
                 <div className={styles.RightSection}>
-                    <div className={styles.DeleteIcon}>
+                    <div
+                        className={styles.DeleteIcon}
+                        onClick={onDeleteProjectClickHandler(project.id)}
+                    >
                         <MaterialIconUI>close</MaterialIconUI>
                     </div>
                 </div>
             </div>
         );
     };
+
+    if (!team) {
+        return null;
+    }
 
     return (
         <div className={styles.Projects}>
@@ -136,7 +176,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                         </div>
                     </div>
                     <div className={styles.ProjectList}>
-                        {currentTeam.projects.map(renderProject)}
+                        {team.projects.map(renderProject)}
                     </div>
                 </div>
                 <div className={styles.Timeline}>

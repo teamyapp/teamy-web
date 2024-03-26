@@ -27,6 +27,7 @@ import {
     CreateFilterGroupInput,
     CreateInvitationInput,
     CreateMessageInput,
+    CreateProjectInput,
     CreateSprintInput,
     CreateStaticGroupInput,
     CreateTaskInput,
@@ -38,6 +39,7 @@ import {
     UpdateAppVersionInput,
     UpdateGroupInput,
     UpdateMessageInput,
+    UpdateProjectInput,
     UpdateRolloutInput,
     UpdateTaskInput,
     UpdateTeamInput,
@@ -81,6 +83,8 @@ import {
     mergeGroupRolloutRelation,
     mergeInvitation,
     mergeMessage,
+    mergePhase,
+    mergeProject,
     mergeRollout,
     mergeSprint,
     mergeTag,
@@ -94,6 +98,7 @@ import {
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
+import { ProjectClient } from '@core/client/project.client';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -110,6 +115,7 @@ export class StateSyncer {
         private identityClient: IdentityClient,
         private localStore: LocalStore,
         private appClient: AppClient,
+        private projectClient: ProjectClient,
         private taskClient: TaskClient,
         private messageClient: MessageClient,
         private teamClient: TeamClient,
@@ -914,6 +920,54 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async createProject(
+        teamId: number,
+        input: CreateProjectInput,
+    ): Promise<void> {
+        const remoteProject = await this.projectClient.createProject(`${teamId}`, input);
+        let appState = this.localStore.getState();
+        appState = mergeProject(appState,remoteProject);
+        this.localStore.updateState(appState);
+    }
+
+    public async updateProject(
+        projectId: number,
+        input: UpdateProjectInput,
+    ): Promise<void> {
+        const remoteProject = await this.projectClient.updateProject(`${projectId}`, input);
+        let appState = this.localStore.getState();
+        appState = mergeProject(appState, remoteProject);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteProject(projectId: number): Promise<void> {
+        await this.projectClient.deleteProject(`${projectId}`);
+        let appState = this.localStore.getState();
+        delete appState.projects[projectId];
+
+        appState.projectPhaseRelations.forEach((relation) => {
+            if (relation.projectId === projectId) {
+                this._deletePhase(appState, relation.phaseId);
+            }
+        })
+
+        appState.projectStoryRelations.forEach((relation) => {
+            if (relation.projectId === projectId) {
+                this._deleteStory(appState, relation.storyId);
+            }
+        })
+
+        appState.projectStoryRelations = appState.projectStoryRelations.filter(
+            (relation) => relation.projectId !== projectId
+        );
+
+        appState.projectPhaseRelations = appState.projectPhaseRelations.filter(
+            (relation) => relation.projectId !== projectId
+        );
+
+        this.localStore.updateState(appState);
+    }
+
     public async installAppToTeam(appId: number, teamId: number) {
         const remoteInstallation = await this.appClient.installAppToTeam(
             `${appId}`,
@@ -1358,6 +1412,30 @@ export class StateSyncer {
 
         appState = mergeVersionSelector(appState, remoteVersionSelector);
         this.localStore.updateState(appState);
+    }
+
+    private _deletePhase(appState: AppState, phaseId: number) {
+        delete appState.phases[phaseId];
+        appState.projectPhaseRelations = appState.projectPhaseRelations.filter(
+            (relation) => relation.phaseId !== phaseId,
+        );
+
+        appState.phaseStoryRelations.forEach((relation) => {
+            if (relation.phaseId === phaseId) {
+                this._deleteStory(appState, relation.storyId);
+            }
+        })
+    }
+
+    private _deleteStory(appState: AppState, storyId: number) {
+        delete appState.stories[storyId];
+        appState.phaseStoryRelations = appState.phaseStoryRelations.filter(
+            (relation) => relation.storyId !== storyId
+        );
+
+        appState.projectStoryRelations = appState.projectStoryRelations.filter(
+            (relation) => relation.storyId !== storyId
+        );
     }
 
     private _deleteRollout(

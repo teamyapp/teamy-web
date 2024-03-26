@@ -1,0 +1,20 @@
+#import "./user.graphql"
+#import "./task.graphql"
+
+fragment StoryFragment on Story {
+    id
+    name
+    owner {
+        ...UserFragment
+    }
+    status
+    priority
+    creator {
+        ...UserFragment
+    }
+    createdAt
+    updatedAt
+    tasks {
+        ...TaskFragment
+    }
+}

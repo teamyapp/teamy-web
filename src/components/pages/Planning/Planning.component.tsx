@@ -1,10 +1,11 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import { TaskDetailModalComponent } from 'components/internal/Modals/TaskDetailModal.component';
-import { Fragment, useRef } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 
 import { Route } from '@lib/router/Route';
 
 import { Deps } from '@core/dep/deps';
+import { Team } from '@core/entity/team';
 import {
     getPhaseId,
     getProjectId,
@@ -38,10 +39,28 @@ interface Level {
 }
 
 export function PlanningComponent(props: Props) {
-    const currentTeam = props.deps.graphSource.currentTeam();
-    if (!currentTeam) {
-        return null;
-    }
+    const taskDetailModalRef = useRef<TaskDetailModalComponent>(null);
+    const [team, setTeam] = useState<Team>();
+
+    useEffect(() => {
+        const stateChangeChan = props.deps.localStore.subscribeStateChange();
+        (async () => {
+            while (true) {
+                console.log('[PlanningComponent] waiting for state changes');
+                const hasChanged = await stateChangeChan!.pop();
+                if (hasChanged === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+
+                const currentTeam = props.deps.graphSource.currentTeam();
+                if (currentTeam) {
+                    setTeam(currentTeam);
+                }
+            }
+        })();
+    }, []);
 
     // TODO: intercept the route and get the project, phase, and story
     const routeUpdateParams = props.deps.router.currentRouteUpdate.params;
@@ -53,16 +72,19 @@ export function PlanningComponent(props: Props) {
     const phase = phaseId && props.deps.graphSource.phase(phaseId);
     const story = storyId && props.deps.graphSource.story(storyId);
 
-    const taskDetailModalRef = useRef<TaskDetailModalComponent>(null);
     const onViewTaskDetail = (taskId: number) => {
         taskDetailModalRef.current?.open(taskId);
     };
+
+    if (!team) {
+        return null;
+    }
 
     const location: Level[] = [
         {
             name: 'Projects',
             onClick: () => {
-                props.deps.router.navigateTo(projectsPath(currentTeam.id));
+                props.deps.router.navigateTo(projectsPath(team.id));
             },
         },
     ];
@@ -72,7 +94,7 @@ export function PlanningComponent(props: Props) {
             name: project.name,
             onClick: () => {
                 props.deps.router.navigateTo(
-                    projectPath(currentTeam.id, project.id),
+                    projectPath(team.id, project.id),
                 );
             },
         });
@@ -82,7 +104,7 @@ export function PlanningComponent(props: Props) {
                 name: phase.name,
                 onClick: () => {
                     props.deps.router.navigateTo(
-                        phasePath(currentTeam.id, project.id, phase.id),
+                        phasePath(team.id, project.id, phase.id),
                     );
                 },
             });

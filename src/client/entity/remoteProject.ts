@@ -1,17 +1,19 @@
 import { RemotePhase } from './remotePhase';
 import { RemoteStory } from './remoteStory';
+import { RemoteTeam } from './remoteTeam';
 import { RemoteUser } from './remoteUser';
 
 export interface RemoteProject {
     id: string;
     name: string;
-    expectedStartAt: Date;
-    actualStartAt?: Date;
-    expectedEndAt: Date;
-    actualEndAt?: Date;
+    expectedStartAt: string;
+    actualStartAt?: string;
+    expectedEndAt: string;
+    actualEndAt?: string;
     creator: RemoteUser;
-    createdAt: Date;
-    updatedAt?: Date;
+    createdAt: string;
+    updatedAt?: string;
     phases: RemotePhase[];
     stories: RemoteStory[];
+    team: RemoteTeam;
 }

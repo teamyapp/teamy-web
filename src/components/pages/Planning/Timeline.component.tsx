@@ -4,6 +4,7 @@ import {
     ForwardedRef,
     ReactElement,
     RefObject,
+    createRef,
     forwardRef,
     useEffect,
     useImperativeHandle,
@@ -93,7 +94,7 @@ export interface TimelineComponentHandle {
 export const TimelineComponent = forwardRef(
     (props: Props, ref: ForwardedRef<TimelineComponentHandle>) => {
         const rowRefs: RefObject<any>[][] = props.rows.map((row) =>
-            row.items.map((item) => useRef()),
+            row.items.map((item) => createRef()),
         );
         const labelsContentRef = useRef<HTMLDivElement>(null);
         const labelsSpacerRef = useRef<HTMLDivElement>(null);
@@ -127,7 +128,7 @@ export const TimelineComponent = forwardRef(
 
         useImperativeHandle(ref, () => ({
             showAndSelectItem: (rowIndex: number, itemIndex: number) => {
-                rowRefs[rowIndex][itemIndex].current.scrollIntoView({
+                rowRefs[rowIndex][itemIndex].current?.scrollIntoView({
                     behavior: 'smooth',
                     block: 'center',
                     inline: 'center',
