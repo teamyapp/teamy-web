@@ -2,6 +2,7 @@ import { GraphQLClient } from "@lib/network/GraphQL.client";
 import { RemoteCreateProjectInput } from "./entity/input";
 import  createProject  from "./graphql/mutation/createProject.graphql";
 import  updateProject  from "./graphql/mutation/updateProject.graphql";
+import deleteProject  from "./graphql/mutation/deleteProject.graphql";
 import { print } from "graphql";
 import { RemoteProject } from "./entity/remoteProject";
 
@@ -39,13 +40,7 @@ export class ProjectClient {
     deleteProject(projectId: string): Promise<void> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation deleteProject($projectId: ID!) {
-                        deleteProject(projectId: $projectId) {
-                            id
-                        }
-                    }
-                `,
+                mutation: print(deleteProject),
                 variables: {
                     projectId,
                 },
