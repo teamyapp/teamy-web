@@ -1,0 +1,7 @@
+#import '../fragment/phase.graphql'
+
+mutation createPhase($projectId: ID!, $input: CreatePhaseInput!) {
+    createPhase(projectId: $projectId, input: $input) {
+        ...PhaseFragment
+    }
+}

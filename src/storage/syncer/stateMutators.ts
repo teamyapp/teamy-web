@@ -615,14 +615,74 @@ export function mergeProject(
 
     remoteProject.phases?.forEach((phase) => {
         currAppState = mergePhase(currAppState, phase);
+        currAppState = mergeProjectPhaseRelation(
+            currAppState,
+            remoteProject.id,
+            phase.id,
+        );
     });
 
     remoteProject.stories?.forEach((story) => {
         currAppState = mergeStory(currAppState, story);
+        currAppState = mergeProjectStoryRelation(
+            currAppState,
+            remoteProject.id,
+            story.id,
+        );
     });
 
     currAppState = mergeTeam(currAppState, remoteProject.team);
     currAppState.projects[remoteProjectId] = localNewProject;
+    return currAppState;
+}
+
+export function mergeProjectStoryRelation(
+    currAppState: AppState,
+    remoteProjectId: string,
+    remoteStoryId: string,
+): AppState {
+    const projectId = toInt(remoteProjectId)!;
+    const storyId = toInt(remoteStoryId)!;
+
+    if (
+        !currAppState.projectStoryRelations.some((projectStoryRelation) => {
+            return (
+                projectStoryRelation.projectId === projectId &&
+                projectStoryRelation.storyId === storyId
+            );
+        })
+    ) {
+        currAppState.projectStoryRelations.push({
+            projectId: projectId,
+            storyId: storyId,
+        });
+    }
+
+    return currAppState;
+}
+
+export function mergeProjectPhaseRelation(
+    currAppState: AppState,
+    remoteProjectId: string,
+    remotePhaseId: string,
+): AppState {
+    const projectId = toInt(remoteProjectId)!;
+    const phaseId = toInt(remotePhaseId)!;
+
+    if (
+        !currAppState.projectPhaseRelations.some((projectPhaseRelation) => {
+            return (
+                projectPhaseRelation.projectId === projectId &&
+                projectPhaseRelation.phaseId === phaseId
+            );
+        })
+    ) {
+        currAppState.projectPhaseRelations.push({
+            projectId: projectId,
+            phaseId: phaseId,
+        });
+    }
+
     return currAppState;
 }
 

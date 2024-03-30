@@ -50,6 +50,7 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { ProjectClient } from '@core/client/project.client';
+import { PhaseClient } from '@core/client/phase.client';
 
 export interface Deps {
     featureToggle: FeatureToggle;
@@ -136,6 +137,7 @@ export function initDeps(config: Config): Deps {
     );
     const appClient = new AppClient(teamyGraphQLClient);
     const projectClient = new ProjectClient(teamyGraphQLClient);
+    const phaseClient = new PhaseClient(teamyGraphQLClient);
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);
     const teamClient = new TeamClient(teamyGraphQLClient);
@@ -157,6 +159,7 @@ export function initDeps(config: Config): Deps {
         localStore,
         appClient,
         projectClient,
+        phaseClient,
         taskClient,
         messageClient,
         teamClient,

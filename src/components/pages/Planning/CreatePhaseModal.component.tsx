@@ -22,6 +22,7 @@ import styles from './CreatePhaseModal.component.module.scss';
 
 interface Props {
     deps: Deps;
+    projectId: number;
 }
 
 export interface CreatePhaseModalComponentHandle {
@@ -38,8 +39,6 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
     Props & React.RefAttributes<CreatePhaseModalComponentHandle>
 > = forwardRef(
     (props: Props, ref: ForwardedRef<CreatePhaseModalComponentHandle>) => {
-        const localStore: LocalStore = props.deps.localStore;
-        const stateSyncer: StateSyncer = props.deps.stateSyncer;
         const modalRef: RefObject<ModalUI> = createRef();
         const [createPhaseInput, setCreatePhaseInput] =
             useState<CreatePhaseInput>({
@@ -65,8 +64,13 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
         };
 
         const onCreateClick = async () => {
-            const teamId = localStore.getState().currTeamId;
-            if (teamId && createPhaseInput?.name) {
+            if (createPhaseInput?.name) {
+                await props.deps.stateSyncer.createPhase(props.projectId, {
+                    name: createPhaseInput.name,
+                    expectedStartAt: new Date(createPhaseInput.expectedStartAt),
+                    expectedEndAt: new Date(createPhaseInput.expectedEndAt),
+                })
+
                 setCreatePhaseInput({
                     name: '',
                     expectedStartAt: '',

@@ -22,10 +22,10 @@ import {
 import { toInt } from '@core/storage/states/parser';
 
 import { PhaseComponent } from './Phase.component';
+import styles from './Planning.component.module.scss';
 import { ProjectComponent } from './Project.component';
 import { ProjectsComponent } from './Projects.component';
 import { StoryComponent } from './Story.component';
-import styles from './Planning.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -93,9 +93,7 @@ export function PlanningComponent(props: Props) {
         location.push({
             name: project.name,
             onClick: () => {
-                props.deps.router.navigateTo(
-                    projectPath(team.id, project.id),
-                );
+                props.deps.router.navigateTo(projectPath(team.id, project.id));
             },
         });
 
@@ -147,8 +145,11 @@ export function PlanningComponent(props: Props) {
                     pattern={projectRoutePattern}
                     exact
                 >
-                    {project && (
-                        <ProjectComponent deps={props.deps} project={project} />
+                    {projectId && (
+                        <ProjectComponent
+                            deps={props.deps}
+                            projectId={projectId}
+                        />
                     )}
                 </Route>
                 <Route

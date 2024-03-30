@@ -1,7 +1,7 @@
 #import '../fragment/project.graphql'
 
-mutation updateProject($teamId: ID!, $input: UpdateProjectInput!) {
-    updateProject(teamId: $teamId, input: $input) {
+mutation updateProject($projectId: ID!, $input: UpdateProjectInput!) {
+    updateProject(projectId: $projectId, input: $input) {
         ...ProjectFragment
     }
 }

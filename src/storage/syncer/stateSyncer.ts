@@ -27,6 +27,7 @@ import {
     CreateFilterGroupInput,
     CreateInvitationInput,
     CreateMessageInput,
+    CreatePhaseInput,
     CreateProjectInput,
     CreateSprintInput,
     CreateStaticGroupInput,
@@ -39,6 +40,7 @@ import {
     UpdateAppVersionInput,
     UpdateGroupInput,
     UpdateMessageInput,
+    UpdatePhaseInput,
     UpdateProjectInput,
     UpdateRolloutInput,
     UpdateTaskInput,
@@ -85,6 +87,7 @@ import {
     mergeMessage,
     mergePhase,
     mergeProject,
+    mergeProjectPhaseRelation,
     mergeRollout,
     mergeSprint,
     mergeTag,
@@ -99,6 +102,7 @@ import {
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
 import { ProjectClient } from '@core/client/project.client';
+import { PhaseClient } from '@core/client/phase.client';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -116,6 +120,7 @@ export class StateSyncer {
         private localStore: LocalStore,
         private appClient: AppClient,
         private projectClient: ProjectClient,
+        private phaseClient: PhaseClient,
         private taskClient: TaskClient,
         private messageClient: MessageClient,
         private teamClient: TeamClient,
@@ -930,6 +935,34 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async createPhase(
+        projectId: number,
+        input: CreatePhaseInput,
+    ): Promise<void> {
+        const remotePhase = await this.phaseClient.createPhase(`${projectId}`, input);
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        appState = mergeProjectPhaseRelation(appState, `${projectId}`, remotePhase.id);
+        this.localStore.updateState(appState);
+    }
+
+    public async updatePhase(
+        phaseId: number,
+        input: UpdatePhaseInput,
+    ): Promise<void> {
+        const remotePhase = await this.phaseClient.updatePhase(`${phaseId}`, input);
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        this.localStore.updateState(appState);
+    }
+
+    public async deletePhase(phaseId: number): Promise<void> {
+        await this.phaseClient.deletePhase(`${phaseId}`);
+        let appState = this.localStore.getState();
+        appState = this._deletePhase(appState, phaseId);
+        this.localStore.updateState(appState);
+    }
+
     public async updateProject(
         projectId: number,
         input: UpdateProjectInput,
@@ -947,13 +980,13 @@ export class StateSyncer {
 
         appState.projectPhaseRelations.forEach((relation) => {
             if (relation.projectId === projectId) {
-                this._deletePhase(appState, relation.phaseId);
+                appState = this._deletePhase(appState, relation.phaseId);
             }
         })
 
         appState.projectStoryRelations.forEach((relation) => {
             if (relation.projectId === projectId) {
-                this._deleteStory(appState, relation.storyId);
+                appState = this._deleteStory(appState, relation.storyId);
             }
         })
 
@@ -1425,6 +1458,8 @@ export class StateSyncer {
                 this._deleteStory(appState, relation.storyId);
             }
         })
+
+        return appState;
     }
 
     private _deleteStory(appState: AppState, storyId: number) {
@@ -1436,6 +1471,8 @@ export class StateSyncer {
         appState.projectStoryRelations = appState.projectStoryRelations.filter(
             (relation) => relation.storyId !== storyId
         );
+
+        return appState;
     }
 
     private _deleteRollout(
