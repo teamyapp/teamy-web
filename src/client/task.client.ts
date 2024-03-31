@@ -275,22 +275,22 @@ export class TaskClient {
         return Promise.resolve<any>({});
     }
 
-    addTaskToStory(taskId: string, storyId: string): Promise<RemoteStory> {
+    addTaskToStory(storyId: string, taskId: string): Promise<RemoteStory> {
         return this.graphQLClient.mutate({
             mutation: print(addTaskToStory),
             variables: {
-                taskId,
                 storyId,
+                taskId,
             },
         }).then(({addTaskToStory}) => addTaskToStory);
     }
 
-    removeTaskFromStory(taskId: string, storyId: string): Promise<RemoteStory> {
+    removeTaskFromStory(storyId: string, taskId: string ): Promise<RemoteStory> {
         return this.graphQLClient.mutate({
             mutation: print(removeTaskFromStory),
             variables: {
-                taskId,
                 storyId,
+                taskId,
             },
         }).then(({removeTaskFromStory}) => removeTaskFromStory);
     }

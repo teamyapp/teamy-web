@@ -326,6 +326,10 @@ export function ProjectComponent(props: Props) {
         createPhaseModalComponentRef.current?.open();
     };
 
+    const onAddStoriesToPhaseClick = () => {
+        
+    }
+
     if (!project || !currentTeam) {
         return null;
     }
@@ -363,6 +367,7 @@ export function ProjectComponent(props: Props) {
                             selectedPhaseIndexes.size > 0 && (
                                 <div
                                     className={`${styles.Action} ${styles.Move}`}
+                                    onClick={onAddStoriesToPhaseClick}
                                 >
                                     <MaterialIconUI>read_more</MaterialIconUI>
                                 </div>
@@ -370,6 +375,7 @@ export function ProjectComponent(props: Props) {
                         {selectedStoryIds.size > 0 && (
                             <div
                                 className={`${styles.Action} ${styles.Delete}`}
+                                onClick={onDeleteStoriesClick}
                             >
                                 <MaterialIconUI>close</MaterialIconUI>
                             </div>

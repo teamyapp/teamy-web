@@ -985,16 +985,16 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async addTaskToStory(taskId: number, storyId: number): Promise<void> {
-        const remoteStory = await this.taskClient.addTaskToStory(`${taskId}`, `${storyId}`);
+    public async addTaskToStory(storyId: number, taskId: number): Promise<void> {
+        const remoteStory = await this.taskClient.addTaskToStory(`${storyId}`, `${taskId}`);
         let appState = this.localStore.getState();
         appState = mergeStory(appState, remoteStory);
         appState = mergeStoryTaskRelation(appState, `${storyId}`, `${taskId}`);
         this.localStore.updateState(appState);
     }
 
-    public async removeTaskFromStory( taskId: number, storyId: number): Promise<void> {
-        const remoteStory = await this.taskClient.removeTaskFromStory(`${taskId}`, `${storyId}`);
+    public async removeTaskFromStory(storyId: number, taskId: number): Promise<void> {
+        const remoteStory = await this.taskClient.removeTaskFromStory( `${storyId}`, `${taskId}`);
         let appState = this.localStore.getState();
         mergeStory(appState, remoteStory);
         appState.storyTaskRelations = appState.storyTaskRelations.filter(
@@ -1004,16 +1004,23 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async addStoryToPhase(storyId: number, phaseId: number): Promise<void> {
-        const remotePhase = await this.storyClient.addStoryToPhase(`${storyId}`, `${phaseId}`);
+    public async addStoryToPhase(phaseId: number, storyId: number): Promise<void> {
+        const remotePhase = await this.storyClient.addStoryToPhase(`${phaseId}`, `${storyId}`, );
         let appState = this.localStore.getState();
         appState = mergePhase(appState, remotePhase);
         appState = mergePhaseStoryRelation(appState, `${phaseId}`, `${storyId}`);
         this.localStore.updateState(appState);
     }
 
-    public async removeStoryFromPhase(storyId: number, phaseId: number): Promise<void> {
-        const remotePhase = await this.storyClient.removeStoryFromPhase(`${storyId}`, `${phaseId}`);
+    public async addStoriesToPhase(phaseId: number, storyIds: number[]): Promise<void> {
+        const remotePhase = await this.storyClient.addStoriesToPhase(`${phaseId}`, storyIds.map(String));
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        this.localStore.updateState(appState);
+    }
+
+    public async removeStoryFromPhase(phaseId: number, storyId: number): Promise<void> {
+        const remotePhase = await this.storyClient.removeStoryFromPhase(`${phaseId}`, `${storyId}`);
         let appState = this.localStore.getState();
         appState = mergePhase(appState, remotePhase);
         appState.phaseStoryRelations = appState.phaseStoryRelations.filter(

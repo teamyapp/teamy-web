@@ -172,8 +172,8 @@ export function PhaseComponent(props: Props) {
             story,
         );
         props.deps.stateSyncer.addStoryToPhase(
-            storyId,
             props.phase.id,
+            storyId,
         );
         setOnEditingNewStoryInPhase(false);
     };

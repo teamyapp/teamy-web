@@ -4,6 +4,7 @@ import  createStory  from "./graphql/mutation/createStory.graphql";
 import  updateStory  from "./graphql/mutation/updateStory.graphql";
 import deleteStory  from "./graphql/mutation/deleteStory.graphql";
 import addStoryToPhase  from "./graphql/mutation/addStoryToPhase.graphql";
+import addStoriesToPhase from "./graphql/mutation/addStoriesToPhase.graphql";
 import removeStoryFromPhase  from "./graphql/mutation/removeStoryFromPhase.graphql";
 import { print } from "graphql";
 import { RemoteStory } from "./entity/remoteStory";
@@ -51,25 +52,41 @@ export class StoryClient {
             .then(() => undefined);
     }
 
-    addStoryToPhase(storyId: string, phaseId: string): Promise<RemotePhase> {
+    addStoryToPhase(phaseId: string, storyId: string): Promise<RemotePhase> {
         return this.graphQLClient
             .mutate({
                 mutation: print(addStoryToPhase),
                 variables: {
-                    storyId,
                     phaseId,
+                    storyId,
                 },
             })
             .then(({addStoryToPhase}) => addStoryToPhase);
     }
 
-    removeStoryFromPhase(storyId: string, phaseId: string): Promise<RemotePhase> {
+    addStoriesToPhase(
+        phaseId: string,
+        storyIds: string[],
+    ): Promise<RemotePhase> {
+        return this.graphQLClient
+            .mutate({
+                mutation: print(addStoriesToPhase),
+                variables: {
+                    phaseId,
+                    storyIds,
+                },
+            })
+            .then(({addStoriesToPhase}) => addStoriesToPhase);
+    }
+    
+
+    removeStoryFromPhase(phaseId: string, storyId: string): Promise<RemotePhase> {
         return this.graphQLClient
             .mutate({
                 mutation: print(removeStoryFromPhase),
                 variables: {
-                    storyId,
                     phaseId,
+                    storyId,
                 },
             })
             .then(({removeStoryFromPhase}) => removeStoryFromPhase);
