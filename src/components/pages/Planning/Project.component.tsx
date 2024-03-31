@@ -18,6 +18,7 @@ import {
     CreatePhaseModalComponentHandle,
 } from './CreatePhaseModal.component';
 import { InlineCreateStory } from './InlineCreateStory.component';
+import styles from './Project.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
 import {
     Row,
@@ -28,7 +29,6 @@ import {
     UpdatePhaseModalComponent,
     UpdatePhaseModalComponentHandle,
 } from './UpdatePhaseModal.component';
-import styles from './Project.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -53,19 +53,19 @@ export function ProjectComponent(props: Props) {
     const [selectedStoryIds, setSelectedStoryIds] = useState<Set<string>>(
         new Set(),
     );
-    const [selectedPhaseIndexes, setSelectedPhaseIndexes] = useState<
+    const [selectedPhaseIds, setSelectedPhaseIds] = useState<
         Set<string>
     >(new Set());
 
     const selectedStoryIdsRef = useRef(selectedStoryIds);
-    const selectedPhaseIndexesRef = useRef(selectedPhaseIndexes);
+    const selectedPhaseIdsRef = useRef(selectedPhaseIds);
 
     const ctrlKeyPressedRef = useRef(false);
     const storySelectorRef = useRef<ItemsSelector>(
         new ItemsSelector(ctrlKeyPressedRef.current, selectedStoryIds),
     );
     const phaseSelectorRef = useRef<ItemsSelector>(
-        new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseIndexes),
+        new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseIds),
     );
 
     useEffect(() => {
@@ -85,7 +85,7 @@ export function ProjectComponent(props: Props) {
 
                 if (
                     selectedStories.size > 0 &&
-                    selectedPhaseIndexesRef.current.size > 1
+                    selectedPhaseIdsRef.current.size > 1
                 ) {
                     await phaseSelectorRef.current.reset();
                 }
@@ -111,8 +111,8 @@ export function ProjectComponent(props: Props) {
                 }
 
                 const updatedSelectedPhases = new Set(selectedPhases);
-                setSelectedPhaseIndexes(updatedSelectedPhases);
-                selectedPhaseIndexesRef.current = updatedSelectedPhases;
+                setSelectedPhaseIds(updatedSelectedPhases);
+                selectedPhaseIdsRef.current = updatedSelectedPhases;
             }
         })();
 
@@ -205,10 +205,10 @@ export function ProjectComponent(props: Props) {
     };
 
     const onPhaseSelectHandler =
-        (phaseIndexNumber: number) => async (event: MouseEvent) => {
+        (phaseIdNumber: number, phaseIndexNumber: number) => async (event: MouseEvent) => {
             event.stopPropagation();
             const isSelected = await phaseSelectorRef.current.selectItem(
-                phaseIndexNumber.toString(),
+                phaseIdNumber.toString(),
             );
 
             if (isSelected) {
@@ -234,12 +234,12 @@ export function ProjectComponent(props: Props) {
             <div
                 key={index}
                 className={`${styles.Phase} ${classNames({
-                    [styles.Selected]: selectedPhaseIndexes.has(
-                        index.toString(),
+                    [styles.Selected]: selectedPhaseIds.has(
+                        phase.id.toString(),
                     ),
                 })}`}
                 onDoubleClick={onPhaseDoubleClickHandler(phase.id)}
-                onClick={onPhaseSelectHandler(index)}
+                onClick={onPhaseSelectHandler(phase.id, index)}
             >
                 <div className={styles.LeftSection}>
                     <div className={styles.Name}>{phase.name}</div>
@@ -327,8 +327,32 @@ export function ProjectComponent(props: Props) {
     };
 
     const onAddStoriesToPhaseClick = () => {
-        
-    }
+        if (selectedPhaseIds.size !== 1 || selectedStoryIds.size === 0) {
+            return;
+        }
+
+        debugger
+        props.deps.stateSyncer.addStoriesToPhase(
+            Array.from(selectedPhaseIds.values())[0],
+            Array.from(selectedStoryIds.values()),
+        );
+
+        storySelectorRef.current.reset();
+        phaseSelectorRef.current.reset();
+    };
+
+    const onDeleteStoriesClick = () => {
+        debugger
+        if (selectedStoryIds.size === 0) {
+            return;
+        }
+
+        selectedStoryIds.forEach(storyId => {
+            props.deps.stateSyncer.deleteStory(parseInt(storyId));
+        });
+
+        storySelectorRef.current.reset();
+    };
 
     if (!project || !currentTeam) {
         return null;
@@ -364,7 +388,7 @@ export function ProjectComponent(props: Props) {
                     <div className={styles.Title}>Stories</div>
                     <div className={styles.Actions}>
                         {selectedStoryIds.size > 0 &&
-                            selectedPhaseIndexes.size > 0 && (
+                            selectedPhaseIds.size > 0 && (
                                 <div
                                     className={`${styles.Action} ${styles.Move}`}
                                     onClick={onAddStoriesToPhaseClick}
