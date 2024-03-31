@@ -661,6 +661,56 @@ export function mergeProjectStoryRelation(
     return currAppState;
 }
 
+export function mergePhaseStoryRelation(
+    currAppState: AppState,
+    remotePhaseId: string,
+    remoteStoryId: string,
+): AppState {
+    const phaseId = toInt(remotePhaseId)!;
+    const storyId = toInt(remoteStoryId)!;
+
+    if (
+        !currAppState.phaseStoryRelations.some((phaseStoryRelation) => {
+            return (
+                phaseStoryRelation.phaseId === phaseId &&
+                phaseStoryRelation.storyId === storyId
+            );
+        })
+    ) {
+        currAppState.phaseStoryRelations.push({
+            phaseId: phaseId,
+            storyId: storyId,
+        });
+    }
+
+    return currAppState;
+}
+
+export function mergeStoryTaskRelation(
+    currAppState: AppState,
+    remoteStoryId: string,
+    remoteTaskId: string,
+): AppState {
+    const storyId = toInt(remoteStoryId)!;
+    const taskId = toInt(remoteTaskId)!;
+
+    if (
+        !currAppState.storyTaskRelations.some((storyTaskRelation) => {
+            return (
+                storyTaskRelation.storyId === storyId &&
+                storyTaskRelation.taskId === taskId
+            );
+        })
+    ) {
+        currAppState.storyTaskRelations.push({
+            storyId: storyId,
+            taskId: taskId,
+        });
+    }
+
+    return currAppState;
+}
+
 export function mergeProjectPhaseRelation(
     currAppState: AppState,
     remoteProjectId: string,
@@ -719,6 +769,11 @@ export function mergePhase(
 
     remotePhase.stories?.forEach((story) => {
         currAppState = mergeStory(currAppState, story);
+        currAppState = mergePhaseStoryRelation(
+            currAppState,
+            remotePhase.id,
+            story.id,
+        );
     });
 
     currAppState.phases[remotePhaseId] = localNewPhase;
@@ -734,7 +789,10 @@ export function mergeStory(
     const localNewStory: StoryState = {
         id: remoteStoryId,
         name: remoteStory.name || localOldStory.name,
-        ownerId: toInt(remoteStory.owner.id) || localOldStory.ownerId,
+        ownerId:
+            remoteStory.owner === undefined
+                ? localOldStory.ownerId
+                : toInt(remoteStory.owner?.id),
         status: remoteStory.status || localOldStory.status,
         priority: remoteStory.priority || localOldStory.priority,
         creatorId: toInt(remoteStory.creator.id) || localOldStory.creatorId,

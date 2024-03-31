@@ -314,6 +314,7 @@ export function ProjectComponent(props: Props) {
     };
 
     const onCreateStoryInBacklog = (story: CreateStoryInput) => {
+        props.deps.stateSyncer.createStory(props.projectId, story);
         setIsEditingNewStoryInBacklog(false);
     };
 
@@ -390,7 +391,7 @@ export function ProjectComponent(props: Props) {
                             onDiscardNewStory={onDiscardNewStoryInBacklog}
                         />
                     )}
-                    {project.stories.map((story) => (
+                    {project.unplannedStories.map((story) => (
                         <div
                             className={styles.ListItem}
                             key={story.id}

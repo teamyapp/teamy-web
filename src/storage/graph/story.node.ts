@@ -19,7 +19,12 @@ export class StoryNode implements Story {
         return this.story.name;
     }
 
-    get owner(): User {
+    get owner(): User | undefined {
+        if (!this.story.ownerId) {
+            return undefined;
+        }
+
+
         return new UserNode(
             this.localStore,
             this.localStore.getState().users[this.story.ownerId],

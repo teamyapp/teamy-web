@@ -7,7 +7,7 @@ export type StoryStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
 export interface Story {
     id: number;
     name: string;
-    owner: User;
+    owner?: User;
     status: StoryStatus;
     priority?: Priority;
     creator: User;

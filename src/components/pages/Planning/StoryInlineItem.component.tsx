@@ -70,6 +70,11 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
             props.onStorySelectHandler(props.story.id);
         };
 
+        const onStoryDeleteClick = (event: MouseEvent<HTMLDivElement>) => {
+            event.stopPropagation();
+            props.deps.stateSyncer.deleteStory(props.story.id);
+        }
+
         const onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
             const element = event.currentTarget as HTMLDivElement;
             getBindingClientRectRef.current = element.getBoundingClientRect.bind(
@@ -175,7 +180,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                             <div className={styles.ActionsSection}>
                                 <TooltipUI message={'Delete'}>
                                     <div className={styles.Action}>
-                                        <div className={styles.DeleteStoryIcon}>
+                                        <div className={styles.DeleteStoryIcon} onClick={onStoryDeleteClick}>
                                             <MaterialIconUI>
                                                 close
                                             </MaterialIconUI>
@@ -209,7 +214,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                     findOwnersAlignTargetBoundBox={getBindingClientRectRef.current}
                     onClose={onStoryOwnersPopupClose}
                     onSelectOwner={onSelectStoryOwner}
-                    selectedOwnerId={props.story.owner.id}
+                    selectedOwnerId={props.story.owner?.id}
                 />
             </>
         );

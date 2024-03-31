@@ -203,13 +203,13 @@ export interface UpdateAppVersionInput {
 
 export interface CreateStoryInput {
     name: string;
-    ownerId: number;
+    ownerId?: number;
     priority?: Priority;
 }
 
 export interface UpdateStoryInput {
     name: string;
-    ownerId: number;
+    ownerId?: number;
     status: StoryStatus;
     priority?: Priority;
 }

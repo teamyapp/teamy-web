@@ -166,19 +166,24 @@ export function PhaseComponent(props: Props) {
         setOnEditingNewStoryInBacklog(true);
     };
 
-    const onCreateStoryInPhase = (story: CreateStoryInput) => {
-        // props.deps.stateSyncer.createStory(
-        //     props.deps.localStore.getState().currTeamId!,
-        //     story,
-        // );
+    const onCreateStoryInPhase = async (story: CreateStoryInput) => {
+        const storyId = await props.deps.stateSyncer.createStory(
+            props.project.id,
+            story,
+        );
+
+        props.deps.stateSyncer.addStoryToPhase(
+            storyId,
+            props.phase.id,
+        );
         setOnEditingNewStoryInPhase(false);
     };
 
     const onCreateStoryInBacklog = (story: CreateStoryInput) => {
-        // props.deps.stateSyncer.createStory(
-        //     props.deps.localStore.getState().currTeamId!,
-        //     story,
-        // );
+        props.deps.stateSyncer.createStory(
+            props.project.id,
+            story,
+        );
         setOnEditingNewStoryInBacklog(false);
     };
 
@@ -269,7 +274,7 @@ export function PhaseComponent(props: Props) {
                             onDiscardNewStory={onDiscardNewStoryInBacklog}
                         />
                     )}
-                    {props.project.stories.map((story) => (
+                    {props.project.unplannedStories.map((story) => (
                         <div key={story.id}
                              className={styles.ListItem}
                              onDoubleClick={onStoryDoubleClickHandler(story.id)}>

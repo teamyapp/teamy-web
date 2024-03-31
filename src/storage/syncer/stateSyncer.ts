@@ -31,6 +31,7 @@ import {
     CreateProjectInput,
     CreateSprintInput,
     CreateStaticGroupInput,
+    CreateStoryInput,
     CreateTaskInput,
     CreateTeamInput,
     CreateUserInput,
@@ -43,6 +44,7 @@ import {
     UpdatePhaseInput,
     UpdateProjectInput,
     UpdateRolloutInput,
+    UpdateStoryInput,
     UpdateTaskInput,
     UpdateTeamInput,
     UpdateTeamMemberInput,
@@ -88,8 +90,12 @@ import {
     mergePhase,
     mergeProject,
     mergeProjectPhaseRelation,
+    mergeProjectStoryRelation,
+    mergeStoryTaskRelation,
+    mergePhaseStoryRelation,
     mergeRollout,
     mergeSprint,
+    mergeStory,
     mergeTag,
     mergeTask,
     mergeTeam,
@@ -103,6 +109,7 @@ import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
 import { ProjectClient } from '@core/client/project.client';
 import { PhaseClient } from '@core/client/phase.client';
+import { StoryClient } from '@core/client/story.client';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -121,6 +128,7 @@ export class StateSyncer {
         private appClient: AppClient,
         private projectClient: ProjectClient,
         private phaseClient: PhaseClient,
+        private storyClient: StoryClient,
         private taskClient: TaskClient,
         private messageClient: MessageClient,
         private teamClient: TeamClient,
@@ -943,6 +951,82 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         appState = mergePhase(appState, remotePhase);
         appState = mergeProjectPhaseRelation(appState, `${projectId}`, remotePhase.id);
+        this.localStore.updateState(appState);
+    }
+
+    public async createStory(
+        projectId: number,
+        input: CreateStoryInput,
+    ): Promise<number> {
+        const remoteStory = await this.storyClient.createStory(`${projectId}`, {
+            name: input.name,
+            ownerId: input.ownerId ? `${input.ownerId}` : undefined,
+            priority: input.priority,
+        });
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        appState = mergeProjectStoryRelation (appState, `${projectId}`, remoteStory.id);
+        this.localStore.updateState(appState);
+        return toInt(remoteStory.id)!;
+    }
+
+    public async updateStory(
+        storyId: number,
+        input: UpdateStoryInput,
+    ): Promise<void> {
+        const remoteStory = await this.storyClient.updateStory(`${storyId}`, {
+            name: input.name,
+            ownerId: input.ownerId ? `${input.ownerId}` : undefined,
+            priority: input.priority,
+            status: input.status,
+        });
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        this.localStore.updateState(appState);
+    }
+
+    public async addTaskToStory(taskId: number, storyId: number): Promise<void> {
+        const remoteStory = await this.taskClient.addTaskToStory(`${taskId}`, `${storyId}`);
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        appState = mergeStoryTaskRelation(appState, `${storyId}`, `${taskId}`);
+        this.localStore.updateState(appState);
+    }
+
+    public async removeTaskFromStory( taskId: number, storyId: number): Promise<void> {
+        const remoteStory = await this.taskClient.removeTaskFromStory(`${taskId}`, `${storyId}`);
+        let appState = this.localStore.getState();
+        mergeStory(appState, remoteStory);
+        appState.storyTaskRelations = appState.storyTaskRelations.filter(
+            (relation) => relation.storyId !== storyId && relation.taskId !== taskId
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async addStoryToPhase(storyId: number, phaseId: number): Promise<void> {
+        const remotePhase = await this.storyClient.addStoryToPhase(`${storyId}`, `${phaseId}`);
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        appState = mergePhaseStoryRelation(appState, `${phaseId}`, `${storyId}`);
+        this.localStore.updateState(appState);
+    }
+
+    public async removeStoryFromPhase(storyId: number, phaseId: number): Promise<void> {
+        const remotePhase = await this.storyClient.removeStoryFromPhase(`${storyId}`, `${phaseId}`);
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        appState.phaseStoryRelations = appState.phaseStoryRelations.filter(
+            (relation) => relation.phaseId !== phaseId && relation.storyId !== storyId
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteStory(storyId: number): Promise<void> {
+        await this.storyClient.deleteStory(`${storyId}`);
+        let appState = this.localStore.getState();
+        appState = this._deleteStory(appState, storyId);
         this.localStore.updateState(appState);
     }
 
