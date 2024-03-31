@@ -331,10 +331,9 @@ export function ProjectComponent(props: Props) {
             return;
         }
 
-        debugger
         props.deps.stateSyncer.addStoriesToPhase(
-            Array.from(selectedPhaseIds.values())[0],
-            Array.from(selectedStoryIds.values()),
+            parseInt(Array.from(selectedPhaseIds.values())[0]),
+            Array.from(selectedStoryIds.values()).map((id) => parseInt(id)),
         );
 
         storySelectorRef.current.reset();
@@ -342,7 +341,6 @@ export function ProjectComponent(props: Props) {
     };
 
     const onDeleteStoriesClick = () => {
-        debugger
         if (selectedStoryIds.size === 0) {
             return;
         }

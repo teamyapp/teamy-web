@@ -1,18 +1,18 @@
-import {MouseEvent, useEffect, useRef, useState} from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 
-import {ItemsSelector} from '@lib/collections/itemSelector';
-import {getPlatform} from '@lib/runtime/os';
-import {MaterialIconUI} from '@lib/ui/MaterialIcon';
+import { ItemsSelector } from '@lib/collections/itemSelector';
+import { getPlatform } from '@lib/runtime/os';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
-import {Deps} from '@core/dep/deps';
-import {CreateStoryInput} from '@core/entity/input';
-import {Phase} from '@core/entity/phase';
-import {Project} from '@core/entity/project';
-import {phaseStoryPath} from '@core/routing/routes';
+import { Deps } from '@core/dep/deps';
+import { CreateStoryInput } from '@core/entity/input';
+import { Phase } from '@core/entity/phase';
+import { Project } from '@core/entity/project';
+import { phaseStoryPath } from '@core/routing/routes';
 
-import {InlineCreateStory} from './InlineCreateStory.component';
-import {StoryInlineItemComponent} from './StoryInlineItem.component';
+import { InlineCreateStory } from './InlineCreateStory.component';
 import styles from './Phase.component.module.scss';
+import { StoryInlineItemComponent } from './StoryInlineItem.component';
 
 interface Props {
     deps: Deps;
@@ -100,7 +100,7 @@ export function PhaseComponent(props: Props) {
                     return;
                 }
 
-                const {key, eventType} = keyboardEvent;
+                const { key, eventType } = keyboardEvent;
                 const platform = getPlatform();
                 if (
                     (platform === 'Mac' && key === 'Meta') ||
@@ -159,8 +159,7 @@ export function PhaseComponent(props: Props) {
         setOnEditingNewStoryInPhase(true);
     };
 
-    const onDeleteStoryFromPhaseClick = () => {
-    };
+    const onDeleteStoryFromPhaseClick = () => {};
 
     const onAddStoryInBacklogClick = () => {
         setOnEditingNewStoryInBacklog(true);
@@ -171,18 +170,12 @@ export function PhaseComponent(props: Props) {
             props.project.id,
             story,
         );
-        props.deps.stateSyncer.addStoryToPhase(
-            props.phase.id,
-            storyId,
-        );
+        props.deps.stateSyncer.addStoryToPhase(props.phase.id, storyId);
         setOnEditingNewStoryInPhase(false);
     };
 
     const onCreateStoryInBacklog = (story: CreateStoryInput) => {
-        props.deps.stateSyncer.createStory(
-            props.project.id,
-            story,
-        );
+        props.deps.stateSyncer.createStory(props.project.id, story);
         setOnEditingNewStoryInBacklog(false);
     };
 
@@ -192,6 +185,23 @@ export function PhaseComponent(props: Props) {
 
     const onDiscardNewStoryInBacklog = () => {
         setOnEditingNewStoryInBacklog(false);
+    };
+
+    const onAddStoriesToPhaseClick = () => {
+        props.deps.stateSyncer.addStoriesToPhase(
+            props.phase.id,
+            Array.from(selectedBacklogStoryIds.values()).map((id) => parseInt(id)),
+        );
+
+        backlogStorySelectorRef.current.reset();
+    }
+
+    const onDeleteBacklogStoriesClick = () => {
+        selectedBacklogStoryIds.forEach((storyId) => {
+            props.deps.stateSyncer.deleteStory(parseInt(storyId));
+        });
+
+        backlogStorySelectorRef.current.reset();
     };
 
     if (!currentTeam) {
@@ -234,8 +244,11 @@ export function PhaseComponent(props: Props) {
                         />
                     )}
                     {props.phase.stories.map((story) => (
-                        <div className={styles.InlineStory} key={story.id}
-                             onDoubleClick={onStoryDoubleClickHandler(story.id)}>
+                        <div
+                            className={styles.InlineStory}
+                            key={story.id}
+                            onDoubleClick={onStoryDoubleClickHandler(story.id)}
+                        >
                             <StoryInlineItemComponent
                                 story={story}
                                 deps={props.deps}
@@ -256,6 +269,22 @@ export function PhaseComponent(props: Props) {
                 <div className={styles.TopBar}>
                     <div className={styles.Title}>Stories</div>
                     <div className={styles.Actions}>
+                        {selectedBacklogStoryIds.size > 0 && (
+                            <div
+                                className={`${styles.Action} ${styles.Move}`}
+                                onClick={onAddStoriesToPhaseClick}
+                            >
+                                <MaterialIconUI>read_more</MaterialIconUI>
+                            </div>
+                        )}
+                        {selectedBacklogStoryIds.size > 0 && (
+                            <div
+                                className={`${styles.Action} ${styles.Delete}`}
+                                onClick={onDeleteBacklogStoriesClick}
+                            >
+                                <MaterialIconUI>close</MaterialIconUI>
+                            </div>
+                        )}
                         <div
                             className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddStoryInBacklogClick}
@@ -274,9 +303,11 @@ export function PhaseComponent(props: Props) {
                         />
                     )}
                     {props.project.unplannedStories.map((story) => (
-                        <div key={story.id}
-                             className={styles.ListItem}
-                             onDoubleClick={onStoryDoubleClickHandler(story.id)}>
+                        <div
+                            key={story.id}
+                            className={styles.ListItem}
+                            onDoubleClick={onStoryDoubleClickHandler(story.id)}
+                        >
                             <StoryInlineItemComponent
                                 story={story}
                                 deps={props.deps}

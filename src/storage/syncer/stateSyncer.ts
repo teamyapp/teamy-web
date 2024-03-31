@@ -1011,8 +1011,8 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public async addStoriesToPhase(phaseId: string, storyIds: string[]): Promise<void> {
-        const remotePhase = await this.storyClient.addStoriesToPhase(phaseId, storyIds);
+    public async addStoriesToPhase(phaseId: number, storyIds: number[]): Promise<void> {
+        const remotePhase = await this.storyClient.addStoriesToPhase(`${phaseId}`, storyIds.map(String));
         let appState = this.localStore.getState();
         appState = mergePhase(appState, remotePhase);
         this.localStore.updateState(appState);
