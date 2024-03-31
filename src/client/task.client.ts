@@ -10,7 +10,6 @@ import addTaskToStory from './graphql/mutation/addTaskToStory.graphql';
 import removeTaskFromStory from './graphql/mutation/removeTaskFromStory.graphql';
 import { RemoteStory } from './entity/remoteStory';
 
-
 export class TaskClient {
     private readonly graphQLClient: GraphQLClient;
 

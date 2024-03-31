@@ -10,7 +10,7 @@ export class StoryState {
         public status: StoryStatus,
         public creatorId: number,
         public createdAt: Date,
-        public isPlanned?: boolean,
+        public isPlanned: boolean,
         public ownerId?: number,
         public updatedAt?: Date,
         public priority?: Priority,

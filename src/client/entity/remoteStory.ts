@@ -8,7 +8,7 @@ export interface RemoteStory {
     id: string;
     name: string;
     owner?: RemoteUser;
-    isPlanned?: boolean;
+    isPlanned: boolean;
     status: RemoteStoryStatus;
     priority?: RemotePriority;
     creator: RemoteUser;

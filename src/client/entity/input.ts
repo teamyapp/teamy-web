@@ -210,7 +210,6 @@ export interface RemoteUpdatePhaseInput {
     status: RemotePhaseStatus;
 }
 
-
 export interface RemoteCreateStoryInput {
     name: string;
     ownerId?: string;

@@ -171,7 +171,6 @@ export function PhaseComponent(props: Props) {
             props.project.id,
             story,
         );
-
         props.deps.stateSyncer.addStoryToPhase(
             storyId,
             props.phase.id,

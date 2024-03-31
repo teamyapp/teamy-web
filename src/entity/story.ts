@@ -9,7 +9,7 @@ export interface Story {
     name: string;
     owner?: User;
     status: StoryStatus;
-    isPlanned?: boolean;
+    isPlanned: boolean;
     priority?: Priority;
     creator: User;
     createdAt: Date;

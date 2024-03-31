@@ -81,7 +81,7 @@ export class StoryNode implements Story {
         return this.tasks.filter((task) => task.status === 'DELIVERED').length;
     }
 
-    get isPlanned(): boolean | undefined {
+    get isPlanned(): boolean {
         return this.story.isPlanned;
     }
 }
