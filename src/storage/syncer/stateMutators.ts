@@ -801,6 +801,10 @@ export function mergeStory(
             remoteStory.updatedAt === undefined
                 ? localOldStory.updatedAt
                 : toDate(remoteStory.updatedAt),
+        isPlanned:
+            remoteStory.isPlanned === undefined
+                ? localOldStory.isPlanned
+                : remoteStory.isPlanned,
     };
 
     remoteStory.tasks?.forEach((task) => {

@@ -80,4 +80,8 @@ export class StoryNode implements Story {
     get completedTasks(): number {
         return this.tasks.filter((task) => task.status === 'DELIVERED').length;
     }
+
+    get isPlanned(): boolean | undefined {
+        return this.story.isPlanned;
+    }
 }

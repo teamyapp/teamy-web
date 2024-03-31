@@ -80,7 +80,7 @@ export class ProjectNode implements Project {
     }
 
     get unplannedStories(): StoryNode[] {
-        return this.stories.filter((story) => story.status === 'TODO');
+        return this.stories.filter((story) => !story.isPlanned);
     }
 
     get totalPhases(): number {

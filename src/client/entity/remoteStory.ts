@@ -7,9 +7,10 @@ export type RemoteStoryStatus = 'TODO' | 'IN_PROGRESS' | 'PAUSED' | 'COMPLETED';
 export interface RemoteStory {
     id: string;
     name: string;
-    owner: RemoteUser;
+    owner?: RemoteUser;
+    isPlanned?: boolean;
     status: RemoteStoryStatus;
-    priority: RemotePriority;
+    priority?: RemotePriority;
     creator: RemoteUser;
     createdAt: string;
     updatedAt?: string;
