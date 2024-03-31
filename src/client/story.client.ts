@@ -78,7 +78,6 @@ export class StoryClient {
             })
             .then(({addStoriesToPhase}) => addStoriesToPhase);
     }
-    
 
     removeStoryFromPhase(phaseId: string, storyId: string): Promise<RemotePhase> {
         return this.graphQLClient
