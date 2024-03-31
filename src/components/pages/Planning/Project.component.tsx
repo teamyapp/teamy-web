@@ -18,7 +18,6 @@ import {
     CreatePhaseModalComponentHandle,
 } from './CreatePhaseModal.component';
 import { InlineCreateStory } from './InlineCreateStory.component';
-import styles from './Project.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
 import {
     Row,
@@ -29,6 +28,7 @@ import {
     UpdatePhaseModalComponent,
     UpdatePhaseModalComponentHandle,
 } from './UpdatePhaseModal.component';
+import styles from './Project.component.module.scss';
 
 interface Props {
     deps: Deps;

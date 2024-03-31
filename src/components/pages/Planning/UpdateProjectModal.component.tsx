@@ -16,11 +16,9 @@ import { ModalUI } from '@lib/ui/Modal';
 import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
-import { LocalStore } from '@core/storage/syncer/localStore';
-
-import styles from './UpdateProjectModal.component.module.scss';
 import { Project } from '@core/entity/project';
 import { formatDate } from '@lib/time/date';
+import styles from './UpdateProjectModal.component.module.scss';
 
 interface Props {
     deps: Deps;

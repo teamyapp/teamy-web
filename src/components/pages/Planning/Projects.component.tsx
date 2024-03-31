@@ -20,7 +20,6 @@ import {
     CreateProjectModalComponent,
     CreateProjectModalComponentHandle,
 } from './CreateProjectModal.component';
-import styles from './Projects.component.module.scss';
 import {
     Row,
     TimelineComponent,
@@ -30,6 +29,7 @@ import {
     UpdateProjectModalComponent,
     UpdateProjectModalComponentHandle,
 } from './UpdateProjectModal.component';
+import styles from './Projects.component.module.scss';
 
 interface Props {
     deps: Deps;
