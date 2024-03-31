@@ -4,7 +4,6 @@ import {
     FC,
     MouseEvent,
     ReactElement,
-    createRef,
     useEffect,
     useRef,
     useState,
@@ -26,6 +25,10 @@ import {
     TimelineComponent,
     TimelineComponentHandle,
 } from './Timeline.component';
+import {
+    UpdateProjectModalComponent,
+    UpdateProjectModalComponentHandle,
+} from './UpdateProjectModal.component';
 import styles from './Projects.component.module.scss';
 
 interface Props {
@@ -39,6 +42,9 @@ export const ProjectsComponent: FC<Props> = (props) => {
     const timelineRef = useRef<TimelineComponentHandle>(null);
     const createProjectModalComponentRef =
         useRef<CreateProjectModalComponentHandle>(null);
+    const updateProjectModalComponentRef =
+        useRef<UpdateProjectModalComponentHandle>(null);
+    const [editingProject, setEditingProject] = useState<Project>();
     const [selectedProjectIndex, setSelectedProjectIndex] = useState<number>();
     const [team, setTeam] = useState<Team>();
 
@@ -127,6 +133,13 @@ export const ProjectsComponent: FC<Props> = (props) => {
             props.deps.stateSyncer.deleteProject(projectId);
         };
 
+    const onUpdateProjectClickHandler =
+        (project: Project) => (event: MouseEvent) => {
+            event.stopPropagation();
+            setEditingProject(project);
+            updateProjectModalComponentRef.current?.open();
+        };
+
     const renderProject = (project: Project, index: number): ReactElement => {
         return (
             <div
@@ -155,6 +168,12 @@ export const ProjectsComponent: FC<Props> = (props) => {
                         onClick={onDeleteProjectClickHandler(project.id)}
                     >
                         <MaterialIconUI>close</MaterialIconUI>
+                    </div>
+                    <div
+                        className={styles.EditIcon}
+                        onClick={onUpdateProjectClickHandler(project)}
+                    >
+                        <MaterialIconUI>edit</MaterialIconUI>
                     </div>
                 </div>
             </div>
@@ -193,6 +212,13 @@ export const ProjectsComponent: FC<Props> = (props) => {
                 deps={props.deps}
                 ref={createProjectModalComponentRef}
             />
+            {editingProject && (
+                <UpdateProjectModalComponent
+                    deps={props.deps}
+                    ref={updateProjectModalComponentRef}
+                    project={editingProject}
+                />
+            )}
         </div>
     );
 };

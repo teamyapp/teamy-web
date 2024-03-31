@@ -5,6 +5,8 @@ import { RemoteGroupMemberType } from './remoteGroupMemberType';
 import { RemoteGroupType } from './remoteGroupType';
 import { RemoteRolloutActivatorType } from './remoteRolloutActivatorType';
 import { RemoteRolloutVersionSelectorType } from './remoteRolloutVersionSelectorType';
+import { RemotePhaseStatus } from './remotePhase';
+import { RemoteStoryStatus } from './remoteStory';
 
 export interface RemoteAppFilter {
     tagValues: string[];
@@ -193,4 +195,30 @@ export interface RemoteUpdateProjectInput {
     name: string;
     expectedStartAt: Date;
     expectedEndAt: Date;
+}
+
+export interface RemoteCreatePhaseInput {
+    name: string;
+    expectedStartAt: Date;
+    expectedEndAt: Date;
+}
+
+export interface RemoteUpdatePhaseInput {
+    name: string;
+    expectedStartAt: Date;
+    expectedEndAt: Date;
+    status: RemotePhaseStatus;
+}
+
+export interface RemoteCreateStoryInput {
+    name: string;
+    ownerId?: string;
+    priority?: Priority;
+}
+
+export interface RemoteUpdateStoryInput {
+    name: string;
+    status: RemoteStoryStatus;
+    ownerId?: string;
+    priority?: Priority;
 }

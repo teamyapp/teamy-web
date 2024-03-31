@@ -7,10 +7,11 @@ export class StoryState {
     constructor(
         public id: number,
         public name: string,
-        public ownerId: number,
         public status: StoryStatus,
         public creatorId: number,
         public createdAt: Date,
+        public isPlanned: boolean,
+        public ownerId?: number,
         public updatedAt?: Date,
         public priority?: Priority,
     ) {}
@@ -19,10 +20,11 @@ export class StoryState {
         return new StoryState(
             json.ID,
             json.Name,
-            json.OwnerID,
             json.Status,
             json.CreatorID,
             toDate(json.CreatedAt)!,
+            json.IsPlanned,
+            json.OwnerID,
             toDate(json.UpdatedAt),
             json.Priority,
         );
@@ -32,10 +34,11 @@ export class StoryState {
         return new StoryState(
             json.id,
             json.name,
-            json.ownerId,
             json.status,
             json.creatorId,
             toDate(json.createdAt)!,
+            json.isPlanned,
+            json.ownerId,
             toDate(json.updatedAt),
             json.priority,
         );

@@ -1,13 +1,6 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import {
-    MouseEvent,
-    ReactElement,
-    createRef,
-    useEffect,
-    useRef,
-    useState,
-} from 'react';
+import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
@@ -17,6 +10,7 @@ import { Deps } from '@core/dep/deps';
 import { CreateStoryInput } from '@core/entity/input';
 import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
+import { Team } from '@core/entity/team';
 import { phasePath, projectStoryPath } from '@core/routing/routes';
 
 import {
@@ -24,46 +18,54 @@ import {
     CreatePhaseModalComponentHandle,
 } from './CreatePhaseModal.component';
 import { InlineCreateStory } from './InlineCreateStory.component';
+import styles from './Project.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
 import {
     Row,
     TimelineComponent,
     TimelineComponentHandle,
 } from './Timeline.component';
-import styles from './Project.component.module.scss';
+import {
+    UpdatePhaseModalComponent,
+    UpdatePhaseModalComponentHandle,
+} from './UpdatePhaseModal.component';
 
 interface Props {
     deps: Deps;
-    project: Project;
+    projectId: number;
 }
 
 const startAt = moment().subtract(1, 'months').toDate();
 const endAt = moment().add(1, 'months').toDate();
 
 export function ProjectComponent(props: Props) {
+    const [project, setProject] = useState<Project>();
+    const [currentTeam, setCurrentTeam] = useState<Team>();
     const [isEditingNewStoryInBacklog, setIsEditingNewStoryInBacklog] =
         useState(false);
     const createPhaseModalComponentRef =
         useRef<CreatePhaseModalComponentHandle>(null);
+    const updatePhaseModalComponentRef =
+        useRef<UpdatePhaseModalComponentHandle>(null);
+    const [editingPhase, setEditingPhase] = useState<Phase>();
     const timelineRef = useRef<TimelineComponentHandle>(null);
-    const currentTeam = props.deps.graphSource.currentTeam();
 
     const [selectedStoryIds, setSelectedStoryIds] = useState<Set<string>>(
         new Set(),
     );
-    const [selectedPhaseIndexes, setSelectedPhaseIndexes] = useState<
+    const [selectedPhaseIds, setSelectedPhaseIds] = useState<
         Set<string>
     >(new Set());
 
     const selectedStoryIdsRef = useRef(selectedStoryIds);
-    const selectedPhaseIndexesRef = useRef(selectedPhaseIndexes);
+    const selectedPhaseIdsRef = useRef(selectedPhaseIds);
 
     const ctrlKeyPressedRef = useRef(false);
     const storySelectorRef = useRef<ItemsSelector>(
         new ItemsSelector(ctrlKeyPressedRef.current, selectedStoryIds),
     );
     const phaseSelectorRef = useRef<ItemsSelector>(
-        new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseIndexes),
+        new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseIds),
     );
 
     useEffect(() => {
@@ -72,6 +74,7 @@ export function ProjectComponent(props: Props) {
         const selectedPhasesChan =
             phaseSelectorRef.current.subscribeSelectedItemsChanged();
         const keyBoardEventChan = props.deps.keyBoardEventMonitor.subscribe();
+        const stateChangeChan = props.deps.localStore.subscribeStateChange();
 
         (async () => {
             while (true) {
@@ -82,7 +85,7 @@ export function ProjectComponent(props: Props) {
 
                 if (
                     selectedStories.size > 0 &&
-                    selectedPhaseIndexesRef.current.size > 1
+                    selectedPhaseIdsRef.current.size > 1
                 ) {
                     await phaseSelectorRef.current.reset();
                 }
@@ -108,8 +111,8 @@ export function ProjectComponent(props: Props) {
                 }
 
                 const updatedSelectedPhases = new Set(selectedPhases);
-                setSelectedPhaseIndexes(updatedSelectedPhases);
-                selectedPhaseIndexesRef.current = updatedSelectedPhases;
+                setSelectedPhaseIds(updatedSelectedPhases);
+                selectedPhaseIdsRef.current = updatedSelectedPhases;
             }
         })();
 
@@ -141,14 +144,30 @@ export function ProjectComponent(props: Props) {
             }
         })();
 
-        return () => {
-            storySelectorRef.current.dispose();
-            phaseSelectorRef.current.dispose();
-            keyBoardEventChan.close();
-        };
+        (async () => {
+            while (true) {
+                console.log('[ProjectComponent] waiting for state changes');
+                const hasChanged = await stateChangeChan!.pop();
+                if (hasChanged === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+
+                const project = props.deps.graphSource.project(props.projectId);
+                if (project) {
+                    setProject(project);
+                }
+
+                const currentTeam = props.deps.graphSource.currentTeam();
+                if (currentTeam) {
+                    setCurrentTeam(currentTeam);
+                }
+            }
+        })().then();
     }, []);
 
-    const rows: Row[] = props.project.phases.map((phase, index) => {
+    const rows: Row[] = (project?.phases || []).map((phase, index) => {
         return {
             height: 70,
             items: [
@@ -186,10 +205,10 @@ export function ProjectComponent(props: Props) {
     };
 
     const onPhaseSelectHandler =
-        (phaseIndexNumber: number) => async (event: MouseEvent) => {
+        (phaseIdNumber: number, phaseIndexNumber: number) => async (event: MouseEvent) => {
             event.stopPropagation();
             const isSelected = await phaseSelectorRef.current.selectItem(
-                phaseIndexNumber.toString(),
+                phaseIdNumber.toString(),
             );
 
             if (isSelected) {
@@ -199,17 +218,28 @@ export function ProjectComponent(props: Props) {
             }
         };
 
+    const onPhaseDeleteHandler = (phaseId: number) => (event: MouseEvent) => {
+        event.stopPropagation();
+        props.deps.stateSyncer.deletePhase(phaseId);
+    };
+
+    const onPhaseUpdateHandler = (phase: Phase) => (event: MouseEvent) => {
+        event.stopPropagation();
+        setEditingPhase(phase);
+        updatePhaseModalComponentRef.current?.open();
+    };
+
     const renderPhase = (phase: Phase, index: number): ReactElement => {
         return (
             <div
                 key={index}
                 className={`${styles.Phase} ${classNames({
-                    [styles.Selected]: selectedPhaseIndexes.has(
-                        index.toString(),
+                    [styles.Selected]: selectedPhaseIds.has(
+                        phase.id.toString(),
                     ),
                 })}`}
                 onDoubleClick={onPhaseDoubleClickHandler(phase.id)}
-                onClick={onPhaseSelectHandler(index)}
+                onClick={onPhaseSelectHandler(phase.id, index)}
             >
                 <div className={styles.LeftSection}>
                     <div className={styles.Name}>{phase.name}</div>
@@ -224,44 +254,53 @@ export function ProjectComponent(props: Props) {
                     </div>
                 </div>
                 <div className={styles.RightSection}>
-                    <div className={styles.DeleteIcon}>
+                    <div
+                        className={styles.DeleteIcon}
+                        onClick={onPhaseDeleteHandler(phase.id)}
+                    >
                         <MaterialIconUI>close</MaterialIconUI>
+                    </div>
+                    <div
+                        className={styles.EditIcon}
+                        onClick={onPhaseUpdateHandler(phase)}
+                    >
+                        <MaterialIconUI>edit</MaterialIconUI>
                     </div>
                 </div>
             </div>
         );
     };
     const onStoryDetailClickHandler = (storyId: number) => {
-        if (!currentTeam) {
+        if (!currentTeam || !project) {
             return;
         }
 
         props.deps.router.navigateTo(
-            projectStoryPath(currentTeam.id, props.project.id, storyId),
+            projectStoryPath(currentTeam.id, project.id, storyId),
         );
     };
     const onStoryDoubleClickHandler = (storyId: number) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
-            if (!currentTeam) {
+            if (!currentTeam || !project) {
                 return;
             }
 
             props.deps.router.navigateTo(
-                projectStoryPath(currentTeam.id, props.project.id, storyId),
+                projectStoryPath(currentTeam.id, project.id, storyId),
             );
         };
-    }
+    };
 
     const onPhaseDoubleClickHandler = (phaseId: number) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
-            if (!currentTeam) {
+            if (!currentTeam || !project) {
                 return;
             }
 
             props.deps.router.navigateTo(
-                phasePath(currentTeam.id, props.project.id, phaseId),
+                phasePath(currentTeam.id, project.id, phaseId),
             );
         };
     };
@@ -275,6 +314,7 @@ export function ProjectComponent(props: Props) {
     };
 
     const onCreateStoryInBacklog = (story: CreateStoryInput) => {
+        props.deps.stateSyncer.createStory(props.projectId, story);
         setIsEditingNewStoryInBacklog(false);
     };
 
@@ -286,7 +326,33 @@ export function ProjectComponent(props: Props) {
         createPhaseModalComponentRef.current?.open();
     };
 
-    if (!currentTeam) {
+    const onAddStoriesToPhaseClick = () => {
+        if (selectedPhaseIds.size !== 1 || selectedStoryIds.size === 0) {
+            return;
+        }
+
+        props.deps.stateSyncer.addStoriesToPhase(
+            parseInt(Array.from(selectedPhaseIds.values())[0]),
+            Array.from(selectedStoryIds.values()).map((id) => parseInt(id)),
+        );
+
+        storySelectorRef.current.reset();
+        phaseSelectorRef.current.reset();
+    };
+
+    const onDeleteStoriesClick = () => {
+        if (selectedStoryIds.size === 0) {
+            return;
+        }
+
+        selectedStoryIds.forEach(storyId => {
+            props.deps.stateSyncer.deleteStory(parseInt(storyId));
+        });
+
+        storySelectorRef.current.reset();
+    };
+
+    if (!project || !currentTeam) {
         return null;
     }
 
@@ -301,7 +367,7 @@ export function ProjectComponent(props: Props) {
                         </div>
                     </div>
                     <div className={styles.PhaseList}>
-                        {props.project.phases.map(renderPhase)}
+                        {project.phases.map(renderPhase)}
                     </div>
                 </div>
                 <div className={styles.Timeline}>
@@ -320,9 +386,10 @@ export function ProjectComponent(props: Props) {
                     <div className={styles.Title}>Stories</div>
                     <div className={styles.Actions}>
                         {selectedStoryIds.size > 0 &&
-                            selectedPhaseIndexes.size > 0 && (
+                            selectedPhaseIds.size > 0 && (
                                 <div
                                     className={`${styles.Action} ${styles.Move}`}
+                                    onClick={onAddStoriesToPhaseClick}
                                 >
                                     <MaterialIconUI>read_more</MaterialIconUI>
                                 </div>
@@ -330,6 +397,7 @@ export function ProjectComponent(props: Props) {
                         {selectedStoryIds.size > 0 && (
                             <div
                                 className={`${styles.Action} ${styles.Delete}`}
+                                onClick={onDeleteStoriesClick}
                             >
                                 <MaterialIconUI>close</MaterialIconUI>
                             </div>
@@ -338,7 +406,7 @@ export function ProjectComponent(props: Props) {
                             className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddStoryInBacklogClick}
                         >
-                                <MaterialIconUI>add</MaterialIconUI>
+                            <MaterialIconUI>add</MaterialIconUI>
                         </div>
                     </div>
                 </div>
@@ -351,9 +419,12 @@ export function ProjectComponent(props: Props) {
                             onDiscardNewStory={onDiscardNewStoryInBacklog}
                         />
                     )}
-                    {props.project.stories.map((story) => (
-                        <div className={styles.ListItem} key={story.id}
-                            onDoubleClick={onStoryDoubleClickHandler(story.id)}>
+                    {project.unplannedStories.map((story) => (
+                        <div
+                            className={styles.ListItem}
+                            key={story.id}
+                            onDoubleClick={onStoryDoubleClickHandler(story.id)}
+                        >
                             <StoryInlineItemComponent
                                 story={story}
                                 key={story.id}
@@ -371,9 +442,17 @@ export function ProjectComponent(props: Props) {
                 </div>
             </div>
             <CreatePhaseModalComponent
-                deps={props.deps}
                 ref={createPhaseModalComponentRef}
+                deps={props.deps}
+                projectId={props.projectId}
             />
+            {editingPhase && (
+                <UpdatePhaseModalComponent
+                    ref={updatePhaseModalComponentRef}
+                    deps={props.deps}
+                    phase={editingPhase}
+                />
+            )}
         </div>
     );
 }

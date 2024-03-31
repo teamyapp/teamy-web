@@ -19,7 +19,12 @@ export class StoryNode implements Story {
         return this.story.name;
     }
 
-    get owner(): User {
+    get owner(): User | undefined {
+        if (!this.story.ownerId) {
+            return undefined;
+        }
+
+
         return new UserNode(
             this.localStore,
             this.localStore.getState().users[this.story.ownerId],
@@ -74,5 +79,9 @@ export class StoryNode implements Story {
 
     get completedTasks(): number {
         return this.tasks.filter((task) => task.status === 'DELIVERED').length;
+    }
+
+    get isPlanned(): boolean {
+        return this.story.isPlanned;
     }
 }

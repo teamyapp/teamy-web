@@ -1,4 +1,4 @@
-@import "ItemListSection.module";
+@import 'ItemListSection.module';
 
 .Project {
     background-color: white;
@@ -69,9 +69,10 @@
                         cursor: pointer;
 
                         .RightSection {
-                            .DeleteIcon {
+                            .DeleteIcon,
+                            .EditIcon {
                                 display: block;
-                                --icon-color: #BDBDBD;
+                                --icon-color: #bdbdbd;
 
                                 &:hover {
                                     --icon-color: #757575;
@@ -92,7 +93,8 @@
                         }
 
                         .RightSection {
-                            .DeleteIcon {
+                            .DeleteIcon,
+                            .EditIcon {
                                 display: block;
                                 --icon-color: rgba(255, 255, 255, 0.4);
 
@@ -127,7 +129,8 @@
                     }
 
                     .RightSection {
-                        .DeleteIcon {
+                        .DeleteIcon,
+                        .EditIcon {
                             display: none;
                             --icon-size: 22px;
                         }

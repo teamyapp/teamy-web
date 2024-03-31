@@ -5,6 +5,10 @@ import {
     RemoteUpdateTaskInput,
 } from '@core/client/entity/input';
 import { RemoteTask } from '@core/client/entity/remoteTask';
+import { print } from 'graphql';
+import addTaskToStory from './graphql/mutation/addTaskToStory.graphql';
+import removeTaskFromStory from './graphql/mutation/removeTaskFromStory.graphql';
+import { RemoteStory } from './entity/remoteStory';
 
 export class TaskClient {
     private readonly graphQLClient: GraphQLClient;
@@ -269,5 +273,25 @@ export class TaskClient {
         awaitOnTaskIds: [string],
     ): Promise<RemoteTask> {
         return Promise.resolve<any>({});
+    }
+
+    addTaskToStory(storyId: string, taskId: string): Promise<RemoteStory> {
+        return this.graphQLClient.mutate({
+            mutation: print(addTaskToStory),
+            variables: {
+                storyId,
+                taskId,
+            },
+        }).then(({addTaskToStory}) => addTaskToStory);
+    }
+
+    removeTaskFromStory(storyId: string, taskId: string ): Promise<RemoteStory> {
+        return this.graphQLClient.mutate({
+            mutation: print(removeTaskFromStory),
+            variables: {
+                storyId,
+                taskId,
+            },
+        }).then(({removeTaskFromStory}) => removeTaskFromStory);
     }
 }

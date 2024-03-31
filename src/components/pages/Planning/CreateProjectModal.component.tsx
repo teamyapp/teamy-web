@@ -49,7 +49,6 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
         const projectNameInputRef: RefObject<TextFieldUI> = useRef(null);
 
         const localStore: LocalStore = props.deps.localStore;
-        const stateSyncer: StateSyncer = props.deps.stateSyncer;
 
         const open = () => {
             modalRef.current?.open();

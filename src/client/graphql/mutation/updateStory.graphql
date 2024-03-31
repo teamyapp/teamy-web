@@ -1,0 +1,7 @@
+#import '../fragment/story.graphql'
+
+mutation updateStory($storyId: ID!, $input: UpdateStoryInput!) {
+    updateStory(storyId: $storyId, input: $input) {
+        ...StoryFragment
+    }
+}

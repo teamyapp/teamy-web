@@ -6,6 +6,7 @@ import { AppVersionStatus } from './appVersion';
 import { GroupMemberType, GroupType } from './group';
 import { AppRolloutType } from './rollout';
 import { StoryStatus } from './story';
+import { PhaseStatus } from './phase';
 
 export interface CreateAppInput {
     name: string;
@@ -202,13 +203,13 @@ export interface UpdateAppVersionInput {
 
 export interface CreateStoryInput {
     name: string;
-    ownerId: number;
+    ownerId?: number;
     priority?: Priority;
 }
 
 export interface UpdateStoryInput {
     name: string;
-    ownerId: number;
+    ownerId?: number;
     status: StoryStatus;
     priority?: Priority;
 }
@@ -223,4 +224,17 @@ export interface UpdateProjectInput {
     name: string;
     expectedStartAt: Date;
     expectedEndAt: Date;
+}
+
+export interface CreatePhaseInput {
+    name: string;
+    expectedStartAt: Date;
+    expectedEndAt: Date;
+}
+
+export interface UpdatePhaseInput {
+    name: string;
+    expectedStartAt: Date;
+    expectedEndAt: Date;
+    status: PhaseStatus;
 }

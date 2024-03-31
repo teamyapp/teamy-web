@@ -79,6 +79,10 @@ export class ProjectNode implements Project {
             });
     }
 
+    get unplannedStories(): StoryNode[] {
+        return this.stories.filter((story) => !story.isPlanned);
+    }
+
     get totalPhases(): number {
         return this.phases.length;
     }

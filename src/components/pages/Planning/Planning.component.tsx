@@ -93,9 +93,7 @@ export function PlanningComponent(props: Props) {
         location.push({
             name: project.name,
             onClick: () => {
-                props.deps.router.navigateTo(
-                    projectPath(team.id, project.id),
-                );
+                props.deps.router.navigateTo(projectPath(team.id, project.id));
             },
         });
 
@@ -147,8 +145,11 @@ export function PlanningComponent(props: Props) {
                     pattern={projectRoutePattern}
                     exact
                 >
-                    {project && (
-                        <ProjectComponent deps={props.deps} project={project} />
+                    {projectId && (
+                        <ProjectComponent
+                            deps={props.deps}
+                            projectId={projectId}
+                        />
                     )}
                 </Route>
                 <Route
