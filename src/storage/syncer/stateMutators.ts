@@ -136,6 +136,27 @@ export function applySprintMutation(
     return currState;
 }
 
+export function applyStoryMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create':
+        case 'Update': {
+            const story = StoryState.fromMutationPayload(mutation.payload);
+            currState.stories[story.id] = story;
+            break;
+        }
+        case 'Delete': {
+            const storyId = mutation.payload;
+            delete currState.stories[storyId];
+            break;
+        }
+    }
+
+    return currState;
+}
+
 export function applyTaskLinkMutation(
     currState: AppState,
     mutation: Mutation,
