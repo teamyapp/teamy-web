@@ -66,6 +66,15 @@
                         }
                     }
 
+                    &.Remove {
+                        --icon-color: #d32f2f;
+                        --icon-size: 20px;
+    
+                        &:hover {
+                            background-color: #d32f2f;
+                        }
+                    }
+
                     &.Delete {
                         --icon-color: #d32f2f;
                         --icon-size: 22px;

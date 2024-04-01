@@ -6,6 +6,7 @@ import deleteStory  from "./graphql/mutation/deleteStory.graphql";
 import addStoryToPhase  from "./graphql/mutation/addStoryToPhase.graphql";
 import addStoriesToPhase from "./graphql/mutation/addStoriesToPhase.graphql";
 import removeStoryFromPhase  from "./graphql/mutation/removeStoryFromPhase.graphql";
+import removeStoriesFromPhase from "./graphql/mutation/removeStoriesFromPhase.graphql";
 import { print } from "graphql";
 import { RemoteStory } from "./entity/remoteStory";
 import { RemotePhase } from "./entity/remotePhase";
@@ -89,5 +90,20 @@ export class StoryClient {
                 },
             })
             .then(({removeStoryFromPhase}) => removeStoryFromPhase);
+    }
+
+    removeStoriesFromPhase(
+        phaseId: string,
+        storyIds: string[],
+    ): Promise<RemotePhase> {
+        return this.graphQLClient
+            .mutate({
+                mutation: print(removeStoriesFromPhase),
+                variables: {
+                    phaseId,
+                    storyIds,
+                },
+            })
+            .then(({removeStoriesFromPhase}) => removeStoriesFromPhase);
     }
 }

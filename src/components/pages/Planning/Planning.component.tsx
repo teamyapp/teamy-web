@@ -157,11 +157,11 @@ export function PlanningComponent(props: Props) {
                     pattern={phaseRoutePattern}
                     exact
                 >
-                    {project && phase && (
+                    {projectId && phaseId && (
                         <PhaseComponent
                             deps={props.deps}
-                            project={project}
-                            phase={phase}
+                            projectId={projectId}
+                            phaseId={phaseId}
                         />
                     )}
                 </Route>

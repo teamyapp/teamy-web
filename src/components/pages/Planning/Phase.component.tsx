@@ -13,19 +13,22 @@ import { phaseStoryPath } from '@core/routing/routes';
 import { InlineCreateStory } from './InlineCreateStory.component';
 import styles from './Phase.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
+import { Team } from '@core/entity/team';
 
 interface Props {
     deps: Deps;
-    project: Project;
-    phase: Phase;
+    projectId: number;
+    phaseId: number;
 }
 
 export function PhaseComponent(props: Props) {
+    const [project, setProject] = useState<Project>();
+    const [phase, setPhase] = useState<Phase>();
+    const [currentTeam, setCurrentTeam] = useState<Team>();
     const [onEditingNewStoryInBacklog, setOnEditingNewStoryInBacklog] =
         useState(false);
     const [onEditingNewStoryInPhase, setOnEditingNewStoryInPhase] =
         useState(false);
-    const currentTeam = props.deps.graphSource.currentTeam();
     const [selectedBacklogStoryIds, setSelectedBacklogStoryIds] = useState<
         Set<string>
     >(new Set());
@@ -49,6 +52,7 @@ export function PhaseComponent(props: Props) {
         const selectedPhaseStoryChan =
             phaseStorySelectorRef.current.subscribeSelectedItemsChanged();
         const keyBoardEventChan = props.deps.keyBoardEventMonitor.subscribe();
+        const stateChangeChan = props.deps.localStore.subscribeStateChange();
 
         (async () => {
             while (true) {
@@ -120,6 +124,34 @@ export function PhaseComponent(props: Props) {
                 }
             }
         })();
+    
+        (async () => {
+            while (true) {
+                console.log('[PhaseComponent] waiting for state changes');
+                const hasChanged = await stateChangeChan!.pop();
+                if (hasChanged === undefined) {
+                    // check undefined instead of falsy because
+                    // a falsy data could be valid data per channel's concern.
+                    return;
+                }
+
+                const project = props.deps.graphSource.project(props.projectId);
+                if (project) {
+                    setProject(project);
+                }
+
+                const currentTeam = props.deps.graphSource.currentTeam();
+                if (currentTeam) {
+                    setCurrentTeam(currentTeam);
+                }
+
+                const phase = props.deps.graphSource.phase(props.phaseId);
+                if (phase) {
+                    setPhase(phase);
+                }
+            }
+        })().then();
+
     }, []);
 
     const onBacklogStorySelect = (storyIdNumber: number) => {
@@ -131,11 +163,15 @@ export function PhaseComponent(props: Props) {
     };
 
     const onStoryDetailClickHandler = (storyId: number) => {
+        if (!currentTeam) {
+            return;
+        }
+
         props.deps.router.navigateTo(
             phaseStoryPath(
-                currentTeam!.id,
-                props.project.id,
-                props.phase.id,
+                currentTeam.id,
+                props.projectId,
+                props.phaseId,
                 storyId,
             ),
         );
@@ -144,11 +180,15 @@ export function PhaseComponent(props: Props) {
     const onStoryDoubleClickHandler = (storyId: number) => {
         return (event: MouseEvent<HTMLDivElement>) => {
             event.stopPropagation();
+            if (!currentTeam) {
+                return;
+            }
+
             props.deps.router.navigateTo(
                 phaseStoryPath(
-                    currentTeam!.id,
-                    props.project.id,
-                    props.phase.id,
+                    currentTeam.id,
+                    props.projectId,
+                    props.phaseId,
                     storyId,
                 ),
             );
@@ -159,7 +199,24 @@ export function PhaseComponent(props: Props) {
         setOnEditingNewStoryInPhase(true);
     };
 
-    const onDeleteStoryFromPhaseClick = () => {};
+    const onDeletePhaseStoriesClick = () => {
+        selectedPhaseStoryIds.forEach((storyId) => {
+            props.deps.stateSyncer.deleteStory(parseInt(storyId));
+        });
+
+        phaseStorySelectorRef.current.reset();
+    };
+
+    const onRemoveStoriesToPhaseClick = () => {
+        props.deps.stateSyncer.removeStoriesFromPhase(
+            props.phaseId,
+            Array.from(selectedPhaseStoryIds.values()).map((id) =>
+                parseInt(id),
+            ),
+        );
+
+        phaseStorySelectorRef.current.reset();
+    }
 
     const onAddStoryInBacklogClick = () => {
         setOnEditingNewStoryInBacklog(true);
@@ -167,15 +224,15 @@ export function PhaseComponent(props: Props) {
 
     const onCreateStoryInPhase = async (story: CreateStoryInput) => {
         const storyId = await props.deps.stateSyncer.createStory(
-            props.project.id,
+            props.projectId,
             story,
         );
-        props.deps.stateSyncer.addStoryToPhase(props.phase.id, storyId);
+        props.deps.stateSyncer.addStoryToPhase(props.phaseId, storyId);
         setOnEditingNewStoryInPhase(false);
     };
 
     const onCreateStoryInBacklog = (story: CreateStoryInput) => {
-        props.deps.stateSyncer.createStory(props.project.id, story);
+        props.deps.stateSyncer.createStory(props.projectId, story);
         setOnEditingNewStoryInBacklog(false);
     };
 
@@ -189,12 +246,14 @@ export function PhaseComponent(props: Props) {
 
     const onAddStoriesToPhaseClick = () => {
         props.deps.stateSyncer.addStoriesToPhase(
-            props.phase.id,
-            Array.from(selectedBacklogStoryIds.values()).map((id) => parseInt(id)),
+            props.phaseId,
+            Array.from(selectedBacklogStoryIds.values()).map((id) =>
+                parseInt(id),
+            ),
         );
 
         backlogStorySelectorRef.current.reset();
-    }
+    };
 
     const onDeleteBacklogStoriesClick = () => {
         selectedBacklogStoryIds.forEach((storyId) => {
@@ -204,7 +263,7 @@ export function PhaseComponent(props: Props) {
         backlogStorySelectorRef.current.reset();
     };
 
-    if (!currentTeam) {
+    if (!currentTeam || !project || !phase) {
         return null;
     }
 
@@ -213,24 +272,35 @@ export function PhaseComponent(props: Props) {
             <div className={styles.PhaseDetail}>
                 <div className={styles.Header}>
                     <div className={styles.Information}>
-                        {props.phase.name}
+                        {phase.name}
                         <div className={styles.Description}>
-                            {props.phase.deliveredStories} of{' '}
-                            {props.phase.totalStories} stories delivered
+                            {phase.deliveredStories} of{' '}
+                            {phase.totalStories} stories delivered
                         </div>
                     </div>
                     <div className={styles.Actions}>
+                        {selectedPhaseStoryIds.size > 0 && (
+                            <>
+                                <div
+                                    className={`${styles.Action} ${styles.Remove}`}
+                                    onClick={onRemoveStoriesToPhaseClick}
+                                >
+                                    <MaterialIconUI>read_more</MaterialIconUI>
+                                </div>
+
+                                <div
+                                    className={`${styles.Action} ${styles.Delete}`}
+                                    onClick={onDeletePhaseStoriesClick}
+                                >
+                                    <MaterialIconUI>close</MaterialIconUI>
+                                </div>
+                            </>
+                        )}
                         <div
                             className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddStoryInPhaseClick}
                         >
                             <MaterialIconUI>add</MaterialIconUI>
-                        </div>
-                        <div
-                            className={`${styles.Action} ${styles.Delete}`}
-                            onClick={onDeleteStoryFromPhaseClick}
-                        >
-                            <MaterialIconUI>close</MaterialIconUI>
                         </div>
                     </div>
                 </div>
@@ -243,7 +313,7 @@ export function PhaseComponent(props: Props) {
                             onDiscardNewStory={onDiscardNewStoryInPhase}
                         />
                     )}
-                    {props.phase.stories.map((story) => (
+                    {phase.stories.map((story) => (
                         <div
                             className={styles.InlineStory}
                             key={story.id}
@@ -302,7 +372,7 @@ export function PhaseComponent(props: Props) {
                             onDiscardNewStory={onDiscardNewStoryInBacklog}
                         />
                     )}
-                    {props.project.unplannedStories.map((story) => (
+                    {project.unplannedStories.map((story) => (
                         <div
                             key={story.id}
                             className={styles.ListItem}
