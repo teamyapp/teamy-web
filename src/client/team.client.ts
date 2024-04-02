@@ -44,7 +44,7 @@ export class TeamClient {
                                 goal
                                 dueAt
                                 status
-                                isPlanned
+                                isScheduled
                                 effort
                                 priority
                                 owner {
@@ -61,7 +61,7 @@ export class TeamClient {
                                     goal
                                     context
                                     status
-                                    isPlanned
+                                    isScheduled
                                     effort
                                     priority
                                     owningTeam {

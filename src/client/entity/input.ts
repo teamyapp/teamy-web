@@ -44,7 +44,7 @@ export interface RemoteCreateTaskInput {
     context?: string;
     ownerUserId?: string;
     dueAt?: Date;
-    isPlanned: boolean;
+    isScheduled: boolean;
 }
 
 export interface RemoteUpdateTaskInput {

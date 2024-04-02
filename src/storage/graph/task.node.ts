@@ -73,8 +73,8 @@ export class TaskNode implements Task {
         return this.taskState.status;
     }
 
-    public get isPlanned(): boolean {
-        return this.taskState.isPlanned;
+    public get isScheduled(): boolean {
+        return this.taskState.isScheduled;
     }
 
     public get comments(): ThreadNode {

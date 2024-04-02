@@ -17,7 +17,7 @@ export interface TaskFilters {
 
 export interface TaskFilter {
     goalContains?: string;
-    isPlanned?: boolean;
+    isScheduled?: boolean;
     ownerId?: number;
     status?: TaskStatus;
     taskId?: number;

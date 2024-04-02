@@ -349,7 +349,7 @@ export class StateSyncer {
         if (filter) {
             remoteFilter = {
                 goalContains: filter.goalContains,
-                isPlanned: filter.isPlanned,
+                isScheduled: filter.isScheduled,
                 ownerId: filter.ownerId ? `${filter.ownerId}` : undefined,
                 status: filter.status,
                 taskId: filter.taskId ? `${filter.taskId}` : undefined,
@@ -545,9 +545,9 @@ export class StateSyncer {
         task: CreateTaskInput,
         sprintId?: number,
     ): Promise<void> {
-        let isPlanned = false;
+        let isScheduled = false;
         if (sprintId) {
-            isPlanned = true;
+            isScheduled = true;
         }
 
         const remoteTask = await this.taskClient.createTask(`${teamId}`, {
@@ -555,7 +555,7 @@ export class StateSyncer {
             context: task.context,
             ownerUserId: task.ownerUserId ? `${task.ownerUserId}` : undefined,
             dueAt: task.dueAt,
-            isPlanned: isPlanned,
+            isScheduled: isScheduled,
         });
 
         const remoteTaskId = parseInt(remoteTask.id);
