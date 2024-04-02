@@ -154,7 +154,7 @@ export class BacklogComponent extends Component<Props, State> {
 
     public async refresh() {
         await this.stateSyncer.pullCurrentTeamTaskPreview({
-            isPlanned: false,
+            isScheduled: false,
         });
     }
 

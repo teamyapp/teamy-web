@@ -14,7 +14,7 @@ fragment TaskFragment on Task {
     owningTeam {
         ...TeamFragment
     }
-    isPlanned
+    isScheduled
     createdAt
     deliveredAt
     comments {

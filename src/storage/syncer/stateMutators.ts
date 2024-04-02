@@ -1388,10 +1388,10 @@ export function mergeTask(
         owningTeamId:
             toInt(remoteTask.owningTeam?.id) || localOldTask.owningTeamId,
         status: remoteTask.status || localOldTask?.status,
-        isPlanned:
-            remoteTask.isPlanned === undefined
-                ? localOldTask?.isPlanned
-                : remoteTask.isPlanned,
+        isScheduled:
+            remoteTask.isScheduled === undefined
+                ? localOldTask?.isScheduled
+                : remoteTask.isScheduled,
         commentsThreadId:
             toInt(remoteTask.comments?.id) || localOldTask.commentsThreadId,
         createdAt: toDate(remoteTask.createdAt) || localOldTask.createdAt,

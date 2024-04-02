@@ -38,7 +38,7 @@ export class TaskClient {
                             owningTeam {
                                 id
                             }
-                            isPlanned
+                            isScheduled
                             createdAt
                             deliveredAt
                             comments {
