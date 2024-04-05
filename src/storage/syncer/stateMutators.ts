@@ -830,6 +830,11 @@ export function mergeStory(
 
     remoteStory.tasks?.forEach((task) => {
         currAppState = mergeTask(currAppState, task);
+        currAppState = mergeStoryTaskRelation(
+            currAppState,
+            remoteStory.id,
+            task.id,
+        )
     });
 
     currAppState.stories[remoteStoryId] = localNewStory;
@@ -1392,6 +1397,10 @@ export function mergeTask(
             remoteTask.isScheduled === undefined
                 ? localOldTask?.isScheduled
                 : remoteTask.isScheduled,
+        isPlanned:
+            remoteTask.isPlanned === undefined
+                ? localOldTask?.isPlanned
+                : remoteTask.isPlanned,
         commentsThreadId:
             toInt(remoteTask.comments?.id) || localOldTask.commentsThreadId,
         createdAt: toDate(remoteTask.createdAt) || localOldTask.createdAt,

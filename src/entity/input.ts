@@ -61,6 +61,7 @@ export interface CreateTaskInput {
     context?: string;
     ownerUserId?: number;
     dueAt?: Date;
+    isPlanned?: boolean;
 }
 
 export interface UpdateTaskInput {

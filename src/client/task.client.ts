@@ -39,6 +39,7 @@ export class TaskClient {
                                 id
                             }
                             isScheduled
+                            isPlanned
                             createdAt
                             deliveredAt
                             comments {

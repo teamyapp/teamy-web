@@ -1,23 +1,22 @@
-import {ThirdPartyAppEventHub} from '@teamyapp/ext';
-import {InlineCreateTaskUI} from 'components/internal/InlineCreateTask';
-import {TaskListItem} from 'components/internal/TaskListSections/TaskListItem';
-import {useEffect, useRef, useState} from 'react';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
+import { InlineCreateTaskUI } from 'components/internal/InlineCreateTask';
+import { TaskListItem } from 'components/internal/TaskListSections/TaskListItem';
+import { useEffect, useRef, useState } from 'react';
 
-import {ItemsSelector} from '@lib/collections/itemSelector';
-import {getPlatform} from '@lib/runtime/os';
-import {ButtonUI} from '@lib/ui/Button';
-import {MaterialIconUI} from '@lib/ui/MaterialIcon';
+import { ItemsSelector } from '@lib/collections/itemSelector';
+import { getPlatform } from '@lib/runtime/os';
+import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
-import {backlogSectionId} from '@core/config/sections';
-import {unplanned} from '@core/data/task.filter';
-import {orderByStatusUrgencyAsc} from '@core/data/task.order';
-import {Deps} from '@core/dep/deps';
-import {CreateTaskInput, UpdateTaskInput} from '@core/entity/input';
-import {Phase} from '@core/entity/phase';
-import {Project} from '@core/entity/project';
-import {Story} from '@core/entity/story';
-import {Task} from '@core/entity/task';
-import {TaskAction} from '@core/entity/taskAction';
+import { backlogSectionId } from '@core/config/sections';
+import { unplanned } from '@core/data/task.filter';
+import { orderByStatusUrgencyAsc } from '@core/data/task.order';
+import { Deps } from '@core/dep/deps';
+import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
+import { Phase } from '@core/entity/phase';
+import { Project } from '@core/entity/project';
+import { Story } from '@core/entity/story';
+import { Task } from '@core/entity/task';
+import { TaskAction } from '@core/entity/taskAction';
 
 import styles from './Story.component.module.scss';
 
@@ -36,10 +35,8 @@ export function StoryComponent(props: Props) {
         useState(false);
     const [onEditingNewTaskInStory, setOnEditingNewTaskInStory] =
         useState(false);
-
-    const currentClientId = props.deps.localStore.getState().currClientId;
-    const unplannedTasksRef = useRef<Task[]>([]);
     const [unplannedTasks, setUnplannedTasks] = useState<Task[]>([]);
+    const currentClientId = props.deps.localStore.getState().currClientId;
     const [selectBacklogTaskIds, setSelectBacklogTaskIds] = useState<
         Set<string>
     >(new Set());
@@ -68,7 +65,7 @@ export function StoryComponent(props: Props) {
         const stateChangeChan = props.deps.localStore.subscribeStateChange();
         (async () => {
             while (true) {
-                console.log('[PlanningComponent] waiting for state changes');
+                console.log('[StoryComponent] waiting for state changes');
                 const hasChanged = await stateChangeChan!.pop();
                 if (hasChanged === undefined) {
                     // check undefined instead of falsy because
@@ -76,14 +73,13 @@ export function StoryComponent(props: Props) {
                     return;
                 }
 
-                if (unplannedTasksRef.current) {
-                    let tasks =
-                        props.deps.graphSource.currentTeam()?.tasks || [];
-                    tasks = tasks
-                        .filter(unplanned)
-                        .sort(orderByStatusUrgencyAsc);
-                    setUnplannedTasks(tasks);
-                    unplannedTasksRef.current = tasks;
+                const currentTeam = props.deps.graphSource.currentTeam();
+                if (currentTeam?.tasks.length) {
+                    setUnplannedTasks(
+                        currentTeam.tasks
+                            .filter(unplanned)
+                            .sort(orderByStatusUrgencyAsc),
+                    );
                 }
             }
         })();
@@ -137,7 +133,7 @@ export function StoryComponent(props: Props) {
                     return;
                 }
 
-                const {key, eventType} = keyboardEvent;
+                const { key, eventType } = keyboardEvent;
                 const platform = getPlatform();
                 if (
                     (platform === 'Mac' && key === 'Meta') ||
@@ -156,13 +152,6 @@ export function StoryComponent(props: Props) {
                 }
             }
         })();
-
-        return () => {
-            backlogTaskSelectorRef.current.dispose();
-            storyTaskSelectorRef.current.dispose();
-            keyBoardEventChan.close();
-            stateChangeChan?.close();
-        };
     }, []);
 
     const onUpdateTask = async (taskId: number, task: UpdateTaskInput) => {
@@ -185,8 +174,7 @@ export function StoryComponent(props: Props) {
         setOnEditingNewTaskInStory(true);
     };
 
-    const onDeleteTaskFromStoryClick = () => {
-    };
+    const onDeleteTaskFromStoryClick = () => {};
 
     const onBacklogTaskSelectHandler = (taskId: number) => {
         backlogTaskSelectorRef.current.selectItem(taskId.toString());
@@ -209,6 +197,7 @@ export function StoryComponent(props: Props) {
             props.deps.localStore.getState().currTeamId!,
             task,
         );
+        // TODO move task to story in next PR
         setOnEditingNewTaskInStory(false);
     };
 
@@ -262,7 +251,9 @@ export function StoryComponent(props: Props) {
                                 relativeLayout={props.deps.relativeLayout}
                                 task={task}
                                 currentClientId={currentClientId}
-                                isSelected={selectStoryTaskIds.has(task.id.toString())}
+                                isSelected={selectStoryTaskIds.has(
+                                    task.id.toString(),
+                                )}
                                 onTaskSelectHandler={onStoryTaskSelectHandler}
                                 filterTaskAction={filterTaskAction}
                                 numActionColumns={props.numActionColumns}
@@ -270,7 +261,7 @@ export function StoryComponent(props: Props) {
                                 thirdPartyAppEventHubs={
                                     props.thirdPartyAppEventHubs
                                 }
-                                sectionId="StoryDetail"
+                                sectionId='StoryDetail'
                                 onUpdateTask={onUpdateTask}
                                 onDeleteTask={onDeleteTask}
                                 onViewTaskDetail={props.onViewTaskDetail}
@@ -314,7 +305,9 @@ export function StoryComponent(props: Props) {
                                     props.deps.dragAndDropController
                                 }
                                 onTaskSelectHandler={onBacklogTaskSelectHandler}
-                                isSelected={selectBacklogTaskIds.has(task.id.toString())}
+                                isSelected={selectBacklogTaskIds.has(
+                                    task.id.toString(),
+                                )}
                                 currentClientId={currentClientId}
                                 task={task}
                                 numActionColumns={1}
