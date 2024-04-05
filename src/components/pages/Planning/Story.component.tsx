@@ -36,7 +36,7 @@ export function StoryComponent(props: Props) {
     const [onEditingNewTaskInStory, setOnEditingNewTaskInStory] =
         useState(false);
     const [unplannedTasks, setUnplannedTasks] = useState<Task[]>([]);
-    const currentClientId = props.deps.localStore.getState().currClientId;
+    const [currentClientId, setCurrentClientId] = useState<number>();
     const [selectBacklogTaskIds, setSelectBacklogTaskIds] = useState<
         Set<string>
     >(new Set());
@@ -80,6 +80,11 @@ export function StoryComponent(props: Props) {
                             .filter(unplanned)
                             .sort(orderByStatusUrgencyAsc),
                     );
+                }
+
+                const currentClientId = props.deps.localStore.getState().currClientId
+                if (currentClientId === undefined) {
+                    setCurrentClientId(currentClientId);
                 }
             }
         })();
