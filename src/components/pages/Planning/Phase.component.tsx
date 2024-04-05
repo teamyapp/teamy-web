@@ -152,6 +152,10 @@ export function PhaseComponent(props: Props) {
             }
         })().then();
 
+        return () => {
+            phaseStorySelectorRef.current.dispose();
+            backlogStorySelectorRef.current.dispose();
+        };
     }, []);
 
     const onBacklogStorySelect = (storyIdNumber: number) => {

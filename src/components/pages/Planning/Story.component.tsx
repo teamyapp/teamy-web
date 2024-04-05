@@ -157,6 +157,11 @@ export function StoryComponent(props: Props) {
                 }
             }
         })();
+
+        return () => {
+            storyTaskSelectorRef.current.dispose();
+            backlogTaskSelectorRef.current.dispose();
+        }
     }, []);
 
     const onUpdateTask = async (taskId: number, task: UpdateTaskInput) => {
