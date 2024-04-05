@@ -14,7 +14,7 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { backlogSectionId } from '@core/config/sections';
-import { allTasks, unplanned } from '@core/data/task.filter';
+import { allTasks, unscheduled } from '@core/data/task.filter';
 import { orderByStatusUrgencyAsc } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
@@ -160,7 +160,7 @@ export class BacklogComponent extends Component<Props, State> {
 
     private updateState() {
         let tasks = this.graphSource.currentTeam()?.tasks || [];
-        tasks = tasks.filter(unplanned).sort(orderByStatusUrgencyAsc);
+        tasks = tasks.filter(unscheduled).sort(orderByStatusUrgencyAsc);
         this.setState({
             unplannedTasks: tasks,
         });

@@ -15,6 +15,7 @@ export interface RemoteTask {
     owningTeam?: RemoteTeam;
     status?: RemoteTaskStatus;
     isScheduled: boolean;
+    isPlanned: boolean;
     comments?: RemoteThread;
     createdAt?: string;
     updatedAt?: string;

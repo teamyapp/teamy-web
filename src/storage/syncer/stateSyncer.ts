@@ -350,6 +350,7 @@ export class StateSyncer {
             remoteFilter = {
                 goalContains: filter.goalContains,
                 isScheduled: filter.isScheduled,
+                isPlanned: filter.isPlanned,
                 ownerId: filter.ownerId ? `${filter.ownerId}` : undefined,
                 status: filter.status,
                 taskId: filter.taskId ? `${filter.taskId}` : undefined,
@@ -556,6 +557,7 @@ export class StateSyncer {
             ownerUserId: task.ownerUserId ? `${task.ownerUserId}` : undefined,
             dueAt: task.dueAt,
             isScheduled: isScheduled,
+            isPlanned: Boolean(task.isPlanned),
         });
 
         const remoteTaskId = parseInt(remoteTask.id);

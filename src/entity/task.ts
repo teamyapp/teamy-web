@@ -24,6 +24,7 @@ export interface Task {
     availableActions: TaskAction[];
     status: TaskStatus;
     isScheduled: boolean;
+    isPlanned: boolean;
     awaitForTasks: Task[];
     draggingBy?: Client;
     links: TaskLink[];

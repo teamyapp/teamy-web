@@ -34,6 +34,7 @@ export class SprintClient {
                                 effort
                                 priority
                                 isScheduled
+                                isPlanned
                                 owner {
                                     id
                                     firstName
@@ -49,6 +50,7 @@ export class SprintClient {
                                     context
                                     status
                                     isScheduled
+                                    isPlanned
                                     owningTeam {
                                         id
                                     }

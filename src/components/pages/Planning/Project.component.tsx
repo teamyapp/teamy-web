@@ -165,6 +165,11 @@ export function ProjectComponent(props: Props) {
                 }
             }
         })().then();
+
+        return () => {
+            phaseSelectorRef.current.dispose();
+            storySelectorRef.current.dispose();
+        }
     }, []);
 
     const rows: Row[] = (project?.phases || []).map((phase, index) => {
