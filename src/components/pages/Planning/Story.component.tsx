@@ -53,7 +53,7 @@ export function StoryComponent(props: Props) {
         Set<string>
     >(new Set());
     const [selectedBacklogTasksFilter, setSelectedBacklogTasksFilter] =
-        useState<backlogTasksFilterOption>('ALL');
+        useState<backlogTasksFilterKey>('ALL');
     const [selectStoryTaskIds, setSelectStoryTaskIds] = useState<Set<string>>(
         new Set(),
     );
@@ -263,19 +263,24 @@ export function StoryComponent(props: Props) {
         const taskIds = Array.from(selectStoryTaskIds).map((taskId) =>
             parseInt(taskId),
         );
-        await props.deps.stateSyncer.removeTasksFromStory(props.storyId, tasks);
+        await props.deps.stateSyncer.removeTasksFromStory(
+            props.storyId,
+            taskIds,
+        );
         await storyTaskSelectorRef.current.reset();
     };
 
     const handleBacklogFilterChange = (optionKey: string) => {
-        setSelectedBacklogTasksFilter(optionKey as backlogTasksFilterOption);
+        setSelectedBacklogTasksFilter(optionKey as backlogTasksFilterKey);
     };
 
+    if (!story) {
+        return null;
+    }
+
+    const storyTaskIds = new Set(story.tasks.map((task) => task.id));
     let backlogTasks = tasks
-        .filter(
-            (task) =>
-                !story?.tasks.some((storyTask) => storyTask.id === task.id),
-        )
+        .filter((task) => !storyTaskIds.has(task.id))
         .sort(orderByStatusUrgencyAsc);
     switch (selectedBacklogTasksFilter) {
         case 'IS_PLANNED':
@@ -284,12 +289,8 @@ export function StoryComponent(props: Props) {
         case 'UNPLANNED':
             backlogTasks = backlogTasks.filter(unplanned);
             break;
-        case 'All':
+        case 'ALL':
             break;
-    }
-
-    if (!story) {
-        return null;
     }
 
     return (
