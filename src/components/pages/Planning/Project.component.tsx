@@ -396,7 +396,7 @@ export function ProjectComponent(props: Props) {
                                     className={`${styles.Action} ${styles.Move}`}
                                     onClick={onAddStoriesToPhaseClick}
                                 >
-                                    <MaterialIconUI>read_more</MaterialIconUI>
+                                    <MaterialIconUI rotatedDegree={180}>read_more</MaterialIconUI>
                                 </div>
                             )}
                         {selectedStoryIds.size > 0 && (

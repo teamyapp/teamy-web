@@ -348,7 +348,7 @@ export function PhaseComponent(props: Props) {
                                 className={`${styles.Action} ${styles.Move}`}
                                 onClick={onAddStoriesToPhaseClick}
                             >
-                                <MaterialIconUI>read_more</MaterialIconUI>
+                                <MaterialIconUI rotatedDegree={180}>read_more</MaterialIconUI>
                             </div>
                         )}
                         {selectedBacklogStoryIds.size > 0 && (
