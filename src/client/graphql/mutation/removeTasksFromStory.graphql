@@ -1,0 +1,7 @@
+#import '../fragment/story.graphql'
+
+mutation removeTasksFromStory($storyId: ID!, $taskIds: [ID!]!) {
+    removeTasksFromStory(storyId: $storyId, taskIds: $taskIds) {
+        ...StoryFragment
+    }
+}

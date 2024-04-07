@@ -82,8 +82,9 @@ export function StoryComponent(props: Props) {
                     );
                 }
 
-                const currentClientId = props.deps.localStore.getState().currClientId
-                if (currentClientId === undefined) {
+                const currentClientId =
+                    props.deps.localStore.getState().currClientId;
+                if (currentClientId !== undefined) {
                     setCurrentClientId(currentClientId);
                 }
             }
@@ -161,7 +162,7 @@ export function StoryComponent(props: Props) {
         return () => {
             storyTaskSelectorRef.current.dispose();
             backlogTaskSelectorRef.current.dispose();
-        }
+        };
     }, []);
 
     const onUpdateTask = async (taskId: number, task: UpdateTaskInput) => {
@@ -184,7 +185,13 @@ export function StoryComponent(props: Props) {
         setOnEditingNewTaskInStory(true);
     };
 
-    const onDeleteTaskFromStoryClick = () => {};
+    const onDeleteTasksFromStoryClick = () => {
+        selectStoryTaskIds.forEach((taskId) => {
+            props.deps.stateSyncer.deleteTask(parseInt(taskId));
+        });
+
+        storyTaskSelectorRef.current.reset();
+    };
 
     const onBacklogTaskSelectHandler = (taskId: number) => {
         backlogTaskSelectorRef.current.selectItem(taskId.toString());
@@ -202,12 +209,13 @@ export function StoryComponent(props: Props) {
         setOnEditingNewTaskInBacklog(false);
     };
 
-    const onCreateTaskInStory = (task: CreateTaskInput) => {
-        props.deps.stateSyncer.createTask(
+    const onCreateTaskInStory = async (task: CreateTaskInput) => {
+        const taskId = await props.deps.stateSyncer.createTask(
             props.deps.localStore.getState().currTeamId!,
             task,
         );
-        // TODO move task to story in next PR
+
+        props.deps.stateSyncer.addTaskToStory(props.story.id, taskId);
         setOnEditingNewTaskInStory(false);
     };
 
@@ -218,6 +226,32 @@ export function StoryComponent(props: Props) {
     const onDiscardNewTaskInStory = () => {
         setOnEditingNewTaskInStory(false);
     };
+
+    const onAddTasksToStoryClick = async () => {
+        const tasks = Array.from(selectBacklogTaskIds).map((taskId) => {
+            return parseInt(taskId);
+        });
+
+        await props.deps.stateSyncer.addTasksToStory(props.story.id, tasks);
+        await backlogTaskSelectorRef.current.reset();
+    };
+
+    const onDeleteBacklogTasksClick = async () => {
+        selectBacklogTaskIds.forEach((taskId) => {
+            props.deps.stateSyncer.deleteTask(parseInt(taskId));
+        });
+
+        await backlogTaskSelectorRef.current.reset();
+    };
+
+    const onRemoveTasksFromStoryClick = async () => {
+        const tasks = Array.from(selectStoryTaskIds).map((taskId) => parseInt(taskId));
+        await props.deps.stateSyncer.removeTasksFromStory(
+            props.story.id,
+            tasks,
+        );
+        await storyTaskSelectorRef.current.reset();
+    }
 
     return (
         <div className={styles.Story}>
@@ -231,17 +265,27 @@ export function StoryComponent(props: Props) {
                         </div>
                     </div>
                     <div className={styles.Actions}>
+                        {selectStoryTaskIds.size > 0 && (
+                            <>
+                                <div
+                                    className={`${styles.Action} ${styles.Remove}`}
+                                    onClick={onRemoveTasksFromStoryClick}
+                                >
+                                    <MaterialIconUI>read_more</MaterialIconUI>
+                                </div>
+                                <div
+                                    className={`${styles.Action} ${styles.Delete}`}
+                                    onClick={onDeleteTasksFromStoryClick}
+                                >
+                                    <MaterialIconUI>close</MaterialIconUI>
+                                </div>
+                            </>
+                        )}
                         <div
                             className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddTaskToStoryClick}
                         >
                             <MaterialIconUI>add</MaterialIconUI>
-                        </div>
-                        <div
-                            className={`${styles.Action} ${styles.Delete}`}
-                            onClick={onDeleteTaskFromStoryClick}
-                        >
-                            <MaterialIconUI>close</MaterialIconUI>
                         </div>
                     </div>
                 </div>
@@ -288,6 +332,22 @@ export function StoryComponent(props: Props) {
                 <div className={styles.TopBar}>
                     <div className={styles.Title}>Tasks</div>
                     <div className={styles.Actions}>
+                        {selectBacklogTaskIds.size > 0 && (
+                            <div
+                                className={`${styles.Action} ${styles.Move}`}
+                                onClick={onAddTasksToStoryClick}
+                            >
+                                <MaterialIconUI>read_more</MaterialIconUI>
+                            </div>
+                        )}
+                        {selectBacklogTaskIds.size > 0 && (
+                            <div
+                                className={`${styles.Action} ${styles.Delete}`}
+                                onClick={onDeleteBacklogTasksClick}
+                            >
+                                <MaterialIconUI>close</MaterialIconUI>
+                            </div>
+                        )}
                         <div
                             className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddTaskInBacklogClick}

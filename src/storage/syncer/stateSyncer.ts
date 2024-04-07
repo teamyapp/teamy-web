@@ -545,7 +545,7 @@ export class StateSyncer {
         teamId: number,
         task: CreateTaskInput,
         sprintId?: number,
-    ): Promise<void> {
+    ): Promise<number> {
         let isScheduled = false;
         if (sprintId) {
             isScheduled = true;
@@ -568,6 +568,7 @@ export class StateSyncer {
         }
 
         this.localStore.updateState(appState);
+        return remoteTaskId;
     }
 
     public async updateTask(taskId: number, input: UpdateTaskInput) {
@@ -596,6 +597,10 @@ export class StateSyncer {
                 relation.awaitForTaskId !== taskId,
         );
         appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
+            (relation) => relation.taskId !== taskId,
+        );
+        
+        appState.storyTaskRelations = appState.storyTaskRelations.filter(
             (relation) => relation.taskId !== taskId,
         );
         delete appState.tasks[taskId];
@@ -1016,6 +1021,19 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async addTasksToStory(
+        storyId: number,
+        taskIds: number[],
+    ): Promise<void> {
+        const remoteStory = await this.taskClient.addTasksToStory(
+            `${storyId}`,
+            taskIds.map(String),
+        );
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        this.localStore.updateState(appState);
+    }
+
     public async removeTaskFromStory(
         storyId: number,
         taskId: number,
@@ -1029,6 +1047,25 @@ export class StateSyncer {
         appState.storyTaskRelations = appState.storyTaskRelations.filter(
             (relation) =>
                 relation.storyId !== storyId && relation.taskId !== taskId,
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async removeTasksFromStory(
+        storyId: number,
+        taskIds: number[],
+    ): Promise<void> {
+        const remoteStory = await this.taskClient.removeTasksFromStory(
+            `${storyId}`,
+            taskIds.map(String),
+        );
+        let appState = this.localStore.getState();
+        mergeStory(appState, remoteStory);
+        appState.storyTaskRelations = appState.storyTaskRelations.filter(
+            (relation) =>
+                relation.storyId !== storyId ||
+                !taskIds.includes(relation.taskId),
         );
 
         this.localStore.updateState(appState);

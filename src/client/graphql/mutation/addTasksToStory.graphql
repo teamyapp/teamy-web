@@ -1,0 +1,7 @@
+#import '../fragment/story.graphql'
+
+mutation addTasksToStory($storyId: ID!, $taskIds: [ID!]!) {
+    addTasksToStory(storyId: $storyId, taskIds: $taskIds) {
+        ...StoryFragment
+    }
+}
