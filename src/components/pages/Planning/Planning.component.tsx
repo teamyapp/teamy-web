@@ -170,11 +170,10 @@ export function PlanningComponent(props: Props) {
                     pattern={projectStoryRoutePattern}
                     exact
                 >
-                    {project && story && (
+                    {storyId && (
                         <StoryComponent
                             deps={props.deps}
-                            project={project}
-                            story={story}
+                            storyId={storyId}
                             thirdPartyAppEventHubs={
                                 props.thirdPartyAppEventHubs
                             }
@@ -188,12 +187,10 @@ export function PlanningComponent(props: Props) {
                     pattern={phaseStoryRoutePattern}
                     exact
                 >
-                    {project && phase && story && (
+                    {storyId && (
                         <StoryComponent
                             deps={props.deps}
-                            project={project}
-                            phase={phase}
-                            story={story}
+                            storyId={storyId}
                             thirdPartyAppEventHubs={
                                 props.thirdPartyAppEventHubs
                             }
