@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
+import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { backlogSectionId } from '@core/config/sections';
@@ -17,7 +18,6 @@ import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 
 import styles from './Story.component.module.scss';
-import { DropDownList, Option } from '@lib/ui/DropDownList';
 
 type backlogTasksFilterOption = 'IS_PLANNED' | 'UNPLANNED' | 'ALL';
 const backlogTasksFilterOptions: Option[] = [
@@ -33,7 +33,7 @@ const backlogTasksFilterOptions: Option[] = [
         key: 'UNPLANNED',
         description: 'Unplanned',
     },
-]
+];
 interface Props {
     deps: Deps;
     thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
@@ -52,7 +52,8 @@ export function StoryComponent(props: Props) {
     const [selectBacklogTaskIds, setSelectBacklogTaskIds] = useState<
         Set<string>
     >(new Set());
-    const [selectedBacklogTasksFilter, setSelectedBacklogTasksFilter] = useState<backlogTasksFilterOption>('ALL');
+    const [selectedBacklogTasksFilter, setSelectedBacklogTasksFilter] =
+        useState<backlogTasksFilterOption>('ALL');
     const [selectStoryTaskIds, setSelectStoryTaskIds] = useState<Set<string>>(
         new Set(),
     );
@@ -88,9 +89,7 @@ export function StoryComponent(props: Props) {
 
                 const currentTeam = props.deps.graphSource.currentTeam();
                 if (currentTeam?.tasks.length) {
-                    setTasks(
-                        currentTeam.tasks
-                    );
+                    setTasks(currentTeam.tasks);
                 }
 
                 const currentClientId =
@@ -264,23 +263,23 @@ export function StoryComponent(props: Props) {
         const tasks = Array.from(selectStoryTaskIds).map((taskId) =>
             parseInt(taskId),
         );
-        await props.deps.stateSyncer.removeTasksFromStory(
-            props.storyId,
-            tasks,
-        );
+        await props.deps.stateSyncer.removeTasksFromStory(props.storyId, tasks);
         await storyTaskSelectorRef.current.reset();
     };
 
     const handleBacklogFilterChange = (optionKey: string) => {
         setSelectedBacklogTasksFilter(optionKey as backlogTasksFilterOption);
-    }
+    };
 
-    let backlogTasks = tasks.filter(
-        (task) => !story?.tasks.some((storyTask) => storyTask.id === task.id),
-    ).sort(orderByStatusUrgencyAsc);
+    let backlogTasks = tasks
+        .filter(
+            (task) =>
+                !story?.tasks.some((storyTask) => storyTask.id === task.id),
+        )
+        .sort(orderByStatusUrgencyAsc);
     switch (selectedBacklogTasksFilter) {
         case 'IS_PLANNED':
-            backlogTasks = backlogTasks.filter(isPlanned)
+            backlogTasks = backlogTasks.filter(isPlanned);
             break;
         case 'UNPLANNED':
             backlogTasks = backlogTasks.filter(unplanned);
@@ -290,7 +289,7 @@ export function StoryComponent(props: Props) {
     }
 
     if (!story) {
-        return null
+        return null;
     }
 
     return (
@@ -300,8 +299,8 @@ export function StoryComponent(props: Props) {
                     <div className={styles.Information}>
                         {story.name}
                         <div className={styles.Description}>
-                            {story.completedTasks} of{' '}
-                            {story.totalTasks} tasks completed
+                            {story.completedTasks} of {story.totalTasks} tasks
+                            completed
                         </div>
                     </div>
                     <div className={styles.Actions}>
@@ -371,15 +370,14 @@ export function StoryComponent(props: Props) {
             <div className={styles.TaskListSection}>
                 <div className={styles.TopBar}>
                     <div className={styles.Title}>Tasks</div>
+                    <div className={styles.Filter}>
+                        <DropDownList
+                            selectOptionKey={selectedBacklogTasksFilter}
+                            options={backlogTasksFilterOptions}
+                            onSelectOption={handleBacklogFilterChange}
+                        />
+                    </div>
                     <div className={styles.Actions}>
-                        <div className={styles.Filter}>
-                            <DropDownList
-                                selectOptionKey={selectedBacklogTasksFilter}
-                                options={backlogTasksFilterOptions}
-                                onSelectOption={handleBacklogFilterChange}
-                            />
-                        </div>
-
                         {selectBacklogTaskIds.size > 0 && (
                             <div
                                 className={`${styles.Action} ${styles.Move}`}
