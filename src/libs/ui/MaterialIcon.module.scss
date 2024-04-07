@@ -5,6 +5,7 @@ $iconColor: var(--icon-color, black);
 $iconBoxSize: var(--icon-box-size, $iconSize);
 $iconWidth: var(--icon-box-width, $iconBoxSize);
 $iconHeight: var(--icon-box-height, $iconBoxSize);
+$rotatedDegree: var(--icon-rotated-degree, 0);
 
 .Icon {
     align-items: center;
@@ -22,4 +23,5 @@ $iconHeight: var(--icon-box-height, $iconBoxSize);
     letter-spacing: normal;
     overflow: hidden;
     width: $iconWidth;
+    transform: rotate($rotatedDegree);
 }

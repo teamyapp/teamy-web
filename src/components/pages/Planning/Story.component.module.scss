@@ -52,7 +52,7 @@
                         --icon-color: white;
                         cursor: pointer;
 
-                        &.Add, &.Delete {
+                        &.Add, &.Delete, &.Remove {
                             --icon-color: white;
                         }
                     }
@@ -63,6 +63,15 @@
 
                         &:hover {
                             background-color: #1e88e5;
+                        }
+                    }
+
+                    &.Remove {
+                        --icon-color: #5e5e5e;
+                        --icon-size: 20px;
+
+                        &:hover {
+                            background-color: #5e5e5e;
                         }
                     }
 
