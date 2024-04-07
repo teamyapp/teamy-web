@@ -337,7 +337,7 @@ export function StoryComponent(props: Props) {
                                 className={`${styles.Action} ${styles.Move}`}
                                 onClick={onAddTasksToStoryClick}
                             >
-                                <MaterialIconUI rotatedDegree={180}>read_more</MaterialIconUI>
+                                <MaterialIconUI>read_more</MaterialIconUI>
                             </div>
                         )}
                         {selectBacklogTaskIds.size > 0 && (

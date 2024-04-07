@@ -7,7 +7,6 @@ type IconStyle = 'outlined' | 'rounded' | 'sharp';
 interface Props {
     children: React.ReactNode;
     iconStyle?: IconStyle;
-    rotatedDegree?: number;
 }
 
 export class MaterialIconUI extends Component<Props> {
@@ -19,9 +18,6 @@ export class MaterialIconUI extends Component<Props> {
                 className={`${styles.Icon} ${
                     styles[`material-symbols-${iconStyle}`]
                 }`}
-                style={{
-                    transform: `rotate(${this.props.rotatedDegree || 0}deg)`,
-                }}
             >
                 <span className={styles.Content}>{this.props.children}</span>
             </i>
