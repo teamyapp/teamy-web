@@ -5,28 +5,40 @@ import { useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
+import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { backlogSectionId } from '@core/config/sections';
-import { unplanned } from '@core/data/task.filter';
+import { isPlanned, unplanned } from '@core/data/task.filter';
 import { orderByStatusUrgencyAsc } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
-import { Phase } from '@core/entity/phase';
-import { Project } from '@core/entity/project';
 import { Story } from '@core/entity/story';
 import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 
 import styles from './Story.component.module.scss';
 
+type backlogTasksFilterKey = 'IS_PLANNED' | 'UNPLANNED' | 'ALL';
+const backlogTasksFilterOptions: Option[] = [
+    {
+        key: 'ALL',
+        description: 'All',
+    },
+    {
+        key: 'IS_PLANNED',
+        description: 'Planned',
+    },
+    {
+        key: 'UNPLANNED',
+        description: 'Unplanned',
+    },
+];
 interface Props {
     deps: Deps;
     thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     numActionColumns: number;
-    project: Project;
-    story: Story;
-    phase?: Phase;
+    storyId: number;
     onViewTaskDetail: (taskId: number) => void;
 }
 
@@ -35,12 +47,13 @@ export function StoryComponent(props: Props) {
         useState(false);
     const [onEditingNewTaskInStory, setOnEditingNewTaskInStory] =
         useState(false);
-    const [unplannedTasks, setUnplannedTasks] = useState<Task[]>([]);
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [currentClientId, setCurrentClientId] = useState<number>();
     const [selectBacklogTaskIds, setSelectBacklogTaskIds] = useState<
         Set<string>
     >(new Set());
-
+    const [selectedBacklogTasksFilter, setSelectedBacklogTasksFilter] =
+        useState<backlogTasksFilterKey>('ALL');
     const [selectStoryTaskIds, setSelectStoryTaskIds] = useState<Set<string>>(
         new Set(),
     );
@@ -54,6 +67,7 @@ export function StoryComponent(props: Props) {
     const storyTaskSelectorRef = useRef<ItemsSelector>(
         new ItemsSelector(ctrlKeyPressedRef.current, selectStoryTaskIds),
     );
+    const [story, setStory] = useState<Story>();
 
     useEffect(() => {
         const selectedBacklogTaskChan =
@@ -75,17 +89,18 @@ export function StoryComponent(props: Props) {
 
                 const currentTeam = props.deps.graphSource.currentTeam();
                 if (currentTeam?.tasks.length) {
-                    setUnplannedTasks(
-                        currentTeam.tasks
-                            .filter(unplanned)
-                            .sort(orderByStatusUrgencyAsc),
-                    );
+                    setTasks(currentTeam.tasks);
                 }
 
                 const currentClientId =
                     props.deps.localStore.getState().currClientId;
                 if (currentClientId !== undefined) {
                     setCurrentClientId(currentClientId);
+                }
+
+                const story = props.deps.graphSource.story(props.storyId);
+                if (story) {
+                    setStory(story);
                 }
             }
         })();
@@ -215,7 +230,7 @@ export function StoryComponent(props: Props) {
             task,
         );
 
-        props.deps.stateSyncer.addTaskToStory(props.story.id, taskId);
+        props.deps.stateSyncer.addTaskToStory(props.storyId, taskId);
         setOnEditingNewTaskInStory(false);
     };
 
@@ -232,7 +247,7 @@ export function StoryComponent(props: Props) {
             return parseInt(taskId);
         });
 
-        await props.deps.stateSyncer.addTasksToStory(props.story.id, tasks);
+        await props.deps.stateSyncer.addTasksToStory(props.storyId, tasks);
         await backlogTaskSelectorRef.current.reset();
     };
 
@@ -245,12 +260,37 @@ export function StoryComponent(props: Props) {
     };
 
     const onRemoveTasksFromStoryClick = async () => {
-        const tasks = Array.from(selectStoryTaskIds).map((taskId) => parseInt(taskId));
+        const taskIds = Array.from(selectStoryTaskIds).map((taskId) =>
+            parseInt(taskId),
+        );
         await props.deps.stateSyncer.removeTasksFromStory(
-            props.story.id,
-            tasks,
+            props.storyId,
+            taskIds,
         );
         await storyTaskSelectorRef.current.reset();
+    };
+
+    const handleBacklogFilterChange = (optionKey: string) => {
+        setSelectedBacklogTasksFilter(optionKey as backlogTasksFilterKey);
+    };
+
+    if (!story) {
+        return null;
+    }
+
+    const storyTaskIds = new Set(story.tasks.map((task) => task.id));
+    let backlogTasks = tasks
+        .filter((task) => !storyTaskIds.has(task.id))
+        .sort(orderByStatusUrgencyAsc);
+    switch (selectedBacklogTasksFilter) {
+        case 'IS_PLANNED':
+            backlogTasks = backlogTasks.filter(isPlanned);
+            break;
+        case 'UNPLANNED':
+            backlogTasks = backlogTasks.filter(unplanned);
+            break;
+        case 'ALL':
+            break;
     }
 
     return (
@@ -258,10 +298,10 @@ export function StoryComponent(props: Props) {
             <div className={styles.StoryDetailSection}>
                 <div className={styles.Header}>
                     <div className={styles.Information}>
-                        {props.story.name}
+                        {story.name}
                         <div className={styles.Description}>
-                            {props.story.completedTasks} of{' '}
-                            {props.story.totalTasks} tasks completed
+                            {story.completedTasks} of {story.totalTasks} tasks
+                            completed
                         </div>
                     </div>
                     <div className={styles.Actions}>
@@ -298,7 +338,7 @@ export function StoryComponent(props: Props) {
                             onDiscardNewTask={onDiscardNewTaskInStory}
                         />
                     )}
-                    {props.story.tasks.map((task) => (
+                    {story.tasks.map((task) => (
                         <div key={task.id} className={styles.InlineTask}>
                             <TaskListItem
                                 deps={props.deps}
@@ -331,6 +371,13 @@ export function StoryComponent(props: Props) {
             <div className={styles.TaskListSection}>
                 <div className={styles.TopBar}>
                     <div className={styles.Title}>Tasks</div>
+                    <div className={styles.Filter}>
+                        <DropDownList
+                            selectOptionKey={selectedBacklogTasksFilter}
+                            options={backlogTasksFilterOptions}
+                            onSelectOption={handleBacklogFilterChange}
+                        />
+                    </div>
                     <div className={styles.Actions}>
                         {selectBacklogTaskIds.size > 0 && (
                             <div
@@ -365,7 +412,7 @@ export function StoryComponent(props: Props) {
                             onDiscardNewTask={onDiscardNewTaskInBacklog}
                         />
                     )}
-                    {unplannedTasks.map((task) => (
+                    {backlogTasks.map((task) => (
                         <div className={styles.ListItem} key={task.id}>
                             <TaskListItem
                                 deps={props.deps}
