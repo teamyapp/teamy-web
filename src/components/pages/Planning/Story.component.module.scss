@@ -104,6 +104,7 @@
     .TaskListSection {
         @include ItemListSection;
         .Filter {
+        
             margin-right: auto;
             margin-left: 10px;
         }

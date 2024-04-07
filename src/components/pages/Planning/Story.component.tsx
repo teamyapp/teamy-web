@@ -19,7 +19,7 @@ import { TaskAction } from '@core/entity/taskAction';
 
 import styles from './Story.component.module.scss';
 
-type backlogTasksFilterOption = 'IS_PLANNED' | 'UNPLANNED' | 'ALL';
+type backlogTasksFilterKey = 'IS_PLANNED' | 'UNPLANNED' | 'ALL';
 const backlogTasksFilterOptions: Option[] = [
     {
         key: 'ALL',
@@ -260,7 +260,7 @@ export function StoryComponent(props: Props) {
     };
 
     const onRemoveTasksFromStoryClick = async () => {
-        const tasks = Array.from(selectStoryTaskIds).map((taskId) =>
+        const taskIds = Array.from(selectStoryTaskIds).map((taskId) =>
             parseInt(taskId),
         );
         await props.deps.stateSyncer.removeTasksFromStory(props.storyId, tasks);
@@ -284,7 +284,7 @@ export function StoryComponent(props: Props) {
         case 'UNPLANNED':
             backlogTasks = backlogTasks.filter(unplanned);
             break;
-        default:
+        case 'All':
             break;
     }
 
