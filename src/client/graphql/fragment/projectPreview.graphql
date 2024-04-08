@@ -1,7 +1,7 @@
 #import "./user.graphql"
 #import "./team.graphql"
 
-fragment ProjectListItemFragment on Project {
+fragment ProjectPreviewFragment on Project {
     id
     name
     expectedStartAt

@@ -1,6 +1,6 @@
 #import "./user.graphql"
 
-fragment StoryListItemFragment on Story {
+fragment StoryPreviewFragment on Story {
     id
     name
     isPlanned
