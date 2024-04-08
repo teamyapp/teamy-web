@@ -1,5 +1,5 @@
 #import "../fragment/team.graphql"
-#import "../fragment/project.graphql"
+#import "../fragment/projectPreview.graphql"
 #import "../fragment/appVersion.graphql"
 
 query getTeam($teamId: ID!) {
@@ -40,20 +40,7 @@ query getTeam($teamId: ID!) {
             }
         }
         projects {
-            id
-            name
-            expectedStartAt
-            actualStartAt
-            expectedEndAt
-            actualEndAt
-            creator {
-                ...UserFragment
-            }
-            createdAt
-            updatedAt
-            team {
-                ...TeamFragment
-            }
+            ...ProjectPreviewFragment
         }
     }
 }

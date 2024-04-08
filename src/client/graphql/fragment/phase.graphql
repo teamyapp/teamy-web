@@ -1,5 +1,5 @@
 #import "./user.graphql"
-#import "./story.graphql"
+#import "./storyPreview.graphql"
 
 fragment PhaseFragment on Phase {
     id
@@ -15,6 +15,6 @@ fragment PhaseFragment on Phase {
     createdAt
     updatedAt
     stories {
-        ...StoryFragment
+        ...StoryPreviewFragment
     }
 }
