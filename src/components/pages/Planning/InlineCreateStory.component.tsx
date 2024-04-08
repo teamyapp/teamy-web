@@ -27,9 +27,6 @@ export const InlineCreateStory: FC<Props> = (props) => {
     });
     const getBindingClientRectRef = useRef<() => DOMRect>();
     const [isSelectingOwner, setIsSelectingOwner] = useState(false);
-    const owner =
-        props.initialOwnerId &&
-        props.deps.graphSource.user(props.initialOwnerId);
     const selectOwnerPopupRef = useRef<SelectOwnersPopupComponent>(null);
 
     const onNameChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -66,6 +63,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
     }
 
     const onSelectStoryOwner = (ownerId?: number) => {
+        debugger
         setStory({
             ...story,
             ownerId: ownerId || 0,
@@ -74,6 +72,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
     }
 
     const renderAssignOwner = () => {
+        const owner = story.ownerId && props.deps.graphSource.user(story.ownerId);
         const name = owner
             ? getUserShortName(owner.firstName, owner.lastName)
             : 'Unassigned';

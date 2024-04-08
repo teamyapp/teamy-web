@@ -58,7 +58,14 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
         const [isSelectingOwner, setIsSelectingOwner] = useState(false);
         const selectOwnerPopupRef = useRef<SelectOwnersPopupComponent>(null);
         const priorityStyle = toOptionKey(props.story.priority);
-        const handlePriorityChange = (optionKey: string) => {};
+        const handlePriorityChange = (optionKey: string) => {
+            props.deps.stateSyncer.updateStory(props.story.id, {
+                name: props.story.name,
+                status: props.story.status,
+                ownerId: props.story.owner?.id,
+                priority: optionKeyToPriority[optionKey] as Priority,
+            })
+        };
 
         const handleStoryDetailClick = (event: MouseEvent) => {
             event.stopPropagation();
@@ -73,13 +80,12 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
         const onStoryDeleteClick = (event: MouseEvent<HTMLDivElement>) => {
             event.stopPropagation();
             props.deps.stateSyncer.deleteStory(props.story.id);
-        }
+        };
 
         const onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
             const element = event.currentTarget as HTMLDivElement;
-            getBindingClientRectRef.current = element.getBoundingClientRect.bind(
-                element,
-            );
+            getBindingClientRectRef.current =
+                element.getBoundingClientRect.bind(element);
 
             selectOwnerPopupRef.current?.show.call(null);
             setIsSelectingOwner(true);
@@ -90,6 +96,13 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
         };
 
         const onSelectStoryOwner = (ownerId?: number) => {
+            props.deps.stateSyncer.updateStory(props.story.id, {
+                name: props.story.name,
+                status: props.story.status,
+                priority: props.story.priority,
+                ownerId,
+            });
+
             setIsSelectingOwner(false);
         };
 
@@ -180,7 +193,10 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                             <div className={styles.ActionsSection}>
                                 <TooltipUI message={'Delete'}>
                                     <div className={styles.Action}>
-                                        <div className={styles.DeleteStoryIcon} onClick={onStoryDeleteClick}>
+                                        <div
+                                            className={styles.DeleteStoryIcon}
+                                            onClick={onStoryDeleteClick}
+                                        >
                                             <MaterialIconUI>
                                                 close
                                             </MaterialIconUI>
@@ -211,7 +227,9 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                 <SelectOwnersPopupComponent
                     ref={selectOwnerPopupRef}
                     deps={props.deps}
-                    findOwnersAlignTargetBoundBox={getBindingClientRectRef.current}
+                    findOwnersAlignTargetBoundBox={
+                        getBindingClientRectRef.current
+                    }
                     onClose={onStoryOwnersPopupClose}
                     onSelectOwner={onSelectStoryOwner}
                     selectedOwnerId={props.story.owner?.id}
@@ -225,6 +243,13 @@ const priorityToOptionKey: Record<Priority, string> = {
     HIGH: 'high',
     MEDIUM: 'medium',
     LOW: 'low',
+};
+
+const optionKeyToPriority: Record<string, Priority> = {
+    urgent: 'URGENT',
+    high: 'HIGH',
+    medium: 'MEDIUM',
+    low: 'LOW',
 };
 
 function toOptionKey(priority?: Priority): string {
