@@ -1,0 +1,13 @@
+fragment TaskPreviewFragment on Task {
+    id
+    goal
+    dueAt
+    context
+    effort
+    priority
+    isScheduled
+    isPlanned
+    createdAt
+    deliveredAt
+    status
+}
