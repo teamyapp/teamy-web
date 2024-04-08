@@ -5,6 +5,9 @@ import { Fragment, useEffect, useRef, useState } from 'react';
 import { Route } from '@lib/router/Route';
 
 import { Deps } from '@core/dep/deps';
+import { Phase } from '@core/entity/phase';
+import { Project } from '@core/entity/project';
+import { Story } from '@core/entity/story';
 import { Team } from '@core/entity/team';
 import {
     getPhaseId,
@@ -41,6 +44,9 @@ interface Level {
 export function PlanningComponent(props: Props) {
     const taskDetailModalRef = useRef<TaskDetailModalComponent>(null);
     const [team, setTeam] = useState<Team>();
+    const [project, setProject] = useState<Project>();
+    const [phase, setPhase] = useState<Phase>();
+    const [story, setStory] = useState<Story>();
 
     useEffect(() => {
         const stateChangeChan = props.deps.localStore.subscribeStateChange();
@@ -60,17 +66,38 @@ export function PlanningComponent(props: Props) {
                 }
             }
         })();
+
+        const routeChangeCh = props.deps.router.subscribeRouteChange();
+        (async () => {
+            while (true) {
+                console.log('[PlanningComponent] waiting for route changes');
+                const routeUpdate = await routeChangeCh.pop();
+                if (routeUpdate === undefined) {
+                    return;
+                }
+
+                const routeUpdateParams =
+                    props.deps.router.currentRouteUpdate.params;
+                const projectId = toInt(getProjectId(routeUpdateParams));
+                const phaseId = toInt(getPhaseId(routeUpdateParams));
+                const storyId = toInt(getStoryId(routeUpdateParams));
+
+                const project = projectId
+                    ? props.deps.graphSource.project(projectId)
+                    : undefined;
+                const phase = phaseId
+                    ? props.deps.graphSource.phase(phaseId)
+                    : undefined;
+                const story = storyId
+                    ? props.deps.graphSource.story(storyId)
+                    : undefined;
+
+                setProject(project);
+                setPhase(phase);
+                setStory(story);
+            }
+        })();
     }, []);
-
-    // TODO: intercept the route and get the project, phase, and story
-    const routeUpdateParams = props.deps.router.currentRouteUpdate.params;
-    const projectId = toInt(getProjectId(routeUpdateParams));
-    const phaseId = toInt(getPhaseId(routeUpdateParams));
-    const storyId = toInt(getStoryId(routeUpdateParams));
-
-    const project = projectId && props.deps.graphSource.project(projectId);
-    const phase = phaseId && props.deps.graphSource.phase(phaseId);
-    const story = storyId && props.deps.graphSource.story(storyId);
 
     const onViewTaskDetail = (taskId: number) => {
         taskDetailModalRef.current?.open(taskId);
@@ -145,10 +172,10 @@ export function PlanningComponent(props: Props) {
                     pattern={projectRoutePattern}
                     exact
                 >
-                    {projectId && (
+                    {project?.id && (
                         <ProjectComponent
                             deps={props.deps}
-                            projectId={projectId}
+                            projectId={project.id}
                         />
                     )}
                 </Route>
@@ -157,11 +184,11 @@ export function PlanningComponent(props: Props) {
                     pattern={phaseRoutePattern}
                     exact
                 >
-                    {projectId && phaseId && (
+                    {project?.id && phase?.id && (
                         <PhaseComponent
                             deps={props.deps}
-                            projectId={projectId}
-                            phaseId={phaseId}
+                            projectId={project.id}
+                            phaseId={phase.id}
                         />
                     )}
                 </Route>
@@ -170,10 +197,10 @@ export function PlanningComponent(props: Props) {
                     pattern={projectStoryRoutePattern}
                     exact
                 >
-                    {storyId && (
+                    {story?.id && (
                         <StoryComponent
                             deps={props.deps}
-                            storyId={storyId}
+                            storyId={story.id}
                             thirdPartyAppEventHubs={
                                 props.thirdPartyAppEventHubs
                             }
@@ -187,10 +214,10 @@ export function PlanningComponent(props: Props) {
                     pattern={phaseStoryRoutePattern}
                     exact
                 >
-                    {storyId && (
+                    {story?.id && (
                         <StoryComponent
                             deps={props.deps}
-                            storyId={storyId}
+                            storyId={story.id}
                             thirdPartyAppEventHubs={
                                 props.thirdPartyAppEventHubs
                             }

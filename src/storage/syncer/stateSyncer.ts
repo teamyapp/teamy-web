@@ -941,6 +941,39 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async getProject(projectId: number): Promise<void> {
+        const remoteProject = await this.projectClient.getProject(`${projectId}`);
+        if (!remoteProject) {
+            return;
+        }
+        
+        let appState = this.localStore.getState();
+        appState = mergeProject(appState, remoteProject);
+        this.localStore.updateState(appState);
+    }
+
+    public async getPhase(phaseId: number): Promise<void> {
+        const remotePhase = await this.phaseClient.getPhase(`${phaseId}`);
+        if (!remotePhase) {
+            return;
+        }
+        
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        this.localStore.updateState(appState);
+    }
+
+    public async getStory(storyId: number): Promise<void> {
+        const remoteStory = await this.storyClient.getStory(`${storyId}`);
+        if (!remoteStory) {
+            return;
+        }
+        
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        this.localStore.updateState(appState);
+    }
+
     public async createProject(
         teamId: number,
         input: CreateProjectInput,

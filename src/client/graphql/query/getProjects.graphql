@@ -1,0 +1,7 @@
+#import '../fragment/project.graphql'
+
+query getProjects($filter: ProjectFilter) {
+    projects(filter: $filter) {
+        ...ProjectFragment
+    }
+}
