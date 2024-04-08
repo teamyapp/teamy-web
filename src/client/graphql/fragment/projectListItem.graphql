@@ -1,0 +1,19 @@
+#import "./user.graphql"
+#import "./team.graphql"
+
+fragment ProjectListItemFragment on Project {
+    id
+    name
+    expectedStartAt
+    actualStartAt
+    expectedEndAt
+    actualEndAt
+    creator {
+        ...UserFragment
+    }
+    createdAt
+    updatedAt
+    team {
+        ...TeamFragment
+    }
+}

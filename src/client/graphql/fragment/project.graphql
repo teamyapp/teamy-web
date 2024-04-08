@@ -1,6 +1,6 @@
 #import "./user.graphql"
 #import "./phase.graphql"
-#import "./story.graphql"
+#import "./storyListItem.graphql"
 #import "./team.graphql"
 
 fragment ProjectFragment on Project {
@@ -19,7 +19,7 @@ fragment ProjectFragment on Project {
         ...PhaseFragment
     }
     stories {
-        ...StoryFragment
+        ...StoryListItemFragment
     }
     team {
         ...TeamFragment

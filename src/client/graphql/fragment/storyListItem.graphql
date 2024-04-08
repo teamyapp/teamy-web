@@ -1,0 +1,17 @@
+#import "./user.graphql"
+
+fragment StoryListItemFragment on Story {
+    id
+    name
+    isPlanned
+    owner {
+        ...UserFragment
+    }
+    status
+    priority
+    creator {
+        ...UserFragment
+    }
+    createdAt
+    updatedAt
+}
