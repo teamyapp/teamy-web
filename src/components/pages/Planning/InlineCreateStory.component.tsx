@@ -63,7 +63,6 @@ export const InlineCreateStory: FC<Props> = (props) => {
     }
 
     const onSelectStoryOwner = (ownerId?: number) => {
-        debugger
         setStory({
             ...story,
             ownerId: ownerId || 0,
