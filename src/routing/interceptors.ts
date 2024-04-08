@@ -14,7 +14,10 @@ import { FeatureToggle } from '@core/config/toggle';
 import { Deps } from '@core/dep/deps';
 import {
     appRoutes,
+    getPhaseId,
+    getProjectId,
     getSprintId,
+    getStoryId,
     getTabId,
     getTaskId,
     getTeamId,
@@ -314,6 +317,21 @@ const planningRoutesInterceptor = (
             routeUpdate.routePattern.startsWith(phaseStoryRoutePattern)
         ) {
             await stateSyncer.pullCurrentTeamTaskPreview();
+        }
+
+        const projectId = parseInt(getProjectId(routeUpdate.params)!);
+        if (!isNaN(projectId)) {
+            await stateSyncer.getProject(projectId);
+        }
+   
+        const phaseId = parseInt(getPhaseId(routeUpdate.params)!);
+        if (!isNaN(phaseId)) {
+            await stateSyncer.getPhase(phaseId);
+        }
+
+        const storyId = parseInt(getStoryId(routeUpdate.params)!);
+        if (!isNaN(storyId)) {
+            await stateSyncer.getStory(storyId);
         }
 
         return {};

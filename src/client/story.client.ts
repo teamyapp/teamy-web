@@ -5,6 +5,7 @@ import  updateStory  from "./graphql/mutation/updateStory.graphql";
 import deleteStory  from "./graphql/mutation/deleteStory.graphql";
 import addStoryToPhase  from "./graphql/mutation/addStoryToPhase.graphql";
 import addStoriesToPhase from "./graphql/mutation/addStoriesToPhase.graphql";
+import getStories from "./graphql/query/getStories.graphql";
 import removeStoryFromPhase  from "./graphql/mutation/removeStoryFromPhase.graphql";
 import removeStoriesFromPhase from "./graphql/mutation/removeStoriesFromPhase.graphql";
 import { print } from "graphql";
@@ -16,6 +17,19 @@ export class StoryClient {
 
     constructor(graphQLClient: GraphQLClient) {
         this.graphQLClient = graphQLClient;
+    }
+    
+    getStory(storyId: string): Promise<RemoteStory | undefined> {
+        return this.graphQLClient
+            .query({
+                query: print(getStories),
+                variables: {
+                    filter: {
+                        storyId
+                    }
+                },
+            })
+            .then(({ stories }) => stories?.length ? stories[0] : undefined);
     }
 
     createStory(projectId: string, input: RemoteCreateStoryInput): Promise<RemoteStory> {

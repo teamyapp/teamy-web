@@ -1,0 +1,8 @@
+#import '../fragment/phase.graphql'
+
+query getPhases($filter: PhaseFilter) {
+    phases(filter: $filter) {
+        ...PhaseFragment
+    }
+}
+

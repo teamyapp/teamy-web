@@ -1,0 +1,7 @@
+#import '../fragment/story.graphql'
+
+query getStories($filter: StoryFilter) {
+    stories(filter: $filter) {
+        ...StoryFragment
+    }
+}
