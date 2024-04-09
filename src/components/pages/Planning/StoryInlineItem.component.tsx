@@ -89,10 +89,10 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
         };
 
         const renderAssignOwner = ({
-            onToggle,
+            toggleContainer,
             showFollower,
         }: {
-            onToggle: () => void;
+            toggleContainer: () => void;
             showFollower: boolean;
         }) => {
             const name = props.story.owner
@@ -108,7 +108,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                             className={`${styles.Action} ${classNames({
                                 [styles.Active]: showFollower,
                             })}`}
-                            onClick={onToggle}
+                            onClick={toggleContainer}
                         >
                             <div className={styles.AssignOwnerIcon}>
                                 {props.story.owner ? (

@@ -26,12 +26,12 @@ export class DurationInputUI extends Component<Props> {
             <div className={styles.Duration}>
                 <RelativeLayoutContainerUI
                     overSpaceAction='jumpVertically'
-                    onOpen={this.props.onPopupOpen}
-                    onClose={this.props.onPopupClose}
+                    onOpenContainer={this.props.onPopupOpen}
+                    onCloseContainer={this.props.onPopupClose}
                     relativeLayout={this.props.relativeLayout}
                     zOffset={this.props.zOffset}
-                    renderReferenceElement={({ onToggle }) => (
-                        <div className={styles.ValueRow} onClick={onToggle}>
+                    renderReferenceElement={({ toggleContainer }) => (
+                        <div className={styles.ValueRow} onClick={toggleContainer}>
                             {this.props.icon}
                             {duration && (
                                 <div className={styles.Value}>
@@ -40,12 +40,12 @@ export class DurationInputUI extends Component<Props> {
                             )}
                         </div>
                     )}
-                    renderFollower={({ onClose }) => (
+                    renderFollower={({ closeContainer }) => (
                         <DurationInputPopup
                             duration={duration}
                             canClear={this.props.canClear}
                             onDurationChange={this.props.onDurationChange}
-                            onClose={onClose}
+                            onClose={closeContainer}
                         />
                     )}
                 />

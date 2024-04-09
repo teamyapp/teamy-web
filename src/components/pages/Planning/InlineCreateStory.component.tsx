@@ -54,10 +54,10 @@ export const InlineCreateStory: FC<Props> = (props) => {
     };
 
     const renderAssignOwner = ({
-        onToggle,
+        toggleContainer,
         showFollower,
     }: {
-        onToggle: () => void;
+        toggleContainer: () => void;
         showFollower: boolean;
     }) => {
         const owner =
@@ -72,7 +72,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
                         className={`${styles.Action} ${classNames({
                             [styles.Active]: showFollower,
                         })}`}
-                        onClick={onToggle}
+                        onClick={toggleContainer}
                     >
                         <div className={styles.AssignOwnerIcon}>
                             {story.ownerId && owner ? (

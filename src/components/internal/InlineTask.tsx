@@ -478,10 +478,10 @@ export class InlineTaskUI extends Component<Props, State> {
     }
 
     private renderOwnerList = ({
-        onToggle,
+        toggleContainer,
         showFollower,
     }: {
-        onToggle: () => void;
+        toggleContainer: () => void;
         showFollower: boolean;
     }): ReactNode => {
         const owner = this.props.task.owner;
@@ -495,7 +495,7 @@ export class InlineTaskUI extends Component<Props, State> {
                         className={`${styles.Action} ${classNames({
                             [styles.Active]: showFollower,
                         })}`}
-                        onClick={onToggle}
+                        onClick={toggleContainer}
                     >
                         <div className={` ${styles.AssignOwnerIcon}`}>
                             {owner ? (

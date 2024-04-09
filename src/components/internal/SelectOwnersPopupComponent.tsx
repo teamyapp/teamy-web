@@ -1,4 +1,4 @@
-import React, { FC, MouseEvent } from 'react';
+import React, { FC } from 'react';
 
 import { RelativeLayoutContainerUI } from '@lib/layout';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -14,7 +14,7 @@ interface Props {
     selectedOwnerId?: number;
     onSelectOwner?: (OwnerId?: number) => void;
     assignOwner: (props: {
-        onToggle: () => void;
+        toggleContainer: () => void;
         showFollower: boolean;
     }) => React.ReactNode;
 }
@@ -56,23 +56,27 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
         <RelativeLayoutContainerUI
             relativeLayout={props.deps.relativeLayout}
             overSpaceAction='jumpVertically'
-            renderReferenceElement={props.assignOwner}
-            renderFollower={({ onClose, showFollower }) => {
-                if (showFollower) {
-                    fetchOwnerList();
-                }
-
+            renderReferenceElement={({ toggleContainer, showFollower }) => {
+                return props.assignOwner({
+                    toggleContainer,
+                    showFollower,
+                });
+            }}
+            onOpenContainer={fetchOwnerList}
+            renderFollower={({ closeContainer }) => {
                 return (
                     <div
                         ref={ownersPopupRef}
                         className={styles.SelectOwnersPopup}
                         tabIndex={-1}
-                        onBlur={handleCloseOwnersListClick(onClose)}
+                        onBlur={handleCloseOwnersListClick(closeContainer)}
                     >
                         <div className={styles.SelectOwnerListHeader}>
                             <div
                                 className={styles.CloseButton}
-                                onClick={handleCloseOwnersListClick(onClose)}
+                                onClick={handleCloseOwnersListClick(
+                                    closeContainer,
+                                )}
                             >
                                 <MaterialIconUI>close</MaterialIconUI>
                             </div>
@@ -81,8 +85,10 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
                             emptySelectionUserName={'Unassigned'}
                             selectedUserId={props.selectedOwnerId}
                             users={potentialOwners}
-                            onSelectUser={handleSelectOwner(onClose)}
-                            onRemoveSelection={handleRemoveOwner(onClose)}
+                            onSelectUser={handleSelectOwner(closeContainer)}
+                            onRemoveSelection={handleRemoveOwner(
+                                closeContainer,
+                            )}
                         />
                     </div>
                 );

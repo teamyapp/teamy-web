@@ -288,10 +288,10 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     private renderAssignOwner = ({
-        onToggle,
+        toggleContainer,
         showFollower,
     }: {
-        onToggle: () => void;
+        toggleContainer: () => void;
         showFollower: boolean;
     }) => {
         return (
@@ -301,7 +301,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         [styles.Active]: showFollower,
                     },
                 )}`}
-                onClick={onToggle}
+                onClick={toggleContainer}
             >
                 {this.state.task?.owner ? (
                     <>

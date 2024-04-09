@@ -51,15 +51,15 @@ export class DatePickerContainerUI extends Component<Props, State> {
                 zOffset={this.props.zOffset}
                 relativeLayout={this.props.relativeLayout}
                 overSpaceAction='jumpVertically'
-                renderReferenceElement={({ onToggle }) =>
+                renderReferenceElement={({ toggleContainer }) =>
                     this.props.target({
-                        onToggle,
+                        onToggle: toggleContainer,
                         onChange: this.handleCalendarChanged,
                     })
                 }
-                renderFollower={({ onClose }) => (
+                renderFollower={({ closeContainer }) => (
                     <CalendarUI
-                        onClose={this.handleCalendarClosed(onClose)}
+                        onClose={this.handleCalendarClosed(closeContainer)}
                         onChange={this.handleCalendarChanged}
                         onShownDateChange={this.handleShownDateChanged}
                         selectedDate={this.state.selectedDate}
