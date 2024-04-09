@@ -18,10 +18,7 @@ type Props = {
         onToggle: () => void;
         showFollower: boolean;
     }) => ReactNode;
-    renderFollower: ({
-        onClose,
-        onOpen,
-    }: {
+    renderFollower: (props: {
         closeContainer: () => void;
         openContainer: () => void;
         showFollower: boolean;
