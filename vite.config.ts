@@ -5,6 +5,7 @@ import * as childProcess from 'child_process';
 import dns from 'dns';
 import { defineConfig, loadEnv } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import checker from 'vite-plugin-checker';
 
 import buildInject from './vite-plugins/buildInject';
 
@@ -43,6 +44,7 @@ export default ({ mode }) => {
             ),
         },
         plugins: [
+            checker({ typescript: true }),
             buildInject(),
             tsconfigPaths(),
             react(),
