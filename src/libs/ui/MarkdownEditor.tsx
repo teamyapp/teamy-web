@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { marked } from 'marked';
+import { marked, MarkedOptions } from 'marked';
 import prismjs from 'prismjs';
 import React, { Component, FormEvent, ReactNode } from 'react';
 
@@ -7,8 +7,13 @@ import styles from './MarkdownEditor.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
 import './VSCode.theme.scss';
 
+interface CustomMarkedOptions extends MarkedOptions {
+    highlight?: (code: string, lang: string) => string;
+}
+
 const renderer = new marked.Renderer();
-marked.setOptions({
+
+const options: CustomMarkedOptions = {
     renderer,
     highlight: function (code: string, language: string) {
         try {
@@ -21,7 +26,9 @@ marked.setOptions({
             return code;
         }
     },
-});
+};
+
+marked.setOptions(options);
 
 interface Props {
     label?: string;
