@@ -43,7 +43,6 @@ interface State {
     updatedTask?: UpdateTaskInput;
     currentUserId?: number;
     heightWithMargin: number;
-    isSelectingOwner: boolean;
 }
 
 export class TaskDetailModalComponent extends Component<Props, State> {
@@ -54,8 +53,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly relativeLayout: RelativeLayout;
     private getBoundingClientRect?: () => DOMRect;
     private readonly modalRef = createRef<ModalUI>();
-    private readonly selectTaskOwnersPopupRef =
-        createRef<SelectOwnersPopupComponent>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
     private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
@@ -70,7 +67,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.relativeLayout = props.deps.relativeLayout;
         this.state = {
             heightWithMargin: 0,
-            isSelectingOwner: false,
         };
     }
 
@@ -100,44 +96,12 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                 </div>
                             </div>
                             <div className={styles.TaskActionsSection}>
-                                <div
-                                    className={`${styles.Action} ${
-                                        styles.AssignOwner
-                                    } ${classNames({
-                                        [styles.Active]:
-                                            this.state.isSelectingOwner,
-                                    })}`}
-                                    onClick={this.onAssignOwnerClick}
-                                >
-                                    {this.state.task?.owner ? (
-                                        <>
-                                            <UserProfileUI
-                                                user={this.state.task.owner}
-                                            />
-                                            <div
-                                                className={styles.TaskOwnerName}
-                                            >
-                                                {`${getUserShortName(
-                                                    this.state.task.owner
-                                                        .firstName,
-                                                    this.state.task.owner
-                                                        .lastName,
-                                                )}`}
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <MaterialIconUI>
-                                                face
-                                            </MaterialIconUI>
-                                            <div
-                                                className={styles.TaskOwnerName}
-                                            >
-                                                Unassigned
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
+                                <SelectOwnersPopupComponent
+                                    deps={this.props.deps}
+                                    onSelectOwner={this.onTaskOwnerSelected}
+                                    selectedOwnerId={this.state.task?.owner?.id}
+                                    assignOwner={this.renderAssignOwner}
+                                />
                                 <div className={styles.SaveAction}>
                                     <div
                                         className={`${styles.Button}`}
@@ -272,16 +236,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         </div>
                     )}
                 </ModalUI>
-                <SelectOwnersPopupComponent
-                    ref={this.selectTaskOwnersPopupRef}
-                    findOwnersAlignTargetBoundBox={
-                        this.getBoundingClientRect
-                    }
-                    deps={this.props.deps}
-                    onClose={this.onTaskOwnersPopupClose}
-                    onSelectOwner={this.onTaskOwnerSelected}
-                    selectedOwnerId={this.state.task?.owner?.id}
-                />
             </>
         );
     }
@@ -332,6 +286,42 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     public close() {
         this.modalRef.current?.close();
     }
+
+    private renderAssignOwner = ({
+        onToggle,
+        showFollower,
+    }: {
+        onToggle: () => void;
+        showFollower: boolean;
+    }) => {
+        return (
+            <div
+                className={`${styles.Action} ${styles.AssignOwner} ${classNames(
+                    {
+                        [styles.Active]: showFollower,
+                    },
+                )}`}
+                onClick={onToggle}
+            >
+                {this.state.task?.owner ? (
+                    <>
+                        <UserProfileUI user={this.state.task.owner} />
+                        <div className={styles.TaskOwnerName}>
+                            {`${getUserShortName(
+                                this.state.task.owner.firstName,
+                                this.state.task.owner.lastName,
+                            )}`}
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <MaterialIconUI>face</MaterialIconUI>
+                        <div className={styles.TaskOwnerName}>Unassigned</div>
+                    </>
+                )}
+            </div>
+        );
+    };
 
     private updateState(taskId: number) {
         const task = this.graphSource.task(taskId);
@@ -384,19 +374,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     };
 
     private onTaskOwnerSelected = (ownerUserId?: number) => {
-        this.setState({
-            isSelectingOwner: false,
-        });
-
         this.stateSyncer.updateTask(this.state.task!.id, {
             ...this.getUpdatedTaskInput(),
             ownerUserId,
-        });
-    };
-
-    private onTaskOwnersPopupClose = () => {
-        this.setState({
-            isSelectingOwner: false,
         });
     };
 
@@ -431,16 +411,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         const threadDivEl = this.threadDivRef.current;
         threadDivEl?.scrollTo(0, threadDivEl?.scrollHeight);
     }
-
-    private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
-        const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect =
-            element.getBoundingClientRect.bind(element);
-        this.selectTaskOwnersPopupRef.current?.show.call(null);
-        this.setState({
-            isSelectingOwner: true,
-        });
-    };
 
     private onEffortChange = async (effort?: Duration) => {
         await this.stateSyncer.updateTask(this.state.task!.id, {

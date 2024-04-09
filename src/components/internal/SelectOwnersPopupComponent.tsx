@@ -1,174 +1,97 @@
-import React, { Component, createRef } from 'react';
+import React, { FC, MouseEvent } from 'react';
 
+import { RelativeLayoutContainerUI } from '@lib/layout';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { BoundingBoxFinder } from '@lib/ui/position';
 
 import { Deps } from '@core/dep/deps';
 import { User } from '@core/entity/user';
-import { GraphSource } from '@core/storage/graph/graphSource';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
-import { SelectUserListUI } from './SelectUserList';
 import styles from './SelectOwnersPopupComponent.module.scss';
-
-const ownersListVerticalOffset = 4;
-const ownersListHorizontalOffset = 10;
+import { SelectUserListUI } from './SelectUserList';
 
 interface Props {
     deps: Deps;
     selectedOwnerId?: number;
-    findOwnersAlignTargetBoundBox?: BoundingBoxFinder;
-    onClose?: () => void;
     onSelectOwner?: (OwnerId?: number) => void;
+    assignOwner: ({
+        onToggle,
+        showFollower,
+    }: {
+        onToggle: () => void;
+        showFollower: boolean;
+    }) => React.ReactNode;
 }
 
-interface State {
-    showPotentialOwnersList: boolean;
-    ownersListVisible: boolean;
-    ownersListLeft: number;
-    ownersListTop: number;
-    potentialOwners: User[];
-}
+export const SelectOwnersPopupComponent: FC<Props> = (props) => {
+    const [potentialOwners, setPotentialOwners] = React.useState<User[]>([]);
+    const ownersPopupRef = React.useRef<HTMLDivElement>(null);
 
-export class SelectOwnersPopupComponent extends Component<Props, State> {
-    private readonly graphSource: GraphSource;
-    private readonly stateSyncer: StateSyncer;
-    private readonly ownersPopupRef = createRef<HTMLDivElement>();
-
-    constructor(props: Props) {
-        super(props);
-        this.graphSource = props.deps.graphSource;
-        this.stateSyncer = props.deps.stateSyncer;
-        this.state = {
-            showPotentialOwnersList: false,
-            ownersListVisible: false,
-            ownersListLeft: 0,
-            ownersListTop: 0,
-            potentialOwners: [],
-        };
-    }
-
-    render() {
-        return (
-            this.state.showPotentialOwnersList && (
-                <div
-                    ref={this.OwnersPopupRef}
-                    className={styles.SelectOwnersPopup}
-                    style={{
-                        left: this.state.ownersListLeft,
-                        top: this.state.ownersListTop,
-                        visibility: this.state.ownersListVisible
-                            ? 'visible'
-                            : 'hidden',
-                    }}
-                    tabIndex={-1}
-                    onBlur={this.onCloseOwnersListClick}
-                >
-                    <div className={styles.SelectOwnerListHeader}>
-                        <div
-                            className={styles.CloseButton}
-                            onClick={this.onCloseOwnersListClick}
-                        >
-                            <MaterialIconUI>close</MaterialIconUI>
-                        </div>
-                    </div>
-                    <SelectUserListUI
-                        emptySelectionUserName={'Unassigned'}
-                        selectedUserId={this.props.selectedOwnerId}
-                        users={this.state.potentialOwners}
-                        onSelectUser={this.onSelectOwner}
-                        onRemoveSelection={this.onRemoveOwner}
-                    />
-                </div>
-            )
-        );
-    }
-
-    componentDidMount() {
-        window.addEventListener('resize', this.onWindowResize);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.onWindowResize);
-    }
-
-    public show = async () => {
-        // TODO: use relative layout library
-        await this.stateSyncer.pullCurrentTeamMembers();
-        const teamMembers = this.graphSource.currentTeam()!.members;
-        this.setState({
-            potentialOwners: teamMembers.map(
-                (teamMember) => teamMember.user,
-            ),
-            showPotentialOwnersList: true,
-        });
+    const fetchOwnerList = async () => {
+        await props.deps.stateSyncer.pullCurrentTeamMembers();
+        const teamMembers = props.deps.graphSource.currentTeam()!.members;
+        setPotentialOwners(teamMembers.map((teamMember) => teamMember.user));
 
         setTimeout(() => {
-            this.setState({
-                ownersListVisible: true,
-            });
-
-            this.ownersPopupRef.current?.focus();
-            this.updateOwnersListPosition();
+            ownersPopupRef.current?.focus();
         });
     };
 
-    private updateOwnersListPosition = () => {
-        if (!this.state.showPotentialOwnersList) {
-            return;
-        }
-
-        if (!this.props.findOwnersAlignTargetBoundBox) {
-            return;
-        }
-
-        const boundingBox = this.props.findOwnersAlignTargetBoundBox();
-        const width = this.ownersPopupRef.current?.offsetWidth || 0;
-        const height = this.ownersPopupRef.current?.offsetHeight || 0;
-        const left = Math.min(
-            boundingBox.left,
-            document.body.clientWidth - width - ownersListHorizontalOffset,
-        );
-        let top =
-            boundingBox.top + boundingBox.height + ownersListVerticalOffset;
-        if (top + height > document.body.clientHeight) {
-            top = boundingBox.top - height - ownersListVerticalOffset;
-        }
-
-        this.setState({
-            OwnersListLeft: left,
-            OwnersListTop: top,
-        });
+    const handleCloseOwnersListClick = (onClose: () => void) => {
+        return () => {
+            setPotentialOwners([]);
+            onClose();
+        };
     };
 
-    private onCloseOwnersListClick = () => {
-        this.setState({
-            potentialOwners: [],
-            OwnersListVisible: false,
-            showPotentialOwnersList: false,
-        });
-        this.props.onClose?.call(null);
+    const handleSelectOwner = (onClose: () => void) => (userId: number) => {
+        setPotentialOwners([]);
+        onClose();
+        props.onSelectOwner?.call(this, userId);
     };
 
-    private onSelectOwner = (userId: number) => {
-        this.setState({
-            potentialOwners: [],
-            showPotentialOwnersList: false,
-            OwnersListVisible: false,
-        });
-        this.props.onSelectOwner?.call(this, userId);
+    const handleRemoveOwner = (onClose: () => void) => () => {
+        setPotentialOwners([]);
+        onClose();
+        props.onSelectOwner?.call(this);
     };
 
-    private onRemoveOwner = () => {
-        this.setState({
-            potentialOwners: [],
-            showPotentialOwnersList: false,
-            OwnersListVisible: false,
-        });
-        this.props.onSelectOwner?.call(this);
-    };
+    return (
+        <RelativeLayoutContainerUI
+            relativeLayout={props.deps.relativeLayout}
+            overSpaceAction='jumpVertically'
+            renderReferenceElement={({ onToggle, showFollower }) => {
+                return props.assignOwner({ onToggle, showFollower });
+            }}
+            renderFollower={({ onClose, showFollower }) => {
+                if (showFollower) {
+                    fetchOwnerList();
+                }
 
-    private onWindowResize = () => {
-        this.updateOwnersListPosition();
-    };
-}
+                return (
+                    <div
+                        ref={ownersPopupRef}
+                        className={styles.SelectOwnersPopup}
+                        tabIndex={-1}
+                        onBlur={handleCloseOwnersListClick(onClose)}
+                    >
+                        <div className={styles.SelectOwnerListHeader}>
+                            <div
+                                className={styles.CloseButton}
+                                onClick={handleCloseOwnersListClick(onClose)}
+                            >
+                                <MaterialIconUI>close</MaterialIconUI>
+                            </div>
+                        </div>
+                        <SelectUserListUI
+                            emptySelectionUserName={'Unassigned'}
+                            selectedUserId={props.selectedOwnerId}
+                            users={potentialOwners}
+                            onSelectUser={handleSelectOwner(onClose)}
+                            onRemoveSelection={handleRemoveOwner(onClose)}
+                        />
+                    </div>
+                );
+            }}
+        />
+    );
+};

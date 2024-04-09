@@ -16,8 +16,10 @@ type Props = {
     zOffset?: number;
     renderReferenceElement: ({
         onToggle,
+        showFollower,
     }: {
         onToggle: () => void;
+        showFollower: boolean;
     }) => ReactNode;
     renderFollower: ({
         onClose,
@@ -25,6 +27,7 @@ type Props = {
     }: {
         onClose: () => void;
         onOpen: () => void;
+        showFollower: boolean;
     }) => ReactNode;
     relativeLayout: RelativeLayout;
     horizontalAlignment?: HorizontalAlignment;
@@ -64,6 +67,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                 <span ref={this.referenceElementRef}>
                     {this.props.renderReferenceElement({
                         onToggle: this.handleToggle,
+                        showFollower: this.state.showFollower,
                     })}
                 </span>
                 {this.state.showFollower &&
@@ -79,6 +83,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                             {this.props.renderFollower({
                                 onClose: this.onClose,
                                 onOpen: this.onOpen,
+                                showFollower: this.state.showFollower,
                             })}
                         </div>,
                         this.followerContainer,
