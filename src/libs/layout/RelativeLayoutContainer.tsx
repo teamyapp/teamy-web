@@ -10,21 +10,23 @@ import {
 } from '@lib/layout/relativeLayout';
 
 type Props = {
-    onOpen?: () => void;
-    onClose?: () => void;
+    onOpenContainer?: () => void;
+    onCloseContainer?: () => void;
     onMouseLeave?: () => void;
     zOffset?: number;
     renderReferenceElement: ({
-        onToggle,
+        toggleContainer,
+        showFollower,
     }: {
-        onToggle: () => void;
+        toggleContainer: () => void;
+        showFollower: boolean;
     }) => ReactNode;
     renderFollower: ({
-        onClose,
-        onOpen,
+        closeContainer,
+        openContainer,
     }: {
-        onClose: () => void;
-        onOpen: () => void;
+        closeContainer: () => void;
+        openContainer: () => void;
     }) => ReactNode;
     relativeLayout: RelativeLayout;
     horizontalAlignment?: HorizontalAlignment;
@@ -63,7 +65,8 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
             <Fragment>
                 <span ref={this.referenceElementRef}>
                     {this.props.renderReferenceElement({
-                        onToggle: this.handleToggle,
+                        toggleContainer: this.handleToggle,
+                        showFollower: this.state.showFollower,
                     })}
                 </span>
                 {this.state.showFollower &&
@@ -77,8 +80,8 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                             }}
                         >
                             {this.props.renderFollower({
-                                onClose: this.onClose,
-                                onOpen: this.onOpen,
+                                closeContainer : this.onClose,
+                                openContainer: this.onOpen,
                             })}
                         </div>,
                         this.followerContainer,
@@ -93,7 +96,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
             showFollower: false,
         });
 
-        this.props.onClose?.call(null);
+        this.props.onCloseContainer?.call(null);
         this.props.onMouseLeave?.call(null);
     };
 
@@ -119,7 +122,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                 }
             },
         );
-        this.props.onOpen?.call(null);
+        this.props.onOpenContainer?.call(null);
     };
 
     private handleToggle = () => {

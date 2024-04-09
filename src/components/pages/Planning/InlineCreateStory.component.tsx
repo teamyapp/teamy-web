@@ -2,13 +2,14 @@ import classNames from 'classnames';
 import { SelectOwnersPopupComponent } from 'components/internal/SelectOwnersPopupComponent';
 import { UserProfileUI } from 'components/internal/UserProfile';
 import { getUserShortName } from 'components/internal/format';
-import { ChangeEvent, FC, MouseEvent, useRef, useState } from 'react';
+import { ChangeEvent, FC, useState } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { Deps } from '@core/dep/deps';
 import { CreateStoryInput } from '@core/entity/input';
+
 import styles from './InlineCreateStory.component.module.scss';
 
 const storyNameLengthLimit = 100;
@@ -25,9 +26,6 @@ export const InlineCreateStory: FC<Props> = (props) => {
         name: '',
         ownerId: props.initialOwnerId || 0,
     });
-    const getBindingClientRectRef = useRef<() => DOMRect>();
-    const [isSelectingOwner, setIsSelectingOwner] = useState(false);
-    const selectOwnerPopupRef = useRef<SelectOwnersPopupComponent>(null);
 
     const onNameChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setStory({
@@ -42,36 +40,28 @@ export const InlineCreateStory: FC<Props> = (props) => {
         } else {
             props.onDiscardNewStory?.call(null);
         }
-    }
+    };
 
     const onCancelEditStoryClick = () => {
         props.onDiscardNewStory?.call(null);
-    }
-
-    const onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
-        const element = event.currentTarget as HTMLDivElement;
-        getBindingClientRectRef.current =
-            element.getBoundingClientRect.bind(element);
-
-        selectOwnerPopupRef.current?.show.call(null);
-        setIsSelectingOwner(true);
-
-    }
-
-    const onStoryOwnersPopupClose = () => {
-        setIsSelectingOwner(false);
-    }
+    };
 
     const onSelectStoryOwner = (ownerId?: number) => {
         setStory({
             ...story,
             ownerId: ownerId || 0,
         });
-        setIsSelectingOwner(false);
-    }
+    };
 
-    const renderAssignOwner = () => {
-        const owner = story.ownerId && props.deps.graphSource.user(story.ownerId);
+    const renderAssignOwner = ({
+        toggleContainer,
+        showFollower,
+    }: {
+        toggleContainer: () => void;
+        showFollower: boolean;
+    }) => {
+        const owner =
+            story.ownerId && props.deps.graphSource.user(story.ownerId);
         const name = owner
             ? getUserShortName(owner.firstName, owner.lastName)
             : 'Unassigned';
@@ -80,9 +70,9 @@ export const InlineCreateStory: FC<Props> = (props) => {
                 <TooltipUI message={name}>
                     <div
                         className={`${styles.Action} ${classNames({
-                            [styles.Active]: isSelectingOwner,
+                            [styles.Active]: showFollower,
                         })}`}
-                        onClick={onAssignOwnerClick}
+                        onClick={toggleContainer}
                     >
                         <div className={styles.AssignOwnerIcon}>
                             {story.ownerId && owner ? (
@@ -98,58 +88,55 @@ export const InlineCreateStory: FC<Props> = (props) => {
     };
 
     return (
-        <>
-            <div className={styles.Story}>
-                <div className={styles.LeftSection}>
-                    <textarea
-                        className={styles.Goal}
-                        autoFocus
-                        maxLength={storyNameLengthLimit}
-                        value={story.name || ''}
-                        onChange={onNameChange}
-                    />
-                </div>
-                <div className={styles.ActionsSection}
-                     style={{
-                         gridTemplateColumns: `repeat(${
-                             props.numActionColumns || 3
-                         }, 1fr)`,
-                     }}>
-                    <div>
-                        <TooltipUI message={'Save'}>
-                            <div
-                                className={styles.Action}
-                                onClick={onSaveStoryClick}
-                            >
-                                <div className={styles.SaveStoryIcon}>
-                                    <MaterialIconUI>done</MaterialIconUI>
-                                </div>
-                            </div>
-                        </TooltipUI>
-                    </div>
-                    <div>
-                        <TooltipUI message={'Cancel'}>
-                            <div
-                                className={styles.Action}
-                                onClick={onCancelEditStoryClick}
-                            >
-                                <div className={styles.CancelEditStoryIcon}>
-                                    <MaterialIconUI>close</MaterialIconUI>
-                                </div>
-                            </div>
-                        </TooltipUI>
-                    </div>
-                    {renderAssignOwner()}
-                </div>
+        <div className={styles.Story}>
+            <div className={styles.LeftSection}>
+                <textarea
+                    className={styles.Goal}
+                    autoFocus
+                    maxLength={storyNameLengthLimit}
+                    value={story.name || ''}
+                    onChange={onNameChange}
+                />
             </div>
-            <SelectOwnersPopupComponent
-                ref={selectOwnerPopupRef}
-                deps={props.deps}
-                findOwnersAlignTargetBoundBox={getBindingClientRectRef.current}
-                onClose={onStoryOwnersPopupClose}
-                onSelectOwner={onSelectStoryOwner}
-                selectedOwnerId={story.ownerId}
-            />
-        </>
+            <div
+                className={styles.ActionsSection}
+                style={{
+                    gridTemplateColumns: `repeat(${
+                        props.numActionColumns || 3
+                    }, 1fr)`,
+                }}
+            >
+                <div>
+                    <TooltipUI message={'Save'}>
+                        <div
+                            className={styles.Action}
+                            onClick={onSaveStoryClick}
+                        >
+                            <div className={styles.SaveStoryIcon}>
+                                <MaterialIconUI>done</MaterialIconUI>
+                            </div>
+                        </div>
+                    </TooltipUI>
+                </div>
+                <div>
+                    <TooltipUI message={'Cancel'}>
+                        <div
+                            className={styles.Action}
+                            onClick={onCancelEditStoryClick}
+                        >
+                            <div className={styles.CancelEditStoryIcon}>
+                                <MaterialIconUI>close</MaterialIconUI>
+                            </div>
+                        </div>
+                    </TooltipUI>
+                </div>
+                <SelectOwnersPopupComponent
+                    deps={props.deps}
+                    onSelectOwner={onSelectStoryOwner}
+                    selectedOwnerId={story.ownerId}
+                    assignOwner={renderAssignOwner}
+                />
+            </div>
+        </div>
     );
 };

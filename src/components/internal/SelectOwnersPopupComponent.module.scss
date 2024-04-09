@@ -1,13 +1,7 @@
 @import '../../libs/ui/styleguide/elevation';
 
 .SelectOwnersPopup {
-    position: fixed;
-    float: left;
     background-color: white;
-    float: left;
-    overflow: visible;
-    position: fixed;
-    z-index: 5000;
     @include elevation(6);
 
     &:focus {

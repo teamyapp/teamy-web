@@ -4,7 +4,6 @@ import React, {
     Component,
     MouseEvent,
     ReactNode,
-    createRef,
 } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -30,15 +29,10 @@ interface Props {
 
 interface State {
     task: CreateTaskInput;
-    isSelectingOwner: boolean;
 }
 
 export class InlineCreateTaskUI extends Component<Props, State> {
     private readonly graphSource: GraphSource;
-    private getBoundingClientRect?: () => DOMRect;
-
-    private readonly selectTaskOwnersPopupRef =
-        createRef<SelectOwnersPopupComponent>();
 
     constructor(props: Props) {
         super(props);
@@ -48,7 +42,6 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                 goal: '',
                 ownerUserId: props.initialTaskOwnerId,
             },
-            isSelectingOwner: false,
         };
     }
 
@@ -65,12 +58,14 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                             onChange={this.onGoalChange}
                         />
                     </div>
-                    <div className={styles.ActionsSection}
-                         style={{
-                             gridTemplateColumns: `repeat(${
-                                 this.props.numActionColumns || 3
-                             }, 1fr)`,
-                         }}>
+                    <div
+                        className={styles.ActionsSection}
+                        style={{
+                            gridTemplateColumns: `repeat(${
+                                this.props.numActionColumns || 3
+                            }, 1fr)`,
+                        }}
+                    >
                         <div>
                             <TooltipUI message={'Save'}>
                                 <div
@@ -95,24 +90,25 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                                 </div>
                             </TooltipUI>
                         </div>
-                        {this.renderAssignOwner()}
+                        <SelectOwnersPopupComponent
+                            deps={this.props.deps}
+                            onSelectOwner={this.onSelectTaskOwner}
+                            selectedOwnerId={this.state.task.ownerUserId}
+                            assignOwner={this.renderAssignOwner}
+                        />
                     </div>
                 </div>
-                <SelectOwnersPopupComponent
-                    ref={this.selectTaskOwnersPopupRef}
-                    deps={this.props.deps}
-                    findOwnersAlignTargetBoundBox={
-                        this.getBoundingClientRect
-                    }
-                    onClose={this.onTaskOwnersPopupClose}
-                    onSelectOwner={this.onSelectTaskOwner}
-                    selectedOwnerId={this.state.task.ownerUserId}
-                />
             </>
         );
     }
 
-    private renderAssignOwner(): ReactNode {
+    private renderAssignOwner({
+        toggleContainer,
+        showFollower,
+    }: {
+        toggleContainer: () => void;
+        showFollower: boolean;
+    }): ReactNode {
         const owner = this.owner();
         const name = owner
             ? getUserShortName(owner.firstName, owner.lastName)
@@ -122,9 +118,9 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                 <TooltipUI message={name}>
                     <div
                         className={`${styles.Action} ${classNames({
-                            [styles.Active]: this.state.isSelectingOwner,
+                            [styles.Active]: showFollower,
                         })}`}
-                        onClick={this.onAssignOwnerClick}
+                        onClick={toggleContainer}
                     >
                         <div className={` ${styles.AssignOwnerIcon}`}>
                             {this.state.task.ownerUserId ? (
@@ -162,21 +158,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                 ...this.state.task,
                 ownerUserId,
             },
-            isSelectingOwner: false,
         });
-    };
-
-    private onTaskOwnersPopupClose = () => {
-        this.setState({ isSelectingOwner: false });
-    };
-
-    private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
-        const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect =
-            element.getBoundingClientRect.bind(element);
-        this.selectTaskOwnersPopupRef.current?.show.call(null);
-
-        this.setState({ isSelectingOwner: true });
     };
 
     private onSaveTaskClick = () => {

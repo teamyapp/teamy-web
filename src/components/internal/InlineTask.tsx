@@ -108,15 +108,11 @@ interface Props {
 
 interface State {
     isEditingGoal: boolean;
-    isSelectingOwner: boolean;
     updatedGoal?: string;
 }
 
 export class InlineTaskUI extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
-    private getBoundingClientRect?: () => DOMRect;
-    private readonly selectTaskOwnersPopupRef =
-        createRef<SelectOwnersPopupComponent>();
     private readonly taskIdContextMenuRef = createRef<ContextMenuComponent>();
     private contextMenuItemViews: ContextMenuItemView[] = [];
     private contextMenuItemViewCleanups: CleanupFunc[] = [];
@@ -125,20 +121,22 @@ export class InlineTaskUI extends Component<Props, State> {
         super(props);
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
-            isSelectingOwner: false,
             isEditingGoal: false,
         };
     }
 
     public render() {
-        const { draggingBy, id } = this.props.task;
+        const { draggingBy } = this.props.task;
 
         const showDraggingBy =
             draggingBy && draggingBy.id !== this.props.currentClientId;
         const priorityStyle = toOptionKey(this.props.task.priority);
         return (
             <>
-                <div className={styles.InlineTask} onClick={this.onSelectTaskHandler}>
+                <div
+                    className={styles.InlineTask}
+                    onClick={this.onSelectTaskHandler}
+                >
                     <div
                         className={`${styles.Task} ${classNames({
                             [styles.Dragging]: showDraggingBy,
@@ -222,16 +220,6 @@ export class InlineTaskUI extends Component<Props, State> {
                         </div>
                     )}
                 </div>
-                <SelectOwnersPopupComponent
-                    ref={this.selectTaskOwnersPopupRef}
-                    deps={this.props.deps}
-                    findOwnersAlignTargetBoundBox={
-                        this.getBoundingClientRect
-                    }
-                    onClose={this.onTaskOwnersPopupClose}
-                    onSelectOwner={this.onTaskOwnerSelected}
-                    selectedOwnerId={this.props.task.owner?.id}
-                />
                 <ContextMenuComponent
                     ref={this.taskIdContextMenuRef}
                     menuItems={this.renderTaskIdContextMenuItems()}
@@ -265,7 +253,7 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onSelectTaskHandler = () => {
         this.props.onTaskSelectHandler?.call(null, this.props.task.id);
-    }
+    };
 
     private onTaskIdContextMenu = async (event: MouseEvent) => {
         event.preventDefault();
@@ -321,19 +309,9 @@ export class InlineTaskUI extends Component<Props, State> {
     };
 
     private onTaskOwnerSelected = (ownerUserId?: number) => {
-        this.setState({
-            isSelectingOwner: false,
-        });
-
         this.stateSyncer.updateTask(this.props.task.id, {
             ...this.getUpdatedTask(),
             ownerUserId,
-        });
-    };
-
-    private onTaskOwnersPopupClose = () => {
-        this.setState({
-            isSelectingOwner: false,
         });
     };
 
@@ -499,19 +477,25 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     }
 
-    private renderAssignOwner(index: number): ReactNode {
+    private renderOwnerList = ({
+        toggleContainer,
+        showFollower,
+    }: {
+        toggleContainer: () => void;
+        showFollower: boolean;
+    }): ReactNode => {
         const owner = this.props.task.owner;
         const name = owner
             ? getUserShortName(owner.firstName, owner.lastName)
             : 'Unassigned';
         return (
-            <div key={index} className={styles.AssignOwner}>
+            <div className={styles.AssignOwner}>
                 <TooltipUI message={name}>
                     <div
                         className={`${styles.Action} ${classNames({
-                            [styles.Active]: this.state.isSelectingOwner,
+                            [styles.Active]: showFollower,
                         })}`}
-                        onClick={this.onAssignOwnerClick}
+                        onClick={toggleContainer}
                     >
                         <div className={` ${styles.AssignOwnerIcon}`}>
                             {owner ? (
@@ -523,6 +507,18 @@ export class InlineTaskUI extends Component<Props, State> {
                     </div>
                 </TooltipUI>
             </div>
+        );
+    };
+
+    private renderAssignOwner(index: number): ReactNode {
+        return (
+            <SelectOwnersPopupComponent
+                key={index}
+                deps={this.props.deps}
+                onSelectOwner={this.onTaskOwnerSelected}
+                selectedOwnerId={this.props.task.owner?.id}
+                assignOwner={this.renderOwnerList}
+            />
         );
     }
 
@@ -580,16 +576,6 @@ export class InlineTaskUI extends Component<Props, State> {
 
     private onViewTaskDetailClick = () => {
         this.props.onViewTaskDetail?.call(null, this.props.task.id);
-    };
-
-    private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
-        const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect =
-            element.getBoundingClientRect.bind(element);
-        this.selectTaskOwnersPopupRef?.current?.show.call(null);
-        this.setState({
-            isSelectingOwner: true,
-        });
     };
 
     private onAddAwaitForTaskClick = (event: MouseEvent<HTMLDivElement>) => {
