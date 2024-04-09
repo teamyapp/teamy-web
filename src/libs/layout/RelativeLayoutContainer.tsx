@@ -14,10 +14,7 @@ type Props = {
     onClose?: () => void;
     onMouseLeave?: () => void;
     zOffset?: number;
-    renderReferenceElement: ({
-        onToggle,
-        showFollower,
-    }: {
+    renderReferenceElement: (props: {
         onToggle: () => void;
         showFollower: boolean;
     }) => ReactNode;
@@ -25,8 +22,8 @@ type Props = {
         onClose,
         onOpen,
     }: {
-        onClose: () => void;
-        onOpen: () => void;
+        closeContainer: () => void;
+        openContainer: () => void;
         showFollower: boolean;
     }) => ReactNode;
     relativeLayout: RelativeLayout;

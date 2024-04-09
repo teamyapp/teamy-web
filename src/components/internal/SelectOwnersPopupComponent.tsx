@@ -13,10 +13,7 @@ interface Props {
     deps: Deps;
     selectedOwnerId?: number;
     onSelectOwner?: (OwnerId?: number) => void;
-    assignOwner: ({
-        onToggle,
-        showFollower,
-    }: {
+    assignOwner: (props: {
         onToggle: () => void;
         showFollower: boolean;
     }) => React.ReactNode;
