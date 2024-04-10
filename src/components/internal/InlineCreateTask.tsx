@@ -102,13 +102,13 @@ export class InlineCreateTaskUI extends Component<Props, State> {
         );
     }
 
-    private renderAssignOwner({
+    private renderAssignOwner = ({
         toggleContainer,
         showFollower,
     }: {
         toggleContainer: () => void;
         showFollower: boolean;
-    }): ReactNode {
+    }): ReactNode => {
         const owner = this.owner();
         const name = owner
             ? getUserShortName(owner.firstName, owner.lastName)
