@@ -1,16 +1,16 @@
 @import '../../../libs/ui/styleguide/elevation';
-@import "ItemListSection.module";
+@import 'ItemListSection.module';
 
 .Phase {
     display: flex;
     height: 100%;
-    
+
     .PhaseDetail {
         flex: 1;
         padding: 10px;
         display: flex;
         flex-direction: column;
-        background-color: #ECEFF1;
+        background-color: #eceff1;
 
         .Header {
             font-size: 16px;
@@ -52,8 +52,39 @@
                         --icon-color: white;
                         cursor: pointer;
 
-                        &.Add, &.Delete, &.Remove {
+                        &.Add,
+                        &.Delete,
+                        &.Remove,
+                        &.Edit,
+                        &.Save,
+                        &.Cancel {
                             --icon-color: white;
+                        }
+                    }
+                    &.Edit {
+                        --icon-color: #fbc02d;
+                        --icon-size: 24px;
+
+                        &:hover {
+                            background-color: #fbc02d;
+                        }
+                    }
+
+                    &.Save {
+                        --icon-color: #4caf50;
+                        --icon-size: 24px;
+
+                        &:hover {
+                            background-color: #4caf50;
+                        }
+                    }
+
+                    &.Cancel {
+                        --icon-color: #f44336;
+                        --icon-size: 24px;
+
+                        &:hover {
+                            background-color: #f44336;
                         }
                     }
 
@@ -69,7 +100,7 @@
                     &.Remove {
                         --icon-color: #5e5e5e;
                         --icon-size: 20px;
-    
+
                         &:hover {
                             background-color: #5e5e5e;
                         }
@@ -92,6 +123,7 @@
             flex-wrap: wrap;
             row-gap: 16px;
             column-gap: 8px;
+            overflow-y: auto;
 
             .InlineStory {
                 width: 420px;
