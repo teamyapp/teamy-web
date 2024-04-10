@@ -25,7 +25,6 @@ import {
 } from '@core/routing/routes';
 
 import { ContextMenuComponent } from './ContextMenu.component';
-import { FilterListComponent } from './FilterList.component';
 import styles from './Header.component.module.scss';
 import { SprintsHeaderSectionComponent } from './SprintsHeaderSection.component';
 import { UserProfileUI } from './UserProfile';
@@ -194,24 +193,6 @@ export class HeaderComponent extends Component<Props, State> {
                             <MaterialIconUI>search</MaterialIconUI>
                         </div>
                     </div>
-                    {this.state.isSearchBarFocused && (
-                        <div className={styles.Filters}>
-                            <FilterListComponent
-                                deps={this.props.deps}
-                                teamMembers={
-                                    this.props.currentTeam?.members || []
-                                }
-                                taskFiltersData={this.state.taskFiltersData}
-                                taskFilters={this.props.taskFilters}
-                                onTaskFiltersChange={
-                                    this.props.onTaskFiltersChange
-                                }
-                                onTaskFiltersDataChange={
-                                    this.onTaskFiltersDataChange
-                                }
-                            />
-                        </div>
-                    )}
                 </div>
                 <SpacerUI />
                 <div
