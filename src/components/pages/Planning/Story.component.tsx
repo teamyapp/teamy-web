@@ -1,7 +1,6 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import { InlineCreateTaskUI } from 'components/internal/InlineCreateTask';
 import { TaskListItem } from 'components/internal/TaskListSections/TaskListItem';
-import { on } from 'events';
 import { useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
