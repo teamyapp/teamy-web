@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, {FC, useRef, useState} from 'react';
 
 import { RelativeLayoutContainerUI } from '@lib/layout';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -20,17 +20,12 @@ interface Props {
 }
 
 export const SelectOwnersPopupComponent: FC<Props> = (props) => {
-    const [potentialOwners, setPotentialOwners] = React.useState<User[]>([]);
-    const ownersPopupRef = React.useRef<HTMLDivElement>(null);
+    const [potentialOwners, setPotentialOwners] = useState<User[]>([]);
 
     const fetchOwnerList = async () => {
         await props.deps.stateSyncer.pullCurrentTeamMembers();
         const teamMembers = props.deps.graphSource.currentTeam()!.members;
         setPotentialOwners(teamMembers.map((teamMember) => teamMember.user));
-
-        setTimeout(() => {
-            ownersPopupRef.current?.focus();
-        });
     };
 
     const handleCloseOwnersListClick = (onClose: () => void) => {
@@ -66,10 +61,7 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
             renderFollower={({ closeContainer }) => {
                 return (
                     <div
-                        ref={ownersPopupRef}
                         className={styles.SelectOwnersPopup}
-                        tabIndex={-1}
-                        onBlur={handleCloseOwnersListClick(closeContainer)}
                     >
                         <div className={styles.SelectOwnerListHeader}>
                             <div
