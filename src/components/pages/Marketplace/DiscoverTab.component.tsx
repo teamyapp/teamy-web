@@ -40,7 +40,6 @@ export class DiscoverTabComponent extends Component<Props, State> {
         if (!currentTeamId) {
             return null;
         }
-        debugger
 
         const latestAppVersions =
             this.graphSource.latestAppVersions(currentTeamId);

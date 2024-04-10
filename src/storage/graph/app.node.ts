@@ -207,8 +207,6 @@ export class AppNode implements App {
 
     public isInstalled(teamId: number): boolean {
         const appState = this.localStore.getState();
-
-        debugger;
         for (let installationId in appState.appInstallations) {
             const installation = appState.appInstallations[installationId];
             if (
