@@ -1,12 +1,14 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import { InlineCreateTaskUI } from 'components/internal/InlineCreateTask';
 import { TaskListItem } from 'components/internal/TaskListSections/TaskListItem';
+import { on } from 'events';
 import { useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { TextFieldUI } from '@lib/ui/TextField';
 
 import { backlogSectionId } from '@core/config/sections';
 import { isPlanned, unplanned } from '@core/data/task.filter';
@@ -47,6 +49,7 @@ export function StoryComponent(props: Props) {
         useState(false);
     const [onEditingNewTaskInStory, setOnEditingNewTaskInStory] =
         useState(false);
+    const [onEditingStory, setOnEditingStory] = useState(false);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [currentClientId, setCurrentClientId] = useState<number>();
     const [selectBacklogTaskIds, setSelectBacklogTaskIds] = useState<
@@ -68,6 +71,7 @@ export function StoryComponent(props: Props) {
         new ItemsSelector(ctrlKeyPressedRef.current, selectStoryTaskIds),
     );
     const [story, setStory] = useState<Story>();
+    const [storyName, setStoryName] = useState<string>(story?.name || '');
 
     useEffect(() => {
         const selectedBacklogTaskChan =
@@ -274,6 +278,33 @@ export function StoryComponent(props: Props) {
         setSelectedBacklogTasksFilter(optionKey as backlogTasksFilterKey);
     };
 
+    const onStoryNameChange = (value: string) => {
+        setStoryName(value);
+    }
+
+    const onEditStoryName = () => {
+        setOnEditingStory(true);
+    }
+
+    const saveEditedStoryName = async () => {
+        if (!story) {
+            return;
+        }
+
+        await props.deps.stateSyncer.updateStory(props.storyId, {
+            ownerId: story.owner?.id,
+            status: story.status,
+            priority: story.priority,
+            name: storyName,
+        });
+        setOnEditingStory(false);
+    }
+
+    const cancelEditedStoryName = () => {
+        setStoryName(story?.name || '');
+        setOnEditingStory(false);
+    }
+
     if (!story) {
         return null;
     }
@@ -298,7 +329,14 @@ export function StoryComponent(props: Props) {
             <div className={styles.StoryDetailSection}>
                 <div className={styles.Header}>
                     <div className={styles.Information}>
-                        {story.name}
+                        {onEditingStory ? (
+                            <TextFieldUI
+                                value={story.name}
+                                onChange={onStoryNameChange}
+                            />
+                        ) : (
+                            story.name
+                        )}
                         <div className={styles.Description}>
                             {story.completedTasks} of {story.totalTasks} tasks
                             completed
@@ -321,12 +359,37 @@ export function StoryComponent(props: Props) {
                                 </div>
                             </>
                         )}
-                        <div
-                            className={`${styles.Action} ${styles.Add}`}
-                            onClick={onAddTaskToStoryClick}
-                        >
-                            <MaterialIconUI>add</MaterialIconUI>
-                        </div>
+                        {onEditingStory ? (
+                            <>
+                                <div
+                                    className={`${styles.Action} ${styles.Save}`}
+                                    onClick={saveEditedStoryName}
+                                >
+                                    <MaterialIconUI>check</MaterialIconUI>
+                                </div>
+                                <div
+                                    className={`${styles.Action} ${styles.Cancel}`}
+                                    onClick={cancelEditedStoryName}
+                                >
+                                    <MaterialIconUI>cancel</MaterialIconUI>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div
+                                    className={`${styles.Action} ${styles.Edit}`}
+                                    onClick={onEditStoryName}
+                                >
+                                    <MaterialIconUI>edit</MaterialIconUI>
+                                </div>
+                                <div
+                                    className={`${styles.Action} ${styles.Add}`}
+                                    onClick={onAddTaskToStoryClick}
+                                >
+                                    <MaterialIconUI>add</MaterialIconUI>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
                 <div className={styles.TasksSection}>

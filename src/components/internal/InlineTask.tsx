@@ -510,7 +510,7 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     };
 
-    private renderAssignOwner(index: number): ReactNode {
+    private renderAssignOwner = (index: number): ReactNode => {
         return (
             <SelectOwnersPopupComponent
                 key={index}
