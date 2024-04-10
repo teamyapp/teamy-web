@@ -21,7 +21,7 @@ export class RelativeLayout {
         horizontalAlignment: HorizontalAlignment = 'center',
         verticalAlignment: VerticalAlignment = 'bottom',
         overSpaceAction: OverSpaceAction = 'overlap',
-        referenceOffset: number = 0,
+        referenceOffset: number = 10,
         viewportOffset: number = 10,
     ): LayoutAttachment {
         const updateFollowerPosition = () => {
