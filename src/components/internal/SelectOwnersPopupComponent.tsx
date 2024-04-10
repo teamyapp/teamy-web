@@ -1,4 +1,4 @@
-import React, {FC, useRef, useState} from 'react';
+import React, {FC, useState} from 'react';
 
 import { RelativeLayoutContainerUI } from '@lib/layout';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -8,6 +8,9 @@ import { User } from '@core/entity/user';
 
 import styles from './SelectOwnersPopupComponent.module.scss';
 import { SelectUserListUI } from './SelectUserList';
+
+const OWNER_ASSIGNMENT_Z_INDEX = 101
+const OWNER_ASSIGNMENT_OFFSET = 5
 
 interface Props {
     deps: Deps;
@@ -51,6 +54,8 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
         <RelativeLayoutContainerUI
             relativeLayout={props.deps.relativeLayout}
             overSpaceAction='jumpVertically'
+            offset={OWNER_ASSIGNMENT_OFFSET}
+            zOffset={OWNER_ASSIGNMENT_Z_INDEX}
             renderReferenceElement={({ toggleContainer, showFollower }) => {
                 return props.assignOwner({
                     toggleContainer,

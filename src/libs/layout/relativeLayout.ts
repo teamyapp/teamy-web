@@ -74,16 +74,16 @@ function calcLeft(
     followerRect: DOMRect,
     alignment: HorizontalAlignment,
     overSpaceAction: OverSpaceAction,
-    referenceOffset: number = 0,
+    referenceOffset: number,
     viewportOffset: number,
 ) {
     let left = 0;
     switch (alignment) {
         case 'left':
-            left = referenceRect.left - followerRect.width;
+            left = referenceRect.left - followerRect.width - referenceOffset;
             break;
         case 'right':
-            left = referenceRect.left + referenceRect.width;
+            left = referenceRect.left + referenceRect.width + referenceOffset;
             break;
         case 'center':
             left =
@@ -106,7 +106,7 @@ function calcLeft(
                 left = viewportOffset;
                 break;
             case 'jumpHorizontally':
-                left = referenceRect.left + referenceRect.width;
+                left = referenceRect.left + referenceRect.width + referenceOffset;
                 break;
         }
     }
@@ -118,7 +118,7 @@ function calcLeft(
                 left = rightBound - followerRect.width;
                 break;
             case 'jumpHorizontally':
-                left = referenceRect.left - followerRect.width;
+                left = referenceRect.left - followerRect.width - referenceOffset;
                 break;
         }
     }
@@ -131,20 +131,20 @@ function calcTop(
     followerRect: DOMRect,
     alignment: VerticalAlignment,
     overSpaceAction: OverSpaceAction,
-    referenceOffset: number = 0,
+    referenceOffset: number,
     viewportOffset: number,
 ) {
     let top = 0;
     switch (alignment) {
         case 'top':
-            top = referenceRect.top - followerRect.height;
+            top = referenceRect.top - followerRect.height - referenceOffset;
             break;
         case 'bottom':
-            top = referenceRect.top + referenceRect.height;
+            top = referenceRect.top + referenceRect.height + referenceOffset;
             break;
         case 'center':
             top =
-                referenceRect.top +
+                referenceRect.top
                 referenceRect.height / 2 -
                 followerRect.height / 2;
             break;
@@ -164,7 +164,7 @@ function calcTop(
                 top = viewportOffset;
                 break;
             case 'jumpVertically':
-                top = referenceRect.top + referenceRect.height;
+                top = referenceRect.top + referenceRect.height + referenceOffset;
                 break;
         }
     }
@@ -176,7 +176,7 @@ function calcTop(
                 top = bottomBound - followerRect.height;
                 break;
             case 'jumpVertically':
-                top = referenceRect.top - followerRect.height;
+                top = referenceRect.top - followerRect.height - referenceOffset;
                 break;
         }
     }

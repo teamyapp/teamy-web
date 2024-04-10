@@ -10,6 +10,7 @@ import { MaterialIconUI } from './MaterialIcon';
 import { TextFieldUI } from './TextField';
 
 const dateFormat = 'MM/DD/YYYY';
+const DATE_PICKER_Z_INDEX = 101;
 
 interface Props {
     value?: Date;
@@ -51,6 +52,7 @@ export class DateLabelPickerUI extends Component<Props, State> {
             <DatePickerContainerUI
                 relativeLayout={this.props.relativeLayout}
                 onTargetChanged={this.props.onChange}
+                zOffset={DATE_PICKER_Z_INDEX}
                 value={this.props.value}
                 minYear={this.props.minYear}
                 maxYear={this.props.maxYear}
