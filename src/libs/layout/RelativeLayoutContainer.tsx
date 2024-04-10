@@ -32,7 +32,7 @@ type Props = {
     horizontalAlignment?: HorizontalAlignment;
     verticalAlignment?: VerticalAlignment;
     overSpaceAction?: OverSpaceAction;
-    offset?: number;
+    referenceOffset?: number;
 };
 
 interface States {
@@ -130,7 +130,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                             this.props.horizontalAlignment,
                             this.props.verticalAlignment,
                             this.props.overSpaceAction,
-                            this.props.offset,
+                            this.props.referenceOffset,
                         );
                 }
             },

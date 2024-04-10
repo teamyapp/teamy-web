@@ -54,7 +54,7 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
         <RelativeLayoutContainerUI
             relativeLayout={props.deps.relativeLayout}
             overSpaceAction='jumpVertically'
-            offset={OWNER_ASSIGNMENT_OFFSET}
+            referenceOffset={OWNER_ASSIGNMENT_OFFSET}
             zOffset={OWNER_ASSIGNMENT_Z_INDEX}
             renderReferenceElement={({ toggleContainer, showFollower }) => {
                 return props.assignOwner({
