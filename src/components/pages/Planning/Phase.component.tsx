@@ -4,6 +4,7 @@ import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TextFieldUI } from '@lib/ui/TextField';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { Deps } from '@core/dep/deps';
 import { CreateStoryInput } from '@core/entity/input';
@@ -322,50 +323,63 @@ export function PhaseComponent(props: Props) {
                     <div className={styles.Actions}>
                         {selectedPhaseStoryIds.size > 0 && (
                             <>
-                                <div
-                                    className={`${styles.Action} ${styles.Remove}`}
-                                    onClick={onRemoveStoriesToPhaseClick}
-                                >
-                                    <MaterialIconUI>read_more</MaterialIconUI>
-                                </div>
-
-                                <div
-                                    className={`${styles.Action} ${styles.Delete}`}
-                                    onClick={onDeletePhaseStoriesClick}
-                                >
-                                    <MaterialIconUI>close</MaterialIconUI>
-                                </div>
+                                <TooltipUI message='Remove from phase'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Remove}`}
+                                        onClick={onRemoveStoriesToPhaseClick}
+                                    >
+                                        <MaterialIconUI>
+                                            read_more
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <TooltipUI message='Delete'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Delete}`}
+                                        onClick={onDeletePhaseStoriesClick}
+                                    >
+                                        <MaterialIconUI>close</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             </>
                         )}
                         {onEditingPhase ? (
                             <>
-                                <div
-                                    className={`${styles.Action} ${styles.Save}`}
-                                    onClick={saveEditedPhaseName}
-                                >
-                                    <MaterialIconUI>check</MaterialIconUI>
-                                </div>
-                                <div
-                                    className={`${styles.Action} ${styles.Cancel}`}
-                                    onClick={cancelEditedPhaseName}
-                                >
-                                    <MaterialIconUI>cancel</MaterialIconUI>
-                                </div>
+                                <TooltipUI message='Save'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Save}`}
+                                        onClick={saveEditedPhaseName}
+                                    >
+                                        <MaterialIconUI>check</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <TooltipUI message='Cancel'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Cancel}`}
+                                        onClick={cancelEditedPhaseName}
+                                    >
+                                        <MaterialIconUI>cancel</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             </>
                         ) : (
                             <>
-                                <div
-                                    className={`${styles.Action} ${styles.Edit}`}
-                                    onClick={onEditPhaseName}
-                                >
-                                    <MaterialIconUI>edit</MaterialIconUI>
-                                </div>
-                                <div
-                                    className={`${styles.Action} ${styles.Add}`}
-                                    onClick={onAddStoryInPhaseClick}
-                                >
-                                    <MaterialIconUI>add</MaterialIconUI>
-                                </div>
+                                <TooltipUI message='Edit'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Edit}`}
+                                        onClick={onEditPhaseName}
+                                    >
+                                        <MaterialIconUI>edit</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <TooltipUI message='Add story'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Add}`}
+                                        onClick={onAddStoryInPhaseClick}
+                                    >
+                                        <MaterialIconUI>add</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             </>
                         )}
                     </div>
@@ -406,27 +420,33 @@ export function PhaseComponent(props: Props) {
                     <div className={styles.Title}>Stories</div>
                     <div className={styles.Actions}>
                         {selectedBacklogStoryIds.size > 0 && (
-                            <div
-                                className={`${styles.Action} ${styles.Move}`}
-                                onClick={onAddStoriesToPhaseClick}
-                            >
-                                <MaterialIconUI>read_more</MaterialIconUI>
-                            </div>
+                            <TooltipUI message='Move to phase'>
+                                <div
+                                    className={`${styles.Action} ${styles.Move}`}
+                                    onClick={onAddStoriesToPhaseClick}
+                                >
+                                    <MaterialIconUI>read_more</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         )}
                         {selectedBacklogStoryIds.size > 0 && (
-                            <div
-                                className={`${styles.Action} ${styles.Delete}`}
-                                onClick={onDeleteBacklogStoriesClick}
-                            >
-                                <MaterialIconUI>close</MaterialIconUI>
-                            </div>
+                            <TooltipUI message='Delete'>
+                                <div
+                                    className={`${styles.Action} ${styles.Delete}`}
+                                    onClick={onDeleteBacklogStoriesClick}
+                                >
+                                    <MaterialIconUI>close</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         )}
-                        <div
-                            className={`${styles.Action} ${styles.Add}`}
-                            onClick={onAddStoryInBacklogClick}
-                        >
-                            <MaterialIconUI>add</MaterialIconUI>
-                        </div>
+                        <TooltipUI message='Create story'>
+                            <div
+                                className={`${styles.Action} ${styles.Add}`}
+                                onClick={onAddStoryInBacklogClick}
+                            >
+                                <MaterialIconUI>add</MaterialIconUI>
+                            </div>
+                        </TooltipUI>
                     </div>
                 </div>
                 <div className={styles.StoryList}>

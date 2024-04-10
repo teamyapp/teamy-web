@@ -1,7 +1,11 @@
 $backgroundColor: #424242;
 
 .Box {
+    height: 100%;
+
     .Component {
+        height: 100%;
+        
         &:focus {
             outline: none;
         }

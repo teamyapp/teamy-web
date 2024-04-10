@@ -162,13 +162,17 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                         [styles[priorityStyle]]: true,
                                     })}`}
                                 >
-                                    <DropDownList
-                                        selectOptionKey={toOptionKey(
-                                            props.story.priority,
-                                        )}
-                                        options={priorityOptions}
-                                        onSelectOption={handlePriorityChange}
-                                    />
+                                    <TooltipUI message='Set Priority'>
+                                        <DropDownList
+                                            selectOptionKey={toOptionKey(
+                                                props.story.priority,
+                                            )}
+                                            options={priorityOptions}
+                                            onSelectOption={
+                                                handlePriorityChange
+                                            }
+                                        />
+                                    </TooltipUI>
                                 </div>
                             </div>
                         </div>
