@@ -3,17 +3,18 @@ import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
 import { CreateStoryInput } from '@core/entity/input';
 import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
+import { Team } from '@core/entity/team';
 import { phaseStoryPath } from '@core/routing/routes';
 
 import { InlineCreateStory } from './InlineCreateStory.component';
 import styles from './Phase.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
-import { Team } from '@core/entity/team';
 
 interface Props {
     deps: Deps;
@@ -24,6 +25,7 @@ interface Props {
 export function PhaseComponent(props: Props) {
     const [project, setProject] = useState<Project>();
     const [phase, setPhase] = useState<Phase>();
+    const [onEditingPhase, setOnEditingPhase] = useState(false);
     const [currentTeam, setCurrentTeam] = useState<Team>();
     const [onEditingNewStoryInBacklog, setOnEditingNewStoryInBacklog] =
         useState(false);
@@ -37,6 +39,7 @@ export function PhaseComponent(props: Props) {
     >(new Set());
     const selectedBacklogStoryIdsRef = useRef(selectedBacklogStoryIds);
     const selectedPhaseStoryIdsRef = useRef(selectedPhaseStoryIds);
+    const [phaseName, setPhaseName] = useState<string>(phase?.name || '');
 
     const ctrlKeyPressedRef = useRef(false);
     const backlogStorySelectorRef = useRef<ItemsSelector>(
@@ -124,7 +127,7 @@ export function PhaseComponent(props: Props) {
                 }
             }
         })();
-    
+
         (async () => {
             while (true) {
                 console.log('[PhaseComponent] waiting for state changes');
@@ -157,6 +160,33 @@ export function PhaseComponent(props: Props) {
             backlogStorySelectorRef.current.dispose();
         };
     }, []);
+
+    const onPhaseNameChange = (value: string) => {
+        setPhaseName(value);
+    };
+
+    const onEditPhaseName = () => {
+        setOnEditingPhase(true);
+    };
+
+    const saveEditedPhaseName = async () => {
+        if (!phase) {
+            return;
+        }
+
+        await props.deps.stateSyncer.updatePhase(phase.id, {
+            name: phaseName,
+            expectedStartAt: phase.expectedEndAt,
+            expectedEndAt: phase.expectedEndAt,
+            status: phase.status,
+        });
+        setOnEditingPhase(false);
+    };
+
+    const cancelEditedPhaseName = () => {
+        setPhaseName(phase?.name || '');
+        setOnEditingPhase(false);
+    };
 
     const onBacklogStorySelect = (storyIdNumber: number) => {
         backlogStorySelectorRef.current.selectItem(storyIdNumber.toString());
@@ -220,7 +250,7 @@ export function PhaseComponent(props: Props) {
         );
 
         phaseStorySelectorRef.current.reset();
-    }
+    };
 
     const onAddStoryInBacklogClick = () => {
         setOnEditingNewStoryInBacklog(true);
@@ -276,10 +306,17 @@ export function PhaseComponent(props: Props) {
             <div className={styles.PhaseDetail}>
                 <div className={styles.Header}>
                     <div className={styles.Information}>
-                        {phase.name}
+                        {onEditingPhase ? (
+                            <TextFieldUI
+                                value={phase.name}
+                                onChange={onPhaseNameChange}
+                            />
+                        ) : (
+                            phase.name
+                        )}
                         <div className={styles.Description}>
-                            {phase.deliveredStories} of{' '}
-                            {phase.totalStories} stories delivered
+                            {phase.deliveredStories} of {phase.totalStories}{' '}
+                            stories delivered
                         </div>
                     </div>
                     <div className={styles.Actions}>
@@ -300,12 +337,37 @@ export function PhaseComponent(props: Props) {
                                 </div>
                             </>
                         )}
-                        <div
-                            className={`${styles.Action} ${styles.Add}`}
-                            onClick={onAddStoryInPhaseClick}
-                        >
-                            <MaterialIconUI>add</MaterialIconUI>
-                        </div>
+                        {onEditingPhase ? (
+                            <>
+                                <div
+                                    className={`${styles.Action} ${styles.Save}`}
+                                    onClick={saveEditedPhaseName}
+                                >
+                                    <MaterialIconUI>check</MaterialIconUI>
+                                </div>
+                                <div
+                                    className={`${styles.Action} ${styles.Cancel}`}
+                                    onClick={cancelEditedPhaseName}
+                                >
+                                    <MaterialIconUI>cancel</MaterialIconUI>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div
+                                    className={`${styles.Action} ${styles.Edit}`}
+                                    onClick={onEditPhaseName}
+                                >
+                                    <MaterialIconUI>edit</MaterialIconUI>
+                                </div>
+                                <div
+                                    className={`${styles.Action} ${styles.Add}`}
+                                    onClick={onAddStoryInPhaseClick}
+                                >
+                                    <MaterialIconUI>add</MaterialIconUI>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
                 <div className={styles.StoriesSection}>
