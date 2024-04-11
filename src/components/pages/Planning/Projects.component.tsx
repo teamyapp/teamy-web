@@ -165,20 +165,20 @@ export const ProjectsComponent: FC<Props> = (props) => {
                 </div>
                 <div className={styles.RightSection}>
                     <TooltipUI message='delete'>
-                    <div
-                        className={styles.DeleteIcon}
-                        onClick={onDeleteProjectClickHandler(project.id)}
-                    >
-                        <MaterialIconUI>close</MaterialIconUI>
-                    </div>
+                      <div
+                          className={styles.DeleteIcon}
+                          onClick={onDeleteProjectClickHandler(project.id)}
+                      >
+                          <MaterialIconUI>close</MaterialIconUI>
+                      </div>
                     </TooltipUI>
                     <TooltipUI message='edit'>
-                    <div
-                        className={styles.EditIcon}
-                        onClick={onUpdateProjectClickHandler(project)}
-                    >
-                        <MaterialIconUI>edit</MaterialIconUI>
-                    </div>
+                      <div
+                          className={styles.EditIcon}
+                          onClick={onUpdateProjectClickHandler(project)}
+                      >
+                          <MaterialIconUI>edit</MaterialIconUI>
+                      </div>
                     </TooltipUI>
                 </div>
             </div>
