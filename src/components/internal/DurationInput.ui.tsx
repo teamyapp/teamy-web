@@ -19,7 +19,7 @@ interface Props {
     onDurationChange?: (duration?: Duration) => void;
 }
 
-export class DurationInputUI extends Component<Props> {
+export class DurationInputUI extends Component<Props, any> {
     render() {
         const { duration } = this.props;
         return (
@@ -29,6 +29,7 @@ export class DurationInputUI extends Component<Props> {
                     onOpenContainer={this.props.onPopupOpen}
                     onCloseContainer={this.props.onPopupClose}
                     relativeLayout={this.props.relativeLayout}
+                    referenceOffset={4}
                     zOffset={this.props.zOffset}
                     renderReferenceElement={({ toggleContainer }) => (
                         <div className={styles.ValueRow} onClick={toggleContainer}>
@@ -63,7 +64,7 @@ interface PopupProps {
     onMouseLeave?: () => void;
 }
 
-export class DurationInputPopup extends Component<PopupProps> {
+export class DurationInputPopup extends Component<PopupProps, any> {
     private readonly yearsInputRef = createRef<TextFieldUI>();
     private readonly monthsInputRef = createRef<TextFieldUI>();
     private readonly weeksInputRef = createRef<TextFieldUI>();

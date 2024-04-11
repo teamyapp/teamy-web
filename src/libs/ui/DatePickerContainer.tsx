@@ -51,6 +51,7 @@ export class DatePickerContainerUI extends Component<Props, State> {
                 zOffset={this.props.zOffset}
                 relativeLayout={this.props.relativeLayout}
                 overSpaceAction='jumpVertically'
+                referenceOffset={4}
                 renderReferenceElement={({ toggleContainer }) =>
                     this.props.target({
                         onToggle: toggleContainer,
