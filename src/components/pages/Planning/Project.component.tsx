@@ -261,12 +261,12 @@ export function ProjectComponent(props: Props) {
                 </div>
                 <div className={styles.RightSection}>
                     <TooltipUI message='Delete phase'>
-                    <div
-                        className={styles.DeleteIcon}
-                        onClick={onPhaseDeleteHandler(phase.id)}
-                    >
-                        <MaterialIconUI>close</MaterialIconUI>
-                    </div>
+                      <div
+                          className={styles.DeleteIcon}
+                          onClick={onPhaseDeleteHandler(phase.id)}
+                      >
+                          <MaterialIconUI>close</MaterialIconUI>
+                      </div>
                     </TooltipUI>
                     <TooltipUI message='Edit phase'>
                     <div
