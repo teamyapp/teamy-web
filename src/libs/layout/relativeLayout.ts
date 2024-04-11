@@ -144,7 +144,7 @@ function calcTop(
             break;
         case 'center':
             top =
-                referenceRect.top
+                referenceRect.top +
                 referenceRect.height / 2 -
                 followerRect.height / 2;
             break;
