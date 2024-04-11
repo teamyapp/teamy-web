@@ -9,7 +9,7 @@ import { User } from '@core/entity/user';
 import styles from './SelectOwnersPopupComponent.module.scss';
 import { SelectUserListUI } from './SelectUserList';
 
-const OWNER_ASSIGNMENT_Z_INDEX = 101
+const OWNER_ASSIGNMENT_Z_INDEX = 101;
 
 interface Props {
     deps: Deps;
