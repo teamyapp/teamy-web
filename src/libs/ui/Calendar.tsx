@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import _ from 'lodash';
-import React, { Component, ReactNode, createRef } from 'react';
+import React, { Component, ReactNode } from 'react';
 
 import { today } from '../data/format';
 import styles from './Calendar.module.scss';
@@ -40,8 +40,6 @@ interface State {
 }
 
 export class CalendarUI extends Component<Props, State> {
-    private calendarRef = createRef<HTMLDivElement>();
-
     constructor(props: Props) {
         super(props);
 
@@ -53,10 +51,7 @@ export class CalendarUI extends Component<Props, State> {
     public render(): ReactNode {
         return (
             <div
-                ref={this.calendarRef}
-                tabIndex={-1}
                 className={styles.Calendar}
-                onBlur={this.props.onClose}
             >
                 {this.renderCalendarControls()}
                 {this.state.showSelectYear

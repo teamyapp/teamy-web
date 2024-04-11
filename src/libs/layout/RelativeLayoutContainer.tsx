@@ -32,7 +32,7 @@ type Props = {
     horizontalAlignment?: HorizontalAlignment;
     verticalAlignment?: VerticalAlignment;
     overSpaceAction?: OverSpaceAction;
-    offset?: number;
+    referenceOffset?: number;
 };
 
 interface States {
@@ -54,11 +54,24 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
 
     componentDidMount() {
         document.body.appendChild(this.followerContainer);
+        document.addEventListener('mousedown', this.onClickOutside);
     }
 
     componentWillUnmount() {
         document.body.removeChild(this.followerContainer);
+        document.removeEventListener('mousedown', this.onClickOutside);
     }
+
+    private onClickOutside = (event: MouseEvent) => {
+        if (
+            this.referenceElementRef.current &&
+            this.followerRef.current &&
+            !this.referenceElementRef.current.contains(event.target as Node) &&
+            !this.followerRef.current.contains(event.target as Node)
+        ) {
+            this.onClose();
+        }
+    };
 
     render() {
         return (
@@ -117,7 +130,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                             this.props.horizontalAlignment,
                             this.props.verticalAlignment,
                             this.props.overSpaceAction,
-                            this.props.offset,
+                            this.props.referenceOffset,
                         );
                 }
             },

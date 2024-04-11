@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, {FC, useState} from 'react';
 
 import { RelativeLayoutContainerUI } from '@lib/layout';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -8,6 +8,8 @@ import { User } from '@core/entity/user';
 
 import styles from './SelectOwnersPopupComponent.module.scss';
 import { SelectUserListUI } from './SelectUserList';
+
+const OWNER_ASSIGNMENT_Z_INDEX = 101;
 
 interface Props {
     deps: Deps;
@@ -20,17 +22,12 @@ interface Props {
 }
 
 export const SelectOwnersPopupComponent: FC<Props> = (props) => {
-    const [potentialOwners, setPotentialOwners] = React.useState<User[]>([]);
-    const ownersPopupRef = React.useRef<HTMLDivElement>(null);
+    const [potentialOwners, setPotentialOwners] = useState<User[]>([]);
 
     const fetchOwnerList = async () => {
         await props.deps.stateSyncer.pullCurrentTeamMembers();
         const teamMembers = props.deps.graphSource.currentTeam()!.members;
         setPotentialOwners(teamMembers.map((teamMember) => teamMember.user));
-
-        setTimeout(() => {
-            ownersPopupRef.current?.focus();
-        });
     };
 
     const handleCloseOwnersListClick = (onClose: () => void) => {
@@ -56,6 +53,8 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
         <RelativeLayoutContainerUI
             relativeLayout={props.deps.relativeLayout}
             overSpaceAction='jumpVertically'
+            zOffset={OWNER_ASSIGNMENT_Z_INDEX}
+            referenceOffset={4}
             renderReferenceElement={({ toggleContainer, showFollower }) => {
                 return props.assignOwner({
                     toggleContainer,
@@ -66,10 +65,7 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
             renderFollower={({ closeContainer }) => {
                 return (
                     <div
-                        ref={ownersPopupRef}
                         className={styles.SelectOwnersPopup}
-                        tabIndex={-1}
-                        onBlur={handleCloseOwnersListClick(closeContainer)}
                     >
                         <div className={styles.SelectOwnerListHeader}>
                             <div
