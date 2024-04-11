@@ -269,12 +269,12 @@ export function ProjectComponent(props: Props) {
                       </div>
                     </TooltipUI>
                     <TooltipUI message='Edit phase'>
-                    <div
-                        className={styles.EditIcon}
-                        onClick={onPhaseUpdateHandler(phase)}
-                    >
-                        <MaterialIconUI>edit</MaterialIconUI>
-                    </div>
+                      <div
+                          className={styles.EditIcon}
+                          onClick={onPhaseUpdateHandler(phase)}
+                      >
+                          <MaterialIconUI>edit</MaterialIconUI>
+                      </div>
                     </TooltipUI>
                 </div>
             </div>
