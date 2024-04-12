@@ -943,7 +943,7 @@ export function mergeAppVersion(
         appId: appId,
         createdAt: toDate(version.createdAt) || localOldVersion.createdAt,
         creatorUserId:
-            version.createdBy !== undefined ? toInt(version.createdBy!.id) : localOldVersion.creatorUserId,
+            version.createdBy !== undefined ? toInt(version.createdBy.id)! : localOldVersion.creatorUserId,
         description: version.description || localOldVersion.description,
         status: version.status || localOldVersion.status,
         locked: version.locked,
