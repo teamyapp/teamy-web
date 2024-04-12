@@ -28,7 +28,7 @@ export class TaskLinkIconUI extends Component<Props, State> {
             ? this.props.link.iconHoverUrl
             : this.props.link.iconUrl;
         return (
-            <TooltipUI message={this.props.link.title}>
+            <TooltipUI message={this.props.link.previewTitle}>
                 <div
                     className={styles.TaskLink}
                     onMouseEnter={this.onMouseEnterTaskLink}
@@ -43,7 +43,7 @@ export class TaskLinkIconUI extends Component<Props, State> {
                             <img
                                 className={styles.TaskLinkImg}
                                 src={taskLink}
-                                alt={this.props.link.title}
+                                alt={this.props.link.previewTitle}
                             />
                         ) : (
                             <div className={styles.TaskLinkIcon}>

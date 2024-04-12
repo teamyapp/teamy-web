@@ -1620,6 +1620,7 @@ export function mergeTaskLinks(
             id: remoteTaskLinkId,
             taskId: remoteTaskId,
             title: remoteTaskLink.title || localOldTaskLink.title,
+            previewTitle: remoteTaskLink.previewTitle || localOldTaskLink.title,
             url: remoteTaskLink.url || localOldTaskLink.url,
             iconUrl: remoteTaskLink.iconUrl || localOldTaskLink.iconUrl,
             iconHoverUrl:
