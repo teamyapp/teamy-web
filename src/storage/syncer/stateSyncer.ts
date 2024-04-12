@@ -92,7 +92,6 @@ import {
     mergeInvitation,
     mergeMessage,
     mergePhase,
-    mergePhaseStoryRelation,
     mergeProject,
     mergeProjectPhaseRelation,
     mergeProjectStoryRelation,
