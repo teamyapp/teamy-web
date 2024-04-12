@@ -17,6 +17,10 @@ export class TaskLinkNode implements TaskLink {
         return this.taskLinkState.title;
     }
 
+    public get previewTitle(): string {
+        return this.taskLinkState.previewTitle;
+    }
+
     public get url(): string {
         return this.taskLinkState.url;
     }
