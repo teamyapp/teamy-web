@@ -8,8 +8,8 @@ import { orderByName } from '@core/data/team.order';
 import { Team } from '@core/entity/team';
 
 import { ContextMenuComponent } from './ContextMenu.component';
-import styles from './Drawer.module.scss';
 import { RelativeLayout } from '@lib/layout';
+import styles from './Drawer.module.scss';
 
 interface Props {
     teams: Team[];
