@@ -345,7 +345,7 @@ export function StoryComponent(props: Props) {
                     <div className={styles.Actions}>
                         {selectStoryTaskIds.size > 0 && (
                             <>
-                                <TooltipUI message='Remove from story'>
+                                <TooltipUI message='Remove from story' relativeLayout={props.deps.relativeLayout}>
                                     <div
                                         className={`${styles.Action} ${styles.Remove}`}
                                         onClick={onRemoveTasksFromStoryClick}
@@ -355,7 +355,7 @@ export function StoryComponent(props: Props) {
                                         </MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                <TooltipUI message='Delete'>
+                                <TooltipUI message='Delete' relativeLayout={props.deps.relativeLayout}>
                                     <div
                                         className={`${styles.Action} ${styles.Delete}`}
                                         onClick={onDeleteTasksFromStoryClick}
@@ -367,7 +367,7 @@ export function StoryComponent(props: Props) {
                         )}
                         {onEditingStory ? (
                             <>
-                                <TooltipUI message='Save'>
+                                <TooltipUI message='Save' relativeLayout={props.deps.relativeLayout}>
                                     <div
                                         className={`${styles.Action} ${styles.Save}`}
                                         onClick={saveEditedStoryName}
@@ -375,7 +375,7 @@ export function StoryComponent(props: Props) {
                                         <MaterialIconUI>check</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                <TooltipUI message='Cancel'>
+                                <TooltipUI message='Cancel' relativeLayout={props.deps.relativeLayout}>
                                     <div
                                         className={`${styles.Action} ${styles.Cancel}`}
                                         onClick={cancelEditedStoryName}
@@ -386,7 +386,7 @@ export function StoryComponent(props: Props) {
                             </>
                         ) : (
                             <>
-                                <TooltipUI message='Edit'>
+                                <TooltipUI message='Edit' relativeLayout={props.deps.relativeLayout}>
                                     <div
                                         className={`${styles.Action} ${styles.Edit}`}
                                         onClick={onEditStoryName}
@@ -394,7 +394,7 @@ export function StoryComponent(props: Props) {
                                         <MaterialIconUI>edit</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                <TooltipUI message='Add task'>
+                                <TooltipUI message='Add task' relativeLayout={props.deps.relativeLayout}>
                                     <div
                                         className={`${styles.Action} ${styles.Add}`}
                                         onClick={onAddTaskToStoryClick}
@@ -457,7 +457,7 @@ export function StoryComponent(props: Props) {
                     </div>
                     <div className={styles.Actions}>
                         {selectBacklogTaskIds.size > 0 && (
-                            <TooltipUI message='Add to story'>
+                            <TooltipUI message='Add to story' relativeLayout={props.deps.relativeLayout}>
                                 <div
                                     className={`${styles.Action} ${styles.Move}`}
                                     onClick={onAddTasksToStoryClick}
@@ -467,7 +467,7 @@ export function StoryComponent(props: Props) {
                             </TooltipUI>
                         )}
                         {selectBacklogTaskIds.size > 0 && (
-                            <TooltipUI message='Delete'>
+                            <TooltipUI message='Delete' relativeLayout={props.deps.relativeLayout}>
                                 <div
                                     className={`${styles.Action} ${styles.Delete}`}
                                     onClick={onDeleteBacklogTasksClick}
@@ -476,7 +476,7 @@ export function StoryComponent(props: Props) {
                                 </div>
                             </TooltipUI>
                         )}
-                        <TooltipUI message='Create task'>
+                        <TooltipUI message='Create task' relativeLayout={props.deps.relativeLayout}>
                             <div
                                 className={`${styles.Action} ${styles.Add}`}
                                 onClick={onAddTaskInBacklogClick}

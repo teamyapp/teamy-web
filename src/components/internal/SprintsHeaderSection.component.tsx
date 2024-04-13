@@ -55,7 +55,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         const isOnActiveSprint = this.isOnActiveSprint();
         return (
             <div className={styles.SprintHeaderSectionContainer}>
-                <TooltipUI message={'Start new sprint'} position={'Bottom'}>
+                <TooltipUI message={'Start new sprint'} relativeLayout={this.props.deps.relativeLayout}>
                     <div className={styles.CopySection}>
                         <div
                             className={styles.Button}
@@ -109,8 +109,8 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 </div>
                 <TooltipUI
                     message={'Set as active sprint'}
-                    position={'Bottom'}
                     disabled={isOnActiveSprint}
+                    relativeLayout={this.props.deps.relativeLayout}
                 >
                     <div className={styles.SetActiveSprintSection}>
                         <div

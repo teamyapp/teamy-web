@@ -1,90 +1,15 @@
 $backgroundColor: #424242;
 
-.Box {
+
+.Reference {
     height: 100%;
+}
 
-    .Component {
-        height: 100%;
-        
-        &:focus {
-            outline: none;
-        }
-    }
-
-    .Tooltip {
-        background-color: $backgroundColor;
-        border-radius: 3px;
-        color: white;
-        display: none;
-        font-weight: bold;
-        padding: 6px 10px;
-        position: absolute;
-        visibility: hidden;
-        white-space: nowrap;
-        z-index: 100;
-
-        &.Show {
-            display: block;
-        }
-
-        .Triangle {
-            position: absolute;
-        }
-
-        &.Top,
-        &.Bottom {
-            .Triangle {
-                border-left: transparent solid 8px;
-                border-right: transparent solid 8px;
-                left: 50%;
-                transform: translateX(-50%);
-            }
-        }
-
-        &.Top {
-            margin-top: -8px;
-
-            .Triangle {
-                border-top: $backgroundColor solid 6px;
-                bottom: -6px;
-            }
-        }
-
-        &.Bottom {
-            margin-top: 8px;
-
-            .Triangle {
-                border-bottom: $backgroundColor solid 6px;
-                top: -6px;
-            }
-        }
-
-        &.Left,
-        &.Right {
-            .Triangle {
-                border-bottom: transparent solid 8px;
-                border-top: transparent solid 8px;
-                top: 50%;
-                transform: translateY(-50%);
-            }
-        }
-
-        &.Left {
-            margin-left: -8px;
-
-            .Triangle {
-                border-left: $backgroundColor solid 6px;
-                right: -6px;
-            }
-        }
-
-        &.Right {
-            margin-left: 8px;
-
-            .Triangle {
-                border-right: $backgroundColor solid 6px;
-                left: -6px;
-            }
-        }
-    }
+.Tooltip {
+    background-color: $backgroundColor;
+    border-radius: 3px;
+    color: white;
+    font-weight: bold;
+    padding: 6px 10px;
+    white-space: nowrap;
 }

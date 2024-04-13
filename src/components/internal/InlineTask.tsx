@@ -171,7 +171,7 @@ export class InlineTaskUI extends Component<Props, State> {
                                         [styles[priorityStyle]]: true,
                                     })}`}
                                 >
-                                    <TooltipUI message='Set priority'>
+                                    <TooltipUI message='Set priority' relativeLayout={this.props.deps.relativeLayout}>
                                         <DropDownList
                                             selectOptionKey={toOptionKey(
                                                 this.props.task.priority,
@@ -196,7 +196,7 @@ export class InlineTaskUI extends Component<Props, State> {
                                         className={styles.Attribute}
                                         key={link.id}
                                     >
-                                        <TaskLinkIconUI link={link} />
+                                        <TaskLinkIconUI link={link} relativeLayout={this.props.deps.relativeLayout}/>
                                     </div>
                                 ))}
                             </div>
@@ -291,7 +291,7 @@ export class InlineTaskUI extends Component<Props, State> {
         }
 
         return (
-            <TooltipUI message='Set due date'>
+            <TooltipUI message='Set due date' relativeLayout={this.props.deps.relativeLayout}>
                 <DateLabelPickerUI
                     relativeLayout={this.props.relativeLayout}
                     value={dueAt}
@@ -324,7 +324,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderEffort = () => {
         const { effort } = this.props.task;
         return (
-            <TooltipUI message='Set duration'>
+            <TooltipUI message='Set duration' relativeLayout={this.props.deps.relativeLayout}>
                 <DurationInputUI
                     relativeLayout={this.props.relativeLayout}
                     duration={effort}
@@ -401,7 +401,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderStartTask(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Start'}>
+                <TooltipUI message={'Start'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onStartTaskClick}
@@ -418,7 +418,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderReportBlocked(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Report Blocked'}>
+                <TooltipUI message={'Report Blocked'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onReportTaskBlockedClick}
@@ -435,7 +435,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderAddAwaitForTask(index: number) {
         return (
             <div key={index}>
-                <TooltipUI message={'Await'}>
+                <TooltipUI message={'Await'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onAddAwaitForTaskClick}
@@ -454,7 +454,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderCompleteTask(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Complete'}>
+                <TooltipUI message={'Complete'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onCompleteTaskClick}
@@ -471,7 +471,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderDeleteTask(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Delete'}>
+                <TooltipUI message={'Delete'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onDeleteTaskClick}
@@ -498,7 +498,7 @@ export class InlineTaskUI extends Component<Props, State> {
             : 'Unassigned';
         return (
             <div className={styles.AssignOwner}>
-                <TooltipUI message={name}>
+                <TooltipUI message={name} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action} ${classNames({
                             [styles.Active]: showFollower,
@@ -533,7 +533,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderViewTaskDetail(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Detail'}>
+                <TooltipUI message={'Detail'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onViewTaskDetailClick}

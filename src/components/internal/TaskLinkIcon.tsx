@@ -6,9 +6,11 @@ import { TooltipUI } from '@lib/ui/Tooltip';
 import { TaskLink } from '@core/entity/taskLink';
 
 import styles from './TaskLinkIcon.module.scss';
+import { RelativeLayout } from '@lib/layout';
 
 interface Props {
     link: TaskLink;
+    relativeLayout: RelativeLayout
 }
 
 interface State {
@@ -28,7 +30,7 @@ export class TaskLinkIconUI extends Component<Props, State> {
             ? this.props.link.iconHoverUrl
             : this.props.link.iconUrl;
         return (
-            <TooltipUI message={this.props.link.previewTitle}>
+            <TooltipUI message={this.props.link.previewTitle} relativeLayout={this.props.relativeLayout}>
                 <div
                     className={styles.TaskLink}
                     onMouseEnter={this.onMouseEnterTaskLink}

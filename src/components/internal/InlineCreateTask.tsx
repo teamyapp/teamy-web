@@ -67,7 +67,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                         }}
                     >
                         <div>
-                            <TooltipUI message={'Save'}>
+                            <TooltipUI message={'Save'} relativeLayout={this.props.deps.relativeLayout}>
                                 <div
                                     className={styles.Action}
                                     onClick={this.onSaveTaskClick}
@@ -79,7 +79,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                             </TooltipUI>
                         </div>
                         <div>
-                            <TooltipUI message={'Cancel'}>
+                            <TooltipUI message={'Cancel'} relativeLayout={this.props.deps.relativeLayout}>
                                 <div
                                     className={styles.Action}
                                     onClick={this.onCancelEditTaskClick}
@@ -115,7 +115,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
             : 'Unassigned';
         return (
             <div className={styles.AssignOwner}>
-                <TooltipUI message={name}>
+                <TooltipUI message={name} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action} ${classNames({
                             [styles.Active]: showFollower,

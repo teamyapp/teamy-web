@@ -164,7 +164,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                     </div>
                 </div>
                 <div className={styles.RightSection}>
-                    <TooltipUI message='delete'>
+                    <TooltipUI message='delete' relativeLayout={props.deps.relativeLayout}>
                       <div
                           className={styles.DeleteIcon}
                           onClick={onDeleteProjectClickHandler(project.id)}
@@ -172,7 +172,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                           <MaterialIconUI>close</MaterialIconUI>
                       </div>
                     </TooltipUI>
-                    <TooltipUI message='edit'>
+                    <TooltipUI message='edit' relativeLayout={props.deps.relativeLayout}>
                       <div
                           className={styles.EditIcon}
                           onClick={onUpdateProjectClickHandler(project)}
@@ -195,7 +195,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                 <div className={styles.ProjectListSection}>
                     <div className={styles.TopBar}>
                         <div className={styles.Title}>Projects</div>
-                        <TooltipUI message='Create project'>
+                        <TooltipUI message='Create project' relativeLayout={props.deps.relativeLayout}>
                         <div className={styles.Add} onClick={onAddProjectClick}>
                             <MaterialIconUI>add</MaterialIconUI>
                         </div>

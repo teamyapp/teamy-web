@@ -9,6 +9,7 @@ import { Team } from '@core/entity/team';
 
 import { ContextMenuComponent } from './ContextMenu.component';
 import styles from './Drawer.module.scss';
+import { RelativeLayout } from '@lib/layout';
 
 interface Props {
     teams: Team[];
@@ -21,6 +22,7 @@ interface Props {
     onShowInvitationsClick?: (teamId: number) => void;
     onViewTeamSettingsClick?: (teamId: number) => void;
     onCreateTeamClick?: () => void;
+    relativeLayout: RelativeLayout;
 }
 
 export class DrawerUI extends Component<Props> {
@@ -51,7 +53,7 @@ export class DrawerUI extends Component<Props> {
                         .sort(orderByName)
                         .map(this.renderTeam)}
                     <div className={styles.CreateTeamFrame}>
-                        <TooltipUI message={'Create Team'} position={'Right'}>
+                        <TooltipUI message={'Create Team'} verticalAlignment={'center'} horizontalAlignment={'right'} relativeLayout={this.props.relativeLayout}>
                             <div
                                 className={styles.CreateTeamButton}
                                 onClick={this.props.onCreateTeamClick}
@@ -98,7 +100,7 @@ export class DrawerUI extends Component<Props> {
                 })}`}
                 key={team.id}
             >
-                <TooltipUI message={team.name} position={'Right'}>
+                <TooltipUI message={team.name} verticalAlignment={'center'} horizontalAlignment={'right'} relativeLayout={this.props.relativeLayout}>
                     <div
                         className={styles.IconFrame}
                         onClick={this.onTeamClick(team.id)}

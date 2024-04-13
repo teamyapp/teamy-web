@@ -103,7 +103,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                 : 'Unassigned';
             return (
                 <div className={styles.AssignOwner}>
-                    <TooltipUI message={name}>
+                    <TooltipUI message={name} relativeLayout={props.deps.relativeLayout}>
                         <div
                             className={`${styles.Action} ${classNames({
                                 [styles.Active]: showFollower,
@@ -162,7 +162,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                         [styles[priorityStyle]]: true,
                                     })}`}
                                 >
-                                    <TooltipUI message='Set Priority'>
+                                    <TooltipUI message='Set Priority' relativeLayout={props.deps.relativeLayout}>
                                         <DropDownList
                                             selectOptionKey={toOptionKey(
                                                 props.story.priority,
@@ -177,7 +177,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                             </div>
                         </div>
                         <div className={styles.ActionsSection}>
-                            <TooltipUI message={'Delete'}>
+                            <TooltipUI message={'Delete'} relativeLayout={props.deps.relativeLayout}>
                                 <div className={styles.Action}>
                                     <div
                                         className={styles.DeleteStoryIcon}
@@ -193,7 +193,7 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                 selectedOwnerId={props.story.owner?.id}
                                 assignOwner={renderAssignOwner}
                             />
-                            <TooltipUI message={'Detail'}>
+                            <TooltipUI message={'Detail'} relativeLayout={props.deps.relativeLayout}>
                                 <div
                                     className={styles.Action}
                                     onClick={handleStoryDetailClick}

@@ -140,7 +140,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                         </div>
                                         {this.state.task.links.map((link) => (
                                             <div className={styles.Link}>
-                                                <TaskLinkIconUI link={link} />
+                                                <TaskLinkIconUI link={link} relativeLayout={this.props.deps.relativeLayout} />
                                                 <a
                                                     href={link.url}
                                                     target='_blank'
