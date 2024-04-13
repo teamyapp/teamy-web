@@ -53,7 +53,10 @@ export class DrawerUI extends Component<Props> {
                         .sort(orderByName)
                         .map(this.renderTeam)}
                     <div className={styles.CreateTeamFrame}>
-                        <TooltipUI message={'Create Team'} verticalAlignment={'center'} horizontalAlignment={'right'} relativeLayout={this.props.relativeLayout}>
+                        <TooltipUI message={'Create Team'} 
+                            verticalAlignment={'center'} 
+                            horizontalAlignment={'right'} 
+                            relativeLayout={this.props.relativeLayout}>
                             <div
                                 className={styles.CreateTeamButton}
                                 onClick={this.props.onCreateTeamClick}
