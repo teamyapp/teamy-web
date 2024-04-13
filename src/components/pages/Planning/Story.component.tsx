@@ -8,6 +8,7 @@ import { getPlatform } from '@lib/runtime/os';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TextFieldUI } from '@lib/ui/TextField';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 import { backlogSectionId } from '@core/config/sections';
 import { isPlanned, unplanned } from '@core/data/task.filter';
@@ -279,11 +280,11 @@ export function StoryComponent(props: Props) {
 
     const onStoryNameChange = (value: string) => {
         setStoryName(value);
-    }
+    };
 
     const onEditStoryName = () => {
         setOnEditingStory(true);
-    }
+    };
 
     const saveEditedStoryName = async () => {
         if (!story) {
@@ -297,12 +298,12 @@ export function StoryComponent(props: Props) {
             name: storyName,
         });
         setOnEditingStory(false);
-    }
+    };
 
     const cancelEditedStoryName = () => {
         setStoryName(story?.name || '');
         setOnEditingStory(false);
-    }
+    };
 
     if (!story) {
         return null;
@@ -344,49 +345,63 @@ export function StoryComponent(props: Props) {
                     <div className={styles.Actions}>
                         {selectStoryTaskIds.size > 0 && (
                             <>
-                                <div
-                                    className={`${styles.Action} ${styles.Remove}`}
-                                    onClick={onRemoveTasksFromStoryClick}
-                                >
-                                    <MaterialIconUI>read_more</MaterialIconUI>
-                                </div>
-                                <div
-                                    className={`${styles.Action} ${styles.Delete}`}
-                                    onClick={onDeleteTasksFromStoryClick}
-                                >
-                                    <MaterialIconUI>close</MaterialIconUI>
-                                </div>
+                                <TooltipUI message='Remove from story'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Remove}`}
+                                        onClick={onRemoveTasksFromStoryClick}
+                                    >
+                                        <MaterialIconUI>
+                                            read_more
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <TooltipUI message='Delete'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Delete}`}
+                                        onClick={onDeleteTasksFromStoryClick}
+                                    >
+                                        <MaterialIconUI>close</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             </>
                         )}
                         {onEditingStory ? (
                             <>
-                                <div
-                                    className={`${styles.Action} ${styles.Save}`}
-                                    onClick={saveEditedStoryName}
-                                >
-                                    <MaterialIconUI>check</MaterialIconUI>
-                                </div>
-                                <div
-                                    className={`${styles.Action} ${styles.Cancel}`}
-                                    onClick={cancelEditedStoryName}
-                                >
-                                    <MaterialIconUI>cancel</MaterialIconUI>
-                                </div>
+                                <TooltipUI message='Save'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Save}`}
+                                        onClick={saveEditedStoryName}
+                                    >
+                                        <MaterialIconUI>check</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <TooltipUI message='Cancel'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Cancel}`}
+                                        onClick={cancelEditedStoryName}
+                                    >
+                                        <MaterialIconUI>cancel</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             </>
                         ) : (
                             <>
-                                <div
-                                    className={`${styles.Action} ${styles.Edit}`}
-                                    onClick={onEditStoryName}
-                                >
-                                    <MaterialIconUI>edit</MaterialIconUI>
-                                </div>
-                                <div
-                                    className={`${styles.Action} ${styles.Add}`}
-                                    onClick={onAddTaskToStoryClick}
-                                >
-                                    <MaterialIconUI>add</MaterialIconUI>
-                                </div>
+                                <TooltipUI message='Edit'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Edit}`}
+                                        onClick={onEditStoryName}
+                                    >
+                                        <MaterialIconUI>edit</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <TooltipUI message='Add task'>
+                                    <div
+                                        className={`${styles.Action} ${styles.Add}`}
+                                        onClick={onAddTaskToStoryClick}
+                                    >
+                                        <MaterialIconUI>add</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             </>
                         )}
                     </div>
@@ -442,27 +457,33 @@ export function StoryComponent(props: Props) {
                     </div>
                     <div className={styles.Actions}>
                         {selectBacklogTaskIds.size > 0 && (
-                            <div
-                                className={`${styles.Action} ${styles.Move}`}
-                                onClick={onAddTasksToStoryClick}
-                            >
-                                <MaterialIconUI>read_more</MaterialIconUI>
-                            </div>
+                            <TooltipUI message='Add to story'>
+                                <div
+                                    className={`${styles.Action} ${styles.Move}`}
+                                    onClick={onAddTasksToStoryClick}
+                                >
+                                    <MaterialIconUI>read_more</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         )}
                         {selectBacklogTaskIds.size > 0 && (
-                            <div
-                                className={`${styles.Action} ${styles.Delete}`}
-                                onClick={onDeleteBacklogTasksClick}
-                            >
-                                <MaterialIconUI>close</MaterialIconUI>
-                            </div>
+                            <TooltipUI message='Delete'>
+                                <div
+                                    className={`${styles.Action} ${styles.Delete}`}
+                                    onClick={onDeleteBacklogTasksClick}
+                                >
+                                    <MaterialIconUI>close</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         )}
-                        <div
-                            className={`${styles.Action} ${styles.Add}`}
-                            onClick={onAddTaskInBacklogClick}
-                        >
-                            <MaterialIconUI>add</MaterialIconUI>
-                        </div>
+                        <TooltipUI message='Create task'>
+                            <div
+                                className={`${styles.Action} ${styles.Add}`}
+                                onClick={onAddTaskInBacklogClick}
+                            >
+                                <MaterialIconUI>add</MaterialIconUI>
+                            </div>
+                        </TooltipUI>
                     </div>
                 </div>
                 <div className={styles.TaskList}>

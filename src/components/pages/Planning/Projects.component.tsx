@@ -30,6 +30,7 @@ import {
     UpdateProjectModalComponentHandle,
 } from './UpdateProjectModal.component';
 import styles from './Projects.component.module.scss';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 interface Props {
     deps: Deps;
@@ -163,18 +164,22 @@ export const ProjectsComponent: FC<Props> = (props) => {
                     </div>
                 </div>
                 <div className={styles.RightSection}>
-                    <div
-                        className={styles.DeleteIcon}
-                        onClick={onDeleteProjectClickHandler(project.id)}
-                    >
-                        <MaterialIconUI>close</MaterialIconUI>
-                    </div>
-                    <div
-                        className={styles.EditIcon}
-                        onClick={onUpdateProjectClickHandler(project)}
-                    >
-                        <MaterialIconUI>edit</MaterialIconUI>
-                    </div>
+                    <TooltipUI message='delete'>
+                      <div
+                          className={styles.DeleteIcon}
+                          onClick={onDeleteProjectClickHandler(project.id)}
+                      >
+                          <MaterialIconUI>close</MaterialIconUI>
+                      </div>
+                    </TooltipUI>
+                    <TooltipUI message='edit'>
+                      <div
+                          className={styles.EditIcon}
+                          onClick={onUpdateProjectClickHandler(project)}
+                      >
+                          <MaterialIconUI>edit</MaterialIconUI>
+                      </div>
+                    </TooltipUI>
                 </div>
             </div>
         );
@@ -190,9 +195,11 @@ export const ProjectsComponent: FC<Props> = (props) => {
                 <div className={styles.ProjectListSection}>
                     <div className={styles.TopBar}>
                         <div className={styles.Title}>Projects</div>
+                        <TooltipUI message='Create project'>
                         <div className={styles.Add} onClick={onAddProjectClick}>
                             <MaterialIconUI>add</MaterialIconUI>
                         </div>
+                        </TooltipUI>
                     </div>
                     <div className={styles.ProjectList}>
                         {team.projects.map(renderProject)}

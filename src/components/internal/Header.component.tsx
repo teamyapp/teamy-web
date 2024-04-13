@@ -202,31 +202,37 @@ export class HeaderComponent extends Component<Props, State> {
                 >
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.ButtonsSection}>
-                            <div
-                                className={`${styles.Button} ${classNames({
-                                    [styles.Active]: this.state.showSprintsView,
-                                })}`}
-                                onClick={this.onShowSprintsViewClick}
-                            >
-                                <MaterialIconUI>sprint</MaterialIconUI>
-                            </div>
-                            {this.props.deps.featureToggle
-                                .enablePlanning && (
+                            <TooltipUI message='Sprints'>
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                            this.state.showPlanningView,
+                                            this.state.showSprintsView,
                                     })}`}
-                                    onClick={this.onShowPlanningViewClick}
+                                    onClick={this.onShowSprintsViewClick}
                                 >
-                                    <MaterialIconUI>flag</MaterialIconUI>
+                                    <MaterialIconUI>sprint</MaterialIconUI>
                                 </div>
+                            </TooltipUI>
+                            {this.props.deps.featureToggle.enablePlanning && (
+                                <TooltipUI message='Planning'>
+                                    <div
+                                        className={`${
+                                            styles.Button
+                                        } ${classNames({
+                                            [styles.Active]:
+                                                this.state.showPlanningView,
+                                        })}`}
+                                        onClick={this.onShowPlanningViewClick}
+                                    >
+                                        <MaterialIconUI>flag</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             )}
                             {this.props.deps.featureToggle.enableInsights && (
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                        this.state.showInsightsView,
+                                            this.state.showInsightsView,
                                     })}`}
                                     onClick={this.onShowInsightsViewClick}
                                 >
@@ -247,17 +253,23 @@ export class HeaderComponent extends Component<Props, State> {
                             )}
                             {this.props.deps.featureToggle
                                 .enableMarketplace && (
-                                <div
-                                    className={`${styles.Button} ${classNames({
-                                        [styles.Active]:
-                                            this.state.showMarketplaceView,
-                                    })}`}
-                                    onClick={this.onShowMarketplaceViewClick}
-                                >
-                                    <MaterialIconUI>
-                                        shopping_cart
-                                    </MaterialIconUI>
-                                </div>
+                                <TooltipUI message='Marketplace'>
+                                    <div
+                                        className={`${
+                                            styles.Button
+                                        } ${classNames({
+                                            [styles.Active]:
+                                                this.state.showMarketplaceView,
+                                        })}`}
+                                        onClick={
+                                            this.onShowMarketplaceViewClick
+                                        }
+                                    >
+                                        <MaterialIconUI>
+                                            shopping_cart
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             )}
                         </div>
                     </Route>

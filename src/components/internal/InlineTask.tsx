@@ -171,13 +171,17 @@ export class InlineTaskUI extends Component<Props, State> {
                                         [styles[priorityStyle]]: true,
                                     })}`}
                                 >
-                                    <DropDownList
-                                        selectOptionKey={toOptionKey(
-                                            this.props.task.priority,
-                                        )}
-                                        options={priorityOptions}
-                                        onSelectOption={this.onPrioritySelected}
-                                    />
+                                    <TooltipUI message='Set priority'>
+                                        <DropDownList
+                                            selectOptionKey={toOptionKey(
+                                                this.props.task.priority,
+                                            )}
+                                            options={priorityOptions}
+                                            onSelectOption={
+                                                this.onPrioritySelected
+                                            }
+                                        />
+                                    </TooltipUI>
                                 </div>
 
                                 <div className={styles.Attribute}>
@@ -287,13 +291,15 @@ export class InlineTaskUI extends Component<Props, State> {
         }
 
         return (
-            <DateLabelPickerUI
-                relativeLayout={this.props.relativeLayout}
-                value={dueAt}
-                isWarn={warn}
-                shownValue={dueAt && dueDate(dueAt)}
-                onChange={this.handleEndDateChanged}
-            />
+            <TooltipUI message='Set due date'>
+                <DateLabelPickerUI
+                    relativeLayout={this.props.relativeLayout}
+                    value={dueAt}
+                    isWarn={warn}
+                    shownValue={dueAt && dueDate(dueAt)}
+                    onChange={this.handleEndDateChanged}
+                />
+            </TooltipUI>
         );
     };
 
@@ -318,19 +324,21 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderEffort = () => {
         const { effort } = this.props.task;
         return (
-            <DurationInputUI
-                relativeLayout={this.props.relativeLayout}
-                duration={effort}
-                icon={
-                    <MaterialIconUI iconStyle={'outlined'}>
-                        weight
-                    </MaterialIconUI>
-                }
-                canClear={true}
-                onPopupOpen={this.onEffortPopupOpen}
-                onPopupClose={this.onEffortPopupClose}
-                onDurationChange={this.onEffortChange}
-            />
+            <TooltipUI message='Set duration'>
+                <DurationInputUI
+                    relativeLayout={this.props.relativeLayout}
+                    duration={effort}
+                    icon={
+                        <MaterialIconUI iconStyle={'outlined'}>
+                            weight
+                        </MaterialIconUI>
+                    }
+                    canClear={true}
+                    onPopupOpen={this.onEffortPopupOpen}
+                    onPopupClose={this.onEffortPopupClose}
+                    onDurationChange={this.onEffortChange}
+                />
+            </TooltipUI>
         );
     };
 
@@ -520,7 +528,7 @@ export class InlineTaskUI extends Component<Props, State> {
                 assignOwner={this.renderOwnerList}
             />
         );
-    }
+    };
 
     private renderViewTaskDetail(index: number): ReactNode {
         return (

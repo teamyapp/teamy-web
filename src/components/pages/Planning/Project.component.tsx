@@ -29,6 +29,7 @@ import {
     UpdatePhaseModalComponent,
     UpdatePhaseModalComponentHandle,
 } from './UpdatePhaseModal.component';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 interface Props {
     deps: Deps;
@@ -259,18 +260,22 @@ export function ProjectComponent(props: Props) {
                     </div>
                 </div>
                 <div className={styles.RightSection}>
-                    <div
-                        className={styles.DeleteIcon}
-                        onClick={onPhaseDeleteHandler(phase.id)}
-                    >
-                        <MaterialIconUI>close</MaterialIconUI>
-                    </div>
-                    <div
-                        className={styles.EditIcon}
-                        onClick={onPhaseUpdateHandler(phase)}
-                    >
-                        <MaterialIconUI>edit</MaterialIconUI>
-                    </div>
+                    <TooltipUI message='Delete phase'>
+                      <div
+                          className={styles.DeleteIcon}
+                          onClick={onPhaseDeleteHandler(phase.id)}
+                      >
+                          <MaterialIconUI>close</MaterialIconUI>
+                      </div>
+                    </TooltipUI>
+                    <TooltipUI message='Edit phase'>
+                      <div
+                          className={styles.EditIcon}
+                          onClick={onPhaseUpdateHandler(phase)}
+                      >
+                          <MaterialIconUI>edit</MaterialIconUI>
+                      </div>
+                    </TooltipUI>
                 </div>
             </div>
         );
@@ -367,9 +372,11 @@ export function ProjectComponent(props: Props) {
                 <div className={styles.PhaseListSection}>
                     <div className={styles.TopBar}>
                         <div className={styles.Title}>Phases</div>
+                        <TooltipUI message='Create phase'>
                         <div className={styles.Add} onClick={onAddPhaseClick}>
                             <MaterialIconUI>add</MaterialIconUI>
                         </div>
+                        </TooltipUI>
                     </div>
                     <div className={styles.PhaseList}>
                         {project.phases.map(renderPhase)}
@@ -392,27 +399,33 @@ export function ProjectComponent(props: Props) {
                     <div className={styles.Actions}>
                         {selectedStoryIds.size > 0 &&
                             selectedPhaseIds.size > 0 && (
+                                <TooltipUI message='Move to phase'>
                                 <div
                                     className={`${styles.Action} ${styles.Move}`}
                                     onClick={onAddStoriesToPhaseClick}
                                 >
                                     <MaterialIconUI>read_more</MaterialIconUI>
                                 </div>
+                                </TooltipUI>
                             )}
                         {selectedStoryIds.size > 0 && (
+                            <TooltipUI message='Delete'>
                             <div
                                 className={`${styles.Action} ${styles.Delete}`}
                                 onClick={onDeleteStoriesClick}
                             >
                                 <MaterialIconUI>close</MaterialIconUI>
                             </div>
+                            </TooltipUI>
                         )}
+                        <TooltipUI message='Create story'>
                         <div
                             className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddStoryInBacklogClick}
                         >
                             <MaterialIconUI>add</MaterialIconUI>
                         </div>
+                        </TooltipUI>
                     </div>
                 </div>
                 <div className={styles.StoryList}>
