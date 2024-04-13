@@ -103,7 +103,10 @@ export class DrawerUI extends Component<Props> {
                 })}`}
                 key={team.id}
             >
-                <TooltipUI message={team.name} verticalAlignment={'center'} horizontalAlignment={'right'} relativeLayout={this.props.relativeLayout}>
+                <TooltipUI message={team.name} 
+                    verticalAlignment={'center'} 
+                    horizontalAlignment={'right'} 
+                    relativeLayout={this.props.relativeLayout}>
                     <div
                         className={styles.IconFrame}
                         onClick={this.onTeamClick(team.id)}
