@@ -36,7 +36,7 @@ export const TooltipUI: FC<Props> = ({
         horizontalAlignment={horizontalAlignment}
         verticalAlignment={verticalAlignment}
         renderReferenceElement={({openContainer, closeContainer}) => (
-            <div className={styles.Reference} onMouseOver={openContainer} onMouseOut={closeContainer}>
+            <div className={styles.Reference} onClick={closeContainer} onMouseOver={openContainer} onMouseOut={closeContainer}>
                 {children}
             </div>
         )}
