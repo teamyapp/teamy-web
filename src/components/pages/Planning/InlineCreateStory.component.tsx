@@ -67,7 +67,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
             : 'Unassigned';
         return (
             <div className={styles.AssignOwner}>
-                <TooltipUI message={name}>
+                <TooltipUI message={name} relativeLayout={props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action} ${classNames({
                             [styles.Active]: showFollower,
@@ -107,7 +107,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
                 }}
             >
                 <div>
-                    <TooltipUI message={'Save'}>
+                    <TooltipUI message={'Save'} relativeLayout={props.deps.relativeLayout}>
                         <div
                             className={styles.Action}
                             onClick={onSaveStoryClick}
@@ -119,7 +119,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
                     </TooltipUI>
                 </div>
                 <div>
-                    <TooltipUI message={'Cancel'}>
+                    <TooltipUI message={'Cancel'} relativeLayout={props.deps.relativeLayout}>
                         <div
                             className={styles.Action}
                             onClick={onCancelEditStoryClick}

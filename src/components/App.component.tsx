@@ -191,6 +191,7 @@ export class AppComponent extends Component<Props, State> {
                             <DrawerUI
                                 activeTeamId={this.state.activeTeamId}
                                 teams={this.state.teams}
+                                relativeLayout={this.props.deps.relativeLayout}
                                 isDrawerOpen={this.state.isDrawerOpen}
                                 onMenuClose={this.onMenuToggle}
                                 onActiveTeamSelect={this.onActiveTeamSelect}

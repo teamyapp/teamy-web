@@ -260,7 +260,7 @@ export function ProjectComponent(props: Props) {
                     </div>
                 </div>
                 <div className={styles.RightSection}>
-                    <TooltipUI message='Delete phase'>
+                    <TooltipUI message='Delete phase' relativeLayout={props.deps.relativeLayout}>
                       <div
                           className={styles.DeleteIcon}
                           onClick={onPhaseDeleteHandler(phase.id)}
@@ -268,7 +268,7 @@ export function ProjectComponent(props: Props) {
                           <MaterialIconUI>close</MaterialIconUI>
                       </div>
                     </TooltipUI>
-                    <TooltipUI message='Edit phase'>
+                    <TooltipUI message='Edit phase' relativeLayout={props.deps.relativeLayout}>
                       <div
                           className={styles.EditIcon}
                           onClick={onPhaseUpdateHandler(phase)}
@@ -372,7 +372,7 @@ export function ProjectComponent(props: Props) {
                 <div className={styles.PhaseListSection}>
                     <div className={styles.TopBar}>
                         <div className={styles.Title}>Phases</div>
-                        <TooltipUI message='Create phase'>
+                        <TooltipUI message='Create phase' relativeLayout={props.deps.relativeLayout}>
                         <div className={styles.Add} onClick={onAddPhaseClick}>
                             <MaterialIconUI>add</MaterialIconUI>
                         </div>
@@ -399,7 +399,7 @@ export function ProjectComponent(props: Props) {
                     <div className={styles.Actions}>
                         {selectedStoryIds.size > 0 &&
                             selectedPhaseIds.size > 0 && (
-                                <TooltipUI message='Move to phase'>
+                                <TooltipUI message='Move to phase' relativeLayout={props.deps.relativeLayout}>
                                 <div
                                     className={`${styles.Action} ${styles.Move}`}
                                     onClick={onAddStoriesToPhaseClick}
@@ -409,7 +409,7 @@ export function ProjectComponent(props: Props) {
                                 </TooltipUI>
                             )}
                         {selectedStoryIds.size > 0 && (
-                            <TooltipUI message='Delete'>
+                            <TooltipUI message='Delete' relativeLayout={props.deps.relativeLayout}>
                             <div
                                 className={`${styles.Action} ${styles.Delete}`}
                                 onClick={onDeleteStoriesClick}
@@ -418,7 +418,7 @@ export function ProjectComponent(props: Props) {
                             </div>
                             </TooltipUI>
                         )}
-                        <TooltipUI message='Create story'>
+                        <TooltipUI message='Create story' relativeLayout={props.deps.relativeLayout}>
                         <div
                             className={`${styles.Action} ${styles.Add}`}
                             onClick={onAddStoryInBacklogClick}
