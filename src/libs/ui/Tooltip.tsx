@@ -4,7 +4,7 @@ import styles from './Tooltip.module.scss';
 import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
 import { HorizontalAlignment, VerticalAlignment } from '@lib/layout/relativeLayout';
 
-const TOOLTIP_Z_INDEX = 1002
+const TOOLTIP_Z_INDEX = 1002;
 interface Props {
     children: ReactNode;
     relativeLayout: RelativeLayout;
