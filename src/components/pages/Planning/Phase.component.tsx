@@ -171,13 +171,13 @@ export function PhaseComponent(props: Props) {
     };
 
     const saveEditedPhaseName = async () => {
-        if (!phase) {
+        if (!phase || !phaseName) {
             return;
         }
 
         await props.deps.stateSyncer.updatePhase(phase.id, {
             name: phaseName,
-            expectedStartAt: phase.expectedEndAt,
+            expectedStartAt: phase.expectedStartAt,
             expectedEndAt: phase.expectedEndAt,
             status: phase.status,
         });
