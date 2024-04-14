@@ -20,6 +20,7 @@ import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 
 import styles from './Story.component.module.scss';
+import { DividerUI } from '@lib/ui/Divider';
 
 type backlogTasksFilterKey = 'IS_PLANNED' | 'UNPLANNED' | 'ALL';
 const backlogTasksFilterOptions: Option[] = [
@@ -343,9 +344,65 @@ export function StoryComponent(props: Props) {
                         </div>
                     </div>
                     <div className={styles.Actions}>
+                        {onEditingStory ? (
+                            <>
+                                <TooltipUI
+                                    message='Save'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Save}`}
+                                        onClick={saveEditedStoryName}
+                                    >
+                                        <MaterialIconUI>check</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <TooltipUI
+                                    message='Cancel'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Cancel}`}
+                                        onClick={cancelEditedStoryName}
+                                    >
+                                        <MaterialIconUI>cancel</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                {selectStoryTaskIds.size > 0 && <DividerUI vertical/>}
+                            </>
+                        ) : (
+                            <>
+                                <TooltipUI
+                                    message='Edit'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Edit}`}
+                                        onClick={onEditStoryName}
+                                    >
+                                        <MaterialIconUI>edit</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <DividerUI vertical/>
+                                <TooltipUI
+                                    message='Add task'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Add}`}
+                                        onClick={onAddTaskToStoryClick}
+                                    >
+                                        <MaterialIconUI>add</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            </>
+                        )}
                         {selectStoryTaskIds.size > 0 && (
                             <>
-                                <TooltipUI message='Remove from story' relativeLayout={props.deps.relativeLayout}>
+                                <TooltipUI
+                                    message='Remove from story'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
                                     <div
                                         className={`${styles.Action} ${styles.Remove}`}
                                         onClick={onRemoveTasksFromStoryClick}
@@ -355,51 +412,15 @@ export function StoryComponent(props: Props) {
                                         </MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                <TooltipUI message='Delete' relativeLayout={props.deps.relativeLayout}>
+                                <TooltipUI
+                                    message='Delete'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
                                     <div
                                         className={`${styles.Action} ${styles.Delete}`}
                                         onClick={onDeleteTasksFromStoryClick}
                                     >
                                         <MaterialIconUI>close</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                            </>
-                        )}
-                        {onEditingStory ? (
-                            <>
-                                <TooltipUI message='Save' relativeLayout={props.deps.relativeLayout}>
-                                    <div
-                                        className={`${styles.Action} ${styles.Save}`}
-                                        onClick={saveEditedStoryName}
-                                    >
-                                        <MaterialIconUI>check</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                                <TooltipUI message='Cancel' relativeLayout={props.deps.relativeLayout}>
-                                    <div
-                                        className={`${styles.Action} ${styles.Cancel}`}
-                                        onClick={cancelEditedStoryName}
-                                    >
-                                        <MaterialIconUI>cancel</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                            </>
-                        ) : (
-                            <>
-                                <TooltipUI message='Edit' relativeLayout={props.deps.relativeLayout}>
-                                    <div
-                                        className={`${styles.Action} ${styles.Edit}`}
-                                        onClick={onEditStoryName}
-                                    >
-                                        <MaterialIconUI>edit</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                                <TooltipUI message='Add task' relativeLayout={props.deps.relativeLayout}>
-                                    <div
-                                        className={`${styles.Action} ${styles.Add}`}
-                                        onClick={onAddTaskToStoryClick}
-                                    >
-                                        <MaterialIconUI>add</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
                             </>
@@ -457,7 +478,10 @@ export function StoryComponent(props: Props) {
                     </div>
                     <div className={styles.Actions}>
                         {selectBacklogTaskIds.size > 0 && (
-                            <TooltipUI message='Add to story' relativeLayout={props.deps.relativeLayout}>
+                            <TooltipUI
+                                message='Add to story'
+                                relativeLayout={props.deps.relativeLayout}
+                            >
                                 <div
                                     className={`${styles.Action} ${styles.Move}`}
                                     onClick={onAddTasksToStoryClick}
@@ -467,7 +491,10 @@ export function StoryComponent(props: Props) {
                             </TooltipUI>
                         )}
                         {selectBacklogTaskIds.size > 0 && (
-                            <TooltipUI message='Delete' relativeLayout={props.deps.relativeLayout}>
+                            <TooltipUI
+                                message='Delete'
+                                relativeLayout={props.deps.relativeLayout}
+                            >
                                 <div
                                     className={`${styles.Action} ${styles.Delete}`}
                                     onClick={onDeleteBacklogTasksClick}
@@ -476,7 +503,10 @@ export function StoryComponent(props: Props) {
                                 </div>
                             </TooltipUI>
                         )}
-                        <TooltipUI message='Create task' relativeLayout={props.deps.relativeLayout}>
+                        <TooltipUI
+                            message='Create task'
+                            relativeLayout={props.deps.relativeLayout}
+                        >
                             <div
                                 className={`${styles.Action} ${styles.Add}`}
                                 onClick={onAddTaskInBacklogClick}

@@ -2,6 +2,7 @@ import { MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
+import { DividerUI } from '@lib/ui/Divider';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TextFieldUI } from '@lib/ui/TextField';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -321,9 +322,67 @@ export function PhaseComponent(props: Props) {
                         </div>
                     </div>
                     <div className={styles.Actions}>
+                        {onEditingPhase ? (
+                            <>
+                                <TooltipUI
+                                    message='Save'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Save}`}
+                                        onClick={saveEditedPhaseName}
+                                    >
+                                        <MaterialIconUI>check</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <TooltipUI
+                                    message='Cancel'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Cancel}`}
+                                        onClick={cancelEditedPhaseName}
+                                    >
+                                        <MaterialIconUI>cancel</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                {selectedPhaseStoryIds.size > 0 && (
+                                    <DividerUI vertical />
+                                )}
+                            </>
+                        ) : (
+                            <>
+                                <TooltipUI
+                                    message='Edit'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Edit}`}
+                                        onClick={onEditPhaseName}
+                                    >
+                                        <MaterialIconUI>edit</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <DividerUI vertical />
+                                <TooltipUI
+                                    message='Add story'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Add}`}
+                                        onClick={onAddStoryInPhaseClick}
+                                    >
+                                        <MaterialIconUI>add</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            </>
+                        )}
                         {selectedPhaseStoryIds.size > 0 && (
                             <>
-                                <TooltipUI message='Remove from phase' relativeLayout={props.deps.relativeLayout}>
+                                <TooltipUI
+                                    message='Remove from phase'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
                                     <div
                                         className={`${styles.Action} ${styles.Remove}`}
                                         onClick={onRemoveStoriesToPhaseClick}
@@ -333,51 +392,15 @@ export function PhaseComponent(props: Props) {
                                         </MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                <TooltipUI message='Delete' relativeLayout={props.deps.relativeLayout}>
+                                <TooltipUI
+                                    message='Delete'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
                                     <div
                                         className={`${styles.Action} ${styles.Delete}`}
                                         onClick={onDeletePhaseStoriesClick}
                                     >
                                         <MaterialIconUI>close</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                            </>
-                        )}
-                        {onEditingPhase ? (
-                            <>
-                                <TooltipUI message='Save' relativeLayout={props.deps.relativeLayout}>
-                                    <div
-                                        className={`${styles.Action} ${styles.Save}`}
-                                        onClick={saveEditedPhaseName}
-                                    >
-                                        <MaterialIconUI>check</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                                <TooltipUI message='Cancel' relativeLayout={props.deps.relativeLayout}>
-                                    <div
-                                        className={`${styles.Action} ${styles.Cancel}`}
-                                        onClick={cancelEditedPhaseName}
-                                    >
-                                        <MaterialIconUI>cancel</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                            </>
-                        ) : (
-                            <>
-                                <TooltipUI message='Edit' relativeLayout={props.deps.relativeLayout}>
-                                    <div
-                                        className={`${styles.Action} ${styles.Edit}`}
-                                        onClick={onEditPhaseName}
-                                    >
-                                        <MaterialIconUI>edit</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                                <TooltipUI message='Add story' relativeLayout={props.deps.relativeLayout}>
-                                    <div
-                                        className={`${styles.Action} ${styles.Add}`}
-                                        onClick={onAddStoryInPhaseClick}
-                                    >
-                                        <MaterialIconUI>add</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
                             </>
@@ -420,7 +443,10 @@ export function PhaseComponent(props: Props) {
                     <div className={styles.Title}>Stories</div>
                     <div className={styles.Actions}>
                         {selectedBacklogStoryIds.size > 0 && (
-                            <TooltipUI message='Move to phase' relativeLayout={props.deps.relativeLayout}>
+                            <TooltipUI
+                                message='Move to phase'
+                                relativeLayout={props.deps.relativeLayout}
+                            >
                                 <div
                                     className={`${styles.Action} ${styles.Move}`}
                                     onClick={onAddStoriesToPhaseClick}
@@ -430,7 +456,10 @@ export function PhaseComponent(props: Props) {
                             </TooltipUI>
                         )}
                         {selectedBacklogStoryIds.size > 0 && (
-                            <TooltipUI message='Delete' relativeLayout={props.deps.relativeLayout}>
+                            <TooltipUI
+                                message='Delete'
+                                relativeLayout={props.deps.relativeLayout}
+                            >
                                 <div
                                     className={`${styles.Action} ${styles.Delete}`}
                                     onClick={onDeleteBacklogStoriesClick}
@@ -439,7 +468,10 @@ export function PhaseComponent(props: Props) {
                                 </div>
                             </TooltipUI>
                         )}
-                        <TooltipUI message='Create story' relativeLayout={props.deps.relativeLayout}>
+                        <TooltipUI
+                            message='Create story'
+                            relativeLayout={props.deps.relativeLayout}
+                        >
                             <div
                                 className={`${styles.Action} ${styles.Add}`}
                                 onClick={onAddStoryInBacklogClick}
