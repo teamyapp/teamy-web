@@ -40,6 +40,12 @@
                 gap: 8px;
                 margin-left: auto;
 
+                .Divider {
+                    border-left: 1px solid #e0e0e0;
+                    margin: 0 8px;
+                    display: inline-block;
+                }
+
                 .Action {
                     width: 26px;
                     height: 26px;
@@ -61,7 +67,7 @@
                             --icon-color: white;
                         }
                     }
-                    
+
                     &.Edit {
                         --icon-color: #fbc02d;
                         --icon-size: 24px;

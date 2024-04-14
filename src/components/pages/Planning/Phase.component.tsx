@@ -2,7 +2,6 @@ import { MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
-import { DividerUI } from '@lib/ui/Divider';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TextFieldUI } from '@lib/ui/TextField';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -153,6 +152,7 @@ export function PhaseComponent(props: Props) {
                 const phase = props.deps.graphSource.phase(props.phaseId);
                 if (phase) {
                     setPhase(phase);
+                    setPhaseName(phase.name);
                 }
             }
         })().then();
@@ -347,7 +347,7 @@ export function PhaseComponent(props: Props) {
                                     </div>
                                 </TooltipUI>
                                 {selectedPhaseStoryIds.size > 0 && (
-                                    <DividerUI vertical />
+                                    <div className={styles.Divider}/>
                                 )}
                             </>
                         ) : (
@@ -363,7 +363,7 @@ export function PhaseComponent(props: Props) {
                                         <MaterialIconUI>edit</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                <DividerUI vertical />
+                                <div className={styles.Divider} />
                                 <TooltipUI
                                     message='Add story'
                                     relativeLayout={props.deps.relativeLayout}

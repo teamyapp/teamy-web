@@ -20,7 +20,6 @@ import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 
 import styles from './Story.component.module.scss';
-import { DividerUI } from '@lib/ui/Divider';
 
 type backlogTasksFilterKey = 'IS_PLANNED' | 'UNPLANNED' | 'ALL';
 const backlogTasksFilterOptions: Option[] = [
@@ -106,6 +105,7 @@ export function StoryComponent(props: Props) {
                 const story = props.deps.graphSource.story(props.storyId);
                 if (story) {
                     setStory(story);
+                    setStoryName(story.name);
                 }
             }
         })();
@@ -368,7 +368,7 @@ export function StoryComponent(props: Props) {
                                         <MaterialIconUI>cancel</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                {selectStoryTaskIds.size > 0 && <DividerUI vertical/>}
+                                {selectStoryTaskIds.size > 0 && <div className={styles.Divider} />}
                             </>
                         ) : (
                             <>
@@ -383,7 +383,7 @@ export function StoryComponent(props: Props) {
                                         <MaterialIconUI>edit</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                <DividerUI vertical/>
+                                <div className={styles.Divider}/>
                                 <TooltipUI
                                     message='Add task'
                                     relativeLayout={props.deps.relativeLayout}
