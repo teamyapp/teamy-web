@@ -40,6 +40,11 @@
                 gap: 8px;
                 margin-left: auto;
 
+                .Divider {
+                    border-left: 1px solid #e0e0e0;
+                    margin: 0 8px;
+                }
+
                 .Action {
                     width: 26px;
                     height: 26px;
@@ -61,7 +66,7 @@
                             --icon-color: white;
                         }
                     }
-                    
+
                     &.Edit {
                         --icon-color: #fbc02d;
                         --icon-size: 24px;
@@ -125,6 +130,8 @@
             row-gap: 16px;
             column-gap: 8px;
             overflow-y: auto;
+            padding-top: 3px;
+            padding-bottom: 3px;
 
             .InlineStory {
                 width: 420px;
