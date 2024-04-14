@@ -106,7 +106,6 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                 ownerId: props.story.owner?.id,
                 priority: props.story.priority,
             });
-
             setIsEditingStory(false);
         };
 
