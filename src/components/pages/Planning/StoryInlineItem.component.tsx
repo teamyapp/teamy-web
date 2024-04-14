@@ -181,7 +181,8 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                 </div>
                             </div>
                             {!isEditingStory ? (
-                                <div className={styles.Goal} onClick={onStoryNameClick}>
+                                <div className={styles.Goal} 
+                                         onClick={onStoryNameClick}>
                                     {storyName}
                                 </div>
                             ) : (
