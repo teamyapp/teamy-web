@@ -1,5 +1,6 @@
 @import '../../../libs/ui/styleguide/elevation';
 @import 'ItemListSection.module';
+@import 'Shared.scss';
 
 .Story {
     display: flex;
@@ -24,6 +25,7 @@
             @include elevation(4);
 
             .Information {
+                flex-basis: 60%;
                 display: flex;
                 flex-direction: column;
                 gap: 4px;

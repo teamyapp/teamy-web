@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { SelectOwnersPopupComponent } from 'components/internal/SelectOwnersPopupComponent';
 import { getUserShortName } from 'components/internal/format';
 import {
+    ChangeEvent,
     FunctionComponent,
     MouseEvent,
     useState,
@@ -9,9 +10,7 @@ import {
 
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { TextFieldUI } from '@lib/ui/TextField';
 import { TooltipUI } from '@lib/ui/Tooltip';
-
 import { Deps } from '@core/dep/deps';
 import { Priority } from '@core/entity/priority';
 import { Story, StoryStatus } from '@core/entity/story';
@@ -95,8 +94,8 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
             });
         };
 
-        const onStoryNameChange = (storyName: string) => {
-            setStoryName(storyName);
+        const onStoryNameChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+            setStoryName(event.target.value);
         };
 
         const onSaveStoryClick = () => {
@@ -185,7 +184,8 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                     {storyName}
                                 </div>
                             ) : (
-                                <TextFieldUI
+                                <textarea
+                                    className={styles.TextArea}
                                     value={storyName}
                                     onChange={onStoryNameChange}
                                 />
