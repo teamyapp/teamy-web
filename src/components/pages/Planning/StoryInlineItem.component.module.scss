@@ -166,6 +166,18 @@ $actionIconSize: 28px;
                 }
             }
 
+            .SaveStoryIcon {
+                background-color: #4caf50;
+                @include actionIcon;
+                --icon-size: #{$actionIconSize - 6px};
+            }
+
+            .CancelEditStoryIcon {
+                background-color: #f44336;
+                @include actionIcon;
+                --icon-size: #{$actionIconSize - 6px};
+            }
+
             .DeleteStoryIcon {
                 background-color: #e53935;
                 @include actionIcon;
