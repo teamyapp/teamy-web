@@ -217,14 +217,22 @@ export interface UpdateStoryInput {
 
 export interface CreateProjectInput {
     name: string;
-    expectedStartAt: Date;
-    expectedEndAt: Date; 
+    expectedStartAt?: Date;
+    expectedEndAt?: Date;
+    actualStartAt?: Date;
+    actualEndAt?: Date;
+    iconUrl?: string;
+    color?: string;
 }
 
 export interface UpdateProjectInput {
     name: string;
-    expectedStartAt: Date;
-    expectedEndAt: Date;
+    expectedStartAt?: Date;
+    expectedEndAt?: Date;
+    actualStartAt?: Date;
+    actualEndAt?: Date;
+    iconUrl?: string;
+    color?: string;
 }
 
 export interface CreatePhaseInput {

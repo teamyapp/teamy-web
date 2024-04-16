@@ -188,14 +188,22 @@ export interface RemoteUpdateRolloutInput {
 
 export interface RemoteCreateProjectInput {
     name: string;
-    expectedStartAt: Date;
-    expectedEndAt: Date;
+    expectedStartAt?: Date;
+    expectedEndAt?: Date;
+    actualStartAt?: Date;
+    actualEndAt?: Date;
+    iconUrl?: string;
+    color?: string;
 }
 
 export interface RemoteUpdateProjectInput {
     name: string;
-    expectedStartAt: Date;
-    expectedEndAt: Date;
+    expectedStartAt?: Date;
+    expectedEndAt?: Date;
+    actualStartAt?: Date;
+    actualEndAt?: Date;
+    iconUrl?: string;
+    color?: string;
 }
 
 export interface RemoteCreatePhaseInput {

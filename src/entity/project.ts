@@ -6,9 +6,9 @@ import { User } from './user';
 export interface Project {
     id: number;
     name: string;
-    expectedStartAt: Date;
+    expectedStartAt?: Date;
     actualStartAt?: Date;
-    expectedEndAt: Date;
+    expectedEndAt?: Date;
     actualEndAt?: Date;
     creator: User;
     createdAt: Date;
@@ -18,4 +18,6 @@ export interface Project {
     unplannedStories: Story[];
     totalPhases: number;
     deliveredPhases: number;
+    iconUrl?: string;
+    color?: string;
 }

@@ -1,9 +1,7 @@
-import classNames from 'classnames';
-import moment from 'moment';
 import {
+    ChangeEvent,
     FC,
     MouseEvent,
-    ReactElement,
     useEffect,
     useRef,
     useState,
@@ -20,34 +18,22 @@ import {
     CreateProjectModalComponent,
     CreateProjectModalComponentHandle,
 } from './CreateProjectModal.component';
-import {
-    Row,
-    TimelineComponent,
-    TimelineComponentHandle,
-} from './Timeline.component';
-import {
-    UpdateProjectModalComponent,
-    UpdateProjectModalComponentHandle,
-} from './UpdateProjectModal.component';
 import styles from './Projects.component.module.scss';
 import { TooltipUI } from '@lib/ui/Tooltip';
+import { UpdateProjectInput } from '@core/entity/input';
 
 interface Props {
     deps: Deps;
 }
 
-const startAt = moment().subtract(1, 'months').toDate();
-const endAt = moment().add(1, 'months').toDate();
-
 export const ProjectsComponent: FC<Props> = (props) => {
-    const timelineRef = useRef<TimelineComponentHandle>(null);
     const createProjectModalComponentRef =
         useRef<CreateProjectModalComponentHandle>(null);
-    const updateProjectModalComponentRef =
-        useRef<UpdateProjectModalComponentHandle>(null);
-    const [editingProject, setEditingProject] = useState<Project>();
-    const [selectedProjectIndex, setSelectedProjectIndex] = useState<number>();
     const [team, setTeam] = useState<Team>();
+    const [editingUpdateProject, setEditingUpdateProject] = useState<{
+        projectId: number;
+        updateProjectInput: UpdateProjectInput;
+    }>();
 
     useEffect(() => {
         const stateChangeChan = props.deps.localStore.subscribeStateChange();
@@ -69,47 +55,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
         })().then();
     }, []);
 
-    const rows: Row[] = (team?.projects || []).map((project, index) => {
-        return {
-            height: 70,
-            items: [
-                {
-                    view: (
-                        <div className={styles.Project}>
-                            <div className={styles.ProgressBar}>
-                                <div
-                                    className={styles.Progress}
-                                    style={{
-                                        width: `${
-                                            (project.deliveredPhases /
-                                                project.totalPhases) *
-                                            100
-                                        }%`,
-                                    }}
-                                />
-                            </div>
-                            <div className={styles.Name}>{project.name}</div>
-                            <div className={styles.Status}>
-                                {project.deliveredPhases} of{' '}
-                                {project.totalPhases} phases delivered
-                            </div>
-                        </div>
-                    ),
-                    startAt: project.expectedStartAt,
-                    endAt: project.expectedEndAt,
-                },
-            ],
-        };
-    });
-
-    const onProjectClickHandler = (projectIndex: number) => {
-        return () => {
-            timelineRef.current?.showAndSelectItem(projectIndex, 0);
-            setSelectedProjectIndex(projectIndex);
-        };
-    };
-
-    const onProjectDoubleClickHandler = (projectId: number) => {
+    const onViewProjectDetailClickHandler = (projectId: number) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
             if (!team) {
@@ -118,10 +64,6 @@ export const ProjectsComponent: FC<Props> = (props) => {
 
             props.deps.router.navigateTo(projectPath(team.id, projectId));
         };
-    };
-
-    const onTimelineItemSelect = (rowIndex: number, itemIndex: number) => {
-        setSelectedProjectIndex(rowIndex);
     };
 
     const onAddProjectClick = () => {
@@ -134,56 +76,58 @@ export const ProjectsComponent: FC<Props> = (props) => {
             props.deps.stateSyncer.deleteProject(projectId);
         };
 
-    const onUpdateProjectClickHandler =
-        (project: Project) => (event: MouseEvent) => {
-            event.stopPropagation();
-            setEditingProject(project);
-            updateProjectModalComponentRef.current?.open();
-        };
+    const onSaveProjectClick = (event: MouseEvent) => {
+        if (!editingUpdateProject) {
+            return;
+        }
 
-    const renderProject = (project: Project, index: number): ReactElement => {
-        return (
-            <div
-                key={index}
-                className={`${styles.Project} ${classNames({
-                    [styles.Selected]: index === selectedProjectIndex,
-                })}`}
-                onDoubleClick={onProjectDoubleClickHandler(project.id)}
-                onClick={onProjectClickHandler(index)}
-            >
-                <div className={styles.LeftSection}>
-                    <div className={styles.Name}>{project.name}</div>
-                    <div className={styles.Status}>
-                        {project.deliveredPhases} of {project.totalPhases}{' '}
-                        phases delivered
-                    </div>
-                    <div className={styles.Duration}>
-                        {moment(project.expectedStartAt).format('MMM DD')}
-                        &nbsp;-&nbsp;
-                        {moment(project.expectedEndAt).format('MMM DD')}
-                    </div>
-                </div>
-                <div className={styles.RightSection}>
-                    <TooltipUI message='delete' relativeLayout={props.deps.relativeLayout}>
-                      <div
-                          className={styles.DeleteIcon}
-                          onClick={onDeleteProjectClickHandler(project.id)}
-                      >
-                          <MaterialIconUI>close</MaterialIconUI>
-                      </div>
-                    </TooltipUI>
-                    <TooltipUI message='edit' relativeLayout={props.deps.relativeLayout}>
-                      <div
-                          className={styles.EditIcon}
-                          onClick={onUpdateProjectClickHandler(project)}
-                      >
-                          <MaterialIconUI>edit</MaterialIconUI>
-                      </div>
-                    </TooltipUI>
-                </div>
-            </div>
+        event.stopPropagation();
+        props.deps.stateSyncer.updateProject(
+            editingUpdateProject.projectId,
+            editingUpdateProject.updateProjectInput,
         );
+
+        setEditingUpdateProject(undefined);
     };
+
+    const onCancelProjectClick = () => {
+        setEditingUpdateProject(undefined);
+    };
+
+    const onEditProjectClickHandler = (projectId: number) => () => {
+        const project = props.deps.graphSource.project(projectId);
+        if (!project) {
+            return;
+        }
+
+        setEditingUpdateProject({
+            projectId,
+            updateProjectInput: {
+                name: project.name,
+                expectedEndAt: project.expectedEndAt,
+                expectedStartAt: project.expectedStartAt,
+                actualStartAt: project.actualStartAt,
+                actualEndAt: project.actualEndAt,
+                iconUrl: project.iconUrl,
+                color: project.color,
+            },
+        });
+    };
+
+    const onProjectNameChangeHandler =
+        (projectId: number) => (event: ChangeEvent<HTMLInputElement>) => {
+            if (!editingUpdateProject) {
+                return;
+            }
+
+            setEditingUpdateProject({
+                projectId,
+                updateProjectInput: {
+                    ...editingUpdateProject.updateProjectInput,
+                    name: event.target.value,
+                },
+            });
+        };
 
     if (!team) {
         return null;
@@ -191,41 +135,165 @@ export const ProjectsComponent: FC<Props> = (props) => {
 
     return (
         <div className={styles.Projects}>
-            <div className={styles.ProjectView}>
-                <div className={styles.ProjectListSection}>
-                    <div className={styles.TopBar}>
-                        <div className={styles.Title}>Projects</div>
-                        <TooltipUI message='Create project' relativeLayout={props.deps.relativeLayout}>
-                        <div className={styles.Add} onClick={onAddProjectClick}>
-                            <MaterialIconUI>add</MaterialIconUI>
+            <div className={styles.Section}>
+                <div className={styles.TitleRow}>
+                    <div className={styles.Title}>Projects</div>
+                    <div className={styles.Spacer} />
+                    <div className={styles.TitleActions}>
+                        <div
+                            className={`${styles.TitleAction} ${styles.CreateProject}`}
+                            onClick={onAddProjectClick}
+                        >
+                            Create project
                         </div>
-                        </TooltipUI>
-                    </div>
-                    <div className={styles.ProjectList}>
-                        {team.projects.map(renderProject)}
                     </div>
                 </div>
-                <div className={styles.Timeline}>
-                    <TimelineComponent
-                        ref={timelineRef}
-                        startAt={startAt}
-                        endAt={endAt}
-                        rows={rows}
-                        onItemSelect={onTimelineItemSelect}
-                    />
+
+                <div className={`${styles.Section} ${styles.Cards}`}>
+                    {team.projects.map((project) => (
+                        <div className={styles.Project}>
+                            <div
+                                className={styles.Content}
+                                style={{
+                                    backgroundColor: project.color,
+                                }}
+                            >
+                                {!project.iconUrl ? (
+                                    <div className={styles.Icon}>
+                                        <MaterialIconUI>
+                                            construction
+                                        </MaterialIconUI>
+                                    </div>
+                                ) : (
+                                    <div className={styles.IconUrl}>
+                                        <img src={project.iconUrl}/>
+                                    </div>
+                                )}
+                            </div>
+                            <div className={styles.NameRow}>
+                                <div className={styles.Name}>
+                                    {editingUpdateProject?.projectId ===
+                                    project.id ? (
+                                        <input
+                                            className={styles.TextField}
+                                            value={
+                                                editingUpdateProject
+                                                    .updateProjectInput.name
+                                            }
+                                            onChange={onProjectNameChangeHandler(
+                                                project.id,
+                                            )}
+                                        ></input>
+                                    ) : (
+                                        project.name
+                                    )}
+                                </div>
+                                <div className={styles.Actions}>
+                                    {editingUpdateProject?.projectId ===
+                                    project.id ? (
+                                        <>
+                                            <TooltipUI
+                                                message='Save'
+                                                relativeLayout={
+                                                    props.deps.relativeLayout
+                                                }
+                                            >
+                                                <div
+                                                    className={`${styles.Edit} ${styles.Action}`}
+                                                    onClick={onSaveProjectClick}
+                                                >
+                                                    <MaterialIconUI>
+                                                        save
+                                                    </MaterialIconUI>
+                                                </div>
+                                            </TooltipUI>
+                                            <TooltipUI
+                                                message='Cancel'
+                                                relativeLayout={
+                                                    props.deps.relativeLayout
+                                                }
+                                            >
+                                                <div
+                                                    className={`${styles.Cancel} ${styles.Action}`}
+                                                    onClick={
+                                                        onCancelProjectClick
+                                                    }
+                                                >
+                                                    <MaterialIconUI>
+                                                        cancel
+                                                    </MaterialIconUI>
+                                                </div>
+                                            </TooltipUI>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <TooltipUI
+                                                message='Edit'
+                                                relativeLayout={
+                                                    props.deps.relativeLayout
+                                                }
+                                            >
+                                                <div
+                                                    className={`${styles.Edit} ${styles.Action}`}
+                                                    onClick={onEditProjectClickHandler(
+                                                        project.id,
+                                                    )}
+                                                >
+                                                    <MaterialIconUI>
+                                                        edit
+                                                    </MaterialIconUI>
+                                                </div>
+                                            </TooltipUI>
+                                            <TooltipUI
+                                                message='delete'
+                                                relativeLayout={
+                                                    props.deps.relativeLayout
+                                                }
+                                            >
+                                                <div
+                                                    className={`${styles.Delete} ${styles.Action}`}
+                                                    onClick={onDeleteProjectClickHandler(
+                                                        project.id,
+                                                    )}
+                                                >
+                                                    <MaterialIconUI>
+                                                        close
+                                                    </MaterialIconUI>
+                                                </div>
+                                            </TooltipUI>
+                                            <TooltipUI
+                                                message='Detail'
+                                                relativeLayout={
+                                                    props.deps.relativeLayout
+                                                }
+                                            >
+                                                <div
+                                                    className={`${styles.Detail} ${styles.Action}`}
+                                                    onClick={onViewProjectDetailClickHandler(
+                                                        project.id,
+                                                    )}
+                                                >
+                                                    <MaterialIconUI>
+                                                        details
+                                                    </MaterialIconUI>
+                                                </div>
+                                            </TooltipUI>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                            <div className={styles.Description}>
+                                {project.deliveredPhases} of{' '}
+                                {project.totalPhases} phases delivered
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
             <CreateProjectModalComponent
                 deps={props.deps}
                 ref={createProjectModalComponentRef}
             />
-            {editingProject && (
-                <UpdateProjectModalComponent
-                    deps={props.deps}
-                    ref={updateProjectModalComponentRef}
-                    project={editingProject}
-                />
-            )}
         </div>
     );
 };

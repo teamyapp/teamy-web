@@ -1,185 +1,151 @@
+@import 'shared.scss';
+
 .Projects {
-    background-color: white;
-    display: flex;
-    height: 100%;
-    width: 100%;
+    padding: 30px;
 
-    .ProjectView {
-        display: flex;
-        flex: 1;
-        overflow: hidden;
-        position: relative;
-        z-index: 0;
+    .Label {
+        font-size: 16px;
+        font-weight: bold;
 
-        .ProjectListSection {
-            box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-            box-sizing: border-box;
+        &.SameRow {
+            margin-right: 10px;
+        }
+
+        &.NextRow {
+            margin-bottom: 10px;
+        }
+    }
+
+    .Section {
+        &:not(:first-child) {
+            margin-top: 20px;
+        }
+
+        .Row {
+            input[type='text'] {
+                border: 1px solid #e5e5e5;
+                border-radius: 4px;
+                flex: 1;
+                font-size: 16px;
+                letter-spacing: 1px;
+                outline: none;
+                padding: 4px 10px;
+                width: 300px;
+            }
+        }
+
+        .TitleRow {
+            align-items: center;
             display: flex;
-            flex-direction: column;
-            height: 100%;
-            overflow: hidden;
-            padding: 0 10px;
-            width: 220px;
-            z-index: 1;
 
-            > .TopBar {
-                align-items: center;
-                display: flex;
-                justify-content: space-between;
-                padding: 20px 10px 10px 10px;
-
-                .Title {
-                    font-size: 20px;
-                    font-weight: bold;
-                }
-
-                .Add {
-                    border-radius: 4px;
-                    --icon-color: #ff5722;
-                    --icon-size: 24px;
-
-                    &:hover {
-                        cursor: pointer;
-                        background-color: #ff5722;
-                        --icon-color: white;
-                    }
-                }
+            .Title {
+                font-size: 16px;
+                font-weight: bold;
             }
 
-            .ProjectList {
-                box-sizing: border-box;
-                display: flex;
+            .Spacer {
                 flex: 1;
-                flex-direction: column;
-                overflow-y: auto;
-                row-gap: 4px;
+            }
 
-                .Project {
+            .TitleActions {
+                .TitleAction {
                     border-radius: 4px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: 10px;
-                    user-select: none;
+                    font-weight: bold;
+                    padding: 6px 20px;
+                    text-align: center;
 
                     &:hover {
-                        background-color: rgba(0, 0, 0, 0.05);
                         cursor: pointer;
-
-                        .RightSection {
-                            .DeleteIcon,
-                            .EditIcon {
-                                display: block;
-                                --icon-color: #bdbdbd;
-
-                                &:hover {
-                                    --icon-color: #757575;
-                                }
-                            }
-                        }
+                        opacity: 0.85;
                     }
 
-                    &.Selected {
-                        background-color: #ff5722;
-
-                        .LeftSection {
-                            .Name,
-                            .Status,
-                            .Duration {
-                                color: white;
-                            }
-                        }
-
-                        .RightSection {
-                            .DeleteIcon,
-                            .EditIcon {
-                                display: block;
-                                --icon-color: rgba(255, 255, 255, 0.4);
-
-                                &:hover {
-                                    --icon-color: rgba(255, 255, 255, 1);
-                                }
-                            }
-                        }
-                    }
-
-                    .LeftSection {
-                        display: flex;
-                        flex-direction: column;
-                        row-gap: 6px;
-
-                        .Name {
-                            font-size: 14px;
-                            font-weight: bold;
-                        }
-
-                        .Status {
-                            color: #757575;
-                            font-size: 12px;
-                            font-weight: bold;
-                        }
-
-                        .Duration {
-                            color: #9e9e9e;
-                            font-size: 12px;
-                            font-weight: bold;
-                        }
-                    }
-
-                    .RightSection {
-                        .DeleteIcon,
-                        .EditIcon {
-                            display: none;
-                            --icon-size: 22px;
-                        }
+                    &.CreateProject {
+                        background-color: #388e3c;
+                        border-color: #2e7d32;
+                        color: white;
                     }
                 }
             }
         }
 
-        .Timeline {
-            flex: 1;
-            overflow: hidden;
-            padding: 0;
-            z-index: 0;
+        .Cards {
+            display: flex;
+            flex-wrap: wrap;
+            row-gap: 20px;
+            column-gap: 10px;
 
             .Project {
-                box-sizing: border-box;
-                display: flex;
-                flex-direction: column;
-                height: 100%;
-                justify-content: center;
-                padding: 0 14px;
-                row-gap: 6px;
+                .Content {
+                    width: 260px;
+                    background-color: #e5e5e5;
+                    height: 150px;
+                    border: 1px solid #e5e5e5;
+                    border-radius: 4px;
+                    margin-bottom: 10px;
 
-                .ProgressBar {
-                    background-color: #eeeeee;
-                    border-radius: 2px;
-                    height: 4px;
-                    overflow: hidden;
-
-                    .Progress {
-                        background-color: #66bb6a;
-                        border-radius: inherit;
+                    .Icon {
+                        align-items: center;
+                        display: flex;
+                        justify-content: center;
                         height: 100%;
+                        width: 100%;
+
+                        --icon-size: 48px;
+                        --icon-color: #6a8db8;
                     }
                 }
 
-                .Name {
-                    font-size: 14px;
-                    font-weight: bold;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
+                .NameRow {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    .Actions {
+                        display: flex;
+                        .Action {
+                            align-items: center;
+                            border-radius: 4px;
+                            display: flex;
+                            height: 30px;
+                            justify-content: center;
+                            --icon-size: 24px;
+                            width: 30px;
+
+                            &:hover {
+                                background-color: rgba(0, 0, 0, 0.07);
+                                cursor: pointer;
+                            }
+
+                            &.Cancel {
+                                --icon-color: #ff0000;
+                            }
+
+                            &.Save {
+                                --icon-color: #009304;
+                            }
+
+                            &.Detail {
+                                --icon-color: #3f51b5;
+                            }
+
+                            &.Edit{
+                                --icon-color: #ff9800;
+                            }
+
+                            &.Delete {
+                                --icon-color: #ff0000;
+                            }
+                        }
+                    }
+                    .Name {
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
                 }
 
-                .Status {
-                    color: #757575;
-                    font-size: 12px;
-                    font-weight: bold;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
+                .Description {
+                    font-size: 14px;
+                    margin-top: 5px;
+                    color: #333333;
                 }
             }
         }

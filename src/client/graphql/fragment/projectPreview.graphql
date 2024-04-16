@@ -1,5 +1,6 @@
 #import "./user.graphql"
 #import "./team.graphql"
+#import "./phase.graphql"
 
 fragment ProjectPreviewFragment on Project {
     id
@@ -13,7 +14,12 @@ fragment ProjectPreviewFragment on Project {
     }
     createdAt
     updatedAt
+    color
+    iconUrl
     team {
         ...TeamFragment
+    }
+    phases {
+        ...PhaseFragment
     }
 }
