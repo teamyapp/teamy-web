@@ -1,5 +1,6 @@
 @import '../../../libs/ui/styleguide/elevation';
 @import '../../../libs/ui/styleguide/divider';
+@import "shared.scss";
 
 $edgeSpace: 10px;
 $actionIconSize: 28px;
@@ -164,6 +165,18 @@ $actionIconSize: 28px;
                 &:hover {
                     background-color: rgba(0, 0, 0, 0.07);
                 }
+            }
+
+            .SaveStoryIcon {
+                background-color: #4caf50;
+                @include actionIcon;
+                --icon-size: #{$actionIconSize - 6px};
+            }
+
+            .CancelEditStoryIcon {
+                background-color: #f44336;
+                @include actionIcon;
+                --icon-size: #{$actionIconSize - 6px};
             }
 
             .DeleteStoryIcon {

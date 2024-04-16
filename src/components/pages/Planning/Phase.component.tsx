@@ -1,11 +1,9 @@
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { TextFieldUI } from '@lib/ui/TextField';
 import { TooltipUI } from '@lib/ui/Tooltip';
-
 import { Deps } from '@core/dep/deps';
 import { CreateStoryInput } from '@core/entity/input';
 import { Phase } from '@core/entity/phase';
@@ -163,8 +161,8 @@ export function PhaseComponent(props: Props) {
         };
     }, []);
 
-    const onPhaseNameChange = (value: string) => {
-        setPhaseName(value);
+    const onPhaseNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setPhaseName(event.target.value);
     };
 
     const onEditPhaseName = () => {
@@ -309,8 +307,9 @@ export function PhaseComponent(props: Props) {
                 <div className={styles.Header}>
                     <div className={styles.Information}>
                         {onEditingPhase ? (
-                            <TextFieldUI
-                                value={phase.name}
+                            <input
+                                className={styles.TextField}
+                                value={phaseName}
                                 onChange={onPhaseNameChange}
                             />
                         ) : (

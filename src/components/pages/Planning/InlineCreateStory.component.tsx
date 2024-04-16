@@ -91,7 +91,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
         <div className={styles.Story}>
             <div className={styles.LeftSection}>
                 <textarea
-                    className={styles.Goal}
+                    className={styles.TextArea}
                     autoFocus
                     maxLength={storyNameLengthLimit}
                     value={story.name || ''}

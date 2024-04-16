@@ -1,15 +1,13 @@
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import { InlineCreateTaskUI } from 'components/internal/InlineCreateTask';
 import { TaskListItem } from 'components/internal/TaskListSections/TaskListItem';
-import { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { TextFieldUI } from '@lib/ui/TextField';
 import { TooltipUI } from '@lib/ui/Tooltip';
-
 import { backlogSectionId } from '@core/config/sections';
 import { isPlanned, unplanned } from '@core/data/task.filter';
 import { orderByStatusUrgencyAsc } from '@core/data/task.order';
@@ -279,8 +277,8 @@ export function StoryComponent(props: Props) {
         setSelectedBacklogTasksFilter(optionKey as backlogTasksFilterKey);
     };
 
-    const onStoryNameChange = (value: string) => {
-        setStoryName(value);
+    const onStoryNameChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setStoryName(event.target.value);
     };
 
     const onEditStoryName = () => {
@@ -331,8 +329,9 @@ export function StoryComponent(props: Props) {
                 <div className={styles.Header}>
                     <div className={styles.Information}>
                         {onEditingStory ? (
-                            <TextFieldUI
-                                value={story.name}
+                            <input
+                                className={styles.TextField}
+                                value={storyName}
                                 onChange={onStoryNameChange}
                             />
                         ) : (

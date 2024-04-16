@@ -1,12 +1,16 @@
 import classNames from 'classnames';
 import { SelectOwnersPopupComponent } from 'components/internal/SelectOwnersPopupComponent';
 import { getUserShortName } from 'components/internal/format';
-import { FunctionComponent, MouseEvent, useRef } from 'react';
+import {
+    ChangeEvent,
+    FunctionComponent,
+    MouseEvent,
+    useState,
+} from 'react';
 
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
-
 import { Deps } from '@core/dep/deps';
 import { Priority } from '@core/entity/priority';
 import { Story, StoryStatus } from '@core/entity/story';
@@ -54,6 +58,8 @@ const priorityOptions: Option[] = [
 
 export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponentProps> =
     (props: StoryInlineItemComponentProps) => {
+        const [isEditingStory, setIsEditingStory] = useState(false);
+        const [storyName, setStoryName] = useState(props.story.name);
         const priorityStyle = toOptionKey(props.story.priority);
         const handlePriorityChange = (optionKey: string) => {
             props.deps.stateSyncer.updateStory(props.story.id, {
@@ -88,6 +94,28 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
             });
         };
 
+        const onStoryNameChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+            setStoryName(event.target.value);
+        };
+
+        const onSaveStoryClick = () => {
+            props.deps.stateSyncer.updateStory(props.story.id, {
+                name: storyName,
+                status: props.story.status,
+                ownerId: props.story.owner?.id,
+                priority: props.story.priority,
+            });
+            setIsEditingStory(false);
+        };
+
+        const onCancelStoryEdit = () => {
+            setIsEditingStory(false);
+        }
+
+        const onStoryNameClick = () => {
+            setIsEditingStory(true);
+        }
+
         const renderAssignOwner = ({
             toggleContainer,
             showFollower,
@@ -103,7 +131,10 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                 : 'Unassigned';
             return (
                 <div className={styles.AssignOwner}>
-                    <TooltipUI message={name} relativeLayout={props.deps.relativeLayout}>
+                    <TooltipUI
+                        message={name}
+                        relativeLayout={props.deps.relativeLayout}
+                    >
                         <div
                             className={`${styles.Action} ${classNames({
                                 [styles.Active]: showFollower,
@@ -147,9 +178,18 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                     {statusNames[props.story.status]}
                                 </div>
                             </div>
-                            <div className={styles.Goal}>
-                                {props.story.name}
-                            </div>
+                            {isEditingStory ? (
+                                <textarea
+                                    className={styles.TextArea}
+                                    value={storyName}
+                                    onChange={onStoryNameChange}
+                                />
+                            ) : (
+                                <div className={styles.Goal} 
+                                         onClick={onStoryNameClick}>
+                                    {storyName}
+                                </div>
+                            )}
                             <div className={styles.CompletionStatus}>
                                 {props.story.completedTasks} of{' '}
                                 {props.story.totalTasks} tasks completed
@@ -162,7 +202,12 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                         [styles[priorityStyle]]: true,
                                     })}`}
                                 >
-                                    <TooltipUI message='Set Priority' relativeLayout={props.deps.relativeLayout}>
+                                    <TooltipUI
+                                        message='Set Priority'
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
                                         <DropDownList
                                             selectOptionKey={toOptionKey(
                                                 props.story.priority,
@@ -177,34 +222,94 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                             </div>
                         </div>
                         <div className={styles.ActionsSection}>
-                            <TooltipUI message={'Delete'} relativeLayout={props.deps.relativeLayout}>
-                                <div className={styles.Action}>
-                                    <div
-                                        className={styles.DeleteStoryIcon}
-                                        onClick={onStoryDeleteClick}
+                            {isEditingStory && (
+                                <>
+                                    <TooltipUI
+                                        message={'Save'}
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
                                     >
-                                        <MaterialIconUI>close</MaterialIconUI>
+                                        <div
+                                            className={styles.Action}
+                                            onClick={onSaveStoryClick}
+                                        >
+                                            <div
+                                                className={styles.SaveStoryIcon}
+                                            >
+                                                <MaterialIconUI>
+                                                    done
+                                                </MaterialIconUI>
+                                            </div>
+                                        </div>
+                                    </TooltipUI>
+                                    <TooltipUI
+                                        message={'Cancel'}
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={styles.Action}
+                                            onClick={onCancelStoryEdit}
+                                        >
+                                            <div
+                                                className={
+                                                    styles.CancelEditStoryIcon
+                                                }
+                                            >
+                                                <MaterialIconUI>
+                                                    close
+                                                </MaterialIconUI>
+                                            </div>
+                                        </div>
+                                    </TooltipUI>
+                                </>
+                            )}
+                            {!isEditingStory && (
+                                <TooltipUI
+                                    message={'Delete'}
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div className={styles.Action}>
+                                        <div
+                                            className={styles.DeleteStoryIcon}
+                                            onClick={onStoryDeleteClick}
+                                        >
+                                            <MaterialIconUI>
+                                                close
+                                            </MaterialIconUI>
+                                        </div>
                                     </div>
-                                </div>
-                            </TooltipUI>
+                                </TooltipUI>
+                            )}
                             <SelectOwnersPopupComponent
                                 deps={props.deps}
                                 onSelectOwner={onSelectStoryOwner}
                                 selectedOwnerId={props.story.owner?.id}
                                 assignOwner={renderAssignOwner}
                             />
-                            <TooltipUI message={'Detail'} relativeLayout={props.deps.relativeLayout}>
-                                <div
-                                    className={styles.Action}
-                                    onClick={handleStoryDetailClick}
+                            {!isEditingStory && (
+                                <TooltipUI
+                                    message={'Detail'}
+                                    relativeLayout={props.deps.relativeLayout}
                                 >
-                                    <div className={styles.ViewStoryDetailIcon}>
-                                        <MaterialIconUI>
-                                            settings
-                                        </MaterialIconUI>
+                                    <div
+                                        className={styles.Action}
+                                        onClick={handleStoryDetailClick}
+                                    >
+                                        <div
+                                            className={
+                                                styles.ViewStoryDetailIcon
+                                            }
+                                        >
+                                            <MaterialIconUI>
+                                                settings
+                                            </MaterialIconUI>
+                                        </div>
                                     </div>
-                                </div>
-                            </TooltipUI>
+                                </TooltipUI>
+                            )}
                         </div>
                     </div>
                 </div>
