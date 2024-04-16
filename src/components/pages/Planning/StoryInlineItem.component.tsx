@@ -178,17 +178,17 @@ export const StoryInlineItemComponent: FunctionComponent<StoryInlineItemComponen
                                     {statusNames[props.story.status]}
                                 </div>
                             </div>
-                            {!isEditingStory ? (
-                                <div className={styles.Goal} 
-                                         onClick={onStoryNameClick}>
-                                    {storyName}
-                                </div>
-                            ) : (
+                            {isEditingStory ? (
                                 <textarea
                                     className={styles.TextArea}
                                     value={storyName}
                                     onChange={onStoryNameChange}
                                 />
+                            ) : (
+                                <div className={styles.Goal} 
+                                         onClick={onStoryNameClick}>
+                                    {storyName}
+                                </div>
                             )}
                             <div className={styles.CompletionStatus}>
                                 {props.story.completedTasks} of{' '}
