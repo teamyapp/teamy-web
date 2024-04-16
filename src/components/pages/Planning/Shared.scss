@@ -10,13 +10,13 @@
 }
 
 .TextField {
-    @include text;
+    @include textInput;
     height: 30px;
     padding: 1px;
 }
 
 .TextArea {
-    @include text;
+    @include textInput;
     width: 100%;
     height: 60px;
     padding: 6px;
