@@ -157,15 +157,15 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                     backgroundColor: project.color,
                                 }}
                             >
-                                {!project.iconUrl ? (
+                                {project.iconUrl ? (
+                                    <div className={styles.IconUrl}>
+                                        <img src={project.iconUrl}/>
+                                    </div>
+                                ) : (
                                     <div className={styles.Icon}>
                                         <MaterialIconUI>
                                             construction
                                         </MaterialIconUI>
-                                    </div>
-                                ) : (
-                                    <div className={styles.IconUrl}>
-                                        <img src={project.iconUrl}/>
                                     </div>
                                 )}
                             </div>
