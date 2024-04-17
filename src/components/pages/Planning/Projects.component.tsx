@@ -148,7 +148,6 @@ export const ProjectsComponent: FC<Props> = (props) => {
                         </div>
                     </div>
                 </div>
-
                 <div className={`${styles.Section} ${styles.Cards}`}>
                     {team.projects.map((project) => (
                         <div className={styles.Project}>
