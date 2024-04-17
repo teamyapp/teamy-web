@@ -188,8 +188,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                     )}
                                 </div>
                                 <div className={styles.Actions}>
-                                    {editingUpdateProject?.projectId ===
-                                    project.id ? (
+                                    {editingUpdateProject?.projectId === project.id ? (
                                         <>
                                             <TooltipUI
                                                 message='Save'
