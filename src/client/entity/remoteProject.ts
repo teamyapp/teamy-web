@@ -6,9 +6,9 @@ import { RemoteUser } from './remoteUser';
 export interface RemoteProject {
     id: string;
     name: string;
-    expectedStartAt: string;
+    expectedStartAt?: string;
     actualStartAt?: string;
-    expectedEndAt: string;
+    expectedEndAt?: string;
     actualEndAt?: string;
     creator: RemoteUser;
     createdAt: string;
@@ -16,4 +16,6 @@ export interface RemoteProject {
     phases: RemotePhase[];
     stories: RemoteStory[];
     team: RemoteTeam;
+    iconUrl?: string;
+    color?: string;
 }

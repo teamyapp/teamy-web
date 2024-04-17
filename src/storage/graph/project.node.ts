@@ -20,11 +20,11 @@ export class ProjectNode implements Project {
         return this.project.name;
     }
 
-    get expectedStartAt(): Date {
+    get expectedStartAt(): Date | undefined {
         return this.project.expectedStartAt;
     }
 
-    get expectedEndAt(): Date {
+    get expectedEndAt(): Date | undefined {
         return this.project.expectedEndAt;
     }
 
@@ -90,5 +90,13 @@ export class ProjectNode implements Project {
     get deliveredPhases(): number {
         return this.phases.filter((phase) => phase.status === 'COMPLETED')
             .length;
+    }
+
+    get iconUrl(): string | undefined {
+        return this.project.iconUrl;
+    }
+
+    get color(): string | undefined {
+        return this.project.color;
     }
 }
