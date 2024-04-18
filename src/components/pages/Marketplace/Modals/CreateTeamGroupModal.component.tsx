@@ -55,6 +55,7 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
                 </div>
                 <div className={styles.Content}>
                     <CreateGroupViewComponent
+                        relativeLayout={this.props.deps.relativeLayout}
                         membersLabel={'Teams'}
                         memberLabel={'Team'}
                         renderInlineGroupMember={this.renderInlineTeam}

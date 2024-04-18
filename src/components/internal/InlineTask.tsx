@@ -31,7 +31,6 @@ import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
 import { SelectOwnersPopupComponent } from './SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from './TaskLinkIcon';
-import { UserProfileUI } from './UserProfile';
 import { dueDate, getUserShortName } from './format';
 
 const statusNames: Record<TaskStatus, string> = {
@@ -173,6 +172,7 @@ export class InlineTaskUI extends Component<Props, State> {
                                 >
                                     <TooltipUI message='Set priority' relativeLayout={this.props.deps.relativeLayout}>
                                         <DropDownList
+                                            relativeLayout={this.props.deps.relativeLayout}
                                             selectOptionKey={toOptionKey(
                                                 this.props.task.priority,
                                             )}
@@ -485,47 +485,13 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     }
 
-    private renderOwnerList = ({
-        toggleContainer,
-        showFollower,
-    }: {
-        toggleContainer: () => void;
-        showFollower: boolean;
-    }): ReactNode => {
-        const owner = this.props.task.owner;
-        const name = owner
-            ? getUserShortName(owner.firstName, owner.lastName)
-            : 'Unassigned';
-        return (
-            <div className={styles.AssignOwner}>
-                <TooltipUI message={name} relativeLayout={this.props.deps.relativeLayout}>
-                    <div
-                        className={`${styles.Action} ${classNames({
-                            [styles.Active]: showFollower,
-                        })}`}
-                        onClick={toggleContainer}
-                    >
-                        <div className={` ${styles.AssignOwnerIcon}`}>
-                            {owner ? (
-                                <UserProfileUI user={owner} />
-                            ) : (
-                                <MaterialIconUI>face</MaterialIconUI>
-                            )}
-                        </div>
-                    </div>
-                </TooltipUI>
-            </div>
-        );
-    };
-
     private renderAssignOwner = (index: number): ReactNode => {
         return (
             <SelectOwnersPopupComponent
                 key={index}
                 deps={this.props.deps}
                 onSelectOwner={this.onTaskOwnerSelected}
-                selectedOwnerId={this.props.task.owner?.id}
-                assignOwner={this.renderOwnerList}
+                selectedOwner={this.props.task.owner}
             />
         );
     };

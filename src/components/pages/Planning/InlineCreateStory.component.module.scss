@@ -27,14 +27,6 @@ $actionIconSize: 28px;
         flex: 1;
     }
 
-    .AssignOwnerIcon {
-        display: flex;
-        border-radius: 50%;
-        align-items: center;
-        --icon-color: #3d7bf6;
-        --icon-size: #{$actionIconSize + 4px};
-    }
-
     .ActionsSection {
         display: grid;
         padding-left: $edgeSpace;
@@ -42,11 +34,6 @@ $actionIconSize: 28px;
         gap: 2px;
         grid-auto-rows: min-content;
         grid-template-columns: repeat(3, 1fr);
-
-        .AssignOwner {
-            --profile-height: #{$actionIconSize};
-            --profile-width: #{$actionIconSize};
-        }
 
         .Action {
             display: flex;

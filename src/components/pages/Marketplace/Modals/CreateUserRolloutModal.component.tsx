@@ -44,6 +44,7 @@ export class CreateUserRolloutModalComponent extends Component<Props> {
                 <div className={styles.Content}>
                     <CreateRolloutViewComponent
                         groupLabel={'User'}
+                        relativeLayout={this.props.deps.relativeLayout}
                         appRolloutType='USER'
                         renderInlineGroup={this.renderInlineUserGroup}
                         isValidGroup={this.isValidUserGroup}

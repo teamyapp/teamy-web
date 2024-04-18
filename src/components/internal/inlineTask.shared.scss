@@ -54,24 +54,11 @@ $actionIconSize: 28px;
         padding-right: $edgeSpace;
     }
 
-    .AssignOwnerIcon {
-        align-items: center;
-        border-radius: 50%;
-        --icon-color: #3d7bf6;
-        display: flex;
-        --icon-size: #{$actionIconSize + 4px};
-    }
-
     .ActionsSection {
         border-left: 2px solid $dividerColor;
         display: grid;
         gap: 2px;
         grid-auto-rows: min-content;
         padding-left: $edgeSpace;
-
-        .AssignOwner {
-            --profile-height: #{$actionIconSize};
-            --profile-width: #{$actionIconSize};
-        }
     }
 }

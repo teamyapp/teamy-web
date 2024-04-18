@@ -1,9 +1,6 @@
-import classNames from 'classnames';
 import React, {
     ChangeEvent,
     Component,
-    MouseEvent,
-    ReactNode,
 } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -16,8 +13,6 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 
 import styles from './InlineCreateTask.module.scss';
 import { SelectOwnersPopupComponent } from './SelectOwnersPopupComponent';
-import { UserProfileUI } from './UserProfile';
-import { getUserShortName } from './format';
 
 interface Props {
     deps: Deps;
@@ -93,45 +88,11 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                         <SelectOwnersPopupComponent
                             deps={this.props.deps}
                             onSelectOwner={this.onSelectTaskOwner}
-                            selectedOwnerId={this.state.task.ownerUserId}
-                            assignOwner={this.renderAssignOwner}
+                            selectedOwner={this.owner()}
                         />
                     </div>
                 </div>
             </>
-        );
-    }
-
-    private renderAssignOwner = ({
-        toggleContainer,
-        showFollower,
-    }: {
-        toggleContainer: () => void;
-        showFollower: boolean;
-    }): ReactNode => {
-        const owner = this.owner();
-        const name = owner
-            ? getUserShortName(owner.firstName, owner.lastName)
-            : 'Unassigned';
-        return (
-            <div className={styles.AssignOwner}>
-                <TooltipUI message={name} relativeLayout={this.props.deps.relativeLayout}>
-                    <div
-                        className={`${styles.Action} ${classNames({
-                            [styles.Active]: showFollower,
-                        })}`}
-                        onClick={toggleContainer}
-                    >
-                        <div className={` ${styles.AssignOwnerIcon}`}>
-                            {this.state.task.ownerUserId ? (
-                                <UserProfileUI user={this.owner()!} />
-                            ) : (
-                                <MaterialIconUI>face</MaterialIconUI>
-                            )}
-                        </div>
-                    </div>
-                </TooltipUI>
-            </div>
         );
     }
 

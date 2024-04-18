@@ -85,6 +85,7 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                             <div className={styles.Label}>Expire In:</div>
                             <div className={styles.DropDown}>
                                 <DropDownList
+                                    relativeLayout={this.props.deps.relativeLayout}
                                     ref={this.dropDownListRef}
                                     selectOptionKey={
                                         expirationPeriodOptions[0].key

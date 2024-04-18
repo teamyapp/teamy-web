@@ -9,6 +9,13 @@
     outline: none;
 }
 
+@mixin actionIcon {
+    border-radius: 50%;
+    align-items: center;
+    display: flex;
+    --icon-color: white;
+}
+
 .TextField {
     @include textInput;
     height: 30px;

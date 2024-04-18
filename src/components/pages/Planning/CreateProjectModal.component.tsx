@@ -17,7 +17,6 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { Deps } from '@core/dep/deps';
 import { LocalStore } from '@core/storage/syncer/localStore';
-import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import styles from './CreateProjectModal.component.module.scss';
 

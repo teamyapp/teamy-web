@@ -1,5 +1,4 @@
-import classNames from 'classnames';
-import React, { Component, MouseEvent, ReactNode, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
@@ -25,8 +24,6 @@ import { DurationInputUI } from '../DurationInput.ui';
 import { SelectOwnersPopupComponent } from '../SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from '../TaskLinkIcon';
 import { ThreadUI } from '../Thread';
-import { UserProfileUI } from '../UserProfile';
-import { getUserShortName } from '../format';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 30;
@@ -99,8 +96,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                 <SelectOwnersPopupComponent
                                     deps={this.props.deps}
                                     onSelectOwner={this.onTaskOwnerSelected}
-                                    selectedOwnerId={this.state.task?.owner?.id}
-                                    assignOwner={this.renderAssignOwner}
+                                    selectedOwner={this.state.task?.owner}
                                 />
                                 <div className={styles.SaveAction}>
                                     <div
@@ -286,42 +282,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     public close() {
         this.modalRef.current?.close();
     }
-
-    private renderAssignOwner = ({
-        toggleContainer,
-        showFollower,
-    }: {
-        toggleContainer: () => void;
-        showFollower: boolean;
-    }) => {
-        return (
-            <div
-                className={`${styles.Action} ${styles.AssignOwner} ${classNames(
-                    {
-                        [styles.Active]: showFollower,
-                    },
-                )}`}
-                onClick={toggleContainer}
-            >
-                {this.state.task?.owner ? (
-                    <>
-                        <UserProfileUI user={this.state.task.owner} />
-                        <div className={styles.TaskOwnerName}>
-                            {`${getUserShortName(
-                                this.state.task.owner.firstName,
-                                this.state.task.owner.lastName,
-                            )}`}
-                        </div>
-                    </>
-                ) : (
-                    <>
-                        <MaterialIconUI>face</MaterialIconUI>
-                        <div className={styles.TaskOwnerName}>Unassigned</div>
-                    </>
-                )}
-            </div>
-        );
-    };
 
     private updateState(taskId: number) {
         const task = this.graphSource.task(taskId);

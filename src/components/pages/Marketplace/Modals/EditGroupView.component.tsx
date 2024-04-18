@@ -10,6 +10,7 @@ import { Group, GroupType } from '@core/entity/group';
 import { UpdateGroupInput } from '@core/entity/input';
 
 import styles from './EditGroupView.component.module.scss';
+import { RelativeLayout } from '@lib/layout';
 
 const groupTypeOptions: Option[] = [
     { key: 'STATIC', description: 'Static' },
@@ -25,6 +26,7 @@ interface FilterGroupInput {
 }
 
 interface Props {
+    relativeLayout: RelativeLayout;
     group: Group;
     membersLabel: string;
     memberLabel: string;
@@ -120,6 +122,7 @@ export class EditGroupViewComponent extends Component<Props, State> {
                         </div>
                         <DropDownList
                             ref={this.groupTypeDropdownRef}
+                            relativeLayout={this.props.relativeLayout}
                             selectOptionKey={this.state.selectedGroupType}
                             options={groupTypeOptions}
                             onSelectOption={this.onSelectGroupType}

@@ -1,0 +1,64 @@
+@import "shared.scss";
+@import '../../../libs/ui/styleguide/elevation';
+
+$actionIconSize: 24px;
+
+.StoryTable {
+    @include elevation(4);
+    border-radius: 6px;
+    background-color: white;
+    word-break: break-word;
+    width: 100%;
+    height: 100%;
+
+    .TableHeader {
+        th {
+            height: 22px;
+        }
+    }
+
+    .TableBody {
+        .TableRow {
+            td {
+                height: 22px;
+                text-align: center;
+
+                &.Actions {
+                    display: flex;
+                    gap: 8px;
+                    margin-left: auto;
+                    align-items: center;
+                    justify-content: center;
+
+                    .Action {
+                        display: flex;
+                        width: 22px;
+                        height: 22px;
+                        padding: 4px;
+                        border-radius: 4px;
+                        align-items: center;
+                        justify-content: center;
+                        user-select: none;
+
+                        &.Active,
+                        &:hover {
+                            background-color: rgba(0, 0, 0, 0.07);
+                        }
+
+                        &.Save {
+                            background-color: #4caf50;
+                            @include actionIcon;
+                            --icon-size: #{$actionIconSize - 6px};
+                        }
+            
+                        &.Cancel {
+                            background-color: #f44336;
+                            @include actionIcon;
+                            --icon-size: #{$actionIconSize - 6px};
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

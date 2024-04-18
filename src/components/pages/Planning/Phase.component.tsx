@@ -1,5 +1,4 @@
 import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -14,7 +13,20 @@ import { phaseStoryPath } from '@core/routing/routes';
 import { InlineCreateStory } from './InlineCreateStory.component';
 import styles from './Phase.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
+import { DropDownList, Option } from '@lib/ui/DropDownList';
+import { StoryTable } from './StoryTable.component';
 
+type itemViewOptionKey = 'TABLE' | 'INLINE';
+const viewOptions: Option[] = [
+    {
+        key: 'TABLE',
+        description: 'Table view',
+    },
+    {
+        key: 'INLINE',
+        description: 'Inline view',
+    },
+];
 interface Props {
     deps: Deps;
     projectId: number;
@@ -26,6 +38,8 @@ export function PhaseComponent(props: Props) {
     const [phase, setPhase] = useState<Phase>();
     const [onEditingPhase, setOnEditingPhase] = useState(false);
     const [currentTeam, setCurrentTeam] = useState<Team>();
+    const [selectedView, setSelectedView] =
+        useState<itemViewOptionKey>('TABLE');
     const [onEditingNewStoryInBacklog, setOnEditingNewStoryInBacklog] =
         useState(false);
     const [onEditingNewStoryInPhase, setOnEditingNewStoryInPhase] =
@@ -47,6 +61,8 @@ export function PhaseComponent(props: Props) {
     const phaseStorySelectorRef = useRef<ItemsSelector>(
         new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseStoryIds),
     );
+
+    phaseStorySelectorRef.current.setMultiSelectionEnabled(selectedView === "TABLE");
 
     useEffect(() => {
         const selectedBacklogStoryChan =
@@ -297,6 +313,10 @@ export function PhaseComponent(props: Props) {
         backlogStorySelectorRef.current.reset();
     };
 
+    const onSelectedViewChanged = (key: string) => {
+        setSelectedView(key as itemViewOptionKey);
+    };
+
     if (!currentTeam || !project || !phase) {
         return null;
     }
@@ -304,80 +324,81 @@ export function PhaseComponent(props: Props) {
     return (
         <div className={styles.Phase}>
             <div className={styles.PhaseDetail}>
-                <div className={styles.Header}>
-                    <div className={styles.Information}>
-                        {onEditingPhase ? (
-                            <input
-                                className={styles.TextField}
-                                value={phaseName}
-                                onChange={onPhaseNameChange}
-                            />
-                        ) : (
-                            phase.name
-                        )}
-                        <div className={styles.Description}>
-                            {phase.deliveredStories} of {phase.totalStories}{' '}
-                            stories delivered
+                <div className={styles.HeaderSection}>
+                    <div className={styles.Header}>
+                        <div className={styles.Information}>
+                            {onEditingPhase ? (
+                                <input
+                                    className={styles.TextField}
+                                    value={phaseName}
+                                    onChange={onPhaseNameChange}
+                                />
+                            ) : (
+                                phase.name
+                            )}
+                            <div className={styles.Description}>
+                                {phase.deliveredStories} of {phase.totalStories}{' '}
+                                stories delivered
+                            </div>
+                        </div>
+                        <div className={styles.Actions}>
+                            {onEditingPhase ? (
+                                <>
+                                    <TooltipUI
+                                        message='Save'
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={`${styles.Action} ${styles.Save}`}
+                                            onClick={saveEditedPhaseName}
+                                        >
+                                            <MaterialIconUI>
+                                                check
+                                            </MaterialIconUI>
+                                        </div>
+                                    </TooltipUI>
+                                    <TooltipUI
+                                        message='Cancel'
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={`${styles.Action} ${styles.Cancel}`}
+                                            onClick={cancelEditedPhaseName}
+                                        >
+                                            <MaterialIconUI>
+                                                cancel
+                                            </MaterialIconUI>
+                                        </div>
+                                    </TooltipUI>
+                                </>
+                            ) : (
+                                <>
+                                    <TooltipUI
+                                        message='Edit'
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={`${styles.Action} ${styles.Edit}`}
+                                            onClick={onEditPhaseName}
+                                        >
+                                            <MaterialIconUI>
+                                                edit
+                                            </MaterialIconUI>
+                                        </div>
+                                    </TooltipUI>
+                                </>
+                            )}
                         </div>
                     </div>
-                    <div className={styles.Actions}>
-                        {onEditingPhase ? (
-                            <>
-                                <TooltipUI
-                                    message='Save'
-                                    relativeLayout={props.deps.relativeLayout}
-                                >
-                                    <div
-                                        className={`${styles.Action} ${styles.Save}`}
-                                        onClick={saveEditedPhaseName}
-                                    >
-                                        <MaterialIconUI>check</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                                <TooltipUI
-                                    message='Cancel'
-                                    relativeLayout={props.deps.relativeLayout}
-                                >
-                                    <div
-                                        className={`${styles.Action} ${styles.Cancel}`}
-                                        onClick={cancelEditedPhaseName}
-                                    >
-                                        <MaterialIconUI>cancel</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                                {selectedPhaseStoryIds.size > 0 && (
-                                    <div className={styles.Divider}/>
-                                )}
-                            </>
-                        ) : (
-                            <>
-                                <TooltipUI
-                                    message='Edit'
-                                    relativeLayout={props.deps.relativeLayout}
-                                >
-                                    <div
-                                        className={`${styles.Action} ${styles.Edit}`}
-                                        onClick={onEditPhaseName}
-                                    >
-                                        <MaterialIconUI>edit</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                                <div className={styles.Divider} />
-                                <TooltipUI
-                                    message='Add story'
-                                    relativeLayout={props.deps.relativeLayout}
-                                >
-                                    <div
-                                        className={`${styles.Action} ${styles.Add}`}
-                                        onClick={onAddStoryInPhaseClick}
-                                    >
-                                        <MaterialIconUI>add</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                            </>
-                        )}
+                    <div className={styles.Operations}>
                         {selectedPhaseStoryIds.size > 0 && (
-                            <>
+                            <div className={styles.LeftSection}>
                                 <TooltipUI
                                     message='Remove from phase'
                                     relativeLayout={props.deps.relativeLayout}
@@ -402,38 +423,75 @@ export function PhaseComponent(props: Props) {
                                         <MaterialIconUI>close</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                            </>
+                            </div>
                         )}
+                        <div className={styles.RightSection}>
+                            <DropDownList
+                                relativeLayout={props.deps.relativeLayout}
+                                selectOptionKey={selectedView}
+                                options={viewOptions}
+                                onSelectOption={onSelectedViewChanged}
+                            />
+                            <TooltipUI
+                                message='Add story'
+                                relativeLayout={props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.Add}`}
+                                    onClick={onAddStoryInPhaseClick}
+                                >
+                                    <MaterialIconUI>add</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
+                        </div>
                     </div>
                 </div>
                 <div className={styles.StoriesSection}>
-                    {onEditingNewStoryInPhase && (
-                        <InlineCreateStory
+                    {selectedView === 'INLINE' ? (
+                        <>
+                            {onEditingNewStoryInPhase && (
+                                <InlineCreateStory
+                                    deps={props.deps}
+                                    numActionColumns={1}
+                                    onCreateStory={onCreateStoryInPhase}
+                                    onDiscardNewStory={onDiscardNewStoryInPhase}
+                                />
+                            )}
+                            {phase.stories.map((story) => (
+                                <div
+                                    className={styles.InlineStory}
+                                    key={story.id}
+                                    onDoubleClick={onStoryDoubleClickHandler(
+                                        story.id,
+                                    )}
+                                >
+                                    <StoryInlineItemComponent
+                                        story={story}
+                                        deps={props.deps}
+                                        isSelected={selectedPhaseStoryIds.has(
+                                            story.id.toString(),
+                                        )}
+                                        onStoryDetailClickHandler={
+                                            onStoryDetailClickHandler
+                                        }
+                                        onStorySelectHandler={
+                                            onPhaseStorySelect
+                                        }
+                                    />
+                                </div>
+                            ))}
+                        </>
+                    ) : (
+                        <StoryTable
+                            saveCreatingNewStory={onCreateStoryInPhase}
+                            cancelCreatingNewStory={() => setOnEditingNewStoryInPhase(false)}
+                            stories={phase.stories}
                             deps={props.deps}
-                            numActionColumns={1}
-                            onCreateStory={onCreateStoryInPhase}
-                            onDiscardNewStory={onDiscardNewStoryInPhase}
+                            selectedStoryIds={selectedPhaseStoryIds}
+                            onStorySelect={onPhaseStorySelect}
+                            creatingNewStory={onEditingNewStoryInPhase}
                         />
                     )}
-                    {phase.stories.map((story) => (
-                        <div
-                            className={styles.InlineStory}
-                            key={story.id}
-                            onDoubleClick={onStoryDoubleClickHandler(story.id)}
-                        >
-                            <StoryInlineItemComponent
-                                story={story}
-                                deps={props.deps}
-                                isSelected={selectedPhaseStoryIds.has(
-                                    story.id.toString(),
-                                )}
-                                onStoryDetailClickHandler={
-                                    onStoryDetailClickHandler
-                                }
-                                onStorySelectHandler={onPhaseStorySelect}
-                            />
-                        </div>
-                    ))}
                 </div>
             </div>
 

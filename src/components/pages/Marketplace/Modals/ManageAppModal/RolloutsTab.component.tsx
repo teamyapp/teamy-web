@@ -219,6 +219,7 @@ export function RolloutsTabComponent(props: Props) {
                 selectedUserGroupRollout && (
                     <div className={`${styles.Box} ${styles.Rollout}`}>
                         <EditUserGroupRolloutViewComponent
+                            relativeLayout={props.deps.relativeLayout}
                             ref={editUserGroupRolloutViewRef}
                             rollout={selectedUserGroupRollout}
                             isValidVersionNumber={props.isValidVersionNumber}
@@ -240,6 +241,7 @@ export function RolloutsTabComponent(props: Props) {
                     <div className={`${styles.Box} ${styles.Rollout}`}>
                         <EditTeamGroupRolloutViewComponent
                             ref={editTeamGroupRolloutViewRef}
+                            relativeLayout={props.deps.relativeLayout}
                             rollout={selectedTeamGroupRollout}
                             isValidVersionNumber={props.isValidVersionNumber}
                             renderInlineVersionNumber={

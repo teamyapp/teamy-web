@@ -100,6 +100,7 @@ export class UpcomingSection extends Component<Props, State> {
                                 </div>
                                 <div className={styles.SortOrder}>
                                     <DropDownList
+                                        relativeLayout={this.props.relativeLayout}
                                         selectOptionKey={this.props.sortOrder}
                                         options={upcomingSortOrders}
                                         onSelectOption={

@@ -17,54 +17,11 @@ $optionPadding: 8px;
 .DropDownList {
     color: $fontColor;
     font-size: $fontSize;
-    height: $height;
     user-select: none;
     width: $width;
 
     &:focus {
         outline: none;
-    }
-
-    .SelectedOption {
-        background-color: $dropDownColor;
-        border-radius: 4px;
-        display: flex;
-        height: $height;
-        overflow: hidden;
-        width: $width;
-
-        .Option {
-            align-items: center;
-            border-radius: 4px 0 0 4px;
-            box-sizing: border-box;
-            display: flex;
-            flex: 1;
-            font-weight: $fontWeight;
-            height: 100%;
-            line-height: $fontSize;
-            padding: 0 $optionPadding;
-
-            &:hover {
-                background-color: rgba(255, 255, 255, 0.08);
-                cursor: pointer;
-            }
-        }
-
-        .DropDownButton {
-            align-items: center;
-            background-color: $dropDownButtonColor;
-            --icon-color: white;
-            display: flex;
-            height: $height;
-            justify-content: center;
-            --icon-size: #{$height - 6px};
-            width: $height;
-
-            &:hover {
-                background-color: $dropDownButtonHoverColor;
-                cursor: pointer;
-            }
-        }
     }
 
     .AvailableOptions {
@@ -88,6 +45,50 @@ $optionPadding: 8px;
                 background-color: rgba(0, 0, 0, 0.05);
                 cursor: pointer;
             }
+        }
+    }
+}
+
+.SelectedOption {
+    color: $fontColor;
+    background-color: $dropDownColor;
+    border-radius: 4px;
+    display: flex;
+    height: $height;
+    overflow: hidden;
+    width: $width;
+
+    .Option {
+        align-items: center;
+        border-radius: 4px 0 0 4px;
+        box-sizing: border-box;
+        display: flex;
+        flex: 1;
+        font-weight: $fontWeight;
+        height: 100%;
+        line-height: $fontSize;
+        padding: 0 $optionPadding;
+
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            cursor: pointer;
+        }
+    }
+
+    .DropDownButton {
+        color: $fontColor;
+        align-items: center;
+        background-color: $dropDownButtonColor;
+        --icon-color: white;
+        display: flex;
+        height: $height;
+        justify-content: center;
+        --icon-size: #{$height - 6px};
+        width: $height;
+
+        &:hover {
+            background-color: $dropDownButtonHoverColor;
+            cursor: pointer;
         }
     }
 }
