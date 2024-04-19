@@ -193,7 +193,7 @@ export function PhaseComponent(props: Props) {
                 if (phase) {
                     setPhase(phase);
                     setPhaseName(phase.name);
-                    setSortPhaseStories();
+                    setSortPhaseStories(phase.stories);
                 }
             }
         })().then();
@@ -344,12 +344,9 @@ export function PhaseComponent(props: Props) {
         setSelectedView(key as itemViewOptionKey);
     };
 
-    const setSortPhaseStories = () => {
-        if (!phase) {
-            return;
-        }
+    const setSortPhaseStories = (stories: Story[]) => {
 
-        const sortedPhaseStories = [...phase.stories];
+        const sortedPhaseStories = [...stories];
 
         switch (selectedSort) {
             case 'ID':
@@ -383,7 +380,7 @@ export function PhaseComponent(props: Props) {
 
     const onSelectedSortChanged = (key: string) => {
         setSelectedSort(key as sortOptionKey);
-        setSortPhaseStories();
+        setSortPhaseStories(phase?.stories || []);
     };
 
     if (!currentTeam || !project || !phase) {
