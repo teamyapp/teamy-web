@@ -32,11 +32,11 @@ type sortOptionKey = 'ID' | 'NAME' | 'PRIORITY' | 'STATUS';
 const sortOptions: Option[] = [
     {
         key: 'ID',
-        description: "Id",
+        description: 'Id',
     },
     {
         key: 'NAME',
-        description: "Name",
+        description: 'Name',
     },
     {
         key: 'PRIORITY',
@@ -82,7 +82,9 @@ export function PhaseComponent(props: Props) {
     const phaseStorySelectorRef = useRef<ItemsSelector>(
         new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseStoryIds),
     );
-    const [sortedPhaseStories, setSortedPhaseStories] = useState<Story[]>(phase?.stories || []);
+    const [sortedPhaseStories, setSortedPhaseStories] = useState<Story[]>(
+        phase?.stories || [],
+    );
 
     phaseStorySelectorRef.current.setMultiSelectionEnabled(
         selectedView === 'TABLE',
@@ -354,9 +356,7 @@ export function PhaseComponent(props: Props) {
                 sortedPhaseStories.sort((a, b) => a.id - b.id);
                 break;
             case 'NAME':
-                sortedPhaseStories.sort((a, b) =>
-                    a.name.localeCompare(b.name),
-                );
+                sortedPhaseStories.sort((a, b) => a.name.localeCompare(b.name));
                 break;
             case 'PRIORITY':
                 sortedPhaseStories.sort((a, b) => {
@@ -379,12 +379,12 @@ export function PhaseComponent(props: Props) {
         }
 
         setSortedPhaseStories(sortedPhaseStories);
-    }
+    };
 
     const onSelectedSortChanged = (key: string) => {
         setSelectedSort(key as sortOptionKey);
         setSortPhaseStories();
-    }
+    };
 
     if (!currentTeam || !project || !phase) {
         return null;
@@ -467,18 +467,28 @@ export function PhaseComponent(props: Props) {
                     </div>
                     <div className={styles.Operations}>
                         <div className={styles.LeftSection}>
-                            <DropDownList
+                            <TooltipUI
+                                message='View mode'
                                 relativeLayout={props.deps.relativeLayout}
-                                selectOptionKey={selectedView}
-                                options={viewOptions}
-                                onSelectOption={onSelectedViewChanged}
-                            />
-                            <DropDownList
+                            >
+                                <DropDownList
+                                    relativeLayout={props.deps.relativeLayout}
+                                    selectOptionKey={selectedView}
+                                    options={viewOptions}
+                                    onSelectOption={onSelectedViewChanged}
+                                />
+                            </TooltipUI>
+                            <TooltipUI
+                                message='Sort'
                                 relativeLayout={props.deps.relativeLayout}
-                                selectOptionKey={selectedSort}
-                                options={sortOptions}
-                                onSelectOption={onSelectedSortChanged}
-                            />
+                            >
+                                <DropDownList
+                                    relativeLayout={props.deps.relativeLayout}
+                                    selectOptionKey={selectedSort}
+                                    options={sortOptions}
+                                    onSelectOption={onSelectedSortChanged}
+                                />
+                            </TooltipUI>
                         </div>
 
                         <div className={styles.RightSection}>
