@@ -153,14 +153,20 @@ export const StoryTable: FC<Props> = (props) => {
                             />
                         </td>
                         <td>
-                            <StoryPriority
-                                relativeLayout={props.deps.relativeLayout}
-                                priority={creatingStoryInput?.priority}
-                                onPriorityChange={onCreatingStoryPriorityChange}
-                            />
+                            <div className={styles.StoryPriority}>
+                                <StoryPriority
+                                    relativeLayout={props.deps.relativeLayout}
+                                    priority={creatingStoryInput?.priority}
+                                    onPriorityChange={
+                                        onCreatingStoryPriorityChange
+                                    }
+                                />
+                            </div>
                         </td>
                         <td>
-                            <StoryStatus status={'TODO'} />
+                            <div className={styles.StoryStatus}>
+                                <StoryStatus status={'TODO'} />
+                            </div>
                         </td>
                         <td className={styles.Actions}>
                             <div className={styles.Action}>
@@ -207,7 +213,9 @@ export const StoryTable: FC<Props> = (props) => {
                             <input
                                 type='checkbox'
                                 className={styles.Checkbox}
-                                checked={props.selectedStoryIds.has(story.id.toString())}
+                                checked={props.selectedStoryIds.has(
+                                    story.id.toString(),
+                                )}
                                 onChange={onSelectStoryChecked(story.id)}
                             />
                         </td>
@@ -223,16 +231,20 @@ export const StoryTable: FC<Props> = (props) => {
                             />
                         </td>
                         <td>
-                            <StoryPriority
-                                relativeLayout={props.deps.relativeLayout}
-                                priority={story.priority}
-                                onPriorityChange={storyPriorityChangedHandler(
-                                    story,
-                                )}
-                            />
+                            <div className={styles.StoryPriority}>
+                                <StoryPriority
+                                    relativeLayout={props.deps.relativeLayout}
+                                    priority={story.priority}
+                                    onPriorityChange={storyPriorityChangedHandler(
+                                        story,
+                                    )}
+                                />
+                            </div>
                         </td>
                         <td>
-                            <StoryStatus status={story.status} />
+                            <div className={styles.StoryStatus}>
+                                <StoryStatus status={story.status} />
+                            </div>
                         </td>
                         <td className={styles.Actions}>
                             <div className={styles.Action}>

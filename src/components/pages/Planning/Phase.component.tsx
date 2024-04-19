@@ -15,6 +15,7 @@ import styles from './Phase.component.module.scss';
 import { StoryInlineItemComponent } from './StoryInlineItem.component';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { StoryTable } from './StoryTable.component';
+import { Story } from '@core/entity/story';
 
 type itemViewOptionKey = 'TABLE' | 'INLINE';
 const viewOptions: Option[] = [
@@ -25,6 +26,25 @@ const viewOptions: Option[] = [
     {
         key: 'INLINE',
         description: 'Inline view',
+    },
+];
+type sortOptionKey = 'ID' | 'NAME' | 'PRIORITY' | 'STATUS';
+const sortOptions: Option[] = [
+    {
+        key: 'ID',
+        description: "Id",
+    },
+    {
+        key: 'NAME',
+        description: "Name",
+    },
+    {
+        key: 'PRIORITY',
+        description: 'Priority',
+    },
+    {
+        key: 'STATUS',
+        description: 'Status',
     },
 ];
 interface Props {
@@ -38,6 +58,7 @@ export function PhaseComponent(props: Props) {
     const [phase, setPhase] = useState<Phase>();
     const [onEditingPhase, setOnEditingPhase] = useState(false);
     const [currentTeam, setCurrentTeam] = useState<Team>();
+    const [selectedSort, setSelectedSort] = useState<sortOptionKey>('ID');
     const [selectedView, setSelectedView] =
         useState<itemViewOptionKey>('TABLE');
     const [onEditingNewStoryInBacklog, setOnEditingNewStoryInBacklog] =
@@ -61,8 +82,11 @@ export function PhaseComponent(props: Props) {
     const phaseStorySelectorRef = useRef<ItemsSelector>(
         new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseStoryIds),
     );
+    const [sortedPhaseStories, setSortedPhaseStories] = useState<Story[]>(phase?.stories || []);
 
-    phaseStorySelectorRef.current.setMultiSelectionEnabled(selectedView === "TABLE");
+    phaseStorySelectorRef.current.setMultiSelectionEnabled(
+        selectedView === 'TABLE',
+    );
 
     useEffect(() => {
         const selectedBacklogStoryChan =
@@ -167,6 +191,7 @@ export function PhaseComponent(props: Props) {
                 if (phase) {
                     setPhase(phase);
                     setPhaseName(phase.name);
+                    setSortPhaseStories();
                 }
             }
         })().then();
@@ -317,6 +342,50 @@ export function PhaseComponent(props: Props) {
         setSelectedView(key as itemViewOptionKey);
     };
 
+    const setSortPhaseStories = () => {
+        if (!phase) {
+            return;
+        }
+
+        const sortedPhaseStories = [...phase.stories];
+
+        switch (selectedSort) {
+            case 'ID':
+                sortedPhaseStories.sort((a, b) => a.id - b.id);
+                break;
+            case 'NAME':
+                sortedPhaseStories.sort((a, b) =>
+                    a.name.localeCompare(b.name),
+                );
+                break;
+            case 'PRIORITY':
+                sortedPhaseStories.sort((a, b) => {
+                    if (!a.priority) {
+                        return -1;
+                    }
+
+                    if (!b.priority) {
+                        return 1;
+                    }
+
+                    return a.priority.localeCompare(b.priority);
+                });
+                break;
+            case 'STATUS':
+                sortedPhaseStories.sort((a, b) =>
+                    a.status.localeCompare(b.status),
+                );
+                break;
+        }
+
+        setSortedPhaseStories(sortedPhaseStories);
+    }
+
+    const onSelectedSortChanged = (key: string) => {
+        setSelectedSort(key as sortOptionKey);
+        setSortPhaseStories();
+    }
+
     if (!currentTeam || !project || !phase) {
         return null;
     }
@@ -397,41 +466,58 @@ export function PhaseComponent(props: Props) {
                         </div>
                     </div>
                     <div className={styles.Operations}>
-                        {selectedPhaseStoryIds.size > 0 && (
-                            <div className={styles.LeftSection}>
-                                <TooltipUI
-                                    message='Remove from phase'
-                                    relativeLayout={props.deps.relativeLayout}
-                                >
-                                    <div
-                                        className={`${styles.Action} ${styles.Remove}`}
-                                        onClick={onRemoveStoriesToPhaseClick}
-                                    >
-                                        <MaterialIconUI>
-                                            read_more
-                                        </MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                                <TooltipUI
-                                    message='Delete'
-                                    relativeLayout={props.deps.relativeLayout}
-                                >
-                                    <div
-                                        className={`${styles.Action} ${styles.Delete}`}
-                                        onClick={onDeletePhaseStoriesClick}
-                                    >
-                                        <MaterialIconUI>close</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                            </div>
-                        )}
-                        <div className={styles.RightSection}>
+                        <div className={styles.LeftSection}>
                             <DropDownList
                                 relativeLayout={props.deps.relativeLayout}
                                 selectOptionKey={selectedView}
                                 options={viewOptions}
                                 onSelectOption={onSelectedViewChanged}
                             />
+                            <DropDownList
+                                relativeLayout={props.deps.relativeLayout}
+                                selectOptionKey={selectedSort}
+                                options={sortOptions}
+                                onSelectOption={onSelectedSortChanged}
+                            />
+                        </div>
+
+                        <div className={styles.RightSection}>
+                            {selectedPhaseStoryIds.size > 0 && (
+                                <>
+                                    <TooltipUI
+                                        message='Remove from phase'
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={`${styles.Action} ${styles.Remove}`}
+                                            onClick={
+                                                onRemoveStoriesToPhaseClick
+                                            }
+                                        >
+                                            <MaterialIconUI>
+                                                read_more
+                                            </MaterialIconUI>
+                                        </div>
+                                    </TooltipUI>
+                                    <TooltipUI
+                                        message='Delete'
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={`${styles.Action} ${styles.Delete}`}
+                                            onClick={onDeletePhaseStoriesClick}
+                                        >
+                                            <MaterialIconUI>
+                                                close
+                                            </MaterialIconUI>
+                                        </div>
+                                    </TooltipUI>
+                                </>
+                            )}
                             <TooltipUI
                                 message='Add story'
                                 relativeLayout={props.deps.relativeLayout}
@@ -457,7 +543,7 @@ export function PhaseComponent(props: Props) {
                                     onDiscardNewStory={onDiscardNewStoryInPhase}
                                 />
                             )}
-                            {phase.stories.map((story) => (
+                            {sortedPhaseStories.map((story) => (
                                 <div
                                     className={styles.InlineStory}
                                     key={story.id}
@@ -484,8 +570,10 @@ export function PhaseComponent(props: Props) {
                     ) : (
                         <StoryTable
                             saveCreatingNewStory={onCreateStoryInPhase}
-                            cancelCreatingNewStory={() => setOnEditingNewStoryInPhase(false)}
-                            stories={phase.stories}
+                            cancelCreatingNewStory={() =>
+                                setOnEditingNewStoryInPhase(false)
+                            }
+                            stories={sortedPhaseStories}
                             deps={props.deps}
                             selectedStoryIds={selectedPhaseStoryIds}
                             onStorySelect={onPhaseStorySelect}
