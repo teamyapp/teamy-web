@@ -10,7 +10,6 @@ import {
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
-import { Project } from '@core/entity/project';
 import { Team } from '@core/entity/team';
 import { projectPath } from '@core/routing/routes';
 
@@ -137,8 +136,6 @@ export const ProjectsComponent: FC<Props> = (props) => {
         <div className={styles.Projects}>
             <div className={styles.Section}>
                 <div className={styles.TitleRow}>
-                    <div className={styles.Title}>Projects</div>
-                    <div className={styles.Spacer} />
                     <div className={styles.TitleActions}>
                         <div
                             className={`${styles.TitleAction} ${styles.CreateProject}`}
@@ -156,6 +153,9 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                 style={{
                                     backgroundColor: project.color,
                                 }}
+                                onClick={onViewProjectDetailClickHandler(
+                                    project.id,
+                                )}
                             >
                                 {project.iconUrl ? (
                                     <div className={styles.IconUrl}>
@@ -256,23 +256,6 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                                 >
                                                     <MaterialIconUI>
                                                         close
-                                                    </MaterialIconUI>
-                                                </div>
-                                            </TooltipUI>
-                                            <TooltipUI
-                                                message='Detail'
-                                                relativeLayout={
-                                                    props.deps.relativeLayout
-                                                }
-                                            >
-                                                <div
-                                                    className={`${styles.Detail} ${styles.Action}`}
-                                                    onClick={onViewProjectDetailClickHandler(
-                                                        project.id,
-                                                    )}
-                                                >
-                                                    <MaterialIconUI>
-                                                        details
                                                     </MaterialIconUI>
                                                 </div>
                                             </TooltipUI>
