@@ -316,7 +316,10 @@ export const StoryTable: FC<Props> = (props) => {
                         </td>
                         <td>
                             <div className={styles.StoryStatus}>
-                                <StoryStatus relativeLayout={props.deps.relativeLayout} status={story.status} onStatusChange={handleStoryStatusChanged(story)}/>
+                                <StoryStatus 
+                                    relativeLayout={props.deps.relativeLayout} 
+                                    status={story.status} 
+                                    onStatusChange={handleStoryStatusChanged(story)}/>
                             </div>
                         </td>
                         <td className={styles.OwnerCol}>
