@@ -598,13 +598,37 @@ export class StateSyncer {
         appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
             (relation) => relation.taskId !== taskId,
         );
-        
+
         appState.storyTaskRelations = appState.storyTaskRelations.filter(
             (relation) => relation.taskId !== taskId,
         );
         delete appState.tasks[taskId];
         this.localStore.updateState(appState);
         await this.taskClient.deleteTask(`${taskId}`);
+    }
+
+    public async moveTaskToUpcoming(taskId: number) {
+        let appState = this.localStore.getState();
+        const task = appState.tasks[taskId];
+
+        switch (task.status) {
+            case 'IN_PROGRESS':
+            case 'PAUSED':
+                task.status = 'PAUSED';
+                break;
+            default:
+                task.status = 'TODO';
+        }
+
+        // Responsive UI for drag & drop
+        this.localStore.updateState(appState);
+
+        const remoteTask = await this.taskClient.moveTaskToUpcoming(
+            `${taskId}`,
+        );
+        appState = this.localStore.getState();
+        appState = mergeTask(appState, remoteTask);
+        this.localStore.updateState(appState);
     }
 
     public async moveTaskToInProgress(taskId: number) {
@@ -638,36 +662,12 @@ export class StateSyncer {
     public async moveTaskToDelivered(taskId: number) {
         let appState = this.localStore.getState();
         const task = appState.tasks[taskId];
-        task.status = 'IN_PROGRESS';
+        task.status = 'DELIVERED';
 
         // Responsive UI for drag & drop
         this.localStore.updateState(appState);
 
         const remoteTask = await this.taskClient.moveTaskToDelivered(
-            `${taskId}`,
-        );
-        appState = this.localStore.getState();
-        appState = mergeTask(appState, remoteTask);
-        this.localStore.updateState(appState);
-    }
-
-    public async moveTaskToUpcoming(taskId: number) {
-        let appState = this.localStore.getState();
-        const task = appState.tasks[taskId];
-
-        switch (task.status) {
-            case 'IN_PROGRESS':
-            case 'PAUSED':
-                task.status = 'PAUSED';
-                break;
-            default:
-                task.status = 'TODO';
-        }
-
-        // Responsive UI for drag & drop
-        this.localStore.updateState(appState);
-
-        const remoteTask = await this.taskClient.moveTaskToUpcoming(
             `${taskId}`,
         );
         appState = this.localStore.getState();
@@ -941,11 +941,13 @@ export class StateSyncer {
     }
 
     public async getProject(projectId: number): Promise<void> {
-        const remoteProject = await this.projectClient.getProject(`${projectId}`);
+        const remoteProject = await this.projectClient.getProject(
+            `${projectId}`,
+        );
         if (!remoteProject) {
             return;
         }
-        
+
         let appState = this.localStore.getState();
         appState = mergeProject(appState, remoteProject);
         this.localStore.updateState(appState);
@@ -956,7 +958,7 @@ export class StateSyncer {
         if (!remotePhase) {
             return;
         }
-        
+
         let appState = this.localStore.getState();
         appState = mergePhase(appState, remotePhase);
         this.localStore.updateState(appState);
@@ -967,7 +969,7 @@ export class StateSyncer {
         if (!remoteStory) {
             return;
         }
-        
+
         let appState = this.localStore.getState();
         appState = mergeStory(appState, remoteStory);
         this.localStore.updateState(appState);

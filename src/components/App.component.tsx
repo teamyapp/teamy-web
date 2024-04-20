@@ -758,25 +758,81 @@ export class AppComponent extends Component<Props, State> {
             case backlogSectionId:
                 this.processTask(task, context);
                 break;
-            case needAttentionSectionId:
-            case inProgressSectionId:
+            case upcomingSectionId: {
                 switch (destSectionId) {
-                    case backlogSectionId:
+                    case backlogSectionId: {
+                        this.removeTaskFromSprint(task.id);
+                        break;
+                    }
+                    case inProgressSectionId: {
+                        this.stateSyncer.moveTaskToInProgress(task.id);
+                        break;
+                    }
+                    case awaitingSectionId: {
+                        // this.stateSyncer.moveTaskToAwaiting(task.id);
+                        break;
+                    }
+                    case deliveredSectionId: {
+                        this.stateSyncer.moveTaskToDelivered(task.id);
+                        break;
+                    }
+                }
+                break;
+            }
+            case inProgressSectionId: {
+                switch (destSectionId) {
+                    case backlogSectionId: {
+                        this.removeTaskFromSprint(task.id);
+                        break;
+                    }
+                    case awaitingSectionId: {
+                        // this.stateSyncer.moveTaskToAwaiting(task.id);
+                        break;
+                    }
+                    case deliveredSectionId:
+                        this.stateSyncer.moveTaskToDelivered(task.id);
+                        break;
+                }
+                break;
+            }
+            case awaitingSectionId: {
+                switch (destSectionId) {
+                    case backlogSectionId: {
+                        this.removeTaskFromSprint(task.id);
+                        break;
+                    }
+                    case inProgressSectionId: {
+                        this.stateSyncer.moveTaskToInProgress(task.id);
+                        break;
+                    }
+                    case upcomingSectionId: {
                         this.stateSyncer.moveTaskToUpcoming(task.id);
-                        this.removeTaskFromSprint(task.id);
                         break;
+                    }
+                    case deliveredSectionId: {
+                        this.stateSyncer.moveTaskToDelivered(task.id);
+                        break;
+                    }
                 }
-
                 break;
-            case upcomingSectionId:
-            case deliveredSectionId:
+            }
+            case deliveredSectionId: {
                 switch (destSectionId) {
-                    case backlogSectionId:
+                    case backlogSectionId: {
                         this.removeTaskFromSprint(task.id);
                         break;
+                    }
+                    case upcomingSectionId: {
+                        this.stateSyncer.moveTaskToUpcoming(task.id);
+                        break;
+                    }
+                    case inProgressSectionId: {
+                        this.stateSyncer.moveTaskToInProgress(task.id);
+                        break;
+                    }
                 }
-
                 break;
+            }
         }
     }
 
