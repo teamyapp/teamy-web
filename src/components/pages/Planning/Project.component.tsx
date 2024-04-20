@@ -7,7 +7,7 @@ import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
-import { CreateStoryInput } from '@core/entity/input';
+import { CreateStoryInput, UpdatePhaseInput } from '@core/entity/input';
 import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
 import { Team } from '@core/entity/team';
@@ -49,7 +49,10 @@ export function ProjectComponent(props: Props) {
         useRef<CreatePhaseModalComponentHandle>(null);
     const updatePhaseModalComponentRef =
         useRef<UpdatePhaseModalComponentHandle>(null);
-    const [editingPhase, setEditingPhase] = useState<Phase>();
+    const [editingPhaseInput, setEditingPhaseInput] = useState<{
+        phaseId: number;
+        updatePhaseInput: UpdatePhaseInput;
+    }>();
     const timelineRef = useRef<TimelineComponentHandle>(null);
 
     const [selectedStoryIds, setSelectedStoryIds] = useState<Set<string>>(
@@ -69,6 +72,13 @@ export function ProjectComponent(props: Props) {
     const phaseSelectorRef = useRef<ItemsSelector>(
         new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseIds),
     );
+    const handleUpdatePhase = (updatePhaseInput: UpdatePhaseInput) => {
+        if (!editingPhaseInput) {
+            return;
+        }
+
+        props.deps.stateSyncer.updatePhase(editingPhaseInput.phaseId, updatePhaseInput);
+    };
 
     useEffect(() => {
         const selectedStoriesChan =
@@ -233,7 +243,15 @@ export function ProjectComponent(props: Props) {
 
     const onPhaseUpdateHandler = (phase: Phase) => (event: MouseEvent) => {
         event.stopPropagation();
-        setEditingPhase(phase);
+        setEditingPhaseInput({
+            phaseId: phase.id,
+            updatePhaseInput: {
+                name: phase.name,
+                expectedStartAt: phase.expectedStartAt,
+                expectedEndAt: phase.expectedEndAt,
+                status: phase.status,
+            },
+        });
         updatePhaseModalComponentRef.current?.open();
     };
 
@@ -492,11 +510,11 @@ export function ProjectComponent(props: Props) {
                 deps={props.deps}
                 projectId={props.projectId}
             />
-            {editingPhase && (
+            {editingPhaseInput && (
                 <UpdatePhaseModalComponent
                     ref={updatePhaseModalComponentRef}
-                    deps={props.deps}
-                    phase={editingPhase}
+                    updatePhaseInput={editingPhaseInput.updatePhaseInput}
+                    updatePhase={handleUpdatePhase}
                 />
             )}
         </div>
