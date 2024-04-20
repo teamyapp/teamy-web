@@ -32,6 +32,7 @@ $actionIconSize: 28px;
 .AssignOwner {
     --profile-height: #{$actionIconSize};
     --profile-width: #{$actionIconSize};
+    cursor: pointer;
 
     .AssignOwnerIcon {
         display: flex;

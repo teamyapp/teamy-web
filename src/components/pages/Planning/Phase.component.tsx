@@ -200,7 +200,7 @@ export function PhaseComponent(props: Props) {
                 if (phase) {
                     setPhase(phase);
                     setPhaseName(phase.name);
-                    setSortPhaseStories(phase.stories);
+                    setSortPhaseStories(phase.stories, selectedOrder);
                 }
             }
         })().then();
@@ -306,13 +306,17 @@ export function PhaseComponent(props: Props) {
         setOnEditingNewStoryInBacklog(true);
     };
 
-    const onCreateStoryInPhase = async (story: CreateStoryInput) => {
+    const onCreateStoryInPhase = async (story?: CreateStoryInput) => {
+        setOnEditingNewStoryInPhase(false);
+        if (!story) {
+            return
+        }
+
         const storyId = await props.deps.stateSyncer.createStory(
             props.projectId,
             story,
         );
         props.deps.stateSyncer.addStoryToPhase(props.phaseId, storyId);
-        setOnEditingNewStoryInPhase(false);
     };
 
     const onCreateStoryInBacklog = (story: CreateStoryInput) => {
@@ -351,7 +355,7 @@ export function PhaseComponent(props: Props) {
         setSelectedView(key as itemViewOptionKey);
     };
 
-    const setSortPhaseStories = (stories: Story[]) => {
+    const setSortPhaseStories = (stories: Story[], selectedOrder:sortOptionKey) => {
         const sortedPhaseStories = [...stories];
 
         switch (selectedOrder) {
@@ -374,7 +378,7 @@ export function PhaseComponent(props: Props) {
 
     const onSelectedSortOrder = (key: string) => {
         setSelectedOrder(key as sortOptionKey);
-        setSortPhaseStories(phase?.stories || []);
+        setSortPhaseStories(phase?.stories || [], key as sortOptionKey);
     };
 
     if (!currentTeam || !project || !phase) {
@@ -582,6 +586,7 @@ export function PhaseComponent(props: Props) {
                             selectedStoryIds={selectedPhaseStoryIds}
                             onStorySelect={onPhaseStorySelect}
                             creatingNewStory={onEditingNewStoryInPhase}
+                            onStoryDetailsClick={onStoryDetailClickHandler}
                         />
                     )}
                 </div>

@@ -15,9 +15,10 @@ interface Props {
     deps: Deps;
     creatingNewStory: boolean;
     cancelCreatingNewStory: () => void;
-    saveCreatingNewStory: (story: CreateStoryInput) => void;
+    saveCreatingNewStory: (story?: CreateStoryInput) => void;
     onStorySelect: (storyId: number) => void;
     selectedStoryIds: Set<string>;
+    onStoryDetailsClick: (storyId: number) => void;
 }
 
 export const StoryTable: FC<Props> = (props) => {
@@ -32,12 +33,13 @@ export const StoryTable: FC<Props> = (props) => {
     };
 
     const onSaveCreatingStoryClick = () => {
-        if (!creatingStoryInput) {
-            return;
-        }
+        setCreatingStoryInput(undefined);
 
         props.saveCreatingNewStory(creatingStoryInput);
-        setCreatingStoryInput(undefined);
+    };
+
+    const handleStoryDetailClick = (storyId: number) => () => {
+        props.onStoryDetailsClick(storyId);
     };
 
     const onCancelCreatingStoryClick = () => {
@@ -125,16 +127,29 @@ export const StoryTable: FC<Props> = (props) => {
         });
     };
 
+    const handleStoryNameClicked = (story: Story) => () => {
+        setEditingStoryInputs({
+            ...editingStoryInputs,
+            [story.id]: {
+                name: story.name,
+                status: story.status,
+                priority: story.priority,
+                ownerId: story.owner?.id,
+            },
+        });
+    };
+
     return (
         <table className={styles.StoryTable}>
             <thead className={styles.TableHeader}>
                 <tr>
-                    <th></th>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Priority</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th className={styles.CheckboxCol}></th>
+                    <th className={styles.IdCol}>ID</th>
+                    <th className={styles.NameCol}>Name</th>
+                    <th className={styles.PriorityCol}>Priority</th>
+                    <th className={styles.StatusCol}>Status</th>
+                    <th className={styles.OwnerCol}>Owner</th>
+                    <th className={styles.ActionsCol}>Actions</th>
                 </tr>
             </thead>
             <tbody className={styles.TableBody}>
@@ -143,11 +158,48 @@ export const StoryTable: FC<Props> = (props) => {
                         <td></td>
                         <td></td>
                         <td>
-                            <input
-                                className={styles.TextField}
-                                value={creatingStoryInput?.name}
-                                onChange={onCreatingStoryNameChange}
-                            />
+                            <div className={styles.CreatingStoryName}>
+                                <input
+                                    autoFocus
+                                    className={styles.TextField}
+                                    value={creatingStoryInput?.name}
+                                    onChange={onCreatingStoryNameChange}
+                                />
+
+                                <div className={styles.Actions}>
+                                    <TooltipUI
+                                        message='Save'
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={`${styles.Action} ${styles.Save}`}
+                                            onClick={onSaveCreatingStoryClick}
+                                        >
+                                            <MaterialIconUI>
+                                                save
+                                            </MaterialIconUI>
+                                        </div>
+                                    </TooltipUI>
+
+                                    <TooltipUI
+                                        message='Cancel'
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={`${styles.Action} ${styles.Cancel}`}
+                                            onClick={onCancelCreatingStoryClick}
+                                        >
+                                            <MaterialIconUI>
+                                                close
+                                            </MaterialIconUI>
+                                        </div>
+                                    </TooltipUI>
+                                </div>
+                            </div>
                         </td>
                         <td>
                             <div className={styles.StoryPriority}>
@@ -165,8 +217,8 @@ export const StoryTable: FC<Props> = (props) => {
                                 <StoryStatus status={'TODO'} />
                             </div>
                         </td>
-                        <td className={styles.Actions}>
-                            <div className={styles.Action}>
+                        <td className={styles.OwnerCol}>
+                            <div className={styles.StoryOwner}>
                                 <SelectOwnersPopupComponent
                                     deps={props.deps}
                                     onSelectOwner={onSelectCreatingStoryOwner}
@@ -179,34 +231,17 @@ export const StoryTable: FC<Props> = (props) => {
                                     }
                                 />
                             </div>
-                            <TooltipUI
-                                message='Save'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.Save}`}
-                                    onClick={onSaveCreatingStoryClick}
-                                >
-                                    <MaterialIconUI>save</MaterialIconUI>
-                                </div>
-                            </TooltipUI>
-                            <TooltipUI
-                                message='Delete'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.Cancel}`}
-                                    onClick={onCancelCreatingStoryClick}
-                                >
-                                    <MaterialIconUI>close</MaterialIconUI>
-                                </div>
-                            </TooltipUI>
                         </td>
+                        <td className={styles.Actions}></td>
                     </tr>
                 )}
                 {props.stories.map((story) => (
-                    <tr key={story.id} className={styles.TableRow}>
-                        <td>
+                    <tr
+                        key={story.id}
+                        className={styles.TableRow}
+                        onBlur={handleSaveStoryClick(story.id)}
+                    >
+                        <td className={styles.CheckboxCol}>
                             <input
                                 type='checkbox'
                                 className={styles.Checkbox}
@@ -216,16 +251,27 @@ export const StoryTable: FC<Props> = (props) => {
                                 onChange={onSelectStoryChecked(story.id)}
                             />
                         </td>
-                        <td>{story.id}</td>
-                        <td>
-                            <input
-                                className={styles.TextField}
-                                value={
-                                    editingStoryInputs[story.id]?.name ??
-                                    story.name
-                                }
-                                onChange={storyNameChangedHandler(story)}
-                            />
+                        <td className={styles.IdCol}>{story.id}</td>
+                        <td className={styles.NameCol}>
+                            {editingStoryInputs[story.id] ? (
+                                <input
+                                    autoFocus
+                                    className={styles.TextField}
+                                    value={
+                                        editingStoryInputs[story.id]?.name ??
+                                        story.name
+                                    }
+                                    onChange={storyNameChangedHandler(story)}
+                                />
+                            ) : (
+                                <div
+                                    onDoubleClick={handleStoryNameClicked(
+                                        story,
+                                    )}
+                                >
+                                    {story.name}
+                                </div>
+                            )}
                         </td>
                         <td>
                             <div className={styles.StoryPriority}>
@@ -243,8 +289,8 @@ export const StoryTable: FC<Props> = (props) => {
                                 <StoryStatus status={story.status} />
                             </div>
                         </td>
-                        <td className={styles.Actions}>
-                            <div className={styles.Action}>
+                        <td className={styles.OwnerCol}>
+                            <div className={styles.StoryOwner}>
                                 <SelectOwnersPopupComponent
                                     deps={props.deps}
                                     onSelectOwner={handleSelectStoryOwner(
@@ -253,28 +299,38 @@ export const StoryTable: FC<Props> = (props) => {
                                     selectedOwner={story.owner}
                                 />
                             </div>
-                            <TooltipUI
-                                message='Save'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.Save}`}
-                                    onClick={handleSaveStoryClick(story.id)}
+                        </td>
+                        <td className={styles.Actions}>
+                  
+                                <TooltipUI
+                                    message='Delete'
+                                    relativeLayout={props.deps.relativeLayout}
                                 >
-                                    <MaterialIconUI>save</MaterialIconUI>
-                                </div>
-                            </TooltipUI>
-                            <TooltipUI
-                                message='Delete'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.Cancel}`}
-                                    onClick={handleDeleteStoryClick(story.id)}
+                                    <div
+                                        className={`${styles.Action} ${styles.Cancel}`}
+                                        onClick={handleDeleteStoryClick(
+                                            story.id,
+                                        )}
+                                    >
+                                        <MaterialIconUI>close</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                                <TooltipUI
+                                    message='Details'
+                                    relativeLayout={props.deps.relativeLayout}
                                 >
-                                    <MaterialIconUI>close</MaterialIconUI>
-                                </div>
-                            </TooltipUI>
+                                    <div
+                                        className={`${styles.Action} ${styles.Details}`}
+                                        onClick={handleStoryDetailClick(
+                                            story.id,
+                                        )}
+                                    >
+                                        <MaterialIconUI>
+                                            settings
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            
                         </td>
                     </tr>
                 ))}
