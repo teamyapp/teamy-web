@@ -462,23 +462,27 @@ export function PhaseComponent(props: Props) {
                                 message='View mode'
                                 relativeLayout={props.deps.relativeLayout}
                             >
+                                <div className={styles.Selections}>
                                 <DropDownList
                                     relativeLayout={props.deps.relativeLayout}
                                     selectOptionKey={selectedView}
                                     options={viewOptions}
                                     onSelectOption={onSelectView}
                                 />
+                                </div>
                             </TooltipUI>
                             <TooltipUI
                                 message='Order by'
                                 relativeLayout={props.deps.relativeLayout}
                             >
+                                <div className={styles.Selections}>
                                 <DropDownList
                                     relativeLayout={props.deps.relativeLayout}
                                     selectOptionKey={selectedOrder}
                                     options={orderOptions}
                                     onSelectOption={onSelectedSortOrder}
                                 />
+                                </div>
                             </TooltipUI>
                         </div>
                         <div className={styles.RightSection}>
