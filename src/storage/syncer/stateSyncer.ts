@@ -598,7 +598,7 @@ export class StateSyncer {
         appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
             (relation) => relation.taskId !== taskId,
         );
-        
+
         appState.storyTaskRelations = appState.storyTaskRelations.filter(
             (relation) => relation.taskId !== taskId,
         );
@@ -941,11 +941,13 @@ export class StateSyncer {
     }
 
     public async getProject(projectId: number): Promise<void> {
-        const remoteProject = await this.projectClient.getProject(`${projectId}`);
+        const remoteProject = await this.projectClient.getProject(
+            `${projectId}`,
+        );
         if (!remoteProject) {
             return;
         }
-        
+
         let appState = this.localStore.getState();
         appState = mergeProject(appState, remoteProject);
         this.localStore.updateState(appState);
@@ -956,7 +958,7 @@ export class StateSyncer {
         if (!remotePhase) {
             return;
         }
-        
+
         let appState = this.localStore.getState();
         appState = mergePhase(appState, remotePhase);
         this.localStore.updateState(appState);
@@ -967,7 +969,7 @@ export class StateSyncer {
         if (!remoteStory) {
             return;
         }
-        
+
         let appState = this.localStore.getState();
         appState = mergeStory(appState, remoteStory);
         this.localStore.updateState(appState);
