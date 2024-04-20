@@ -1,6 +1,6 @@
 import { Deps } from '@core/dep/deps';
 import { CreateStoryInput, UpdateStoryInput } from '@core/entity/input';
-import { Story } from '@core/entity/story';
+import { Story, StoryStatus as Status } from '@core/entity/story';
 import { ChangeEvent, FC, useState } from 'react';
 import styles from './StoryTable.component.module.scss';
 import { StoryPriority } from './StoryPriority.component';
@@ -33,6 +33,10 @@ export const StoryTable: FC<Props> = (props) => {
     };
 
     const onSaveCreatingStoryClick = () => {
+        if (!creatingStoryInput?.name) {
+            return;
+        }
+
         setCreatingStoryInput(undefined);
 
         props.saveCreatingNewStory(creatingStoryInput);
@@ -54,6 +58,7 @@ export const StoryTable: FC<Props> = (props) => {
         setCreatingStoryInput({
             ...creatingStoryInput,
             name: storyName,
+            status: creatingStoryInput?.status ?? 'TODO',
         });
     };
 
@@ -62,6 +67,7 @@ export const StoryTable: FC<Props> = (props) => {
             ...creatingStoryInput,
             name: creatingStoryInput?.name ?? '',
             ownerId,
+            status: creatingStoryInput?.status ?? 'TODO',
         });
     };
 
@@ -70,8 +76,17 @@ export const StoryTable: FC<Props> = (props) => {
             ...creatingStoryInput,
             name: creatingStoryInput?.name ?? '',
             priority,
+            status: creatingStoryInput?.status ?? 'TODO',
         });
     };
+
+    const onCreatingStoryStatusChanged = (status: Status) => {
+        setCreatingStoryInput({
+            ...creatingStoryInput,
+            name: creatingStoryInput?.name ?? '',
+            status,
+        });
+    }
 
     const handleSaveStoryClick = (storyId: number) => () => {
         const editingStoryInput = editingStoryInputs[storyId];
@@ -84,6 +99,15 @@ export const StoryTable: FC<Props> = (props) => {
         delete remainingEditingStoryInputs[storyId];
         setEditingStoryInputs(remainingEditingStoryInputs);
     };
+
+    const handleStoryStatusChanged = (story: Story) => (status: Status) => {
+        props.deps.stateSyncer.updateStory(story.id, {
+            name: story.name,
+            ownerId: story.owner?.id,
+            status,
+            priority: story.priority,
+        });
+    }
 
     const handleDeleteStoryClick = (storyId: number) => () => {
         props.deps.stateSyncer.deleteStory(storyId);
@@ -214,7 +238,13 @@ export const StoryTable: FC<Props> = (props) => {
                         </td>
                         <td>
                             <div className={styles.StoryStatus}>
-                                <StoryStatus status={'TODO'} />
+                                <StoryStatus
+                                    relativeLayout={props.deps.relativeLayout}
+                                    status={'TODO'}
+                                    onStatusChange={
+                                        onCreatingStoryStatusChanged
+                                    }
+                                />
                             </div>
                         </td>
                         <td className={styles.OwnerCol}>
@@ -286,7 +316,7 @@ export const StoryTable: FC<Props> = (props) => {
                         </td>
                         <td>
                             <div className={styles.StoryStatus}>
-                                <StoryStatus status={story.status} />
+                                <StoryStatus relativeLayout={props.deps.relativeLayout} status={story.status} onStatusChange={handleStoryStatusChanged(story)}/>
                             </div>
                         </td>
                         <td className={styles.OwnerCol}>
@@ -301,36 +331,28 @@ export const StoryTable: FC<Props> = (props) => {
                             </div>
                         </td>
                         <td className={styles.Actions}>
-                  
-                                <TooltipUI
-                                    message='Delete'
-                                    relativeLayout={props.deps.relativeLayout}
+                            <TooltipUI
+                                message='Delete'
+                                relativeLayout={props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.Cancel}`}
+                                    onClick={handleDeleteStoryClick(story.id)}
                                 >
-                                    <div
-                                        className={`${styles.Action} ${styles.Cancel}`}
-                                        onClick={handleDeleteStoryClick(
-                                            story.id,
-                                        )}
-                                    >
-                                        <MaterialIconUI>close</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                                <TooltipUI
-                                    message='Details'
-                                    relativeLayout={props.deps.relativeLayout}
+                                    <MaterialIconUI>close</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
+                            <TooltipUI
+                                message='Details'
+                                relativeLayout={props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.Details}`}
+                                    onClick={handleStoryDetailClick(story.id)}
                                 >
-                                    <div
-                                        className={`${styles.Action} ${styles.Details}`}
-                                        onClick={handleStoryDetailClick(
-                                            story.id,
-                                        )}
-                                    >
-                                        <MaterialIconUI>
-                                            settings
-                                        </MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                            
+                                    <MaterialIconUI>settings</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         </td>
                     </tr>
                 ))}

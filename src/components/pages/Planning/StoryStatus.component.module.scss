@@ -1,27 +1,31 @@
 .Status {
     display: flex;
     height: 100%;
-    padding: 0 6px;
     border-radius: 4px;
     font-size: 14px;
     font-weight: 600;
     align-items: center;
-    justify-content: center;
-    color: white;
+    height: 25px;
+    --drop-down-font-size: 14px;
+    --drop-down-width: 120px;
 
-    &.TODO {
-        background-color: #1e88e5;
+    &.todo {
+        --drop-down-button-color: rgba(0, 0, 0, 0.12);
+        --drop-down-color: #757575;
     }
 
-    &.PAUSED {
-        background-color: #7b1fa2;
+    &.paused {
+        --drop-down-button-color: rgba(0, 0, 0, 0.1);
+        --drop-down-color: #cb6600;
     }
 
-    &.IN_PROGRESS {
-        background-color: #ff551b;
+    &.inProgress {
+        --drop-down-button-color: rgba(0, 0, 0, 0.1);
+        --drop-down-color: #038d08;
     }
 
-    &.COMPLETED {
-        background-color: #26882b;
+    &.completed {
+        --drop-down-button-color: rgba(0, 0, 0, 0.15);
+        --drop-down-color: #1976d2;
     }
 }

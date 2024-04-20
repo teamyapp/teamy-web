@@ -223,6 +223,7 @@ export interface RemoteCreateStoryInput {
     name: string;
     ownerId?: string;
     priority?: Priority;
+    status: RemoteStoryStatus;
 }
 
 export interface RemoteUpdateStoryInput {

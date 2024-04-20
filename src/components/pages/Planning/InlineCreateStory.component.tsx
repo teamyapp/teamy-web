@@ -22,6 +22,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
     const [story, setStory] = useState<CreateStoryInput>({
         name: '',
         ownerId: props.initialOwnerId || 0,
+        status: 'TODO',
     });
 
     const onNameChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
