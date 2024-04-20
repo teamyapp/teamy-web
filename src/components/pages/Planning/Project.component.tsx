@@ -257,7 +257,6 @@ export function ProjectComponent(props: Props) {
 
     const onPhaseDetailHandler = (phaseId: number) => (event: MouseEvent) => {
         event.stopPropagation();
-
         if (!currentTeam || !project) {
             return;
         }
