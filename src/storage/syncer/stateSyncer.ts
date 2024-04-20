@@ -607,6 +607,30 @@ export class StateSyncer {
         await this.taskClient.deleteTask(`${taskId}`);
     }
 
+    public async moveTaskToUpcoming(taskId: number) {
+        let appState = this.localStore.getState();
+        const task = appState.tasks[taskId];
+
+        switch (task.status) {
+            case 'IN_PROGRESS':
+            case 'PAUSED':
+                task.status = 'PAUSED';
+                break;
+            default:
+                task.status = 'TODO';
+        }
+
+        // Responsive UI for drag & drop
+        this.localStore.updateState(appState);
+
+        const remoteTask = await this.taskClient.moveTaskToUpcoming(
+            `${taskId}`,
+        );
+        appState = this.localStore.getState();
+        appState = mergeTask(appState, remoteTask);
+        this.localStore.updateState(appState);
+    }
+
     public async moveTaskToInProgress(taskId: number) {
         let appState = this.localStore.getState();
 
@@ -638,36 +662,12 @@ export class StateSyncer {
     public async moveTaskToDelivered(taskId: number) {
         let appState = this.localStore.getState();
         const task = appState.tasks[taskId];
-        task.status = 'IN_PROGRESS';
+        task.status = 'DELIVERED';
 
         // Responsive UI for drag & drop
         this.localStore.updateState(appState);
 
         const remoteTask = await this.taskClient.moveTaskToDelivered(
-            `${taskId}`,
-        );
-        appState = this.localStore.getState();
-        appState = mergeTask(appState, remoteTask);
-        this.localStore.updateState(appState);
-    }
-
-    public async moveTaskToUpcoming(taskId: number) {
-        let appState = this.localStore.getState();
-        const task = appState.tasks[taskId];
-
-        switch (task.status) {
-            case 'IN_PROGRESS':
-            case 'PAUSED':
-                task.status = 'PAUSED';
-                break;
-            default:
-                task.status = 'TODO';
-        }
-
-        // Responsive UI for drag & drop
-        this.localStore.updateState(appState);
-
-        const remoteTask = await this.taskClient.moveTaskToUpcoming(
             `${taskId}`,
         );
         appState = this.localStore.getState();
