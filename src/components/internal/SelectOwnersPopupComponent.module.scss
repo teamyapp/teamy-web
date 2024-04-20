@@ -1,5 +1,6 @@
 @import '../../libs/ui/styleguide/elevation';
 
+$actionIconSize: 28px;
 .SelectOwnersPopup {
     background-color: white;
     @include elevation(6);
@@ -28,34 +29,36 @@
     }
 }
 
-$actionIconSize: 28px;
 .AssignOwner {
     --profile-height: #{$actionIconSize};
     --profile-width: #{$actionIconSize};
-}
 
-.Action {
-    display: flex;
-    width: $actionIconSize;
-    height: $actionIconSize;
-    padding: 4px;
-    border-radius: 4px;
-    align-items: center;
-    --icon-box-size: #{$actionIconSize};
-    justify-content: center;
-    --icon-size: #{$actionIconSize};
-    user-select: none;
+    .AssignOwnerIcon {
+        display: flex;
+        border-radius: 50%;
+        align-items: center;
+        --icon-color: #3d7bf6;
+        --icon-size: #{$actionIconSize + 4px};
+    }
 
-    &.Active,
-    &:hover {
-        background-color: rgba(0, 0, 0, 0.07);
+    .Action {
+        display: flex;
+        width: $actionIconSize;
+        height: $actionIconSize;
+        padding: 4px;
+        border-radius: 4px;
+        align-items: center;
+        --icon-box-size: #{$actionIconSize};
+        justify-content: center;
+        --icon-size: #{$actionIconSize};
+        user-select: none;
+    
+        &.Active,
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.07);
+        }
     }
 }
 
-.AssignOwnerIcon {
-    display: flex;
-    border-radius: 50%;
-    align-items: center;
-    --icon-color: #3d7bf6;
-    --icon-size: #{$actionIconSize + 4px};
-}
+
+

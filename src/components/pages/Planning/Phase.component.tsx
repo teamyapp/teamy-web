@@ -29,7 +29,7 @@ const viewOptions: Option[] = [
     },
 ];
 type sortOptionKey = 'ID' | 'NAME' | 'PRIORITY' | 'STATUS';
-const sortOptions: Option[] = [
+const orderOptions: Option[] = [
     {
         key: 'ID',
         description: 'Id',
@@ -59,7 +59,7 @@ export function PhaseComponent(props: Props) {
     const [phase, setPhase] = useState<Phase>();
     const [onEditingPhase, setOnEditingPhase] = useState(false);
     const [currentTeam, setCurrentTeam] = useState<Team>();
-    const [selectedSort, setSelectedSort] = useState<sortOptionKey>('ID');
+    const [selectedOrder, setSelectedOrder] = useState<sortOptionKey>('ID');
     const [selectedView, setSelectedView] =
         useState<itemViewOptionKey>('TABLE');
     const [onEditingNewStoryInBacklog, setOnEditingNewStoryInBacklog] =
@@ -273,7 +273,7 @@ export function PhaseComponent(props: Props) {
         };
     };
 
-    const onAddStoryInPhaseClick = () => {
+    const onCreateStoryInPhaseClick = () => {
         setOnEditingNewStoryInPhase(true);
     };
 
@@ -341,14 +341,14 @@ export function PhaseComponent(props: Props) {
         backlogStorySelectorRef.current.reset();
     };
 
-    const onSelectedViewChanged = (key: string) => {
+    const onSelectView = (key: string) => {
         setSelectedView(key as itemViewOptionKey);
     };
 
     const setSortPhaseStories = (stories: Story[]) => {
         const sortedPhaseStories = [...stories];
 
-        switch (selectedSort) {
+        switch (selectedOrder) {
             case 'ID':
                 sortedPhaseStories.sort((a, b) => a.id - b.id);
                 break;
@@ -378,8 +378,8 @@ export function PhaseComponent(props: Props) {
         setSortedPhaseStories(sortedPhaseStories);
     };
 
-    const onSelectedSortChanged = (key: string) => {
-        setSelectedSort(key as sortOptionKey);
+    const onSelectedSortOrder = (key: string) => {
+        setSelectedOrder(key as sortOptionKey);
         setSortPhaseStories(phase?.stories || []);
     };
 
@@ -539,7 +539,7 @@ export function PhaseComponent(props: Props) {
                     </div>
                 </div>
                 <div className={styles.StoriesSection}>
-                    {selectedView === 'INLINE' ? (
+                    {selectedView === 'CARDS' ? (
                         <>
                             {onEditingNewStoryInPhase && (
                                 <InlineCreateStory
