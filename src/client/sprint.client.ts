@@ -59,6 +59,7 @@ export class SprintClient {
                                 links {
                                     id
                                     taskId
+                                    previewTitle
                                     title
                                     url
                                     iconUrl
