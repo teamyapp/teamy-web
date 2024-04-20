@@ -16,6 +16,12 @@ import { StoryInlineItemComponent } from './StoryInlineItem.component';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { StoryTable } from './StoryTable.component';
 import { Story } from '@core/entity/story';
+import {
+    sortByStoryId,
+    sortByStoryName,
+    sortByStoryPriority,
+    sortByStoryStatus,
+} from '@core/config/sortOrder';
 
 type itemViewOptionKey = 'TABLE' | 'CARDS';
 const viewOptions: Option[] = [
@@ -350,28 +356,16 @@ export function PhaseComponent(props: Props) {
 
         switch (selectedOrder) {
             case 'ID':
-                sortedPhaseStories.sort((a, b) => a.id - b.id);
+                sortedPhaseStories.sort(sortByStoryId);
                 break;
             case 'NAME':
-                sortedPhaseStories.sort((a, b) => a.name.localeCompare(b.name));
+                sortedPhaseStories.sort(sortByStoryName);
                 break;
             case 'PRIORITY':
-                sortedPhaseStories.sort((a, b) => {
-                    if (!a.priority) {
-                        return -1;
-                    }
-
-                    if (!b.priority) {
-                        return 1;
-                    }
-
-                    return a.priority.localeCompare(b.priority);
-                });
+                sortedPhaseStories.sort(sortByStoryPriority);
                 break;
             case 'STATUS':
-                sortedPhaseStories.sort((a, b) =>
-                    a.status.localeCompare(b.status),
-                );
+                sortedPhaseStories.sort(sortByStoryStatus);
                 break;
         }
 

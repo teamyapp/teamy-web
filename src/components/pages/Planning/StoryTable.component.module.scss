@@ -1,4 +1,4 @@
-@import "shared.scss";
+@import 'shared.scss';
 @import '../../../libs/ui/styleguide/elevation';
 
 $actionIconSize: 24px;
@@ -14,18 +14,24 @@ $actionIconSize: 24px;
     border-collapse: collapse;
 
     .TableHeader {
-        th {
-            height: 22px;
+        tr {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+
+            th {
+                height: 22px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+            }
         }
     }
 
     .TableBody {
         .TableRow {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.12);            
+            border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 
             td {
                 height: 48px;
-                text-align: center;    
+                text-align: center;
 
                 .StoryStatus {
                     height: 24px;
@@ -63,7 +69,7 @@ $actionIconSize: 24px;
                             @include actionIcon;
                             --icon-size: #{$actionIconSize - 6px};
                         }
-            
+
                         &.Cancel {
                             background-color: #f44336;
                             @include actionIcon;

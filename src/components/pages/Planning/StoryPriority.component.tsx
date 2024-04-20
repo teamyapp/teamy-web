@@ -34,6 +34,28 @@ const priorityOptions: Option[] = [
     },
 ];
 
+const priorityToOptionKey: Record<Priority, string> = {
+    URGENT: 'urgent',
+    HIGH: 'high',
+    MEDIUM: 'medium',
+    LOW: 'low',
+};
+
+const optionKeyToPriority: Record<string, Priority> = {
+    urgent: 'URGENT',
+    high: 'HIGH',
+    medium: 'MEDIUM',
+    low: 'LOW',
+};
+
+function toOptionKey(priority?: Priority): string {
+    if (!priority) {
+        return 'unset';
+    }
+
+    return priorityToOptionKey[priority];
+}
+
 export const StoryPriority: FC<Props> = (props) => {
     const priorityStyle = toOptionKey(props.priority);
     const handlePriorityChange = (optionKey: string) => {
@@ -56,25 +78,3 @@ export const StoryPriority: FC<Props> = (props) => {
         </div>
     );
 };
-
-const priorityToOptionKey: Record<Priority, string> = {
-    URGENT: 'urgent',
-    HIGH: 'high',
-    MEDIUM: 'medium',
-    LOW: 'low',
-};
-
-const optionKeyToPriority: Record<string, Priority> = {
-    urgent: 'URGENT',
-    high: 'HIGH',
-    medium: 'MEDIUM',
-    low: 'LOW',
-};
-
-function toOptionKey(priority?: Priority): string {
-    if (!priority) {
-        return 'unset';
-    }
-
-    return priorityToOptionKey[priority];
-}
