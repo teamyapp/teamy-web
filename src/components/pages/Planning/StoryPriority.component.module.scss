@@ -1,0 +1,35 @@
+.Priority {
+    display: flex;
+    height: 100%;
+    padding: 0 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    align-items: center;
+    height: 25px;
+    --drop-down-font-size: 14px;
+
+    &.urgent {
+        --drop-down-button-color: rgba(0, 0, 0, 0.12);
+        --drop-down-color: #bb0600;
+    }
+
+    &.high {
+        --drop-down-button-color: rgba(0, 0, 0, 0.1);
+        --drop-down-color: #cb6600;
+    }
+
+    &.medium {
+        --drop-down-button-color: rgba(0, 0, 0, 0.15);
+        --drop-down-color: #1976d2;
+    }
+
+    &.low {
+        --drop-down-button-color: rgba(0, 0, 0, 0.15);
+        --drop-down-color: #038d08;
+    }
+
+    &.unset {
+        --drop-down-color: #757575;
+    }
+}

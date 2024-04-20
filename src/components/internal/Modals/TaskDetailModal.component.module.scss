@@ -19,21 +19,6 @@ $divider: 2px solid #eeeeee;
         justify-content: flex-end;
         padding: 4px 10px;
 
-        .AssignOwner {
-            align-items: center;
-            --icon-color: #3d7bf6;
-            display: flex;
-            --profile-height: 26px;
-            margin-right: 10px;
-            --icon-size: 26px;
-            --profile-width: 26px;
-
-            .TaskOwnerName {
-                font-weight: bold;
-                margin-left: 6px;
-            }
-        }
-
         .SaveAction {
             align-items: center;
             display: flex;

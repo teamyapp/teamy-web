@@ -30,6 +30,7 @@ import {
 
 import styles from './EditRolloutView.component.module.scss';
 import { formatDate } from '@lib/time/date';
+import { RelativeLayout } from '@lib/layout';
 
 const activatorTypeOptions: Option[] = [
     { key: 'STATIC', description: 'Static' },
@@ -44,6 +45,7 @@ const versionSelectorTypeOptions: Option[] = [
 ];
 
 interface Props {
+    relativeLayout: RelativeLayout;
     rollout: Rollout;
     appRolloutType: AppRolloutType;
     renderInlineVersionNumber: (versionNumber: number) => ReactNode;
@@ -625,6 +627,7 @@ export function EditRolloutViewComponent() {
                                 Activator Type:
                             </div>
                             <DropDownList
+                                relativeLayout={props.relativeLayout}
                                 ref={activatorTypeRef}
                                 selectOptionKey={activatorType}
                                 options={activatorTypeOptions}
@@ -639,6 +642,7 @@ export function EditRolloutViewComponent() {
                                 Version Selector Type:
                             </div>
                             <DropDownList
+                                relativeLayout={props.relativeLayout}
                                 ref={versionSelectorTypeRef}
                                 selectOptionKey={versionSelectorType}
                                 options={versionSelectorTypeOptions}

@@ -7,6 +7,7 @@ import { ItemListUI } from '@lib/ui/ItemList';
 import { GroupType } from '@core/entity/group';
 
 import styles from './CreateGroupView.component.module.scss';
+import { RelativeLayout } from '@lib/layout';
 
 const groupTypeOptions: Option[] = [
     { key: 'STATIC', description: 'Static' },
@@ -22,6 +23,7 @@ interface FilterInput {
 }
 
 interface Props {
+    relativeLayout: RelativeLayout;
     membersLabel: string;
     memberLabel: string;
     renderInlineGroupMember: (memberId: number) => ReactNode;
@@ -69,6 +71,7 @@ export class CreateGroupViewComponent extends Component<Props, State> {
                         Group Type:
                     </div>
                     <DropDownList
+                        relativeLayout={this.props.relativeLayout}
                         selectOptionKey={this.state.selectedGroupType}
                         options={groupTypeOptions}
                         onSelectOption={this.onSelectGroupType}

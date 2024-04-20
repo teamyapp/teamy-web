@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, { FC, useState } from 'react';
 
 import { RelativeLayoutContainerUI } from '@lib/layout';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -8,17 +8,17 @@ import { User } from '@core/entity/user';
 
 import styles from './SelectOwnersPopupComponent.module.scss';
 import { SelectUserListUI } from './SelectUserList';
+import { getUserShortName } from './format';
+import { TooltipUI } from '@lib/ui/Tooltip';
+import classNames from 'classnames';
+import { UserProfileUI } from './UserProfile';
 
 const OWNER_ASSIGNMENT_Z_INDEX = 101;
 
 interface Props {
     deps: Deps;
-    selectedOwnerId?: number;
+    selectedOwner?: User;
     onSelectOwner?: (OwnerId?: number) => void;
-    assignOwner: (props: {
-        toggleContainer: () => void;
-        showFollower: boolean;
-    }) => React.ReactNode;
 }
 
 export const SelectOwnersPopupComponent: FC<Props> = (props) => {
@@ -49,24 +49,55 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
         props.onSelectOwner?.call(this);
     };
 
+    const renderAssignOwner = ({
+        toggleContainer,
+        showFollower,
+    }: {
+        toggleContainer: () => void;
+        showFollower: boolean;
+    }) => {
+        const name = props.selectedOwner
+            ? getUserShortName(
+                  props.selectedOwner.firstName,
+                  props.selectedOwner.lastName,
+              )
+            : 'Unassigned';
+        return (
+            <div className={styles.AssignOwner}>
+                <TooltipUI
+                    message={name}
+                    relativeLayout={props.deps.relativeLayout}
+                >
+                    <div
+                        className={`${styles.Action} ${classNames({
+                            [styles.Active]: showFollower,
+                        })}`}
+                        onClick={toggleContainer}
+                    >
+                        <div className={styles.AssignOwnerIcon}>
+                            {props.selectedOwner ? (
+                                <UserProfileUI user={props.selectedOwner} />
+                            ) : (
+                                <MaterialIconUI>face</MaterialIconUI>
+                            )}
+                        </div>
+                    </div>
+                </TooltipUI>
+            </div>
+        );
+    };
+
     return (
         <RelativeLayoutContainerUI
             relativeLayout={props.deps.relativeLayout}
             overSpaceAction='jumpVertically'
             zOffset={OWNER_ASSIGNMENT_Z_INDEX}
             referenceOffset={4}
-            renderReferenceElement={({ toggleContainer, showFollower }) => {
-                return props.assignOwner({
-                    toggleContainer,
-                    showFollower,
-                });
-            }}
+            renderReferenceElement={renderAssignOwner}
             onOpenContainer={fetchOwnerList}
             renderFollower={({ closeContainer }) => {
                 return (
-                    <div
-                        className={styles.SelectOwnersPopup}
-                    >
+                    <div className={styles.SelectOwnersPopup}>
                         <div className={styles.SelectOwnerListHeader}>
                             <div
                                 className={styles.CloseButton}
@@ -79,7 +110,7 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
                         </div>
                         <SelectUserListUI
                             emptySelectionUserName={'Unassigned'}
-                            selectedUserId={props.selectedOwnerId}
+                            selectedUserId={props.selectedOwner?.id}
                             users={potentialOwners}
                             onSelectUser={handleSelectOwner(closeContainer)}
                             onRemoveSelection={handleRemoveOwner(

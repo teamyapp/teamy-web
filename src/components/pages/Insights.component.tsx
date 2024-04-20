@@ -78,6 +78,7 @@ export class InsightsComponent extends Component<Props, State> {
                     <div className={styles.Spacer} />
                     <div className={styles.RightSection}>
                         <DropDownList
+                            relativeLayout={this.props.deps.relativeLayout}
                             options={timeRangeOptions}
                             selectOptionKey={defaultTimeRangeKey}
                             onSelectOption={this.onTimeRangeSelect}

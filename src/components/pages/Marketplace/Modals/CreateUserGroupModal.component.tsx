@@ -49,6 +49,7 @@ export class CreateUserGroupModalComponent extends Component<Props> {
                 </div>
                 <div className={styles.Content}>
                     <CreateGroupViewComponent
+                        relativeLayout={this.props.deps.relativeLayout}
                         membersLabel={'Users'}
                         memberLabel={'User'}
                         renderInlineGroupMember={this.renderInlineUser}

@@ -1,7 +1,4 @@
-import classNames from 'classnames';
 import { SelectOwnersPopupComponent } from 'components/internal/SelectOwnersPopupComponent';
-import { UserProfileUI } from 'components/internal/UserProfile';
-import { getUserShortName } from 'components/internal/format';
 import { ChangeEvent, FC, useState } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -53,40 +50,6 @@ export const InlineCreateStory: FC<Props> = (props) => {
         });
     };
 
-    const renderAssignOwner = ({
-        toggleContainer,
-        showFollower,
-    }: {
-        toggleContainer: () => void;
-        showFollower: boolean;
-    }) => {
-        const owner =
-            story.ownerId && props.deps.graphSource.user(story.ownerId);
-        const name = owner
-            ? getUserShortName(owner.firstName, owner.lastName)
-            : 'Unassigned';
-        return (
-            <div className={styles.AssignOwner}>
-                <TooltipUI message={name} relativeLayout={props.deps.relativeLayout}>
-                    <div
-                        className={`${styles.Action} ${classNames({
-                            [styles.Active]: showFollower,
-                        })}`}
-                        onClick={toggleContainer}
-                    >
-                        <div className={styles.AssignOwnerIcon}>
-                            {story.ownerId && owner ? (
-                                <UserProfileUI user={owner} />
-                            ) : (
-                                <MaterialIconUI>face</MaterialIconUI>
-                            )}
-                        </div>
-                    </div>
-                </TooltipUI>
-            </div>
-        );
-    };
-
     return (
         <div className={styles.Story}>
             <div className={styles.LeftSection}>
@@ -133,8 +96,7 @@ export const InlineCreateStory: FC<Props> = (props) => {
                 <SelectOwnersPopupComponent
                     deps={props.deps}
                     onSelectOwner={onSelectStoryOwner}
-                    selectedOwnerId={story.ownerId}
-                    assignOwner={renderAssignOwner}
+                    selectedOwner={story.ownerId ? props.deps.graphSource.user(story.ownerId) : undefined}
                 />
             </div>
         </div>

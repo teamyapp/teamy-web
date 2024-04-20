@@ -18,6 +18,7 @@ import {
 } from '@core/entity/rollout';
 
 import styles from './CreateRolloutView.component.module.scss';
+import { RelativeLayout } from '@lib/layout';
 
 const activatorTypeOptions: Option[] = [
     { key: 'STATIC', description: 'Static' },
@@ -53,6 +54,7 @@ interface ExperimentVersionSelectorInput {
 }
 
 interface Props {
+    relativeLayout: RelativeLayout;
     groupLabel: string;
     appRolloutType: AppRolloutType;
     renderInlineGroup: (groupId: number) => ReactNode;
@@ -111,6 +113,7 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
                         Activator Type:
                     </div>
                     <DropDownList
+                        relativeLayout={this.props.relativeLayout}
                         selectOptionKey={this.state.selectedActivatorType}
                         options={activatorTypeOptions}
                         onSelectOption={this.onSelectActivatorType}
@@ -124,6 +127,7 @@ export class CreateRolloutViewComponent extends Component<Props, State> {
                         Version Selector Type:
                     </div>
                     <DropDownList
+                        relativeLayout={this.props.relativeLayout}
                         selectOptionKey={this.state.selectedVersionSelectorType}
                         options={versionSelectorTypeOptions}
                         onSelectOption={this.onSelectVersionSelectorType}

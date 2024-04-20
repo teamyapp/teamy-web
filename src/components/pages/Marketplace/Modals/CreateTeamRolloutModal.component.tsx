@@ -43,6 +43,7 @@ export class CreateTeamRolloutModalComponent extends Component<Props> {
                 </div>
                 <div className={styles.Content}>
                     <CreateRolloutViewComponent
+                        relativeLayout={this.props.deps.relativeLayout}
                         groupLabel={'Team'}
                         appRolloutType='TEAM'
                         renderInlineGroup={this.renderInlineTeamGroup}

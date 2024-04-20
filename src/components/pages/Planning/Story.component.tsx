@@ -470,6 +470,7 @@ export function StoryComponent(props: Props) {
                     <div className={styles.Title}>Tasks</div>
                     <div className={styles.Filter}>
                         <DropDownList
+                            relativeLayout={props.deps.relativeLayout}
                             selectOptionKey={selectedBacklogTasksFilter}
                             options={backlogTasksFilterOptions}
                             onSelectOption={handleBacklogFilterChange}

@@ -385,6 +385,7 @@ export function ProjectComponent(props: Props) {
                 <div className={styles.Timeline}>
                     <TimelineComponent
                         ref={timelineRef}
+                        relativeLayout={props.deps.relativeLayout}
                         startAt={startAt}
                         endAt={endAt}
                         rows={rows}

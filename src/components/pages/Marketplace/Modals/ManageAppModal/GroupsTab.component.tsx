@@ -226,6 +226,7 @@ export function GroupsTabComponent(props: Props) {
                 selectedUserGroup && (
                     <div className={`${styles.Box} ${styles.Group}`}>
                         <EditGroupViewComponent
+                            relativeLayout={props.deps.relativeLayout}
                             ref={editGroupViewRef}
                             group={selectedUserGroup}
                             membersLabel={'Users'}
@@ -245,6 +246,7 @@ export function GroupsTabComponent(props: Props) {
                 selectedTeamGroup && (
                     <div className={`${styles.Box} ${styles.Group}`}>
                         <EditGroupViewComponent
+                            relativeLayout={props.deps.relativeLayout}
                             ref={editGroupViewRef}
                             group={selectedTeamGroup}
                             membersLabel={'Teams'}

@@ -3,6 +3,7 @@ import React, { Component, createRef } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import styles from './DropDownList.module.scss';
+import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
 
 export interface Option {
     key: string;
@@ -10,6 +11,7 @@ export interface Option {
 }
 
 interface Props {
+    relativeLayout: RelativeLayout;
     selectOptionKey?: string;
     options: Option[];
     onSelectOption?: (optionKey: string) => void;
@@ -17,7 +19,6 @@ interface Props {
 
 interface State {
     selectedOption?: Option;
-    showAvailableOptions: boolean;
 }
 
 export class DropDownList extends Component<Props, State> {
@@ -35,7 +36,6 @@ export class DropDownList extends Component<Props, State> {
             selectedOption: this.props.selectOptionKey
                 ? options[this.props.selectOptionKey]
                 : undefined,
-            showAvailableOptions: false,
         };
     }
 
@@ -45,31 +45,48 @@ export class DropDownList extends Component<Props, State> {
 
     public render() {
         return (
-            <div
-                role={'listbox'}
-                ref={this.ref}
-                className={styles.DropDownList}
-                tabIndex={-1}
-                onBlur={this.onDropDownBlur}
-            >
-                <div
-                    className={styles.SelectedOption}
-                    onClick={this.onSelectedOptionClick}
-                >
-                    <div role={'listitem'} className={styles.Option}>
-                        {this.state.selectedOption &&
-                            this.state.selectedOption.description}
-                    </div>
-                    <div role={'button'} className={styles.DropDownButton}>
-                        <MaterialIconUI>arrow_drop_down</MaterialIconUI>
-                    </div>
-                </div>
-                {this.state.showAvailableOptions && (
-                    <div className={styles.AvailableOptions}>
-                        {this.props.options.map(this.renderOption)}
+            <RelativeLayoutContainerUI
+                relativeLayout={this.props.relativeLayout}
+                overSpaceAction='jumpVertically'
+                verticalAlignment='bottom'
+                renderFollower={({closeContainer}) => (
+                    <div className={styles.DropDownList}>
+                        <div className={styles.AvailableOptions}>
+                            {this.props.options.map((option, index) => {
+                                return (
+                                    <div
+                                        key={index}
+                                        role={'listitem'}
+                                        className={styles.Option}
+                                        onClick={this.onOptionClick(option, closeContainer)}
+                                    >
+                                        {option.description}
+                                    </div>
+                                );
+                            })}
+                        </div>
                     </div>
                 )}
-            </div>
+                renderReferenceElement={({ toggleContainer }) => {
+                    return (
+                        <div
+                            className={styles.SelectedOption}
+                            onClick={toggleContainer}
+                        >
+                            <div role={'listitem'} className={styles.Option}>
+                                {this.state.selectedOption &&
+                                    this.state.selectedOption.description}
+                            </div>
+                            <div
+                                role={'button'}
+                                className={styles.DropDownButton}
+                            >
+                                <MaterialIconUI>arrow_drop_down</MaterialIconUI>
+                            </div>
+                        </div>
+                    );
+                }}
+            />
         );
     }
 
@@ -81,50 +98,18 @@ export class DropDownList extends Component<Props, State> {
         });
     }
 
-    private renderOption = (option: Option, index: number) => {
-        return (
-            <div
-                role={'listitem'}
-                aria-label={option.description}
-                key={index}
-                className={styles.Option}
-                onClick={this.onOptionClick(option)}
-            >
-                {option.description}
-            </div>
-        );
-    };
-
-    private onOptionClick = (option: Option) => {
+    private onOptionClick = (option: Option, closeContainer: () => void) => {
         return () => {
             this.setState({
                 selectedOption: option,
-                showAvailableOptions: false,
             });
 
+            closeContainer();
             if (this.state.selectedOption === option) {
                 return;
             }
+            
             this.props.onSelectOption?.call(null, option.key);
         };
-    };
-
-    private onSelectedOptionClick = () => {
-        this.toggleAvailableActions();
-    };
-
-    private toggleAvailableActions() {
-        this.setState({
-            showAvailableOptions: !this.state.showAvailableOptions,
-        });
-        if (this.state.showAvailableOptions) {
-            this.ref.current?.focus();
-        }
-    }
-
-    private onDropDownBlur = () => {
-        this.setState({
-            showAvailableOptions: false,
-        });
     };
 }

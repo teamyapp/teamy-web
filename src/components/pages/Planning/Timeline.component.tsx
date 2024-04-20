@@ -26,6 +26,7 @@ import {
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 
 import styles from './Timeline.component.module.scss';
+import { RelativeLayout } from '@lib/layout';
 
 const debug = false;
 
@@ -84,6 +85,7 @@ interface Props {
     endAt: Date;
     rows: Row[];
     onItemSelect?: (rowIndex: number, itemIndex: number) => void;
+    relativeLayout: RelativeLayout;
 }
 
 export interface TimelineComponentHandle {
@@ -518,6 +520,7 @@ export const TimelineComponent = forwardRef(
                 <div className={styles.Controls}>
                     <div className={styles.TimeUnitDropdown}>
                         <DropDownList
+                            relativeLayout={props.relativeLayout}
                             options={timeUnits}
                             selectOptionKey={selectedTimeUnit}
                             onSelectOption={onSelectTimeUnitOption}
