@@ -67,6 +67,5 @@ export const sortByStoryPriority = (storyA: Story, storyB: Story) => {
 export const sortByStoryStatus = (storyA: Story, storyB: Story) => {
     const statusAOrderNumber = storyStatusToOrderNumber[storyA.status];
     const statusBOrderNumber = storyStatusToOrderNumber[storyB.status];
-
     return statusAOrderNumber - statusBOrderNumber;
 };
