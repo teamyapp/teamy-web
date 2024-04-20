@@ -117,7 +117,7 @@ export const StoryInlineItemComponent: FunctionComponent<
                         ) : (
                             <div
                                 className={styles.Goal}
-                                onClick={onStoryNameClick}
+                                onDoubleClick={onStoryNameClick}
                             >
                                 {storyName}
                             </div>

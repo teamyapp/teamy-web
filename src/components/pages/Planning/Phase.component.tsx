@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -219,10 +219,6 @@ export function PhaseComponent(props: Props) {
         setOnEditingPhase(true);
     };
 
-    const onEditPhaseName = () => {
-        setOnEditingPhase(true);
-    };
-
     const saveEditedPhaseName = async () => {
         if (!phase || !phaseName) {
             return;
@@ -263,24 +259,6 @@ export function PhaseComponent(props: Props) {
                 storyId,
             ),
         );
-    };
-
-    const onStoryDoubleClickHandler = (storyId: number) => {
-        return (event: MouseEvent<HTMLDivElement>) => {
-            event.stopPropagation();
-            if (!currentTeam) {
-                return;
-            }
-
-            props.deps.router.navigateTo(
-                phaseStoryPath(
-                    currentTeam.id,
-                    props.projectId,
-                    props.phaseId,
-                    storyId,
-                ),
-            );
-        };
     };
 
     const onCreateStoryInPhaseClick = () => {
@@ -550,9 +528,6 @@ export function PhaseComponent(props: Props) {
                                 <div
                                     className={styles.InlineStory}
                                     key={story.id}
-                                    onDoubleClick={onStoryDoubleClickHandler(
-                                        story.id,
-                                    )}
                                 >
                                     <StoryInlineItemComponent
                                         story={story}
@@ -643,7 +618,6 @@ export function PhaseComponent(props: Props) {
                         <div
                             key={story.id}
                             className={styles.ListItem}
-                            onDoubleClick={onStoryDoubleClickHandler(story.id)}
                         >
                             <StoryInlineItemComponent
                                 story={story}
