@@ -2,6 +2,7 @@ import { Invitation } from '@core/entity/invitation';
 
 export type Feedback =
     | TaskUpdatedFeedback
+    | StoryUpdatedFeedback
     | UserProfileUpdatedFeedback
     | TeamProfileUpdatedFeedback
     | InvitationLinkCopiedFeedback
@@ -10,6 +11,11 @@ export type Feedback =
 export interface TaskUpdatedFeedback {
     type: 'TaskUpdated';
     taskId: number;
+}
+
+export interface StoryUpdatedFeedback {
+    type: "StoryUpdated";
+    storyId: number;
 }
 
 export interface UserProfileUpdatedFeedback {

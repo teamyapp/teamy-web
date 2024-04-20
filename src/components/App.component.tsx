@@ -81,6 +81,7 @@ import { MarketplaceComponent } from './pages/Marketplace/Marketplace.component'
 import { PlanningComponent } from './pages/Planning/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
+import { StoryUpdatedFeedbackComponent } from './internal/feedbacks/StoryUpdatedFeedback.component';
 
 const sectionIds = [
     backlogSectionId,
@@ -406,6 +407,7 @@ export class AppComponent extends Component<Props, State> {
                 />
                 <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <TaskUpdatedFeedbackComponent deps={this.props.deps} />
+                <StoryUpdatedFeedbackComponent deps={this.props.deps} />
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
                 <AppSecretCopiedFeedbackComponent deps={this.props.deps} />
                 <DynamicFeedbackUI ref={this.dynamicFeedbackRef} />

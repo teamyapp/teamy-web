@@ -78,6 +78,10 @@ export const StoryInlineItemComponent: FunctionComponent<
             priority: props.story.priority,
         });
         setIsEditingStory(false);
+        props.deps.feedbackPubSub.publish({
+            type: 'StoryUpdated',
+            storyId: props.story.id,
+        });
     };
 
     const onCancelStoryEdit = () => {

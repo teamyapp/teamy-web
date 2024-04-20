@@ -30,6 +30,7 @@ import {
     UpdatePhaseModalComponentHandle,
 } from './UpdatePhaseModal.component';
 import { TooltipUI } from '@lib/ui/Tooltip';
+import { ButtonUI } from '@lib/ui/Button';
 
 interface Props {
     deps: Deps;
@@ -392,16 +393,25 @@ export function ProjectComponent(props: Props) {
                         {project.phases.map(renderPhase)}
                     </div>
                 </div>
-                <div className={styles.Timeline}>
-                    <TimelineComponent
-                        ref={timelineRef}
-                        relativeLayout={props.deps.relativeLayout}
-                        startAt={startAt}
-                        endAt={endAt}
-                        rows={rows}
-                        onItemSelect={onTimelineItemSelect}
-                    />
-                </div>
+                {project.phases.length === 0 ? (
+                    <div className={styles.CreatePhaseContainer}>
+                        <ButtonUI
+                            onClick={onAddPhaseClick}
+                            label='Create phase'
+                        />
+                    </div>
+                ) : (
+                    <div className={styles.Timeline}>
+                        <TimelineComponent
+                            ref={timelineRef}
+                            relativeLayout={props.deps.relativeLayout}
+                            startAt={startAt}
+                            endAt={endAt}
+                            rows={rows}
+                            onItemSelect={onTimelineItemSelect}
+                        />
+                    </div>
+                )}
             </div>
 
             <div className={styles.StoryListSection}>
