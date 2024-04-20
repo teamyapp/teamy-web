@@ -17,15 +17,15 @@ import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { StoryTable } from './StoryTable.component';
 import { Story } from '@core/entity/story';
 
-type itemViewOptionKey = 'TABLE' | 'INLINE';
+type itemViewOptionKey = 'TABLE' | 'CARDS';
 const viewOptions: Option[] = [
     {
         key: 'TABLE',
-        description: 'Table view',
+        description: 'Table',
     },
     {
-        key: 'INLINE',
-        description: 'Inline view',
+        key: 'CARDS',
+        description: 'Cards',
     },
 ];
 type sortOptionKey = 'ID' | 'NAME' | 'PRIORITY' | 'STATUS';
@@ -47,6 +47,7 @@ const sortOptions: Option[] = [
         description: 'Status',
     },
 ];
+
 interface Props {
     deps: Deps;
     projectId: number;
@@ -345,7 +346,6 @@ export function PhaseComponent(props: Props) {
     };
 
     const setSortPhaseStories = (stories: Story[]) => {
-
         const sortedPhaseStories = [...stories];
 
         switch (selectedSort) {
@@ -472,22 +472,21 @@ export function PhaseComponent(props: Props) {
                                     relativeLayout={props.deps.relativeLayout}
                                     selectOptionKey={selectedView}
                                     options={viewOptions}
-                                    onSelectOption={onSelectedViewChanged}
+                                    onSelectOption={onSelectView}
                                 />
                             </TooltipUI>
                             <TooltipUI
-                                message='Sort'
+                                message='Order by'
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <DropDownList
                                     relativeLayout={props.deps.relativeLayout}
-                                    selectOptionKey={selectedSort}
-                                    options={sortOptions}
-                                    onSelectOption={onSelectedSortChanged}
+                                    selectOptionKey={selectedOrder}
+                                    options={orderOptions}
+                                    onSelectOption={onSelectedSortOrder}
                                 />
                             </TooltipUI>
                         </div>
-
                         <div className={styles.RightSection}>
                             {selectedPhaseStoryIds.size > 0 && (
                                 <>
@@ -526,12 +525,12 @@ export function PhaseComponent(props: Props) {
                                 </>
                             )}
                             <TooltipUI
-                                message='Add story'
+                                message='Create story'
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div
                                     className={`${styles.Action} ${styles.Add}`}
-                                    onClick={onAddStoryInPhaseClick}
+                                    onClick={onCreateStoryInPhaseClick}
                                 >
                                     <MaterialIconUI>add</MaterialIconUI>
                                 </div>

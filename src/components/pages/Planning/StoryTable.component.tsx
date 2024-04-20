@@ -49,7 +49,6 @@ export const StoryTable: FC<Props> = (props) => {
         event: ChangeEvent<HTMLInputElement>,
     ) => {
         const storyName = event.target.value;
-
         setCreatingStoryInput({
             ...creatingStoryInput,
             name: storyName,
@@ -74,13 +73,11 @@ export const StoryTable: FC<Props> = (props) => {
 
     const handleSaveStoryClick = (storyId: number) => () => {
         const editingStoryInput = editingStoryInputs[storyId];
-
         if (!editingStoryInput) {
             return;
         }
 
         props.deps.stateSyncer.updateStory(storyId, editingStoryInput);
-
         const remainingEditingStoryInputs = { ...editingStoryInputs };
         delete remainingEditingStoryInputs[storyId];
         setEditingStoryInputs(remainingEditingStoryInputs);

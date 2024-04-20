@@ -80,10 +80,10 @@ $optionPadding: 8px;
         align-items: center;
         background-color: $dropDownButtonColor;
         --icon-color: white;
+        --icon-size: #{$height - 6px};
         display: flex;
         height: $height;
         justify-content: center;
-        --icon-size: #{$height - 6px};
         width: $height;
 
         &:hover {

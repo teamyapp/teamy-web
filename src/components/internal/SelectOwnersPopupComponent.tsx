@@ -62,7 +62,6 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
                   props.selectedOwner.lastName,
               )
             : 'Unassigned';
-
         return (
             <div className={styles.AssignOwner}>
                 <TooltipUI

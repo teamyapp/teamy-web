@@ -108,6 +108,7 @@ export class DropDownList extends Component<Props, State> {
             if (this.state.selectedOption === option) {
                 return;
             }
+            
             this.props.onSelectOption?.call(null, option.key);
         };
     };
