@@ -206,6 +206,7 @@ export interface CreateStoryInput {
     name: string;
     ownerId?: number;
     priority?: Priority;
+    status: StoryStatus;
 }
 
 export interface UpdateStoryInput {

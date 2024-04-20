@@ -4,6 +4,7 @@ import React, {
     RefObject,
     createRef,
     forwardRef,
+    useEffect,
     useImperativeHandle,
     useRef,
     useState,
@@ -15,25 +16,25 @@ import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
 import { TextFieldUI } from '@lib/ui/TextField';
 
-import { Deps } from '@core/dep/deps';
-import { Phase, PhaseStatus } from '@core/entity/phase';
+import { PhaseStatus } from '@core/entity/phase';
 
 import styles from './UpdatePhaseModal.component.module.scss';
+import { UpdatePhaseInput } from '@core/entity/input';
 
 interface Props {
-    deps: Deps;
-    phase: Phase;
+    updatePhaseInput: UpdatePhaseInput;
+    updatePhase: (updatePhaseInput: UpdatePhaseInput) => void;
 }
 
-export interface UpdatePhaseModalComponentHandle {
-    open: () => void;
-}
-
-interface UpdatePhaseInput {
+interface UpdatePhaseUIInput {
     name: string;
     expectedStartAt: string;
     expectedEndAt: string;
     status: PhaseStatus;
+}
+
+export interface UpdatePhaseModalComponentHandle {
+    open: () => void;
 }
 
 export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
@@ -42,13 +43,19 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
     (props: Props, ref: ForwardedRef<UpdatePhaseModalComponentHandle>) => {
         const modalRef: RefObject<ModalUI> = createRef();
         const [updatePhaseInput, setUpdatePhaseInput] =
-            useState<UpdatePhaseInput>({
-                name: props.phase.name,
-                expectedStartAt: formatDate(props.phase.expectedStartAt),
-                expectedEndAt: formatDate(props.phase.expectedEndAt),
-                status: props.phase.status,
-            });
+            useState<UpdatePhaseUIInput>();
         const phaseNameInputRef: RefObject<TextFieldUI> = useRef(null);
+
+        useEffect(() => {
+            setUpdatePhaseInput({
+                name: props.updatePhaseInput.name,
+                expectedStartAt: formatDate(
+                    props.updatePhaseInput.expectedStartAt,
+                ),
+                expectedEndAt: formatDate(props.updatePhaseInput.expectedEndAt),
+                status: props.updatePhaseInput.status,
+            });
+        }, [props.updatePhaseInput])
 
         const open = () => {
             modalRef.current?.open();
@@ -66,8 +73,13 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
         };
 
         const onUpdateClick = async () => {
-            if (updatePhaseInput.name && updatePhaseInput.expectedStartAt && updatePhaseInput.expectedEndAt && updatePhaseInput.status) {
-                await props.deps.stateSyncer.updatePhase(props.phase.id, {
+            if (
+                updatePhaseInput?.name &&
+                updatePhaseInput.expectedStartAt &&
+                updatePhaseInput.expectedEndAt &&
+                updatePhaseInput.status
+            ) {
+                await props.updatePhase({
                     name: updatePhaseInput.name,
                     expectedStartAt: new Date(updatePhaseInput.expectedStartAt),
                     expectedEndAt: new Date(updatePhaseInput.expectedEndAt),
@@ -86,6 +98,10 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
         };
 
         const onNameChange = (name: string) => {
+            if (!updatePhaseInput) {
+                return;
+            }
+
             setUpdatePhaseInput({
                 ...updatePhaseInput,
                 name,
@@ -93,6 +109,10 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
         };
 
         const onExpectedStartDateChange = (expectedStartAt: string) => {
+            if (!updatePhaseInput) {
+                return
+            }
+
             setUpdatePhaseInput({
                 ...updatePhaseInput,
                 expectedStartAt,
@@ -100,6 +120,10 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
         };
 
         const onExpectedEndDateChange = (expectedEndAt: string) => {
+            if (!updatePhaseInput) {
+                return;
+            }
+
             setUpdatePhaseInput({
                 ...updatePhaseInput,
                 expectedEndAt,

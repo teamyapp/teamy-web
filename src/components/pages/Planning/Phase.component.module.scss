@@ -31,6 +31,10 @@
                     flex-direction: column;
                     gap: 4px;
 
+                    .PhaseName{
+                        cursor: pointer;
+                    }
+
                     .Description {
                         color: #757575;
                         font-size: 12px;

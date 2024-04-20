@@ -115,10 +115,9 @@ $actionIconSize: 24px;
                 }
 
                 .StoryStatus {
-                    height: 24px;
-                    width: 100px;
-                    margin-left: auto;
-                    margin-right: auto;
+                    --drop-down-width: 120px;
+                    display: flex;
+                    justify-content: center;
                 }
 
                 .StoryOwner {

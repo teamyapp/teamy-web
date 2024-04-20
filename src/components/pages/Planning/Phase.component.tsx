@@ -1,4 +1,4 @@
-import { ChangeEvent, MouseEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -215,7 +215,7 @@ export function PhaseComponent(props: Props) {
         setPhaseName(event.target.value);
     };
 
-    const onEditPhaseName = () => {
+    const onPhaseNameDoubleClicked = () => {
         setOnEditingPhase(true);
     };
 
@@ -261,24 +261,6 @@ export function PhaseComponent(props: Props) {
         );
     };
 
-    const onStoryDoubleClickHandler = (storyId: number) => {
-        return (event: MouseEvent<HTMLDivElement>) => {
-            event.stopPropagation();
-            if (!currentTeam) {
-                return;
-            }
-
-            props.deps.router.navigateTo(
-                phaseStoryPath(
-                    currentTeam.id,
-                    props.projectId,
-                    props.phaseId,
-                    storyId,
-                ),
-            );
-        };
-    };
-
     const onCreateStoryInPhaseClick = () => {
         setOnEditingNewStoryInPhase(true);
     };
@@ -309,7 +291,7 @@ export function PhaseComponent(props: Props) {
     const onCreateStoryInPhase = async (story?: CreateStoryInput) => {
         setOnEditingNewStoryInPhase(false);
         if (!story) {
-            return
+            return;
         }
 
         const storyId = await props.deps.stateSyncer.createStory(
@@ -355,7 +337,10 @@ export function PhaseComponent(props: Props) {
         setSelectedView(key as itemViewOptionKey);
     };
 
-    const setSortPhaseStories = (stories: Story[], selectedOrder:sortOptionKey) => {
+    const setSortPhaseStories = (
+        stories: Story[],
+        selectedOrder: sortOptionKey,
+    ) => {
         const sortedPhaseStories = [...stories];
 
         switch (selectedOrder) {
@@ -398,7 +383,9 @@ export function PhaseComponent(props: Props) {
                                     onChange={onPhaseNameChange}
                                 />
                             ) : (
-                                phase.name
+                                <div className={styles.PhaseName} onDoubleClick={onPhaseNameDoubleClicked}>
+                                    {phase.name}
+                                </div>
                             )}
                             <div className={styles.Description}>
                                 {phase.deliveredStories} of {phase.totalStories}{' '}
@@ -406,7 +393,7 @@ export function PhaseComponent(props: Props) {
                             </div>
                         </div>
                         <div className={styles.Actions}>
-                            {onEditingPhase ? (
+                            {onEditingPhase && (
                                 <>
                                     <TooltipUI
                                         message='Save'
@@ -439,24 +426,6 @@ export function PhaseComponent(props: Props) {
                                         </div>
                                     </TooltipUI>
                                 </>
-                            ) : (
-                                <>
-                                    <TooltipUI
-                                        message='Edit'
-                                        relativeLayout={
-                                            props.deps.relativeLayout
-                                        }
-                                    >
-                                        <div
-                                            className={`${styles.Action} ${styles.Edit}`}
-                                            onClick={onEditPhaseName}
-                                        >
-                                            <MaterialIconUI>
-                                                edit
-                                            </MaterialIconUI>
-                                        </div>
-                                    </TooltipUI>
-                                </>
                             )}
                         </div>
                     </div>
@@ -467,12 +436,14 @@ export function PhaseComponent(props: Props) {
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div className={styles.Selections}>
-                                <DropDownList
-                                    relativeLayout={props.deps.relativeLayout}
-                                    selectOptionKey={selectedView}
-                                    options={viewOptions}
-                                    onSelectOption={onSelectView}
-                                />
+                                    <DropDownList
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                        selectOptionKey={selectedView}
+                                        options={viewOptions}
+                                        onSelectOption={onSelectView}
+                                    />
                                 </div>
                             </TooltipUI>
                             <TooltipUI
@@ -480,12 +451,14 @@ export function PhaseComponent(props: Props) {
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div className={styles.Selections}>
-                                <DropDownList
-                                    relativeLayout={props.deps.relativeLayout}
-                                    selectOptionKey={selectedOrder}
-                                    options={orderOptions}
-                                    onSelectOption={onSelectedSortOrder}
-                                />
+                                    <DropDownList
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                        selectOptionKey={selectedOrder}
+                                        options={orderOptions}
+                                        onSelectOption={onSelectedSortOrder}
+                                    />
                                 </div>
                             </TooltipUI>
                         </div>
@@ -555,9 +528,6 @@ export function PhaseComponent(props: Props) {
                                 <div
                                     className={styles.InlineStory}
                                     key={story.id}
-                                    onDoubleClick={onStoryDoubleClickHandler(
-                                        story.id,
-                                    )}
                                 >
                                     <StoryInlineItemComponent
                                         story={story}
@@ -648,7 +618,6 @@ export function PhaseComponent(props: Props) {
                         <div
                             key={story.id}
                             className={styles.ListItem}
-                            onDoubleClick={onStoryDoubleClickHandler(story.id)}
                         >
                             <StoryInlineItemComponent
                                 story={story}

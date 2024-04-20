@@ -1012,6 +1012,7 @@ export class StateSyncer {
             name: input.name,
             ownerId: input.ownerId ? `${input.ownerId}` : undefined,
             priority: input.priority,
+            status: input.status,
         });
         let appState = this.localStore.getState();
         appState = mergeStory(appState, remoteStory);

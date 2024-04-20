@@ -5,7 +5,7 @@ import { ChangeEvent, FunctionComponent, MouseEvent, useState } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 import { Deps } from '@core/dep/deps';
-import { Story } from '@core/entity/story';
+import { Story, StoryStatus as Status } from '@core/entity/story';
 import styles from './StoryInlineItem.component.module.scss';
 import { StoryPriority } from './StoryPriority.component';
 import { Priority } from '@core/entity/priority';
@@ -48,6 +48,15 @@ export const StoryInlineItemComponent: FunctionComponent<
         props.deps.stateSyncer.deleteStory(props.story.id);
     };
 
+    const onStatusChange = (status: Status) => {
+        props.deps.stateSyncer.updateStory(props.story.id, {
+            name: props.story.name,
+            status,
+            ownerId: props.story.owner?.id,
+            priority: props.story.priority,
+        });
+    };
+
     const onSelectStoryOwner = (ownerId?: number) => {
         props.deps.stateSyncer.updateStory(props.story.id, {
             name: props.story.name,
@@ -69,6 +78,10 @@ export const StoryInlineItemComponent: FunctionComponent<
             priority: props.story.priority,
         });
         setIsEditingStory(false);
+        props.deps.feedbackPubSub.publish({
+            type: 'StoryUpdated',
+            storyId: props.story.id,
+        });
     };
 
     const onCancelStoryEdit = () => {
@@ -93,7 +106,11 @@ export const StoryInlineItemComponent: FunctionComponent<
                                 {props.story.id}
                             </div>
 
-                            <StoryStatus status={props.story.status} />
+                            <StoryStatus
+                                status={props.story.status}
+                                onStatusChange={onStatusChange}
+                                relativeLayout={props.deps.relativeLayout}
+                            />
                         </div>
                         {isEditingStory ? (
                             <textarea
@@ -104,7 +121,7 @@ export const StoryInlineItemComponent: FunctionComponent<
                         ) : (
                             <div
                                 className={styles.Goal}
-                                onClick={onStoryNameClick}
+                                onDoubleClick={onStoryNameClick}
                             >
                                 {storyName}
                             </div>

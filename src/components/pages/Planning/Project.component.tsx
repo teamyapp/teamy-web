@@ -7,7 +7,7 @@ import { getPlatform } from '@lib/runtime/os';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 import { Deps } from '@core/dep/deps';
-import { CreateStoryInput } from '@core/entity/input';
+import { CreateStoryInput, UpdatePhaseInput } from '@core/entity/input';
 import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
 import { Team } from '@core/entity/team';
@@ -30,6 +30,7 @@ import {
     UpdatePhaseModalComponentHandle,
 } from './UpdatePhaseModal.component';
 import { TooltipUI } from '@lib/ui/Tooltip';
+import { ButtonUI } from '@lib/ui/Button';
 
 interface Props {
     deps: Deps;
@@ -48,15 +49,18 @@ export function ProjectComponent(props: Props) {
         useRef<CreatePhaseModalComponentHandle>(null);
     const updatePhaseModalComponentRef =
         useRef<UpdatePhaseModalComponentHandle>(null);
-    const [editingPhase, setEditingPhase] = useState<Phase>();
+    const [editingPhaseInput, setEditingPhaseInput] = useState<{
+        phaseId: number;
+        updatePhaseInput: UpdatePhaseInput;
+    }>();
     const timelineRef = useRef<TimelineComponentHandle>(null);
 
     const [selectedStoryIds, setSelectedStoryIds] = useState<Set<string>>(
         new Set(),
     );
-    const [selectedPhaseIds, setSelectedPhaseIds] = useState<
-        Set<string>
-    >(new Set());
+    const [selectedPhaseIds, setSelectedPhaseIds] = useState<Set<string>>(
+        new Set(),
+    );
 
     const selectedStoryIdsRef = useRef(selectedStoryIds);
     const selectedPhaseIdsRef = useRef(selectedPhaseIds);
@@ -68,6 +72,13 @@ export function ProjectComponent(props: Props) {
     const phaseSelectorRef = useRef<ItemsSelector>(
         new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseIds),
     );
+    const handleUpdatePhase = (updatePhaseInput: UpdatePhaseInput) => {
+        if (!editingPhaseInput) {
+            return;
+        }
+
+        props.deps.stateSyncer.updatePhase(editingPhaseInput.phaseId, updatePhaseInput);
+    };
 
     useEffect(() => {
         const selectedStoriesChan =
@@ -170,7 +181,7 @@ export function ProjectComponent(props: Props) {
         return () => {
             phaseSelectorRef.current.dispose();
             storySelectorRef.current.dispose();
-        }
+        };
     }, []);
 
     const rows: Row[] = (project?.phases || []).map((phase, index) => {
@@ -211,7 +222,8 @@ export function ProjectComponent(props: Props) {
     };
 
     const onPhaseSelectHandler =
-        (phaseIdNumber: number, phaseIndexNumber: number) => async (event: MouseEvent) => {
+        (phaseIdNumber: number, phaseIndexNumber: number) =>
+        async (event: MouseEvent) => {
             event.stopPropagation();
             const isSelected = await phaseSelectorRef.current.selectItem(
                 phaseIdNumber.toString(),
@@ -231,8 +243,27 @@ export function ProjectComponent(props: Props) {
 
     const onPhaseUpdateHandler = (phase: Phase) => (event: MouseEvent) => {
         event.stopPropagation();
-        setEditingPhase(phase);
+        setEditingPhaseInput({
+            phaseId: phase.id,
+            updatePhaseInput: {
+                name: phase.name,
+                expectedStartAt: phase.expectedStartAt,
+                expectedEndAt: phase.expectedEndAt,
+                status: phase.status,
+            },
+        });
         updatePhaseModalComponentRef.current?.open();
+    };
+
+    const onPhaseDetailClickHandler = (phaseId: number) => (event: MouseEvent) => {
+        event.stopPropagation();
+        if (!currentTeam || !project) {
+            return;
+        }
+
+        props.deps.router.navigateTo(
+            phasePath(currentTeam.id, project.id, phaseId),
+        );
     };
 
     const renderPhase = (phase: Phase, index: number): ReactElement => {
@@ -244,7 +275,6 @@ export function ProjectComponent(props: Props) {
                         phase.id.toString(),
                     ),
                 })}`}
-                onDoubleClick={onPhaseDoubleClickHandler(phase.id)}
                 onClick={onPhaseSelectHandler(phase.id, index)}
             >
                 <div className={styles.LeftSection}>
@@ -260,21 +290,38 @@ export function ProjectComponent(props: Props) {
                     </div>
                 </div>
                 <div className={styles.RightSection}>
-                    <TooltipUI message='Delete phase' relativeLayout={props.deps.relativeLayout}>
-                      <div
-                          className={styles.DeleteIcon}
-                          onClick={onPhaseDeleteHandler(phase.id)}
-                      >
-                          <MaterialIconUI>close</MaterialIconUI>
-                      </div>
+                    <TooltipUI
+                        message='Delete phase'
+                        relativeLayout={props.deps.relativeLayout}
+                    >
+                        <div
+                            className={styles.DeleteIcon}
+                            onClick={onPhaseDeleteHandler(phase.id)}
+                        >
+                            <MaterialIconUI>close</MaterialIconUI>
+                        </div>
                     </TooltipUI>
-                    <TooltipUI message='Edit phase' relativeLayout={props.deps.relativeLayout}>
-                      <div
-                          className={styles.EditIcon}
-                          onClick={onPhaseUpdateHandler(phase)}
-                      >
-                          <MaterialIconUI>edit</MaterialIconUI>
-                      </div>
+                    <TooltipUI
+                        message='Edit phase'
+                        relativeLayout={props.deps.relativeLayout}
+                    >
+                        <div
+                            className={styles.EditIcon}
+                            onClick={onPhaseUpdateHandler(phase)}
+                        >
+                            <MaterialIconUI>edit</MaterialIconUI>
+                        </div>
+                    </TooltipUI>
+                    <TooltipUI
+                        message='Details'
+                        relativeLayout={props.deps.relativeLayout}
+                    >
+                        <div
+                            className={styles.DetailsIcon}
+                            onClick={onPhaseDetailClickHandler(phase.id)}
+                        >
+                            <MaterialIconUI>settings</MaterialIconUI>
+                        </div>
                     </TooltipUI>
                 </div>
             </div>
@@ -288,31 +335,6 @@ export function ProjectComponent(props: Props) {
         props.deps.router.navigateTo(
             projectStoryPath(currentTeam.id, project.id, storyId),
         );
-    };
-    const onStoryDoubleClickHandler = (storyId: number) => {
-        return (event: MouseEvent) => {
-            event.stopPropagation();
-            if (!currentTeam || !project) {
-                return;
-            }
-
-            props.deps.router.navigateTo(
-                projectStoryPath(currentTeam.id, project.id, storyId),
-            );
-        };
-    };
-
-    const onPhaseDoubleClickHandler = (phaseId: number) => {
-        return (event: MouseEvent) => {
-            event.stopPropagation();
-            if (!currentTeam || !project) {
-                return;
-            }
-
-            props.deps.router.navigateTo(
-                phasePath(currentTeam.id, project.id, phaseId),
-            );
-        };
     };
 
     const onTimelineItemSelect = (rowIndex: number, itemIndex: number) => {
@@ -355,7 +377,7 @@ export function ProjectComponent(props: Props) {
             return;
         }
 
-        selectedStoryIds.forEach(storyId => {
+        selectedStoryIds.forEach((storyId) => {
             props.deps.stateSyncer.deleteStory(parseInt(storyId));
         });
 
@@ -372,26 +394,41 @@ export function ProjectComponent(props: Props) {
                 <div className={styles.PhaseListSection}>
                     <div className={styles.TopBar}>
                         <div className={styles.Title}>Phases</div>
-                        <TooltipUI message='Create phase' relativeLayout={props.deps.relativeLayout}>
-                        <div className={styles.Add} onClick={onAddPhaseClick}>
-                            <MaterialIconUI>add</MaterialIconUI>
-                        </div>
+                        <TooltipUI
+                            message='Create phase'
+                            relativeLayout={props.deps.relativeLayout}
+                        >
+                            <div
+                                className={styles.Add}
+                                onClick={onAddPhaseClick}
+                            >
+                                <MaterialIconUI>add</MaterialIconUI>
+                            </div>
                         </TooltipUI>
                     </div>
                     <div className={styles.PhaseList}>
                         {project.phases.map(renderPhase)}
                     </div>
                 </div>
-                <div className={styles.Timeline}>
-                    <TimelineComponent
-                        ref={timelineRef}
-                        relativeLayout={props.deps.relativeLayout}
-                        startAt={startAt}
-                        endAt={endAt}
-                        rows={rows}
-                        onItemSelect={onTimelineItemSelect}
-                    />
-                </div>
+                {project.phases.length === 0 ? (
+                    <div className={styles.CreatePhaseContainer}>
+                        <ButtonUI
+                            onClick={onAddPhaseClick}
+                            label='Create phase'
+                        />
+                    </div>
+                ) : (
+                    <div className={styles.Timeline}>
+                        <TimelineComponent
+                            ref={timelineRef}
+                            relativeLayout={props.deps.relativeLayout}
+                            startAt={startAt}
+                            endAt={endAt}
+                            rows={rows}
+                            onItemSelect={onTimelineItemSelect}
+                        />
+                    </div>
+                )}
             </div>
 
             <div className={styles.StoryListSection}>
@@ -400,32 +437,43 @@ export function ProjectComponent(props: Props) {
                     <div className={styles.Actions}>
                         {selectedStoryIds.size > 0 &&
                             selectedPhaseIds.size > 0 && (
-                                <TooltipUI message='Move to phase' relativeLayout={props.deps.relativeLayout}>
-                                <div
-                                    className={`${styles.Action} ${styles.Move}`}
-                                    onClick={onAddStoriesToPhaseClick}
+                                <TooltipUI
+                                    message='Move to phase'
+                                    relativeLayout={props.deps.relativeLayout}
                                 >
-                                    <MaterialIconUI>read_more</MaterialIconUI>
-                                </div>
+                                    <div
+                                        className={`${styles.Action} ${styles.Move}`}
+                                        onClick={onAddStoriesToPhaseClick}
+                                    >
+                                        <MaterialIconUI>
+                                            read_more
+                                        </MaterialIconUI>
+                                    </div>
                                 </TooltipUI>
                             )}
                         {selectedStoryIds.size > 0 && (
-                            <TooltipUI message='Delete' relativeLayout={props.deps.relativeLayout}>
-                            <div
-                                className={`${styles.Action} ${styles.Delete}`}
-                                onClick={onDeleteStoriesClick}
+                            <TooltipUI
+                                message='Delete'
+                                relativeLayout={props.deps.relativeLayout}
                             >
-                                <MaterialIconUI>close</MaterialIconUI>
-                            </div>
+                                <div
+                                    className={`${styles.Action} ${styles.Delete}`}
+                                    onClick={onDeleteStoriesClick}
+                                >
+                                    <MaterialIconUI>close</MaterialIconUI>
+                                </div>
                             </TooltipUI>
                         )}
-                        <TooltipUI message='Create story' relativeLayout={props.deps.relativeLayout}>
-                        <div
-                            className={`${styles.Action} ${styles.Add}`}
-                            onClick={onAddStoryInBacklogClick}
+                        <TooltipUI
+                            message='Create story'
+                            relativeLayout={props.deps.relativeLayout}
                         >
-                            <MaterialIconUI>add</MaterialIconUI>
-                        </div>
+                            <div
+                                className={`${styles.Action} ${styles.Add}`}
+                                onClick={onAddStoryInBacklogClick}
+                            >
+                                <MaterialIconUI>add</MaterialIconUI>
+                            </div>
                         </TooltipUI>
                     </div>
                 </div>
@@ -439,11 +487,7 @@ export function ProjectComponent(props: Props) {
                         />
                     )}
                     {project.unplannedStories.map((story) => (
-                        <div
-                            className={styles.ListItem}
-                            key={story.id}
-                            onDoubleClick={onStoryDoubleClickHandler(story.id)}
-                        >
+                        <div className={styles.ListItem} key={story.id}>
                             <StoryInlineItemComponent
                                 story={story}
                                 key={story.id}
@@ -465,11 +509,11 @@ export function ProjectComponent(props: Props) {
                 deps={props.deps}
                 projectId={props.projectId}
             />
-            {editingPhase && (
+            {editingPhaseInput && (
                 <UpdatePhaseModalComponent
                     ref={updatePhaseModalComponentRef}
-                    deps={props.deps}
-                    phase={editingPhase}
+                    updatePhaseInput={editingPhaseInput.updatePhaseInput}
+                    updatePhase={handleUpdatePhase}
                 />
             )}
         </div>
