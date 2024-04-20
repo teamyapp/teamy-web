@@ -54,7 +54,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
         })().then();
     }, []);
 
-    const onViewProjectDetailClickHandler = (projectId: number) => {
+    const onViewProjectCardClickHandler = (projectId: number) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
             if (!team) {
@@ -145,11 +145,11 @@ export const ProjectsComponent: FC<Props> = (props) => {
                         </div>
                     </div>
                 </div>
-                <div className={`${styles.Section} ${styles.Cards}`}>
+                <div className={`${styles.Section} ${styles.ProjectList}`}>
                     {team.projects.map((project) => (
                         <div className={styles.Project}>
                             <div
-                                className={styles.Content}
+                                className={styles.Card}
                                 style={{
                                     backgroundColor: project.color,
                                 }}

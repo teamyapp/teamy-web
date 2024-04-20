@@ -60,14 +60,14 @@
             }
         }
 
-        .Cards {
+        .ProjectList {
             display: flex;
             flex-wrap: wrap;
             row-gap: 20px;
             column-gap: 10px;
 
             .Project {
-                .Content {
+                .Card {
                     width: 260px;
                     background-color: #e5e5e5;
                     height: 150px;
@@ -76,7 +76,7 @@
                     margin-bottom: 10px;
 
                     &:hover {
-                        border: 1px solid #6a8db8;
+                        opacity: 0.75;
                         cursor: pointer;
                     }
 
