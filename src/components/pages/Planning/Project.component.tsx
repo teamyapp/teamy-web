@@ -318,7 +318,7 @@ export function ProjectComponent(props: Props) {
                     >
                         <div
                             className={styles.DetailsIcon}
-                            onClick={onPhaseDetailHandler(phase.id)}
+                            onClick={onPhaseDetailClickHandler(phase.id)}
                         >
                             <MaterialIconUI>settings</MaterialIconUI>
                         </div>
