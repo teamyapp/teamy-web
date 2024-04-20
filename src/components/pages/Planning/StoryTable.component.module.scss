@@ -20,6 +20,30 @@ $actionIconSize: 24px;
             th {
                 padding-top: 12px;
                 padding-bottom: 12px;
+
+                &.CheckboxCol {
+                    width: 36px;
+                }
+
+                &.IdCol {
+                    width: 36px;
+                }
+
+                &.PriorityCol {
+                    width: 140px;
+                }
+
+                &.StatusCol {
+                    width: 140px;
+                }
+
+                &.ActionsCol {
+                    width: 100px;
+                }
+
+                &.OwnerCol {
+                    width: 80px;
+                }
             }
         }
     }
@@ -28,53 +52,83 @@ $actionIconSize: 24px;
         .TableRow {
             border-bottom: 1px solid rgba(0, 0, 0, 0.12);
 
+            .Actions {
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                justify-content: center;
+
+                .Action {
+                    display: flex;
+                    width: 22px;
+                    height: 22px;
+                    padding: 4px;
+                    border-radius: 4px;
+                    align-items: center;
+                    justify-content: center;
+                    user-select: none;
+
+                    &.Active,
+                    &:hover {
+                        cursor: pointer;
+                        background-color: rgba(0, 0, 0, 0.07);
+                    }
+
+                    &.Cancel {
+                        background-color: #f44336;
+                        @include actionIcon;
+                        --icon-size: #{$actionIconSize - 6px};
+                    }
+
+                    &.Save {
+                        background-color: #4caf50;
+                        @include actionIcon;
+                        --icon-size: #{$actionIconSize - 6px};
+                    }
+
+                    &.Details {
+                        background-color: #3d7bf6;
+                        @include actionIcon;
+                        --icon-size: #{$actionIconSize - 6px};
+                    }
+                }
+            }
+
             td {
                 height: 48px;
-                text-align: center;
+
+                &.CheckboxCol {
+                    text-align: center;
+                }
+
+                &.IdCol {
+                    text-align: center;
+                }
+
+                &.NameCol {
+                    cursor: pointer;
+                }
+
+                .CreatingStoryName {
+                    display: flex;
+                    gap: 8px;
+                }
 
                 .StoryStatus {
                     height: 24px;
+                    width: 100px;
+                    margin-left: auto;
+                    margin-right: auto;
+                }
+
+                .StoryOwner {
+                    display: flex;
+                    justify-content: center;
                 }
 
                 .StoryPriority {
                     display: flex;
                     justify-content: center;
-                }
-
-                &.Actions {
-                    display: flex;
-                    gap: 8px;
-                    margin-left: auto;
-                    align-items: center;
-                    justify-content: center;
-
-                    .Action {
-                        display: flex;
-                        width: 22px;
-                        height: 22px;
-                        padding: 4px;
-                        border-radius: 4px;
-                        align-items: center;
-                        justify-content: center;
-                        user-select: none;
-
-                        &.Active,
-                        &:hover {
-                            background-color: rgba(0, 0, 0, 0.07);
-                        }
-
-                        &.Save {
-                            background-color: #4caf50;
-                            @include actionIcon;
-                            --icon-size: #{$actionIconSize - 6px};
-                        }
-
-                        &.Cancel {
-                            background-color: #f44336;
-                            @include actionIcon;
-                            --icon-size: #{$actionIconSize - 6px};
-                        }
-                    }
                 }
             }
         }

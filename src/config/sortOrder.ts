@@ -60,6 +60,7 @@ export const sortByStoryPriority = (storyA: Story, storyB: Story) => {
     const priorityBOrderNumber = storyB.priority
         ? priorityToOrderNumber[storyB.priority]
         : -1;
+
     return priorityAOrderNumber - priorityBOrderNumber;
 };
 
