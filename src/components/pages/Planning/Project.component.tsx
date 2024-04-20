@@ -255,7 +255,7 @@ export function ProjectComponent(props: Props) {
         updatePhaseModalComponentRef.current?.open();
     };
 
-    const onPhaseDetailHandler = (phaseId: number) => (event: MouseEvent) => {
+    const onPhaseDetailClickHandler = (phaseId: number) => (event: MouseEvent) => {
         event.stopPropagation();
         if (!currentTeam || !project) {
             return;
