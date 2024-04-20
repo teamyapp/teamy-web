@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, MouseEvent } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -30,7 +30,9 @@ export class TaskLinkIconUI extends Component<Props, State> {
             ? this.props.link.iconHoverUrl
             : this.props.link.iconUrl;
         return (
-            <TooltipUI message={this.props.link.previewTitle} relativeLayout={this.props.relativeLayout}>
+            <TooltipUI
+                relativeLayout={this.props.relativeLayout}
+                message={this.props.link.previewTitle} >
                 <div
                     className={styles.TaskLink}
                     onMouseEnter={this.onMouseEnterTaskLink}
@@ -40,6 +42,7 @@ export class TaskLinkIconUI extends Component<Props, State> {
                         href={this.props.link.url}
                         rel='noreferrer'
                         target='_blank'
+                        onClick={this.onTaskLinkClick}
                     >
                         {this.props.link.iconUrl ? (
                             <img
@@ -68,5 +71,9 @@ export class TaskLinkIconUI extends Component<Props, State> {
         this.setState({
             isHover: false,
         });
+    };
+
+    private onTaskLinkClick = (event: MouseEvent) => {
+        event.stopPropagation();
     };
 }

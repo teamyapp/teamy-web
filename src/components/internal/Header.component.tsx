@@ -68,7 +68,6 @@ export class HeaderComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly searchBarRef = createRef<HTMLDivElement>();
     private readonly searchInputRef = createRef<HTMLInputElement>();
-    private readonly teamContextMenuRef = createRef<ContextMenuComponent>();
     private readonly userProfileSectionRef: React.RefObject<HTMLDivElement> =
         createRef();
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
@@ -111,41 +110,21 @@ export class HeaderComponent extends Component<Props, State> {
                         )}
                     </div>
                     {this.props.currentTeam && (
-                        <div
-                            role={'button'}
-                            aria-label={this.props.currentTeam.name}
-                            className={styles.TeamName}
-                            onClick={this.onViewTeamSettingsClick}
-                            onContextMenu={this.onTeamContextMenu}
-                        >
-                            {this.props.currentTeam.name}
-                        </div>
+                        <TooltipUI
+                            relativeLayout={this.props.deps.relativeLayout}
+                            preserveReferenceParentHeight={true}
+                            message={'Team Settings'}>
+                            <div
+                                role={'button'}
+                                aria-label={this.props.currentTeam.name}
+                                className={styles.TeamName}
+                                onClick={this.onViewTeamSettingsClick}
+                            >
+
+                                {this.props.currentTeam.name}
+                            </div>
+                        </TooltipUI>
                     )}
-                    <ContextMenuComponent
-                        ref={this.teamContextMenuRef}
-                        menuItems={[
-                            {
-                                key: 'addMembers',
-                                action: this.onAddMembersClick,
-                                label: 'Add Members',
-                            },
-                            {
-                                key: 'showMembers',
-                                action: this.onShowMembersClick,
-                                label: 'Show Members',
-                            },
-                            {
-                                key: 'showInvitations',
-                                action: this.onShowInvitationsClick,
-                                label: 'Show Invitations',
-                            },
-                            {
-                                key: 'viewTeamSettings',
-                                action: this.onViewTeamSettingsClick,
-                                label: 'View Team Settings',
-                            },
-                        ]}
-                    />
                     <Route router={this.router} pattern={sprintsRoutePattern}>
                         <div className={styles.BacklogSection}>
                             <TooltipUI message={'Backlog'} relativeLayout={this.props.deps.relativeLayout}>
@@ -202,11 +181,11 @@ export class HeaderComponent extends Component<Props, State> {
                 >
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.ButtonsSection}>
-                            <TooltipUI message='Sprints' relativeLayout={this.props.deps.relativeLayout}>
+                            <TooltipUI message="Sprints" relativeLayout={this.props.deps.relativeLayout}>
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                            this.state.showSprintsView,
+                                        this.state.showSprintsView,
                                     })}`}
                                     onClick={this.onShowSprintsViewClick}
                                 >
@@ -214,13 +193,13 @@ export class HeaderComponent extends Component<Props, State> {
                                 </div>
                             </TooltipUI>
                             {this.props.deps.featureToggle.enablePlanning && (
-                                <TooltipUI message='Planning' relativeLayout={this.props.deps.relativeLayout}>
+                                <TooltipUI message="Planning" relativeLayout={this.props.deps.relativeLayout}>
                                     <div
                                         className={`${
                                             styles.Button
                                         } ${classNames({
                                             [styles.Active]:
-                                                this.state.showPlanningView,
+                                            this.state.showPlanningView,
                                         })}`}
                                         onClick={this.onShowPlanningViewClick}
                                     >
@@ -232,7 +211,7 @@ export class HeaderComponent extends Component<Props, State> {
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                            this.state.showInsightsView,
+                                        this.state.showInsightsView,
                                     })}`}
                                     onClick={this.onShowInsightsViewClick}
                                 >
@@ -244,7 +223,7 @@ export class HeaderComponent extends Component<Props, State> {
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                            this.state.showKnowledgeView,
+                                        this.state.showKnowledgeView,
                                     })}`}
                                     onClick={this.onShowKnowledgeViewClick}
                                 >
@@ -253,13 +232,13 @@ export class HeaderComponent extends Component<Props, State> {
                             )}
                             {this.props.deps.featureToggle
                                 .enableMarketplace && (
-                                <TooltipUI message='Marketplace' relativeLayout={this.props.deps.relativeLayout}>
+                                <TooltipUI message="Marketplace" relativeLayout={this.props.deps.relativeLayout}>
                                     <div
                                         className={`${
                                             styles.Button
                                         } ${classNames({
                                             [styles.Active]:
-                                                this.state.showMarketplaceView,
+                                            this.state.showMarketplaceView,
                                         })}`}
                                         onClick={
                                             this.onShowMarketplaceViewClick
@@ -293,7 +272,7 @@ export class HeaderComponent extends Component<Props, State> {
                             <div
                                 className={`${styles.Popup} ${classNames({
                                     [styles.Show]:
-                                        this.state.showUserProfileMenu,
+                                    this.state.showUserProfileMenu,
                                 })}`}
                             >
                                 <div
@@ -418,11 +397,6 @@ export class HeaderComponent extends Component<Props, State> {
         });
 
         this.props.onBacklogToggle?.call(null);
-    };
-
-    private onTeamContextMenu = (event: React.MouseEvent<HTMLElement>) => {
-        event.preventDefault();
-        this.teamContextMenuRef.current?.open(event.clientY, event.clientX);
     };
 
     private onAddMembersClick = () => {

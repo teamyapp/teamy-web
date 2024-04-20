@@ -55,7 +55,7 @@ interface Props {
     relativeLayout: RelativeLayout;
 }
 
-export const StoryStatus: FC<Props> = (props) => {
+export const StoryStatusComponent: FC<Props> = (props) => {
     const statusStyle = toOptionKey(props.status);
     const handleStatusChange = (optionKey: string) => {
         const status = optionKeyToStatus[optionKey];

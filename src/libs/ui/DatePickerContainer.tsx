@@ -9,10 +9,10 @@ import { CalendarUI } from './Calendar';
 const dateFormat = 'MM/DD/YYYY';
 
 interface Props {
-    target: ({
-        onChange,
-        onToggle,
-    }: {
+    renderReferenceElement: ({
+                 onChange,
+                 onToggle,
+             }: {
         onChange: (date: Date) => void;
         onToggle: () => void;
     }) => ReactNode;
@@ -23,12 +23,17 @@ interface Props {
     maxYear?: number;
     zOffset?: number;
     relativeLayout: RelativeLayout;
+    transformReferenceContainer?: (props: {
+        showFollower: boolean;
+        container: ReactNode;
+    }) => ReactNode;
 }
 
 interface State {
     value: string;
     selectedDate: Date;
     shownDate: Date;
+    showFollower: boolean;
 }
 
 export class DatePickerContainerUI extends Component<Props, State> {
@@ -42,6 +47,7 @@ export class DatePickerContainerUI extends Component<Props, State> {
                 : '',
             selectedDate: date,
             shownDate: date,
+            showFollower: false,
         };
     }
 
@@ -50,14 +56,27 @@ export class DatePickerContainerUI extends Component<Props, State> {
             <RelativeLayoutContainerUI
                 zOffset={this.props.zOffset}
                 relativeLayout={this.props.relativeLayout}
-                overSpaceAction='jumpVertically'
+                overSpaceAction="jumpVertically"
                 referenceOffset={4}
-                renderReferenceElement={({ toggleContainer }) =>
-                    this.props.target({
-                        onToggle: toggleContainer,
-                        onChange: this.handleCalendarChanged,
-                    })
-                }
+                renderReferenceElement={({ toggleContainer }) => {
+                    return this.props.transformReferenceContainer ?
+                        this.props.transformReferenceContainer({
+                                showFollower: this.state.showFollower,
+                                container: (
+                                    this.props.renderReferenceElement({
+                                        onToggle: this.onReferenceElementToggle(toggleContainer),
+                                        onChange: this.handleCalendarChanged,
+                                    })
+                                ),
+                            },
+                        ) :
+                        (
+                            this.props.renderReferenceElement({
+                                onToggle: toggleContainer,
+                                onChange: this.handleCalendarChanged,
+                            })
+                        );
+                }}
                 renderFollower={({ closeContainer }) => (
                     <CalendarUI
                         onClose={this.handleCalendarClosed(closeContainer)}
@@ -67,6 +86,8 @@ export class DatePickerContainerUI extends Component<Props, State> {
                         shownDate={this.state.shownDate}
                     />
                 )}
+                preserveReferenceParentHeight={true}
+                onCloseContainer={this.onCloseContainer}
             />
         );
     }
@@ -89,5 +110,16 @@ export class DatePickerContainerUI extends Component<Props, State> {
             onClose();
             this.props.onTargetFocus?.call(null);
         };
+    };
+
+    private onReferenceElementToggle = (toggleContainer: () => void) => {
+        return () => {
+            this.setState({ showFollower: !this.state.showFollower });
+            toggleContainer();
+        };
+    };
+
+    private onCloseContainer = () => {
+        this.setState({ showFollower: false });
     };
 }

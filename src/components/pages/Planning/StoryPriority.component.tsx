@@ -1,6 +1,6 @@
 import { Priority } from '@core/entity/priority';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import styles from './StoryPriority.component.module.scss';
 import classNames from 'classnames';
 import { RelativeLayout } from '@lib/layout';
@@ -9,6 +9,10 @@ interface Props {
     relativeLayout: RelativeLayout;
     priority?: Priority;
     onPriorityChange: (priority: Priority) => void;
+    transformReferenceContainer?: (props: {
+        showFollower: boolean,
+        container: ReactNode
+    }) => ReactNode;
 }
 
 const priorityOptions: Option[] = [
@@ -74,6 +78,7 @@ export const StoryPriority: FC<Props> = (props) => {
                 selectOptionKey={toOptionKey(props.priority)}
                 options={priorityOptions}
                 onSelectOption={handlePriorityChange}
+                transformReferenceContainer={props.transformReferenceContainer}
             />
         </div>
     );

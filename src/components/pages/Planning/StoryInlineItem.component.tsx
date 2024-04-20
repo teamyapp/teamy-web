@@ -5,11 +5,11 @@ import { ChangeEvent, FunctionComponent, MouseEvent, useState } from 'react';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
 import { Deps } from '@core/dep/deps';
-import { Story, StoryStatus as Status } from '@core/entity/story';
+import { Story, StoryStatus } from '@core/entity/story';
 import styles from './StoryInlineItem.component.module.scss';
 import { StoryPriority } from './StoryPriority.component';
 import { Priority } from '@core/entity/priority';
-import { StoryStatus } from './StoryStatus.component';
+import { StoryStatusComponent } from './StoryStatus.component';
 
 interface StoryInlineItemComponentProps {
     story: Story;
@@ -48,7 +48,7 @@ export const StoryInlineItemComponent: FunctionComponent<
         props.deps.stateSyncer.deleteStory(props.story.id);
     };
 
-    const onStatusChange = (status: Status) => {
+    const onStatusChange = (status: StoryStatus) => {
         props.deps.stateSyncer.updateStory(props.story.id, {
             name: props.story.name,
             status,
@@ -70,7 +70,8 @@ export const StoryInlineItemComponent: FunctionComponent<
         setStoryName(event.target.value);
     };
 
-    const onSaveStoryClick = () => {
+    const onSaveStoryClick = (event: MouseEvent) => {
+        event.stopPropagation();
         props.deps.stateSyncer.updateStory(props.story.id, {
             name: storyName,
             status: props.story.status,
@@ -84,11 +85,13 @@ export const StoryInlineItemComponent: FunctionComponent<
         });
     };
 
-    const onCancelStoryEdit = () => {
+    const onCancelStoryEdit = (event: MouseEvent) => {
+        event.stopPropagation();
         setIsEditingStory(false);
     };
 
-    const onStoryNameClick = () => {
+    const onStoryNameDoubleClick = (event: MouseEvent) => {
+        event.stopPropagation();
         setIsEditingStory(true);
     };
 
@@ -105,8 +108,7 @@ export const StoryInlineItemComponent: FunctionComponent<
                             <div className={`${styles.Attribute} ${styles.Id}`}>
                                 {props.story.id}
                             </div>
-
-                            <StoryStatus
+                            <StoryStatusComponent
                                 status={props.story.status}
                                 onStatusChange={onStatusChange}
                                 relativeLayout={props.deps.relativeLayout}
@@ -121,7 +123,7 @@ export const StoryInlineItemComponent: FunctionComponent<
                         ) : (
                             <div
                                 className={styles.Goal}
-                                onDoubleClick={onStoryNameClick}
+                                onDoubleClick={onStoryNameDoubleClick}
                             >
                                 {storyName}
                             </div>
@@ -131,16 +133,20 @@ export const StoryInlineItemComponent: FunctionComponent<
                             {props.story.totalTasks} tasks completed
                         </div>
                         <div className={styles.BottomRow}>
-                            <TooltipUI
-                                message='Set Priority'
+                            <StoryPriority
                                 relativeLayout={props.deps.relativeLayout}
-                            >
-                                <StoryPriority
-                                    relativeLayout={props.deps.relativeLayout}
-                                    onPriorityChange={handlePriorityChange}
-                                    priority={props.story.priority}
-                                />
-                            </TooltipUI>
+                                onPriorityChange={handlePriorityChange}
+                                priority={props.story.priority}
+                                transformReferenceContainer={({showFollower, container}) => (
+                                    <TooltipUI
+                                        message="Priority"
+                                        disabled={showFollower}
+                                        relativeLayout={props.deps.relativeLayout}
+                                    >
+                                        {container}
+                                    </TooltipUI>
+                                )}
+                            />
                         </div>
                     </div>
                     <div className={styles.ActionsSection}>

@@ -19,7 +19,6 @@
 
     .SprintHeaderSection {
         height: 30px;
-        position: relative;
 
         &:focus {
             outline: none;
@@ -59,104 +58,101 @@
                 }
             }
         }
+    }
+}
 
-        .Detail {
-            background-color: white;
-            border-radius: 4px;
-            box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-            box-sizing: border-box;
-            left: 50%;
-            margin-top: 4px;
-            position: absolute;
-            transform: translateX(-50%);
-            width: 160px;
+.Detail {
+    background-color: white;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    width: 160px;
 
-            .AddSection {
-                padding: 4px;
+    .AddSection {
+        padding: 4px;
 
-                .Button {
-                    align-items: center;
-                    --icon-color: #424242;
-                    display: flex;
-                    font-weight: bold;
-                    height: 30px;
-                    justify-content: center;
-                    --icon-size: 28px;
+        .Button {
+            align-items: center;
+            --icon-color: #424242;
+            display: flex;
+            font-weight: bold;
+            height: 30px;
+            justify-content: center;
+            --icon-size: 28px;
 
-                    &:hover {
-                        background-color: rgba(0, 0, 0, 0.08);
-                        color: white;
-                        cursor: pointer;
-                    }
-                }
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.08);
+                color: white;
+                cursor: pointer;
+            }
+        }
+    }
+
+    .Divider {
+        border-top: 1px dashed #e0e0e0;
+        margin: 0 10px;
+    }
+
+    .Sprints {
+        color: #424242;
+        font-weight: 600;
+        max-height: 500px;
+        overflow-y: auto;
+        text-align: center;
+
+        .Sprint {
+            align-items: center;
+            padding: 8px 0;
+            position: relative;
+
+            .Active {
+                background-color: #3d7bf6;
+                border-radius: 50%;
+                height: 6px;
+                left: 16px;
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 6px;
             }
 
-            .Divider {
-                border-top: 1px dashed #e0e0e0;
-                margin: 0 10px;
-            }
-
-            .Sprints {
-                color: #424242;
+            .Delete {
+                --icon-color: white;
+                display: none;
                 font-weight: 600;
-                max-height: 500px;
-                overflow-y: auto;
-                text-align: center;
+                opacity: 0.5;
+                position: absolute;
+                right: 6px;
+                --icon-size: 20px;
+                top: 50%;
+                transform: translateY(-50%);
 
-                .Sprint {
-                    align-items: center;
-                    padding: 8px 0;
-                    position: relative;
-
-                    .Active {
-                        background-color: #3d7bf6;
-                        border-radius: 50%;
-                        height: 6px;
-                        left: 16px;
-                        position: absolute;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        width: 6px;
-                    }
-
-                    .Delete {
-                        --icon-color: white;
-                        display: none;
-                        font-weight: 600;
-                        opacity: 0.5;
-                        position: absolute;
-                        right: 6px;
-                        --icon-size: 20px;
-                        top: 50%;
-                        transform: translateY(-50%);
-
-                        &:hover {
-                            opacity: 1;
-                        }
-                    }
-
-                    &:hover,
-                    &.Selected {
-                        color: white;
-                        cursor: pointer;
-
-                        .Active {
-                            background-color: white;
-                        }
-
-                        .Delete {
-                            display: block;
-                        }
-                    }
-
-                    &:hover {
-                        background-color: #3d7bf6;
-                    }
-
-                    &.Selected {
-                        background-color: $primaryColor;
-                    }
+                &:hover {
+                    opacity: 1;
                 }
+            }
+
+            &:hover,
+            &.Selected {
+                color: white;
+                cursor: pointer;
+
+                .Active {
+                    background-color: white;
+                }
+
+                .Delete {
+                    display: block;
+                }
+            }
+
+            &:hover {
+                background-color: #3d7bf6;
+            }
+
+            &.Selected {
+                background-color: $primaryColor;
             }
         }
     }
