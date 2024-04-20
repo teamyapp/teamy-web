@@ -14,29 +14,33 @@ type Props = {
     onCloseContainer?: () => void;
     onMouseLeave?: () => void;
     zOffset?: number;
-    renderReferenceElement: ({
-        toggleContainer,
-        closeContainer,
-        openContainer,
-        showFollower,
-    }: {
-        toggleContainer: () => void;
-        closeContainer: () => void;
-        openContainer: () => void;
-        showFollower: boolean;
-    }) => ReactNode;
-    renderFollower: ({
-        closeContainer,
-        openContainer,
-    }: {
-        closeContainer: () => void;
-        openContainer: () => void;
-    }) => ReactNode;
+    renderReferenceElement: (
+        {
+            toggleContainer,
+            closeContainer,
+            openContainer,
+            showFollower,
+        }: {
+            toggleContainer: () => void;
+            closeContainer: () => void;
+            openContainer: () => void;
+            showFollower: boolean;
+        }) => ReactNode;
+    renderFollower: (
+        {
+            closeContainer,
+            openContainer,
+        }: {
+            closeContainer: () => void;
+            openContainer: () => void;
+        }) => ReactNode;
     relativeLayout: RelativeLayout;
     horizontalAlignment?: HorizontalAlignment;
     verticalAlignment?: VerticalAlignment;
     overSpaceAction?: OverSpaceAction;
     referenceOffset?: number;
+    preserveReferenceParentHeight?: boolean;
+    preserveReferenceParentWidth?: boolean;
 };
 
 interface States {
@@ -80,14 +84,18 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
     render() {
         return (
             <Fragment>
-                <span ref={this.referenceElementRef}>
+                <div ref={this.referenceElementRef}
+                    style={{
+                        width: this.props.preserveReferenceParentWidth ? '100%' : 'auto',
+                        height: this.props.preserveReferenceParentHeight ? '100%' : 'auto',
+                    }}>
                     {this.props.renderReferenceElement({
                         toggleContainer: this.handleToggle,
                         showFollower: this.state.showFollower,
                         closeContainer: this.onClose,
                         openContainer: this.onOpen,
                     })}
-                </span>
+                </div>
                 {this.state.showFollower &&
                     this.followerRef &&
                     createPortal(
@@ -99,7 +107,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                             }}
                         >
                             {this.props.renderFollower({
-                                closeContainer : this.onClose,
+                                closeContainer: this.onClose,
                                 openContainer: this.onOpen,
                             })}
                         </div>,

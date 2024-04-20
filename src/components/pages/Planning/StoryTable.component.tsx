@@ -2,10 +2,10 @@ import { Deps } from '@core/dep/deps';
 import { CreateStoryInput, UpdateStoryInput } from '@core/entity/input';
 import { Story, StoryStatus as Status } from '@core/entity/story';
 import { ChangeEvent, FC, useState } from 'react';
+import { StoryStatusComponent } from './StoryStatus.component';
 import styles from './StoryTable.component.module.scss';
 import { StoryPriority } from './StoryPriority.component';
 import { Priority } from '@core/entity/priority';
-import { StoryStatus } from './StoryStatus.component';
 import { SelectOwnersPopupComponent } from 'components/internal/SelectOwnersPopupComponent';
 import { TooltipUI } from '@lib/ui/Tooltip';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -238,7 +238,7 @@ export const StoryTable: FC<Props> = (props) => {
                         </td>
                         <td>
                             <div className={styles.StoryStatus}>
-                                <StoryStatus
+                                <StoryStatusComponent
                                     relativeLayout={props.deps.relativeLayout}
                                     status={'TODO'}
                                     onStatusChange={
@@ -316,7 +316,7 @@ export const StoryTable: FC<Props> = (props) => {
                         </td>
                         <td>
                             <div className={styles.StoryStatus}>
-                                <StoryStatus 
+                                <StoryStatusComponent
                                     relativeLayout={props.deps.relativeLayout} 
                                     status={story.status} 
                                     onStatusChange={handleStoryStatusChanged(story)}/>
@@ -346,7 +346,7 @@ export const StoryTable: FC<Props> = (props) => {
                                 </div>
                             </TooltipUI>
                             <TooltipUI
-                                message='Details'
+                                message='Detail'
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div

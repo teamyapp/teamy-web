@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, MouseEvent, useState } from 'react';
 
 import { RelativeLayoutContainerUI } from '@lib/layout';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -19,10 +19,12 @@ interface Props {
     deps: Deps;
     selectedOwner?: User;
     onSelectOwner?: (OwnerId?: number) => void;
+    zOffset?: number;
 }
 
 export const SelectOwnersPopupComponent: FC<Props> = (props) => {
     const [potentialOwners, setPotentialOwners] = useState<User[]>([]);
+    const [showFollower, setShowFollower] = useState(false);
 
     const fetchOwnerList = async () => {
         await props.deps.stateSyncer.pullCurrentTeamMembers();
@@ -33,21 +35,32 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
     const handleCloseOwnersListClick = (onClose: () => void) => {
         return () => {
             setPotentialOwners([]);
+            setShowFollower(false);
             onClose();
         };
     };
 
     const handleSelectOwner = (onClose: () => void) => (userId: number) => {
         setPotentialOwners([]);
+        setShowFollower(false);
         onClose();
         props.onSelectOwner?.call(this, userId);
     };
 
     const handleRemoveOwner = (onClose: () => void) => () => {
         setPotentialOwners([]);
+        setShowFollower(false);
         onClose();
         props.onSelectOwner?.call(this);
     };
+
+    const onAssignOwnerClick = (toggleContainer: ()=>void) => {
+        return (event: MouseEvent) => {
+            event.stopPropagation();
+            setShowFollower(!showFollower);
+            toggleContainer();
+        }
+    }
 
     const renderAssignOwner = ({
         toggleContainer,
@@ -65,14 +78,15 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
         return (
             <div className={styles.AssignOwner}>
                 <TooltipUI
-                    message={name}
                     relativeLayout={props.deps.relativeLayout}
+                    disabled={showFollower}
+                    message={name}
                 >
                     <div
                         className={`${styles.Action} ${classNames({
                             [styles.Active]: showFollower,
                         })}`}
-                        onClick={toggleContainer}
+                        onClick={onAssignOwnerClick(toggleContainer)}
                     >
                         <div className={styles.AssignOwnerIcon}>
                             {props.selectedOwner ? (
@@ -87,11 +101,16 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
         );
     };
 
+    const onContainerClose = () => {
+        setPotentialOwners([]);
+        setShowFollower(false);
+    }
+
     return (
         <RelativeLayoutContainerUI
             relativeLayout={props.deps.relativeLayout}
             overSpaceAction='jumpVertically'
-            zOffset={OWNER_ASSIGNMENT_Z_INDEX}
+            zOffset={props.zOffset === undefined ? OWNER_ASSIGNMENT_Z_INDEX : props.zOffset}
             referenceOffset={4}
             renderReferenceElement={renderAssignOwner}
             onOpenContainer={fetchOwnerList}
@@ -120,6 +139,7 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
                     </div>
                 );
             }}
+            onCloseContainer={onContainerClose}
         />
     );
 };

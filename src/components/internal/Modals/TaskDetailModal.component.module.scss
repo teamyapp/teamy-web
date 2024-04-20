@@ -18,6 +18,7 @@ $divider: 2px solid #eeeeee;
         display: flex;
         justify-content: flex-end;
         padding: 4px 10px;
+        gap: 10px;
 
         .SaveAction {
             align-items: center;
@@ -117,14 +118,29 @@ $divider: 2px solid #eeeeee;
                 align-items: flex-end;
                 display: flex;
                 flex-direction: column;
+                row-gap: 20px;
 
                 .Row {
                     align-items: flex-start;
-                    display: flex;
                     width: 100%;
 
-                    &:not(:first-child) {
-                        margin-top: 20px;
+                    &.Effort {
+                        height: 24px;
+                        display: flex;
+                    }
+
+                    &.DeliveredAt {
+                        .Label {
+                            font-weight: bold;
+                            font-size: 16px;
+                            margin-bottom: 4px;
+                        }
+
+                        .Value {
+                            font-weight: bold;
+                            color: #494949;
+                            font-size: 14px;
+                        }
                     }
                 }
             }

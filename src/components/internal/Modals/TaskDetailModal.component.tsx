@@ -1,3 +1,4 @@
+import { TooltipUI } from '@lib/ui/Tooltip';
 import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -27,8 +28,7 @@ import { ThreadUI } from '../Thread';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 30;
-const DATE_PICKER_Z_INDEX = 1002;
-const DURATION_INPUT_Z_INDEX = 1000;
+const POPUP_Z_INDEX = 1002;
 
 interface Props {
     deps: Deps;
@@ -97,6 +97,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                     deps={this.props.deps}
                                     onSelectOwner={this.onTaskOwnerSelected}
                                     selectedOwner={this.state.task?.owner}
+                                    zOffset={POPUP_Z_INDEX}
                                 />
                                 <div className={styles.SaveAction}>
                                     <div
@@ -195,12 +196,23 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                     label={'Due at'}
                                                     value={dueAt}
                                                     zOffset={
-                                                        DATE_PICKER_Z_INDEX
+                                                        POPUP_Z_INDEX
                                                     }
                                                 />
                                             </div>
                                         )}
-
+                                        {this.state.task.deliveredAt && (
+                                            <div className={`${styles.Row} ${styles.DeliveredAt}`}>
+                                                <div className={styles.Label}>
+                                                    Delivered at:
+                                                </div>
+                                                <div className={styles.Value}>
+                                                    {new Date(
+                                                        this.state.task.deliveredAt,
+                                                    ).toLocaleString()}
+                                                </div>
+                                            </div>
+                                        )}
                                         <div
                                             className={`${styles.Row} ${styles.Effort}`}
                                         >
@@ -213,7 +225,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                         .effort
                                                 }
                                                 canClear={true}
-                                                zOffset={DURATION_INPUT_Z_INDEX}
+                                                zOffset={POPUP_Z_INDEX}
                                                 icon={
                                                     <MaterialIconUI
                                                         iconStyle={'outlined'}
@@ -224,6 +236,18 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                 onDurationChange={
                                                     this.onEffortChange
                                                 }
+                                                transformReferenceContainer={({
+                                                    showFollower,
+                                                    container,
+                                                }) => (
+                                                    <TooltipUI
+                                                        relativeLayout={this.props.deps.relativeLayout}
+                                                        preserveReferenceParentHeight={true}
+                                                        disabled={showFollower}
+                                                        message={'Effort'}>
+                                                        {container}
+                                                    </TooltipUI>
+                                                )}
                                             />
                                         </div>
                                     </div>

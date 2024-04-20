@@ -313,7 +313,7 @@ export function ProjectComponent(props: Props) {
                         </div>
                     </TooltipUI>
                     <TooltipUI
-                        message='Details'
+                        message='Detail'
                         relativeLayout={props.deps.relativeLayout}
                     >
                         <div

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import React, { Component, ReactNode, createRef } from 'react';
+import React, { Component, ReactNode, createRef, MouseEvent } from 'react';
 
 import { RelativeLayout } from '@lib/layout/relativeLayout';
 
@@ -12,6 +12,8 @@ import { TextFieldUI } from './TextField';
 const dateFormat = 'MM/DD/YYYY';
 const DATE_PICKER_Z_INDEX = 101;
 
+// this component is similar to dropdown list, you need to add transformSelectedOptionContainer
+
 interface Props {
     value?: Date;
     shownValue?: string;
@@ -20,6 +22,10 @@ interface Props {
     maxYear?: number;
     onChange?: (date?: Date) => void;
     relativeLayout: RelativeLayout;
+    transformReferenceContainer?: (props: {
+        showFollower: boolean;
+        container: ReactNode;
+    }) => ReactNode;
 }
 
 interface State {
@@ -56,9 +62,9 @@ export class DateLabelPickerUI extends Component<Props, State> {
                 value={this.props.value}
                 minYear={this.props.minYear}
                 maxYear={this.props.maxYear}
-                target={({ onToggle }) => (
+                renderReferenceElement={({ onToggle }) => (
                     <div
-                        onClick={onToggle}
+                        onClick={this.onToggleHandler(onToggle)}
                         className={`${styles.DateLabelPicker} ${classNames({
                             [styles.Warn]: this.props.isWarn,
                         })}`}
@@ -71,7 +77,15 @@ export class DateLabelPickerUI extends Component<Props, State> {
                         )}
                     </div>
                 )}
+                transformReferenceContainer={this.props.transformReferenceContainer}
             />
         );
     }
+
+    private onToggleHandler = (onToggle: () => void) => {
+        return (event: MouseEvent) => {
+            event.stopPropagation();
+            onToggle();
+        };
+    };
 }

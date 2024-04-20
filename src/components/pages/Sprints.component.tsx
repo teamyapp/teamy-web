@@ -1,3 +1,4 @@
+import { TooltipUI } from '@lib/ui/Tooltip';
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, { Component, ReactNode, createRef } from 'react';
@@ -155,9 +156,9 @@ export class SprintsComponent extends Component<Props, State> {
                     if (appState.sprintTabReady)
                         if (
                             appState.currSprintId !==
-                                this.state.selectedSprintId ||
+                            this.state.selectedSprintId ||
                             appState.activeSprintTabIndex !==
-                                this.state.activeTabIndex
+                            this.state.activeTabIndex
                         ) {
                             this.selectTab(activeSprintTabIndex, false);
                         }
@@ -411,7 +412,8 @@ export class SprintsComponent extends Component<Props, State> {
                                             checked={
                                                 this.state.allowMultiSelection
                                             }
-                                            onChange={() => {}}
+                                            onChange={() => {
+                                            }}
                                         />
                                         <div className={styles.ToggleLabel}>
                                             Select many
@@ -545,24 +547,29 @@ export class SprintsComponent extends Component<Props, State> {
                         {getUserShortName(user.firstName, user.lastName)}
                     </div>
                     <div className={styles.BandwidthSection}>
-                        <div className={styles.BandwidthFull}>
-                            <div
-                                className={`${
-                                    styles.UnusedBandwidth
-                                } ${classNames({
-                                    [styles.Negative]:
+                        <TooltipUI
+                            relativeLayout={this.props.deps.relativeLayout}
+                            message={`Bandwidth`}
+                        >
+                            <div className={styles.BandwidthFull}>
+                                <div
+                                    className={`${
+                                        styles.UnusedBandwidth
+                                    } ${classNames({
+                                        [styles.Negative]:
                                         participant.unusedBandwidth
                                             .totalMilliSeconds < 0,
-                                })}`}
-                                style={{
-                                    width: `${Math.abs(
-                                        unusedBandwidthPercent,
-                                    )}%`,
-                                }}
-                            />
-                        </div>
+                                    })}`}
+                                    style={{
+                                        width: `${Math.abs(
+                                            unusedBandwidthPercent,
+                                        )}%`,
+                                    }}
+                                />
+                            </div>
+                        </TooltipUI>
                         <div className={styles.Label}>
-                            {`${unusedBandwidthReadable} / ${totalBandwidthReadable}`}
+                            {`${unusedBandwidthReadable} / ${totalBandwidthReadable} (${Math.floor(unusedBandwidthPercent)}%)`}
                         </div>
                     </div>
                 </div>

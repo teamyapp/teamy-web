@@ -150,7 +150,6 @@ export class InlineTaskUI extends Component<Props, State> {
                                 >
                                     {this.props.task.id}
                                 </div>
-
                                 {this.props.showStatus && (
                                     <div
                                         className={`${styles.Attribute} ${
@@ -170,33 +169,39 @@ export class InlineTaskUI extends Component<Props, State> {
                                         [styles[priorityStyle]]: true,
                                     })}`}
                                 >
-                                    <TooltipUI message='Set priority' relativeLayout={this.props.deps.relativeLayout}>
-                                        <DropDownList
-                                            relativeLayout={this.props.deps.relativeLayout}
-                                            selectOptionKey={toOptionKey(
-                                                this.props.task.priority,
-                                            )}
-                                            options={priorityOptions}
-                                            onSelectOption={
-                                                this.onPrioritySelected
-                                            }
-                                        />
-                                    </TooltipUI>
+                                    <DropDownList
+                                        relativeLayout={this.props.deps.relativeLayout}
+                                        selectOptionKey={toOptionKey(
+                                            this.props.task.priority,
+                                        )}
+                                        options={priorityOptions}
+                                        onSelectOption={
+                                            this.onPrioritySelected
+                                        }
+                                        transformReferenceContainer={
+                                            ({ showFollower, container }) => (
+                                                <TooltipUI
+                                                    relativeLayout={this.props.deps.relativeLayout}
+                                                    disabled={showFollower}
+                                                    message='Priority'>
+                                                    {container}
+                                                </TooltipUI>
+                                            )
+                                        }
+                                    />
                                 </div>
-
                                 <div className={styles.Attribute}>
                                     {this.renderDueAt()}
                                 </div>
                                 <div className={styles.Attribute}>
                                     {this.renderEffort()}
                                 </div>
-
                                 {this.props.task.links.map((link) => (
                                     <div
                                         className={styles.Attribute}
                                         key={link.id}
                                     >
-                                        <TaskLinkIconUI link={link} relativeLayout={this.props.deps.relativeLayout}/>
+                                        <TaskLinkIconUI link={link} relativeLayout={this.props.deps.relativeLayout} />
                                     </div>
                                 ))}
                             </div>
@@ -291,15 +296,22 @@ export class InlineTaskUI extends Component<Props, State> {
         }
 
         return (
-            <TooltipUI message='Set due date' relativeLayout={this.props.deps.relativeLayout}>
-                <DateLabelPickerUI
-                    relativeLayout={this.props.relativeLayout}
-                    value={dueAt}
-                    isWarn={warn}
-                    shownValue={dueAt && dueDate(dueAt)}
-                    onChange={this.handleEndDateChanged}
-                />
-            </TooltipUI>
+            <DateLabelPickerUI
+                relativeLayout={this.props.relativeLayout}
+                value={dueAt}
+                isWarn={warn}
+                shownValue={dueAt && dueDate(dueAt)}
+                onChange={this.handleEndDateChanged}
+                transformReferenceContainer={({ showFollower, container }) => (
+                    <TooltipUI
+                        message='Due date'
+                        disabled={showFollower}
+                        relativeLayout={this.props.deps.relativeLayout}
+                        preserveReferenceParentHeight={true}>
+                        {container}
+                    </TooltipUI>
+                )}
+            />
         );
     };
 
@@ -324,21 +336,28 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderEffort = () => {
         const { effort } = this.props.task;
         return (
-            <TooltipUI message='Set duration' relativeLayout={this.props.deps.relativeLayout}>
-                <DurationInputUI
-                    relativeLayout={this.props.relativeLayout}
-                    duration={effort}
-                    icon={
-                        <MaterialIconUI iconStyle={'outlined'}>
-                            weight
-                        </MaterialIconUI>
-                    }
-                    canClear={true}
-                    onPopupOpen={this.onEffortPopupOpen}
-                    onPopupClose={this.onEffortPopupClose}
-                    onDurationChange={this.onEffortChange}
-                />
-            </TooltipUI>
+            <DurationInputUI
+                relativeLayout={this.props.relativeLayout}
+                duration={effort}
+                icon={
+                    <MaterialIconUI iconStyle={'outlined'}>
+                        weight
+                    </MaterialIconUI>
+                }
+                canClear={true}
+                onPopupOpen={this.onEffortPopupOpen}
+                onPopupClose={this.onEffortPopupClose}
+                onDurationChange={this.onEffortChange}
+                transformReferenceContainer={({ showFollower, container }) => (
+                    <TooltipUI
+                        message='Effort'
+                        disabled={showFollower}
+                        relativeLayout={this.props.deps.relativeLayout}
+                        preserveReferenceParentHeight={true}>
+                        {container}
+                    </TooltipUI>
+                )}
+            />
         );
     };
 
@@ -532,27 +551,32 @@ export class InlineTaskUI extends Component<Props, State> {
         return menuItems;
     };
 
-    private onStartTaskClick = () => {
+    private onStartTaskClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onStartTask?.call(null, this.props.task.id);
     };
 
-    private onReportTaskBlockedClick = () => {
+    private onReportTaskBlockedClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onReportTaskBlocked?.call(null, this.props.task.id);
     };
 
-    private onCompleteTaskClick = () => {
+    private onCompleteTaskClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onCompleteTask?.call(null, this.props.task.id);
     };
 
-    private onDeleteTaskClick = () => {
+    private onDeleteTaskClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onDeleteTask?.call(null, this.props.task.id);
     };
 
-    private onViewTaskDetailClick = () => {
+    private onViewTaskDetailClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onViewTaskDetail?.call(null, this.props.task.id);
     };
 
-    private onAddAwaitForTaskClick = (event: MouseEvent<HTMLDivElement>) => {
+    private onAddAwaitForTaskClick = (event: MouseEvent) => {
         // TODO: allow user to pick awaiting task
     };
 

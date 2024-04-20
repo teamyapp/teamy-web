@@ -243,7 +243,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                                 </div>
                                             </TooltipUI>
                                             <TooltipUI
-                                                message='delete'
+                                                message='Delete'
                                                 relativeLayout={
                                                     props.deps.relativeLayout
                                                 }

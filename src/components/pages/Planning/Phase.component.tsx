@@ -431,36 +431,44 @@ export function PhaseComponent(props: Props) {
                     </div>
                     <div className={styles.Operations}>
                         <div className={styles.LeftSection}>
-                            <TooltipUI
-                                message='View mode'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div className={styles.Selections}>
-                                    <DropDownList
-                                        relativeLayout={
-                                            props.deps.relativeLayout
-                                        }
-                                        selectOptionKey={selectedView}
-                                        options={viewOptions}
-                                        onSelectOption={onSelectView}
-                                    />
-                                </div>
-                            </TooltipUI>
-                            <TooltipUI
-                                message='Order by'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div className={styles.Selections}>
-                                    <DropDownList
-                                        relativeLayout={
-                                            props.deps.relativeLayout
-                                        }
-                                        selectOptionKey={selectedOrder}
-                                        options={orderOptions}
-                                        onSelectOption={onSelectedSortOrder}
-                                    />
-                                </div>
-                            </TooltipUI>
+                            <div className={styles.Selections}>
+                                <DropDownList
+                                    relativeLayout={
+                                        props.deps.relativeLayout
+                                    }
+                                    selectOptionKey={selectedView}
+                                    options={viewOptions}
+                                    onSelectOption={onSelectView}
+                                    transformReferenceContainer={({showFollower, container}) =>
+                                        <TooltipUI
+                                            message='View'
+                                            disabled={showFollower}
+                                            relativeLayout={props.deps.relativeLayout}
+                                        >
+                                            {container}
+                                        </TooltipUI>
+                                    }
+                                />
+                            </div>
+                            <div className={styles.Selections}>
+                                <DropDownList
+                                    relativeLayout={
+                                        props.deps.relativeLayout
+                                    }
+                                    selectOptionKey={selectedOrder}
+                                    options={orderOptions}
+                                    onSelectOption={onSelectedSortOrder}
+                                    transformReferenceContainer={({showFollower, container}) =>
+                                        <TooltipUI
+                                            message='Order by'
+                                            disabled={showFollower}
+                                            relativeLayout={props.deps.relativeLayout}
+                                        >
+                                            {container}
+                                        </TooltipUI>
+                                    }
+                                />
+                            </div>
                         </div>
                         <div className={styles.RightSection}>
                             {selectedPhaseStoryIds.size > 0 && (

@@ -1,4 +1,4 @@
-import React, { Component, ReactNode, createRef } from 'react';
+import React, { Component, ReactNode, createRef, MouseEvent } from 'react';
 
 import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
 import { Duration } from '@lib/time/duration';
@@ -17,9 +17,24 @@ interface Props {
     onPopupOpen?: () => void;
     onPopupClose?: () => void;
     onDurationChange?: (duration?: Duration) => void;
+    transformReferenceContainer?: (props: {
+        showFollower: boolean;
+        container: ReactNode;
+    }) => ReactNode;
 }
 
-export class DurationInputUI extends Component<Props, any> {
+interface State {
+    showFollower: boolean;
+}
+
+export class DurationInputUI extends Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            showFollower: false,
+        };
+    }
+
     render() {
         const { duration } = this.props;
         return (
@@ -27,19 +42,16 @@ export class DurationInputUI extends Component<Props, any> {
                 <RelativeLayoutContainerUI
                     overSpaceAction='jumpVertically'
                     onOpenContainer={this.props.onPopupOpen}
-                    onCloseContainer={this.props.onPopupClose}
+                    onCloseContainer={this.onCloseContainer}
                     relativeLayout={this.props.relativeLayout}
                     referenceOffset={4}
+                    preserveReferenceParentHeight={true}
                     zOffset={this.props.zOffset}
                     renderReferenceElement={({ toggleContainer }) => (
-                        <div className={styles.ValueRow} onClick={toggleContainer}>
-                            {this.props.icon}
-                            {duration && (
-                                <div className={styles.Value}>
-                                    {this.props.duration?.toReadable()}
-                                </div>
-                            )}
-                        </div>
+                        this.props.transformReferenceContainer? this.props.transformReferenceContainer({
+                            showFollower: this.state.showFollower,
+                            container: this.renderReferenceElement({duration, toggleContainer}),
+                        }) : this.renderReferenceElement({duration, toggleContainer})
                     )}
                     renderFollower={({ closeContainer }) => (
                         <DurationInputPopup
@@ -52,6 +64,38 @@ export class DurationInputUI extends Component<Props, any> {
                 />
             </div>
         );
+    }
+
+    renderReferenceElement = ({ duration, toggleContainer }: {
+        duration?: Duration,
+        toggleContainer: ()=>void
+    }) => {
+        return <div className={styles.ValueRow}
+             onClick={this.onViewRowClickHandler(toggleContainer)}>
+            {this.props.icon}
+            {duration && (
+                <div className={styles.Value}>
+                    {this.props.duration?.toReadable()}
+                </div>
+            )}
+        </div>;
+    }
+
+    onViewRowClickHandler = (toggleContainer: () => void) => {
+        return (event: MouseEvent) => {
+            event.stopPropagation();
+            this.setState({
+                showFollower: !this.state.showFollower
+            })
+            toggleContainer();
+        };
+    };
+
+    private onCloseContainer = () => {
+        this.setState({
+            showFollower: false
+        });
+        this.props.onPopupClose?.call(null);
     }
 }
 

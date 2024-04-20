@@ -1,3 +1,4 @@
+import { TooltipUI } from '@lib/ui/Tooltip';
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
@@ -106,6 +107,17 @@ export class UpcomingSection extends Component<Props, State> {
                                         onSelectOption={
                                             this.props.onSelectSortOrder
                                         }
+                                        transformReferenceContainer={({
+                                            showFollower,
+                                            container,
+                                        }) => (
+                                            <TooltipUI
+                                                relativeLayout={this.props.deps.relativeLayout}
+                                                disabled={showFollower}
+                                                message={'Order by'}>
+                                                {container}
+                                            </TooltipUI>
+                                        )}
                                     />
                                 </div>
                                 <SpacerUI />

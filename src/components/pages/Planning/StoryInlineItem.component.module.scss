@@ -1,6 +1,6 @@
 @import '../../../libs/ui/styleguide/elevation';
 @import '../../../libs/ui/styleguide/divider';
-@import "shared.scss";
+@import 'shared.scss';
 
 $edgeSpace: 10px;
 $actionIconSize: 28px;
@@ -77,7 +77,7 @@ $actionIconSize: 28px;
                 gap: 6px;
 
                 .Attribute {
-                    height: 25px;
+                    height: 24px;
                 }
             }
         }
