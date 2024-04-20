@@ -153,7 +153,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                 style={{
                                     backgroundColor: project.color,
                                 }}
-                                onClick={onViewProjectDetailClickHandler(
+                                onClick={onViewProjectCardClickHandler(
                                     project.id,
                                 )}
                             >
