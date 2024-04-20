@@ -37,15 +37,7 @@
         .TitleRow {
             align-items: center;
             display: flex;
-
-            .Title {
-                font-size: 16px;
-                font-weight: bold;
-            }
-
-            .Spacer {
-                flex: 1;
-            }
+            justify-content: flex-end;
 
             .TitleActions {
                 .TitleAction {
@@ -68,20 +60,25 @@
             }
         }
 
-        .Cards {
+        .ProjectList {
             display: flex;
             flex-wrap: wrap;
             row-gap: 20px;
             column-gap: 10px;
 
             .Project {
-                .Content {
+                .Card {
                     width: 260px;
                     background-color: #e5e5e5;
                     height: 150px;
                     border: 1px solid #e5e5e5;
                     border-radius: 4px;
                     margin-bottom: 10px;
+
+                    &:hover {
+                        opacity: 0.75;
+                        cursor: pointer;
+                    }
 
                     .Icon {
                         align-items: center;
@@ -123,10 +120,6 @@
 
                             &.Save {
                                 --icon-color: #009304;
-                            }
-
-                            &.Detail {
-                                --icon-color: #3f51b5;
                             }
 
                             &.Edit{
