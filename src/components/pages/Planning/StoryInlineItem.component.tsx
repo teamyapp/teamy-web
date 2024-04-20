@@ -139,7 +139,7 @@ export const StoryInlineItemComponent: FunctionComponent<
                                 priority={props.story.priority}
                                 transformReferenceContainer={({showFollower, container}) => (
                                     <TooltipUI
-                                        message="Priority"
+                                        message='Priority'
                                         disabled={showFollower}
                                         relativeLayout={props.deps.relativeLayout}
                                     >

@@ -244,7 +244,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                         relativeLayout={this.props.deps.relativeLayout}
                                                         preserveReferenceParentHeight={true}
                                                         disabled={showFollower}
-                                                        message={"Effort"}>
+                                                        message={'Effort'}>
                                                         {container}
                                                     </TooltipUI>
                                                 )}

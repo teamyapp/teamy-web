@@ -408,7 +408,7 @@ export class SprintsComponent extends Component<Props, State> {
                                     >
                                         <input
                                             className={styles.Toggle}
-                                            type="checkbox"
+                                            type='checkbox'
                                             checked={
                                                 this.state.allowMultiSelection
                                             }

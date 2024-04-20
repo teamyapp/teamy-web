@@ -181,7 +181,7 @@ export class HeaderComponent extends Component<Props, State> {
                 >
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.ButtonsSection}>
-                            <TooltipUI message="Sprints" relativeLayout={this.props.deps.relativeLayout}>
+                            <TooltipUI message='Sprints' relativeLayout={this.props.deps.relativeLayout}>
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
@@ -193,7 +193,7 @@ export class HeaderComponent extends Component<Props, State> {
                                 </div>
                             </TooltipUI>
                             {this.props.deps.featureToggle.enablePlanning && (
-                                <TooltipUI message="Planning" relativeLayout={this.props.deps.relativeLayout}>
+                                <TooltipUI message='Planning' relativeLayout={this.props.deps.relativeLayout}>
                                     <div
                                         className={`${
                                             styles.Button
@@ -232,7 +232,7 @@ export class HeaderComponent extends Component<Props, State> {
                             )}
                             {this.props.deps.featureToggle
                                 .enableMarketplace && (
-                                <TooltipUI message="Marketplace" relativeLayout={this.props.deps.relativeLayout}>
+                                <TooltipUI message='Marketplace' relativeLayout={this.props.deps.relativeLayout}>
                                     <div
                                         className={`${
                                             styles.Button

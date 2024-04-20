@@ -183,7 +183,7 @@ export class InlineTaskUI extends Component<Props, State> {
                                                 <TooltipUI
                                                     relativeLayout={this.props.deps.relativeLayout}
                                                     disabled={showFollower}
-                                                    message="Priority">
+                                                    message='Priority'>
                                                     {container}
                                                 </TooltipUI>
                                             )
@@ -304,7 +304,7 @@ export class InlineTaskUI extends Component<Props, State> {
                 onChange={this.handleEndDateChanged}
                 transformReferenceContainer={({ showFollower, container }) => (
                     <TooltipUI
-                        message="Due date"
+                        message='Due date'
                         disabled={showFollower}
                         relativeLayout={this.props.deps.relativeLayout}
                         preserveReferenceParentHeight={true}>
@@ -350,7 +350,7 @@ export class InlineTaskUI extends Component<Props, State> {
                 onDurationChange={this.onEffortChange}
                 transformReferenceContainer={({ showFollower, container }) => (
                     <TooltipUI
-                        message="Effort"
+                        message='Effort'
                         disabled={showFollower}
                         relativeLayout={this.props.deps.relativeLayout}
                         preserveReferenceParentHeight={true}>

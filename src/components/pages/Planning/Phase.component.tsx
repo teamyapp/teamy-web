@@ -396,7 +396,7 @@ export function PhaseComponent(props: Props) {
                             {onEditingPhase && (
                                 <>
                                     <TooltipUI
-                                        message="Save"
+                                        message='Save'
                                         relativeLayout={
                                             props.deps.relativeLayout
                                         }
@@ -411,7 +411,7 @@ export function PhaseComponent(props: Props) {
                                         </div>
                                     </TooltipUI>
                                     <TooltipUI
-                                        message="Cancel"
+                                        message='Cancel'
                                         relativeLayout={
                                             props.deps.relativeLayout
                                         }
@@ -441,7 +441,7 @@ export function PhaseComponent(props: Props) {
                                     onSelectOption={onSelectView}
                                     transformReferenceContainer={({showFollower, container}) =>
                                         <TooltipUI
-                                            message="View"
+                                            message='View'
                                             disabled={showFollower}
                                             relativeLayout={props.deps.relativeLayout}
                                         >
@@ -460,7 +460,7 @@ export function PhaseComponent(props: Props) {
                                     onSelectOption={onSelectedSortOrder}
                                     transformReferenceContainer={({showFollower, container}) =>
                                         <TooltipUI
-                                            message="Order by"
+                                            message='Order by'
                                             disabled={showFollower}
                                             relativeLayout={props.deps.relativeLayout}
                                         >
@@ -474,7 +474,7 @@ export function PhaseComponent(props: Props) {
                             {selectedPhaseStoryIds.size > 0 && (
                                 <>
                                     <TooltipUI
-                                        message="Remove from phase"
+                                        message='Remove from phase'
                                         relativeLayout={
                                             props.deps.relativeLayout
                                         }
@@ -491,7 +491,7 @@ export function PhaseComponent(props: Props) {
                                         </div>
                                     </TooltipUI>
                                     <TooltipUI
-                                        message="Delete"
+                                        message='Delete'
                                         relativeLayout={
                                             props.deps.relativeLayout
                                         }
@@ -508,7 +508,7 @@ export function PhaseComponent(props: Props) {
                                 </>
                             )}
                             <TooltipUI
-                                message="Create story"
+                                message='Create story'
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div
@@ -576,7 +576,7 @@ export function PhaseComponent(props: Props) {
                     <div className={styles.Actions}>
                         {selectedBacklogStoryIds.size > 0 && (
                             <TooltipUI
-                                message="Move to phase"
+                                message='Move to phase'
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div
@@ -589,7 +589,7 @@ export function PhaseComponent(props: Props) {
                         )}
                         {selectedBacklogStoryIds.size > 0 && (
                             <TooltipUI
-                                message="Delete"
+                                message='Delete'
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div
@@ -601,7 +601,7 @@ export function PhaseComponent(props: Props) {
                             </TooltipUI>
                         )}
                         <TooltipUI
-                            message="Create story"
+                            message='Create story'
                             relativeLayout={props.deps.relativeLayout}
                         >
                             <div
