@@ -303,7 +303,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
         (async () => {
             while (true) {
-                console.log(`[ProjectComponent] waiting for keyboard event`);
+                console.log(`[TaskDetailModal] waiting for keyboard event`);
                 const keyboardEvent = await this.keyBoardEventChan!.pop();
                 if (keyboardEvent === undefined) {
                     return;

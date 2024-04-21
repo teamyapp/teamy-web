@@ -6,7 +6,7 @@ type KeyboardKey = 'Control' | 'Meta' | 's';
 
 const keyMap: Record<string, KeyboardKey> = {
     Control: 'Control',
-    s: 's',
+    S: 's',
 };
 
 export interface InternalKeyboardEvent {
