@@ -16,7 +16,7 @@ interface Props {
         onChange: (date: Date) => void;
         onToggle: () => void;
     }) => ReactNode;
-    onTargetChanged?: (date: Date) => void;
+    onTargetChanged?: (date?: Date) => void;
     onTargetFocus?: () => void;
     value?: Date;
     minYear?: number;
@@ -96,10 +96,12 @@ export class DatePickerContainerUI extends Component<Props, State> {
         this.setState({ shownDate: date });
     };
 
-    private handleCalendarChanged = (date: Date) => {
+    private handleCalendarChanged = (date?: Date) => {
+        const calculatedDate = date || today();
+
         this.setState({
-            selectedDate: date,
-            shownDate: date,
+            selectedDate: calculatedDate,
+            shownDate: calculatedDate,
         });
 
         this.props.onTargetChanged?.call(null, date);

@@ -26,6 +26,8 @@ import { SelectOwnersPopupComponent } from '../SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from '../TaskLinkIcon';
 import { ThreadUI } from '../Thread';
 import styles from './TaskDetailModal.component.module.scss';
+import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
+import { getPlatform } from '@lib/runtime/os';
 
 const verticalMargin = 30;
 const POPUP_Z_INDEX = 1002;
@@ -40,6 +42,7 @@ interface State {
     updatedTask?: UpdateTaskInput;
     currentUserId?: number;
     heightWithMargin: number;
+    isCmdKeyPressed: boolean
 }
 
 export class TaskDetailModalComponent extends Component<Props, State> {
@@ -54,6 +57,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly threadDivRef = createRef<HTMLDivElement>();
     private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
+    private keyBoardEventChan?: csp.PopChannel<
+        InternalKeyboardEvent | undefined
+    >;
 
     constructor(props: Props) {
         super(props);
@@ -64,6 +70,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.relativeLayout = props.deps.relativeLayout;
         this.state = {
             heightWithMargin: 0,
+            isCmdKeyPressed: false,
         };
     }
 
@@ -137,7 +144,13 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                         </div>
                                         {this.state.task.links.map((link) => (
                                             <div className={styles.Link}>
-                                                <TaskLinkIconUI link={link} relativeLayout={this.props.deps.relativeLayout} />
+                                                <TaskLinkIconUI
+                                                    link={link}
+                                                    relativeLayout={
+                                                        this.props.deps
+                                                            .relativeLayout
+                                                    }
+                                                />
                                                 <a
                                                     href={link.url}
                                                     target='_blank'
@@ -195,14 +208,14 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                     ref={this.dueAtDatePicker}
                                                     label={'Due at'}
                                                     value={dueAt}
-                                                    zOffset={
-                                                        POPUP_Z_INDEX
-                                                    }
+                                                    zOffset={POPUP_Z_INDEX}
                                                 />
                                             </div>
                                         )}
                                         {this.state.task.deliveredAt && (
-                                            <div className={`${styles.Row} ${styles.DeliveredAt}`}>
+                                            <div
+                                                className={`${styles.Row} ${styles.DeliveredAt}`}
+                                            >
                                                 <div className={styles.Label}>
                                                     Delivered at:
                                                 </div>
@@ -241,10 +254,16 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                     container,
                                                 }) => (
                                                     <TooltipUI
-                                                        relativeLayout={this.props.deps.relativeLayout}
-                                                        preserveReferenceParentHeight={true}
+                                                        relativeLayout={
+                                                            this.props.deps
+                                                                .relativeLayout
+                                                        }
+                                                        preserveReferenceParentHeight={
+                                                            true
+                                                        }
                                                         disabled={showFollower}
-                                                        message={'Effort'}>
+                                                        message={'Effort'}
+                                                    >
                                                         {container}
                                                     </TooltipUI>
                                                 )}
@@ -263,6 +282,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     public componentDidMount() {
         window.addEventListener('resize', this.onBodyResize);
         this.stateChangeChan = this.localStore.subscribeStateChange();
+        // this.keyBoardEventChan =
+        //     this.props.deps.keyBoardEventMonitor.subscribe();
         (async () => {
             while (true) {
                 console.log(
@@ -280,6 +301,35 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                 }
             }
         })().then();
+
+        // (async () => {
+        //     while (true) {
+        //         console.log(`[ProjectComponent] waiting for keyboard event`);
+        //         const keyboardEvent = await this.keyBoardEventChan!.pop();
+        //         if (keyboardEvent === undefined) {
+        //             return;
+        //         }
+
+        //         const { key, eventType } = keyboardEvent;
+        //         const platform = getPlatform();
+        //         if (
+        //             (platform === 'Mac' && key === 'Meta') ||
+        //             (platform === 'Windows' && key === 'Control')
+        //         ) {
+        //             if (['keydown', 'keyup'].includes(eventType)) {
+        //                 const isCmdKeyPressed = eventType === 'keydown';
+        //                 this.setState({
+        //                     isCmdKeyPressed,
+        //                 });
+        //             }
+        //         }
+
+        //         debugger
+        //         if (this.state.isCmdKeyPressed && key === 's') {
+        //             this.onSaveButtonClick();
+        //         }
+        //     }
+        // })();
     }
 
     public componentWillUnmount() {
