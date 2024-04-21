@@ -17,19 +17,20 @@
         width: 100%;
         height: 100%;
     }
+
+    .Default {
+        font-size: 40px;
+    }
 }
 
 @mixin ListItem {
     .InlineItem {
         display: flex;
         height: 62px;
+        width: 260px;
 
         .LeftSection {
             margin-right: 10px;
-
-            .Icon {
-                @include AppIcon(60px);
-            }
         }
 
         .MiddleSection {

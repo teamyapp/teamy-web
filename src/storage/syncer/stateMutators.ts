@@ -1,10 +1,27 @@
-import { Duration } from '@lib/entity/duration';
+import { Duration } from '@lib/time/duration';
 
+import { RemoteApp } from '@core/client/entity/remoteApp';
+import { RemoteAppInstallation } from '@core/client/entity/remoteAppInstallation';
+import { RemoteAppSecret } from '@core/client/entity/remoteAppSecret';
+import { RemoteAppVersion } from '@core/client/entity/remoteAppVersion';
+import { RemoteAppVersionChange } from '@core/client/entity/remoteAppVersionChange';
 import { RemoteClient } from '@core/client/entity/remoteClient';
+import { RemoteGroup } from '@core/client/entity/remoteGroup';
 import { RemoteInvitation } from '@core/client/entity/remoteInvitation';
 import { RemoteMessage } from '@core/client/entity/remoteMessage';
+import { RemoteMoney } from '@core/client/entity/remoteMoney';
+import { RemotePhase } from '@core/client/entity/remotePhase';
+import { RemoteProject } from '@core/client/entity/remoteProject';
+import {
+    RemoteAppRolloutType,
+    RemoteRollout,
+} from '@core/client/entity/remoteRollout';
+import { RemoteRolloutActivator } from '@core/client/entity/remoteRolloutActivator';
+import { RemoteRolloutVersionSelector } from '@core/client/entity/remoteRolloutVersionSelector';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteSprintParticipant } from '@core/client/entity/remoteSprintParticipant';
+import { RemoteStory } from '@core/client/entity/remoteStory';
+import { RemoteTag } from '@core/client/entity/remoteTag';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { RemoteTaskActivity } from '@core/client/entity/remoteTaskActivity';
 import { RemoteTaskLink } from '@core/client/entity/remoteTaskLink';
@@ -31,10 +48,28 @@ import {
     DeleteTaskAwaitForRelationPayload,
 } from '@core/storage/syncer/payload';
 
+import {
+    ActivatorState,
+    MaxViewersActivatorState,
+    PercentageActivatorState,
+    TimeRangeActivatorState,
+} from '../states/activator.state';
+import { AppInstallationState } from '../states/appInstallation.state';
+import { AppSecretState } from '../states/appSecret.state';
+import { AppVersionState } from '../states/appVersion.state';
+import { AppVersionChangeState } from '../states/appVersionChange.state';
 import { ClientState } from '../states/client.state';
 import { DragTaskActivityState } from '../states/dragTaskActivity.state';
+import { FilterGroupState, GroupState } from '../states/group.state';
+import { PhaseState } from '../states/phase.state';
+import { ProjectState } from '../states/project.state';
+import { RolloutState } from '../states/rollout.state';
+import { StoryState } from '../states/story.state';
+import { TagState } from '../states/tag.state';
 import { TaskActivityState } from '../states/taskActivity.state';
 import { TaskLinkState } from '../states/taskLink.state';
+import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
+import { VersionSelectorState } from '../states/versionSelector.state';
 import { Mutation } from './mutation';
 
 export function applyTaskMutation(
@@ -58,6 +93,28 @@ export function applyTaskMutation(
     return currState;
 }
 
+export function applyAppVersionMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create':
+        case 'Update': {
+            const appVersion = AppVersionState.fromMutationPayload(
+                mutation.payload,
+            );
+            currState.apps[appVersion.appId].versions[appVersion.number] =
+                appVersion;
+            break;
+        }
+        case 'Delete': {
+            break;
+        }
+    }
+
+    return currState;
+}
+
 export function applySprintMutation(
     currState: AppState,
     mutation: Mutation,
@@ -72,6 +129,27 @@ export function applySprintMutation(
         case 'Delete': {
             const sprintId = mutation.payload;
             delete currState.sprints[sprintId];
+            break;
+        }
+    }
+
+    return currState;
+}
+
+export function applyStoryMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create':
+        case 'Update': {
+            const story = StoryState.fromMutationPayload(mutation.payload);
+            currState.stories[story.id] = story;
+            break;
+        }
+        case 'Delete': {
+            const storyId = mutation.payload;
+            delete currState.stories[storyId];
             break;
         }
     }
@@ -285,6 +363,23 @@ export async function applyTeamMemberMutation(
     return currState;
 }
 
+export function applyAppVersionChangeMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create': {
+            const appVersionChange = AppVersionChangeState.fromMutationPayload(
+                mutation.payload,
+            );
+            currState.appVersionChanges[appVersionChange.id] = appVersionChange;
+            break;
+        }
+    }
+
+    return currState;
+}
+
 function addOrReplaceTeamMember(
     currState: AppState,
     newTeamMember: TeamMemberState,
@@ -483,6 +578,799 @@ export function mergeUser(
     return currAppState;
 }
 
+export function mergeAppRolloutRelation(
+    currAppState: AppState,
+    appId: number,
+    rolloutId: number,
+    type: RemoteAppRolloutType,
+): AppState {
+    if (
+        !currAppState.appRolloutRelations.some((appRolloutRelation) => {
+            return (
+                appRolloutRelation.appId === appId &&
+                appRolloutRelation.rolloutId === rolloutId
+            );
+        })
+    ) {
+        currAppState.appRolloutRelations.push({
+            appId: appId,
+            rolloutId: rolloutId,
+            type: type,
+        });
+    }
+
+    return currAppState;
+}
+
+export function mergeProject(
+    currAppState: AppState,
+    remoteProject: RemoteProject,
+): AppState {
+    const remoteProjectId = toInt(remoteProject.id)!;
+    const localOldProject = currAppState.projects[remoteProjectId] || {};
+    const localNewProject: ProjectState = {
+        id: remoteProjectId,
+        name: remoteProject.name || localOldProject.name,
+        expectedStartAt:
+            toDate(remoteProject.expectedStartAt) ||
+            localOldProject.expectedStartAt,
+        actualStartAt:
+            remoteProject.actualStartAt === undefined
+                ? localOldProject.actualStartAt
+                : toDate(remoteProject.actualStartAt),
+        expectedEndAt:
+            toDate(remoteProject.expectedEndAt) ||
+            localOldProject.expectedEndAt,
+        actualEndAt:
+            remoteProject.actualEndAt === undefined
+                ? localOldProject.actualEndAt
+                : toDate(remoteProject.actualEndAt),
+        createdAt: toDate(remoteProject.createdAt) || localOldProject.createdAt,
+        creatorId: toInt(remoteProject.creator.id) || localOldProject.creatorId,
+        updatedAt:
+            remoteProject.updatedAt === undefined
+                ? localOldProject.updatedAt
+                : toDate(remoteProject.updatedAt),
+        teamId: toInt(remoteProject.team.id) || localOldProject.teamId,
+    };
+
+    remoteProject.phases?.forEach((phase) => {
+        currAppState = mergePhase(currAppState, phase);
+        currAppState = mergeProjectPhaseRelation(
+            currAppState,
+            remoteProject.id,
+            phase.id,
+        );
+    });
+
+    remoteProject.stories?.forEach((story) => {
+        currAppState = mergeStory(currAppState, story);
+        currAppState = mergeProjectStoryRelation(
+            currAppState,
+            remoteProject.id,
+            story.id,
+        );
+    });
+
+    currAppState = mergeTeam(currAppState, remoteProject.team);
+    currAppState.projects[remoteProjectId] = localNewProject;
+    return currAppState;
+}
+
+export function mergeProjectStoryRelation(
+    currAppState: AppState,
+    remoteProjectId: string,
+    remoteStoryId: string,
+): AppState {
+    const projectId = toInt(remoteProjectId)!;
+    const storyId = toInt(remoteStoryId)!;
+
+    if (
+        !currAppState.projectStoryRelations.some((projectStoryRelation) => {
+            return (
+                projectStoryRelation.projectId === projectId &&
+                projectStoryRelation.storyId === storyId
+            );
+        })
+    ) {
+        currAppState.projectStoryRelations.push({
+            projectId: projectId,
+            storyId: storyId,
+        });
+    }
+
+    return currAppState;
+}
+
+export function mergePhaseStoryRelation(
+    currAppState: AppState,
+    remotePhaseId: string,
+    remoteStoryId: string,
+): AppState {
+    const phaseId = toInt(remotePhaseId)!;
+    const storyId = toInt(remoteStoryId)!;
+
+    if (
+        !currAppState.phaseStoryRelations.some((phaseStoryRelation) => {
+            return (
+                phaseStoryRelation.phaseId === phaseId &&
+                phaseStoryRelation.storyId === storyId
+            );
+        })
+    ) {
+        currAppState.phaseStoryRelations.push({
+            phaseId: phaseId,
+            storyId: storyId,
+        });
+    }
+
+    return currAppState;
+}
+
+export function mergeStoryTaskRelation(
+    currAppState: AppState,
+    remoteStoryId: string,
+    remoteTaskId: string,
+): AppState {
+    const storyId = toInt(remoteStoryId)!;
+    const taskId = toInt(remoteTaskId)!;
+
+    if (
+        !currAppState.storyTaskRelations.some((storyTaskRelation) => {
+            return (
+                storyTaskRelation.storyId === storyId &&
+                storyTaskRelation.taskId === taskId
+            );
+        })
+    ) {
+        currAppState.storyTaskRelations.push({
+            storyId: storyId,
+            taskId: taskId,
+        });
+    }
+
+    return currAppState;
+}
+
+export function mergeProjectPhaseRelation(
+    currAppState: AppState,
+    remoteProjectId: string,
+    remotePhaseId: string,
+): AppState {
+    const projectId = toInt(remoteProjectId)!;
+    const phaseId = toInt(remotePhaseId)!;
+
+    if (
+        !currAppState.projectPhaseRelations.some((projectPhaseRelation) => {
+            return (
+                projectPhaseRelation.projectId === projectId &&
+                projectPhaseRelation.phaseId === phaseId
+            );
+        })
+    ) {
+        currAppState.projectPhaseRelations.push({
+            projectId: projectId,
+            phaseId: phaseId,
+        });
+    }
+
+    return currAppState;
+}
+
+export function mergePhase(
+    currAppState: AppState,
+    remotePhase: RemotePhase,
+): AppState {
+    const remotePhaseId = toInt(remotePhase.id)!;
+    const localOldPhase = currAppState.phases[remotePhaseId] || {};
+    const localNewPhase: PhaseState = {
+        id: remotePhaseId,
+        name: remotePhase.name || localOldPhase.name,
+        status: remotePhase.status || localOldPhase.status,
+        expectedStartAt:
+            toDate(remotePhase.expectedStartAt) ||
+            localOldPhase.expectedStartAt,
+        actualStartAt:
+            remotePhase.actualStartAt === undefined
+                ? localOldPhase.actualStartAt
+                : toDate(remotePhase.actualStartAt),
+        expectedEndAt:
+            toDate(remotePhase.expectedEndAt) || localOldPhase.expectedEndAt,
+        actualEndAt:
+            remotePhase.actualEndAt === undefined
+                ? localOldPhase.actualEndAt
+                : toDate(remotePhase.actualEndAt),
+        creatorId: toInt(remotePhase.creator.id) || localOldPhase.creatorId,
+        createdAt: toDate(remotePhase.createdAt) || localOldPhase.createdAt,
+        updatedAt:
+            remotePhase.updatedAt === undefined
+                ? localOldPhase.updatedAt
+                : toDate(remotePhase.updatedAt),
+    };
+
+    remotePhase.stories?.forEach((story) => {
+        currAppState = mergeStory(currAppState, story);
+        currAppState = mergePhaseStoryRelation(
+            currAppState,
+            remotePhase.id,
+            story.id,
+        );
+    });
+
+    currAppState.phases[remotePhaseId] = localNewPhase;
+    return currAppState;
+}
+
+export function mergeStory(
+    currAppState: AppState,
+    remoteStory: RemoteStory,
+): AppState {
+    const remoteStoryId = toInt(remoteStory.id)!;
+    const localOldStory = currAppState.stories[remoteStoryId] || {};
+    const localNewStory: StoryState = {
+        id: remoteStoryId,
+        name: remoteStory.name || localOldStory.name,
+        ownerId:
+            remoteStory.owner === undefined
+                ? localOldStory.ownerId
+                : toInt(remoteStory.owner?.id),
+        status: remoteStory.status || localOldStory.status,
+        priority: remoteStory.priority || localOldStory.priority,
+        creatorId: toInt(remoteStory.creator.id) || localOldStory.creatorId,
+        createdAt: toDate(remoteStory.createdAt) || localOldStory.createdAt,
+        updatedAt:
+            remoteStory.updatedAt === undefined
+                ? localOldStory.updatedAt
+                : toDate(remoteStory.updatedAt),
+        isPlanned:
+            remoteStory.isPlanned === undefined
+                ? localOldStory.isPlanned
+                : remoteStory.isPlanned,
+    };
+
+    remoteStory.tasks?.forEach((task) => {
+        currAppState = mergeTask(currAppState, task);
+        currAppState = mergeStoryTaskRelation(
+            currAppState,
+            remoteStory.id,
+            task.id,
+        )
+    });
+
+    currAppState.stories[remoteStoryId] = localNewStory;
+    return currAppState;
+}
+
+export function mergeApp(
+    currAppState: AppState,
+    remoteApp: RemoteApp,
+    remoteTeamId: number,
+): AppState {
+    const remoteAppId = toInt(remoteApp.id)!;
+    const localOldApp: ThirdPartyAppState =
+        currAppState.apps[remoteAppId] || {};
+
+    const localNewApp: ThirdPartyAppState = {
+        id: remoteAppId,
+        totalInstallations:
+            remoteApp.totalInstallations == undefined
+                ? localOldApp.totalInstallations
+                : remoteApp.totalInstallations,
+        managedByTeamId:
+            toInt(remoteApp.managedByTeam?.id) || localOldApp.managedByTeamId,
+        secretIds:
+            remoteApp.secrets?.map((secret) => toInt(secret.id)!) ||
+            localOldApp.secretIds,
+        tagIds: remoteApp.tags
+            ? new Set(remoteApp.tags?.map((tag) => toInt(tag.id)!))
+            : localOldApp.tagIds,
+        versions: localOldApp.versions || {},
+    };
+
+    if (remoteApp.latestVersionForTeam) {
+        currAppState = mergeTeamAppVersion(
+            currAppState,
+            remoteTeamId,
+            remoteApp.latestVersionForTeam,
+        );
+    }
+
+    if (remoteApp.managedByTeam) {
+        currAppState = mergeTeam(currAppState, remoteApp.managedByTeam);
+    }
+
+    remoteApp.secrets?.forEach((secret) => {
+        currAppState = mergeAppSecret(currAppState, secret);
+    });
+
+    remoteApp.installations?.forEach((installation) => {
+        currAppState = mergeAppInstallation(currAppState, installation);
+    });
+
+    remoteApp.tags?.forEach((tag) => {
+        currAppState = mergeTag(currAppState, tag);
+    });
+
+    currAppState.apps[remoteAppId] = localNewApp;
+
+    remoteApp.versions?.forEach((version) => {
+        currAppState = mergeAppVersion(currAppState, remoteApp.id, version);
+    });
+
+    remoteApp.userRollouts?.forEach((rollout) => {
+        currAppState = mergeRollout(currAppState, rollout);
+        currAppState = mergeAppRolloutRelation(
+            currAppState,
+            remoteAppId,
+            toInt(rollout.id)!,
+            'USER',
+        );
+    });
+
+    remoteApp.teamRollouts?.forEach((rollout) => {
+        currAppState = mergeRollout(currAppState, rollout);
+        currAppState = mergeAppRolloutRelation(
+            currAppState,
+            remoteAppId,
+            toInt(rollout.id)!,
+            'TEAM',
+        );
+    });
+
+    remoteApp.groups?.forEach((group) => {
+        currAppState = mergeGroup(currAppState, group, remoteAppId);
+    });
+
+    return currAppState;
+}
+
+export function mergeAppVersion(
+    currAppState: AppState,
+    remoteAppId: string,
+    version: RemoteAppVersion,
+): AppState {
+    const appId = toInt(remoteAppId)!;
+    if (version.app) {
+        currAppState = mergeApp(currAppState, version.app, appId);
+    }
+
+    const app = currAppState.apps[appId];
+    const localOldVersion = app.versions[version.number] || {};
+
+    app.versions[version.number] = {
+        number: version.number,
+        appName: version.appName || localOldVersion.appName,
+        appId: appId,
+        createdAt: toDate(version.createdAt) || localOldVersion.createdAt,
+        creatorUserId:
+            version.createdBy !== undefined ? toInt(version.createdBy.id)! : localOldVersion.creatorUserId,
+        description: version.description || localOldVersion.description,
+        status: version.status || localOldVersion.status,
+        locked: version.locked,
+        hasUiExtension: version.hasUiExtension,
+        errorMessage: version.errorMessage || localOldVersion.errorMessage,
+    };
+
+    version.changes?.forEach((change) => {
+        currAppState = mergeAppVersionChange(currAppState, change);
+    });
+
+    version.prices?.forEach((price) => {
+        currAppState = mergeAppVersionPrice(
+            currAppState,
+            appId,
+            version.number,
+            price,
+        );
+    });
+
+    return currAppState;
+}
+
+export function mergeAppVersionPrice(
+    currAppState: AppState,
+    remoteAppId: number,
+    versionNumber: number,
+    price: RemoteMoney,
+) {
+    const localAppVersionPrice = currAppState.appVersionPrices.find(
+        (appVersionPrice) => {
+            return (
+                appVersionPrice.appId === remoteAppId &&
+                appVersionPrice.versionNumber === versionNumber &&
+                appVersionPrice.currency === price.currency
+            );
+        },
+    );
+
+    if (!localAppVersionPrice) {
+        currAppState.appVersionPrices.push({
+            appId: remoteAppId,
+            versionNumber: versionNumber,
+            currency: price.currency,
+            price: price.amount,
+        });
+    } else {
+        localAppVersionPrice.price = price.amount;
+    }
+
+    return currAppState;
+}
+
+export function mergeAppVersionChange(
+    currAppState: AppState,
+    appVersionChange: RemoteAppVersionChange,
+): AppState {
+    const appVersionChangeId = toInt(appVersionChange.id)!;
+    const localOldAppVersionChange =
+        currAppState.appVersionChanges[appVersionChangeId] || {};
+
+    const localNewAppVersionChange: AppVersionChangeState = {
+        id: appVersionChangeId,
+        versionNumber:
+            appVersionChange.appVersion.number ||
+            localOldAppVersionChange.versionNumber,
+        appId:
+            toInt(appVersionChange.appVersion.app.id)! ||
+            localOldAppVersionChange.appId,
+        change: appVersionChange.change || localOldAppVersionChange.change,
+    };
+
+    currAppState.appVersionChanges[appVersionChangeId] =
+        localNewAppVersionChange;
+    return currAppState;
+}
+
+export function mergeTeamAppVersion(
+    currAppState: AppState,
+    teamId: number,
+    version: RemoteAppVersion,
+): AppState {
+    for (let teamAppVersion of currAppState.teamAppVersions) {
+        if (
+            teamAppVersion.teamId === teamId &&
+            teamAppVersion.appId === toInt(version.app.id)
+        ) {
+            teamAppVersion.appVersion = version.number;
+            return currAppState;
+        }
+    }
+
+    currAppState.teamAppVersions.push({
+        teamId: teamId,
+        appId: toInt(version.app.id)!,
+        appVersion: version.number,
+    });
+
+    return currAppState;
+}
+
+export function mergeAppSecret(
+    currAppState: AppState,
+    remoteAppSecret: RemoteAppSecret,
+): AppState {
+    const remoteAppSecretId = toInt(remoteAppSecret.id)!;
+    const localOldAppSecret = currAppState.appSecrets[remoteAppSecretId] || {};
+    const localNewAppSecret: AppSecretState = {
+        id: remoteAppSecretId,
+        name: remoteAppSecret.name || localOldAppSecret.name,
+        addedAt: toDate(remoteAppSecret.addedAt) || localOldAppSecret.addedAt,
+        addedByUserId:
+            toInt(remoteAppSecret.addedBy.id) ||
+            localOldAppSecret.addedByUserId,
+        appId: toInt(remoteAppSecret.app.id) || localOldAppSecret.appId,
+        lastUsedAt:
+            toDate(remoteAppSecret.lastUsedAt) || localOldAppSecret.lastUsedAt,
+        token: remoteAppSecret.token,
+    };
+
+    currAppState.appSecrets[remoteAppSecretId] = localNewAppSecret;
+    return currAppState;
+}
+
+export function mergeTag(
+    currAppState: AppState,
+    remoteTag: RemoteTag,
+): AppState {
+    const remoteTagId = toInt(remoteTag.id)!;
+    const localOldTag = currAppState.tags[remoteTagId] || {};
+    const localNewTag: TagState = {
+        id: remoteTagId,
+        value: remoteTag.value || localOldTag.value,
+    };
+
+    currAppState.tags[remoteTagId] = localNewTag;
+    return currAppState;
+}
+
+export function mergeRollout(
+    currAppState: AppState,
+    remoteRollout: RemoteRollout,
+): AppState {
+    const remoteRolloutId = toInt(remoteRollout.id)!;
+    const localOldRollout = currAppState.rollouts[remoteRolloutId] || {};
+    const localNewRollout: RolloutState = {
+        id: remoteRolloutId,
+        name: remoteRollout.name || localOldRollout.name,
+        activatorId:
+            toInt(remoteRollout.activator.id) || localOldRollout.activatorId,
+        versionSelectorId:
+            toInt(remoteRollout.versionSelector.id) ||
+            localOldRollout.versionSelectorId,
+        isEnabled: remoteRollout.isEnabled,
+        locked: remoteRollout.locked,
+        createdAt: toDate(remoteRollout.createdAt) || localOldRollout.createdAt,
+        updatedAt: toDate(remoteRollout.updatedAt) || localOldRollout.updatedAt,
+    };
+
+    if (remoteRollout.activator) {
+        currAppState = mergeActivator(currAppState, remoteRollout.activator);
+    }
+
+    if (remoteRollout.versionSelector) {
+        currAppState = mergeVersionSelector(
+            currAppState,
+            remoteRollout.versionSelector,
+        );
+    }
+
+    currAppState.rollouts[remoteRolloutId] = localNewRollout;
+    return currAppState;
+}
+
+export function mergeActivator(
+    currAppState: AppState,
+    remoteActivator: RemoteRolloutActivator,
+): AppState {
+    const remoteActivatorId = toInt(remoteActivator.id)!;
+    const localOldActivator = currAppState.activators[remoteActivatorId] || {};
+    const localNewActivator: ActivatorState = {
+        id: remoteActivatorId,
+        type: remoteActivator.type || localOldActivator.type,
+        createdAt:
+            toDate(remoteActivator.createdAt) || localOldActivator.createdAt,
+        updatedAt:
+            toDate(remoteActivator.updatedAt) || localOldActivator.updatedAt,
+    };
+
+    const type = remoteActivator.type || localOldActivator.type;
+    switch (type) {
+        case 'STATIC':
+            break;
+        case 'TIME_RANGE':
+            const localOldTimeRangeActivator =
+                currAppState.timeRangeActivators[remoteActivatorId] || {};
+            const localNewTimeRangeActivator: TimeRangeActivatorState = {
+                startAt:
+                    toDate(remoteActivator.startAt) ||
+                    localOldTimeRangeActivator.startAt,
+                endAt:
+                    toDate(remoteActivator.endAt) ||
+                    localOldTimeRangeActivator.endAt,
+            };
+            currAppState.timeRangeActivators[remoteActivatorId] =
+                localNewTimeRangeActivator;
+            break;
+        case 'MAX_VIEWERS':
+            const localOldMaxViewersActivator =
+                currAppState.maxViewersActivators[remoteActivatorId] || {};
+            const localNewMaxViewersActivator: MaxViewersActivatorState = {
+                maxViewers:
+                    remoteActivator.maxViewers ||
+                    localOldMaxViewersActivator.maxViewers,
+            };
+            currAppState.maxViewersActivators[remoteActivatorId] =
+                localNewMaxViewersActivator;
+            break;
+        case 'PERCENTAGE':
+            const localOldPercentageActivator =
+                currAppState.percentageActivators[remoteActivatorId] || {};
+            const localNewPercentageActivator: PercentageActivatorState = {
+                percentage:
+                    remoteActivator.percentage ||
+                    localOldPercentageActivator.percentage,
+            };
+            currAppState.percentageActivators[remoteActivatorId] =
+                localNewPercentageActivator;
+            break;
+    }
+
+    currAppState.activators[remoteActivatorId] = localNewActivator;
+    return currAppState;
+}
+
+export function mergeVersionSelector(
+    currAppState: AppState,
+    remoteVersionSelector: RemoteRolloutVersionSelector,
+): AppState {
+    const remoteVersionSelectorId = toInt(remoteVersionSelector.id)!;
+    const localOldVersionSelector =
+        currAppState.versionSelectors[remoteVersionSelectorId] || {};
+    const localNewVersionSelector: VersionSelectorState = {
+        id: remoteVersionSelectorId,
+        type: remoteVersionSelector.type || localOldVersionSelector.type,
+        createdAt:
+            toDate(remoteVersionSelector.createdAt) ||
+            localOldVersionSelector.createdAt,
+        updatedAt:
+            toDate(remoteVersionSelector.updatedAt) ||
+            localOldVersionSelector.updatedAt,
+    };
+
+    currAppState.versionSelectorVersionRelations =
+        currAppState.versionSelectorVersionRelations.filter(
+            (versionSelectorVersionRelation) => {
+                return (
+                    versionSelectorVersionRelation.versionSelectorId !==
+                    remoteVersionSelectorId
+                );
+            },
+        );
+
+    const type = remoteVersionSelector.type || localOldVersionSelector.type;
+    switch (type) {
+        case 'STATIC':
+            currAppState.versionSelectorVersionRelations.push({
+                versionSelectorId: remoteVersionSelectorId,
+                versionNumber: remoteVersionSelector.versionNumber!,
+            });
+            break;
+        case 'EXPERIMENT':
+            remoteVersionSelector.versionNumbers?.forEach((versionNumber) => {
+                currAppState.versionSelectorVersionRelations.push({
+                    versionSelectorId: remoteVersionSelectorId,
+                    versionNumber: versionNumber,
+                });
+            });
+            break;
+    }
+
+    currAppState.versionSelectors[remoteVersionSelectorId] =
+        localNewVersionSelector;
+    return currAppState;
+}
+
+export function mergeGroup(
+    currAppState: AppState,
+    remoteGroup: RemoteGroup,
+    remoteAppId: number,
+): AppState {
+    const remoteGroupId = toInt(remoteGroup.id)!;
+    const localOldGroup = currAppState.groups[remoteGroupId] || {};
+    const localNewGroup: GroupState = {
+        id: remoteGroupId,
+        type: remoteGroup.type || localOldGroup.type,
+        memberType: remoteGroup.memberType || localOldGroup.memberType,
+        name: remoteGroup.name || localOldGroup.name,
+        locked: remoteGroup.locked,
+        createdAt: toDate(remoteGroup.createdAt) || localOldGroup.createdAt,
+        updatedAt: toDate(remoteGroup.updatedAt),
+    };
+
+    if (remoteGroup.type === 'FILTER') {
+        const localOldFilterGroup =
+            currAppState.filterGroups[remoteGroupId] || {};
+        const localNewFilterGroup: FilterGroupState = {
+            filter: remoteGroup.filter || localOldFilterGroup.filter,
+        };
+        currAppState.filterGroups[remoteGroupId] = localNewFilterGroup;
+    } else {
+        remoteGroup.teams?.forEach((team) => {
+            currAppState = mergeTeam(currAppState, team);
+        });
+        remoteGroup.users?.forEach((user) => {
+            currAppState = mergeUser(currAppState, user);
+        });
+
+        const memberAttr =
+            remoteGroup.memberType === 'USER' ? 'users' : 'teams';
+        const otherGroupMemberRelations =
+            currAppState.groupMemberRelations.filter((groupMemberRelation) => {
+                return groupMemberRelation.groupId !== remoteGroupId;
+            });
+        const remoteGroupMemberRelations =
+            remoteGroup[memberAttr]?.map((member) => {
+                return {
+                    groupId: remoteGroupId,
+                    memberId: toInt(member.id)!,
+                };
+            }) || [];
+
+        currAppState.groupMemberRelations = [
+            ...otherGroupMemberRelations,
+            ...remoteGroupMemberRelations,
+        ];
+    }
+
+    if (remoteAppId) {
+        if (
+            !currAppState.appGroupRelations.some((appGroupRelation) => {
+                return (
+                    appGroupRelation.appId === remoteAppId &&
+                    appGroupRelation.groupId === remoteGroupId
+                );
+            })
+        ) {
+            currAppState.appGroupRelations.push({
+                appId: remoteAppId,
+                groupId: remoteGroupId,
+            });
+        }
+    }
+    remoteGroup.groupRolloutRelations?.forEach((remoteGroupRolloutRelation) => {
+        currAppState = mergeGroupRolloutRelation(
+            currAppState,
+            remoteGroupId,
+            toInt(remoteGroupRolloutRelation.rollout.id)!,
+            remoteGroupRolloutRelation.orderIndex,
+        );
+    });
+
+    currAppState.groups[remoteGroupId] = localNewGroup;
+    return currAppState;
+}
+
+export function mergeGroupRolloutRelation(
+    currAppState: AppState,
+    remoteGroupId: number,
+    remoteRolloutId: number,
+    orderIndex: number,
+) {
+    const isRelationExisted = currAppState.groupRolloutRelations.some(
+        (groupRolloutRelation) => {
+            return (
+                groupRolloutRelation.groupId === remoteGroupId &&
+                groupRolloutRelation.rolloutId === remoteRolloutId
+            );
+        },
+    );
+
+    if (!isRelationExisted) {
+        currAppState.groupRolloutRelations.push({
+            groupId: remoteGroupId,
+            rolloutId: remoteRolloutId,
+            orderIndex,
+        });
+    }
+
+    return currAppState;
+}
+
+export function mergeAppInstallation(
+    currAppState: AppState,
+    remoteAppInstallation: RemoteAppInstallation,
+): AppState {
+    const remoteAppInstallationId = toInt(remoteAppInstallation.id)!;
+    const localOldAppInstallation =
+        currAppState.appInstallations[remoteAppInstallationId] || {};
+
+    const localNewAppInstallation: AppInstallationState = {
+        id: remoteAppInstallationId,
+        installedTeamId:
+            toInt(remoteAppInstallation.installedTeam.id) ||
+            localOldAppInstallation.installedTeamId,
+        appId:
+            toInt(remoteAppInstallation.activeAppVersion?.app.id) ||
+            localOldAppInstallation.appId,
+        appVersionNumber:
+            remoteAppInstallation.activeAppVersion?.number ||
+            localOldAppInstallation.appVersionNumber,
+    };
+
+    if (remoteAppInstallation.activeAppVersion) {
+        mergeAppVersion(
+            currAppState,
+            remoteAppInstallation.activeAppVersion.app.id,
+            remoteAppInstallation.activeAppVersion,
+        );
+    }
+
+    currAppState.appInstallations[remoteAppInstallationId] =
+        localNewAppInstallation;
+
+    return currAppState;
+}
+
 export function mergeTask(
     currAppState: AppState,
     remoteTask: RemoteTask,
@@ -505,6 +1393,10 @@ export function mergeTask(
         owningTeamId:
             toInt(remoteTask.owningTeam?.id) || localOldTask.owningTeamId,
         status: remoteTask.status || localOldTask?.status,
+        isScheduled:
+            remoteTask.isScheduled === undefined
+                ? localOldTask?.isScheduled
+                : remoteTask.isScheduled,
         isPlanned:
             remoteTask.isPlanned === undefined
                 ? localOldTask?.isPlanned
@@ -633,6 +1525,18 @@ export function mergeTeam(
         currAppState = mergeTask(currAppState, task);
     });
 
+    remoteTeam.managedApps?.forEach((app) => {
+        currAppState = mergeApp(currAppState, app, remoteTeamId);
+    });
+
+    remoteTeam.appInstallations?.forEach((appInstallation) => {
+        currAppState = mergeAppInstallation(currAppState, appInstallation);
+    });
+
+    remoteTeam.projects?.forEach((project) => {
+        currAppState = mergeProject(currAppState, project);
+    });
+
     if (remoteTeam.invitations) {
         currAppState = replaceTeamInvitations(
             currAppState,
@@ -716,6 +1620,7 @@ export function mergeTaskLinks(
             id: remoteTaskLinkId,
             taskId: remoteTaskId,
             title: remoteTaskLink.title || localOldTaskLink.title,
+            previewTitle: remoteTaskLink.previewTitle || localOldTaskLink.title,
             url: remoteTaskLink.url || localOldTaskLink.url,
             iconUrl: remoteTaskLink.iconUrl || localOldTaskLink.iconUrl,
             iconHoverUrl:

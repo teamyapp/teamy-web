@@ -1,15 +1,16 @@
-import React, { Component, createRef } from 'react';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import styles from './ContextMenu.component.module.scss';
 
-interface MenuItem {
+export interface MenuItem {
     key: string;
     action: () => void;
-    label: string;
+    label: ReactNode;
 }
 
 interface Props {
     menuItems: MenuItem[];
+    afterClose?: () => void;
 }
 
 interface State {
@@ -61,23 +62,31 @@ export class ContextMenuComponent extends Component<Props, State> {
         );
     }
 
-    public open = (top: number, left: number) => {
-        this.setState(
-            {
-                show: true,
-                top: top,
-                left: left,
-            },
-            () => this.contextMenuRef.current?.focus(),
-        );
+    public open = (top: number, left: number): Promise<void> => {
+        return new Promise((resolve) => {
+            this.setState(
+                {
+                    show: true,
+                    top: top,
+                    left: left,
+                },
+                () => {
+                    resolve();
+                    this.contextMenuRef.current?.focus();
+                },
+            );
+        });
     };
 
     private close = () => {
-        this.setState({
-            show: false,
-            top: 0,
-            left: 0,
-        });
+        this.setState(
+            {
+                show: false,
+                top: 0,
+                left: 0,
+            },
+            this.props.afterClose,
+        );
     };
 
     private onItemClick = (action: () => void) => () => {

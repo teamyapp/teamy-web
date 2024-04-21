@@ -1,5 +1,5 @@
-import { Duration } from '@lib/entity/duration';
 import { Semaphore } from '@lib/sync/semaphore';
+import { Duration } from '@lib/time/duration';
 
 export interface Runtime {
     threadSleep(duration: Duration): Promise<void>;

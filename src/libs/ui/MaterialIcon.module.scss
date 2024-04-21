@@ -5,21 +5,23 @@ $iconColor: var(--icon-color, black);
 $iconBoxSize: var(--icon-box-size, $iconSize);
 $iconWidth: var(--icon-box-width, $iconBoxSize);
 $iconHeight: var(--icon-box-height, $iconBoxSize);
+$rotatedDegree: var(--icon-rotated-degree, 0);
 
 .Icon {
-    display: flex;
-    width: $iconWidth;
-    height: $iconHeight;
+    align-items: center;
     color: $iconColor;
+    direction: ltr;
+    display: flex;
+    font-feature-settings: 'liga';
     font-size: $iconSize;
     -webkit-font-smoothing: antialiased;
     font-style: normal;
+    font-variation-settings: 'FILL' 1;
     font-weight: 600;
+    height: $iconHeight;
+    justify-content: center;
     letter-spacing: normal;
     overflow: hidden;
-    align-items: center;
-    direction: ltr;
-    font-feature-settings: 'liga';
-    font-variation-settings: 'FILL' 1;
-    justify-content: center;
+    width: $iconWidth;
+    transform: rotate($rotatedDegree);
 }

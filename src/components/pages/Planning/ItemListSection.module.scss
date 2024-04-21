@@ -1,0 +1,75 @@
+@mixin ItemListSection {
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    padding: 0 8px;
+    width: 420px;
+    z-index: 1;
+    background-color: #FAFAFA;
+
+    > .TopBar {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        padding: 20px 10px 0 10px;
+
+        .Title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .Actions {
+            display: flex;
+            gap: 8px;
+
+            .Action {
+                width: 26px;
+                height: 26px;
+                border-radius: 4px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+
+                &:hover {
+                    --icon-color: white;
+                    cursor: pointer;
+
+                    &.Add, &.Move, &.Delete {
+                        --icon-color: white;
+                    }
+                }
+
+                &.Add {
+                    --icon-color: #1e88e5;
+                    --icon-size: 24px;
+
+                    &:hover {
+                        background-color: #1e88e5;
+                    }
+                }
+
+                &.Move {
+                    --icon-color: #5e5e5e;
+                    --icon-size: 20px;
+                    --icon-rotated-degree: 180deg;
+
+                    &:hover {
+                        background-color: #5e5e5e;
+                    }
+                }
+
+                &.Delete {
+                    --icon-color: #d32f2f;
+                    --icon-size: 22px;
+
+                    &:hover {
+                        background-color: #d32f2f;
+                    }
+                }
+            }
+        }
+    }
+}

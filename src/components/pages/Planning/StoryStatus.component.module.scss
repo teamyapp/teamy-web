@@ -1,0 +1,29 @@
+.Status {
+    display: flex;
+    height: 100%;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+    align-items: center;
+    --drop-down-font-size: 14px;
+
+    &.todo {
+        --drop-down-button-color: rgba(0, 0, 0, 0.12);
+        --drop-down-color: #757575;
+    }
+
+    &.paused {
+        --drop-down-button-color: rgba(0, 0, 0, 0.1);
+        --drop-down-color: #cb6600;
+    }
+
+    &.inProgress {
+        --drop-down-button-color: rgba(0, 0, 0, 0.1);
+        --drop-down-color: #038d08;
+    }
+
+    &.completed {
+        --drop-down-button-color: rgba(0, 0, 0, 0.15);
+        --drop-down-color: #1976d2;
+    }
+}

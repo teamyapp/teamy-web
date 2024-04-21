@@ -1,6 +1,15 @@
 import { Money } from '@core/entity/money';
 import { User } from '@core/entity/user';
 
+import { App } from './app';
+
+export type AppVersionStatus =
+    | 'INIT'
+    | 'UPLOADING'
+    | 'PROCESSING'
+    | 'READY'
+    | 'ERROR';
+
 export interface AppVersion {
     number: number;
     appName: string;
@@ -8,7 +17,14 @@ export interface AppVersion {
     changes: string[];
     createdAt: Date;
     createdBy: User;
-    iconUrl: string;
     prices: Money[];
-    isReady: boolean;
+    localPrice?: Money;
+    status: AppVersionStatus;
+    locked: boolean;
+    app: App;
+    packagePath: string;
+    errorMessage?: string;
+    hasUiExtension: boolean;
+
+    iconPath(size: number): string;
 }

@@ -1,3 +1,5 @@
+import { TooltipUI } from '@lib/ui/Tooltip';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, { Component, ReactNode, createRef } from 'react';
 
@@ -5,10 +7,10 @@ import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { Filter, and, or } from '@lib/data/filter';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
-import { Duration } from '@lib/entity/duration';
 import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
 import { Router } from '@lib/router/router';
 import { getPlatform } from '@lib/runtime/os';
+import { Duration } from '@lib/time/duration';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TabsUI } from '@lib/ui/Tabs';
 
@@ -21,7 +23,7 @@ import {
     needAttentionSectionId,
     upcomingSectionId,
 } from '@core/config/sections';
-import { taskPriorityOrder, taskDeadlineOrder } from '@core/config/sortOrder';
+import { taskPriorityOrder } from '@core/config/sortOrder';
 import { defaultSprintTabId, sprintTabIds } from '@core/config/sprints';
 import { orderByStartTimeDesc } from '@core/data/sprint.order';
 import * as filters from '@core/data/task.filter';
@@ -54,6 +56,7 @@ const sectionIds = [
 interface Props {
     deps: Deps;
     taskFilters: TaskFilters;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onViewTaskDetail?: (taskId: number) => void;
     onCreateSprintClick?: () => void;
     onTaskFiltersChange?: (taskFilters: TaskFilters) => void;
@@ -153,9 +156,9 @@ export class SprintsComponent extends Component<Props, State> {
                     if (appState.sprintTabReady)
                         if (
                             appState.currSprintId !==
-                                this.state.selectedSprintId ||
+                            this.state.selectedSprintId ||
                             appState.activeSprintTabIndex !==
-                                this.state.activeTabIndex
+                            this.state.activeTabIndex
                         ) {
                             this.selectTab(activeSprintTabIndex, false);
                         }
@@ -409,7 +412,8 @@ export class SprintsComponent extends Component<Props, State> {
                                             checked={
                                                 this.state.allowMultiSelection
                                             }
-                                            onChange={() => {}}
+                                            onChange={() => {
+                                            }}
                                         />
                                         <div className={styles.ToggleLabel}>
                                             Select many
@@ -426,6 +430,9 @@ export class SprintsComponent extends Component<Props, State> {
                                 )}
                                 currentClientId={clientId}
                                 sortOrders={this.state.sortOrders}
+                                thirdPartyAppEventHubs={
+                                    this.props.thirdPartyAppEventHubs
+                                }
                                 onCreateTask={this.onCreateTask}
                                 onUpdateTask={this.onUpdateTask}
                                 onStartTask={this.moveTaskToInProgress}
@@ -540,24 +547,29 @@ export class SprintsComponent extends Component<Props, State> {
                         {getUserShortName(user.firstName, user.lastName)}
                     </div>
                     <div className={styles.BandwidthSection}>
-                        <div className={styles.BandwidthFull}>
-                            <div
-                                className={`${
-                                    styles.UnusedBandwidth
-                                } ${classNames({
-                                    [styles.Negative]:
+                        <TooltipUI
+                            relativeLayout={this.props.deps.relativeLayout}
+                            message={`Bandwidth`}
+                        >
+                            <div className={styles.BandwidthFull}>
+                                <div
+                                    className={`${
+                                        styles.UnusedBandwidth
+                                    } ${classNames({
+                                        [styles.Negative]:
                                         participant.unusedBandwidth
                                             .totalMilliSeconds < 0,
-                                })}`}
-                                style={{
-                                    width: `${Math.abs(
-                                        unusedBandwidthPercent,
-                                    )}%`,
-                                }}
-                            />
-                        </div>
+                                    })}`}
+                                    style={{
+                                        width: `${Math.abs(
+                                            unusedBandwidthPercent,
+                                        )}%`,
+                                    }}
+                                />
+                            </div>
+                        </TooltipUI>
                         <div className={styles.Label}>
-                            {`${unusedBandwidthReadable} / ${totalBandwidthReadable}`}
+                            {`${unusedBandwidthReadable} / ${totalBandwidthReadable} (${Math.floor(unusedBandwidthPercent)}%)`}
                         </div>
                     </div>
                 </div>

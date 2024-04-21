@@ -1,28 +1,25 @@
-// type App {
-//     id: ID!
-//     secrets: [AppSecret!]!
-//     totalInstallations: Int!
-//     installations: [TeamAppInstallation!]!
-//     versions: [AppVersion!]!
-//     userGroups: [Group!]!
-//     teamGroups: [Group!]!
-//     userRollouts: [Rollout!]!
-//     teamRollouts: [Rollout!]!
-//     managedByTeam: Team!
-// }
-import { AppSecret } from '@core/entity/appSecret';
-import { AppVersion } from '@core/entity/appVersion';
-import { Team } from '@core/entity/team';
+import { AppSecret } from './appSecret';
+import { AppVersion } from './appVersion';
+import { Group } from './group';
+import { Rollout } from './rollout';
+import { Tag } from './tag';
+import { Team } from './team';
+import { TeamAppInstallation } from './teamAppInstallation';
 
 export interface App {
     id: number;
     secrets: AppSecret[];
     totalInstallations: number;
-    // installations: TeamAppInstallation[];
+    installations: TeamAppInstallation[];
+    managedByTeam: Team;
     versions: AppVersion[];
-    // userGroups: Group[];
-    // teamGroups: Group[];
-    // userRollouts: Rollout[];
-    // teamRollouts: Rollout[];
-    // managedByTeam: Team;
+    tags: Tag[];
+    userGroups: Group[];
+    teamGroups: Group[];
+    userRollouts: Rollout[];
+    teamRollouts: Rollout[];
+
+    latestVersionForTeam(teamId?: number): AppVersion | undefined;
+
+    isInstalled(teamId: number): boolean;
 }

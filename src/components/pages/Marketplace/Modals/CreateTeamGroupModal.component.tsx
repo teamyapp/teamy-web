@@ -14,8 +14,16 @@ import styles from './CreateTeamGroupModal.component.module.scss';
 interface Props {
     deps: Deps;
     appId: number;
-    onCreateStaticGroupClick?: (groupName: string, userIds: number[]) => void;
-    onCreateFilterGroupClick?: (groupName: string, filter: string) => void;
+    onCreateStaticGroupClick?: (
+        groupName: string,
+        userIds: number[],
+        rolloutIds: number[],
+    ) => void;
+    onCreateFilterGroupClick?: (
+        groupName: string,
+        filter: string,
+        rolloutIds: number[],
+    ) => void;
 }
 
 export class CreateTeamGroupModalComponent extends Component<Props> {
@@ -47,6 +55,7 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
                 </div>
                 <div className={styles.Content}>
                     <CreateGroupViewComponent
+                        relativeLayout={this.props.deps.relativeLayout}
                         membersLabel={'Teams'}
                         memberLabel={'Team'}
                         renderInlineGroupMember={this.renderInlineTeam}
@@ -91,9 +100,9 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
         );
     };
 
-    private isValidTeam = (teamId: number): boolean => {
-        // TODO: pull team
-        return this.graphSource.team(teamId) !== undefined;
+    private isValidTeam = async (teamId: number): Promise<boolean> => {
+        await this.stateSyncer.pullTeam(teamId);
+        return Boolean(this.graphSource.team(teamId));
     };
 
     private onCreateStaticGroupClick = async (
@@ -103,6 +112,7 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
         await this.stateSyncer.createStaticTeamGroup(this.props.appId, {
             groupName,
             memberIds: userIds,
+            rolloutIds: [],
         });
         this.modalRef.current?.close();
     };
@@ -111,9 +121,11 @@ export class CreateTeamGroupModalComponent extends Component<Props> {
         groupName: string,
         filter: string,
     ) => {
-        await this.stateSyncer.createFilterTeamGroup(this.props.appId, {
+        await this.stateSyncer.createFilterGroup(this.props.appId, {
             groupName,
             filter,
+            groupMemberType: 'TEAM',
+            rolloutIds: [],
         });
         this.modalRef.current?.close();
     };

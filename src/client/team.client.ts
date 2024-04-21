@@ -1,3 +1,5 @@
+import { print } from 'graphql';
+
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteTaskFilter } from '@core/client/entity/filter';
@@ -6,6 +8,8 @@ import {
     RemoteUpdateTeamInput,
 } from '@core/client/entity/input';
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
+
+import getTeamWithSprintPreviews from './graphql/query/getTeamWithSprintPreviews.graphql';
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;
@@ -17,39 +21,7 @@ export class TeamClient {
     public getTeamWithSprintPreviews(teamId: string): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
-                query: `
-                    query getTeam($teamId: ID!) {
-                        teams(filter: { teamId: $teamId }) {
-                            id
-                            iconUrl
-                            activeSprint {
-                                id
-                            }
-                            taskActivities {
-                                taskId
-                                dragTaskActivity {
-                                    isDragging
-                                    client {
-                                        id
-                                        user {
-                                            id
-                                            firstName
-                                            lastName
-                                        }
-                                    }
-                                }
-                            }
-                            sprints {
-                                id
-                                startAt
-                                endAt
-                                owningTeam {
-                                    id
-                                }
-                            }
-                        }
-                    }
-                `,
+                query: print(getTeamWithSprintPreviews),
                 variables: {
                     teamId,
                 },
@@ -72,6 +44,7 @@ export class TeamClient {
                                 goal
                                 dueAt
                                 status
+                                isScheduled
                                 isPlanned
                                 effort
                                 priority
@@ -89,6 +62,7 @@ export class TeamClient {
                                     goal
                                     context
                                     status
+                                    isScheduled
                                     isPlanned
                                     effort
                                     priority

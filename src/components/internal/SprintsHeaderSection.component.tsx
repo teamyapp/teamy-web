@@ -1,3 +1,4 @@
+import { RelativeLayoutContainerUI } from '@lib/layout';
 import classNames from 'classnames';
 import React, { Component, ReactNode } from 'react';
 
@@ -25,9 +26,9 @@ interface Props {
 
 interface State {
     currentSprint?: Sprint;
-    showDetail: boolean;
     sprints: Sprint[];
     sprintToDelete?: number;
+    showFollower: boolean;
 }
 
 export class SprintsHeaderSectionComponent extends Component<Props, State> {
@@ -47,7 +48,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             sprints: [],
-            showDetail: false,
+            showFollower: false,
         };
     }
 
@@ -55,7 +56,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         const isOnActiveSprint = this.isOnActiveSprint();
         return (
             <div className={styles.SprintHeaderSectionContainer}>
-                <TooltipUI message={'Start new sprint'} position={'Bottom'}>
+                <TooltipUI message={'Start new sprint'} relativeLayout={this.props.deps.relativeLayout}>
                     <div className={styles.CopySection}>
                         <div
                             className={styles.Button}
@@ -65,52 +66,59 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                         </div>
                     </div>
                 </TooltipUI>
-
                 <div
                     className={styles.SprintHeaderSection}
-                    tabIndex={-1}
-                    onBlur={this.onBlur}
                 >
                     <div className={styles.SectionContainer}>
-                        <div
-                            className={`${styles.HeaderSection} ${classNames({
-                                [styles.Active]: this.state.showDetail,
-                            })}`}
-                            onClick={this.onHeaderSectionClick}
-                        >
-                            <div className={styles.Icon}>
-                                <MaterialIconUI>directions_run</MaterialIconUI>
-                            </div>
-                            {
-                                <div className={styles.Name}>
-                                    {this.renderSprintName()}
-                                </div>
-                            }
-                        </div>
-                        {this.state.showDetail && (
-                            <div className={styles.Detail}>
-                                <div className={styles.AddSection}>
+                        <RelativeLayoutContainerUI
+                            relativeLayout={this.props.deps.relativeLayout}
+                            zOffset={101}
+                            referenceOffset={4}
+                            renderReferenceElement={({ toggleContainer }) => (
+                                <TooltipUI
+                                    relativeLayout={this.props.deps.relativeLayout}
+                                    disabled={this.state.showFollower}
+                                    message={'Current sprint'}>
                                     <div
-                                        className={styles.Button}
-                                        onClick={this.props.onCreateSprintClick}
+                                        className={styles.HeaderSection}
+                                        onClick={this.onReferenceElementClickHandler(toggleContainer)}
                                     >
-                                        <MaterialIconUI>add</MaterialIconUI>
+                                        <div className={styles.Icon}>
+                                            <MaterialIconUI>directions_run</MaterialIconUI>
+                                        </div>
+                                        <div className={styles.Name}>
+                                            {this.renderSprintName()}
+                                        </div>
+                                    </div>
+                                </TooltipUI>
+                            )}
+                            renderFollower={({ closeContainer }) => (
+                                <div className={styles.Detail}>
+                                    <div className={styles.AddSection}>
+                                        <div
+                                            className={styles.Button}
+                                            onClick={this.onCreateSprintClickHandler(closeContainer)}
+                                        >
+                                            <MaterialIconUI>add</MaterialIconUI>
+                                        </div>
+                                    </div>
+                                    {this.state.sprints.length > 0 && (
+                                        <div className={styles.Divider} />
+                                    )}
+                                    <div className={styles.Sprints}>
+                                        {this.state.sprints.map((sprint:Sprint)=>
+                                            this.renderSprint(sprint, closeContainer)
+                                        )}
                                     </div>
                                 </div>
-                                {this.state.sprints.length > 0 && (
-                                    <div className={styles.Divider} />
-                                )}
-                                <div className={styles.Sprints}>
-                                    {this.state.sprints.map(this.renderSprint)}
-                                </div>
-                            </div>
-                        )}
+                            )}
+                            onCloseContainer={this.onCloseContainer}
+                        />
                     </div>
                 </div>
                 <TooltipUI
-                    message={'Set as active sprint'}
-                    position={'Bottom'}
-                    disabled={isOnActiveSprint}
+                    message={'Set active sprint'}
+                    relativeLayout={this.props.deps.relativeLayout}
                 >
                     <div className={styles.SetActiveSprintSection}>
                         <div
@@ -138,7 +146,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         );
     }
 
-    renderSprint = (sprint: Sprint): ReactNode => {
+    renderSprint = (sprint: Sprint, closeContainer: ()=>void): ReactNode => {
         return (
             <div
                 key={sprint.id}
@@ -146,7 +154,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                     [styles.Selected]:
                         sprint.id === this.state.currentSprint?.id,
                 })}`}
-                onClick={this.onSprintClick(sprint.id)}
+                onClick={this.onSprintClick(sprint.id, closeContainer)}
             >
                 {sprint.id === this.getActiveSprint()?.id && (
                     <div className={styles.Active} />
@@ -154,7 +162,7 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 <div>{getSprintName(sprint.startAt)}</div>
                 <div
                     className={styles.Delete}
-                    onClick={this.onDeleteSprintClick(sprint.id)}
+                    onClick={this.onDeleteSprintClick(sprint.id, closeContainer)}
                 >
                     <MaterialIconUI>close</MaterialIconUI>
                 </div>
@@ -200,12 +208,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         this.setState({
             currentSprint,
             sprints,
-        });
-    };
-
-    private onHeaderSectionClick = () => {
-        this.setState({
-            showDetail: !this.state.showDetail,
         });
     };
 
@@ -322,19 +324,30 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         return sprints[currentIndex - 1];
     }
 
-    private onSprintClick = (sprintId: number) => {
+    private onCreateSprintClickHandler = (closeContainer: ()=>void) => {
+        return () => {
+            this.setState({
+                showFollower: false,
+            });
+            closeContainer();
+            this.props.onCreateSprintClick?.call(null);
+        };
+    }
+
+    private onSprintClick = (sprintId: number, closeContainer: ()=>void) => {
         return async () => {
             if (this.stateSyncer.trySetCurrentSprint(sprintId)) {
                 this.stateSyncer.pullCurrentSprint();
             }
 
             this.setState({
-                showDetail: false,
+                showFollower: false,
             });
+            closeContainer();
         };
     };
 
-    private onDeleteSprintClick = (sprintToDelete: number) => {
+    private onDeleteSprintClick = (sprintToDelete: number, closeContainer: ()=>void) => {
         return () => {
             this.setState({
                 sprintToDelete,
@@ -343,9 +356,18 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         };
     };
 
-    private onBlur = () => {
+    private onReferenceElementClickHandler = (toggleContainer: ()=>void) => {
+        return () => {
+            this.setState({
+                showFollower: !this.state.showFollower,
+            });
+            toggleContainer();
+        };
+    };
+
+    private onCloseContainer = () => {
         this.setState({
-            showDetail: false,
+            showFollower: false,
         });
     };
 }

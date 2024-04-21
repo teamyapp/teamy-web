@@ -10,27 +10,37 @@ import {
 } from '@lib/layout/relativeLayout';
 
 type Props = {
-    onOpen?: () => void;
-    onClose?: () => void;
+    onOpenContainer?: () => void;
+    onCloseContainer?: () => void;
     onMouseLeave?: () => void;
     zOffset?: number;
-    renderReferenceElement: ({
-        onToggle,
-    }: {
-        onToggle: () => void;
-    }) => ReactNode;
-    renderFollower: ({
-        onClose,
-        onOpen,
-    }: {
-        onClose: () => void;
-        onOpen: () => void;
-    }) => ReactNode;
+    renderReferenceElement: (
+        {
+            toggleContainer,
+            closeContainer,
+            openContainer,
+            showFollower,
+        }: {
+            toggleContainer: () => void;
+            closeContainer: () => void;
+            openContainer: () => void;
+            showFollower: boolean;
+        }) => ReactNode;
+    renderFollower: (
+        {
+            closeContainer,
+            openContainer,
+        }: {
+            closeContainer: () => void;
+            openContainer: () => void;
+        }) => ReactNode;
     relativeLayout: RelativeLayout;
     horizontalAlignment?: HorizontalAlignment;
     verticalAlignment?: VerticalAlignment;
     overSpaceAction?: OverSpaceAction;
-    offset?: number;
+    referenceOffset?: number;
+    preserveReferenceParentHeight?: boolean;
+    preserveReferenceParentWidth?: boolean;
 };
 
 interface States {
@@ -52,20 +62,40 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
 
     componentDidMount() {
         document.body.appendChild(this.followerContainer);
+        document.addEventListener('mousedown', this.onClickOutside);
     }
 
     componentWillUnmount() {
         document.body.removeChild(this.followerContainer);
+        document.removeEventListener('mousedown', this.onClickOutside);
     }
+
+    private onClickOutside = (event: MouseEvent) => {
+        if (
+            this.referenceElementRef.current &&
+            this.followerRef.current &&
+            !this.referenceElementRef.current.contains(event.target as Node) &&
+            !this.followerRef.current.contains(event.target as Node)
+        ) {
+            this.onClose();
+        }
+    };
 
     render() {
         return (
             <Fragment>
-                <span ref={this.referenceElementRef}>
+                <div ref={this.referenceElementRef}
+                    style={{
+                        width: this.props.preserveReferenceParentWidth ? '100%' : 'auto',
+                        height: this.props.preserveReferenceParentHeight ? '100%' : 'auto',
+                    }}>
                     {this.props.renderReferenceElement({
-                        onToggle: this.handleToggle,
+                        toggleContainer: this.handleToggle,
+                        showFollower: this.state.showFollower,
+                        closeContainer: this.onClose,
+                        openContainer: this.onOpen,
                     })}
-                </span>
+                </div>
                 {this.state.showFollower &&
                     this.followerRef &&
                     createPortal(
@@ -77,8 +107,8 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                             }}
                         >
                             {this.props.renderFollower({
-                                onClose: this.onClose,
-                                onOpen: this.onOpen,
+                                closeContainer: this.onClose,
+                                openContainer: this.onOpen,
                             })}
                         </div>,
                         this.followerContainer,
@@ -93,7 +123,7 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
             showFollower: false,
         });
 
-        this.props.onClose?.call(null);
+        this.props.onCloseContainer?.call(null);
         this.props.onMouseLeave?.call(null);
     };
 
@@ -114,12 +144,12 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
                             this.props.horizontalAlignment,
                             this.props.verticalAlignment,
                             this.props.overSpaceAction,
-                            this.props.offset,
+                            this.props.referenceOffset,
                         );
                 }
             },
         );
-        this.props.onOpen?.call(null);
+        this.props.onOpenContainer?.call(null);
     };
 
     private handleToggle = () => {

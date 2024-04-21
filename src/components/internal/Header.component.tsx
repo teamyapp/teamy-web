@@ -16,7 +16,6 @@ import { TaskFilters, TaskFiltersData } from '@core/entity/filters';
 import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import {
-    helpCenterRoutePattern,
     insightsRoutePattern,
     knowledgeRoutePattern,
     marketplaceRoutePattern,
@@ -26,7 +25,6 @@ import {
 } from '@core/routing/routes';
 
 import { ContextMenuComponent } from './ContextMenu.component';
-import { FilterListComponent } from './FilterList.component';
 import styles from './Header.component.module.scss';
 import { SprintsHeaderSectionComponent } from './SprintsHeaderSection.component';
 import { UserProfileUI } from './UserProfile';
@@ -51,7 +49,6 @@ interface Props {
     onShowInsightsViewClick?: () => void;
     onShowPlanningViewClick?: () => void;
     onShowKnowledgeViewClick?: () => void;
-    onShowHelpCenterViewClick?: () => void;
     onShowMarketplaceViewClick?: () => void;
 }
 
@@ -64,7 +61,6 @@ interface State {
     showInsightsView: boolean;
     showPlanningView: boolean;
     showKnowledgeView: boolean;
-    showHelpCenterView: boolean;
     showMarketplaceView: boolean;
 }
 
@@ -72,7 +68,6 @@ export class HeaderComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly searchBarRef = createRef<HTMLDivElement>();
     private readonly searchInputRef = createRef<HTMLInputElement>();
-    private readonly teamContextMenuRef = createRef<ContextMenuComponent>();
     private readonly userProfileSectionRef: React.RefObject<HTMLDivElement> =
         createRef();
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
@@ -91,7 +86,6 @@ export class HeaderComponent extends Component<Props, State> {
             showInsightsView: false,
             showPlanningView: false,
             showKnowledgeView: false,
-            showHelpCenterView: false,
             showMarketplaceView: false,
         };
     }
@@ -116,44 +110,24 @@ export class HeaderComponent extends Component<Props, State> {
                         )}
                     </div>
                     {this.props.currentTeam && (
-                        <div
-                            role={'button'}
-                            aria-label={this.props.currentTeam.name}
-                            className={styles.TeamName}
-                            onClick={this.onViewTeamSettingsClick}
-                            onContextMenu={this.onTeamContextMenu}
-                        >
-                            {this.props.currentTeam.name}
-                        </div>
+                        <TooltipUI
+                            relativeLayout={this.props.deps.relativeLayout}
+                            preserveReferenceParentHeight={true}
+                            message={'Team Settings'}>
+                            <div
+                                role={'button'}
+                                aria-label={this.props.currentTeam.name}
+                                className={styles.TeamName}
+                                onClick={this.onViewTeamSettingsClick}
+                            >
+
+                                {this.props.currentTeam.name}
+                            </div>
+                        </TooltipUI>
                     )}
-                    <ContextMenuComponent
-                        ref={this.teamContextMenuRef}
-                        menuItems={[
-                            {
-                                key: 'addMembers',
-                                action: this.onAddMembersClick,
-                                label: 'Add Members',
-                            },
-                            {
-                                key: 'showMembers',
-                                action: this.onShowMembersClick,
-                                label: 'Show Members',
-                            },
-                            {
-                                key: 'showInvitations',
-                                action: this.onShowInvitationsClick,
-                                label: 'Show Invitations',
-                            },
-                            {
-                                key: 'viewTeamSettings',
-                                action: this.onViewTeamSettingsClick,
-                                label: 'View Team Settings',
-                            },
-                        ]}
-                    />
-                    <Route router={this.router} pattern={teamRoutePattern}>
+                    <Route router={this.router} pattern={sprintsRoutePattern}>
                         <div className={styles.BacklogSection}>
-                            <TooltipUI message={'Backlog'}>
+                            <TooltipUI message={'Backlog'} relativeLayout={this.props.deps.relativeLayout}>
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]: this.state.showBacklog,
@@ -198,24 +172,6 @@ export class HeaderComponent extends Component<Props, State> {
                             <MaterialIconUI>search</MaterialIconUI>
                         </div>
                     </div>
-                    {this.state.isSearchBarFocused && (
-                        <div className={styles.Filters}>
-                            <FilterListComponent
-                                deps={this.props.deps}
-                                teamMembers={
-                                    this.props.currentTeam?.members || []
-                                }
-                                taskFiltersData={this.state.taskFiltersData}
-                                taskFilters={this.props.taskFilters}
-                                onTaskFiltersChange={
-                                    this.props.onTaskFiltersChange
-                                }
-                                onTaskFiltersDataChange={
-                                    this.onTaskFiltersDataChange
-                                }
-                            />
-                        </div>
-                    )}
                 </div>
                 <SpacerUI />
                 <div
@@ -225,19 +181,37 @@ export class HeaderComponent extends Component<Props, State> {
                 >
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.ButtonsSection}>
-                            <div
-                                className={`${styles.Button} ${classNames({
-                                    [styles.Active]: this.state.showSprintsView,
-                                })}`}
-                                onClick={this.onShowSprintsViewClick}
-                            >
-                                <MaterialIconUI>sprint</MaterialIconUI>
-                            </div>
+                            <TooltipUI message='Sprints' relativeLayout={this.props.deps.relativeLayout}>
+                                <div
+                                    className={`${styles.Button} ${classNames({
+                                        [styles.Active]:
+                                        this.state.showSprintsView,
+                                    })}`}
+                                    onClick={this.onShowSprintsViewClick}
+                                >
+                                    <MaterialIconUI>sprint</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
+                            {this.props.deps.featureToggle.enablePlanning && (
+                                <TooltipUI message='Planning' relativeLayout={this.props.deps.relativeLayout}>
+                                    <div
+                                        className={`${
+                                            styles.Button
+                                        } ${classNames({
+                                            [styles.Active]:
+                                            this.state.showPlanningView,
+                                        })}`}
+                                        onClick={this.onShowPlanningViewClick}
+                                    >
+                                        <MaterialIconUI>flag</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            )}
                             {this.props.deps.featureToggle.enableInsights && (
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                            this.state.showInsightsView,
+                                        this.state.showInsightsView,
                                     })}`}
                                     onClick={this.onShowInsightsViewClick}
                                 >
@@ -245,53 +219,36 @@ export class HeaderComponent extends Component<Props, State> {
                                 </div>
                             )}
                             {this.props.deps.featureToggle
-                                .enablePlanningDoc && (
-                                <div
-                                    className={`${styles.Button} ${classNames({
-                                        [styles.Active]:
-                                            this.state.showPlanningView,
-                                    })}`}
-                                    onClick={this.onShowPlanningViewClick}
-                                >
-                                    <MaterialIconUI>flag</MaterialIconUI>
-                                </div>
-                            )}
-                            {this.props.deps.featureToggle
                                 .enableKnowledgeBase && (
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                            this.state.showKnowledgeView,
+                                        this.state.showKnowledgeView,
                                     })}`}
                                     onClick={this.onShowKnowledgeViewClick}
                                 >
                                     <MaterialIconUI>school</MaterialIconUI>
                                 </div>
                             )}
-                            {this.props.deps.featureToggle.enableHelpCenter && (
-                                <div
-                                    className={`${styles.Button} ${classNames({
-                                        [styles.Active]:
-                                            this.state.showHelpCenterView,
-                                    })}`}
-                                    onClick={this.onShowHelpCenterViewClick}
-                                >
-                                    <MaterialIconUI>forum</MaterialIconUI>
-                                </div>
-                            )}
                             {this.props.deps.featureToggle
                                 .enableMarketplace && (
-                                <div
-                                    className={`${styles.Button} ${classNames({
-                                        [styles.Active]:
+                                <TooltipUI message='Marketplace' relativeLayout={this.props.deps.relativeLayout}>
+                                    <div
+                                        className={`${
+                                            styles.Button
+                                        } ${classNames({
+                                            [styles.Active]:
                                             this.state.showMarketplaceView,
-                                    })}`}
-                                    onClick={this.onShowMarketplaceViewClick}
-                                >
-                                    <MaterialIconUI>
-                                        shopping_cart
-                                    </MaterialIconUI>
-                                </div>
+                                        })}`}
+                                        onClick={
+                                            this.onShowMarketplaceViewClick
+                                        }
+                                    >
+                                        <MaterialIconUI>
+                                            shopping_cart
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             )}
                         </div>
                     </Route>
@@ -315,7 +272,7 @@ export class HeaderComponent extends Component<Props, State> {
                             <div
                                 className={`${styles.Popup} ${classNames({
                                     [styles.Show]:
-                                        this.state.showUserProfileMenu,
+                                    this.state.showUserProfileMenu,
                                 })}`}
                             >
                                 <div
@@ -391,12 +348,6 @@ export class HeaderComponent extends Component<Props, State> {
                         showKnowledgeView: true,
                     });
                 } else if (
-                    routeUpdate.routePattern.startsWith(helpCenterRoutePattern)
-                ) {
-                    this.setState({
-                        showHelpCenterView: true,
-                    });
-                } else if (
                     routeUpdate.routePattern.startsWith(marketplaceRoutePattern)
                 ) {
                     this.setState({
@@ -446,11 +397,6 @@ export class HeaderComponent extends Component<Props, State> {
         });
 
         this.props.onBacklogToggle?.call(null);
-    };
-
-    private onTeamContextMenu = (event: React.MouseEvent<HTMLElement>) => {
-        event.preventDefault();
-        this.teamContextMenuRef.current?.open(event.clientY, event.clientX);
     };
 
     private onAddMembersClick = () => {
@@ -521,14 +467,6 @@ export class HeaderComponent extends Component<Props, State> {
         this.props.onShowKnowledgeViewClick?.call(null);
     };
 
-    private onShowHelpCenterViewClick = () => {
-        this.resetViewButtons();
-        this.setState({
-            showHelpCenterView: true,
-        });
-        this.props.onShowHelpCenterViewClick?.call(null);
-    };
-
     private onShowMarketplaceViewClick = () => {
         this.resetViewButtons();
         this.setState({
@@ -543,7 +481,6 @@ export class HeaderComponent extends Component<Props, State> {
             showInsightsView: false,
             showPlanningView: false,
             showKnowledgeView: false,
-            showHelpCenterView: false,
             showMarketplaceView: false,
         });
     }

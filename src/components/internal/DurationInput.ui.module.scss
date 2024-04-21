@@ -7,16 +7,16 @@ $backgroundColor: var(--duration-background-color, #7b1fa2);
     outline: none;
 
     .ValueRow {
-        display: flex;
-        height: 100%;
-        padding: 0 8px;
-        border-radius: 4px;
+        align-items: center;
         background-color: $backgroundColor;
+        border-radius: 4px;
+        --icon-color: white;
         color: white;
+        display: flex;
         font-size: 14px;
         font-weight: 500;
-        align-items: center;
-        --icon-color: white;
+        height: 100%;
+        padding: 0 8px;
         --icon-size: 18px;
         user-select: none;
 
@@ -32,24 +32,24 @@ $backgroundColor: var(--duration-background-color, #7b1fa2);
 }
 
 .InputPopup {
-    width: 360px;
-    padding: 20px;
-    border-radius: 4px;
     background-color: white;
-    color: black;
+    border-radius: 4px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-    opacity: 1;
     box-sizing: border-box;
+    color: black;
+    opacity: 1;
+    padding: 20px;
+    width: 360px;
 
     .InputRow {
         display: flex;
-        width: 100%;
         justify-content: center;
+        width: 100%;
 
         .TextField {
-            width: 100px;
             --background-color: white;
             --hint-color: black;
+            width: 100px;
         }
 
         &:not(:first-child) {

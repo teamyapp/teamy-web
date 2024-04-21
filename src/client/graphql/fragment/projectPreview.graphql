@@ -1,0 +1,25 @@
+#import "./user.graphql"
+#import "./team.graphql"
+#import "./phase.graphql"
+
+fragment ProjectPreviewFragment on Project {
+    id
+    name
+    expectedStartAt
+    actualStartAt
+    expectedEndAt
+    actualEndAt
+    creator {
+        ...UserFragment
+    }
+    createdAt
+    updatedAt
+    color
+    iconUrl
+    team {
+        ...TeamFragment
+    }
+    phases {
+        ...PhaseFragment
+    }
+}

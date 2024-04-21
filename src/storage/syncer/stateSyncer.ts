@@ -1,33 +1,58 @@
 import moment from 'moment';
 
 import { PopChannel, chan, multi } from '@lib/csp/csp';
-import { Duration } from '@lib/entity/duration';
 import { IdentityClient, getAccessToken } from '@lib/identity/Identity.client';
 import { Connection } from '@lib/network/Connection';
 import { WebSocketConnection } from '@lib/network/WebSocket.connection';
+import { Duration } from '@lib/time/duration';
 
+import { AppClient } from '@core/client/app.client';
+import { AppVersionClient } from '@core/client/appVersion.client';
 import { RemoteTaskFilter } from '@core/client/entity/filter';
+import { RemoteRolloutActivator } from '@core/client/entity/remoteRolloutActivator';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
+import { PhaseClient } from '@core/client/phase.client';
+import { ProjectClient } from '@core/client/project.client';
 import { SprintClient } from '@core/client/sprint.client';
+import { StoryClient } from '@core/client/story.client';
 import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
 import { TaskFilter } from '@core/entity/filters';
 import {
+    CreateActivatorInput,
+    CreateAppInput,
+    CreateAppRolloutInput,
+    CreateAppSecretInput,
+    CreateFilterGroupInput,
     CreateInvitationInput,
     CreateMessageInput,
+    CreatePhaseInput,
+    CreateProjectInput,
     CreateSprintInput,
+    CreateStaticGroupInput,
+    CreateStoryInput,
     CreateTaskInput,
     CreateTeamInput,
     CreateUserInput,
+    CreateVersionSelectorInput,
+    UpdateActivatorInput,
+    UpdateAppSecretInput,
+    UpdateAppVersionInput,
+    UpdateGroupInput,
     UpdateMessageInput,
+    UpdatePhaseInput,
+    UpdateProjectInput,
+    UpdateRolloutInput,
+    UpdateStoryInput,
     UpdateTaskInput,
     UpdateTeamInput,
     UpdateTeamMemberInput,
     UpdateUserInput,
+    UpdateVersionSelectorInput,
 } from '@core/entity/input';
 import { AppState } from '@core/storage/states/app.state';
 import { toDate, toInt } from '@core/storage/states/parser';
@@ -40,9 +65,12 @@ import { LocalStore } from './localStore';
 import { Message } from './message';
 import { Metadata } from './metadata';
 import {
+    applyAppVersionChangeMutation,
+    applyAppVersionMutation,
     applyInvitationMutation,
     applyMessageMutation,
     applySprintMutation,
+    applyStoryMutation,
     applySprintParticipantMutation,
     applySprintTaskMutation,
     applyTaskActivityMutation,
@@ -53,36 +81,35 @@ import {
     applyTeamMutation,
     applyUserMutation,
     deleteThread,
+    mergeActivator,
+    mergeApp,
+    mergeAppInstallation,
+    mergeAppRolloutRelation,
+    mergeAppSecret,
+    mergeAppVersion,
+    mergeGroup,
+    mergeGroupRolloutRelation,
     mergeInvitation,
     mergeMessage,
+    mergePhase,
+    mergeProject,
+    mergeProjectPhaseRelation,
+    mergeProjectStoryRelation,
+    mergeRollout,
     mergeSprint,
+    mergeStory,
+    mergeStoryTaskRelation,
+    mergeTag,
     mergeTask,
     mergeTeam,
     mergeUser,
+    mergeVersionSelector,
     removeOrMergeTeamMembers,
     replaceTeamInvitations,
     replaceTeamTaskActivities,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
-
-interface CreateAppInput {
-    name: string;
-}
-
-interface CreateAppApiTokenInput {
-    name: string;
-}
-
-interface CreateStaticGroupInput {
-    groupName: string;
-    memberIds: number[];
-}
-
-interface CreateFilterGroupInput {
-    groupName: string;
-    filter: string;
-}
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -98,11 +125,16 @@ export class StateSyncer {
         private webSocketEndpoint: string,
         private identityClient: IdentityClient,
         private localStore: LocalStore,
+        private appClient: AppClient,
+        private projectClient: ProjectClient,
+        private phaseClient: PhaseClient,
+        private storyClient: StoryClient,
         private taskClient: TaskClient,
         private messageClient: MessageClient,
         private teamClient: TeamClient,
         private teamMemberClient: TeamMemberClient,
         private userClient: UserClient,
+        private appVersionClient: AppVersionClient,
         private invitationClient: InvitationClient,
         private sprintClient: SprintClient,
     ) {
@@ -244,6 +276,15 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async pullTeam(teamId: number) {
+        const remoteTeam = await this.teamClient.getTeamWithSprintPreviews(
+            `${teamId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeTeam(appState, remoteTeam);
+        this.localStore.updateState(appState);
+    }
+
     public async pullCurrentTeam(): Promise<void> {
         let appState = this.localStore.getState();
         const currTeamId = appState.currTeamId;
@@ -307,6 +348,7 @@ export class StateSyncer {
         if (filter) {
             remoteFilter = {
                 goalContains: filter.goalContains,
+                isScheduled: filter.isScheduled,
                 isPlanned: filter.isPlanned,
                 ownerId: filter.ownerId ? `${filter.ownerId}` : undefined,
                 status: filter.status,
@@ -367,6 +409,15 @@ export class StateSyncer {
         if (remoteTask) {
             let appState = this.localStore.getState();
             appState = mergeTask(appState, remoteTask);
+            this.localStore.updateState(appState);
+        }
+    }
+
+    public async pullUser(userId: number): Promise<void> {
+        const remoteUser = await this.userClient.getUser(`${userId}`);
+        if (remoteUser) {
+            let appState = this.localStore.getState();
+            appState = mergeUser(appState, remoteUser);
             this.localStore.updateState(appState);
         }
     }
@@ -493,10 +544,10 @@ export class StateSyncer {
         teamId: number,
         task: CreateTaskInput,
         sprintId?: number,
-    ): Promise<void> {
-        let isPlanned = false;
+    ): Promise<number> {
+        let isScheduled = false;
         if (sprintId) {
-            isPlanned = true;
+            isScheduled = true;
         }
 
         const remoteTask = await this.taskClient.createTask(`${teamId}`, {
@@ -504,7 +555,8 @@ export class StateSyncer {
             context: task.context,
             ownerUserId: task.ownerUserId ? `${task.ownerUserId}` : undefined,
             dueAt: task.dueAt,
-            isPlanned: isPlanned,
+            isScheduled: isScheduled,
+            isPlanned: Boolean(task.isPlanned),
         });
 
         const remoteTaskId = parseInt(remoteTask.id);
@@ -515,6 +567,7 @@ export class StateSyncer {
         }
 
         this.localStore.updateState(appState);
+        return remoteTaskId;
     }
 
     public async updateTask(taskId: number, input: UpdateTaskInput) {
@@ -545,9 +598,37 @@ export class StateSyncer {
         appState.sprintTaskRelations = appState.sprintTaskRelations.filter(
             (relation) => relation.taskId !== taskId,
         );
+
+        appState.storyTaskRelations = appState.storyTaskRelations.filter(
+            (relation) => relation.taskId !== taskId,
+        );
         delete appState.tasks[taskId];
         this.localStore.updateState(appState);
         await this.taskClient.deleteTask(`${taskId}`);
+    }
+
+    public async moveTaskToUpcoming(taskId: number) {
+        let appState = this.localStore.getState();
+        const task = appState.tasks[taskId];
+
+        switch (task.status) {
+            case 'IN_PROGRESS':
+            case 'PAUSED':
+                task.status = 'PAUSED';
+                break;
+            default:
+                task.status = 'TODO';
+        }
+
+        // Responsive UI for drag & drop
+        this.localStore.updateState(appState);
+
+        const remoteTask = await this.taskClient.moveTaskToUpcoming(
+            `${taskId}`,
+        );
+        appState = this.localStore.getState();
+        appState = mergeTask(appState, remoteTask);
+        this.localStore.updateState(appState);
     }
 
     public async moveTaskToInProgress(taskId: number) {
@@ -581,36 +662,12 @@ export class StateSyncer {
     public async moveTaskToDelivered(taskId: number) {
         let appState = this.localStore.getState();
         const task = appState.tasks[taskId];
-        task.status = 'IN_PROGRESS';
+        task.status = 'DELIVERED';
 
         // Responsive UI for drag & drop
         this.localStore.updateState(appState);
 
         const remoteTask = await this.taskClient.moveTaskToDelivered(
-            `${taskId}`,
-        );
-        appState = this.localStore.getState();
-        appState = mergeTask(appState, remoteTask);
-        this.localStore.updateState(appState);
-    }
-
-    public async moveTaskToUpcoming(taskId: number) {
-        let appState = this.localStore.getState();
-        const task = appState.tasks[taskId];
-
-        switch (task.status) {
-            case 'IN_PROGRESS':
-            case 'PAUSED':
-                task.status = 'PAUSED';
-                break;
-            default:
-                task.status = 'TODO';
-        }
-
-        // Responsive UI for drag & drop
-        this.localStore.updateState(appState);
-
-        const remoteTask = await this.taskClient.moveTaskToUpcoming(
             `${taskId}`,
         );
         appState = this.localStore.getState();
@@ -638,6 +695,18 @@ export class StateSyncer {
         return parseInt(remoteSessionID);
     };
 
+    public createAppPackageUploadSession = async (
+        appId: number,
+        versionNumber: number,
+    ): Promise<number> => {
+        const remoteSessionID =
+            await this.appVersionClient.createAppPackageUploadSession(
+                `${appId}`,
+                versionNumber,
+            );
+        return parseInt(remoteSessionID);
+    };
+
     public async finishUserProfileUpdateSession(
         fileUploadSessionId: number,
     ): Promise<void> {
@@ -646,6 +715,23 @@ export class StateSyncer {
         );
         let appState = this.localStore.getState();
         appState = mergeUser(appState, remoteUser);
+        this.localStore.updateState(appState);
+    }
+
+    public async finishAppPackageUploadSession(
+        appId: number,
+        versionNumber: number,
+        fileUploadSessionId: number,
+    ): Promise<void> {
+        const remoteAppVersion =
+            await this.appVersionClient.finishAppPackageUploadSession(
+                `${appId}`,
+                versionNumber,
+                `${fileUploadSessionId}`,
+            );
+
+        let appState = this.localStore.getState();
+        appState = mergeAppVersion(appState, `${appId}`, remoteAppVersion);
         this.localStore.updateState(appState);
     }
 
@@ -844,61 +930,832 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
-    public createApp(teamId: number, input: CreateAppInput): Promise<number> {
-        // TODO: integrate with create app API
-        console.log('createApp', teamId, input);
-        return Promise.resolve(0);
+    public async createApp(
+        teamId: number,
+        input: CreateAppInput,
+    ): Promise<void> {
+        const remoteApp = await this.appClient.createApp(`${teamId}`, input);
+        let appState = this.localStore.getState();
+        appState = mergeApp(appState, remoteApp, teamId);
+        this.localStore.updateState(appState);
     }
 
-    public createAppApiToken(
-        appId: number,
-        input: CreateAppApiTokenInput,
+    public async getProject(projectId: number): Promise<void> {
+        const remoteProject = await this.projectClient.getProject(
+            `${projectId}`,
+        );
+        if (!remoteProject) {
+            return;
+        }
+
+        let appState = this.localStore.getState();
+        appState = mergeProject(appState, remoteProject);
+        this.localStore.updateState(appState);
+    }
+
+    public async getPhase(phaseId: number): Promise<void> {
+        const remotePhase = await this.phaseClient.getPhase(`${phaseId}`);
+        if (!remotePhase) {
+            return;
+        }
+
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        this.localStore.updateState(appState);
+    }
+
+    public async getStory(storyId: number): Promise<void> {
+        const remoteStory = await this.storyClient.getStory(`${storyId}`);
+        if (!remoteStory) {
+            return;
+        }
+
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        this.localStore.updateState(appState);
+    }
+
+    public async createProject(
+        teamId: number,
+        input: CreateProjectInput,
+    ): Promise<void> {
+        const remoteProject = await this.projectClient.createProject(
+            `${teamId}`,
+            input,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeProject(appState, remoteProject);
+        this.localStore.updateState(appState);
+    }
+
+    public async createPhase(
+        projectId: number,
+        input: CreatePhaseInput,
+    ): Promise<void> {
+        const remotePhase = await this.phaseClient.createPhase(
+            `${projectId}`,
+            input,
+        );
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        appState = mergeProjectPhaseRelation(
+            appState,
+            `${projectId}`,
+            remotePhase.id,
+        );
+        this.localStore.updateState(appState);
+    }
+
+    public async createStory(
+        projectId: number,
+        input: CreateStoryInput,
     ): Promise<number> {
-        // TODO: integrate with create app api token API
-        console.log('createAppApiToken', appId, input);
-        return Promise.resolve(0);
+        const remoteStory = await this.storyClient.createStory(`${projectId}`, {
+            name: input.name,
+            ownerId: input.ownerId ? `${input.ownerId}` : undefined,
+            priority: input.priority,
+            status: input.status,
+        });
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        appState = mergeProjectStoryRelation(
+            appState,
+            `${projectId}`,
+            remoteStory.id,
+        );
+        this.localStore.updateState(appState);
+        return toInt(remoteStory.id)!;
     }
 
-    public createAppVersion(appId: number): Promise<number> {
-        // TODO: integrate with create app version API
-        console.log('createAppVersion', appId);
-        return Promise.resolve(0);
+    public async updateStory(
+        storyId: number,
+        input: UpdateStoryInput,
+    ): Promise<void> {
+        const remoteStory = await this.storyClient.updateStory(`${storyId}`, {
+            name: input.name,
+            ownerId: input.ownerId ? `${input.ownerId}` : undefined,
+            priority: input.priority,
+            status: input.status,
+        });
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        this.localStore.updateState(appState);
     }
 
-    public createStaticUserGroup(
+    public async addTaskToStory(
+        storyId: number,
+        taskId: number,
+    ): Promise<void> {
+        const remoteStory = await this.taskClient.addTaskToStory(
+            `${storyId}`,
+            `${taskId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        appState = mergeStoryTaskRelation(appState, `${storyId}`, `${taskId}`);
+        this.localStore.updateState(appState);
+    }
+
+    public async addTasksToStory(
+        storyId: number,
+        taskIds: number[],
+    ): Promise<void> {
+        const remoteStory = await this.taskClient.addTasksToStory(
+            `${storyId}`,
+            taskIds.map(String),
+        );
+        let appState = this.localStore.getState();
+        appState = mergeStory(appState, remoteStory);
+        this.localStore.updateState(appState);
+    }
+
+    public async removeTaskFromStory(
+        storyId: number,
+        taskId: number,
+    ): Promise<void> {
+        const remoteStory = await this.taskClient.removeTaskFromStory(
+            `${storyId}`,
+            `${taskId}`,
+        );
+        let appState = this.localStore.getState();
+        mergeStory(appState, remoteStory);
+        appState.storyTaskRelations = appState.storyTaskRelations.filter(
+            (relation) =>
+                relation.storyId !== storyId && relation.taskId !== taskId,
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async removeTasksFromStory(
+        storyId: number,
+        taskIds: number[],
+    ): Promise<void> {
+        const remoteStory = await this.taskClient.removeTasksFromStory(
+            `${storyId}`,
+            taskIds.map(String),
+        );
+        let appState = this.localStore.getState();
+        mergeStory(appState, remoteStory);
+        appState.storyTaskRelations = appState.storyTaskRelations.filter(
+            (relation) =>
+                relation.storyId !== storyId ||
+                !taskIds.includes(relation.taskId),
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async addStoryToPhase(
+        phaseId: number,
+        storyId: number,
+    ): Promise<void> {
+        const remotePhase = await this.storyClient.addStoryToPhase(
+            `${phaseId}`,
+            `${storyId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        this.localStore.updateState(appState);
+    }
+
+    public async addStoriesToPhase(
+        phaseId: number,
+        storyIds: number[],
+    ): Promise<void> {
+        const remotePhase = await this.storyClient.addStoriesToPhase(
+            `${phaseId}`,
+            storyIds.map(String),
+        );
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        this.localStore.updateState(appState);
+    }
+
+    public async removeStoryFromPhase(
+        phaseId: number,
+        storyId: number,
+    ): Promise<void> {
+        const remotePhase = await this.storyClient.removeStoryFromPhase(
+            `${phaseId}`,
+            `${storyId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        appState.phaseStoryRelations = appState.phaseStoryRelations.filter(
+            (relation) =>
+                relation.phaseId !== phaseId && relation.storyId !== storyId,
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async removeStoriesFromPhase(
+        phaseId: number,
+        storyIds: number[],
+    ): Promise<void> {
+        const remotePhase = await this.storyClient.removeStoriesFromPhase(
+            `${phaseId}`,
+            storyIds.map(String),
+        );
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        appState.phaseStoryRelations = appState.phaseStoryRelations.filter(
+            (relation) =>
+                relation.phaseId !== phaseId ||
+                !storyIds.includes(relation.storyId),
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteStory(storyId: number): Promise<void> {
+        await this.storyClient.deleteStory(`${storyId}`);
+        let appState = this.localStore.getState();
+        appState = this._deleteStory(appState, storyId);
+        this.localStore.updateState(appState);
+    }
+
+    public async updatePhase(
+        phaseId: number,
+        input: UpdatePhaseInput,
+    ): Promise<void> {
+        const remotePhase = await this.phaseClient.updatePhase(
+            `${phaseId}`,
+            input,
+        );
+        let appState = this.localStore.getState();
+        appState = mergePhase(appState, remotePhase);
+        this.localStore.updateState(appState);
+    }
+
+    public async deletePhase(phaseId: number): Promise<void> {
+        await this.phaseClient.deletePhase(`${phaseId}`);
+        let appState = this.localStore.getState();
+        appState = this._deletePhase(appState, phaseId);
+        this.localStore.updateState(appState);
+    }
+
+    public async updateProject(
+        projectId: number,
+        input: UpdateProjectInput,
+    ): Promise<void> {
+        const remoteProject = await this.projectClient.updateProject(
+            `${projectId}`,
+            input,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeProject(appState, remoteProject);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteProject(projectId: number): Promise<void> {
+        await this.projectClient.deleteProject(`${projectId}`);
+        let appState = this.localStore.getState();
+        delete appState.projects[projectId];
+
+        appState.projectPhaseRelations.forEach((relation) => {
+            if (relation.projectId === projectId) {
+                appState = this._deletePhase(appState, relation.phaseId);
+            }
+        });
+
+        appState.projectStoryRelations.forEach((relation) => {
+            if (relation.projectId === projectId) {
+                appState = this._deleteStory(appState, relation.storyId);
+            }
+        });
+
+        appState.projectStoryRelations = appState.projectStoryRelations.filter(
+            (relation) => relation.projectId !== projectId,
+        );
+
+        appState.projectPhaseRelations = appState.projectPhaseRelations.filter(
+            (relation) => relation.projectId !== projectId,
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async installAppToTeam(appId: number, teamId: number) {
+        const remoteInstallation = await this.appClient.installAppToTeam(
+            `${appId}`,
+            `${teamId}`,
+        );
+        let appState = this.localStore.getState();
+        if (remoteInstallation.activeAppVersion?.app) {
+            appState = mergeApp(
+                appState,
+                remoteInstallation.activeAppVersion.app,
+                teamId,
+            );
+        }
+
+        appState = mergeAppInstallation(appState, remoteInstallation);
+        this.localStore.updateState(appState);
+    }
+
+    public async uninstallAppFromTeam(installationId: number) {
+        await this.appClient.uninstallAppFromTeam(`${installationId}`);
+        let appState = this.localStore.getState();
+        const installation = appState.appInstallations[installationId];
+        const app = appState.apps[installation.appId];
+        app.totalInstallations -= 1;
+        delete appState.appInstallations[installationId];
+        this.localStore.updateState(appState);
+    }
+
+    public async getApps(teamId: number): Promise<void> {
+        const remoteApps = await this.appClient.getApps(`${teamId}`);
+        let appState = this.localStore.getState();
+        appState = remoteApps.reduce(
+            (appState, remoteApp) =>
+                mergeApp(appState, remoteApp, appState.currTeamId!),
+            appState,
+        );
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteApp(appId: number): Promise<void> {
+        await this.appClient.deleteApp(`${appId}`);
+        let appState = this.localStore.getState();
+
+        for (let appSecretId of appState.apps[appId].secretIds) {
+            delete appState.appSecrets[appSecretId];
+        }
+
+        for (let appInstallation in appState.appInstallations) {
+            if (appState.appInstallations[appInstallation].appId === appId) {
+                delete appState.appInstallations[appInstallation];
+            }
+        }
+
+        appState.appGroupRelations
+            .filter((relation) => relation.appId === appId)
+            .forEach((relation) => {
+                this._deleteGroup(appState, relation.groupId);
+            });
+
+        appState.appRolloutRelations
+            .filter((relation) => relation.appId === appId)
+            .forEach((relation) => {
+                const rollout = appState.rollouts[relation.rolloutId];
+                this._deleteRollout(
+                    appState,
+                    relation.rolloutId,
+                    rollout.activatorId,
+                    rollout.versionSelectorId,
+                );
+            });
+
+        appState.teamAppVersions = appState.teamAppVersions.filter(
+            (relation) => relation.appId !== appId,
+        );
+        delete appState.apps[appId];
+        this.localStore.updateState(appState);
+    }
+
+    public async createAppSecret(
+        appId: number,
+        secret: CreateAppSecretInput,
+    ): Promise<void> {
+        const remoteAppSecret = await this.appClient.createAppSecret(
+            `${appId}`,
+            secret,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeAppSecret(appState, remoteAppSecret);
+        const app = appState.apps[appId];
+        const secretId = toInt(remoteAppSecret.id);
+        if (!secretId) {
+            return;
+        }
+
+        app.secretIds.push(secretId);
+        this.localStore.updateState(appState);
+    }
+
+    public async updateAppSecret(
+        secretId: number,
+        secret: UpdateAppSecretInput,
+    ): Promise<void> {
+        const remoteAppSecret = await this.appClient.updateAppSecret(
+            `${secretId}`,
+            secret,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeAppSecret(appState, remoteAppSecret);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteAppSecret(
+        appId: number,
+        secretId: number,
+    ): Promise<void> {
+        await this.appClient.deleteAppSecret(`${secretId}`);
+        let appState = this.localStore.getState();
+        delete appState.appSecrets[secretId];
+        const app = appState.apps[appId];
+        app.secretIds = app.secretIds.filter((id) => id !== secretId);
+        this.localStore.updateState(appState);
+    }
+
+    public async createAppVersion(appId: number): Promise<number> {
+        const appVersion = await this.appVersionClient.createAppVersion(
+            `${appId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeAppVersion(appState, `${appId}`, appVersion);
+        this.localStore.updateState(appState);
+        return appVersion.number;
+    }
+
+    public async updateAppVersion(
+        appId: number,
+        versionNumber: number,
+        input: UpdateAppVersionInput,
+    ) {
+        const remoteAppVersion = await this.appVersionClient.updateAppVersion(
+            `${appId}`,
+            versionNumber,
+            input,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeAppVersion(appState, `${appId}`, remoteAppVersion);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteAppVersion(
+        appId: number,
+        versionNumber: number,
+    ): Promise<void> {
+        await this.appVersionClient.deleteAppVersion(`${appId}`, versionNumber);
+        let appState = this.localStore.getState();
+        const app = appState.apps[appId];
+        delete app.versions[versionNumber];
+        this.localStore.updateState(appState);
+    }
+
+    public async addTagToApp(appId: number, tag: string): Promise<void> {
+        const remoteTag = await this.appClient.addTagToApp(`${appId}`, tag);
+        let appState = this.localStore.getState();
+        const app = appState.apps[appId];
+        const tagId = toInt(remoteTag.id);
+        if (!tagId) {
+            return;
+        }
+
+        app.tagIds.add(tagId);
+        appState = mergeTag(appState, remoteTag);
+        this.localStore.updateState(appState);
+    }
+
+    public async removeTagFromApp(appId: number, tagId: number): Promise<void> {
+        await this.appClient.removeTagFromApp(`${appId}`, `${tagId}`);
+        let appState = this.localStore.getState();
+        const app = appState.apps[appId];
+        app.tagIds.delete(tagId);
+        this.localStore.updateState(appState);
+    }
+
+    public async createStaticUserGroup(
         appId: number,
         input: CreateStaticGroupInput,
-    ): Promise<number> {
-        // TODO: integrate with create static user group API
-        console.log('createStaticUserGroup', appId, input);
-        return Promise.resolve(0);
+    ): Promise<void> {
+        const remoteGroup = await this.appClient.createStaticUserGroup(
+            `${appId}`,
+            {
+                name: input.groupName,
+                userIds: input.memberIds.map(String),
+                rolloutIds: input.rolloutIds.map(String),
+            },
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeGroup(appState, remoteGroup, appId);
+        this.localStore.updateState(appState);
     }
 
-    public createFilterUserGroup(
+    public async createFilterGroup(
         appId: number,
         input: CreateFilterGroupInput,
-    ): Promise<number> {
-        // TODO: integrate with create filter user group API
-        console.log('createFilterUserGroup', appId, input);
-        return Promise.resolve(0);
+    ): Promise<void> {
+        const remoteGroup = await this.appClient.createFilterGroup(`${appId}`, {
+            name: input.groupName,
+            filter: input.filter,
+            groupMemberType: input.groupMemberType,
+            rolloutIds: input.rolloutIds.map(String),
+        });
+
+        let appState = this.localStore.getState();
+        appState = mergeGroup(appState, remoteGroup, appId);
+        this.localStore.updateState(appState);
     }
 
-    public createStaticTeamGroup(
+    public async createStaticTeamGroup(
         appId: number,
         input: CreateStaticGroupInput,
-    ): Promise<number> {
-        // TODO: integrate with create static team group API
-        console.log('createStaticTeamGroup', appId, input);
-        return Promise.resolve(0);
+    ): Promise<void> {
+        const remoteGroup = await this.appClient.createStaticTeamGroup(
+            `${appId}`,
+            {
+                name: input.groupName,
+                teamIds: input.memberIds.map(String),
+                rolloutIds: input.rolloutIds.map(String),
+            },
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeGroup(appState, remoteGroup, appId);
+        this.localStore.updateState(appState);
     }
 
-    public createFilterTeamGroup(
+    public async updateGroup(
         appId: number,
-        input: CreateFilterGroupInput,
+        groupId: number,
+        input: UpdateGroupInput,
+    ): Promise<void> {
+        const remoteGroup = await this.appClient.updateGroup(
+            `${appId}`,
+            `${groupId}`,
+            {
+                name: input.name,
+                type: input.type,
+                groupMemberType: input.groupMemberType,
+                memberIds: input.memberIds?.map(String) ?? [],
+                rolloutIds: input.rolloutIds.map(String),
+                filter: input.filter,
+            },
+        );
+        let appState = this.localStore.getState();
+        appState = this._deleteGroup(appState, groupId);
+        appState = mergeGroup(appState, remoteGroup, appId);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteGroup(groupId: number): Promise<void> {
+        await this.appClient.deleteGroup(`${groupId}`);
+        let appState = this.localStore.getState();
+        appState = this._deleteGroup(appState, groupId);
+        this.localStore.updateState(appState);
+    }
+
+    public async createAppRollout(
+        appId: number,
+        input: CreateAppRolloutInput,
+    ): Promise<void> {
+        const remoteRollout = await this.appClient.createAppRollout(
+            `${appId}`,
+            input.type,
+            {
+                name: input.name,
+                activatorId: `${input.activatorId}`,
+                versionSelectorId: `${input.versionSelectorId}`,
+                isEnabled: input.isEnabled,
+                groupIds: input.groupIds.map(String),
+            },
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeRollout(appState, remoteRollout);
+        appState = mergeAppRolloutRelation(
+            appState,
+            appId,
+            toInt(remoteRollout.id)!,
+            input.type,
+        );
+
+        remoteRollout.groupRolloutRelations.forEach((relation) => {
+            appState = mergeGroupRolloutRelation(
+                appState,
+                toInt(relation.group.id)!,
+                toInt(remoteRollout.id)!,
+                relation.orderIndex,
+            );
+        });
+
+        this.localStore.updateState(appState);
+    }
+
+    public async updateRollout(input: UpdateRolloutInput) {
+        const remoteRollout = await this.appClient.updateRollout(
+            `${input.id}`,
+            {
+                name: input.name,
+                activatorId: `${input.activatorId}`,
+                versionSelectorId: `${input.versionSelectorId}`,
+                isEnabled: input.isEnabled,
+                groupIds: input.groupIds.map(String),
+            },
+        );
+
+        let appState = this.localStore.getState();
+        appState = mergeRollout(appState, remoteRollout);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteRollout(rolloutId: number): Promise<void> {
+        await this.appClient.deleteRollout(`${rolloutId}`);
+        let appState = this.localStore.getState();
+        const rollout = appState.rollouts[rolloutId];
+        const activatorId = rollout.activatorId;
+        const versionSelectorId = rollout.versionSelectorId;
+        appState = this._deleteRollout(
+            appState,
+            rolloutId,
+            activatorId,
+            versionSelectorId,
+        );
+
+        this.localStore.updateState(appState);
+    }
+
+    public async createActivator(input: CreateActivatorInput): Promise<number> {
+        let remoteActivator: RemoteRolloutActivator;
+        switch (input.type) {
+            case 'STATIC': {
+                remoteActivator = await this.appClient.createStaticActivator();
+                break;
+            }
+            case 'MAX_VIEWERS': {
+                remoteActivator =
+                    await this.appClient.createMaxViewersActivator({
+                        maxViewers: input.maxViewers,
+                    });
+                break;
+            }
+            case 'TIME_RANGE': {
+                remoteActivator = await this.appClient.createTimeRangeActivator(
+                    {
+                        startAt: input.startAt,
+                        endAt: input.endAt,
+                    },
+                );
+                break;
+            }
+            case 'PERCENTAGE': {
+                remoteActivator =
+                    await this.appClient.createPercentageActivator({
+                        percentage: input.percentage,
+                    });
+                break;
+            }
+        }
+
+        let appState = this.localStore.getState();
+        appState = mergeActivator(appState, remoteActivator);
+        this.localStore.updateState(appState);
+        return toInt(remoteActivator.id)!;
+    }
+
+    public async updateActivator(
+        activatorId: number,
+        input: UpdateActivatorInput,
+    ): Promise<void> {
+        const remoteActivator = await this.appClient.updateActivator(
+            `${activatorId}`,
+            input,
+        );
+        let appState = this.localStore.getState();
+        delete appState.timeRangeActivators[activatorId];
+        delete appState.maxViewersActivators[activatorId];
+        delete appState.percentageActivators[activatorId];
+        appState = mergeActivator(appState, remoteActivator);
+        this.localStore.updateState(appState);
+    }
+
+    public async createVersionSelector(
+        appId: number,
+        input: CreateVersionSelectorInput,
     ): Promise<number> {
-        // TODO: integrate with create filter team group API
-        console.log('createFilterTeamGroup', appId, input);
-        return Promise.resolve(0);
+        let remoteVersionSelector;
+        switch (input.type) {
+            case 'STATIC': {
+                remoteVersionSelector =
+                    await this.appClient.createStaticVersionSelector(
+                        `${appId}`,
+                        {
+                            versionNumber: input.versionNumber,
+                        },
+                    );
+                break;
+            }
+            case 'EXPERIMENT': {
+                remoteVersionSelector =
+                    await this.appClient.createExperimentVersionSelector(
+                        `${appId}`,
+                        {
+                            versionNumbers: input.versionNumbers,
+                        },
+                    );
+                break;
+            }
+        }
+
+        let appState = this.localStore.getState();
+        appState = mergeVersionSelector(appState, remoteVersionSelector);
+        this.localStore.updateState(appState);
+        return toInt(remoteVersionSelector.id)!;
+    }
+
+    public async updateVersionSelector(
+        appId: number,
+        versionSelectorId: number,
+        input: UpdateVersionSelectorInput,
+    ): Promise<void> {
+        const remoteVersionSelector =
+            await this.appClient.updateVersionSelector(
+                `${appId}`,
+                `${versionSelectorId}`,
+                {
+                    type: input.type,
+                    versionNumber: input.versionNumber,
+                    versionNumbers: input.versionNumbers ?? [],
+                },
+            );
+        let appState = this.localStore.getState();
+        appState.versionSelectorVersionRelations =
+            appState.versionSelectorVersionRelations.filter(
+                (relation) => relation.versionSelectorId !== versionSelectorId,
+            );
+
+        appState = mergeVersionSelector(appState, remoteVersionSelector);
+        this.localStore.updateState(appState);
+    }
+
+    private _deletePhase(appState: AppState, phaseId: number) {
+        delete appState.phases[phaseId];
+        appState.projectPhaseRelations = appState.projectPhaseRelations.filter(
+            (relation) => relation.phaseId !== phaseId,
+        );
+
+        appState.phaseStoryRelations.forEach((relation) => {
+            if (relation.phaseId === phaseId) {
+                this._deleteStory(appState, relation.storyId);
+            }
+        });
+
+        return appState;
+    }
+
+    private _deleteStory(appState: AppState, storyId: number) {
+        delete appState.stories[storyId];
+        appState.phaseStoryRelations = appState.phaseStoryRelations.filter(
+            (relation) => relation.storyId !== storyId,
+        );
+
+        appState.projectStoryRelations = appState.projectStoryRelations.filter(
+            (relation) => relation.storyId !== storyId,
+        );
+
+        return appState;
+    }
+
+    private _deleteRollout(
+        appState: AppState,
+        rolloutId: number,
+        activatorId: number,
+        versionSelectorId: number,
+    ): AppState {
+        delete appState.rollouts[rolloutId];
+        delete appState.activators[activatorId];
+        delete appState.timeRangeActivators[activatorId];
+        delete appState.maxViewersActivators[activatorId];
+        delete appState.percentageActivators[activatorId];
+        delete appState.versionSelectors[versionSelectorId];
+
+        appState.versionSelectorVersionRelations =
+            appState.versionSelectorVersionRelations.filter(
+                (relation) => relation.versionSelectorId !== versionSelectorId,
+            );
+
+        appState.groupRolloutRelations = appState.groupRolloutRelations.filter(
+            (relation) => relation.rolloutId !== rolloutId,
+        );
+        appState.appRolloutRelations = appState.appRolloutRelations.filter(
+            (relation) => relation.rolloutId !== rolloutId,
+        );
+
+        return appState;
+    }
+
+    private _deleteGroup(appState: AppState, groupId: number) {
+        delete appState.groups[groupId];
+        delete appState.filterGroups[groupId];
+
+        appState.appGroupRelations = appState.appGroupRelations.filter(
+            (relation) => relation.groupId !== groupId,
+        );
+
+        appState.groupRolloutRelations = appState.groupRolloutRelations.filter(
+            (relation) => relation.groupId !== groupId,
+        );
+
+        appState.groupMemberRelations = appState.groupMemberRelations.filter(
+            (relation) => relation.groupId !== groupId,
+        );
+
+        return appState;
     }
 
     private _moveTaskToSprint(
@@ -978,8 +1835,23 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         for (const mutation of transaction.mutations) {
             switch (mutation.collectionType) {
+                case 'AppVersion': {
+                    appState = applyAppVersionMutation(appState, mutation);
+                    break;
+                }
+                case 'AppVersionChange': {
+                    appState = applyAppVersionChangeMutation(
+                        appState,
+                        mutation,
+                    );
+                    break;
+                }
                 case 'Sprint': {
                     appState = applySprintMutation(appState, mutation);
+                    break;
+                }
+                case 'Story': {
+                    appState = applyStoryMutation(appState, mutation);
                     break;
                 }
                 case 'Task': {

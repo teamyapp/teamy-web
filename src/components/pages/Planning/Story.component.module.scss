@@ -1,0 +1,165 @@
+@import '../../../libs/ui/styleguide/elevation';
+@import 'ItemListSection.module';
+@import 'shared.scss';
+
+.Story {
+    display: flex;
+    height: 100%;
+
+    .StoryDetailSection {
+        padding: 10px;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        background-color: #eceff1;
+
+        .Header {
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            padding: 16px;
+            align-items: center;
+            background-color: white;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            @include elevation(4);
+
+            .Information {
+                flex-basis: 60%;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+
+                .Description {
+                    color: #757575;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+            }
+
+            .Actions {
+                display: flex;
+                gap: 8px;
+                margin-left: auto;
+
+                .Divider {
+                    border-left: 1px solid #e0e0e0;
+                    margin: 0 8px;
+                }
+
+                .Action {
+                    width: 26px;
+                    height: 26px;
+                    border-radius: 4px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+
+                    &:hover {
+                        --icon-color: white;
+                        cursor: pointer;
+
+                        &.Add,
+                        &.Delete,
+                        &.Edit,
+                        &.Save,
+                        &.Cancel,
+                        &.Remove {
+                            --icon-color: white;
+                        }
+                    }
+
+                    &.Add {
+                        --icon-color: #1e88e5;
+                        --icon-size: 24px;
+
+                        &:hover {
+                            background-color: #1e88e5;
+                        }
+                    }
+
+                    &.Edit {
+                        --icon-color: #fbc02d;
+                        --icon-size: 24px;
+
+                        &:hover {
+                            background-color: #fbc02d;
+                        }
+                    }
+
+                    &.Save {
+                        --icon-color: #4caf50;
+                        --icon-size: 24px;
+
+                        &:hover {
+                            background-color: #4caf50;
+                        }
+                    }
+
+                    &.Cancel {
+                        --icon-color: #f44336;
+                        --icon-size: 24px;
+
+                        &:hover {
+                            background-color: #f44336;
+                        }
+                    }
+
+                    &.Remove {
+                        --icon-color: #5e5e5e;
+                        --icon-size: 20px;
+
+                        &:hover {
+                            background-color: #5e5e5e;
+                        }
+                    }
+
+                    &.Delete {
+                        --icon-color: #d32f2f;
+                        --icon-size: 22px;
+
+                        &:hover {
+                            background-color: #d32f2f;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .TasksSection {
+        display: flex;
+        flex-wrap: wrap;
+        row-gap: 16px;
+        column-gap: 8px;
+        overflow-y: auto;
+        padding-top: 3px;
+        padding-bottom: 3px;
+
+        .InlineTask {
+            width: 420px;
+        }
+    }
+
+    .TaskListSection {
+        @include ItemListSection;
+        .Filter {
+            --drop-down-color: #1565c0;
+            max-width: 120px;
+            min-width: 100px;
+            margin-right: auto;
+            margin-left: 10px;
+        }
+
+        .TaskList {
+            box-sizing: border-box;
+            flex: 1;
+            overflow-y: scroll;
+            padding: 6px 8px;
+            margin: 10px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+    }
+}

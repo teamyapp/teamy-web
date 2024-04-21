@@ -1,0 +1,275 @@
+@import '../../shared';
+
+.VersionsTab {
+    display: flex;
+    height: 100%;
+    --app-icon-size: 120px;
+
+    .Label {
+        font-size: 16px;
+        font-weight: bold;
+
+        &.SameRow {
+            margin-right: 10px;
+        }
+
+        &.NextRow {
+            margin-bottom: 10px;
+        }
+    }
+
+    .Action {
+        border-radius: 4px;
+        font-weight: bold;
+        padding: 6px 20px;
+        text-align: center;
+
+        &:hover {
+            cursor: pointer;
+            opacity: 0.85;
+        }
+
+        &.CreateVersion {
+            background-color: #388e3c;
+            border-color: #2e7d32;
+            color: white;
+        }
+    }
+
+    .VersionsSection {
+        border-radius: 6px;
+        margin: 30px;
+        width: 160px;
+
+        .VersionList {
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+            row-gap: 4px;
+
+            .AppVersion {
+                border-radius: 4px;
+                display: flex;
+                flex-direction: column;
+                font-weight: bold;
+                padding: 6px 0;
+                row-gap: 10px;
+                text-align: center;
+
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.05);
+                    cursor: pointer;
+                }
+
+                &.Active {
+                    background-color: #2770ff;
+                    color: white;
+                }
+            }
+        }
+    }
+
+    .AppVersionDetail {
+        align-items: center;
+        background-color: #cfd8dc;
+        display: flex;
+        flex: 1;
+        justify-content: center;
+        padding: 20px;
+
+        .Box {
+            background-color: white;
+            border-radius: 6px;
+            box-sizing: border-box;
+            height: 100%;
+            overflow-y: auto;
+            padding: 40px;
+            width: 460px;
+
+            .Row {
+                &.Icon {
+                    display: flex;
+                    justify-content: center;
+
+                    .Icon {
+                        @include AppIcon(120px);
+                    }
+                }
+
+                &.Lock {
+                    --icon-color: #9e9e9e;
+                    display: flex;
+                    justify-content: center;
+                    margin-bottom: 30px;
+                    --icon-size: 48px;
+                }
+
+                &.Name,
+                &.Description,
+                &.Changes,
+                &.CreatedAt {
+                    margin-top: 30px;
+                }
+
+                &.Changes {
+                    .ChangeList {
+                        border: 2px solid #e5e5e5;
+
+                        .Change {
+                            font-size: 14px;
+                            font-weight: bold;
+                            padding: 10px 20px;
+
+                            &:not(:first-child) {
+                                border-top: 2px solid #e5e5e5;
+                            }
+                        }
+                    }
+                }
+            }
+
+            &.UploadAppPackage {
+                align-items: center;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                justify-content: center;
+                width: 460px;
+
+                .Title {
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin-bottom: 60px;
+                }
+
+                .TitleError {
+                    align-items: center;
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 36px;
+                }
+
+                .SelectFile {
+                    &.Button {
+                        background-color: #363636;
+                        border-radius: 10px;
+                        padding: 30px;
+                        position: relative;
+
+                        &:hover {
+                            background-color: #484848;
+                            cursor: pointer;
+                        }
+
+                        .Icon {
+                            --icon-color: white;
+                            --icon-size: 80px;
+                        }
+
+                        .FileInput {
+                            bottom: 0;
+                            left: 0;
+                            opacity: 0;
+                            position: absolute;
+                            right: 0;
+                            top: 0;
+                            z-index: 1;
+
+                            &:hover {
+                                cursor: pointer;
+                            }
+                        }
+                    }
+                }
+
+                .ErrorMessage {
+                    color: red;
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-bottom: 24px;
+                }
+
+                .ProgressBar {
+                    background-color: #0000001a;
+                    height: 10px;
+                    width: 260px;
+
+                    .Progress {
+                        background-color: #2770ff;
+                        height: 100%;
+                    }
+                }
+
+                .Spinner {
+                    align-items: center;
+                    column-gap: 4px;
+                    display: flex;
+                    height: 40px;
+
+                    .Rect {
+                        animation: stretch 1.2s infinite ease-in-out;
+                        background-color: #2770ff;
+                        height: 100%;
+                        width: 10px;
+
+                        &.Two {
+                            animation-delay: -1.1s;
+                        }
+
+                        &.Three {
+                            animation-delay: -1s;
+                        }
+
+                        &.Four {
+                            animation-delay: -0.9s;
+                        }
+
+                        &.Five {
+                            animation-delay: -0.8s;
+                        }
+                    }
+
+                    @keyframes stretch {
+                        0%,
+                        40%,
+                        100% {
+                            transform: scaleY(0.4);
+                        }
+
+                        20% {
+                            transform: scaleY(1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .Buttons {
+        column-gap: 10px;
+        display: flex;
+        justify-content: center;
+        margin-top: 30px;
+
+        .Download,
+        .Delete {
+            width: 160px;
+        }
+
+        .Download {
+            --background-color: #388e3c;
+            --border-color: #2e7d32;
+
+            a {
+                color: white;
+                text-decoration: none;
+            }
+        }
+
+        .Delete {
+            --background-color: #d32f2f;
+            --border-color: #c62828;
+        }
+    }
+}

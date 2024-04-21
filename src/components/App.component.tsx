@@ -1,15 +1,21 @@
 import { CloudComponent } from '@cloud/Cloud.component';
-import { Extension, ExtensionRuntime } from '@teamyapp/ext';
+import {
+    RequiredAction,
+    ThirdPartyApp,
+    ThirdPartyAppClient,
+    ThirdPartyAppEventHub,
+} from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, { Component, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
-import { TeamyExtensionRuntime } from '@lib/ext/runtime';
 import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
+import { TeamyThirdPartyAppFeedbackUI } from '@lib/thirdPartyApp/DynamicFeedback';
+import { TeamyThirdPartyAppClient } from '@lib/thirdPartyApp/client';
 import { BannerUI } from '@lib/ui/Banner';
 import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -32,10 +38,8 @@ import { Team } from '@core/entity/team';
 import { User } from '@core/entity/user';
 import { UserActionEvent } from '@core/event/userAction';
 import {
-    absoluteRootPath,
     debugRoutePattern,
     getTeamId,
-    helpCenterPath,
     insightsPath,
     insightsRoutePattern,
     invitationRoutePattern,
@@ -61,13 +65,11 @@ import { HeaderComponent } from './internal/Header.component';
 import { AddTeamMembersModalComponent } from './internal/Modals/AddTeamMembersModal.component';
 import { CreateSprintModalComponent } from './internal/Modals/CreateSprintModal.component';
 import { CreateTeamModalComponent } from './internal/Modals/CreateTeamModal.component';
-import {
-    RequiredAction,
-    RequiredActionsModalComponent,
-} from './internal/Modals/RequiredActionsModal.component';
+import { RequiredActionsModalComponent } from './internal/Modals/RequiredActionsModal.component';
 import { TaskDetailModalComponent } from './internal/Modals/TaskDetailModal.component';
 import { TeamSettingsModalComponent } from './internal/Modals/TeamSettingsModal.component';
 import { UserSettingsModalComponent } from './internal/Modals/UserSettingsModal.component';
+import { AppSecretCopiedFeedbackComponent } from './internal/feedbacks/AppSecretCopiedFeedback.component';
 import { InvitationLinkCopiedFeedbackComponent } from './internal/feedbacks/InviationLinkCopiedFeedback.component';
 import { TaskUpdatedFeedbackComponent } from './internal/feedbacks/TaskUpdatedFeedback.component';
 import { TeamProfileUpdatedFeedbackComponent } from './internal/feedbacks/TeamProfileUpdatedFeedback.component';
@@ -76,9 +78,10 @@ import { DebugComponent } from './pages/Debug.component';
 import { InsightsComponent } from './pages/Insights.component';
 import { InvitationComponent } from './pages/Invitation.component';
 import { MarketplaceComponent } from './pages/Marketplace/Marketplace.component';
-import { PlanningComponent } from './pages/Planning.component';
+import { PlanningComponent } from './pages/Planning/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
+import { StoryUpdatedFeedbackComponent } from './internal/feedbacks/StoryUpdatedFeedback.component';
 
 const sectionIds = [
     backlogSectionId,
@@ -107,6 +110,7 @@ interface State {
     backlogDropReceiverLayer: number;
     taskFilters: TaskFilters;
     showActiveSprintBanner?: boolean;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
 }
 
 export class AppComponent extends Component<Props, State> {
@@ -130,14 +134,15 @@ export class AppComponent extends Component<Props, State> {
         createRef<RequiredActionsModalComponent>();
     private readonly backlogRef = createRef<BacklogComponent>();
     private readonly dynamicFeedbackRef = createRef<DynamicFeedbackUI>();
+    private readonly thirdPartyAppFeedbackRef =
+        createRef<TeamyThirdPartyAppFeedbackUI>();
 
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
     private userActionChan?: csp.PopChannel<UserActionEvent | undefined>;
     private dragAndDropEventChan?: csp.PopChannel<
         DragAndDropEvent<DragAndDropContext> | undefined
     >;
-
-    private extensions: Extension[] = [];
+    private thirdPartyAppEventHubs: ThirdPartyAppEventHub[] = [];
 
     constructor(props: Props) {
         super(props);
@@ -155,6 +160,7 @@ export class AppComponent extends Component<Props, State> {
             teams: [],
             taskFilters: {},
             backlogDropReceiverLayer: -1,
+            thirdPartyAppEventHubs: [],
         };
     }
 
@@ -186,6 +192,7 @@ export class AppComponent extends Component<Props, State> {
                             <DrawerUI
                                 activeTeamId={this.state.activeTeamId}
                                 teams={this.state.teams}
+                                relativeLayout={this.props.deps.relativeLayout}
                                 isDrawerOpen={this.state.isDrawerOpen}
                                 onMenuClose={this.onMenuToggle}
                                 onActiveTeamSelect={this.onActiveTeamSelect}
@@ -266,9 +273,6 @@ export class AppComponent extends Component<Props, State> {
                                 onShowKnowledgeViewClick={
                                     this.onShowKnowledgeViewClick
                                 }
-                                onShowHelpCenterViewClick={
-                                    this.onShowHelpCenterViewClick
-                                }
                                 onShowMarketplaceViewClick={
                                     this.onShowMarketplaceViewClick
                                 }
@@ -294,6 +298,10 @@ export class AppComponent extends Component<Props, State> {
                                                 taskFilters={
                                                     this.state.taskFilters
                                                 }
+                                                thirdPartyAppEventHubs={
+                                                    this.state
+                                                        .thirdPartyAppEventHubs
+                                                }
                                                 onViewTaskDetail={
                                                     this.onViewTaskDetail
                                                 }
@@ -309,6 +317,10 @@ export class AppComponent extends Component<Props, State> {
                                                 deps={this.props.deps}
                                                 taskFilters={
                                                     this.state.taskFilters
+                                                }
+                                                thirdPartyAppEventHubs={
+                                                    this.state
+                                                        .thirdPartyAppEventHubs
                                                 }
                                                 onViewTaskDetail={
                                                     this.onViewTaskDetail
@@ -333,7 +345,14 @@ export class AppComponent extends Component<Props, State> {
                                             router={this.router}
                                             pattern={planningRoutePattern}
                                         >
-                                            <PlanningComponent />
+                                            <PlanningComponent
+                                                deps={this.props.deps}
+                                                thirdPartyAppEventHubs={
+                                                    this.state
+                                                        .thirdPartyAppEventHubs
+                                                }
+                                                numActionColumns={1}
+                                            />
                                         </Route>
                                         <Route
                                             router={this.router}
@@ -341,6 +360,10 @@ export class AppComponent extends Component<Props, State> {
                                         >
                                             <MarketplaceComponent
                                                 deps={this.props.deps}
+                                                thirdPartyAppEventHubs={
+                                                    this.state
+                                                        .thirdPartyAppEventHubs
+                                                }
                                             />
                                         </Route>
                                     </div>
@@ -357,7 +380,7 @@ export class AppComponent extends Component<Props, State> {
                 <TaskDetailModalComponent
                     ref={this.taskDetailModalRef}
                     deps={this.props.deps}
-                    onClose={this.onTaskDetailModalClose}
+                    afterClose={this.afterTaskDetailModalClose}
                 />
                 <CreateTeamModalComponent
                     ref={this.createTeamModalRef}
@@ -384,8 +407,13 @@ export class AppComponent extends Component<Props, State> {
                 />
                 <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <TaskUpdatedFeedbackComponent deps={this.props.deps} />
+                <StoryUpdatedFeedbackComponent deps={this.props.deps} />
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
+                <AppSecretCopiedFeedbackComponent deps={this.props.deps} />
                 <DynamicFeedbackUI ref={this.dynamicFeedbackRef} />
+                <TeamyThirdPartyAppFeedbackUI
+                    ref={this.thirdPartyAppFeedbackRef}
+                />
                 <RequiredActionsModalComponent
                     ref={this.requiredActionsModalRef}
                 />
@@ -464,10 +492,10 @@ export class AppComponent extends Component<Props, State> {
 
     public async onTeamInit() {
         try {
-            this.extensions = await this.loadExtensions();
+            await this.bootstrapThirdPartyApps();
             await this.showRequiredActionsIfAny();
         } catch (err) {
-            console.log(`Fail to load extensions: ${err}`);
+            console.log(`Fail to load extensions: `, err);
         }
     }
 
@@ -678,7 +706,7 @@ export class AppComponent extends Component<Props, State> {
         });
     };
 
-    private onTaskDetailModalClose = () => {
+    private afterTaskDetailModalClose = () => {
         const teamIdParam = getTeamId(this.router.currentRouteUpdate.params);
         if (teamIdParam) {
             const teamId = parseInt(teamIdParam);
@@ -714,12 +742,6 @@ export class AppComponent extends Component<Props, State> {
         });
     };
 
-    private onShowHelpCenterViewClick = () => {
-        this.router.navigateTo(helpCenterPath(this.state.activeTeamId!), {
-            notifyRouteChange: true,
-        });
-    };
-
     private onShowMarketplaceViewClick = () => {
         this.router.navigateTo(marketplacePath(this.state.activeTeamId!), {
             notifyRouteChange: true,
@@ -736,25 +758,81 @@ export class AppComponent extends Component<Props, State> {
             case backlogSectionId:
                 this.processTask(task, context);
                 break;
-            case needAttentionSectionId:
-            case inProgressSectionId:
+            case upcomingSectionId: {
                 switch (destSectionId) {
-                    case backlogSectionId:
+                    case backlogSectionId: {
+                        this.removeTaskFromSprint(task.id);
+                        break;
+                    }
+                    case inProgressSectionId: {
+                        this.stateSyncer.moveTaskToInProgress(task.id);
+                        break;
+                    }
+                    case awaitingSectionId: {
+                        // this.stateSyncer.moveTaskToAwaiting(task.id);
+                        break;
+                    }
+                    case deliveredSectionId: {
+                        this.stateSyncer.moveTaskToDelivered(task.id);
+                        break;
+                    }
+                }
+                break;
+            }
+            case inProgressSectionId: {
+                switch (destSectionId) {
+                    case backlogSectionId: {
+                        this.removeTaskFromSprint(task.id);
+                        break;
+                    }
+                    case awaitingSectionId: {
+                        // this.stateSyncer.moveTaskToAwaiting(task.id);
+                        break;
+                    }
+                    case deliveredSectionId:
+                        this.stateSyncer.moveTaskToDelivered(task.id);
+                        break;
+                }
+                break;
+            }
+            case awaitingSectionId: {
+                switch (destSectionId) {
+                    case backlogSectionId: {
+                        this.removeTaskFromSprint(task.id);
+                        break;
+                    }
+                    case inProgressSectionId: {
+                        this.stateSyncer.moveTaskToInProgress(task.id);
+                        break;
+                    }
+                    case upcomingSectionId: {
                         this.stateSyncer.moveTaskToUpcoming(task.id);
-                        this.removeTaskFromSprint(task.id);
                         break;
+                    }
+                    case deliveredSectionId: {
+                        this.stateSyncer.moveTaskToDelivered(task.id);
+                        break;
+                    }
                 }
-
                 break;
-            case upcomingSectionId:
-            case deliveredSectionId:
+            }
+            case deliveredSectionId: {
                 switch (destSectionId) {
-                    case backlogSectionId:
+                    case backlogSectionId: {
                         this.removeTaskFromSprint(task.id);
                         break;
+                    }
+                    case upcomingSectionId: {
+                        this.stateSyncer.moveTaskToUpcoming(task.id);
+                        break;
+                    }
+                    case inProgressSectionId: {
+                        this.stateSyncer.moveTaskToInProgress(task.id);
+                        break;
+                    }
                 }
-
                 break;
+            }
         }
     }
 
@@ -780,42 +858,22 @@ export class AppComponent extends Component<Props, State> {
     }
 
     private async showRequiredActionsIfAny() {
-        const requiredActions: RequiredAction[] = [];
-        for (let index = 0; index < this.extensions.length; index++) {
-            const extension = this.extensions[index];
-            const extRequiredActions = await extension.requiredActions(
-                this.state.activeTeamId!,
-            );
-            if (extRequiredActions.length < 1) {
-                continue;
-            }
-
-            const viewRef = createRef<HTMLDivElement>();
-            extRequiredActions.forEach((requiredAction) => {
-                const view = (
-                    <div
-                        key={index}
-                        ref={viewRef}
-                        style={{
-                            height: '100%',
-                        }}
-                    />
+        const allRequiredActions: RequiredAction[] = [];
+        for (
+            let index = 0;
+            index < this.thirdPartyAppEventHubs.length;
+            index++
+        ) {
+            const thirdPartyAppEventHub = this.thirdPartyAppEventHubs[index];
+            const requiredActions =
+                await thirdPartyAppEventHub.onShowRequiredActions(
+                    this.onRequireActionComplete,
                 );
-                requiredActions.push({
-                    actionName: requiredAction.name(),
-                    view,
-                    renderView: () => {
-                        requiredAction.renderView({
-                            container: viewRef.current!,
-                            onActionComplete: this.onRequireActionComplete,
-                        });
-                    },
-                });
-            });
+            allRequiredActions.push(...requiredActions);
         }
 
-        if (requiredActions.length > 0) {
-            this.requiredActionsModalRef.current?.open(requiredActions);
+        if (allRequiredActions.length > 0) {
+            this.requiredActionsModalRef.current?.open(allRequiredActions);
         }
     }
 
@@ -823,62 +881,54 @@ export class AppComponent extends Component<Props, State> {
         this.requiredActionsModalRef.current?.completeCurrentStep();
     };
 
-    private loadExtensions(): Promise<Extension[]> {
-        // TODO(magicoder10): load extension from backend
-        // TODO(magicoder10): error handling when failed to load script
-        this.registerGithubExtensionUI();
+    private async bootstrapThirdPartyApps() {
+        this.thirdPartyAppEventHubs = [];
 
-        return Promise.all(
-            ['http://localhost:8082/app/app.js'].map(
-                async (extensionEntryPoint) => {
+        const teamAppInstallations =
+            this.graphSource.currentTeam()?.appInstallations;
+        if (!teamAppInstallations || teamAppInstallations.length === 0) {
+            return;
+        }
+
+        await Promise.all(
+            teamAppInstallations
+                .filter(
+                    (teamAppInstallation) =>
+                        teamAppInstallation.activeAppVersion.hasUiExtension,
+                )
+                .map(async (teamAppInstallation) => {
+                    const appId = teamAppInstallation.activeAppVersion.app.id;
+                    const versionNumber =
+                        teamAppInstallation.activeAppVersion.number;
+                    const client: ThirdPartyAppClient =
+                        new TeamyThirdPartyAppClient(
+                            this.localStore,
+                            this.props.deps.fileClient,
+                            this.router,
+                            this.identityClient,
+                            this.thirdPartyAppFeedbackRef,
+                            appId,
+                            versionNumber,
+                        );
+                    const extensionEntryPoint = client.getResourceUrl('app.js');
                     let { App } = await importModule(extensionEntryPoint);
-                    const app: Extension = new App();
-                    const runtime = this.getExtensionRuntime(0);
-                    app.init(runtime);
+                    const app: ThirdPartyApp = new App();
+
+                    const thirdPartyAppEventHub = new ThirdPartyAppEventHub(
+                        teamAppInstallation.activeAppVersion.app.id,
+                    );
+                    this.thirdPartyAppEventHubs.push(thirdPartyAppEventHub);
+
+                    app.init({
+                        eventListener: thirdPartyAppEventHub,
+                        client,
+                    });
                     console.log(`[Extension][${app.name()}] Loaded`);
                     return app;
-                },
-            ),
+                }),
         );
-    }
-
-    private registerGithubExtensionUI() {
-        // simulate ui extension to register configs and actions,
-        // remove once ui extension is fully implemented
-        this.props.deps.uiRegistry.registerTaskIdAction({
-            key: 'GitHubCopyMentionTask',
-            readableName: 'Copy mention task',
-            execute: async (taskId: number) => {
-                const teamId = this.localStore.getState().currTeamId;
-                if (teamId) {
-                    const mentionTask = `[(task:${taskId})](${absoluteRootPath}${taskPath(
-                        teamId,
-                        taskId,
-                    )})`;
-                    navigator.clipboard.writeText(mentionTask);
-                    this.dynamicFeedbackRef.current?.show(
-                        `${mentionTask} is copied to clipboard`,
-                    );
-                }
-            },
+        this.setState({
+            thirdPartyAppEventHubs: this.thirdPartyAppEventHubs,
         });
     }
-
-    private getExtensionRuntime(extensionVersion: number): ExtensionRuntime {
-        return new TeamyExtensionRuntime(
-            extensionVersion,
-            this.router,
-            this.identityClient,
-        );
-    }
 }
-
-// function includePrefix(patterns: string[], input: string): boolean {
-//     for (const pattern of patterns) {
-//         if (input.startsWith(pattern)) {
-//             return true;
-//         }
-//     }
-//
-//     return false;
-// }

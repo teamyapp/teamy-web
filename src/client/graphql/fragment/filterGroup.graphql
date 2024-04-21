@@ -1,0 +1,22 @@
+fragment FilterGroupFragment on FilterGroup {
+    id
+    type
+    locked
+    memberType
+    name
+    filter
+    createdAt
+    updatedAt
+    groupRolloutRelations {
+        group {
+            id
+        }
+        rollout {
+            id
+        }
+        orderIndex
+    }
+    apps {
+        id
+    }
+}

@@ -1,0 +1,10 @@
+#import '../fragment/staticUserGroup.graphql'
+
+mutation createStaticUserGroup(
+    $appId: ID!
+    $input: CreateStaticUserGroupInput!
+) {
+    createStaticUserGroup(appId: $appId, input: $input) {
+        ...StaticUserGroupFragment
+    }
+}

@@ -49,6 +49,7 @@ export class CreateUserGroupModalComponent extends Component<Props> {
                 </div>
                 <div className={styles.Content}>
                     <CreateGroupViewComponent
+                        relativeLayout={this.props.deps.relativeLayout}
                         membersLabel={'Users'}
                         memberLabel={'User'}
                         renderInlineGroupMember={this.renderInlineUser}
@@ -89,9 +90,9 @@ export class CreateUserGroupModalComponent extends Component<Props> {
         );
     };
 
-    private isValidUser = (userId: number): boolean => {
-        // TODO: pull user
-        return this.graphSource.user(userId) !== undefined;
+    private isValidUser = async (userId: number): Promise<boolean> => {
+        await this.stateSyncer.pullUser(userId);
+        return Boolean(this.graphSource.user(userId));
     };
 
     private onCreateStaticGroupClick = async (
@@ -101,6 +102,7 @@ export class CreateUserGroupModalComponent extends Component<Props> {
         await this.stateSyncer.createStaticUserGroup(this.props.appId, {
             groupName,
             memberIds: userIds,
+            rolloutIds: [],
         });
         this.modalRef.current?.close();
     };
@@ -109,9 +111,11 @@ export class CreateUserGroupModalComponent extends Component<Props> {
         groupName: string,
         filter: string,
     ) => {
-        await this.stateSyncer.createFilterUserGroup(this.props.appId, {
+        await this.stateSyncer.createFilterGroup(this.props.appId, {
             groupName,
             filter,
+            groupMemberType: 'USER',
+            rolloutIds: [],
         });
         this.modalRef.current?.close();
     };

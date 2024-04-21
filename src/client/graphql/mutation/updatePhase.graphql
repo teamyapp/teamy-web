@@ -1,0 +1,7 @@
+#import '../fragment/phase.graphql'
+
+mutation updatePhase($phaseId: ID!, $input: UpdatePhaseInput!) {
+    updatePhase(phaseId: $phaseId, input: $input) {
+        ...PhaseFragment
+    }
+}

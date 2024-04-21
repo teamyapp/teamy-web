@@ -8,12 +8,12 @@
     $opacity: var(--tab-hover-opacity, 0.05);
 
     .Tab {
-        padding: 10px 0 14px 0;
         color: $textColor;
+        flex: 1;
         font-size: 18px;
         font-weight: bold;
+        padding: 10px 0 14px 0;
         text-align: center;
-        flex: 1;
 
         &:hover {
             background-color: rgba(0, 0, 0, $opacity);
@@ -22,11 +22,11 @@
     }
 
     .ActiveTabMarker {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 3px;
-        transition: all 500ms $easeOutExpo;
         background-color: var(--tab-active-indicator-color, #{$textColor});
+        bottom: 0;
+        height: 3px;
+        left: 0;
+        position: absolute;
+        transition: all 500ms $easeOutExpo;
     }
 }

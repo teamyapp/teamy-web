@@ -28,6 +28,9 @@ import { logWithCommit } from '@lib/telemetry/middleware/logWithCommit';
 import { logWithRequestId } from '@lib/telemetry/middleware/logWithRequestId';
 import { logWithServiceName } from '@lib/telemetry/middleware/logWithServiceName';
 
+import { AppClient } from '@core/client/app.client';
+import { AppVersionClient } from '@core/client/appVersion.client';
+import { FileClient } from '@core/client/file.client';
 import { InvitationClient } from '@core/client/invitation.client';
 import { MessageClient } from '@core/client/message.client';
 import { SprintClient } from '@core/client/sprint.client';
@@ -35,19 +38,20 @@ import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
 import { UserClient } from '@core/client/user.client';
-import { Config, getConfig } from '@core/config/config';
+import { Config } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { shortcuts } from '@core/config/shortcut';
 import { FeatureToggle, getFeatureToggle } from '@core/config/toggle';
 import { Feedback } from '@core/entity/feedback';
-import { getEnvironment } from '@core/env/environment';
 import { UserActionEvent } from '@core/event/userAction';
-import { UIRegistry } from '@core/ext/UIRegistry';
 import { absoluteRootPath, signInFinishPath } from '@core/routing/routes';
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncClient } from '@core/storage/syncer/stateSyncClient';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
+import { ProjectClient } from '@core/client/project.client';
+import { PhaseClient } from '@core/client/phase.client';
+import { StoryClient } from '@core/client/story.client';
 
 export interface Deps {
     featureToggle: FeatureToggle;
@@ -63,7 +67,7 @@ export interface Deps {
     feedbackPubSub: PubSub<Feedback>;
     fileUploadSessionFactory: FileUploadSessionFactory;
     keyBoardEventMonitor: KeyBoardEventMonitor;
-    uiRegistry: UIRegistry;
+    fileClient: FileClient;
 }
 
 export function initDeps(config: Config): Deps {
@@ -127,10 +131,15 @@ export function initDeps(config: Config): Deps {
         httpWithLogger,
         identityConfig,
     );
+    const fileClient = new FileClient(config.cloudWebAPIEndpoint);
     const teamyGraphQLClient = new GraphQLClient(
         `${config.servicesWebAPIEndpoint}/graphql`,
         httpWithLogger,
     );
+    const appClient = new AppClient(teamyGraphQLClient);
+    const projectClient = new ProjectClient(teamyGraphQLClient);
+    const phaseClient = new PhaseClient(teamyGraphQLClient);
+    const storyClient = new StoryClient(teamyGraphQLClient);
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);
     const teamClient = new TeamClient(teamyGraphQLClient);
@@ -138,6 +147,7 @@ export function initDeps(config: Config): Deps {
     const invitationClient = new InvitationClient(teamyGraphQLClient);
     const messageClient = new MessageClient(teamyGraphQLClient);
     const sprintClient = new SprintClient(teamyGraphQLClient);
+    const appVersionClient = new AppVersionClient(teamyGraphQLClient);
     const localStore = new LocalStore();
     const graphSource = new GraphSource(localStore);
     const stateSyncClient = new StateSyncClient(
@@ -149,11 +159,16 @@ export function initDeps(config: Config): Deps {
         config.servicesWebSocketAPIEndpoint,
         identityClient,
         localStore,
+        appClient,
+        projectClient,
+        phaseClient,
+        storyClient,
         taskClient,
         messageClient,
         teamClient,
         teamMemberClient,
         userClient,
+        appVersionClient,
         invitationClient,
         sprintClient,
     );
@@ -173,7 +188,6 @@ export function initDeps(config: Config): Deps {
     );
     const relativeLayout = new RelativeLayout(boundingBoxChangeEventMonitor);
     const keyBoardEventMonitor = new KeyBoardEventMonitor();
-    const uiRegistry = new UIRegistry();
     const featureToggle = getFeatureToggle();
     return {
         keyBoardEventMonitor,
@@ -188,7 +202,7 @@ export function initDeps(config: Config): Deps {
         dragAndDropController,
         feedbackPubSub,
         fileUploadSessionFactory,
-        uiRegistry,
         featureToggle,
+        fileClient,
     };
 }

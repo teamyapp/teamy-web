@@ -1,7 +1,7 @@
-import React, { Component, ReactNode, createRef } from 'react';
+import React, { Component, ReactNode, createRef, MouseEvent } from 'react';
 
-import { Duration } from '@lib/entity/duration';
 import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
+import { Duration } from '@lib/time/duration';
 import { ButtonUI } from '@lib/ui/Button';
 import { SpacerUI } from '@lib/ui/Spacer';
 import { TextFieldUI } from '@lib/ui/TextField';
@@ -17,40 +17,85 @@ interface Props {
     onPopupOpen?: () => void;
     onPopupClose?: () => void;
     onDurationChange?: (duration?: Duration) => void;
+    transformReferenceContainer?: (props: {
+        showFollower: boolean;
+        container: ReactNode;
+    }) => ReactNode;
 }
 
-export class DurationInputUI extends Component<Props> {
+interface State {
+    showFollower: boolean;
+}
+
+export class DurationInputUI extends Component<Props, State> {
+    constructor(props: Props) {
+        super(props);
+        this.state = {
+            showFollower: false,
+        };
+    }
+
     render() {
         const { duration } = this.props;
         return (
             <div className={styles.Duration}>
                 <RelativeLayoutContainerUI
                     overSpaceAction='jumpVertically'
-                    onOpen={this.props.onPopupOpen}
-                    onClose={this.props.onPopupClose}
+                    onOpenContainer={this.props.onPopupOpen}
+                    onCloseContainer={this.onCloseContainer}
                     relativeLayout={this.props.relativeLayout}
+                    referenceOffset={4}
+                    preserveReferenceParentHeight={true}
                     zOffset={this.props.zOffset}
-                    renderReferenceElement={({ onToggle }) => (
-                        <div className={styles.ValueRow} onClick={onToggle}>
-                            {this.props.icon}
-                            {duration && (
-                                <div className={styles.Value}>
-                                    {this.props.duration?.toReadable()}
-                                </div>
-                            )}
-                        </div>
+                    renderReferenceElement={({ toggleContainer }) => (
+                        this.props.transformReferenceContainer? this.props.transformReferenceContainer({
+                            showFollower: this.state.showFollower,
+                            container: this.renderReferenceElement({duration, toggleContainer}),
+                        }) : this.renderReferenceElement({duration, toggleContainer})
                     )}
-                    renderFollower={({ onClose }) => (
+                    renderFollower={({ closeContainer }) => (
                         <DurationInputPopup
                             duration={duration}
                             canClear={this.props.canClear}
                             onDurationChange={this.props.onDurationChange}
-                            onClose={onClose}
+                            onClose={closeContainer}
                         />
                     )}
                 />
             </div>
         );
+    }
+
+    renderReferenceElement = ({ duration, toggleContainer }: {
+        duration?: Duration,
+        toggleContainer: ()=>void
+    }) => {
+        return <div className={styles.ValueRow}
+             onClick={this.onViewRowClickHandler(toggleContainer)}>
+            {this.props.icon}
+            {duration && (
+                <div className={styles.Value}>
+                    {this.props.duration?.toReadable()}
+                </div>
+            )}
+        </div>;
+    }
+
+    onViewRowClickHandler = (toggleContainer: () => void) => {
+        return (event: MouseEvent) => {
+            event.stopPropagation();
+            this.setState({
+                showFollower: !this.state.showFollower
+            })
+            toggleContainer();
+        };
+    };
+
+    private onCloseContainer = () => {
+        this.setState({
+            showFollower: false
+        });
+        this.props.onPopupClose?.call(null);
     }
 }
 
@@ -63,7 +108,7 @@ interface PopupProps {
     onMouseLeave?: () => void;
 }
 
-export class DurationInputPopup extends Component<PopupProps> {
+export class DurationInputPopup extends Component<PopupProps, any> {
     private readonly yearsInputRef = createRef<TextFieldUI>();
     private readonly monthsInputRef = createRef<TextFieldUI>();
     private readonly weeksInputRef = createRef<TextFieldUI>();

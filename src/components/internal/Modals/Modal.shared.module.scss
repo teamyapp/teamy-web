@@ -1,22 +1,22 @@
 @import '../../../libs/ui/styleguide/color';
 
 .Header {
-    display: flex;
-    position: relative;
-    padding: 10px 20px;
+    align-items: center;
     background-color: $primaryColor;
     color: white;
+    display: flex;
     font-size: 20px;
     font-weight: 500;
-    align-items: center;
+    padding: 10px 20px;
+    position: relative;
 
     .CloseButton {
-        position: absolute;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%);
         --icon-color: white;
+        position: absolute;
+        right: 10px;
         --icon-size: 26px;
+        top: 50%;
+        transform: translateY(-50%);
 
         &:hover {
             cursor: pointer;

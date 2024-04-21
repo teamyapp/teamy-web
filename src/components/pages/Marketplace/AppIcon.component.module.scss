@@ -1,0 +1,7 @@
+@import './shared';
+
+$appIconSize: var(--app-icon-size, 60px);
+
+.Icon {
+    @include AppIcon($appIconSize);
+}

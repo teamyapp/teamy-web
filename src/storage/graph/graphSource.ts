@@ -5,6 +5,13 @@ import { TeamNode } from '@core/storage/graph/team.node';
 import { UserNode } from '@core/storage/graph/user.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
+import { AppNode } from './app.node';
+import { AppVersionNode } from './appVersion.node';
+import { PhaseNode } from './phase.node';
+import { ProjectNode } from './project.node';
+import { RolloutNode } from './rollout.node';
+import { StoryNode } from './story.node';
+
 export class GraphSource {
     constructor(private localStore: LocalStore) {}
 
@@ -81,5 +88,74 @@ export class GraphSource {
         }
 
         return new SprintNode(this.localStore, sprintState);
+    }
+
+    public app(appId: number): AppNode | undefined {
+        const appState = this.localStore.getState();
+        const app = appState.apps[appId];
+        if (app) {
+            return new AppNode(this.localStore, app);
+        }
+    }
+
+    public apps(): AppNode[] {
+        const appState = this.localStore.getState();
+        return Object.values(appState.apps).map(
+            (app) => new AppNode(this.localStore, app),
+        );
+    }
+
+    public latestAppVersions(
+        teamId: number,
+        tagValues?: string[],
+    ): AppVersionNode[] {
+        const appVersionNodes: AppVersionNode[] = [];
+        let filteredAppNodes: AppNode[] = this.apps();
+        if (tagValues && tagValues.length > 0) {
+            filteredAppNodes = filteredAppNodes.filter((appNode) =>
+                appNode.tags.some((tag) => tagValues.includes(tag.value)),
+            );
+        }
+
+        for (const appNode of filteredAppNodes) {
+            const appVersionNode = appNode.latestVersionForTeam(teamId);
+            if (appVersionNode) {
+                appVersionNodes.push(appVersionNode);
+            }
+        }
+
+        return appVersionNodes;
+    }
+
+    public rollout(rolloutId: number): RolloutNode | undefined {
+        const appState = this.localStore.getState();
+        const rollout = appState.rollouts[rolloutId];
+        if (rollout) {
+            return new RolloutNode(this.localStore, rollout);
+        }
+    }
+
+    public story(storyId: number): StoryNode | undefined {
+        const appState = this.localStore.getState();
+        const story = appState.stories[storyId];
+        if (story) {
+            return new StoryNode(this.localStore, story);
+        }
+    }
+
+    public phase(phaseId: number): PhaseNode | undefined {
+        const appState = this.localStore.getState();
+        const phase = appState.phases[phaseId];
+        if (phase) {
+            return new PhaseNode(this.localStore, phase);
+        }
+    }
+
+    public project(projectId: number): ProjectNode | undefined {
+        const appState = this.localStore.getState();
+        const project = appState.projects[projectId];
+        if (project) {
+            return new ProjectNode(this.localStore, project);
+        }
     }
 }

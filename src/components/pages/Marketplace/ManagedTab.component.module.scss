@@ -1,31 +1,29 @@
 @import './shared';
 
 .ItemList {
-    display: grid;
-    margin: 30px;
-    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
     gap: 30px 50px;
-    grid-auto-rows: 62px;
-    grid-template-columns: repeat(4, 1fr);
+    margin: 30px;
 
     @include ListItem;
 
     .CreateAppButton {
-        display: flex;
-        width: 60px;
-        height: 60px;
-        border-radius: 16px;
-        background-color: rgba(0, 0, 0, 0.05);
         align-items: center;
+        background-color: rgba(0, 0, 0, 0.05);
+        border-radius: 16px;
+        --icon-color: rgb(130, 130, 130);
+        display: flex;
+        height: 60px;
         justify-content: center;
 
         --icon-size: 34px;
-        --icon-color: rgb(130, 130, 130);
+        width: 60px;
 
         &:hover {
             background-color: #828282;
-            cursor: pointer;
             --icon-color: white;
+            cursor: pointer;
         }
     }
 }

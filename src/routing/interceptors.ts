@@ -1,6 +1,7 @@
 import { RefObject } from 'react';
 
 import { IdentityClient } from '@lib/identity/Identity.client';
+import { exactMatch, includePrefix } from '@lib/router/matcher';
 import {
     RouteInterceptor,
     RouteInterceptorResult,
@@ -13,16 +14,21 @@ import { FeatureToggle } from '@core/config/toggle';
 import { Deps } from '@core/dep/deps';
 import {
     appRoutes,
+    getPhaseId,
+    getProjectId,
     getSprintId,
+    getStoryId,
     getTabId,
     getTaskId,
     getTeamId,
-    helpCenterRoutePattern,
     insightsRoutePattern,
     knowledgeRoutePattern,
     marketplaceRoutePattern,
     marketplaceRoutes,
+    phaseStoryRoutePattern,
     planningRoutePattern,
+    planningRoutes,
+    projectStoryRoutePattern,
     publicRoutes,
     signUpRoutePattern,
     sprintTabPath,
@@ -37,9 +43,9 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { AppComponent } from '../components/App.component';
 import { signUpRedirectKey } from '../components/pages/SignUp.component';
-import { exactMatch, includePrefix } from './match';
 import {
     redirectToMarketplaceFallback,
+    redirectToPlanningFallback,
     redirectToSprintTabFallback,
     redirectToTeamsFallback,
 } from './redirect';
@@ -174,7 +180,7 @@ const teamsRoutesInterceptor = (
                 };
             }
         } else if (routeUpdate.routePattern.startsWith(planningRoutePattern)) {
-            if (!featureToggle.enablePlanningDoc) {
+            if (!featureToggle.enablePlanning) {
                 redirectToTeamsFallback(router, localStore);
                 return {
                     isRedirected: true,
@@ -182,15 +188,6 @@ const teamsRoutesInterceptor = (
             }
         } else if (routeUpdate.routePattern.startsWith(knowledgeRoutePattern)) {
             if (!featureToggle.enableKnowledgeBase) {
-                redirectToTeamsFallback(router, localStore);
-                return {
-                    isRedirected: true,
-                };
-            }
-        } else if (
-            routeUpdate.routePattern.startsWith(helpCenterRoutePattern)
-        ) {
-            if (!featureToggle.enableHelpCenter) {
                 redirectToTeamsFallback(router, localStore);
                 return {
                     isRedirected: true,
@@ -293,6 +290,54 @@ const sprintsRouteInterceptor = (
     };
 };
 
+const planningRoutesInterceptor = (
+    localStore: LocalStore,
+    stateSyncer: StateSyncer,
+): RouteInterceptor => {
+    return async (
+        router: Router,
+        routeUpdate: RouteUpdate,
+    ): Promise<RouteInterceptorResult> => {
+        if (!routeUpdate.routePattern.startsWith(planningRoutePattern)) {
+            return {};
+        }
+
+        if (!includePrefix(planningRoutes, routeUpdate.routePattern)) {
+            redirectToPlanningFallback(
+                router,
+                localStore.getState().currTeamId!,
+            );
+            return {
+                isRedirected: true,
+            };
+        }
+
+        if (
+            routeUpdate.routePattern.startsWith(projectStoryRoutePattern) ||
+            routeUpdate.routePattern.startsWith(phaseStoryRoutePattern)
+        ) {
+            await stateSyncer.pullCurrentTeamTaskPreview();
+        }
+
+        const projectId = parseInt(getProjectId(routeUpdate.params)!);
+        if (!isNaN(projectId)) {
+            await stateSyncer.getProject(projectId);
+        }
+   
+        const phaseId = parseInt(getPhaseId(routeUpdate.params)!);
+        if (!isNaN(phaseId)) {
+            await stateSyncer.getPhase(phaseId);
+        }
+
+        const storyId = parseInt(getStoryId(routeUpdate.params)!);
+        if (!isNaN(storyId)) {
+            await stateSyncer.getStory(storyId);
+        }
+
+        return {};
+    };
+};
+
 const marketplaceRoutesInterceptor = (
     localStore: LocalStore,
 ): RouteInterceptor => {
@@ -336,6 +381,7 @@ export function addRouteInterceptors(
         ),
         sprintsRouteInterceptor(deps.localStore, deps.stateSyncer),
         marketplaceRoutesInterceptor(deps.localStore),
+        planningRoutesInterceptor(deps.localStore, deps.stateSyncer),
     ];
     interceptors.forEach((interceptor) => {
         deps.router.addRouteInterceptor(interceptor);

@@ -1,4 +1,4 @@
-import { Duration, MILLIS_IN_NANOS } from '@lib/entity/duration';
+import { Duration, MILLIS_IN_NANOS } from '@lib/time/duration';
 
 import { Priority } from '@core/entity/priority';
 import { toDate } from '@core/storage/states/parser';
@@ -11,6 +11,7 @@ export class TaskState {
         public creatorUserId: number,
         public owningTeamId: number,
         public status: TaskStatus,
+        public isScheduled: boolean,
         public isPlanned: boolean,
         public commentsThreadId: number,
         public createdAt: Date,
@@ -30,6 +31,7 @@ export class TaskState {
             json.CreatorUserID,
             json.OwningTeamID,
             json.Status,
+            json.IsScheduled,
             json.IsPlanned,
             json.CommentsThreadID,
             toDate(json.CreatedAt)!,
@@ -52,6 +54,7 @@ export class TaskState {
             json.creatorUserId,
             json.owningTeamId,
             json.status,
+            json.isScheduled,
             json.isPlanned,
             json.commentThreadId,
             toDate(json.createdAt)!,

@@ -1,0 +1,10 @@
+#import '../fragment/staticTeamGroup.graphql'
+
+mutation createStaticTeamGroup(
+    $appId: ID!
+    $input: CreateStaticTeamGroupInput!
+) {
+    createStaticTeamGroup(appId: $appId, input: $input) {
+        ...StaticTeamGroupFragment
+    }
+}

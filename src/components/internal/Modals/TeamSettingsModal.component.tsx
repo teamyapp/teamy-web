@@ -3,9 +3,9 @@ import React, { Component, ReactNode, createRef } from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout';
 import { Router } from '@lib/router/router';
+import { Duration } from '@lib/time/duration';
 import { ButtonUI } from '@lib/ui/Button';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { ModalUI } from '@lib/ui/Modal';
@@ -41,7 +41,6 @@ interface State {
     newTeamName?: string;
     team?: Team;
     invitations: Invitation[];
-    modalPosition?: Point;
 }
 
 export class TeamSettingsModalComponent extends Component<Props, State> {
@@ -157,11 +156,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             initialTeamName: team?.name,
             newTeamName: team?.name,
             invitations,
-        });
-        setTimeout(() => {
-            this.setState({
-                modalPosition: this.modalRef.current?.Position(),
-            });
         });
     }
 
@@ -366,10 +360,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     }
 
     private renderInvitedUser = (invitation: Invitation, index: number) => {
-        const modalPosition = this.modalRef.current?.Position() || {
-            left: 0,
-            top: 0,
-        };
         return (
             <div key={invitation.id} className={styles.Cell}>
                 <div className={styles.InvitedUserProfile}>?</div>
@@ -384,7 +374,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 <div className={styles.Actions}>
                     {this.renderDeleteInvitationAction(
                         invitation,
-                        modalPosition,
                     )}
                 </div>
             </div>
@@ -393,7 +382,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private renderInvitation = (invitation: Invitation, index: number) => {
         return (
-            <tr key={invitation.id} className={`${styles.Row} ${styles.Invitation}`}>
+            <tr
+                key={invitation.id}
+                className={`${styles.Row} ${styles.Invitation}`}
+            >
                 <td>{invitation.receiver?.id}</td>
                 <td className={styles.FirstName}>
                     {invitation.receiverFirstName}
@@ -415,7 +407,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 <td className={styles.Actions}>
                     <TooltipUI
                         message={'Copy Link'}
-                        parentOffset={this.state.modalPosition}
+                        relativeLayout={this.props.deps.relativeLayout}
                     >
                         <div
                             className={`${styles.Action} ${styles.CopyLink}`}
@@ -428,7 +420,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     </TooltipUI>
                     {this.renderDeleteInvitationAction(
                         invitation,
-                        this.state.modalPosition!,
                     )}
                 </td>
             </tr>
@@ -437,10 +428,11 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private renderDeleteInvitationAction(
         invitation: Invitation,
-        modalPosition: Point,
     ) {
         return (
-            <TooltipUI message={'Delete'} parentOffset={modalPosition}>
+            <TooltipUI 
+                message={'Delete'}
+                relativeLayout={this.props.deps.relativeLayout}>
                 <div
                     className={`${styles.Action} ${styles.Delete}`}
                     onClick={this.onDeleteInvitationClick(invitation.id)}

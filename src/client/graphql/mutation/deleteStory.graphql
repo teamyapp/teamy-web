@@ -1,0 +1,5 @@
+mutation deleteStory($storyId: ID!) {
+    deleteStory(storyId: $storyId) {
+        id
+    }
+}

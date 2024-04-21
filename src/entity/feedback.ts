@@ -2,13 +2,20 @@ import { Invitation } from '@core/entity/invitation';
 
 export type Feedback =
     | TaskUpdatedFeedback
+    | StoryUpdatedFeedback
     | UserProfileUpdatedFeedback
     | TeamProfileUpdatedFeedback
-    | InvitationLinkCopiedFeedback;
+    | InvitationLinkCopiedFeedback
+    | AppSecretCopiedFeedback;
 
 export interface TaskUpdatedFeedback {
     type: 'TaskUpdated';
     taskId: number;
+}
+
+export interface StoryUpdatedFeedback {
+    type: "StoryUpdated";
+    storyId: number;
 }
 
 export interface UserProfileUpdatedFeedback {
@@ -22,4 +29,9 @@ export interface TeamProfileUpdatedFeedback {
 export interface InvitationLinkCopiedFeedback {
     type: 'InvitationLinkCopied';
     invitation: Invitation;
+}
+
+export interface AppSecretCopiedFeedback {
+    type: 'AppSecretCopied';
+    appSecretId: number;
 }

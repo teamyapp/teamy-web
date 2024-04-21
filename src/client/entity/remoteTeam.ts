@@ -1,7 +1,10 @@
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteTeamMember } from '@core/client/entity/remoteTeamMember';
 
+import { RemoteApp } from './remoteApp';
+import { RemoteAppInstallation } from './remoteAppInstallation';
 import { RemoteInvitation } from './remoteInvitation';
+import { RemoteProject } from './remoteProject';
 import { RemoteTask } from './remoteTask';
 import { RemoteTaskActivity } from './remoteTaskActivity';
 import { RemoteUser } from './remoteUser';
@@ -19,4 +22,7 @@ export interface RemoteTeam {
     sprints?: RemoteSprint[];
     taskActivities?: RemoteTaskActivity[];
     activeSprint?: RemoteSprint;
+    managedApps?: RemoteApp[];
+    appInstallations?: RemoteAppInstallation[];
+    projects: RemoteProject[];
 }

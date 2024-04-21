@@ -1,7 +1,16 @@
+import { print } from 'graphql';
+
 import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import { RemoteUser } from '@core/client/entity/remoteUser';
 import { CreateUserInput, UpdateUserInput } from '@core/entity/input';
+
+import createUser from './graphql/mutation/createUser.graphql';
+import finishUserProfileUploadSession from './graphql/mutation/finishUserProfileUploadSession.graphql';
+import updateUser from './graphql/mutation/updateUser.graphql';
+import getMe from './graphql/query/getMe.graphql';
+import getMeWithTeams from './graphql/query/getMeWithTeams.graphql';
+import getUserWithTeams from './graphql/query/getUserWithTeams.graphql';
 
 export class UserClient {
     private readonly graphQLClient: GraphQLClient;
@@ -10,41 +19,21 @@ export class UserClient {
         this.graphQLClient = graphQLClient;
     }
 
+    public getUser(userId: string): Promise<RemoteUser> {
+        return this.graphQLClient
+            .query({
+                query: print(getUserWithTeams),
+                variables: {
+                    userId,
+                },
+            })
+            .then((payload: any) => payload?.user);
+    }
+
     public getMeWithTeams(): Promise<RemoteUser> {
         return this.graphQLClient
             .query({
-                query: `
-                    query getMeWithTeams {
-                        me {
-                            id
-                            firstName
-                            lastName
-                            profileUrl
-                            createdAt
-                            updatedAt
-                            teams {
-                                id
-                                name
-                                iconUrl
-                                owner {
-                                    id
-                                }
-                                activeSprint {
-                                    id
-                                }
-                                members {
-                                    user {
-                                        id
-                                        lastName
-                                        firstName
-                                        profileUrl
-                                        createdAt
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `,
+                query: print(getMeWithTeams),
             })
             .then((payload: any) => payload?.me);
     }
@@ -52,18 +41,7 @@ export class UserClient {
     public getMe(): Promise<RemoteUser> {
         return this.graphQLClient
             .query({
-                query: `
-                    query getMe {
-                        me {
-                            id
-                            firstName
-                            lastName
-                            profileUrl
-                            createdAt
-                            updatedAt
-                        }
-                    }
-                `,
+                query: print(getMe),
             })
             .then((payload: any) => payload?.me);
     }
@@ -71,13 +49,7 @@ export class UserClient {
     public createUser(input: CreateUserInput): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation createUser($input: CreateUserInput!) {
-                        createUser(user: $input) {
-                            id
-                        }
-                    }
-                `,
+                mutation: print(createUser),
                 variables: {
                     input,
                 },
@@ -91,20 +63,7 @@ export class UserClient {
     ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation updateUser(
-                        $userId: ID!
-                        $input: UpdateUserInput!
-                    ) {
-                        updateUser(userId: $userId, input: $input) {
-                            id
-                            firstName
-                            lastName
-                            profileUrl
-                            updatedAt
-                        }
-                    }
-                `,
+                mutation: print(updateUser),
                 variables: {
                     userId,
                     input,
@@ -130,18 +89,7 @@ export class UserClient {
     ): Promise<RemoteUser> {
         return this.graphQLClient
             .mutate({
-                mutation: `
-                    mutation finishUserProfileUploadSession(
-                        $fileUploadSessionId: ID!
-                    ) {
-                        finishUserProfileUploadSession(
-                            fileUploadSessionId: $fileUploadSessionId
-                        ) {
-                            id
-                            profileUrl
-                        }
-                    }
-                `,
+                mutation: print(finishUserProfileUploadSession),
                 variables: {
                     fileUploadSessionId,
                 },

@@ -21,7 +21,8 @@ export class RelativeLayout {
         horizontalAlignment: HorizontalAlignment = 'center',
         verticalAlignment: VerticalAlignment = 'bottom',
         overSpaceAction: OverSpaceAction = 'overlap',
-        offset: number = 10,
+        referenceOffset: number = 0,
+        viewportOffset: number = 10,
     ): LayoutAttachment {
         const updateFollowerPosition = () => {
             const referenceRect = referenceEl.getBoundingClientRect();
@@ -31,14 +32,16 @@ export class RelativeLayout {
                 followerRect,
                 verticalAlignment,
                 overSpaceAction,
-                offset,
+                referenceOffset,
+                viewportOffset,
             );
             const left = calcLeft(
                 referenceRect,
                 followerRect,
                 horizontalAlignment,
                 overSpaceAction,
-                offset,
+                referenceOffset,
+                viewportOffset,
             );
             followerEl.style.left = `${left}px`;
             followerEl.style.top = `${top}px`;
@@ -47,10 +50,18 @@ export class RelativeLayout {
             referenceEl,
             updateFollowerPosition,
         );
+        this.boundingBoxChangeEventMonitor.addEventListener(
+            followerEl,
+            updateFollowerPosition,
+        );
         return {
             detach: () => {
                 this.boundingBoxChangeEventMonitor.removeEventListener(
                     referenceEl,
+                    updateFollowerPosition,
+                );
+                this.boundingBoxChangeEventMonitor.removeEventListener(
+                    followerEl,
                     updateFollowerPosition,
                 );
             },
@@ -63,15 +74,16 @@ function calcLeft(
     followerRect: DOMRect,
     alignment: HorizontalAlignment,
     overSpaceAction: OverSpaceAction,
-    offset: number,
+    referenceOffset: number,
+    viewportOffset: number,
 ) {
     let left = 0;
     switch (alignment) {
         case 'left':
-            left = referenceRect.left - followerRect.width;
+            left = referenceRect.left - followerRect.width - referenceOffset;
             break;
         case 'right':
-            left = referenceRect.left + referenceRect.width;
+            left = referenceRect.left + referenceRect.width + referenceOffset;
             break;
         case 'center':
             left =
@@ -81,20 +93,20 @@ function calcLeft(
     }
 
     const rightBound =
-        (window.innerWidth || document.documentElement.clientWidth) - offset;
+        (window.innerWidth || document.documentElement.clientWidth) - viewportOffset;
     const right = left + followerRect.width;
-    if (left >= offset && right <= rightBound) {
+    if (left >= viewportOffset && right <= rightBound) {
         return left;
     }
 
-    if (left < offset) {
+    if (left < viewportOffset) {
         switch (overSpaceAction) {
             case 'overlap':
             case 'jumpVertically':
-                left = offset;
+                left = viewportOffset;
                 break;
             case 'jumpHorizontally':
-                left = referenceRect.left + referenceRect.width;
+                left = referenceRect.left + referenceRect.width + referenceOffset;
                 break;
         }
     }
@@ -106,12 +118,12 @@ function calcLeft(
                 left = rightBound - followerRect.width;
                 break;
             case 'jumpHorizontally':
-                left = referenceRect.left - followerRect.width;
+                left = referenceRect.left - followerRect.width - referenceOffset;
                 break;
         }
     }
 
-    return Math.max(left, offset);
+    return Math.max(left, viewportOffset);
 }
 
 function calcTop(
@@ -119,15 +131,16 @@ function calcTop(
     followerRect: DOMRect,
     alignment: VerticalAlignment,
     overSpaceAction: OverSpaceAction,
-    offset: number,
+    referenceOffset: number,
+    viewportOffset: number,
 ) {
     let top = 0;
     switch (alignment) {
         case 'top':
-            top = referenceRect.top - followerRect.height;
+            top = referenceRect.top - followerRect.height - referenceOffset;
             break;
         case 'bottom':
-            top = referenceRect.top + referenceRect.height;
+            top = referenceRect.top + referenceRect.height + referenceOffset;
             break;
         case 'center':
             top =
@@ -138,20 +151,20 @@ function calcTop(
     }
 
     const bottomBound =
-        window.innerHeight || document.documentElement.clientHeight - offset;
+        window.innerHeight || document.documentElement.clientHeight - viewportOffset;
     const bottom = top + followerRect.height;
-    if (top >= offset && bottom <= bottomBound) {
+    if (top >= viewportOffset && bottom <= bottomBound) {
         return top;
     }
 
-    if (top < offset) {
+    if (top < viewportOffset) {
         switch (overSpaceAction) {
             case 'overlap':
             case 'jumpHorizontally':
-                top = offset;
+                top = viewportOffset;
                 break;
             case 'jumpVertically':
-                top = referenceRect.top + referenceRect.height;
+                top = referenceRect.top + referenceRect.height + referenceOffset;
                 break;
         }
     }
@@ -163,10 +176,10 @@ function calcTop(
                 top = bottomBound - followerRect.height;
                 break;
             case 'jumpVertically':
-                top = referenceRect.top - followerRect.height;
+                top = referenceRect.top - followerRect.height - referenceOffset;
                 break;
         }
     }
 
-    return Math.max(top, offset);
+    return Math.max(top, viewportOffset);
 }

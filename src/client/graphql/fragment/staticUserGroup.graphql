@@ -1,0 +1,26 @@
+#import "./user.graphql"
+
+fragment StaticUserGroupFragment on StaticUserGroup {
+    id
+    type
+    locked
+    memberType
+    name
+    users {
+        ...UserFragment
+    }
+    createdAt
+    updatedAt
+    groupRolloutRelations {
+        group {
+            id
+        }
+        rollout {
+            id
+        }
+        orderIndex
+    }
+    apps {
+        id
+    }
+}

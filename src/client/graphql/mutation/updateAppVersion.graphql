@@ -1,0 +1,15 @@
+#import '../fragment/appVersion.graphql'
+
+mutation updateAppVersion(
+    $appId: ID!
+    $versionNumber: Int!
+    $input: UpdateAppVersionInput!
+) {
+    updateAppVersion(
+        appId: $appId
+        versionNumber: $versionNumber
+        input: $input
+    ) {
+        ...AppVersionFragment
+    }
+}

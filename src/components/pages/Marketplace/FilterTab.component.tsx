@@ -1,187 +1,46 @@
-import { Component } from 'react';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
+import React, { Component, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { RouteUpdate, Router } from '@lib/router/router';
 
+import { FileClient } from '@core/client/file.client';
 import { Deps } from '@core/dep/deps';
-import { getTag, marketplaceFilterRoutePattern } from '@core/routing/routes';
+import { getTags, marketplaceFilterRoutePattern } from '@core/routing/routes';
+import { AppNode } from '@core/storage/graph/app.node';
+import { GraphSource } from '@core/storage/graph/graphSource';
+import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
+import { AppIconComponent } from './AppIcon.component';
 import styles from './FilterTab.component.module.scss';
-import googleCalendarIconImg from './assets/calendar.png';
-import excelIconImg from './assets/excel.png';
-import figmaIconImg from './assets/figma.png';
-import githubIconImg from './assets/github.png';
-import gmailIconImg from './assets/gmail.png';
-import instagramIconImg from './assets/instagram.png';
-import miro from './assets/miro.png';
-import notionIconImg from './assets/notion.png';
-import onePasswordIconImg from './assets/onePassword.png';
-import powerpointIconImg from './assets/powerPoint.png';
-import salesforce from './assets/salesforce.png';
-import slackIconImg from './assets/slack.png';
-import teamsIconImg from './assets/teams.png';
-import googleTranslateIconImg from './assets/translate.png';
-import wechatIconImg from './assets/wechat.png';
-import wordIconImg from './assets/word.png';
-import zoomIconImg from './assets/zoom.png';
+import { AppSettingModalComponent } from './Modals/AppSettingModal.component';
 import { formatCount, formatPrice } from './format';
 
-interface Item {
-    id: number;
-    iconUrl: string;
-    name: string;
-    installations: number;
-    price: number;
-    isInstalled?: boolean;
-}
-
-const items: Item[] = [
-    {
-        id: 1,
-        iconUrl: githubIconImg,
-        name: 'Github',
-        installations: 1_400,
-        price: 0,
-        isInstalled: true,
-    },
-    {
-        id: 2,
-        iconUrl: zoomIconImg,
-        name: 'Zoom',
-        installations: 1_200,
-        price: 0,
-    },
-    {
-        id: 3,
-        iconUrl: slackIconImg,
-        name: 'Slack',
-        installations: 1_000_000,
-        price: 0,
-    },
-    {
-        id: 4,
-        iconUrl: teamsIconImg,
-        name: 'Teams',
-        installations: 1_300_000,
-        price: 0,
-    },
-    {
-        id: 5,
-        iconUrl: figmaIconImg,
-        name: 'Figma',
-        installations: 50_000,
-        price: 0,
-    },
-    {
-        id: 6,
-        iconUrl: notionIconImg,
-        name: 'Notion',
-        installations: 100_000,
-        price: 0,
-    },
-    {
-        id: 7,
-        iconUrl: miro,
-        name: 'Miro',
-        installations: 1_000_000,
-        price: 0,
-    },
-    {
-        id: 8,
-        iconUrl: googleCalendarIconImg,
-        name: 'Google Calender',
-        installations: 1_400,
-        price: 0,
-    },
-    {
-        id: 9,
-        iconUrl: gmailIconImg,
-        name: 'Gmail',
-        installations: 2_000_000,
-        price: 0,
-    },
-    {
-        id: 10,
-        iconUrl: wordIconImg,
-        name: 'Word',
-        installations: 1_500_000,
-        price: 1.99,
-    },
-    {
-        id: 11,
-        iconUrl: powerpointIconImg,
-        name: 'Powerpoint',
-        installations: 1_400,
-        price: 1.99,
-    },
-    {
-        id: 12,
-        iconUrl: excelIconImg,
-        name: 'Excel',
-        installations: 2_000_000,
-        price: 1.99,
-    },
-    {
-        id: 13,
-        iconUrl: googleTranslateIconImg,
-        name: 'Google Translate',
-        installations: 12_000,
-        price: 0,
-    },
-    {
-        id: 14,
-        iconUrl: salesforce,
-        name: 'Salesforce',
-        installations: 2_000_000,
-        price: 4.99,
-    },
-    {
-        id: 15,
-        iconUrl: onePasswordIconImg,
-        name: '1Password',
-        installations: 10_000,
-        price: 2.99,
-    },
-    {
-        id: 16,
-        iconUrl: wechatIconImg,
-        name: 'WeChat',
-        installations: 1_400_000,
-        price: 0,
-    },
-    {
-        id: 17,
-        iconUrl: instagramIconImg,
-        name: 'Instagram',
-        installations: 1_600_000,
-        price: 0,
-    },
-];
-
-const tagToItemIds: Record<string, number[]> = {
-    'developer-tools': [1],
-    automation: [],
-    communication: [2, 3, 4, 9, 16],
-    design: [5, 7],
-    sales: [14, 17],
-    productivity: [8, 10, 11, 12],
-};
+export const APP_VERSION_ICON_SIZE = 100;
 
 interface Props {
     deps: Deps;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
 }
 
 interface State {
-    tag?: string;
+    tags?: string[];
 }
 
 export class FilterTabComponent extends Component<Props, State> {
     private readonly router: Router;
+    private readonly graphSource: GraphSource;
+    private readonly stateSyncer: StateSyncer;
+    private readonly fileClient: FileClient;
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
+    private readonly appSettingModalRef = createRef<AppSettingModalComponent>();
 
     constructor(props: Props) {
         super(props);
         this.router = props.deps.router;
+        this.fileClient = props.deps.fileClient;
+        this.graphSource = props.deps.graphSource;
+        this.stateSyncer = props.deps.stateSyncer;
         this.state = {};
     }
 
@@ -200,7 +59,7 @@ export class FilterTabComponent extends Component<Props, State> {
                     )
                 ) {
                     this.setState({
-                        tag: getTag(routeUpdate.params),
+                        tags: getTags(routeUpdate.params),
                     });
                 }
             }
@@ -208,58 +67,127 @@ export class FilterTabComponent extends Component<Props, State> {
     }
 
     render() {
+        const currentTeamId = this.graphSource.currentTeam()?.id;
+        if (!currentTeamId) {
+            return null;
+        }
+
+        const latestAppVersions = this.graphSource.latestAppVersions(
+            currentTeamId,
+            this.state.tags,
+        );
         return (
-            <div className={styles.ItemList}>
-                {filterItemsByTag(items, this.state.tag).map((item) => (
-                    <div key={item.id} className={styles.InlineItem}>
-                        <div className={styles.LeftSection}>
-                            <div className={styles.Icon}>
-                                <img src={item.iconUrl} />
+            <>
+                <div className={styles.ItemList}>
+                    {latestAppVersions.map((appVersion) => (
+                        <div
+                            key={appVersion.app.id}
+                            className={styles.InlineItem}
+                        >
+                            <div className={styles.LeftSection}>
+                                <AppIconComponent
+                                    appName={appVersion.appName}
+                                    appIconUrl={this.fileClient.getRemoteFileUrl(
+                                        appVersion.iconPath(
+                                            APP_VERSION_ICON_SIZE,
+                                        ),
+                                    )}
+                                />
+                            </div>
+                            <div className={styles.MiddleSection}>
+                                <div className={styles.Name}>
+                                    {appVersion.appName}
+                                </div>
+                                <div className={styles.Installations}>
+                                    {formatCount(
+                                        appVersion.app.totalInstallations,
+                                    )}{' '}
+                                    installed
+                                </div>
+                            </div>
+                            <div className={styles.RightSection}>
+                                {appVersion.app.isInstalled(currentTeamId) && (
+                                    <>
+                                        <div
+                                            className={`${styles.Button} ${styles.Setting}`}
+                                            onClick={this.onAppSettingButtonClickHandler(
+                                                appVersion.app.id,
+                                            )}
+                                        >
+                                            Setting
+                                        </div>
+                                        <div
+                                            className={`${styles.Button}  ${styles.Remove}`}
+                                            onClick={this.onRemoveAppButtonClick(
+                                                appVersion.app,
+                                                currentTeamId,
+                                            )}
+                                        >
+                                            Remove
+                                        </div>
+                                    </>
+                                )}
+                                {!appVersion.app.isInstalled(currentTeamId) && (
+                                    <>
+                                        <div className={styles.Price}>
+                                            {appVersion.localPrice
+                                                ? formatPrice(
+                                                      appVersion.localPrice
+                                                          .amount,
+                                                  )
+                                                : 'Free'}
+                                        </div>
+                                        <div
+                                            className={`${styles.Button}`}
+                                            onClick={this.onInstallAppButtonClick(
+                                                appVersion.app.id,
+                                                currentTeamId,
+                                            )}
+                                        >
+                                            Install
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </div>
-                        <div className={styles.MiddleSection}>
-                            <div className={styles.Name}>{item.name}</div>
-                            <div className={styles.Installations}>
-                                {formatCount(item.installations)} installed
-                            </div>
-                        </div>
-                        <div className={styles.RightSection}>
-                            {item.isInstalled && (
-                                <>
-                                    <div
-                                        className={`${styles.Button} ${styles.Setting}`}
-                                    >
-                                        Setting
-                                    </div>
-                                    <div
-                                        className={`${styles.Button}  ${styles.Remove}`}
-                                    >
-                                        Remove
-                                    </div>
-                                </>
-                            )}
-                            {!item.isInstalled && (
-                                <>
-                                    <div className={styles.Price}>
-                                        {formatPrice(item.price)}
-                                    </div>
-                                    <div className={`${styles.Button}`}>
-                                        Install
-                                    </div>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+                <AppSettingModalComponent
+                    ref={this.appSettingModalRef}
+                    deps={this.props.deps}
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
+                />
+            </>
         );
     }
-}
 
-function filterItemsByTag(items: Item[], tag: string | undefined) {
-    if (!tag) {
-        return items;
-    }
+    private onInstallAppButtonClick = (
+        appId: number,
+        currentTeamId: number,
+    ) => {
+        return () => {
+            this.stateSyncer.installAppToTeam(appId, currentTeamId);
+        };
+    };
 
-    return items.filter((item) => tagToItemIds[tag].includes(item.id));
+    private onRemoveAppButtonClick = (app: AppNode, currentTeamId: number) => {
+        return () => {
+            const appTeamInstallation = app.installations.find(
+                (installation) =>
+                    installation.installedTeam.id === currentTeamId,
+            );
+
+            if (!appTeamInstallation) {
+                return;
+            }
+
+            this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
+        };
+    };
+
+    private onAppSettingButtonClickHandler = (appId: number) => {
+        return () => {
+            this.appSettingModalRef.current?.open(appId);
+        };
+    };
 }

@@ -1,0 +1,130 @@
+#import "./appVersion.graphql"
+#import "./group.graphql"
+#import "./team.graphql"
+
+fragment AppFragment on App {
+    id
+    tags {
+        id
+        value
+    }
+    secrets {
+        id
+        name
+        addedAt
+        addedBy {
+            id
+        }
+        app {
+            id
+        }
+    }
+    totalInstallations
+    installations {
+        id
+        installedTeam {
+            ...TeamFragment
+        }
+        activeAppVersion {
+            ...AppVersionFragment
+        }
+    }
+    latestVersionForTeam(teamId: $teamId) {
+        ...AppVersionFragment
+    }
+    versions {
+        ...AppVersionFragment
+    }
+    managedByTeam {
+        ...TeamFragment
+    }
+    groups {
+        ...GroupFragment
+    }
+    userRollouts {
+        id
+        name
+        isEnabled
+        locked
+        activator {
+            id
+            type
+            createdAt
+            updatedAt
+            ... on TimeRangeActivator {
+                startAt
+                endAt
+            }
+            ... on MaxViewersActivator {
+                maxViewers
+            }
+            ... on PercentageActivator {
+                percentage
+            }
+        }
+        versionSelector {
+            id
+            type
+            ... on StaticVersionSelector {
+                versionNumber
+            }
+            ... on ExperimentVersionSelector {
+                versionNumbers
+            }
+        }
+        groupRolloutRelations {
+            group {
+                id
+            }
+            rollout {
+                id
+            }
+            orderIndex
+        }
+        createdAt
+        updatedAt
+    }
+    teamRollouts {
+        id
+        name
+        isEnabled
+        locked
+        activator {
+            id
+            type
+            createdAt
+            updatedAt
+            ... on TimeRangeActivator {
+                startAt
+                endAt
+            }
+            ... on MaxViewersActivator {
+                maxViewers
+            }
+            ... on PercentageActivator {
+                percentage
+            }
+        }
+        versionSelector {
+            id
+            type
+            ... on StaticVersionSelector {
+                versionNumber
+            }
+            ... on ExperimentVersionSelector {
+                versionNumbers
+            }
+        }
+        groupRolloutRelations {
+            group {
+                id
+            }
+            rollout {
+                id
+            }
+            orderIndex
+        }
+        createdAt
+        updatedAt
+    }
+}

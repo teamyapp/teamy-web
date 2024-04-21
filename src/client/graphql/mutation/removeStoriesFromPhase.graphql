@@ -1,0 +1,7 @@
+#import '../fragment/phase.graphql'
+
+mutation removeStoriesFromPhase($phaseId: ID!, $storyIds: [ID!]!) {
+    removeStoriesFromPhase(phaseId: $phaseId, storyIds: $storyIds) {
+        ...PhaseFragment
+    }
+}

@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
@@ -24,6 +25,7 @@ interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     needAttentionTask?: Task;
     currentClientId?: number;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
     onDeleteTask?: (taskId: number) => void;
@@ -67,6 +69,9 @@ export class NeedAttentionSection extends Component<Props> {
                         sectionId={sectionId}
                         task={task}
                         currentClientId={this.props.currentClientId}
+                        thirdPartyAppEventHubs={
+                            this.props.thirdPartyAppEventHubs
+                        }
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

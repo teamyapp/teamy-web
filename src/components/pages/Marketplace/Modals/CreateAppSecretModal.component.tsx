@@ -73,7 +73,7 @@ export class CreateAppSecretModalComponent extends Component<Props> {
     onCreateClick = async () => {
         const secretName = this.secretNameInputRef.current?.value;
         if (this.props.appId && secretName) {
-            await this.stateSyncer.createAppApiToken(this.props.appId, {
+            await this.stateSyncer.createAppSecret(this.props.appId, {
                 name: secretName,
             });
         }

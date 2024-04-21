@@ -1,10 +1,11 @@
-import classNames from 'classnames';
-import React, { Component, MouseEvent, ReactNode, createRef } from 'react';
+import { TooltipUI } from '@lib/ui/Tooltip';
+import React, { Component, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
-import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { PubSub } from '@lib/pubSub/pubSub';
+import { Duration } from '@lib/time/duration';
 import { DateTextPickerUI } from '@lib/ui/DateTextPicker';
 import { MarkdownEditorUI } from '@lib/ui/MarkdownEditor';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -13,6 +14,7 @@ import { TextFieldUI } from '@lib/ui/TextField';
 
 import { taskGoalLengthLimit } from '@core/config/config';
 import { Deps } from '@core/dep/deps';
+import { Feedback } from '@core/entity/feedback';
 import { UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
 import { GraphSource } from '@core/storage/graph/graphSource';
@@ -20,20 +22,17 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
 import { DurationInputUI } from '../DurationInput.ui';
-import { SelectTaskOwnersPopupComponent } from '../SelectTaskOwnersPopupComponent';
+import { SelectOwnersPopupComponent } from '../SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from '../TaskLinkIcon';
 import { ThreadUI } from '../Thread';
-import { UserProfileUI } from '../UserProfile';
-import { getUserShortName } from '../format';
 import styles from './TaskDetailModal.component.module.scss';
 
 const verticalMargin = 30;
-const DATE_PICKER_Z_INDEX = 1002;
-const DURATION_INPUT_Z_INDEX = 1000;
+const POPUP_Z_INDEX = 1002;
 
 interface Props {
     deps: Deps;
-    onClose?: () => void;
+    afterClose?: () => void;
 }
 
 interface State {
@@ -41,18 +40,16 @@ interface State {
     updatedTask?: UpdateTaskInput;
     currentUserId?: number;
     heightWithMargin: number;
-    isSelectingOwner: boolean;
 }
 
 export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly localStore: LocalStore;
     private readonly graphSource: GraphSource;
     private readonly stateSyncer: StateSyncer;
+    private readonly feedbackPubSub: PubSub<Feedback>;
     private readonly relativeLayout: RelativeLayout;
     private getBoundingClientRect?: () => DOMRect;
     private readonly modalRef = createRef<ModalUI>();
-    private readonly selectTaskOwnersPopupRef =
-        createRef<SelectTaskOwnersPopupComponent>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
     private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
@@ -63,10 +60,10 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.localStore = props.deps.localStore;
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
+        this.feedbackPubSub = props.deps.feedbackPubSub;
         this.relativeLayout = props.deps.relativeLayout;
         this.state = {
             heightWithMargin: 0,
-            isSelectingOwner: false,
         };
     }
 
@@ -76,7 +73,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             : undefined;
         return (
             <>
-                <ModalUI ref={this.modalRef} onClose={this.props.onClose}>
+                <ModalUI ref={this.modalRef} afterClose={this.props.afterClose}>
                     {this.state.updatedTask && this.state.task && (
                         <div
                             className={styles.ModalContent}
@@ -96,44 +93,12 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                 </div>
                             </div>
                             <div className={styles.TaskActionsSection}>
-                                <div
-                                    className={`${styles.Action} ${
-                                        styles.AssignOwner
-                                    } ${classNames({
-                                        [styles.Active]:
-                                            this.state.isSelectingOwner,
-                                    })}`}
-                                    onClick={this.onAssignOwnerClick}
-                                >
-                                    {this.state.task?.owner ? (
-                                        <>
-                                            <UserProfileUI
-                                                user={this.state.task.owner}
-                                            />
-                                            <div
-                                                className={styles.TaskOwnerName}
-                                            >
-                                                {`${getUserShortName(
-                                                    this.state.task.owner
-                                                        .firstName,
-                                                    this.state.task.owner
-                                                        .lastName,
-                                                )}`}
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <MaterialIconUI>
-                                                face
-                                            </MaterialIconUI>
-                                            <div
-                                                className={styles.TaskOwnerName}
-                                            >
-                                                Unassigned
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
+                                <SelectOwnersPopupComponent
+                                    deps={this.props.deps}
+                                    onSelectOwner={this.onTaskOwnerSelected}
+                                    selectedOwner={this.state.task?.owner}
+                                    zOffset={POPUP_Z_INDEX}
+                                />
                                 <div className={styles.SaveAction}>
                                     <div
                                         className={`${styles.Button}`}
@@ -172,7 +137,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                         </div>
                                         {this.state.task.links.map((link) => (
                                             <div className={styles.Link}>
-                                                <TaskLinkIconUI link={link} />
+                                                <TaskLinkIconUI link={link} relativeLayout={this.props.deps.relativeLayout} />
                                                 <a
                                                     href={link.url}
                                                     target='_blank'
@@ -231,12 +196,23 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                     label={'Due at'}
                                                     value={dueAt}
                                                     zOffset={
-                                                        DATE_PICKER_Z_INDEX
+                                                        POPUP_Z_INDEX
                                                     }
                                                 />
                                             </div>
                                         )}
-
+                                        {this.state.task.deliveredAt && (
+                                            <div className={`${styles.Row} ${styles.DeliveredAt}`}>
+                                                <div className={styles.Label}>
+                                                    Delivered at:
+                                                </div>
+                                                <div className={styles.Value}>
+                                                    {new Date(
+                                                        this.state.task.deliveredAt,
+                                                    ).toLocaleString()}
+                                                </div>
+                                            </div>
+                                        )}
                                         <div
                                             className={`${styles.Row} ${styles.Effort}`}
                                         >
@@ -249,7 +225,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                         .effort
                                                 }
                                                 canClear={true}
-                                                zOffset={DURATION_INPUT_Z_INDEX}
+                                                zOffset={POPUP_Z_INDEX}
                                                 icon={
                                                     <MaterialIconUI
                                                         iconStyle={'outlined'}
@@ -260,6 +236,18 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                 onDurationChange={
                                                     this.onEffortChange
                                                 }
+                                                transformReferenceContainer={({
+                                                    showFollower,
+                                                    container,
+                                                }) => (
+                                                    <TooltipUI
+                                                        relativeLayout={this.props.deps.relativeLayout}
+                                                        preserveReferenceParentHeight={true}
+                                                        disabled={showFollower}
+                                                        message={'Effort'}>
+                                                        {container}
+                                                    </TooltipUI>
+                                                )}
                                             />
                                         </div>
                                     </div>
@@ -268,16 +256,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         </div>
                     )}
                 </ModalUI>
-                <SelectTaskOwnersPopupComponent
-                    ref={this.selectTaskOwnersPopupRef}
-                    findTaskOwnersAlignTargetBoundBox={
-                        this.getBoundingClientRect
-                    }
-                    deps={this.props.deps}
-                    onClose={this.onTaskOwnersPopupClose}
-                    onSelectOwner={this.onTaskOwnerSelected}
-                    selectedOwnerId={this.state.task?.owner?.id}
-                />
             </>
         );
     }
@@ -372,7 +350,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                 this.state.task.id,
                 this.getUpdatedTaskInput(),
             );
-            await this.props.deps.feedbackPubSub.publish({
+            await this.feedbackPubSub.publish({
                 type: 'TaskUpdated',
                 taskId: this.state.task.id,
             });
@@ -380,19 +358,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     };
 
     private onTaskOwnerSelected = (ownerUserId?: number) => {
-        this.setState({
-            isSelectingOwner: false,
-        });
-
         this.stateSyncer.updateTask(this.state.task!.id, {
             ...this.getUpdatedTaskInput(),
             ownerUserId,
-        });
-    };
-
-    private onTaskOwnersPopupClose = () => {
-        this.setState({
-            isSelectingOwner: false,
         });
     };
 
@@ -427,16 +395,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         const threadDivEl = this.threadDivRef.current;
         threadDivEl?.scrollTo(0, threadDivEl?.scrollHeight);
     }
-
-    private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>): void => {
-        const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect =
-            element.getBoundingClientRect.bind(element);
-        this.selectTaskOwnersPopupRef.current?.show.call(null);
-        this.setState({
-            isSelectingOwner: true,
-        });
-    };
 
     private onEffortChange = async (effort?: Duration) => {
         await this.stateSyncer.updateTask(this.state.task!.id, {

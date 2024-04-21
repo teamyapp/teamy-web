@@ -7,9 +7,10 @@ const transitionDurationMilliseconds = 200;
 const visibleDurationSeconds = 5;
 
 interface Props {
-    children: ReactNode;
+    children?: ReactNode;
     actionLabel?: string;
     onActionClick?: () => void;
+    onFeedbackClose?: () => void;
 }
 
 interface State {
@@ -80,6 +81,7 @@ export class FeedbackUI extends Component<Props, State> {
             this.setState({
                 show: false,
             });
+            this.props.onFeedbackClose?.();
         }, transitionDurationMilliseconds);
     }
 

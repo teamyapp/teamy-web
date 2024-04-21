@@ -1,0 +1,26 @@
+#import "./team.graphql"
+
+fragment StaticTeamGroupFragment on StaticTeamGroup {
+    id
+    type
+    locked
+    memberType
+    name
+    teams {
+        ...TeamFragment
+    }
+    createdAt
+    updatedAt
+    groupRolloutRelations {
+        group {
+            id
+        }
+        rollout {
+            id
+        }
+        orderIndex
+    }
+    apps {
+        id
+    }
+}

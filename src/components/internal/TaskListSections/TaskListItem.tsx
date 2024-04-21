@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component } from 'react';
 
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
@@ -18,16 +19,19 @@ interface Props {
     relativeLayout: RelativeLayout;
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     sectionId: string;
+    isSelected?: boolean;
     task: Task;
     currentClientId?: number;
     filterTaskAction?: (action: TaskAction) => boolean;
     numActionColumns?: number;
     showStatus?: boolean;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
     onDeleteTask?: (taskId: number) => void;
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
+    onTaskSelectHandler?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
 }
 
@@ -43,17 +47,20 @@ export class TaskListItem extends Component<Props> {
                 <InlineTaskUI
                     deps={this.props.deps}
                     relativeLayout={this.props.relativeLayout}
+                    isSelected={this.props.isSelected}
                     task={this.props.task}
                     currentClientId={this.props.currentClientId}
                     filterTaskAction={this.props.filterTaskAction}
                     numActionColumns={this.props.numActionColumns}
                     showStatus={this.props.showStatus}
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                     onUpdateTask={this.props.onUpdateTask}
                     onStartTask={this.props.onStartTask}
                     onDeleteTask={this.props.onDeleteTask}
                     onCompleteTask={this.props.onCompleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}
                     onReportTaskBlocked={this.props.onReportTaskBlocked}
+                    onTaskSelectHandler={this.props.onTaskSelectHandler}
                     onStartEditingTask={this.onStartEditingTask}
                     onFinishEditingTask={this.onFinishEditingTask}
                 />

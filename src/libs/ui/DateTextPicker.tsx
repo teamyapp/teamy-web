@@ -54,7 +54,7 @@ export class DateTextPickerUI extends Component<Props, State> {
                 value={this.props.value}
                 minYear={this.props.minYear}
                 maxYear={this.props.maxYear}
-                target={({ onChange, onToggle }) => (
+                renderReferenceElement={({ onChange, onToggle }) => (
                     <TextFieldUI
                         ref={this.textFieldRef}
                         label={this.props.label}

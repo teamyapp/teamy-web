@@ -8,7 +8,10 @@ const tabIdParam = 'tabId';
 const taskIdParam = 'taskId';
 const invitationIdParam = 'id';
 const invitationCodeParam = 'code';
-const tagParam = 'tag';
+const tagsParam = 'tags';
+const projectIdParam = 'projectId';
+const phaseIdParam = 'phaseId';
+const storyIdParam = 'storyId';
 
 export const getTeamId = (params?: Params) => params?.pathParams[teamIdParam];
 export const getSprintId = (params?: Params) =>
@@ -19,7 +22,14 @@ export const getInvitationId = (params?: Params) =>
     params?.queryParams[invitationIdParam];
 export const getInvitationCode = (params?: Params) =>
     params?.queryParams[invitationCodeParam];
-export const getTag = (params?: Params) => params?.queryParams[tagParam];
+export const getTags = (params?: Params): string[] => {
+    const tagsString = params?.queryParams[tagsParam];
+    return tagsString ? tagsString.split(',') : [];
+};
+export const getProjectId = (params?: Params) =>
+    params?.pathParams[projectIdParam];
+export const getPhaseId = (params?: Params) => params?.pathParams[phaseIdParam];
+export const getStoryId = (params?: Params) => params?.pathParams[storyIdParam];
 
 export const rootRoutePattern = '/';
 export const teamsRoutePattern = `${rootRoutePattern}teams`;
@@ -32,8 +42,14 @@ export const sprintRoutePattern = `${sprintsRoutePattern}/{${sprintIdParam}}`;
 export const sprintTabRoutePattern = `${sprintRoutePattern}/{${tabIdParam}}`;
 export const insightsRoutePattern = `${teamRoutePattern}/insights`;
 export const planningRoutePattern = `${teamRoutePattern}/planning`;
+
+export const projectsRoutePattern = `${planningRoutePattern}/projects`;
+export const projectRoutePattern = `${projectsRoutePattern}/{${projectIdParam}}`;
+export const phaseRoutePattern = `${projectRoutePattern}/phases/{${phaseIdParam}}`;
+export const phaseStoryRoutePattern = `${phaseRoutePattern}/stories/{${storyIdParam}}`;
+export const projectStoryRoutePattern = `${projectRoutePattern}/stories/{${storyIdParam}}`;
+
 export const knowledgeRoutePattern = `${teamRoutePattern}/knowledge`;
-export const helpCenterRoutePattern = `${teamRoutePattern}/help-center`;
 export const marketplaceRoutePattern = `${teamRoutePattern}/marketplace`;
 
 export const marketplaceManagedRoutePattern = `${marketplaceRoutePattern}/managed`;
@@ -57,9 +73,25 @@ export const taskPath = (teamId: number, taskId: number) =>
     `${teamPath(teamId)}/tasks/${taskId}`;
 export const insightsPath = (teamId: number) => `/teams/${teamId}/insights`;
 export const planningPath = (teamId: number) => `/teams/${teamId}/planning`;
+export const projectsPath = (teamId: number) =>
+    `/teams/${teamId}/planning/projects`;
+export const projectPath = (teamId: number, projectId: number) =>
+    `/teams/${teamId}/planning/projects/${projectId}`;
+export const phasePath = (teamId: number, projectId: number, phaseId: number) =>
+    `/teams/${teamId}/planning/projects/${projectId}/phases/${phaseId}`;
+export const phaseStoryPath = (
+    teamId: number,
+    projectId: number,
+    phaseId: number,
+    storyId: number,
+) =>
+    `/teams/${teamId}/planning/projects/${projectId}/phases/${phaseId}/stories/${storyId}`;
+export const projectStoryPath = (
+    teamId: number,
+    projectId: number,
+    storyId: number,
+) => `/teams/${teamId}/planning/projects/${projectId}/stories/${storyId}`;
 export const knowledgePath = (teamId: number) => `/teams/${teamId}/knowledge`;
-export const helpCenterPath = (teamId: number) =>
-    `${teamPath(teamId)}/help-center`;
 export const marketplacePath = (teamId: number) =>
     `${teamPath(teamId)}/marketplace`;
 
@@ -69,8 +101,8 @@ export const marketplaceInstalledPath = (teamId: number) =>
     `${marketplacePath(teamId)}/installed`;
 export const marketplaceDiscoverPath = (teamId: number) =>
     `${marketplacePath(teamId)}/discover`;
-export const marketplaceFilterPath = (teamId: number, tag: string) =>
-    `${marketplacePath(teamId)}/filter?tag=${tag}`;
+export const marketplaceFilterPath = (teamId: number, tags: string[]) =>
+    `${marketplacePath(teamId)}/filter?tags=${tags.join(',')}`;
 
 export const signInFinishPath = `${absoluteRootPath}${signInFinishRoutePattern}`;
 
@@ -97,10 +129,17 @@ export const teamsRoutes = [
     insightsRoutePattern,
     planningRoutePattern,
     knowledgeRoutePattern,
-    helpCenterRoutePattern,
     invitationRoutePattern,
     marketplaceRoutePattern,
     taskRoutePattern,
+];
+
+export const planningRoutes = [
+    projectsRoutePattern,
+    projectRoutePattern,
+    phaseRoutePattern,
+    phaseStoryRoutePattern,
+    projectStoryRoutePattern,
 ];
 
 export const marketplaceRoutes = [

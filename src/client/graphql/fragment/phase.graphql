@@ -1,0 +1,20 @@
+#import "./user.graphql"
+#import "./storyPreview.graphql"
+
+fragment PhaseFragment on Phase {
+    id
+    name
+    status
+    expectedStartAt
+    actualStartAt
+    expectedEndAt
+    actualEndAt
+    creator {
+        ...UserFragment
+    }
+    createdAt
+    updatedAt
+    stories {
+        ...StoryPreviewFragment
+    }
+}

@@ -7,5 +7,6 @@ export interface AppSecret {
     addedAt: Date;
     addedBy: User;
     lastUsedAt?: Date;
+    token?: string;
     app: App;
 }

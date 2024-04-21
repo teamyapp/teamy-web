@@ -1,0 +1,46 @@
+#import "../fragment/team.graphql"
+#import "../fragment/projectPreview.graphql"
+#import "../fragment/appVersion.graphql"
+
+query getTeam($teamId: ID!) {
+    teams(filter: { teamId: $teamId }) {
+        ...TeamFragment
+        taskActivities {
+            taskId
+            dragTaskActivity {
+                isDragging
+                client {
+                    id
+                    user {
+                        id
+                        firstName
+                        lastName
+                    }
+                }
+            }
+        }
+        appInstallations {
+            id
+            installedTeam {
+                id
+            }
+            activeAppVersion {
+                ...AppVersionFragment
+            }
+        }
+        activeSprint {
+            id
+        }
+        sprints {
+            id
+            startAt
+            endAt
+            owningTeam {
+                id
+            }
+        }
+        projects {
+            ...ProjectPreviewFragment
+        }
+    }
+}

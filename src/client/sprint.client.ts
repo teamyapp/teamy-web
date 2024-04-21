@@ -33,6 +33,7 @@ export class SprintClient {
                                 status
                                 effort
                                 priority
+                                isScheduled
                                 isPlanned
                                 owner {
                                     id
@@ -48,6 +49,7 @@ export class SprintClient {
                                     goal
                                     context
                                     status
+                                    isScheduled
                                     isPlanned
                                     owningTeam {
                                         id
@@ -57,6 +59,7 @@ export class SprintClient {
                                 links {
                                     id
                                     taskId
+                                    previewTitle
                                     title
                                     url
                                     iconUrl
@@ -213,7 +216,7 @@ export class SprintClient {
                     mutation addTaskToSprint($sprintId: ID!, $taskId: ID!) {
                         addTaskToSprint(sprintId: $sprintId, taskId: $taskId) {
                             id
-                            isPlanned
+                            isScheduled
                         }
                     }
                 `,
@@ -241,7 +244,7 @@ export class SprintClient {
                             taskId: $taskId
                         ) {
                             id
-                            isPlanned
+                            isScheduled
                         }
                     }
                 `,

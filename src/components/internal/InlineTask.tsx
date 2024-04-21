@@ -1,3 +1,4 @@
+import { CleanupFunc, RenderFunc, ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
 import React, {
     ChangeEvent,
@@ -5,11 +6,12 @@ import React, {
     KeyboardEvent,
     MouseEvent,
     ReactNode,
+    RefObject,
     createRef,
 } from 'react';
 
-import { Duration } from '@lib/entity/duration';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
+import { Duration } from '@lib/time/duration';
 import { DateLabelPickerUI } from '@lib/ui/DateLabelPicker';
 import { DropDownList, Option } from '@lib/ui/DropDownList';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
@@ -24,12 +26,11 @@ import { TaskAction } from '@core/entity/taskAction';
 import { TaskStatus } from '@core/entity/taskStatus';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 
-import { ContextMenuComponent } from './ContextMenu.component';
+import { ContextMenuComponent, MenuItem } from './ContextMenu.component';
 import { DurationInputUI } from './DurationInput.ui';
 import styles from './InlineTask.module.scss';
-import { SelectTaskOwnersPopupComponent } from './SelectTaskOwnersPopupComponent';
+import { SelectOwnersPopupComponent } from './SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from './TaskLinkIcon';
-import { UserProfileUI } from './UserProfile';
 import { dueDate, getUserShortName } from './format';
 
 const statusNames: Record<TaskStatus, string> = {
@@ -78,6 +79,11 @@ const optionKeyToPriority: Record<string, Priority> = {
     low: 'LOW',
 };
 
+interface ContextMenuItemView {
+    viewRef: RefObject<HTMLDivElement>;
+    renderFunc: RenderFunc;
+}
+
 interface Props {
     deps: Deps;
     relativeLayout: RelativeLayout;
@@ -86,6 +92,8 @@ interface Props {
     showStatus?: boolean;
     numActionColumns?: number;
     currentClientId?: number;
+    isSelected?: boolean;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onStartEditingTask?: () => void;
     onFinishEditingTask?: () => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
@@ -94,26 +102,24 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
+    onTaskSelectHandler?: (taskId: number) => void;
 }
 
 interface State {
     isEditingGoal: boolean;
-    isSelectingOwner: boolean;
     updatedGoal?: string;
 }
 
 export class InlineTaskUI extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
-    private getBoundingClientRect?: () => DOMRect;
-    private readonly selectTaskOwnersPopupRef =
-        createRef<SelectTaskOwnersPopupComponent>();
     private readonly taskIdContextMenuRef = createRef<ContextMenuComponent>();
+    private contextMenuItemViews: ContextMenuItemView[] = [];
+    private contextMenuItemViewCleanups: CleanupFunc[] = [];
 
     constructor(props: Props) {
         super(props);
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
-            isSelectingOwner: false,
             isEditingGoal: false,
         };
     }
@@ -126,10 +132,14 @@ export class InlineTaskUI extends Component<Props, State> {
         const priorityStyle = toOptionKey(this.props.task.priority);
         return (
             <>
-                <div className={styles.InlineTask}>
+                <div
+                    className={styles.InlineTask}
+                    onClick={this.onSelectTaskHandler}
+                >
                     <div
                         className={`${styles.Task} ${classNames({
                             [styles.Dragging]: showDraggingBy,
+                            [styles.IsSelected]: this.props.isSelected,
                         })}`}
                     >
                         <div className={styles.LeftSection}>
@@ -140,7 +150,6 @@ export class InlineTaskUI extends Component<Props, State> {
                                 >
                                     {this.props.task.id}
                                 </div>
-
                                 {this.props.showStatus && (
                                     <div
                                         className={`${styles.Attribute} ${
@@ -154,32 +163,45 @@ export class InlineTaskUI extends Component<Props, State> {
                             {this.renderGoal()}
                             <div className={styles.BottomRow}>
                                 <div
-                                    className={`${styles.Attribute} ${styles.Priority} ${classNames({
-                                        [styles[priorityStyle]]: true
+                                    className={`${styles.Attribute} ${
+                                        styles.Priority
+                                    } ${classNames({
+                                        [styles[priorityStyle]]: true,
                                     })}`}
                                 >
                                     <DropDownList
+                                        relativeLayout={this.props.deps.relativeLayout}
                                         selectOptionKey={toOptionKey(
                                             this.props.task.priority,
                                         )}
                                         options={priorityOptions}
-                                        onSelectOption={this.onPrioritySelected}
+                                        onSelectOption={
+                                            this.onPrioritySelected
+                                        }
+                                        transformReferenceContainer={
+                                            ({ showFollower, container }) => (
+                                                <TooltipUI
+                                                    relativeLayout={this.props.deps.relativeLayout}
+                                                    disabled={showFollower}
+                                                    message='Priority'>
+                                                    {container}
+                                                </TooltipUI>
+                                            )
+                                        }
                                     />
                                 </div>
-
                                 <div className={styles.Attribute}>
                                     {this.renderDueAt()}
                                 </div>
                                 <div className={styles.Attribute}>
                                     {this.renderEffort()}
                                 </div>
-
                                 {this.props.task.links.map((link) => (
                                     <div
                                         className={styles.Attribute}
                                         key={link.id}
                                     >
-                                        <TaskLinkIconUI link={link} />
+                                        <TaskLinkIconUI link={link} relativeLayout={this.props.deps.relativeLayout} />
                                     </div>
                                 ))}
                             </div>
@@ -207,25 +229,10 @@ export class InlineTaskUI extends Component<Props, State> {
                         </div>
                     )}
                 </div>
-                <SelectTaskOwnersPopupComponent
-                    ref={this.selectTaskOwnersPopupRef}
-                    deps={this.props.deps}
-                    findTaskOwnersAlignTargetBoundBox={
-                        this.getBoundingClientRect
-                    }
-                    onClose={this.onTaskOwnersPopupClose}
-                    onSelectOwner={this.onTaskOwnerSelected}
-                    selectedOwnerId={this.props.task.owner?.id}
-                />
                 <ContextMenuComponent
                     ref={this.taskIdContextMenuRef}
-                    menuItems={Object.entries(
-                        this.props.deps.uiRegistry.taskIdActions,
-                    ).map(([key, value]) => ({
-                        key,
-                        label: value.readableName,
-                        action: () => value.execute(this.props.task.id),
-                    }))}
+                    menuItems={this.renderTaskIdContextMenuItems()}
+                    afterClose={this.onTaskIdContextMenuClose}
                 />
             </>
         );
@@ -253,9 +260,27 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     }
 
-    private onTaskIdContextMenu = (event: MouseEvent) => {
+    private onSelectTaskHandler = () => {
+        this.props.onTaskSelectHandler?.call(null, this.props.task.id);
+    };
+
+    private onTaskIdContextMenu = async (event: MouseEvent) => {
         event.preventDefault();
-        this.taskIdContextMenuRef.current?.open(event.clientY, event.clientX);
+        await this.taskIdContextMenuRef.current?.open(
+            event.clientY,
+            event.clientX,
+        );
+        this.contextMenuItemViews.forEach((item) => {
+            if (item.viewRef.current) {
+                const cleanupFunc = item.renderFunc(item.viewRef.current);
+                this.contextMenuItemViewCleanups.push(cleanupFunc);
+            }
+        });
+    };
+
+    private onTaskIdContextMenuClose = () => {
+        this.contextMenuItemViewCleanups.forEach((cleanup) => cleanup());
+        this.contextMenuItemViewCleanups = [];
     };
 
     private renderDueAt = () => {
@@ -277,6 +302,15 @@ export class InlineTaskUI extends Component<Props, State> {
                 isWarn={warn}
                 shownValue={dueAt && dueDate(dueAt)}
                 onChange={this.handleEndDateChanged}
+                transformReferenceContainer={({ showFollower, container }) => (
+                    <TooltipUI
+                        message='Due date'
+                        disabled={showFollower}
+                        relativeLayout={this.props.deps.relativeLayout}
+                        preserveReferenceParentHeight={true}>
+                        {container}
+                    </TooltipUI>
+                )}
             />
         );
     };
@@ -293,19 +327,9 @@ export class InlineTaskUI extends Component<Props, State> {
     };
 
     private onTaskOwnerSelected = (ownerUserId?: number) => {
-        this.setState({
-            isSelectingOwner: false,
-        });
-
         this.stateSyncer.updateTask(this.props.task.id, {
             ...this.getUpdatedTask(),
             ownerUserId,
-        });
-    };
-
-    private onTaskOwnersPopupClose = () => {
-        this.setState({
-            isSelectingOwner: false,
         });
     };
 
@@ -324,6 +348,15 @@ export class InlineTaskUI extends Component<Props, State> {
                 onPopupOpen={this.onEffortPopupOpen}
                 onPopupClose={this.onEffortPopupClose}
                 onDurationChange={this.onEffortChange}
+                transformReferenceContainer={({ showFollower, container }) => (
+                    <TooltipUI
+                        message='Effort'
+                        disabled={showFollower}
+                        relativeLayout={this.props.deps.relativeLayout}
+                        preserveReferenceParentHeight={true}>
+                        {container}
+                    </TooltipUI>
+                )}
             />
         );
     };
@@ -387,7 +420,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderStartTask(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Start'}>
+                <TooltipUI message={'Start'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onStartTaskClick}
@@ -404,7 +437,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderReportBlocked(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Report Blocked'}>
+                <TooltipUI message={'Report Blocked'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onReportTaskBlockedClick}
@@ -421,7 +454,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderAddAwaitForTask(index: number) {
         return (
             <div key={index}>
-                <TooltipUI message={'Await'}>
+                <TooltipUI message={'Await'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onAddAwaitForTaskClick}
@@ -440,7 +473,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderCompleteTask(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Complete'}>
+                <TooltipUI message={'Complete'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onCompleteTaskClick}
@@ -457,7 +490,7 @@ export class InlineTaskUI extends Component<Props, State> {
     private renderDeleteTask(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Delete'}>
+                <TooltipUI message={'Delete'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onDeleteTaskClick}
@@ -471,37 +504,21 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     }
 
-    private renderAssignOwner(index: number): ReactNode {
-        const owner = this.props.task.owner;
-        const name = owner
-            ? getUserShortName(owner.firstName, owner.lastName)
-            : 'Unassigned';
+    private renderAssignOwner = (index: number): ReactNode => {
         return (
-            <div key={index} className={styles.AssignOwner}>
-                <TooltipUI message={name}>
-                    <div
-                        className={`${styles.Action} ${classNames({
-                            [styles.Active]: this.state.isSelectingOwner,
-                        })}`}
-                        onClick={this.onAssignOwnerClick}
-                    >
-                        <div className={` ${styles.AssignOwnerIcon}`}>
-                            {owner ? (
-                                <UserProfileUI user={owner} />
-                            ) : (
-                                <MaterialIconUI>face</MaterialIconUI>
-                            )}
-                        </div>
-                    </div>
-                </TooltipUI>
-            </div>
+            <SelectOwnersPopupComponent
+                key={index}
+                deps={this.props.deps}
+                onSelectOwner={this.onTaskOwnerSelected}
+                selectedOwner={this.props.task.owner}
+            />
         );
-    }
+    };
 
     private renderViewTaskDetail(index: number): ReactNode {
         return (
             <div key={index}>
-                <TooltipUI message={'Detail'}>
+                <TooltipUI message={'Detail'} relativeLayout={this.props.deps.relativeLayout}>
                     <div
                         className={`${styles.Action}`}
                         onClick={this.onViewTaskDetailClick}
@@ -515,37 +532,51 @@ export class InlineTaskUI extends Component<Props, State> {
         );
     }
 
-    private onStartTaskClick = () => {
+    private renderTaskIdContextMenuItems = (): MenuItem[] => {
+        const menuItems: MenuItem[] = [];
+        this.props.thirdPartyAppEventHubs.forEach((hub) => {
+            hub.onShowTaskIdActions(this.props.task.id).forEach((action) => {
+                const viewRef = createRef<HTMLDivElement>();
+                menuItems.push({
+                    key: `${hub.appId}/${action.key}`,
+                    label: <div ref={viewRef} />,
+                    action: action.execute,
+                });
+                this.contextMenuItemViews.push({
+                    viewRef,
+                    renderFunc: action.renderView,
+                });
+            });
+        });
+        return menuItems;
+    };
+
+    private onStartTaskClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onStartTask?.call(null, this.props.task.id);
     };
 
-    private onReportTaskBlockedClick = () => {
+    private onReportTaskBlockedClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onReportTaskBlocked?.call(null, this.props.task.id);
     };
 
-    private onCompleteTaskClick = () => {
+    private onCompleteTaskClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onCompleteTask?.call(null, this.props.task.id);
     };
 
-    private onDeleteTaskClick = () => {
+    private onDeleteTaskClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onDeleteTask?.call(null, this.props.task.id);
     };
 
-    private onViewTaskDetailClick = () => {
+    private onViewTaskDetailClick = (event: MouseEvent) => {
+        event.stopPropagation();
         this.props.onViewTaskDetail?.call(null, this.props.task.id);
     };
 
-    private onAssignOwnerClick = (event: MouseEvent<HTMLDivElement>) => {
-        const element = event.currentTarget as HTMLDivElement;
-        this.getBoundingClientRect =
-            element.getBoundingClientRect.bind(element);
-        this.selectTaskOwnersPopupRef?.current?.show.call(null);
-        this.setState({
-            isSelectingOwner: true,
-        });
-    };
-
-    private onAddAwaitForTaskClick = (event: MouseEvent<HTMLDivElement>) => {
+    private onAddAwaitForTaskClick = (event: MouseEvent) => {
         // TODO: allow user to pick awaiting task
     };
 

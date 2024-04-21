@@ -1,0 +1,149 @@
+@import 'shared.scss';
+
+.Projects {
+    padding: 30px;
+
+    .Label {
+        font-size: 16px;
+        font-weight: bold;
+
+        &.SameRow {
+            margin-right: 10px;
+        }
+
+        &.NextRow {
+            margin-bottom: 10px;
+        }
+    }
+
+    .Section {
+        &:not(:first-child) {
+            margin-top: 20px;
+        }
+
+        .Row {
+            input[type='text'] {
+                border: 1px solid #e5e5e5;
+                border-radius: 4px;
+                flex: 1;
+                font-size: 16px;
+                letter-spacing: 1px;
+                outline: none;
+                padding: 4px 10px;
+                width: 300px;
+            }
+        }
+
+        .TitleRow {
+            align-items: center;
+            display: flex;
+            justify-content: flex-end;
+
+            .TitleActions {
+                .TitleAction {
+                    border-radius: 4px;
+                    font-weight: bold;
+                    padding: 6px 20px;
+                    text-align: center;
+
+                    &:hover {
+                        cursor: pointer;
+                        opacity: 0.85;
+                    }
+
+                    &.CreateProject {
+                        background-color: #388e3c;
+                        border-color: #2e7d32;
+                        color: white;
+                    }
+                }
+            }
+        }
+
+        .ProjectList {
+            display: flex;
+            flex-wrap: wrap;
+            row-gap: 20px;
+            column-gap: 10px;
+
+            .Project {
+                .Card {
+                    width: 260px;
+                    background-color: #e5e5e5;
+                    height: 150px;
+                    border: 1px solid #e5e5e5;
+                    border-radius: 4px;
+                    margin-bottom: 10px;
+
+                    &:hover {
+                        opacity: 0.75;
+                        cursor: pointer;
+                    }
+
+                    .Icon {
+                        align-items: center;
+                        display: flex;
+                        justify-content: center;
+                        height: 100%;
+                        width: 100%;
+
+                        --icon-size: 48px;
+                        --icon-color: #6a8db8;
+                    }
+                }
+
+                .NameRow {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+
+                    .Actions {
+                        display: flex;
+
+                        .Action {
+                            align-items: center;
+                            border-radius: 4px;
+                            display: flex;
+                            height: 30px;
+                            justify-content: center;
+                            --icon-size: 24px;
+                            width: 30px;
+
+                            &:hover {
+                                background-color: rgba(0, 0, 0, 0.07);
+                                cursor: pointer;
+                            }
+
+                            &.Cancel {
+                                --icon-color: #ff0000;
+                            }
+
+                            &.Save {
+                                --icon-color: #009304;
+                            }
+
+                            &.Edit{
+                                --icon-color: #ff9800;
+                            }
+
+                            &.Delete {
+                                --icon-color: #ff0000;
+                            }
+                        }
+                    }
+
+                    .Name {
+                        font-size: 16px;
+                        font-weight: bold;
+                    }
+                }
+
+                .Description {
+                    font-size: 14px;
+                    margin-top: 5px;
+                    color: #333333;
+                }
+            }
+        }
+    }
+}

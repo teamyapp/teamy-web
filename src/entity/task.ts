@@ -1,4 +1,4 @@
-import { Duration } from '@lib/entity/duration';
+import { Duration } from '@lib/time/duration';
 
 import { Priority } from '@core/entity/priority';
 import { Team } from '@core/entity/team';
@@ -23,6 +23,7 @@ export interface Task {
     comments: Thread;
     availableActions: TaskAction[];
     status: TaskStatus;
+    isScheduled: boolean;
     isPlanned: boolean;
     awaitForTasks: Task[];
     draggingBy?: Client;

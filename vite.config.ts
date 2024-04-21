@@ -1,9 +1,11 @@
+import graphql from '@rollup/plugin-graphql';
 import react from '@vitejs/plugin-react-swc';
 import * as childProcess from 'child_process';
 // @ts-ignore
 import dns from 'dns';
 import { defineConfig, loadEnv } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
+import checker from 'vite-plugin-checker';
 
 import buildInject from './vite-plugins/buildInject';
 
@@ -37,9 +39,17 @@ export default ({ mode }) => {
                     },
                 },
             },
-            sourcemap: JSON.parse(process.env.VITE_ENABLE_SOURCE_MAP),
+            sourcemap: JSON.parse(
+                process.env.VITE_ENABLE_SOURCE_MAP || 'false',
+            ),
         },
-        plugins: [buildInject(), tsconfigPaths(), react()],
+        plugins: [
+            checker({ typescript: true }),
+            buildInject(),
+            tsconfigPaths(),
+            react(),
+            graphql(), // support importing .graphql files
+        ],
         define: {
             GIT_SHORT_COMMIT_HASH: JSON.stringify(gitShortCommitHash),
             GIT_LONG_COMMIT_HASH: JSON.stringify(gitLongCommitHash),

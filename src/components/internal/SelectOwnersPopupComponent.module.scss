@@ -1,0 +1,62 @@
+@import '../../libs/ui/styleguide/elevation';
+
+$actionIconSize: 28px;
+.SelectOwnersPopup {
+    background-color: white;
+    @include elevation(6);
+
+    &:focus {
+        outline: none;
+    }
+
+    .SelectOwnerListHeader {
+        display: flex;
+        padding: 4px;
+        background-color: #424242;
+        --icon-color: white;
+        justify-content: flex-end;
+        --icon-size: 22px;
+
+        .CloseButton {
+            border-radius: 50%;
+            padding: 2px;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                cursor: pointer;
+            }
+        }
+    }
+}
+
+.AssignOwner {
+    --profile-height: #{$actionIconSize};
+    --profile-width: #{$actionIconSize};
+    cursor: pointer;
+
+    .AssignOwnerIcon {
+        display: flex;
+        border-radius: 50%;
+        align-items: center;
+        --icon-color: #3d7bf6;
+        --icon-size: #{$actionIconSize + 4px};
+    }
+
+    .Action {
+        display: flex;
+        width: $actionIconSize;
+        height: $actionIconSize;
+        padding: 4px;
+        border-radius: 4px;
+        align-items: center;
+        --icon-box-size: #{$actionIconSize};
+        justify-content: center;
+        --icon-size: #{$actionIconSize};
+        user-select: none;
+    
+        &.Active,
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.07);
+        }
+    }
+}

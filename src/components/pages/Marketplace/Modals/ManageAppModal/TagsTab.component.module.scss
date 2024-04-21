@@ -1,0 +1,33 @@
+.TagsTab {
+    padding: 30px;
+
+    .Row {
+        --drop-down-button-color: rgba(0, 0, 0, 0.2);
+        --drop-down-color: #1565c0;
+
+        &.Inline {
+            display: flex;
+
+            .TextField {
+                flex: 1;
+            }
+        }
+
+        &.Text {
+            align-items: center;
+        }
+
+        .Label {
+            font-size: 16px;
+            font-weight: bold;
+
+            &.SameRow {
+                margin-right: 10px;
+            }
+
+            &.NextRow {
+                margin-bottom: 10px;
+            }
+        }
+    }
+}

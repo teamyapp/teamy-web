@@ -1,0 +1,21 @@
+#import "./user.graphql"
+#import "./taskPreview.graphql"
+
+fragment StoryPreviewFragment on Story {
+    id
+    name
+    isPlanned
+    owner {
+        ...UserFragment
+    }
+    status
+    priority
+    creator {
+        ...UserFragment
+    }
+    createdAt
+    updatedAt
+    tasks {
+        ...TaskPreviewFragment
+    }
+}

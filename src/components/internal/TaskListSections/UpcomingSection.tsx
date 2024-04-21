@@ -1,3 +1,5 @@
+import { TooltipUI } from '@lib/ui/Tooltip';
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import { SortOrder } from '@lib/data/order';
@@ -16,23 +18,20 @@ import {
 } from '@core/config/draggable';
 import { upcomingSectionId } from '@core/config/sections';
 import {
-    taskEffortOrder,
-    taskPriorityOrder,
-    taskOwnerOrder,
     taskDeadlineOrder,
+    taskEffortOrder,
+    taskOwnerOrder,
+    taskPriorityOrder,
     taskValueOrder,
     upcomingSortOrders,
 } from '@core/config/sortOrder';
+import { groupByOwners } from '@core/data/task.group';
 import {
-    flattenGroupedTasksByOwner,
-    groupByOwners,
-} from '@core/data/task.group';
-import {
+    orderByDeadline,
     orderByEffort,
     orderById,
-    orderByPriorityDesc,
     orderByOwner,
-    orderByDeadline,
+    orderByPriorityDesc,
     orderByValue,
 } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
@@ -52,6 +51,7 @@ interface Props {
     sortOrder?: string;
     currentClientId?: number;
     isPersonal?: boolean;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onCreateTask?: (task: CreateTaskInput) => void;
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
     onStartTask?: (taskId: number) => void;
@@ -101,11 +101,23 @@ export class UpcomingSection extends Component<Props, State> {
                                 </div>
                                 <div className={styles.SortOrder}>
                                     <DropDownList
+                                        relativeLayout={this.props.relativeLayout}
                                         selectOptionKey={this.props.sortOrder}
                                         options={upcomingSortOrders}
                                         onSelectOption={
                                             this.props.onSelectSortOrder
                                         }
+                                        transformReferenceContainer={({
+                                            showFollower,
+                                            container,
+                                        }) => (
+                                            <TooltipUI
+                                                relativeLayout={this.props.deps.relativeLayout}
+                                                disabled={showFollower}
+                                                message={'Order by'}>
+                                                {container}
+                                            </TooltipUI>
+                                        )}
                                     />
                                 </div>
                                 <SpacerUI />
@@ -151,6 +163,9 @@ export class UpcomingSection extends Component<Props, State> {
                         task={task}
                         showStatus={true}
                         currentClientId={this.props.currentClientId}
+                        thirdPartyAppEventHubs={
+                            this.props.thirdPartyAppEventHubs
+                        }
                         onUpdateTask={this.props.onUpdateTask}
                         onStartTask={this.props.onStartTask}
                         onDeleteTask={this.props.onDeleteTask}

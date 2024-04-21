@@ -1,4 +1,4 @@
-import { Duration } from '@lib/entity/duration';
+import { Duration } from '@lib/time/duration';
 
 import { Priority } from '@core/entity/priority';
 import { Task } from '@core/entity/task';
@@ -71,6 +71,10 @@ export class TaskNode implements Task {
 
     public get status(): TaskStatus {
         return this.taskState.status;
+    }
+
+    public get isScheduled(): boolean {
+        return this.taskState.isScheduled;
     }
 
     public get isPlanned(): boolean {

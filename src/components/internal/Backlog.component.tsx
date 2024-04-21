@@ -1,3 +1,4 @@
+import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
 import * as csp from '@lib/csp/csp';
@@ -13,7 +14,7 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { backlogSectionId } from '@core/config/sections';
-import { allTasks, unplanned } from '@core/data/task.filter';
+import { allTasks, unscheduled } from '@core/data/task.filter';
 import { orderByStatusUrgencyAsc } from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
@@ -33,6 +34,7 @@ interface Props {
     deps: Deps;
     dropReceiverLayer?: number;
     taskFilters: TaskFilters;
+    thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onViewTaskDetail?: (taskId: number) => void;
 }
 
@@ -135,6 +137,7 @@ export class BacklogComponent extends Component<Props, State> {
                             {this.state.onEditingNewTask && (
                                 <InlineCreateTaskUI
                                     deps={this.props.deps}
+                                    numActionColumns={1}
                                     onCreateTask={this.onCreateTask}
                                     onDiscardNewTask={this.onDiscardNewTask}
                                 />
@@ -151,22 +154,19 @@ export class BacklogComponent extends Component<Props, State> {
 
     public async refresh() {
         await this.stateSyncer.pullCurrentTeamTaskPreview({
-            isPlanned: false,
+            isScheduled: false,
         });
     }
 
     private updateState() {
         let tasks = this.graphSource.currentTeam()?.tasks || [];
-        tasks = tasks.filter(unplanned).sort(orderByStatusUrgencyAsc);
+        tasks = tasks.filter(unscheduled).sort(orderByStatusUrgencyAsc);
         this.setState({
             unplannedTasks: tasks,
         });
     }
 
-    private renderTask = (
-        task: Task,
-        clientId?: number,
-    ): ReactNode => {
+    private renderTask = (task: Task, clientId?: number): ReactNode => {
         return (
             <div className={styles.ListItem} key={task.id}>
                 <TaskListItem
@@ -181,6 +181,7 @@ export class BacklogComponent extends Component<Props, State> {
                     numActionColumns={1}
                     showStatus={true}
                     filterTaskAction={filterTaskAction}
+                    thirdPartyAppEventHubs={this.props.thirdPartyAppEventHubs}
                     onUpdateTask={this.onUpdateTask}
                     onDeleteTask={this.onDeleteTask}
                     onViewTaskDetail={this.props.onViewTaskDetail}

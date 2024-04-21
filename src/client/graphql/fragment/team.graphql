@@ -1,0 +1,5 @@
+fragment TeamFragment on Team {
+    id
+    name
+    iconUrl
+}

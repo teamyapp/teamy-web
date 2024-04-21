@@ -1,7 +1,6 @@
 import { strictEqual } from 'assert';
 import { beforeEach, describe, it } from 'vitest';
 
-import { Duration } from '@lib/entity/duration';
 import { ErrorCode } from '@lib/error/errors';
 import { TestRandomNumberGenerator } from '@lib/math/randomNumberGenerator';
 import { HTTPClient, HTTPRequestOptions } from '@lib/network/HTTP.client';
@@ -10,6 +9,7 @@ import { Semaphore } from '@lib/sync/semaphore';
 import { Logger } from '@lib/telemetry/Logger';
 import { RawLogger } from '@lib/telemetry/RawLogger';
 import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
+import { Duration } from '@lib/time/duration';
 
 import { ExponentialBackoff } from './backoff/exponential';
 import { InfiniteRetry } from './infinite';
