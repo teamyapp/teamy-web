@@ -65,7 +65,8 @@ export function PhaseComponent(props: Props) {
     const [phase, setPhase] = useState<Phase>();
     const [onEditingPhase, setOnEditingPhase] = useState(false);
     const [currentTeam, setCurrentTeam] = useState<Team>();
-    const [selectedOrder, setSelectedOrder] = useState<sortOptionKey>('ID');
+    const [selectedOrder, setSelectedOrder] = useState<sortOptionKey>("PRIORITY");
+    const selectedOrderRef = useRef(selectedOrder);
     const [selectedView, setSelectedView] =
         useState<itemViewOptionKey>('TABLE');
     const [onEditingNewStoryInBacklog, setOnEditingNewStoryInBacklog] =
@@ -149,7 +150,7 @@ export function PhaseComponent(props: Props) {
 
         (async () => {
             while (true) {
-                console.log(`[ProjectComponent] waiting for keyboard event`);
+                console.log(`[PhaseComponent] waiting for keyboard event`);
                 const keyboardEvent = await keyBoardEventChan.pop();
                 if (keyboardEvent === undefined) {
                     return;
@@ -200,7 +201,7 @@ export function PhaseComponent(props: Props) {
                 if (phase) {
                     setPhase(phase);
                     setPhaseName(phase.name);
-                    setSortPhaseStories(phase.stories, selectedOrder);
+                    setSortPhaseStories(phase.stories, selectedOrderRef.current);
                 }
             }
         })().then();
@@ -363,6 +364,7 @@ export function PhaseComponent(props: Props) {
 
     const onSelectedSortOrder = (key: string) => {
         setSelectedOrder(key as sortOptionKey);
+        selectedOrderRef.current = key as sortOptionKey;
         setSortPhaseStories(phase?.stories || [], key as sortOptionKey);
     };
 

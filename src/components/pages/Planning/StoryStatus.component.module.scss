@@ -9,21 +9,21 @@
 
     &.todo {
         --drop-down-button-color: rgba(0, 0, 0, 0.12);
-        --drop-down-color: #757575;
+        --drop-down-color: #1976d2;
     }
 
     &.paused {
         --drop-down-button-color: rgba(0, 0, 0, 0.1);
-        --drop-down-color: #cb6600;
+        --drop-down-color: #7b1fa2;
     }
 
     &.inProgress {
         --drop-down-button-color: rgba(0, 0, 0, 0.1);
-        --drop-down-color: #038d08;
+        --drop-down-color: #cb6600;
     }
 
     &.completed {
         --drop-down-button-color: rgba(0, 0, 0, 0.15);
-        --drop-down-color: #1976d2;
+        --drop-down-color: #038d08;
     }
 }

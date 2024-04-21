@@ -39,10 +39,10 @@ const priorityToOrderNumber: Record<Priority, number> = {
 };
 
 const storyStatusToOrderNumber: Record<StoryStatus, number> = {
-    TODO: 0,
+    COMPLETED: 0,
     IN_PROGRESS: 1,
     PAUSED: 2,
-    COMPLETED: 3,
+    TODO: 3,
 };
 
 export const sortByStoryId = (storyA: Story, storyB: Story) => {
@@ -56,10 +56,10 @@ export const sortByStoryName = (storyA: Story, storyB: Story) => {
 export const sortByStoryPriority = (storyA: Story, storyB: Story) => {
     const priorityAOrderNumber = storyA.priority
         ? priorityToOrderNumber[storyA.priority]
-        : -1;
+        : 4;
     const priorityBOrderNumber = storyB.priority
         ? priorityToOrderNumber[storyB.priority]
-        : -1;
+        : 4;
 
     return priorityAOrderNumber - priorityBOrderNumber;
 };
