@@ -4,6 +4,8 @@
 $border: var(--border, #{1px solid black});
 $fontSize: var(--font-size, 20px);
 $outlineColor: var(--outline-color, #1976d2);
+$allowResize: var(--allow-resize, none);
+$initialHeight: var(--initial-height, 100%);
 
 .MarkdownEditor {
     border: $border;
@@ -66,7 +68,7 @@ $outlineColor: var(--outline-color, #1976d2);
 
         .Preview {
             box-sizing: border-box;
-            height: 100%;
+            height: $initialHeight;
             overflow-y: auto;
             padding: 10px;
             width: 100%;
@@ -77,11 +79,11 @@ $outlineColor: var(--outline-color, #1976d2);
             box-sizing: border-box;
             display: block;
             font-size: $fontSize;
-            height: 100%;
+            height: $initialHeight;
             letter-spacing: 1px;
             outline: none;
             padding: 10px;
-            resize: none;
+            resize: $allowResize;
             width: 100%;
         }
     }

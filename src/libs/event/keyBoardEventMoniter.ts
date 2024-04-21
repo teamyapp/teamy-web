@@ -2,7 +2,8 @@ import { PopChannel, chan, multi } from '@lib/csp/csp';
 
 type KeyboardEventType = 'keydown' | 'keyup';
 
-type KeyboardKey = 'Control' | 'Meta';
+// add s to the end of KeyboardKey
+type KeyboardKey = 'Control' | 'Meta' | 's';
 
 const keyMap: Record<string, KeyboardKey> = {
     Control: 'Control',

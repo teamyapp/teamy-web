@@ -5,6 +5,7 @@ import React, { Component, ReactNode } from 'react';
 import { today } from '../data/format';
 import styles from './Calendar.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
+import { ButtonUI } from './Button';
 
 const weekDayTitles = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const monthNames = [
@@ -31,7 +32,7 @@ interface Props {
     minYear?: number;
     maxYear?: number;
     onClose?: () => void;
-    onChange?: (date: Date) => void;
+    onChange?: (date?: Date) => void;
     onShownDateChange?: (shownDate: Date) => void;
 }
 
@@ -50,9 +51,12 @@ export class CalendarUI extends Component<Props, State> {
 
     public render(): ReactNode {
         return (
-            <div
-                className={styles.Calendar}
-            >
+            <div className={styles.Calendar}>
+                <div className={styles.Actions}>
+                    <div className={styles.ClearButton} onClick={this.onClearDate}>
+                        <div>Reset</div>
+                    </div>
+                </div>
                 {this.renderCalendarControls()}
                 {this.state.showSelectYear
                     ? this.renderSelectYear()
@@ -169,6 +173,11 @@ export class CalendarUI extends Component<Props, State> {
         this.setState({
             showSelectYear: !this.state.showSelectYear,
         });
+    };
+
+    private onClearDate = () => {
+        this.props.onChange?.call(null, undefined);
+        this.props.onClose?.call(null);
     };
 
     private onDayClickHandler = (monthDay: number): (() => void) => {

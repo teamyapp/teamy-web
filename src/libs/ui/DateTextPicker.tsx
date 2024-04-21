@@ -75,7 +75,7 @@ export class DateTextPickerUI extends Component<Props, State> {
         }
     };
 
-    private handleTargetChanged = (date: Date) => {
+    private handleTargetChanged = (date?: Date) => {
         if (this.textFieldRef.current) {
             this.textFieldRef.current.value = moment(date).format(dateFormat);
         }
