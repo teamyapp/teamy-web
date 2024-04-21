@@ -316,10 +316,6 @@ export class InlineTaskUI extends Component<Props, State> {
     };
 
     private handleEndDateChanged = (date?: Date) => {
-        if (!date) {
-            return;
-        }
-
         this.props.onUpdateTask?.call(this, this.props.task.id, {
             ...this.getUpdatedTask(),
             dueAt: date,
@@ -405,9 +401,11 @@ export class InlineTaskUI extends Component<Props, State> {
             case 'MARK_COMPLETE':
                 return this.renderCompleteTask(index);
             case 'REPORT_BLOCKED':
-                return this.renderReportBlocked(index);
+                // return this.renderReportBlocked(index);
+                return null
             case 'ADD_AWAIT_FOR_TASK':
-                return this.renderAddAwaitForTask(index);
+                // return this.renderAddAwaitForTask(index);
+                return null
             case 'ASSIGN_OWNER':
                 return this.renderAssignOwner(index);
             case 'DELETE':

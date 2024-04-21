@@ -60,6 +60,7 @@ $divider: 2px solid #eeeeee;
     .TaskDetailSection {
         --border: 2px solid #{$secondaryColor};
         --outline-color: #1976d2;
+        --allow-resize: vertical;
         display: flex;
         flex: 1;
         overflow: hidden;
@@ -74,7 +75,7 @@ $divider: 2px solid #eeeeee;
             padding: 20px 14px 20px 20px;
 
             .Context {
-                height: 200px;
+                --initial-height: 300px;
                 margin-top: 20px;
             }
 
