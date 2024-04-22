@@ -78,6 +78,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         const dueAt = this.state.updatedTask?.dueAt
             ? new Date(this.state.updatedTask.dueAt)
             : undefined;
+        const cmdKey = getPlatform() === 'Mac' ? 'cmd' : 'ctrl';
+        
         return (
             <>
                 <ModalUI ref={this.modalRef} afterClose={this.props.afterClose}>
@@ -136,6 +138,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             }
                                             ref={this.markdownEditorRef}
                                         />
+                                        <div className={styles.Description}>Press {cmdKey} + s to save changes</div>
                                     </div>
                                     <div className={styles.LinksSection}>
                                         <div className={styles.Title}>
@@ -282,8 +285,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     public componentDidMount() {
         window.addEventListener('resize', this.onBodyResize);
         this.stateChangeChan = this.localStore.subscribeStateChange();
-        // this.keyBoardEventChan =
-        //     this.props.deps.keyBoardEventMonitor.subscribe();
+        this.keyBoardEventChan =  this.props.deps.keyBoardEventMonitor.subscribe();
         (async () => {
             while (true) {
                 console.log(
@@ -302,34 +304,34 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             }
         })().then();
 
-        // (async () => {
-        //     while (true) {
-        //         console.log(`[ProjectComponent] waiting for keyboard event`);
-        //         const keyboardEvent = await this.keyBoardEventChan!.pop();
-        //         if (keyboardEvent === undefined) {
-        //             return;
-        //         }
+        (async () => {
+            while (true) {
+                console.log(`[TaskDetailModal] waiting for keyboard event`);
+                const keyboardEvent = await this.keyBoardEventChan!.pop();
+                if (keyboardEvent === undefined) {
+                    return;
+                }
 
-        //         const { key, eventType } = keyboardEvent;
-        //         const platform = getPlatform();
-        //         if (
-        //             (platform === 'Mac' && key === 'Meta') ||
-        //             (platform === 'Windows' && key === 'Control')
-        //         ) {
-        //             if (['keydown', 'keyup'].includes(eventType)) {
-        //                 const isCmdKeyPressed = eventType === 'keydown';
-        //                 this.setState({
-        //                     isCmdKeyPressed,
-        //                 });
-        //             }
-        //         }
+                const { key, eventType, event } = keyboardEvent;
+                const platform = getPlatform();
+                if (
+                    (platform === 'Mac' && key === 'Meta') ||
+                    (platform === 'Windows' && key === 'Control')
+                ) {
+                    if (['keydown', 'keyup'].includes(eventType)) {
+                        const isCmdKeyPressed = eventType === 'keydown';
+                        this.setState({
+                            isCmdKeyPressed,
+                        });
+                    }
+                }
 
-        //         debugger
-        //         if (this.state.isCmdKeyPressed && key === 's') {
-        //             this.onSaveButtonClick();
-        //         }
-        //     }
-        // })();
+                if (this.state.isCmdKeyPressed && key === 's') {
+                    event.preventDefault();
+                    this.onSaveButtonClick();
+                }
+            }
+        })();
     }
 
     public componentWillUnmount() {

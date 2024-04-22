@@ -42,6 +42,7 @@ const endAt = moment().add(1, 'months').toDate();
 
 export function ProjectComponent(props: Props) {
     const [project, setProject] = useState<Project>();
+    const [showRightPanel, setShowRightPanel] = useState(true);
     const [currentTeam, setCurrentTeam] = useState<Team>();
     const [isEditingNewStoryInBacklog, setIsEditingNewStoryInBacklog] =
         useState(false);
@@ -77,7 +78,10 @@ export function ProjectComponent(props: Props) {
             return;
         }
 
-        props.deps.stateSyncer.updatePhase(editingPhaseInput.phaseId, updatePhaseInput);
+        props.deps.stateSyncer.updatePhase(
+            editingPhaseInput.phaseId,
+            updatePhaseInput,
+        );
     };
 
     useEffect(() => {
@@ -255,16 +259,17 @@ export function ProjectComponent(props: Props) {
         updatePhaseModalComponentRef.current?.open();
     };
 
-    const onPhaseDetailClickHandler = (phaseId: number) => (event: MouseEvent) => {
-        event.stopPropagation();
-        if (!currentTeam || !project) {
-            return;
-        }
+    const onPhaseDetailClickHandler =
+        (phaseId: number) => (event: MouseEvent) => {
+            event.stopPropagation();
+            if (!currentTeam || !project) {
+                return;
+            }
 
-        props.deps.router.navigateTo(
-            phasePath(currentTeam.id, project.id, phaseId),
-        );
-    };
+            props.deps.router.navigateTo(
+                phasePath(currentTeam.id, project.id, phaseId),
+            );
+        };
 
     const renderPhase = (phase: Phase, index: number): ReactElement => {
         return (
@@ -372,6 +377,10 @@ export function ProjectComponent(props: Props) {
         phaseSelectorRef.current.reset();
     };
 
+    const onToggleRightPanelClick = () => {
+        setShowRightPanel(!showRightPanel);
+    };
+
     const onDeleteStoriesClick = () => {
         if (selectedStoryIds.size === 0) {
             return;
@@ -430,78 +439,105 @@ export function ProjectComponent(props: Props) {
                     </div>
                 )}
             </div>
-
-            <div className={styles.StoryListSection}>
-                <div className={styles.TopBar}>
-                    <div className={styles.Title}>Stories</div>
-                    <div className={styles.Actions}>
-                        {selectedStoryIds.size > 0 &&
-                            selectedPhaseIds.size > 0 && (
+            <div className={styles.StoryListContainer}>
+                <div className={styles.LeftActions}>
+                    <div
+                        className={`${styles.Action} ${styles.Expand} ${classNames(
+                            {
+                                [styles.Active]: !showRightPanel,
+                            },
+                        )}`}
+                        style={{
+                            fontVariationSettings: '"FILL" 1',
+                        }}
+                        onClick={onToggleRightPanelClick}
+                    >
+                        <MaterialIconUI>
+                            {showRightPanel
+                                ? 'collapse_content'
+                                : 'expand_content'}
+                        </MaterialIconUI>
+                    </div>
+                </div>
+                <div
+                    className={`${styles.StoryListSection} ${classNames({
+                        [styles.Hidden]: !showRightPanel,
+                    })}`}
+                >
+                    <div className={styles.TopBar}>
+                        <div className={styles.Title}>Stories</div>
+                        <div className={styles.Actions}>
+                            {selectedStoryIds.size > 0 &&
+                                selectedPhaseIds.size > 0 && (
+                                    <TooltipUI
+                                        message='Move to phase'
+                                        relativeLayout={
+                                            props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={`${styles.Action} ${styles.Move}`}
+                                            onClick={onAddStoriesToPhaseClick}
+                                        >
+                                            <MaterialIconUI>
+                                                read_more
+                                            </MaterialIconUI>
+                                        </div>
+                                    </TooltipUI>
+                                )}
+                            {selectedStoryIds.size > 0 && (
                                 <TooltipUI
-                                    message='Move to phase'
+                                    message='Delete'
                                     relativeLayout={props.deps.relativeLayout}
                                 >
                                     <div
-                                        className={`${styles.Action} ${styles.Move}`}
-                                        onClick={onAddStoriesToPhaseClick}
+                                        className={`${styles.Action} ${styles.Delete}`}
+                                        onClick={onDeleteStoriesClick}
                                     >
-                                        <MaterialIconUI>
-                                            read_more
-                                        </MaterialIconUI>
+                                        <MaterialIconUI>close</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
                             )}
-                        {selectedStoryIds.size > 0 && (
                             <TooltipUI
-                                message='Delete'
+                                message='Create story'
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div
-                                    className={`${styles.Action} ${styles.Delete}`}
-                                    onClick={onDeleteStoriesClick}
+                                    className={`${styles.Action} ${styles.Add}`}
+                                    onClick={onAddStoryInBacklogClick}
                                 >
-                                    <MaterialIconUI>close</MaterialIconUI>
+                                    <MaterialIconUI>add</MaterialIconUI>
                                 </div>
                             </TooltipUI>
-                        )}
-                        <TooltipUI
-                            message='Create story'
-                            relativeLayout={props.deps.relativeLayout}
-                        >
-                            <div
-                                className={`${styles.Action} ${styles.Add}`}
-                                onClick={onAddStoryInBacklogClick}
-                            >
-                                <MaterialIconUI>add</MaterialIconUI>
-                            </div>
-                        </TooltipUI>
-                    </div>
-                </div>
-                <div className={styles.StoryList}>
-                    {isEditingNewStoryInBacklog && (
-                        <InlineCreateStory
-                            deps={props.deps}
-                            numActionColumns={1}
-                            onCreateStory={onCreateStoryInBacklog}
-                            onDiscardNewStory={onDiscardNewStoryInBacklog}
-                        />
-                    )}
-                    {project.unplannedStories.map((story) => (
-                        <div className={styles.ListItem} key={story.id}>
-                            <StoryInlineItemComponent
-                                story={story}
-                                key={story.id}
-                                deps={props.deps}
-                                isSelected={selectedStoryIds.has(
-                                    story.id.toString(),
-                                )}
-                                onStorySelectHandler={onStorySelectHandler}
-                                onStoryDetailClickHandler={
-                                    onStoryDetailClickHandler
-                                }
-                            />
                         </div>
-                    ))}
+                    </div>
+
+                    <div className={styles.StoryList}>
+                        {isEditingNewStoryInBacklog && (
+                            <InlineCreateStory
+                                deps={props.deps}
+                                numActionColumns={1}
+                                onCreateStory={onCreateStoryInBacklog}
+                                onDiscardNewStory={onDiscardNewStoryInBacklog}
+                            />
+                        )}
+                        {project.unplannedStories.map((story) => (
+                            <div className={styles.ListItem} key={story.id}>
+                                <StoryInlineItemComponent
+                                    story={story}
+                                    key={story.id}
+                                    deps={props.deps}
+                                    isSelected={selectedStoryIds.has(
+                                        story.id.toString(),
+                                    )}
+                                    onStorySelectHandler={onStorySelectHandler}
+                                    onStoryDetailClickHandler={
+                                        onStoryDetailClickHandler
+                                    }
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
             <CreatePhaseModalComponent
