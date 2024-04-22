@@ -171,19 +171,11 @@
         }
     }
 
-    .StoryListSection {
-        @include ItemListSection;
-        transition: width 0.5s ease;
+    .StoryListContainer {
+        display: flex;
 
-        &.Hidden {
-            width: 42px;
-            height: 34px;
-            transition: width 0.5s ease;
-        }
-
-        .TopActions {
-            padding-top: 4px;
-            padding-bottom: 4px;
+        .LeftActions {
+            padding: 8px;
 
             .Action {
                 @include action;
@@ -209,15 +201,25 @@
             }
         }
 
-        .StoryList {
-            box-sizing: border-box;
-            flex: 1;
-            overflow-y: scroll;
-            padding: 6px 8px;
-            margin: 10px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .StoryListSection {
+            @include ItemListSection;
+            transition: width 0.5s ease;
+
+            &.Hidden {
+                width: 0px;
+                padding: 0px;
+            }
+
+            .StoryList {
+                box-sizing: border-box;
+                flex: 1;
+                overflow-y: scroll;
+                padding: 6px 8px;
+                margin: 10px 0;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     }
 }

@@ -591,12 +591,8 @@ export function PhaseComponent(props: Props) {
                 </div>
             </div>
 
-            <div
-                className={`${styles.StoryListSection} ${classNames({
-                    [styles.Hidden]: !showRightPanel,
-                })}`}
-            >
-                <div className={styles.TopActions}>
+            <div className={styles.StoryListContainer}>
+                <div className={styles.LeftActions}>
                     <div
                         className={`${styles.Action} ${classNames({
                             [styles.Active]: !showRightPanel,
@@ -613,73 +609,80 @@ export function PhaseComponent(props: Props) {
                         </i>
                     </div>
                 </div>
-
-                <div className={styles.TopBar}>
-                    <div className={styles.Title}>Stories</div>
-                    <div className={styles.Actions}>
-                        {selectedBacklogStoryIds.size > 0 && (
+                <div
+                    className={`${styles.StoryListSection} ${classNames({
+                        [styles.Hidden]: !showRightPanel,
+                    })}`}
+                >
+                    <div className={styles.TopBar}>
+                        <div className={styles.Title}>Stories</div>
+                        <div className={styles.Actions}>
+                            {selectedBacklogStoryIds.size > 0 && (
+                                <TooltipUI
+                                    message='Move to phase'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Move}`}
+                                        onClick={onAddStoriesToPhaseClick}
+                                    >
+                                        <MaterialIconUI>
+                                            read_more
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            )}
+                            {selectedBacklogStoryIds.size > 0 && (
+                                <TooltipUI
+                                    message='Delete'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Delete}`}
+                                        onClick={onDeleteBacklogStoriesClick}
+                                    >
+                                        <MaterialIconUI>close</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            )}
                             <TooltipUI
-                                message='Move to phase'
+                                message='Create story'
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div
-                                    className={`${styles.Action} ${styles.Move}`}
-                                    onClick={onAddStoriesToPhaseClick}
+                                    className={`${styles.Action} ${styles.Add}`}
+                                    onClick={onAddStoryInBacklogClick}
                                 >
-                                    <MaterialIconUI>read_more</MaterialIconUI>
+                                    <MaterialIconUI>add</MaterialIconUI>
                                 </div>
                             </TooltipUI>
-                        )}
-                        {selectedBacklogStoryIds.size > 0 && (
-                            <TooltipUI
-                                message='Delete'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.Delete}`}
-                                    onClick={onDeleteBacklogStoriesClick}
-                                >
-                                    <MaterialIconUI>close</MaterialIconUI>
-                                </div>
-                            </TooltipUI>
-                        )}
-                        <TooltipUI
-                            message='Create story'
-                            relativeLayout={props.deps.relativeLayout}
-                        >
-                            <div
-                                className={`${styles.Action} ${styles.Add}`}
-                                onClick={onAddStoryInBacklogClick}
-                            >
-                                <MaterialIconUI>add</MaterialIconUI>
-                            </div>
-                        </TooltipUI>
-                    </div>
-                </div>
-                <div className={styles.StoryList}>
-                    {onEditingNewStoryInBacklog && (
-                        <InlineCreateStory
-                            deps={props.deps}
-                            numActionColumns={1}
-                            onCreateStory={onCreateStoryInBacklog}
-                            onDiscardNewStory={onDiscardNewStoryInBacklog}
-                        />
-                    )}
-                    {project.unplannedStories.map((story) => (
-                        <div key={story.id} className={styles.ListItem}>
-                            <StoryInlineItemComponent
-                                story={story}
-                                deps={props.deps}
-                                isSelected={selectedBacklogStoryIds.has(
-                                    story.id.toString(),
-                                )}
-                                onStoryDetailClickHandler={
-                                    onStoryDetailClickHandler
-                                }
-                                onStorySelectHandler={onBacklogStorySelect}
-                            />
                         </div>
-                    ))}
+                    </div>
+                    <div className={styles.StoryList}>
+                        {onEditingNewStoryInBacklog && (
+                            <InlineCreateStory
+                                deps={props.deps}
+                                numActionColumns={1}
+                                onCreateStory={onCreateStoryInBacklog}
+                                onDiscardNewStory={onDiscardNewStoryInBacklog}
+                            />
+                        )}
+                        {project.unplannedStories.map((story) => (
+                            <div key={story.id} className={styles.ListItem}>
+                                <StoryInlineItemComponent
+                                    story={story}
+                                    deps={props.deps}
+                                    isSelected={selectedBacklogStoryIds.has(
+                                        story.id.toString(),
+                                    )}
+                                    onStoryDetailClickHandler={
+                                        onStoryDetailClickHandler
+                                    }
+                                    onStorySelectHandler={onBacklogStorySelect}
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
