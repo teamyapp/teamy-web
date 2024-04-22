@@ -9,6 +9,7 @@ import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
 import { Team } from '@core/entity/team';
 import { phaseStoryPath } from '@core/routing/routes';
+import classNames from 'classnames';
 
 import { InlineCreateStory } from './InlineCreateStory.component';
 import styles from './Phase.component.module.scss';
@@ -62,10 +63,12 @@ interface Props {
 
 export function PhaseComponent(props: Props) {
     const [project, setProject] = useState<Project>();
+    const [showRightPanel, setShowRightPanel] = useState(true);
     const [phase, setPhase] = useState<Phase>();
     const [onEditingPhase, setOnEditingPhase] = useState(false);
     const [currentTeam, setCurrentTeam] = useState<Team>();
-    const [selectedOrder, setSelectedOrder] = useState<sortOptionKey>("PRIORITY");
+    const [selectedOrder, setSelectedOrder] =
+        useState<sortOptionKey>('PRIORITY');
     const selectedOrderRef = useRef(selectedOrder);
     const [selectedView, setSelectedView] =
         useState<itemViewOptionKey>('TABLE');
@@ -201,7 +204,10 @@ export function PhaseComponent(props: Props) {
                 if (phase) {
                     setPhase(phase);
                     setPhaseName(phase.name);
-                    setSortPhaseStories(phase.stories, selectedOrderRef.current);
+                    setSortPhaseStories(
+                        phase.stories,
+                        selectedOrderRef.current,
+                    );
                 }
             }
         })().then();
@@ -241,6 +247,10 @@ export function PhaseComponent(props: Props) {
 
     const onBacklogStorySelect = (storyIdNumber: number) => {
         backlogStorySelectorRef.current.selectItem(storyIdNumber.toString());
+    };
+
+    const onToggleRightPanelClick = () => {
+        setShowRightPanel(!showRightPanel);
     };
 
     const onPhaseStorySelect = (storyIdNumber: number) => {
@@ -385,7 +395,10 @@ export function PhaseComponent(props: Props) {
                                     onChange={onPhaseNameChange}
                                 />
                             ) : (
-                                <div className={styles.PhaseName} onDoubleClick={onPhaseNameDoubleClicked}>
+                                <div
+                                    className={styles.PhaseName}
+                                    onDoubleClick={onPhaseNameDoubleClicked}
+                                >
                                     {phase.name}
                                 </div>
                             )}
@@ -435,40 +448,46 @@ export function PhaseComponent(props: Props) {
                         <div className={styles.LeftSection}>
                             <div className={styles.Selections}>
                                 <DropDownList
-                                    relativeLayout={
-                                        props.deps.relativeLayout
-                                    }
+                                    relativeLayout={props.deps.relativeLayout}
                                     selectOptionKey={selectedView}
                                     options={viewOptions}
                                     onSelectOption={onSelectView}
-                                    transformReferenceContainer={({showFollower, container}) =>
+                                    transformReferenceContainer={({
+                                        showFollower,
+                                        container,
+                                    }) => (
                                         <TooltipUI
                                             message='View'
                                             disabled={showFollower}
-                                            relativeLayout={props.deps.relativeLayout}
+                                            relativeLayout={
+                                                props.deps.relativeLayout
+                                            }
                                         >
                                             {container}
                                         </TooltipUI>
-                                    }
+                                    )}
                                 />
                             </div>
                             <div className={styles.Selections}>
                                 <DropDownList
-                                    relativeLayout={
-                                        props.deps.relativeLayout
-                                    }
+                                    relativeLayout={props.deps.relativeLayout}
                                     selectOptionKey={selectedOrder}
                                     options={orderOptions}
                                     onSelectOption={onSelectedSortOrder}
-                                    transformReferenceContainer={({showFollower, container}) =>
+                                    transformReferenceContainer={({
+                                        showFollower,
+                                        container,
+                                    }) => (
                                         <TooltipUI
                                             message='Order by'
                                             disabled={showFollower}
-                                            relativeLayout={props.deps.relativeLayout}
+                                            relativeLayout={
+                                                props.deps.relativeLayout
+                                            }
                                         >
                                             {container}
                                         </TooltipUI>
-                                    }
+                                    )}
                                 />
                             </div>
                         </div>
@@ -572,76 +591,100 @@ export function PhaseComponent(props: Props) {
                 </div>
             </div>
 
-            <div className={styles.StoryListSection}>
-                <div className={styles.TopBar}>
-                    <div className={styles.Title}>Stories</div>
-                    <div className={styles.Actions}>
-                        {selectedBacklogStoryIds.size > 0 && (
-                            <TooltipUI
-                                message='Move to phase'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.Move}`}
-                                    onClick={onAddStoriesToPhaseClick}
-                                >
-                                    <MaterialIconUI>read_more</MaterialIconUI>
-                                </div>
-                            </TooltipUI>
-                        )}
-                        {selectedBacklogStoryIds.size > 0 && (
-                            <TooltipUI
-                                message='Delete'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.Delete}`}
-                                    onClick={onDeleteBacklogStoriesClick}
-                                >
-                                    <MaterialIconUI>close</MaterialIconUI>
-                                </div>
-                            </TooltipUI>
-                        )}
-                        <TooltipUI
-                            message='Create story'
-                            relativeLayout={props.deps.relativeLayout}
-                        >
-                            <div
-                                className={`${styles.Action} ${styles.Add}`}
-                                onClick={onAddStoryInBacklogClick}
-                            >
-                                <MaterialIconUI>add</MaterialIconUI>
-                            </div>
-                        </TooltipUI>
+            <div className={styles.StoryListContainer}>
+                <div className={styles.LeftActions}>
+                    <div
+                        className={`${styles.Action} ${styles.Expand} ${classNames(
+                            {
+                                [styles.Active]: !showRightPanel,
+                            },
+                        )}`}
+                        style={{
+                            fontVariationSettings: '"FILL" 1',
+                        }}
+                        onClick={onToggleRightPanelClick}
+                    >
+                        <MaterialIconUI>
+                            {showRightPanel
+                                ? 'collapse_content'
+                                : 'expand_content'}
+                        </MaterialIconUI>
                     </div>
                 </div>
-                <div className={styles.StoryList}>
-                    {onEditingNewStoryInBacklog && (
-                        <InlineCreateStory
-                            deps={props.deps}
-                            numActionColumns={1}
-                            onCreateStory={onCreateStoryInBacklog}
-                            onDiscardNewStory={onDiscardNewStoryInBacklog}
-                        />
-                    )}
-                    {project.unplannedStories.map((story) => (
-                        <div
-                            key={story.id}
-                            className={styles.ListItem}
-                        >
-                            <StoryInlineItemComponent
-                                story={story}
-                                deps={props.deps}
-                                isSelected={selectedBacklogStoryIds.has(
-                                    story.id.toString(),
-                                )}
-                                onStoryDetailClickHandler={
-                                    onStoryDetailClickHandler
-                                }
-                                onStorySelectHandler={onBacklogStorySelect}
-                            />
+                <div
+                    className={`${styles.StoryListSection} ${classNames({
+                        [styles.Hidden]: !showRightPanel,
+                    })}`}
+                >
+                    <div className={styles.TopBar}>
+                        <div className={styles.Title}>Stories</div>
+                        <div className={styles.Actions}>
+                            {selectedBacklogStoryIds.size > 0 && (
+                                <TooltipUI
+                                    message='Move to phase'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Move}`}
+                                        onClick={onAddStoriesToPhaseClick}
+                                    >
+                                        <MaterialIconUI>
+                                            read_more
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            )}
+                            {selectedBacklogStoryIds.size > 0 && (
+                                <TooltipUI
+                                    message='Delete'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Delete}`}
+                                        onClick={onDeleteBacklogStoriesClick}
+                                    >
+                                        <MaterialIconUI>close</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            )}
+                            <TooltipUI
+                                message='Create story'
+                                relativeLayout={props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.Add}`}
+                                    onClick={onAddStoryInBacklogClick}
+                                >
+                                    <MaterialIconUI>add</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         </div>
-                    ))}
+                    </div>
+                    <div className={styles.StoryList}>
+                        {onEditingNewStoryInBacklog && (
+                            <InlineCreateStory
+                                deps={props.deps}
+                                numActionColumns={1}
+                                onCreateStory={onCreateStoryInBacklog}
+                                onDiscardNewStory={onDiscardNewStoryInBacklog}
+                            />
+                        )}
+                        {project.unplannedStories.map((story) => (
+                            <div key={story.id} className={styles.ListItem}>
+                                <StoryInlineItemComponent
+                                    story={story}
+                                    deps={props.deps}
+                                    isSelected={selectedBacklogStoryIds.has(
+                                        story.id.toString(),
+                                    )}
+                                    onStoryDetailClickHandler={
+                                        onStoryDetailClickHandler
+                                    }
+                                    onStorySelectHandler={onBacklogStorySelect}
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
