@@ -85,7 +85,9 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                             <div className={styles.Label}>Expire In:</div>
                             <div className={styles.DropDown}>
                                 <DropDownList
-                                    relativeLayout={this.props.deps.relativeLayout}
+                                    relativeLayout={
+                                        this.props.deps.relativeLayout
+                                    }
                                     ref={this.dropDownListRef}
                                     selectOptionKey={
                                         expirationPeriodOptions[0].key
@@ -142,8 +144,18 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
             return;
         }
 
+        const generatedLink = invitationLink(invitationId, invitationCode);
+        const invitation = this.graphSource.invitation(invitationId);
+        if (navigator.clipboard && invitation) {
+            await navigator.clipboard.writeText(generatedLink);
+            this.props.deps.feedbackPubSub.publish({
+                type: 'InvitationLinkCopied',
+                invitation,
+            });
+        }
+
         this.setState({
-            invitationLink: invitationLink(invitationId, invitationCode),
+            invitationLink: generatedLink,
         });
     };
 }
