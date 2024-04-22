@@ -594,19 +594,19 @@ export function PhaseComponent(props: Props) {
             <div className={styles.StoryListContainer}>
                 <div className={styles.LeftActions}>
                     <div
-                        className={`${styles.Action} ${classNames({
-                            [styles.Active]: !showRightPanel,
-                        })}`}
+                        className={`${styles.Action} ${styles.Expand} ${classNames(
+                            {
+                                [styles.Active]: !showRightPanel,
+                            },
+                        )}`}
                         style={{
                             fontVariationSettings: '"FILL" 1',
                         }}
                         onClick={onToggleRightPanelClick}
                     >
-                        <i className={styles[`material-symbols-outlined`]}>
-                            {showRightPanel
-                                ? 'collapse_content'
-                                : 'expand_content'}
-                        </i>
+                        <MaterialIconUI>
+                            {showRightPanel ? 'hide' : 'open_in_full'}
+                        </MaterialIconUI>
                     </div>
                 </div>
                 <div
