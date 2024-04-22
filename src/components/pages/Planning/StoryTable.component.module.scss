@@ -22,11 +22,14 @@ $actionIconSize: 24px;
                 padding-bottom: 12px;
 
                 &.CheckboxCol {
-                    width: 36px;
+                    
+                    width: 40px;
                 }
 
                 &.IdCol {
-                    width: 36px;
+                    text-align: left;
+                    width: 40px;
+                    
                 }
 
                 &.PriorityCol {
@@ -54,7 +57,7 @@ $actionIconSize: 24px;
 
             .Actions {
                 display: flex;
-                gap: 8px;
+                gap: 12px;
                 align-items: center;
                 justify-content: center;
 
@@ -102,7 +105,7 @@ $actionIconSize: 24px;
                 }
 
                 &.IdCol {
-                    text-align: center;
+                    text-align: left;
                 }
 
                 &.NameCol {
