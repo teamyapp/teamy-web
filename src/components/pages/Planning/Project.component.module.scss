@@ -198,10 +198,16 @@
     }
 
     .StoryListContainer {
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+        z-index: 1;
         display: flex;
 
         .LeftActions {
+            box-shadow: 2px 0 0 0 rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
             padding: 8px;
+            z-index: 2;
 
             .Action {
                 @include action;
@@ -228,6 +234,7 @@
         }
         .StoryListSection {
             @include ItemListSection;
+            box-shadow: none;
             transition: width 0.5s ease;
 
             &.Hidden {
