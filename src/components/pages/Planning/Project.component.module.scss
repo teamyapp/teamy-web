@@ -1,4 +1,6 @@
+@import 'material-symbols/index.css';
 @import 'ItemListSection.module';
+@import 'shared.scss';
 
 .Project {
     background-color: white;
@@ -195,18 +197,54 @@
         }
     }
 
-    .StoryListSection {
-        @include ItemListSection;
+    .StoryListContainer {
+        display: flex;
 
-        .StoryList {
-            box-sizing: border-box;
-            flex: 1;
-            overflow-y: scroll;
-            padding: 6px 8px;
-            margin: 10px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .LeftActions {
+            padding: 8px;
+
+            .Action {
+                @include action;
+                color: rgb(0, 128, 255);
+
+                > i {
+                    font-size: 20px;
+                    font-weight: bold;
+                }
+
+                &.Active {
+                    background-color: rgb(0, 128, 255);
+                    color: white;
+                }
+
+                &:hover {
+                    cursor: pointer;
+
+                    &:not(.Active) {
+                        background-color: rgba(0, 0, 0, 0.06);
+                    }
+                }
+            }
+        }
+        .StoryListSection {
+            @include ItemListSection;
+            transition: width 0.5s ease;
+
+            &.Hidden {
+                width: 0px;
+                padding: 0px;
+            }
+
+            .StoryList {
+                box-sizing: border-box;
+                flex: 1;
+                overflow-y: scroll;
+                padding: 6px 8px;
+                margin: 10px 0;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     }
 }
