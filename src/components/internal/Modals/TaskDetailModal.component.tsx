@@ -138,7 +138,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             }
                                             ref={this.markdownEditorRef}
                                         />
-                                        <div className={styles.Description}>Type {cmdKey} + s to save changes</div>
+                                        <div className={styles.Description}>Press {cmdKey} + s to save changes</div>
                                     </div>
                                     <div className={styles.LinksSection}>
                                         <div className={styles.Title}>
