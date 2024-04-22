@@ -77,6 +77,14 @@ $divider: 2px solid #eeeeee;
             .Context {
                 --initial-height: 300px;
                 margin-top: 20px;
+
+                .Description {
+                    font-size: 12px;
+                    font-style: italic;
+                    margin-top: 6px;
+                    font-weight: 400;
+                    color: #494949;
+                }
             }
 
             .CommentsSection {
