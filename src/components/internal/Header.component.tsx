@@ -24,10 +24,10 @@ import {
     teamRoutePattern,
 } from '@core/routing/routes';
 
-import { ContextMenuComponent } from './ContextMenu.component';
 import styles from './Header.component.module.scss';
 import { SprintsHeaderSectionComponent } from './SprintsHeaderSection.component';
 import { UserProfileUI } from './UserProfile';
+import { RelativeLayoutContainerUI } from '@lib/layout';
 
 interface Props {
     deps: Deps;
@@ -53,7 +53,6 @@ interface Props {
 }
 
 interface State {
-    showUserProfileMenu: boolean;
     isSearchBarFocused: boolean;
     showBacklog: boolean;
     taskFiltersData: TaskFiltersData;
@@ -68,15 +67,12 @@ export class HeaderComponent extends Component<Props, State> {
     private readonly router: Router;
     private readonly searchBarRef = createRef<HTMLDivElement>();
     private readonly searchInputRef = createRef<HTMLInputElement>();
-    private readonly userProfileSectionRef: React.RefObject<HTMLDivElement> =
-        createRef();
     private routeChangeChan?: csp.PopChannel<RouteUpdate | undefined>;
 
     constructor(props: Props) {
         super(props);
         this.router = props.deps.router;
         this.state = {
-            showUserProfileMenu: false,
             showBacklog: false,
             isSearchBarFocused: false,
             taskFiltersData: {
@@ -113,21 +109,24 @@ export class HeaderComponent extends Component<Props, State> {
                         <TooltipUI
                             relativeLayout={this.props.deps.relativeLayout}
                             preserveReferenceParentHeight={true}
-                            message={'Team Settings'}>
+                            message={'Team Settings'}
+                        >
                             <div
                                 role={'button'}
                                 aria-label={this.props.currentTeam.name}
                                 className={styles.TeamName}
                                 onClick={this.onViewTeamSettingsClick}
                             >
-
                                 {this.props.currentTeam.name}
                             </div>
                         </TooltipUI>
                     )}
                     <Route router={this.router} pattern={sprintsRoutePattern}>
                         <div className={styles.BacklogSection}>
-                            <TooltipUI message={'Backlog'} relativeLayout={this.props.deps.relativeLayout}>
+                            <TooltipUI
+                                message={'Backlog'}
+                                relativeLayout={this.props.deps.relativeLayout}
+                            >
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]: this.state.showBacklog,
@@ -181,11 +180,14 @@ export class HeaderComponent extends Component<Props, State> {
                 >
                     <Route router={this.router} pattern={teamRoutePattern}>
                         <div className={styles.ButtonsSection}>
-                            <TooltipUI message='Sprints' relativeLayout={this.props.deps.relativeLayout}>
+                            <TooltipUI
+                                message='Sprints'
+                                relativeLayout={this.props.deps.relativeLayout}
+                            >
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                        this.state.showSprintsView,
+                                            this.state.showSprintsView,
                                     })}`}
                                     onClick={this.onShowSprintsViewClick}
                                 >
@@ -193,13 +195,18 @@ export class HeaderComponent extends Component<Props, State> {
                                 </div>
                             </TooltipUI>
                             {this.props.deps.featureToggle.enablePlanning && (
-                                <TooltipUI message='Planning' relativeLayout={this.props.deps.relativeLayout}>
+                                <TooltipUI
+                                    message='Planning'
+                                    relativeLayout={
+                                        this.props.deps.relativeLayout
+                                    }
+                                >
                                     <div
                                         className={`${
                                             styles.Button
                                         } ${classNames({
                                             [styles.Active]:
-                                            this.state.showPlanningView,
+                                                this.state.showPlanningView,
                                         })}`}
                                         onClick={this.onShowPlanningViewClick}
                                     >
@@ -211,7 +218,7 @@ export class HeaderComponent extends Component<Props, State> {
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                        this.state.showInsightsView,
+                                            this.state.showInsightsView,
                                     })}`}
                                     onClick={this.onShowInsightsViewClick}
                                 >
@@ -223,7 +230,7 @@ export class HeaderComponent extends Component<Props, State> {
                                 <div
                                     className={`${styles.Button} ${classNames({
                                         [styles.Active]:
-                                        this.state.showKnowledgeView,
+                                            this.state.showKnowledgeView,
                                     })}`}
                                     onClick={this.onShowKnowledgeViewClick}
                                 >
@@ -232,13 +239,18 @@ export class HeaderComponent extends Component<Props, State> {
                             )}
                             {this.props.deps.featureToggle
                                 .enableMarketplace && (
-                                <TooltipUI message='Marketplace' relativeLayout={this.props.deps.relativeLayout}>
+                                <TooltipUI
+                                    message='Marketplace'
+                                    relativeLayout={
+                                        this.props.deps.relativeLayout
+                                    }
+                                >
                                     <div
                                         className={`${
                                             styles.Button
                                         } ${classNames({
                                             [styles.Active]:
-                                            this.state.showMarketplaceView,
+                                                this.state.showMarketplaceView,
                                         })}`}
                                         onClick={
                                             this.onShowMarketplaceViewClick
@@ -254,41 +266,41 @@ export class HeaderComponent extends Component<Props, State> {
                     </Route>
                     <div className={styles.UserActionSection}></div>
                     {this.props.me && (
-                        <div
-                            className={styles.UserSection}
-                            tabIndex={-1}
-                            ref={this.userProfileSectionRef}
-                            onBlur={this.onUserProfileSectionBlur}
-                        >
-                            <div
-                                className={styles.UserProfile}
-                                onClick={this.onUserProfileClick}
-                            >
-                                <UserProfileUI user={this.props.me} />
-                            </div>
-                            <div className={styles.UserName}>
-                                {`${this.props.me.firstName} ${this.props.me.lastName}`}
-                            </div>
-                            <div
-                                className={`${styles.Popup} ${classNames({
-                                    [styles.Show]:
-                                    this.state.showUserProfileMenu,
-                                })}`}
-                            >
-                                <div
-                                    className={styles.Item}
-                                    onClick={this.onViewUserSettingClick}
-                                >
-                                    Settings
+                        <RelativeLayoutContainerUI
+                            relativeLayout={this.props.deps.relativeLayout}
+                            referenceOffset={8}
+                            renderReferenceElement={({ toggleContainer }) => (
+                                <div className={styles.UserSection}>
+                                    <div
+                                        className={styles.UserProfile}
+                                        onClick={toggleContainer}
+                                    >
+                                        <UserProfileUI user={this.props.me} />
+                                    </div>
+                                    <div className={styles.UserName}>
+                                        {`${this.props.me.firstName} ${this.props.me.lastName}`}
+                                    </div>
                                 </div>
-                                <div
-                                    className={`${styles.Item} ${styles.SignOut}`}
-                                    onClick={this.onSignOutClick}
-                                >
-                                    Sign out
+                            )}
+                            renderFollower={() => (
+                                <div className={styles.Popup}>
+                                    <div
+                                        className={styles.Item}
+                                        onClick={
+                                            this.props.onViewUserSettingClick
+                                        }
+                                    >
+                                        Settings
+                                    </div>
+                                    <div
+                                        className={`${styles.Item} ${styles.SignOut}`}
+                                        onClick={this.props.onSignOutClick}
+                                    >
+                                        Sign out
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            )}
+                        />
                     )}
                 </div>
             </header>
@@ -484,37 +496,4 @@ export class HeaderComponent extends Component<Props, State> {
             showMarketplaceView: false,
         });
     }
-
-    private onUserProfileClick = () => {
-        this.setState(
-            {
-                showUserProfileMenu: !this.state.showUserProfileMenu,
-            },
-            () => {
-                if (this.state.showUserProfileMenu) {
-                    this.userProfileSectionRef.current?.focus();
-                }
-            },
-        );
-    };
-
-    private onUserProfileSectionBlur = () => {
-        this.setState({
-            showUserProfileMenu: false,
-        });
-    };
-
-    private onViewUserSettingClick = () => {
-        this.setState({
-            showUserProfileMenu: false,
-        });
-        this.props.onViewUserSettingClick?.call(null);
-    };
-
-    private onSignOutClick = () => {
-        this.setState({
-            showUserProfileMenu: false,
-        });
-        this.props.onSignOutClick?.call(null);
-    };
 }
