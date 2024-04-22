@@ -1,6 +1,16 @@
+@import 'material-symbols/index.css';
 @import '../../../libs/ui/styleguide/elevation';
 @import 'ItemListSection.module';
 @import 'shared.scss';
+
+@mixin action {
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .Phase {
     display: flex;
@@ -31,7 +41,7 @@
                     flex-direction: column;
                     gap: 4px;
 
-                    .PhaseName{
+                    .PhaseName {
                         cursor: pointer;
                     }
 
@@ -44,12 +54,7 @@
             }
 
             .Action {
-                width: 26px;
-                height: 26px;
-                border-radius: 4px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
+                @include action;
 
                 &:hover {
                     --icon-color: white;
@@ -168,6 +173,41 @@
 
     .StoryListSection {
         @include ItemListSection;
+        transition: width 0.5s ease;
+
+        &.Hidden {
+            width: 42px;
+            height: 34px;
+            transition: width 0.5s ease;
+        }
+
+        .TopActions {
+            padding-top: 4px;
+            padding-bottom: 4px;
+
+            .Action {
+                @include action;
+                color: rgb(0, 128, 255);
+
+                > i {
+                    font-size: 20px;
+                    font-weight: bold;
+                }
+
+                &.Active {
+                    background-color: rgb(0, 128, 255);
+                    color: white;
+                }
+
+                &:hover {
+                    cursor: pointer;
+
+                    &:not(.Active) {
+                        background-color: rgba(0, 0, 0, 0.06);
+                    }
+                }
+            }
+        }
 
         .StoryList {
             box-sizing: border-box;
