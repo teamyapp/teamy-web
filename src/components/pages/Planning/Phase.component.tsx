@@ -605,7 +605,9 @@ export function PhaseComponent(props: Props) {
                         onClick={onToggleRightPanelClick}
                     >
                         <MaterialIconUI>
-                            {showRightPanel ? 'hide' : 'open_in_full'}
+                            {showRightPanel
+                                ? 'collapse_content'
+                                : 'expand_content'}
                         </MaterialIconUI>
                     </div>
                 </div>

@@ -442,16 +442,20 @@ export function ProjectComponent(props: Props) {
             <div className={styles.StoryListContainer}>
                 <div className={styles.LeftActions}>
                     <div
-                        className={`${styles.Action} ${styles.Expand} ${classNames({
-                            [styles.Active]: !showRightPanel,
-                        })}`}
+                        className={`${styles.Action} ${styles.Expand} ${classNames(
+                            {
+                                [styles.Active]: !showRightPanel,
+                            },
+                        )}`}
                         style={{
                             fontVariationSettings: '"FILL" 1',
                         }}
                         onClick={onToggleRightPanelClick}
                     >
                         <MaterialIconUI>
-                            {showRightPanel ? 'hide' : 'open_in_full'}
+                            {showRightPanel
+                                ? 'collapse_content'
+                                : 'expand_content'}
                         </MaterialIconUI>
                     </div>
                 </div>
