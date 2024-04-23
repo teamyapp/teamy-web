@@ -376,9 +376,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             });
         }
 
-        if (
-            event.key === 's' &&
-            (this.state.isCmdKeyPressed || this.state.isControlKeyPressed)
+        if ((this.state.isCmdKeyPressed || this.state.isControlKeyPressed) &&
+            event.key === 's'
         ) {
             event.preventDefault();
             this.saveTaskContext();
