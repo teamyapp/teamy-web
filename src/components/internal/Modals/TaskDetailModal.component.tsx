@@ -51,7 +51,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
     private readonly feedbackPubSub: PubSub<Feedback>;
     private readonly relativeLayout: RelativeLayout;
-    private getBoundingClientRect?: () => DOMRect;
     private readonly modalRef = createRef<ModalUI>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
@@ -284,6 +283,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     public componentDidMount() {
         window.addEventListener('resize', this.onBodyResize);
+        document.addEventListener('keydown', this.onKeyDown)
         this.stateChangeChan = this.localStore.subscribeStateChange();
         this.keyBoardEventChan =  this.props.deps.keyBoardEventMonitor.subscribe();
         (async () => {
@@ -312,7 +312,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                     return;
                 }
 
-                const { key, eventType, event } = keyboardEvent;
+                const { key, eventType } = keyboardEvent;
                 const platform = getPlatform();
                 if (
                     (platform === 'Mac' && key === 'Meta') ||
@@ -325,17 +325,13 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         });
                     }
                 }
-
-                if (this.state.isCmdKeyPressed && key === 's') {
-                    event.preventDefault();
-                    this.onSaveButtonClick();
-                }
             }
         })();
     }
 
     public componentWillUnmount() {
         window.removeEventListener('resize', this.onBodyResize);
+        document.removeEventListener('keydown', this.onKeyDown)
         closeIfNot(this.stateChangeChan);
     }
 
@@ -390,6 +386,13 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.adjustSize();
     };
 
+    private onKeyDown = (event: KeyboardEvent) => {
+        if (event.key === 's' && this.state.isCmdKeyPressed) {
+            event.preventDefault();
+            this.saveTaskContext();
+        }
+    };
+
     private adjustSize() {
         this.setState({
             heightWithMargin: document.body.clientHeight,
@@ -408,6 +411,28 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             });
         }
     };
+
+    private saveTaskContext = async () => {
+        if (this.state.task) {
+            const updatedContextTask = {
+                goal: this.state.task.goal,
+                ownerUserId: this.state.task.owner?.id,
+                owningTeamId: this.state.task.owningTeam.id,
+                context: this.markdownEditorRef.current?.content,
+                dueAt: this.state.task.dueAt,
+                effort: this.state.task.effort,
+            };
+
+            await this.stateSyncer.updateTask(
+                this.state.task.id,
+                updatedContextTask,
+            );
+            await this.feedbackPubSub.publish({
+                type: 'TaskUpdated',
+                taskId: this.state.task.id,
+            });
+        }
+    }
 
     private onTaskOwnerSelected = (ownerUserId?: number) => {
         this.stateSyncer.updateTask(this.state.task!.id, {
