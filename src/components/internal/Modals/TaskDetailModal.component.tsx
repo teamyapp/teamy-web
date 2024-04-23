@@ -393,7 +393,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             });
         }
 
-        if (platform === 'Windows' && event.key !== 'Control') {
+        if (platform === 'Windows' && event.key === 'Control') {
             this.setState({
                 isControlKeyPressed: false,
             });
