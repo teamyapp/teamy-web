@@ -42,6 +42,7 @@ interface State {
     currentUserId?: number;
     heightWithMargin: number;
     isCmdKeyPressed: boolean;
+    isControlKeyPressed: boolean;
 }
 
 export class TaskDetailModalComponent extends Component<Props, State> {
@@ -66,6 +67,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.state = {
             heightWithMargin: 0,
             isCmdKeyPressed: false,
+            isControlKeyPressed: false,
         };
     }
 
@@ -281,7 +283,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     public componentDidMount() {
         window.addEventListener('resize', this.onBodyResize);
         document.addEventListener('keydown', this.onKeyDown);
-        document.addEventListener('keyup', this.onKeyUp)
+        document.addEventListener('keyup', this.onKeyUp);
         this.stateChangeChan = this.localStore.subscribeStateChange();
         (async () => {
             while (true) {
@@ -362,17 +364,22 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onKeyDown = (event: KeyboardEvent) => {
         const platform = getPlatform();
-        if (
-            (platform === 'Mac' && event.metaKey) ||
-            (platform === 'Windows' && event.key === 'Control')
-        ) {
+        if (platform === 'Mac' && event.metaKey) {
             this.setState({
                 isCmdKeyPressed: true,
-                isControlKeyPressed: true
             });
         }
 
-        if (event.key === 's' && (this.state.isCmdKeyPressed || this.state. isControlKeyPressed)) {
+        if (platform === 'Windows' && event.key === 'Control') {
+            this.setState({
+                isControlKeyPressed: true,
+            });
+        }
+
+        if (
+            event.key === 's' &&
+            (this.state.isCmdKeyPressed || this.state.isControlKeyPressed)
+        ) {
             event.preventDefault();
             this.saveTaskContext();
         }
@@ -380,12 +387,15 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onKeyUp = (event: KeyboardEvent) => {
         const platform = getPlatform();
-        if (
-            (platform === 'Mac' && !event.metaKey) ||
-            (platform === 'Windows' && event.key === 'Control')
-        ) {
+        if (platform === 'Mac' && !event.metaKey) {
             this.setState({
                 isCmdKeyPressed: false,
+            });
+        }
+
+        if (platform === 'Windows' && event.key !== 'Control') {
+            this.setState({
+                isControlKeyPressed: false,
             });
         }
     };
