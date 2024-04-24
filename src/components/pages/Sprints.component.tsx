@@ -46,7 +46,9 @@ import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
 import { RelativeLayoutContainerUI } from '@lib/layout';
-import { TeamMember } from '@core/entity/teamMember';
+import { SelectUserListUI } from 'components/internal/SelectUserList';
+
+const TEAM_MEMBERS_POPUP_Z_INDEX = 1002;
 
 const sectionIds = [
     upcomingSectionId,
@@ -295,15 +297,20 @@ export class SprintsComponent extends Component<Props, State> {
     };
 
     private handleTeamMemberClick =
-        (teamMember: TeamMember, closeContainer: () => void) => () => {
+        (closeContainer: () => void) => (userId: number) => {
             if (!this.state.selectedSprintId) {
+                return;
+            }
+
+            const currentTeam = this.props.deps.graphSource.currentTeam();
+            if (!currentTeam) {
                 return;
             }
 
             this.stateSyncer.addTeamMemberToSprint(
                 this.state.selectedSprintId,
-                teamMember.team.id,
-                teamMember.user.id,
+                currentTeam.id,
+                userId,
             );
             closeContainer();
         };
@@ -327,27 +334,26 @@ export class SprintsComponent extends Component<Props, State> {
         closeContainer: () => void;
     }) => {
         const teamMembers = this.getAvailableTeamMembers();
+        const users = teamMembers.map((teamMember) => teamMember.user);
 
         return (
-            <div className={styles.DropDownList}>
-                <div className={styles.AvailableOptions}>
-                    {teamMembers.map((teamMember) => {
-                        return (
-                            <div
-                                key={`${teamMember.team.id}@${teamMember.user.id}`}
-                                className={styles.Option}
-                                onClick={this.handleTeamMemberClick(
-                                    teamMember,
-                                    closeContainer,
-                                )}
-                            >
-                                {getUserShortName(
-                                    teamMember.user.firstName,
-                                    teamMember.user.lastName,
-                                )}
-                            </div>
-                        );
-                    })}
+            <div className={styles.TeamMembers}>
+                <div className={styles.TopBar}>
+                    <div
+                        className={styles.CloseButton}
+                        onClick={closeContainer}
+                    >
+                        <MaterialIconUI>close</MaterialIconUI>
+                    </div>
+                </div>
+                <div className={styles.TeamMemberList}>
+                    <SelectUserListUI
+                        users={users}
+                        onSelectUser={this.handleTeamMemberClick(
+                            closeContainer,
+                        )}
+                        singleMode
+                    />
                 </div>
             </div>
         );
@@ -386,7 +392,7 @@ export class SprintsComponent extends Component<Props, State> {
         }
 
         if (this.isDeleteParticipantDisabled()) {
-            return
+            return;
         }
 
         this.state.selectedTaskOwners.forEach((userIdentity) => {
@@ -394,17 +400,17 @@ export class SprintsComponent extends Component<Props, State> {
                 return;
             }
 
-            const userId = userIdentity.split(userPrefix)[1]
+            const userId = userIdentity.split(userPrefix)[1];
             this.stateSyncer.removeTeamMemberFromSprint(
                 this.state.selectedSprintId,
                 currentTeam.id,
                 parseInt(userId),
             );
-        })
+        });
 
         this.setState({
-            selectedTaskOwners: new Set([userAll])
-        })
+            selectedTaskOwners: new Set([userAll]),
+        });
     };
 
     private renderTabContent(
@@ -414,6 +420,7 @@ export class SprintsComponent extends Component<Props, State> {
         let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
         let teamTasksFilter = filters.allTasks;
         const teamMembers = this.getAvailableTeamMembers();
+        const isDeleteParticipantDisabled = this.isDeleteParticipantDisabled();
 
         if (this.props.taskFilters.timeRangeFilter) {
             personalTasksFilter = and(
@@ -486,16 +493,19 @@ export class SprintsComponent extends Component<Props, State> {
                                             <div className={styles.Actions}>
                                                 <TooltipUI
                                                     message='Remove'
-                                                    disabled={this.isDeleteParticipantDisabled()}
+                                                    disabled={isDeleteParticipantDisabled}
                                                     relativeLayout={
                                                         this.props.deps
                                                             .relativeLayout
                                                     }
                                                 >
                                                     <div
-                                                        className={`${styles.Action} ${styles.Delete} ${classNames({
-                                                            [styles.Disabled]: this.isDeleteParticipantDisabled()
-                                                        })}`}
+                                                        className={`${styles.Action} ${styles.Delete} ${classNames(
+                                                            {
+                                                                [styles.Disabled]:
+                                                                    isDeleteParticipantDisabled,
+                                                            },
+                                                        )}`}
                                                         onClick={
                                                             this
                                                                 .onDeleteSprintParticipantClick
@@ -513,6 +523,7 @@ export class SprintsComponent extends Component<Props, State> {
                                             relativeLayout={
                                                 this.props.deps.relativeLayout
                                             }
+                                            zOffset={TEAM_MEMBERS_POPUP_Z_INDEX}
                                             renderFollower={
                                                 this.renderTeamMembers
                                             }
