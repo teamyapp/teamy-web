@@ -26,7 +26,6 @@ import { SelectOwnersPopupComponent } from '../SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from '../TaskLinkIcon';
 import { ThreadUI } from '../Thread';
 import styles from './TaskDetailModal.component.module.scss';
-import { InternalKeyboardEvent } from '@lib/event/keyBoardEventMoniter';
 import { getPlatform } from '@lib/runtime/os';
 
 const verticalMargin = 30;
@@ -42,7 +41,8 @@ interface State {
     updatedTask?: UpdateTaskInput;
     currentUserId?: number;
     heightWithMargin: number;
-    isCmdKeyPressed: boolean
+    isCmdKeyPressed: boolean;
+    isControlKeyPressed: boolean;
 }
 
 export class TaskDetailModalComponent extends Component<Props, State> {
@@ -51,15 +51,11 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly stateSyncer: StateSyncer;
     private readonly feedbackPubSub: PubSub<Feedback>;
     private readonly relativeLayout: RelativeLayout;
-    private getBoundingClientRect?: () => DOMRect;
     private readonly modalRef = createRef<ModalUI>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
     private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
-    private keyBoardEventChan?: csp.PopChannel<
-        InternalKeyboardEvent | undefined
-    >;
 
     constructor(props: Props) {
         super(props);
@@ -71,6 +67,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.state = {
             heightWithMargin: 0,
             isCmdKeyPressed: false,
+            isControlKeyPressed: false,
         };
     }
 
@@ -79,7 +76,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             ? new Date(this.state.updatedTask.dueAt)
             : undefined;
         const cmdKey = getPlatform() === 'Mac' ? 'cmd' : 'ctrl';
-        
         return (
             <>
                 <ModalUI ref={this.modalRef} afterClose={this.props.afterClose}>
@@ -138,7 +134,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             }
                                             ref={this.markdownEditorRef}
                                         />
-                                        <div className={styles.Description}>Press {cmdKey} + s to save changes</div>
+                                        <div className={styles.Description}>
+                                            Press {cmdKey} + s to save changes
+                                        </div>
                                     </div>
                                     <div className={styles.LinksSection}>
                                         <div className={styles.Title}>
@@ -284,8 +282,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     public componentDidMount() {
         window.addEventListener('resize', this.onBodyResize);
+        document.addEventListener('keydown', this.onKeyDown);
+        document.addEventListener('keyup', this.onKeyUp);
         this.stateChangeChan = this.localStore.subscribeStateChange();
-        this.keyBoardEventChan =  this.props.deps.keyBoardEventMonitor.subscribe();
         (async () => {
             while (true) {
                 console.log(
@@ -303,39 +302,12 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                 }
             }
         })().then();
-
-        (async () => {
-            while (true) {
-                console.log(`[TaskDetailModal] waiting for keyboard event`);
-                const keyboardEvent = await this.keyBoardEventChan!.pop();
-                if (keyboardEvent === undefined) {
-                    return;
-                }
-
-                const { key, eventType, event } = keyboardEvent;
-                const platform = getPlatform();
-                if (
-                    (platform === 'Mac' && key === 'Meta') ||
-                    (platform === 'Windows' && key === 'Control')
-                ) {
-                    if (['keydown', 'keyup'].includes(eventType)) {
-                        const isCmdKeyPressed = eventType === 'keydown';
-                        this.setState({
-                            isCmdKeyPressed,
-                        });
-                    }
-                }
-
-                if (this.state.isCmdKeyPressed && key === 's') {
-                    event.preventDefault();
-                    this.onSaveButtonClick();
-                }
-            }
-        })();
     }
 
     public componentWillUnmount() {
         window.removeEventListener('resize', this.onBodyResize);
+        document.removeEventListener('keydown', this.onKeyDown);
+        document.removeEventListener('keyup', this.onKeyUp);
         closeIfNot(this.stateChangeChan);
     }
 
@@ -390,6 +362,43 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         this.adjustSize();
     };
 
+    private onKeyDown = (event: KeyboardEvent) => {
+        const platform = getPlatform();
+        if (platform === 'Mac' && event.metaKey) {
+            this.setState({
+                isCmdKeyPressed: true,
+            });
+        }
+
+        if (platform === 'Windows' && event.key === 'Control') {
+            this.setState({
+                isControlKeyPressed: true,
+            });
+        }
+
+        if ((this.state.isCmdKeyPressed || this.state.isControlKeyPressed) &&
+            event.key === 's'
+        ) {
+            event.preventDefault();
+            this.saveTaskContext();
+        }
+    };
+
+    private onKeyUp = (event: KeyboardEvent) => {
+        const platform = getPlatform();
+        if (platform === 'Mac' && !event.metaKey) {
+            this.setState({
+                isCmdKeyPressed: false,
+            });
+        }
+
+        if (platform === 'Windows' && event.key === 'Control') {
+            this.setState({
+                isControlKeyPressed: false,
+            });
+        }
+    };
+
     private adjustSize() {
         this.setState({
             heightWithMargin: document.body.clientHeight,
@@ -401,6 +410,28 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             await this.stateSyncer.updateTask(
                 this.state.task.id,
                 this.getUpdatedTaskInput(),
+            );
+            await this.feedbackPubSub.publish({
+                type: 'TaskUpdated',
+                taskId: this.state.task.id,
+            });
+        }
+    };
+
+    private saveTaskContext = async () => {
+        if (this.state.task) {
+            const updatedContextTask = {
+                goal: this.state.task.goal,
+                ownerUserId: this.state.task.owner?.id,
+                owningTeamId: this.state.task.owningTeam.id,
+                context: this.markdownEditorRef.current?.content,
+                dueAt: this.state.task.dueAt,
+                effort: this.state.task.effort,
+            };
+
+            await this.stateSyncer.updateTask(
+                this.state.task.id,
+                updatedContextTask,
             );
             await this.feedbackPubSub.publish({
                 type: 'TaskUpdated',

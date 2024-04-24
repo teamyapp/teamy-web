@@ -99,7 +99,7 @@ export class InstalledTabComponent extends Component<Props, State> {
     }
 
     private onRemoveAppButtonClick = (app: App, currentTeamId: number) => {
-        return () => {
+        return async () => {
             const appTeamInstallation = app.installations.find(
                 (installation) =>
                     installation.installedTeam.id === currentTeamId,
@@ -109,7 +109,8 @@ export class InstalledTabComponent extends Component<Props, State> {
                 return;
             }
 
-            this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
+            await this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
+            document.location.reload();
         };
     };
 

@@ -145,13 +145,14 @@ export class DiscoverTabComponent extends Component<Props, State> {
         appId: number,
         currentTeamId: number,
     ) => {
-        return () => {
-            this.stateSyncer.installAppToTeam(appId, currentTeamId);
+        return async () => {
+            await this.stateSyncer.installAppToTeam(appId, currentTeamId);
+            window.location.reload();
         };
     };
 
     private onRemoveAppButtonClick = (app: App, currentTeamId: number) => {
-        return () => {
+        return async () => {
             const appTeamInstallation = app.installations.find(
                 (installation) =>
                     installation.installedTeam.id === currentTeamId,
@@ -161,7 +162,8 @@ export class DiscoverTabComponent extends Component<Props, State> {
                 return;
             }
 
-            this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
+            await this.stateSyncer.uninstallAppFromTeam(appTeamInstallation.id);
+            document.location.reload();
         };
     };
 
