@@ -3,6 +3,7 @@ import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { RemoteCreateSprintInput } from '@core/client/entity/input';
 import { RemoteSprint } from '@core/client/entity/remoteSprint';
 import { RemoteTask } from '@core/client/entity/remoteTask';
+import { RemoteSprintParticipant } from './entity/remoteSprintParticipant';
 
 export class SprintClient {
     private readonly graphQLClient: GraphQLClient;
@@ -204,6 +205,86 @@ export class SprintClient {
                 },
             })
             .then((payload: any) => payload?.copyTasksToSprint);
+    }
+
+    public addTeamMemberToSprint(
+        sprintId: string,
+        teamId: string,
+        userId: string,
+    ): Promise<RemoteSprintParticipant> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation addTeamMemberToSprint(
+                        $sprintId: ID!
+                        $teamId: ID!
+                        $userId: ID!
+                    ) {
+                        addTeamMemberToSprint(
+                            sprintId: $sprintId
+                            teamId: $teamId
+                            userId: $userId
+                        ) {
+                            sprint {
+                                id
+                            }
+                            user {
+                                id
+                            }
+                            totalBandwidth
+                            unusedBandwidth
+                            createdAt
+                            updatedAt
+                        }
+                    }
+                `,
+                variables: {
+                    sprintId,
+                    teamId,
+                    userId,
+                },
+            })
+            .then((payload: any) => payload?.addTeamMemberToSprint);
+    }
+
+    public removeTeamMemberFromSprint(
+        sprintId: string,
+        teamId: string,
+        userId: string,
+    ): Promise<RemoteSprintParticipant> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation removeTeamMemberFromSprint(
+                        $sprintId: ID!
+                        $teamId: ID!
+                        $userId: ID!
+                    ) {
+                        removeTeamMemberFromSprint(
+                            sprintId: $sprintId
+                            teamId: $teamId
+                            userId: $userId
+                        ) {
+                            sprint {
+                                id
+                            }
+                            user {
+                                id
+                            }
+                            totalBandwidth
+                            unusedBandwidth
+                            createdAt
+                            updatedAt
+                        }
+                    }
+                `,
+                variables: {
+                    sprintId,
+                    teamId,
+                    userId,
+                },
+            })
+            .then((payload: any) => payload?.removeTeamMemberFromSprint);
     }
 
     public addTaskToSprint(
