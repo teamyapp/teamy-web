@@ -161,7 +161,7 @@
         }
     }
 
-    .StoryListPanel {
+    .StoryListContainer {
         box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
         box-sizing: border-box;
         z-index: 1;
@@ -175,7 +175,7 @@
 
             .Action {
                 @include action;
-                
+
                 &.Expand {
                     --icon-color: rgb(0, 128, 255);
                 }
@@ -194,7 +194,6 @@
                 }
             }
         }
-
         .StoryListSection {
             @include ItemListSection;
             box-shadow: none;
