@@ -407,7 +407,6 @@ export class SprintsComponent extends Component<Props, State> {
                 parseInt(userId),
             );
         });
-
         this.setState({
             selectedTaskOwners: new Set([userAll]),
         });
