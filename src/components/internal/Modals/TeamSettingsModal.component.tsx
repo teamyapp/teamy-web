@@ -453,7 +453,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         this.modalRef.current?.close();
     };
 
-    private onInvitationCreateClicked = async () => {
+    private onInvitationClick = async () => {
         await this.props.onAddTeamMemberClick?.call(null, this.state.team!.id);
     };
 
