@@ -385,7 +385,6 @@ export class SprintsComponent extends Component<Props, State> {
             return;
         }
 
-        debugger
         this.state.selectedTaskOwners.forEach((userIdentity) => {
             if (!this.state.selectedSprintId) {
                 return;
@@ -503,6 +502,7 @@ export class SprintsComponent extends Component<Props, State> {
                                             renderFollower={
                                                 this.renderTeamMembers
                                             }
+                                            preserveReferenceParentHeight
                                             renderReferenceElement={({
                                                 toggleContainer, showFollower,
                                             }) => (
