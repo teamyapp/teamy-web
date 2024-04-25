@@ -9,8 +9,9 @@ import { UserProfileUI } from './UserProfile';
 import { getUserShortName } from './format';
 
 interface Props {
-    emptySelectionUserName: string;
+    emptySelectionUserName?: string;
     users: User[];
+    showSelected?: boolean;
     selectedUserId?: number;
     onSelectUser?: (userId: number) => void;
     onRemoveSelection?: () => void;
@@ -33,11 +34,13 @@ export class SelectUserListUI extends Component<Props> {
                 key={user.id}
                 onClick={this.onUserRowClick(user.id)}
             >
-                <div className={styles.SelectionIndicator}>
-                    {this.props.selectedUserId === user.id && (
-                        <MaterialIconUI>check</MaterialIconUI>
-                    )}
-                </div>
+                {this.props.showSelected && (
+                    <div className={styles.SelectionIndicator}>
+                        {this.props.selectedUserId === user.id && (
+                            <MaterialIconUI>check</MaterialIconUI>
+                        )}
+                    </div>
+                )}
                 <UserProfileUI user={user} />
                 <div className={styles.Name}>
                     {getUserShortName(user.firstName, user.lastName)}
@@ -47,6 +50,10 @@ export class SelectUserListUI extends Component<Props> {
     };
 
     private renderEmptySelection() {
+        if (!this.props.emptySelectionUserName) {
+            return null;
+        }
+
         return (
             <div
                 className={styles.UserRow}

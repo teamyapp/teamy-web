@@ -135,6 +135,7 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
                             onRemoveSelection={handleRemoveOwner(
                                 closeContainer,
                             )}
+                            showSelected
                         />
                     </div>
                 );
