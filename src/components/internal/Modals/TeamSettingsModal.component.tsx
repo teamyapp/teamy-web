@@ -242,7 +242,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     <div className={`${styles.Action} ${styles.Add}`}>
                         <ButtonUI
                             onClick={this.onInvitationCreateClicked}
-                            label='Add invitation'
+                            label='Invitation'
                         />
                     </div>
                 </div>
