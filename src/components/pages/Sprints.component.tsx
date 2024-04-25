@@ -352,7 +352,6 @@ export class SprintsComponent extends Component<Props, State> {
                         onSelectUser={this.handleTeamMemberClick(
                             closeContainer,
                         )}
-                        singleMode
                     />
                 </div>
             </div>

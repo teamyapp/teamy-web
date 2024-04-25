@@ -34,7 +34,7 @@ export class SelectUserListUI extends Component<Props> {
                 key={user.id}
                 onClick={this.onUserRowClick(user.id)}
             >
-                {!this.props.singleMode && (
+                {this.props.showSelected && (
                     <div className={styles.SelectionIndicator}>
                         {this.props.selectedUserId === user.id && (
                             <MaterialIconUI>check</MaterialIconUI>
