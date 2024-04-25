@@ -238,6 +238,14 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         const sortedInvitations = orderByStatus(this.state.invitations);
         return (
             <div className={styles.InvitationsTab}>
+                <div className={styles.TopBar}>
+                    <div className={`${styles.Action} ${styles.Add}`}>
+                        <ButtonUI
+                            onClick={this.onInvitationClick}
+                            label='Invitation'
+                        />
+                    </div>
+                </div>
                 <div className={styles.Scrollable}>
                     <table className={styles.Table}>
                         <thead>
@@ -372,9 +380,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     {invitation.status}
                 </div>
                 <div className={styles.Actions}>
-                    {this.renderDeleteInvitationAction(
-                        invitation,
-                    )}
+                    {this.renderDeleteInvitationAction(invitation)}
                 </div>
             </div>
         );
@@ -418,21 +424,18 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                             </MaterialIconUI>
                         </div>
                     </TooltipUI>
-                    {this.renderDeleteInvitationAction(
-                        invitation,
-                    )}
+                    {this.renderDeleteInvitationAction(invitation)}
                 </td>
             </tr>
         );
     };
 
-    private renderDeleteInvitationAction(
-        invitation: Invitation,
-    ) {
+    private renderDeleteInvitationAction(invitation: Invitation) {
         return (
-            <TooltipUI 
+            <TooltipUI
                 message={'Delete'}
-                relativeLayout={this.props.deps.relativeLayout}>
+                relativeLayout={this.props.deps.relativeLayout}
+            >
                 <div
                     className={`${styles.Action} ${styles.Delete}`}
                     onClick={this.onDeleteInvitationClick(invitation.id)}
@@ -448,6 +451,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     private onCloseButtonClick = () => {
         closeIfNot(this.onStateChangeChan);
         this.modalRef.current?.close();
+    };
+
+    private onInvitationClick = async () => {
+        await this.props.onAddTeamMemberClick?.call(null, this.state.team!.id);
     };
 
     private onTabClick = (tabIndex: number) => {
