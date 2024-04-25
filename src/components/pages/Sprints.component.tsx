@@ -385,6 +385,7 @@ export class SprintsComponent extends Component<Props, State> {
             return;
         }
 
+        debugger
         this.state.selectedTaskOwners.forEach((userIdentity) => {
             if (!this.state.selectedSprintId) {
                 return;
@@ -397,9 +398,20 @@ export class SprintsComponent extends Component<Props, State> {
                 parseInt(userId),
             );
         });
-        this.setState({
-            selectedTaskOwners: new Set([userAll]),
-        });
+        
+        this.state.selectedTaskOwners.clear();
+        this.state.selectedTaskOwners.add(userAll);
+        this.forceUpdate();
+        this.props.onTaskFiltersChange?.call(
+            null,
+            Object.assign<any, TaskFilters, Partial<TaskFilters>>(
+                {},
+                this.props.taskFilters,
+                {
+                    taskOwnerFilter: this.getTaskOwnerFilter(),
+                },
+            ),
+        );
     };
 
     private renderTabContent(
