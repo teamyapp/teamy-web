@@ -77,7 +77,6 @@ interface State {
     selectedTaskOwners: Set<string>;
     allowMultiSelection: boolean;
     isPageReady?: boolean;
-    isEditingParticipants: boolean;
 }
 
 export class SprintsComponent extends Component<Props, State> {
@@ -114,7 +113,6 @@ export class SprintsComponent extends Component<Props, State> {
             selectedTaskOwners: new Set<string>([userAll]),
             allowMultiSelection: false,
             isPageReady: false,
-            isEditingParticipants: false,
         };
     }
 
@@ -297,8 +295,7 @@ export class SprintsComponent extends Component<Props, State> {
     };
 
     private handleTeamMemberClick =
-        (closeContainer: () => void) => 
-        (userId: number) => {
+        (closeContainer: () => void) => (userId: number) => {
             if (!this.state.selectedSprintId) {
                 return;
             }
@@ -356,12 +353,6 @@ export class SprintsComponent extends Component<Props, State> {
                 </div>
             </div>
         );
-    };
-
-    private toggleEditingParticipants = () => {
-        this.setState({
-            isEditingParticipants: !this.state.isEditingParticipants,
-        });
     };
 
     private handleAddParticipantClick =
@@ -463,59 +454,35 @@ export class SprintsComponent extends Component<Props, State> {
                                 </div>
                                 <div className={styles.ActionsBar}>
                                     <div className={styles.Actions}>
-                                        <TooltipUI
-                                            message='Edit'
-                                            relativeLayout={
-                                                this.props.deps.relativeLayout
-                                            }
-                                        >
-                                            <div
-                                                className={`${styles.Action} ${styles.Edit} ${classNames(
-                                                    {
-                                                        [styles.Active]:
-                                                            this.state
-                                                                .isEditingParticipants,
-                                                    },
-                                                )}`}
-                                                onClick={
-                                                    this
-                                                        .toggleEditingParticipants
+                                        <div className={styles.Actions}>
+                                            <TooltipUI
+                                                message='Remove'
+                                                disabled={
+                                                    isDeleteParticipantDisabled
+                                                }
+                                                relativeLayout={
+                                                    this.props.deps
+                                                        .relativeLayout
                                                 }
                                             >
-                                                <MaterialIconUI iconStyle='rounded'>
-                                                    edit
-                                                </MaterialIconUI>
-                                            </div>
-                                        </TooltipUI>
-                                        {this.state.isEditingParticipants && (
-                                            <div className={styles.Actions}>
-                                                <TooltipUI
-                                                    message='Remove'
-                                                    disabled={isDeleteParticipantDisabled}
-                                                    relativeLayout={
-                                                        this.props.deps
-                                                            .relativeLayout
+                                                <div
+                                                    className={`${styles.Action} ${styles.Delete} ${classNames(
+                                                        {
+                                                            [styles.Disabled]:
+                                                                isDeleteParticipantDisabled,
+                                                        },
+                                                    )}`}
+                                                    onClick={
+                                                        this
+                                                            .onDeleteSprintParticipantClick
                                                     }
                                                 >
-                                                    <div
-                                                        className={`${styles.Action} ${styles.Delete} ${classNames(
-                                                            {
-                                                                [styles.Disabled]:
-                                                                    isDeleteParticipantDisabled,
-                                                            },
-                                                        )}`}
-                                                        onClick={
-                                                            this
-                                                                .onDeleteSprintParticipantClick
-                                                        }
-                                                    >
-                                                        <MaterialIconUI>
-                                                            remove
-                                                        </MaterialIconUI>
-                                                    </div>
-                                                </TooltipUI>
-                                            </div>
-                                        )}
+                                                    <MaterialIconUI>
+                                                        remove
+                                                    </MaterialIconUI>
+                                                </div>
+                                            </TooltipUI>
+                                        </div>
                                         <RelativeLayoutContainerUI
                                             relativeLayout={
                                                 this.props.deps.relativeLayout
@@ -525,7 +492,7 @@ export class SprintsComponent extends Component<Props, State> {
                                                 this.renderTeamMembers
                                             }
                                             renderReferenceElement={({
-                                                toggleContainer,
+                                                toggleContainer, showFollower,
                                             }) => (
                                                 <TooltipUI
                                                     message={'Add to sprint'}
@@ -543,6 +510,7 @@ export class SprintsComponent extends Component<Props, State> {
                                                                 [styles.Disabled]:
                                                                     teamMembers.length ===
                                                                     0,
+                                                                [styles.Active]: showFollower,
                                                             },
                                                         )}`}
                                                         onClick={this.handleAddParticipantClick(

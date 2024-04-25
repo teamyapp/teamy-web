@@ -85,21 +85,16 @@
                                 cursor: pointer;
                             }
 
-                            &.Edit {
-                                --icon-color: #ff9800;
-
-                                &.Active {
-                                    background-color: #ff9800;
-                                    --icon-color: white;
-                                }
-                            }
-
                             &.Add {
                                 --icon-color: #1e88e5;
 
                                 &.Disabled {
                                     --icon-color: #9e9e9e;
                                     pointer-events: none;
+                                }
+
+                                &.Active {
+                                    background-color: rgba(0, 0, 0, 0.07);
                                 }
                             }
 
