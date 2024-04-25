@@ -920,8 +920,8 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         appState.sprintParticipants = appState.sprintParticipants.filter(
             (sprintParticipant) =>
-                sprintParticipant.sprintId !== sprintId ||
-                sprintParticipant.userId !== userId,
+                !(sprintParticipant.sprintId === sprintId &&
+                sprintParticipant.userId === userId),
         );
         this.localStore.updateState(appState)
     }

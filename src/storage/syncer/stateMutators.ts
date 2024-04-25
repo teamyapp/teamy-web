@@ -1918,7 +1918,7 @@ export function mergeSprintParticipant(
     }
 
     appState = mergeUser(appState, remoteSprintParticipant.user);
-    return appState
+    return appState;
 }
 
 export function replaceSprintParticipants(

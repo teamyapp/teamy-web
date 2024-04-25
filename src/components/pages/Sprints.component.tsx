@@ -297,7 +297,8 @@ export class SprintsComponent extends Component<Props, State> {
     };
 
     private handleTeamMemberClick =
-        (closeContainer: () => void) => (userId: number) => {
+        (closeContainer: () => void) => 
+        (userId: number) => {
             if (!this.state.selectedSprintId) {
                 return;
             }
@@ -335,7 +336,6 @@ export class SprintsComponent extends Component<Props, State> {
     }) => {
         const teamMembers = this.getAvailableTeamMembers();
         const users = teamMembers.map((teamMember) => teamMember.user);
-
         return (
             <div className={styles.TeamMembers}>
                 <div className={styles.TopBar}>
@@ -518,7 +518,6 @@ export class SprintsComponent extends Component<Props, State> {
                                                 </TooltipUI>
                                             </div>
                                         )}
-
                                         <RelativeLayoutContainerUI
                                             relativeLayout={
                                                 this.props.deps.relativeLayout
@@ -637,7 +636,6 @@ export class SprintsComponent extends Component<Props, State> {
                                             checked={
                                                 this.state.allowMultiSelection
                                             }
-                                            onChange={() => {}}
                                         />
                                         <div className={styles.ToggleLabel}>
                                             Select many

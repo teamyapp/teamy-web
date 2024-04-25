@@ -11,7 +11,7 @@ import { getUserShortName } from './format';
 interface Props {
     emptySelectionUserName?: string;
     users: User[];
-    singleMode?: boolean;
+    showSelected?: boolean;
     selectedUserId?: number;
     onSelectUser?: (userId: number) => void;
     onRemoveSelection?: () => void;
