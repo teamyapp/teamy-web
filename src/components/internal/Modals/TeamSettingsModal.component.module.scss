@@ -184,6 +184,19 @@ $tableRowGap: 12px;
         }
     }
 
+    .InvitationsTab {
+        .TopBar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 14px;
+            padding-right: 12px;
+
+            .Action {
+                width: auto;
+            }
+        }
+    }
+
     .InvitationsTab,
     .BandwidthTab {
         box-sizing: border-box;
