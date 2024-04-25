@@ -175,7 +175,7 @@
 
             .Action {
                 @include action;
-                
+
                 &.Expand {
                     --icon-color: rgb(0, 128, 255);
                 }
@@ -194,7 +194,7 @@
                 }
             }
         }
-
+        
         .StoryListSection {
             @include ItemListSection;
             box-shadow: none;
