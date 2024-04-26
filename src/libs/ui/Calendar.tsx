@@ -5,7 +5,8 @@ import React, { Component, ReactNode } from 'react';
 import { today } from '../data/format';
 import styles from './Calendar.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
-import { ButtonUI } from './Button';
+import { TooltipUI } from './Tooltip';
+import { RelativeLayout } from '@lib/layout';
 
 const weekDayTitles = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const monthNames = [
@@ -29,6 +30,7 @@ const defaultMaxYear = 2100;
 interface Props {
     selectedDate: Date;
     shownDate: Date;
+    relativeLayout: RelativeLayout;
     minYear?: number;
     maxYear?: number;
     onClose?: () => void;
@@ -53,8 +55,23 @@ export class CalendarUI extends Component<Props, State> {
         return (
             <div className={styles.Calendar}>
                 <div className={styles.Actions}>
-                    <div className={styles.ClearButton} onClick={this.onClearDate}>
-                        <div>Reset</div>
+                    <TooltipUI
+                        message='Clear'
+                        relativeLayout={this.props.relativeLayout}
+                        referenceOffset={2}
+                    >
+                        <div
+                            className={`${styles.Action} ${styles.Clear}`}
+                            onClick={this.onClearDate}
+                        >
+                            <MaterialIconUI>device_reset</MaterialIconUI>
+                        </div>
+                    </TooltipUI>
+                    <div
+                        className={`${styles.Action} ${styles.Close}`}
+                        onClick={this.props.onClose}
+                    >
+                        <MaterialIconUI>close</MaterialIconUI>
                     </div>
                 </div>
                 {this.renderCalendarControls()}

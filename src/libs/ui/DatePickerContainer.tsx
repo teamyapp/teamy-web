@@ -82,6 +82,7 @@ export class DatePickerContainerUI extends Component<Props, State> {
                         onShownDateChange={this.handleShownDateChanged}
                         selectedDate={this.state.selectedDate}
                         shownDate={this.state.shownDate}
+                        relativeLayout={this.props.relativeLayout}
                     />
                 )}
                 preserveReferenceParentHeight={true}
