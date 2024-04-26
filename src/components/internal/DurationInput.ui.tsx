@@ -26,9 +26,6 @@ interface Props {
 export class DurationInputUI extends Component<Props> {
     constructor(props: Props) {
         super(props);
-        this.state = {
-            showFollower: false,
-        };
     }
 
     render() {
@@ -38,7 +35,6 @@ export class DurationInputUI extends Component<Props> {
                 <RelativeLayoutContainerUI
                     overSpaceAction='jumpVertically'
                     onOpenContainer={this.props.onPopupOpen}
-                    onCloseContainer={this.onCloseContainer}
                     relativeLayout={this.props.relativeLayout}
                     referenceOffset={4}
                     preserveReferenceParentHeight={true}
@@ -83,13 +79,6 @@ export class DurationInputUI extends Component<Props> {
             toggleContainer();
         };
     };
-
-    private onCloseContainer = () => {
-        this.setState({
-            showFollower: false
-        });
-        this.props.onPopupClose?.call(null);
-    }
 }
 
 interface PopupProps {
