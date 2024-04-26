@@ -23,11 +23,7 @@ interface Props {
     }) => ReactNode;
 }
 
-interface State {
-    showFollower: boolean;
-}
-
-export class DurationInputUI extends Component<Props, State> {
+export class DurationInputUI extends Component<Props> {
     constructor(props: Props) {
         super(props);
         this.state = {
@@ -47,9 +43,9 @@ export class DurationInputUI extends Component<Props, State> {
                     referenceOffset={4}
                     preserveReferenceParentHeight={true}
                     zOffset={this.props.zOffset}
-                    renderReferenceElement={({ toggleContainer }) => (
+                    renderReferenceElement={({ toggleContainer, showFollower }) => (
                         this.props.transformReferenceContainer? this.props.transformReferenceContainer({
-                            showFollower: this.state.showFollower,
+                            showFollower,
                             container: this.renderReferenceElement({duration, toggleContainer}),
                         }) : this.renderReferenceElement({duration, toggleContainer})
                     )}
@@ -84,9 +80,6 @@ export class DurationInputUI extends Component<Props, State> {
     onViewRowClickHandler = (toggleContainer: () => void) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
-            this.setState({
-                showFollower: !this.state.showFollower
-            })
             toggleContainer();
         };
     };
