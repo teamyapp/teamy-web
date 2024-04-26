@@ -499,6 +499,7 @@ export class SprintsComponent extends Component<Props, State> {
                                                 this.props.deps.relativeLayout
                                             }
                                             zOffset={TEAM_MEMBERS_POPUP_Z_INDEX}
+                                            referenceOffset={4}
                                             renderFollower={
                                                 this.renderTeamMembers
                                             }
