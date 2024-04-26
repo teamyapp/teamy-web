@@ -2,11 +2,31 @@ import { Priority } from '@core/entity/priority';
 import { Story, StoryStatus } from '@core/entity/story';
 import { Option } from '@lib/ui/DropDownList';
 
+export const taskStatusOrder = 'status';
 export const taskPriorityOrder = 'priority';
 export const taskDeadlineOrder = 'deadline';
 export const taskOwnerOrder = 'owner';
 export const taskValueOrder = 'value';
 export const taskEffortOrder = 'effort';
+
+export const backlogSortOrders: Option[] = [
+    {
+        key: taskStatusOrder,
+        description: 'Status',
+    },
+    {
+        key: taskPriorityOrder,
+        description: 'Priority',
+    },
+    {
+        key: taskOwnerOrder,
+        description: 'Owner',
+    },
+    {
+        key: taskDeadlineOrder,
+        description: 'Deadline',
+    },
+];
 
 export const upcomingSortOrders: Option[] = [
     {
