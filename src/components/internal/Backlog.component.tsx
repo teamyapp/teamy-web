@@ -15,7 +15,12 @@ import {
 } from '@core/config/draggable';
 import { backlogSectionId } from '@core/config/sections';
 import { allTasks, unscheduled } from '@core/data/task.filter';
-import { orderByStatusUrgencyAsc } from '@core/data/task.order';
+import {
+    orderByDeadline,
+    orderByOwner,
+    orderByPriorityDesc,
+    orderByStatusUrgencyAsc,
+} from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
@@ -28,6 +33,17 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import styles from './Backlog.component.module.scss';
 import { InlineCreateTaskUI } from './InlineCreateTask';
 import { TaskListItem } from './TaskListSections/TaskListItem';
+import { DropDownList } from '@lib/ui/DropDownList';
+import {
+    backlogSortOrders,
+    taskDeadlineOrder,
+    taskEffortOrder,
+    taskOwnerOrder,
+    taskPriorityOrder,
+    taskStatusOrder,
+    taskValueOrder,
+} from '@core/config/sortOrder';
+import { TooltipUI } from '@lib/ui/Tooltip';
 
 interface Props {
     children?: React.ReactNode;
@@ -40,6 +56,7 @@ interface Props {
 
 interface State {
     unplannedTasks: Task[];
+    sortOrder: string;
     onEditingNewTask: boolean;
 }
 
@@ -66,6 +83,7 @@ export class BacklogComponent extends Component<Props, State> {
         this.state = {
             unplannedTasks: [],
             onEditingNewTask: false,
+            sortOrder: taskStatusOrder,
         };
     }
 
@@ -131,6 +149,32 @@ export class BacklogComponent extends Component<Props, State> {
                                 onClick={this.onAddClick}
                             >
                                 <MaterialIconUI>add</MaterialIconUI>
+                            </div>
+                        </div>
+                        <div className={styles.Toolbar}>
+                            <div className={styles.Filter}>
+                                <DropDownList
+                                    relativeLayout={
+                                        this.props.deps.relativeLayout
+                                    }
+                                    selectOptionKey={this.state.sortOrder}
+                                    options={backlogSortOrders}
+                                    onSelectOption={this.onSelectSortOrder}
+                                    transformReferenceContainer={({
+                                        showFollower,
+                                        container,
+                                    }) => (
+                                        <TooltipUI
+                                            relativeLayout={
+                                                this.props.deps.relativeLayout
+                                            }
+                                            disabled={showFollower}
+                                            message={'Order by'}
+                                        >
+                                            {container}
+                                        </TooltipUI>
+                                    )}
+                                />
                             </div>
                         </div>
                         <div className={styles.TaskList}>
@@ -222,6 +266,28 @@ export class BacklogComponent extends Component<Props, State> {
         this.setState({
             onEditingNewTask: false,
         });
+    };
+
+    private onSelectSortOrder = (sortOrder: string) => {
+        this.setState({
+            sortOrder: sortOrder,
+        });
+
+        const orderedTasks = this.state.unplannedTasks;
+        switch (sortOrder) {
+            case taskStatusOrder:
+                orderedTasks.sort(orderByStatusUrgencyAsc);
+                break;
+            case taskPriorityOrder:
+                orderedTasks.sort(orderByPriorityDesc);
+                break;
+            case taskOwnerOrder:
+                orderedTasks.sort(orderByOwner);
+                break;
+            case taskDeadlineOrder:
+                orderedTasks.sort(orderByDeadline);
+                break;
+        }
     };
 }
 
