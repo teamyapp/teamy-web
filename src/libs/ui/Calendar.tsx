@@ -5,7 +5,6 @@ import React, { Component, ReactNode } from 'react';
 import { today } from '../data/format';
 import styles from './Calendar.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
-import { ButtonUI } from './Button';
 
 const weekDayTitles = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const monthNames = [
@@ -53,8 +52,11 @@ export class CalendarUI extends Component<Props, State> {
         return (
             <div className={styles.Calendar}>
                 <div className={styles.Actions}>
-                    <div className={styles.ClearButton} onClick={this.onClearDate}>
-                        <div>Reset</div>
+                    <div className={`${styles.Action} ${styles.Clear}`} onClick={this.onClearDate}>
+                        <MaterialIconUI>device_reset</MaterialIconUI>
+                    </div>
+                    <div className={`${styles.Action} ${styles.Close}`} onClick={this.props.onClose}>
+                        <MaterialIconUI>close</MaterialIconUI>
                     </div>
                 </div>
                 {this.renderCalendarControls()}
