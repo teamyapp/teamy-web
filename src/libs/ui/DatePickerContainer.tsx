@@ -33,7 +33,6 @@ interface State {
     value: string;
     selectedDate: Date;
     shownDate: Date;
-    showFollower: boolean;
 }
 
 export class DatePickerContainerUI extends Component<Props, State> {
@@ -47,7 +46,6 @@ export class DatePickerContainerUI extends Component<Props, State> {
                 : '',
             selectedDate: date,
             shownDate: date,
-            showFollower: false,
         };
     }
 
@@ -58,13 +56,13 @@ export class DatePickerContainerUI extends Component<Props, State> {
                 relativeLayout={this.props.relativeLayout}
                 overSpaceAction="jumpVertically"
                 referenceOffset={4}
-                renderReferenceElement={({ toggleContainer }) => {
+                renderReferenceElement={({ toggleContainer, showFollower }) => {
                     return this.props.transformReferenceContainer ?
                         this.props.transformReferenceContainer({
-                                showFollower: this.state.showFollower,
+                                showFollower,
                                 container: (
                                     this.props.renderReferenceElement({
-                                        onToggle: this.onReferenceElementToggle(toggleContainer),
+                                        onToggle: toggleContainer,
                                         onChange: this.handleCalendarChanged,
                                     })
                                 ),
@@ -87,7 +85,6 @@ export class DatePickerContainerUI extends Component<Props, State> {
                     />
                 )}
                 preserveReferenceParentHeight={true}
-                onCloseContainer={this.onCloseContainer}
             />
         );
     }
@@ -112,16 +109,5 @@ export class DatePickerContainerUI extends Component<Props, State> {
             onClose();
             this.props.onTargetFocus?.call(null);
         };
-    };
-
-    private onReferenceElementToggle = (toggleContainer: () => void) => {
-        return () => {
-            this.setState({ showFollower: !this.state.showFollower });
-            toggleContainer();
-        };
-    };
-
-    private onCloseContainer = () => {
-        this.setState({ showFollower: false });
     };
 }

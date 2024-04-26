@@ -25,7 +25,6 @@ interface Props {
 
 interface State {
     selectedOption?: Option;
-    showFollower: boolean;
 }
 
 export class DropDownList extends Component<Props, State> {
@@ -42,8 +41,7 @@ export class DropDownList extends Component<Props, State> {
         this.state = {
             selectedOption: this.props.selectOptionKey
                 ? options[this.props.selectOptionKey]
-                : undefined,
-            showFollower: false,
+                : undefined
         };
     }
 
@@ -76,16 +74,15 @@ export class DropDownList extends Component<Props, State> {
                         </div>
                     </div>
                 )}
-                renderReferenceElement={({ toggleContainer }) => {
+                renderReferenceElement={({ toggleContainer, showFollower}) => {
                     return this.props.transformReferenceContainer ?
                         this.props.transformReferenceContainer({
-                            showFollower: this.state.showFollower,
+                            showFollower,
                                 container: this.renderSelectedOptionContainer(toggleContainer),
                             },
                         ) :
                         this.renderSelectedOptionContainer(toggleContainer);
                 }}
-                onCloseContainer={this.onCloseContainer}
             />
         );
     }
@@ -113,9 +110,6 @@ export class DropDownList extends Component<Props, State> {
     private onDropDownButtonClick = (toggleContainer: () => void) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
-            this.setState({
-                showFollower: !this.state.showFollower,
-            });
             toggleContainer();
         };
     };
@@ -141,11 +135,5 @@ export class DropDownList extends Component<Props, State> {
 
             this.props.onSelectOption?.call(null, option.key);
         };
-    };
-
-    private onCloseContainer = () => {
-        this.setState({
-            showFollower: false,
-        });
     };
 }

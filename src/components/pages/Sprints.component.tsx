@@ -509,7 +509,7 @@ export class SprintsComponent extends Component<Props, State> {
                                                 <TooltipUI
                                                     message={'Add to sprint'}
                                                     disabled={
-                                                        !teamMembers.length
+                                                        !teamMembers.length || showFollower
                                                     }
                                                     relativeLayout={
                                                         this.props.deps
