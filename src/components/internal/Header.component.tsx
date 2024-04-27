@@ -269,8 +269,8 @@ export class HeaderComponent extends Component<Props, State> {
                     {this.props.me && (
                         <RelativeLayoutContainerUI
                             zOffset={PROFILE_SETTINGS_Z_INDEX}
-                            referenceOffset={5}
                             relativeLayout={this.props.deps.relativeLayout}
+                            preserveReferenceParentHeight={true}
                             renderReferenceElement={({ toggleContainer }) => (
                                 <div className={styles.UserSection}>
                                     <div
