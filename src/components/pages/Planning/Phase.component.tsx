@@ -591,7 +591,7 @@ export function PhaseComponent(props: Props) {
                 </div>
             </div>
 
-            <div className={styles.StoryListContainer}>
+            <div className={styles.StoryListPanel}>
                 <div className={styles.LeftActions}>
                     <div
                         className={`${styles.Action} ${styles.Expand} ${classNames(

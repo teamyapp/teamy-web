@@ -107,6 +107,7 @@ import {
     removeOrMergeTeamMembers,
     replaceTeamInvitations,
     replaceTeamTaskActivities,
+    mergeSprintParticipant,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
@@ -886,6 +887,43 @@ export class StateSyncer {
         delete appState.sprints[sprintId];
         this.localStore.updateState(appState);
         await this.sprintClient.deleteSprint(`${sprintId}`);
+    }
+
+    public async addTeamMemberToSprint(
+        sprintId: number,
+        teamId: number,
+        userId: number,
+    ): Promise<void> {
+        const remoteSprintParticipant =
+            await this.sprintClient.addTeamMemberToSprint(
+                `${sprintId}`,
+                `${teamId}`,
+                `${userId}`,
+            );
+
+        let appState = this.localStore.getState();
+        appState = mergeSprintParticipant(appState, sprintId, remoteSprintParticipant);
+        this.localStore.updateState(appState)
+    }
+
+    public async removeTeamMemberFromSprint(
+        sprintId: number,
+        teamId: number,
+        userId: number,
+    ): Promise<void> {
+        await this.sprintClient.removeTeamMemberFromSprint(
+            `${sprintId}`,
+            `${teamId}`,
+            `${userId}`,
+        );
+
+        let appState = this.localStore.getState();
+        appState.sprintParticipants = appState.sprintParticipants.filter(
+            (sprintParticipant) =>
+                !(sprintParticipant.sprintId === sprintId &&
+                sprintParticipant.userId === userId),
+        );
+        this.localStore.updateState(appState)
     }
 
     public async addTaskToSprint(sprintId: number, taskId: number) {

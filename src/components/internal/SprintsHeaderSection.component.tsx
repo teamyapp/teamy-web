@@ -28,7 +28,6 @@ interface State {
     currentSprint?: Sprint;
     sprints: Sprint[];
     sprintToDelete?: number;
-    showFollower: boolean;
 }
 
 export class SprintsHeaderSectionComponent extends Component<Props, State> {
@@ -48,7 +47,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             sprints: [],
-            showFollower: false,
         };
     }
 
@@ -74,14 +72,14 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                             relativeLayout={this.props.deps.relativeLayout}
                             zOffset={101}
                             referenceOffset={4}
-                            renderReferenceElement={({ toggleContainer }) => (
+                            renderReferenceElement={({ toggleContainer, showFollower }) => (
                                 <TooltipUI
                                     relativeLayout={this.props.deps.relativeLayout}
-                                    disabled={this.state.showFollower}
+                                    disabled={showFollower}
                                     message={'Current sprint'}>
                                     <div
                                         className={styles.HeaderSection}
-                                        onClick={this.onReferenceElementClickHandler(toggleContainer)}
+                                        onClick={toggleContainer}
                                     >
                                         <div className={styles.Icon}>
                                             <MaterialIconUI>directions_run</MaterialIconUI>
@@ -112,7 +110,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                                     </div>
                                 </div>
                             )}
-                            onCloseContainer={this.onCloseContainer}
                         />
                     </div>
                 </div>
@@ -326,9 +323,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
 
     private onCreateSprintClickHandler = (closeContainer: ()=>void) => {
         return () => {
-            this.setState({
-                showFollower: false,
-            });
             closeContainer();
             this.props.onCreateSprintClick?.call(null);
         };
@@ -340,9 +334,6 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
                 this.stateSyncer.pullCurrentSprint();
             }
 
-            this.setState({
-                showFollower: false,
-            });
             closeContainer();
         };
     };
@@ -354,20 +345,5 @@ export class SprintsHeaderSectionComponent extends Component<Props, State> {
             });
             this.deleteSprintConfirmTaskRef.current?.open();
         };
-    };
-
-    private onReferenceElementClickHandler = (toggleContainer: ()=>void) => {
-        return () => {
-            this.setState({
-                showFollower: !this.state.showFollower,
-            });
-            toggleContainer();
-        };
-    };
-
-    private onCloseContainer = () => {
-        this.setState({
-            showFollower: false,
-        });
     };
 }

@@ -1,7 +1,7 @@
 import { TooltipUI } from '@lib/ui/Tooltip';
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import classNames from 'classnames';
-import React, { Component, ReactNode, createRef } from 'react';
+import React, { Component, MouseEvent, ReactNode, createRef } from 'react';
 
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
@@ -45,6 +45,10 @@ import { KanbanUI } from '../internal/Kanban';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
+import { RelativeLayoutContainerUI } from '@lib/layout';
+import { SelectUserListUI } from 'components/internal/SelectUserList';
+
+const TEAM_MEMBERS_POPUP_Z_INDEX = 1002;
 
 const sectionIds = [
     upcomingSectionId,
@@ -156,9 +160,9 @@ export class SprintsComponent extends Component<Props, State> {
                     if (appState.sprintTabReady)
                         if (
                             appState.currSprintId !==
-                            this.state.selectedSprintId ||
+                                this.state.selectedSprintId ||
                             appState.activeSprintTabIndex !==
-                            this.state.activeTabIndex
+                                this.state.activeTabIndex
                         ) {
                             this.selectTab(activeSprintTabIndex, false);
                         }
@@ -290,12 +294,133 @@ export class SprintsComponent extends Component<Props, State> {
         };
     };
 
+    private handleTeamMemberClick =
+        (closeContainer: () => void) => (userId: number) => {
+            if (!this.state.selectedSprintId) {
+                return;
+            }
+
+            const currentTeam = this.props.deps.graphSource.currentTeam();
+            if (!currentTeam) {
+                return;
+            }
+
+            this.stateSyncer.addTeamMemberToSprint(
+                this.state.selectedSprintId,
+                currentTeam.id,
+                userId,
+            );
+            closeContainer();
+        };
+
+    private getAvailableTeamMembers = () => {
+        const currentTeam = this.props.deps.graphSource.currentTeam();
+        if (!currentTeam) {
+            return [];
+        }
+
+        return currentTeam.members.filter((member) => {
+            return !this.state.sprintParticipants.some((participant) => {
+                return participant.user.id === member.user.id;
+            });
+        });
+    };
+
+    private renderTeamMembers = ({
+        closeContainer,
+    }: {
+        closeContainer: () => void;
+    }) => {
+        const teamMembers = this.getAvailableTeamMembers();
+        const users = teamMembers.map((teamMember) => teamMember.user);
+        return (
+            <div className={styles.TeamMembers}>
+                <div className={styles.TopBar}>
+                    <div
+                        className={styles.CloseButton}
+                        onClick={closeContainer}
+                    >
+                        <MaterialIconUI>close</MaterialIconUI>
+                    </div>
+                </div>
+                <div className={styles.TeamMemberList}>
+                    <SelectUserListUI
+                        users={users}
+                        onSelectUser={this.handleTeamMemberClick(
+                            closeContainer,
+                        )}
+                    />
+                </div>
+            </div>
+        );
+    };
+
+    private handleAddParticipantClick =
+        (enabled: boolean, toggleContainer: () => void) =>
+        (event: MouseEvent<HTMLDivElement>) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (!enabled) {
+                return;
+            }
+
+            toggleContainer();
+        };
+
+    private isDeleteParticipantDisabled = () => {
+        return (
+            this.state.selectedTaskOwners.size === 0 ||
+            this.state.selectedTaskOwners.has(userAll) ||
+            this.state.selectedTaskOwners.has(userUnassigned)
+        );
+    };
+
+    private onDeleteSprintParticipantClick = () => {
+        const currentTeam = this.props.deps.graphSource.currentTeam();
+        if (!currentTeam) {
+            return;
+        }
+
+        if (this.isDeleteParticipantDisabled()) {
+            return;
+        }
+
+        this.state.selectedTaskOwners.forEach((userIdentity) => {
+            if (!this.state.selectedSprintId) {
+                return;
+            }
+
+            const userId = userIdentity.split(userPrefix)[1];
+            this.stateSyncer.removeTeamMemberFromSprint(
+                this.state.selectedSprintId,
+                currentTeam.id,
+                parseInt(userId),
+            );
+        });
+        
+        this.state.selectedTaskOwners.clear();
+        this.state.selectedTaskOwners.add(userAll);
+        this.forceUpdate();
+        this.props.onTaskFiltersChange?.call(
+            null,
+            Object.assign<any, TaskFilters, Partial<TaskFilters>>(
+                {},
+                this.props.taskFilters,
+                {
+                    taskOwnerFilter: this.getTaskOwnerFilter(),
+                },
+            ),
+        );
+    };
+
     private renderTabContent(
         tabId: string,
         clientId?: number,
     ): ReactNode | null {
         let personalTasksFilter = filters.ownedBy(this.state.currentUserId);
         let teamTasksFilter = filters.allTasks;
+        const teamMembers = this.getAvailableTeamMembers();
+        const isDeleteParticipantDisabled = this.isDeleteParticipantDisabled();
 
         if (this.props.taskFilters.timeRangeFilter) {
             personalTasksFilter = and(
@@ -336,6 +461,84 @@ export class SprintsComponent extends Component<Props, State> {
                                     Participants
                                     <div className={styles.Counter}>
                                         {this.state.sprintParticipants.length}
+                                    </div>
+                                </div>
+                                <div className={styles.ActionsBar}>
+                                    <div className={styles.Actions}>
+                                        <div className={styles.Actions}>
+                                            <TooltipUI
+                                                message='Remove'
+                                                disabled={
+                                                    isDeleteParticipantDisabled
+                                                }
+                                                relativeLayout={
+                                                    this.props.deps
+                                                        .relativeLayout
+                                                }
+                                            >
+                                                <div
+                                                    className={`${styles.Action} ${styles.Delete} ${classNames(
+                                                        {
+                                                            [styles.Disabled]:
+                                                                isDeleteParticipantDisabled,
+                                                        },
+                                                    )}`}
+                                                    onClick={
+                                                        this
+                                                            .onDeleteSprintParticipantClick
+                                                    }
+                                                >
+                                                    <MaterialIconUI>
+                                                        remove
+                                                    </MaterialIconUI>
+                                                </div>
+                                            </TooltipUI>
+                                        </div>
+                                        <RelativeLayoutContainerUI
+                                            relativeLayout={
+                                                this.props.deps.relativeLayout
+                                            }
+                                            zOffset={TEAM_MEMBERS_POPUP_Z_INDEX}
+                                            referenceOffset={4}
+                                            renderFollower={
+                                                this.renderTeamMembers
+                                            }
+                                            preserveReferenceParentHeight
+                                            renderReferenceElement={({
+                                                toggleContainer, showFollower,
+                                            }) => (
+                                                <TooltipUI
+                                                    message={'Add to sprint'}
+                                                    disabled={
+                                                        !teamMembers.length || showFollower
+                                                    }
+                                                    relativeLayout={
+                                                        this.props.deps
+                                                            .relativeLayout
+                                                    }
+                                                >
+                                                    <div
+                                                        className={`${styles.Action} ${styles.Add} ${classNames(
+                                                            {
+                                                                [styles.Disabled]:
+                                                                    teamMembers.length ===
+                                                                    0,
+                                                                [styles.Active]: showFollower,
+                                                            },
+                                                        )}`}
+                                                        onClick={this.handleAddParticipantClick(
+                                                            teamMembers.length >
+                                                                0,
+                                                            toggleContainer,
+                                                        )}
+                                                    >
+                                                        <MaterialIconUI>
+                                                            add
+                                                        </MaterialIconUI>
+                                                    </div>
+                                                </TooltipUI>
+                                            )}
+                                        />
                                     </div>
                                 </div>
                                 <div className={styles.ParticipantList}>
@@ -412,8 +615,6 @@ export class SprintsComponent extends Component<Props, State> {
                                             checked={
                                                 this.state.allowMultiSelection
                                             }
-                                            onChange={() => {
-                                            }}
                                         />
                                         <div className={styles.ToggleLabel}>
                                             Select many
@@ -557,8 +758,8 @@ export class SprintsComponent extends Component<Props, State> {
                                         styles.UnusedBandwidth
                                     } ${classNames({
                                         [styles.Negative]:
-                                        participant.unusedBandwidth
-                                            .totalMilliSeconds < 0,
+                                            participant.unusedBandwidth
+                                                .totalMilliSeconds < 0,
                                     })}`}
                                     style={{
                                         width: `${Math.abs(

@@ -202,7 +202,7 @@ export const StoryTable: FC<Props> = (props) => {
                                             onClick={onSaveCreatingStoryClick}
                                         >
                                             <MaterialIconUI>
-                                                save
+                                                done
                                             </MaterialIconUI>
                                         </div>
                                     </TooltipUI>

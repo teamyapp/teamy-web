@@ -168,20 +168,17 @@
         display: flex;
 
         .LeftActions {
-            box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
             padding: 8px;
-            z-index: 2;
+            background-color: #424242;
 
             .Action {
                 @include action;
-                
+
                 &.Expand {
-                    --icon-color: rgb(0, 128, 255);
+                    --icon-color: white;
                 }
 
                 &.Active {
-                    background-color: rgb(0, 128, 255);
                     --icon-color: white;
                 }
 
@@ -194,7 +191,7 @@
                 }
             }
         }
-
+        
         .StoryListSection {
             @include ItemListSection;
             box-shadow: none;

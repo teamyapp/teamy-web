@@ -71,6 +71,7 @@ import { TaskLinkState } from '../states/taskLink.state';
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { VersionSelectorState } from '../states/versionSelector.state';
 import { Mutation } from './mutation';
+import { today } from '@lib/data/format';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -834,7 +835,7 @@ export function mergeStory(
             currAppState,
             remoteStory.id,
             task.id,
-        )
+        );
     });
 
     currAppState.stories[remoteStoryId] = localNewStory;
@@ -943,7 +944,9 @@ export function mergeAppVersion(
         appId: appId,
         createdAt: toDate(version.createdAt) || localOldVersion.createdAt,
         creatorUserId:
-            version.createdBy !== undefined ? toInt(version.createdBy.id)! : localOldVersion.creatorUserId,
+            version.createdBy !== undefined
+                ? toInt(version.createdBy.id)!
+                : localOldVersion.creatorUserId,
         description: version.description || localOldVersion.description,
         status: version.status || localOldVersion.status,
         locked: version.locked,
@@ -1877,6 +1880,45 @@ export function replaceTeamInvitations(
         currAppState = mergeInvitation(currAppState, remoteInvitation);
     });
     return currAppState;
+}
+
+export function mergeSprintParticipant(
+    appState: AppState,
+    sprintId: number,
+    remoteSprintParticipant: RemoteSprintParticipant,
+): AppState {
+    const sprintParticipantUserId = toInt(remoteSprintParticipant.user.id)!;
+    const localOldSprintParticipantIndex =
+        appState.sprintParticipants.findIndex((sprintParticipant) => {
+            return (
+                sprintParticipant.sprintId === sprintId &&
+                sprintParticipant.userId === sprintParticipantUserId
+            );
+        });
+    const localOldSprintParticipant: SprintParticipantState =
+        localOldSprintParticipantIndex !== -1
+            ? appState.sprintParticipants[localOldSprintParticipantIndex]
+            : {} as SprintParticipantState;
+
+    const totalBandwidth = remoteSprintParticipant.totalBandwidth === undefined ? localOldSprintParticipant.totalBandwidth : toDuration(remoteSprintParticipant.totalBandwidth);
+    const unusedBandwidth = remoteSprintParticipant.unusedBandwidth === undefined ? localOldSprintParticipant.unusedBandwidth : toDuration(remoteSprintParticipant.unusedBandwidth)
+    const localNewSprintParticipant: SprintParticipantState = {
+        sprintId,
+        userId: sprintParticipantUserId,
+        totalBandwidth: totalBandwidth!,
+        unusedBandwidth: unusedBandwidth!,
+        createdAt: remoteSprintParticipant.createdAt === undefined ? localOldSprintParticipant.createdAt : toDate(remoteSprintParticipant.createdAt)!,
+        updatedAt: remoteSprintParticipant.updatedAt === undefined ? localOldSprintParticipant.updatedAt : toDate(remoteSprintParticipant.updatedAt)
+    };
+
+    if (localOldSprintParticipantIndex === -1) {
+        appState.sprintParticipants.concat(localNewSprintParticipant)
+    } else {
+        appState.sprintParticipants[localOldSprintParticipantIndex] = localNewSprintParticipant
+    }
+
+    appState = mergeUser(appState, remoteSprintParticipant.user);
+    return appState;
 }
 
 export function replaceSprintParticipants(
