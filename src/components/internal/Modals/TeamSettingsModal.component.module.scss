@@ -192,9 +192,21 @@ $tableRowGap: 12px;
             padding-right: 12px;
 
             .Action {
-                width: auto;
-                --background-color: #388e3c;
-                --border-color: #2e7d32;
+                border-radius: 4px;
+                font-weight: bold;
+                padding: 6px 20px;
+                text-align: center;
+
+                &:hover {
+                    cursor: pointer;
+                    opacity: 0.85;
+                }
+
+                &.Add {
+                    background-color: #388e3c;
+                    border-color: #2e7d32;
+                    color: white;
+                }
             }
         }
     }
