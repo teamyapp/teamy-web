@@ -29,6 +29,7 @@ import { SprintsHeaderSectionComponent } from './SprintsHeaderSection.component'
 import { UserProfileUI } from './UserProfile';
 import { RelativeLayoutContainerUI } from '@lib/layout';
 
+const PROFILE_SETTINGS_Z_INDEX = 101;
 interface Props {
     deps: Deps;
     me: User;
@@ -267,8 +268,8 @@ export class HeaderComponent extends Component<Props, State> {
                     <div className={styles.UserActionSection}></div>
                     {this.props.me && (
                         <RelativeLayoutContainerUI
+                            zOffset={PROFILE_SETTINGS_Z_INDEX}
                             relativeLayout={this.props.deps.relativeLayout}
-                            referenceOffset={8}
                             renderReferenceElement={({ toggleContainer }) => (
                                 <div className={styles.UserSection}>
                                     <div
