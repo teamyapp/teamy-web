@@ -242,7 +242,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         className={`${styles.Action} ${styles.Add}`}
                         onClick={this.onInvitationClick}
                     >
-                        Invitation
+                        Invite
                     </div>
                 </div>
                 <div className={styles.Scrollable}>
