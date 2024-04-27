@@ -52,7 +52,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`teamyapp.com`)
+      match: Host(`www.teamyapp.com`)
       services:
         - kind: Service
           name: teamy-web
