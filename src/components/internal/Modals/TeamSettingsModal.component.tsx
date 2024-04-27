@@ -12,7 +12,6 @@ import { ModalUI } from '@lib/ui/Modal';
 import { TabsUI } from '@lib/ui/Tabs';
 import { TextFieldUI } from '@lib/ui/TextField';
 import { TooltipUI } from '@lib/ui/Tooltip';
-import { Point } from '@lib/ui/position';
 
 import { orderByStatus } from '@core/data/invitation.order';
 import { Deps } from '@core/dep/deps';
@@ -239,11 +238,11 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         return (
             <div className={styles.InvitationsTab}>
                 <div className={styles.TopBar}>
-                    <div className={`${styles.Action} ${styles.Add}`}>
-                        <ButtonUI
-                            onClick={this.onInvitationClick}
-                            label='Invitation'
-                        />
+                    <div
+                        className={`${styles.Action} ${styles.Add}`}
+                        onClick={this.onInvitationClick}
+                    >
+                        Invitation
                     </div>
                 </div>
                 <div className={styles.Scrollable}>
