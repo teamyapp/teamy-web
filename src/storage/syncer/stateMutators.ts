@@ -71,7 +71,8 @@ import { TaskLinkState } from '../states/taskLink.state';
 import { ThirdPartyAppState } from '../states/thirdPartyApp.state';
 import { VersionSelectorState } from '../states/versionSelector.state';
 import { Mutation } from './mutation';
-import { today } from '@lib/data/format';
+import { RemoteTeamMemberGroup } from '@core/client/entity/remoteTeamMemberGroup';
+import { TeamMemberGroupState } from '../states/teamMemberGroup.state';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -1492,6 +1493,72 @@ export function mergeMessage(
     return currAppState;
 }
 
+export function mergeTeamMemberGroup(
+    currAppState: AppState,
+    remoteTeamMemberGroup: RemoteTeamMemberGroup,
+): AppState {
+    const remoteTeamMemberGroupId = toInt(remoteTeamMemberGroup.id)!;
+    const localOldTeamMemberGroup =
+        currAppState.teamMemberGroups[remoteTeamMemberGroupId] || {};
+    const localNewTeamMemberGroup: TeamMemberGroupState = {
+        id: remoteTeamMemberGroupId,
+        name: remoteTeamMemberGroup.name || localOldTeamMemberGroup.name,
+        teamId:
+            toInt(remoteTeamMemberGroup.team?.id) ||
+            localOldTeamMemberGroup.teamId,
+        createdAt:
+            toDate(remoteTeamMemberGroup.createdAt) ||
+            localOldTeamMemberGroup.createdAt,
+        updatedAt:
+            remoteTeamMemberGroup.updatedAt === undefined
+                ? localOldTeamMemberGroup.updatedAt
+                : toDate(remoteTeamMemberGroup.updatedAt),
+    };
+
+    if (remoteTeamMemberGroup.team) {
+        currAppState = mergeTeam(currAppState, remoteTeamMemberGroup.team);
+    }
+
+    remoteTeamMemberGroup.members?.forEach((member) => {
+        currAppState = mergeUser(currAppState, member);
+        currAppState = mergeTeamMemberGroupUserRelation(
+            currAppState,
+            remoteTeamMemberGroup.id,
+            member.id
+        )
+    });
+
+    currAppState.teamMemberGroups[remoteTeamMemberGroupId] =
+        localNewTeamMemberGroup;
+    return currAppState;
+}
+
+export function mergeTeamMemberGroupUserRelation(
+    currAppState: AppState,
+    remoteTeamMemberGroupId: string,
+    remoteUserId: string,
+): AppState {
+    const teamMemberGroupId = toInt(remoteTeamMemberGroupId)!;
+    const userId = toInt(remoteUserId)!;
+
+    if (
+        !currAppState.teamMemberGroupUserRelations.some((teamMemberGroupUserRelation) => {
+            return (
+                teamMemberGroupUserRelation.groupId === teamMemberGroupId &&
+                teamMemberGroupUserRelation.memberUserId === userId
+            );
+        })
+    ) {
+        currAppState.teamMemberGroupUserRelations.push({
+            groupId: teamMemberGroupId,
+            memberUserId: userId,
+        });
+    }
+
+    return currAppState;
+}
+
+
 export function mergeTeam(
     currAppState: AppState,
     remoteTeam: RemoteTeam,
@@ -1538,6 +1605,10 @@ export function mergeTeam(
 
     remoteTeam.projects?.forEach((project) => {
         currAppState = mergeProject(currAppState, project);
+    });
+
+    remoteTeam.memberGroups?.forEach((group) => {
+        currAppState = mergeTeamMemberGroup(currAppState, group);
     });
 
     if (remoteTeam.invitations) {
@@ -1898,23 +1969,36 @@ export function mergeSprintParticipant(
     const localOldSprintParticipant: SprintParticipantState =
         localOldSprintParticipantIndex !== -1
             ? appState.sprintParticipants[localOldSprintParticipantIndex]
-            : {} as SprintParticipantState;
+            : ({} as SprintParticipantState);
 
-    const totalBandwidth = remoteSprintParticipant.totalBandwidth === undefined ? localOldSprintParticipant.totalBandwidth : toDuration(remoteSprintParticipant.totalBandwidth);
-    const unusedBandwidth = remoteSprintParticipant.unusedBandwidth === undefined ? localOldSprintParticipant.unusedBandwidth : toDuration(remoteSprintParticipant.unusedBandwidth)
+    const totalBandwidth =
+        remoteSprintParticipant.totalBandwidth === undefined
+            ? localOldSprintParticipant.totalBandwidth
+            : toDuration(remoteSprintParticipant.totalBandwidth);
+    const unusedBandwidth =
+        remoteSprintParticipant.unusedBandwidth === undefined
+            ? localOldSprintParticipant.unusedBandwidth
+            : toDuration(remoteSprintParticipant.unusedBandwidth);
     const localNewSprintParticipant: SprintParticipantState = {
         sprintId,
         userId: sprintParticipantUserId,
         totalBandwidth: totalBandwidth!,
         unusedBandwidth: unusedBandwidth!,
-        createdAt: remoteSprintParticipant.createdAt === undefined ? localOldSprintParticipant.createdAt : toDate(remoteSprintParticipant.createdAt)!,
-        updatedAt: remoteSprintParticipant.updatedAt === undefined ? localOldSprintParticipant.updatedAt : toDate(remoteSprintParticipant.updatedAt)
+        createdAt:
+            remoteSprintParticipant.createdAt === undefined
+                ? localOldSprintParticipant.createdAt
+                : toDate(remoteSprintParticipant.createdAt)!,
+        updatedAt:
+            remoteSprintParticipant.updatedAt === undefined
+                ? localOldSprintParticipant.updatedAt
+                : toDate(remoteSprintParticipant.updatedAt),
     };
 
     if (localOldSprintParticipantIndex === -1) {
-        appState.sprintParticipants.concat(localNewSprintParticipant)
+        appState.sprintParticipants.concat(localNewSprintParticipant);
     } else {
-        appState.sprintParticipants[localOldSprintParticipantIndex] = localNewSprintParticipant
+        appState.sprintParticipants[localOldSprintParticipantIndex] =
+            localNewSprintParticipant;
     }
 
     appState = mergeUser(appState, remoteSprintParticipant.user);

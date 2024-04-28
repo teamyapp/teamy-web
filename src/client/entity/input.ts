@@ -232,3 +232,11 @@ export interface RemoteUpdateStoryInput {
     ownerId?: string;
     priority?: Priority;
 }
+
+export interface RemoteCreateTeamMemberGroupInput {
+    name: string;
+}
+
+export interface RemoteUpdateTeamMemberGroupInput {
+    name: string;
+}

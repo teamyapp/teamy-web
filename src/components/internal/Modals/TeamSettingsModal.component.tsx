@@ -27,6 +27,8 @@ import { DurationInputUI } from '../DurationInput.ui';
 import { ImageUploaderComponent } from '../ImageUploader.component';
 import { UserProfileUI } from '../UserProfile';
 import styles from './TeamSettingsModal.component.module.scss';
+import { CreateTeamGroupModalComponent } from 'components/pages/Marketplace/Modals/CreateTeamGroupModal.component';
+import { CreateTeamMemberGroupModalComponent } from './CreateTeamMemberGroupModal.component';
 
 interface Props {
     deps: Deps;
@@ -50,6 +52,8 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     private readonly relativeLayout: RelativeLayout;
 
     private readonly modalRef = createRef<ModalUI>();
+    private readonly createTeamMemberGroupModelRef =
+        createRef<CreateTeamGroupModalComponent>();
     private onStateChangeChan?: PopChannel<boolean | undefined>;
 
     constructor(props: any) {
@@ -67,38 +71,44 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     public render() {
         return (
-            <ModalUI ariaLabel={'Team Setting'} ref={this.modalRef}>
-                {this.state.team && (
-                    <div className={styles.TeamSettingsModal}>
-                        <div className={styles.Header}>
-                            Settings for {this.state.initialTeamName}
-                            <div
-                                className={styles.CloseButton}
-                                onClick={this.onCloseButtonClick}
-                            >
-                                <MaterialIconUI>cancel</MaterialIconUI>
+            <>
+                <ModalUI ariaLabel={'Team Setting'} ref={this.modalRef}>
+                    {this.state.team && (
+                        <div className={styles.TeamSettingsModal}>
+                            <div className={styles.Header}>
+                                Settings for {this.state.initialTeamName}
+                                <div
+                                    className={styles.CloseButton}
+                                    onClick={this.onCloseButtonClick}
+                                >
+                                    <MaterialIconUI>cancel</MaterialIconUI>
+                                </div>
+                            </div>
+                            <div className={styles.Tabs}>
+                                <TabsUI
+                                    defaultSelectedIndex={
+                                        this.state.currentTabIndex
+                                    }
+                                    tabNames={[
+                                        'Profile',
+                                        'Bandwidth',
+                                        'Members',
+                                        'Invitations',
+                                    ]}
+                                    onTabClick={this.onTabClick}
+                                />
+                            </div>
+                            <div className={styles.TabContent}>
+                                {this.renderTab()}
                             </div>
                         </div>
-                        <div className={styles.Tabs}>
-                            <TabsUI
-                                defaultSelectedIndex={
-                                    this.state.currentTabIndex
-                                }
-                                tabNames={[
-                                    'Profile',
-                                    'Bandwidth',
-                                    'Members',
-                                    'Invitations',
-                                ]}
-                                onTabClick={this.onTabClick}
-                            />
-                        </div>
-                        <div className={styles.TabContent}>
-                            {this.renderTab()}
-                        </div>
-                    </div>
-                )}
-            </ModalUI>
+                    )}
+                </ModalUI>
+                <CreateTeamMemberGroupModalComponent
+                    deps={this.props.deps}
+                    ref={this.createTeamMemberGroupModelRef}
+                />
+            </>
         );
     }
 
@@ -211,22 +221,35 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     private renderTeamMembersTab = () => {
         return (
             <div className={styles.TeamMembersTab}>
-                <div className={styles.Scrollable}>
-                    <div className={styles.TeamMemberList}>
-                        <div className={styles.Cell}>
-                            <div
-                                className={styles.AddButton}
-                                onClick={this.onAddTeamMemberClick}
-                            >
-                                <MaterialIconUI>add</MaterialIconUI>
+                <div className={styles.TopBar}>
+                    <div
+                        className={`${styles.Action} ${styles.Add}`}
+                        onClick={this.onCreateMemberGroupClick}
+                    >
+                        Create group
+                    </div>
+                </div>
+                <div className={styles.MemberGroup}>
+                    <div className={styles.Scrollable}>
+                        <div className={styles.TeamMemberList}>
+                            <div className={styles.Cell}>
+                                <div
+                                    className={styles.AddButton}
+                                    onClick={this.onAddTeamMemberClick}
+                                >
+                                    <MaterialIconUI>add</MaterialIconUI>
+                                </div>
                             </div>
+                            {this.state.team?.members?.map(
+                                this.renderTeamMember,
+                            )}
+                            {this.state.invitations
+                                .filter(
+                                    (invitation) =>
+                                        invitation.status === 'PENDING',
+                                )
+                                .map(this.renderInvitedUser)}
                         </div>
-                        {this.state.team?.members?.map(this.renderTeamMember)}
-                        {this.state.invitations
-                            .filter(
-                                (invitation) => invitation.status === 'PENDING',
-                            )
-                            .map(this.renderInvitedUser)}
                     </div>
                 </div>
             </div>
@@ -460,6 +483,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         this.setState({
             currentTabIndex: tabIndex,
         });
+    };
+
+    private onCreateMemberGroupClick = () => {
+        this.createTeamMemberGroupModelRef.current?.open();
     };
 
     private onTeamNameChange = (newName: string) => {

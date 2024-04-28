@@ -1,0 +1,5 @@
+mutation deleteTeamMemberGroup($id: ID!) {
+    deleteTeamMemberGroup(id: $id) {
+        id
+    }
+}

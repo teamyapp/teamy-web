@@ -1,6 +1,7 @@
 #import "../fragment/team.graphql"
 #import "../fragment/projectPreview.graphql"
 #import "../fragment/appVersion.graphql"
+#import "../fragment/teamMemberGroup.graphql"
 
 query getTeam($teamId: ID!) {
     teams(filter: { teamId: $teamId }) {
@@ -41,6 +42,9 @@ query getTeam($teamId: ID!) {
         }
         projects {
             ...ProjectPreviewFragment
+        }
+        memberGroups {
+            ...TeamMemberGroupFragment
         }
     }
 }

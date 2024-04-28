@@ -37,6 +37,7 @@ import {
     CreateStoryInput,
     CreateTaskInput,
     CreateTeamInput,
+    CreateTeamMemberGroupInput,
     CreateUserInput,
     CreateVersionSelectorInput,
     UpdateActivatorInput,
@@ -50,6 +51,7 @@ import {
     UpdateStoryInput,
     UpdateTaskInput,
     UpdateTeamInput,
+    UpdateTeamMemberGroupInput,
     UpdateTeamMemberInput,
     UpdateUserInput,
     UpdateVersionSelectorInput,
@@ -108,9 +110,12 @@ import {
     replaceTeamInvitations,
     replaceTeamTaskActivities,
     mergeSprintParticipant,
+    mergeTeamMemberGroup,
+    mergeTeamMemberGroupUserRelation,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
+import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -134,6 +139,7 @@ export class StateSyncer {
         private messageClient: MessageClient,
         private teamClient: TeamClient,
         private teamMemberClient: TeamMemberClient,
+        private teamMemberGroupClient: TeamMemberGroupClient,
         private userClient: UserClient,
         private appVersionClient: AppVersionClient,
         private invitationClient: InvitationClient,
@@ -508,6 +514,79 @@ export class StateSyncer {
             `${taskId}`,
             `${appState.currClientId}`,
         );
+    }
+
+    public async createTeamMemberGroup(
+        teamId: number,
+        input: CreateTeamMemberGroupInput,
+    ): Promise<void> {
+        const remoteTeamMemberGroup =
+            await this.teamMemberGroupClient.createTeamMemberGroup(
+                `${teamId}`,
+                input,
+            );
+        let appState = this.localStore.getState();
+        appState = mergeTeamMemberGroup(appState, remoteTeamMemberGroup);
+        this.localStore.updateState(appState);
+    }
+
+    public async updateTeamMemberGroup(
+        id: number,
+        input: UpdateTeamMemberGroupInput,
+    ) {
+        const remoteTeamMemberGroup =
+            await this.teamMemberGroupClient.updateTeamMemberGroup(
+                `${id}`,
+                input,
+            );
+        let appState = this.localStore.getState();
+        appState = mergeTeamMemberGroup(appState, remoteTeamMemberGroup);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteTeamMemberGroup(id: number): Promise<void> {
+        await this.teamMemberGroupClient.deleteTeamMemberGroup(`${id}`);
+        let appState = this.localStore.getState();
+        delete appState.teamMemberGroups[id];
+        this.localStore.updateState(appState);
+    }
+
+    public async addUserToTeamMemberGroup(
+        id: number,
+        userId: number,
+    ): Promise<void> {
+        await this.teamMemberGroupClient.addUserToTeamMemberGroup(
+            `${id}`,
+            `${userId}`,
+        );
+        let appState = this.localStore.getState();
+        appState = mergeTeamMemberGroupUserRelation(
+            appState,
+            `${id}`,
+            `${userId}`,
+        );
+        this.localStore.updateState(appState);
+    }
+
+    public async removeUserFromTeamMemberGroup(
+        id: number,
+        userId: number,
+    ): Promise<void> {
+        await this.teamMemberGroupClient.removeUserFromTeamMemberGroup(
+            `${id}`,
+            `${userId}`,
+        );
+        let appState = this.localStore.getState();
+        appState.teamMemberGroupUserRelations =
+            appState.teamMemberGroupUserRelations.filter(
+                (relation) =>
+                    !(
+                        relation.groupId === id &&
+                        relation.memberUserId === userId
+                    ),
+            );
+
+        this.localStore.updateState(appState);
     }
 
     public async updateTeamMember(
@@ -902,8 +981,12 @@ export class StateSyncer {
             );
 
         let appState = this.localStore.getState();
-        appState = mergeSprintParticipant(appState, sprintId, remoteSprintParticipant);
-        this.localStore.updateState(appState)
+        appState = mergeSprintParticipant(
+            appState,
+            sprintId,
+            remoteSprintParticipant,
+        );
+        this.localStore.updateState(appState);
     }
 
     public async removeTeamMemberFromSprint(
@@ -920,10 +1003,12 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         appState.sprintParticipants = appState.sprintParticipants.filter(
             (sprintParticipant) =>
-                !(sprintParticipant.sprintId === sprintId &&
-                sprintParticipant.userId === userId),
+                !(
+                    sprintParticipant.sprintId === sprintId &&
+                    sprintParticipant.userId === userId
+                ),
         );
-        this.localStore.updateState(appState)
+        this.localStore.updateState(appState);
     }
 
     public async addTaskToSprint(sprintId: number, taskId: number) {

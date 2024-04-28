@@ -1,0 +1,10 @@
+#import '../fragment/teamMemberGroup.graphql'
+
+mutation createTeamMemberGroup(
+    $teamId: ID!
+    $input: CreateTeamMemberGroupInput!
+) {
+    createTeamMemberGroup(teamId: $teamId, input: $input) {
+        ...TeamMemberGroupFragment
+    }
+}

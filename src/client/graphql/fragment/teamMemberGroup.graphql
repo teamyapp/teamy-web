@@ -1,0 +1,15 @@
+#import "./team.graphql"
+#import "./user.graphql"
+
+fragment TeamMemberGroupFragment on TeamMemberGroup {
+    id
+    name
+    team {
+        ...TeamFragment
+    }
+    members {
+        ...UserFragment
+    }
+    createdAt
+    updatedAt
+}

@@ -10,6 +10,7 @@ import {
 import { RemoteTeam } from '@core/client/entity/remoteTeam';
 
 import getTeamWithSprintPreviews from './graphql/query/getTeamWithSprintPreviews.graphql';
+import getTeamWithTaskPreviews from './graphql/query/getTeamWithTaskPreviews.graphql';
 
 export class TeamClient {
     private readonly graphQLClient: GraphQLClient;
@@ -35,53 +36,7 @@ export class TeamClient {
     ): Promise<RemoteTeam> {
         return this.graphQLClient
             .query({
-                query: `
-                    query getTeam($teamId: ID!, $taskFilter: TaskFilter) {
-                        teams(filter: { teamId: $teamId }) {
-                            id
-                            tasks(filter: $taskFilter) {
-                                id
-                                goal
-                                dueAt
-                                status
-                                isScheduled
-                                isPlanned
-                                effort
-                                priority
-                                owner {
-                                    id
-                                    firstName
-                                    lastName
-                                    profileUrl
-                                }
-                                owningTeam {
-                                    id
-                                }
-                                awaitForTasks {
-                                    id
-                                    goal
-                                    context
-                                    status
-                                    isScheduled
-                                    isPlanned
-                                    effort
-                                    priority
-                                    owningTeam {
-                                        id
-                                    }
-                                }
-                                links {
-                                    id
-                                    taskId
-                                    title
-                                    url
-                                    iconUrl
-                                    iconHoverUrl
-                                }
-                            }
-                        }
-                    }
-                `,
+                query: print(getTeamWithTaskPreviews),
                 variables: {
                     teamId,
                     taskFilter,

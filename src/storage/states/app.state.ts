@@ -1,5 +1,3 @@
-import moment from 'moment';
-
 import { ClientState } from '@core/storage/states/client.state';
 import { InvitationState } from '@core/storage/states/invitation.state';
 import { MessageState } from '@core/storage/states/message.state';
@@ -44,6 +42,8 @@ import {
     VersionSelectorState,
     VersionSelectorVersionRelationState,
 } from './versionSelector.state';
+import { TeamMemberGroupState } from './teamMemberGroup.state';
+import { TeamMemberGroupUserRelation } from './teamMemberGroupUserRelation.state';
 
 interface PersistedState {
     teamSelectedSprint: Record<number, number>;
@@ -78,6 +78,8 @@ export class AppState {
     public stories: Record<number, StoryState> = {};
     public phases: Record<number, PhaseState> = {};
     public projects: Record<number, ProjectState> = {};
+    public teamMemberGroups: Record<number, TeamMemberGroupState> = {};
+    public teamMemberGroupUserRelations: TeamMemberGroupUserRelation[] = [];
     public projectPhaseRelations: ProjectPhaseRelationState[] = [];
     public projectStoryRelations: ProjectStoryRelationState[] = [];
     public phaseStoryRelations: PhaseStoryRelationState[] = [];

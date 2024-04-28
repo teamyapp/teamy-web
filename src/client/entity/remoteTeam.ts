@@ -8,6 +8,7 @@ import { RemoteProject } from './remoteProject';
 import { RemoteTask } from './remoteTask';
 import { RemoteTaskActivity } from './remoteTaskActivity';
 import { RemoteUser } from './remoteUser';
+import { RemoteTeamMemberGroup } from './remoteTeamMemberGroup';
 
 export interface RemoteTeam {
     id: string;
@@ -25,4 +26,5 @@ export interface RemoteTeam {
     managedApps?: RemoteApp[];
     appInstallations?: RemoteAppInstallation[];
     projects: RemoteProject[];
+    memberGroups: RemoteTeamMemberGroup[];
 }
