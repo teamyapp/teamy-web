@@ -202,9 +202,9 @@ export class BacklogComponent extends Component<Props, State> {
         });
     }
 
-    private updateState() {
-        let tasks = this.graphSource.currentTeam()?.tasks || [];
-        tasks = tasks.filter(unscheduled).sort(orderByStatusUrgencyAsc);
+    private updateState(sortOrder?: string) {
+        const taskNodes = this.graphSource.currentTeam()?.tasks || [];
+        const tasks = this.getSortedTasks(taskNodes, sortOrder || this.state.sortOrder);
         this.setState({
             unplannedTasks: tasks,
         });
@@ -240,10 +240,12 @@ export class BacklogComponent extends Component<Props, State> {
             type: 'TaskUpdated',
             taskId: taskId,
         });
+        this.updateState();
     };
 
     private onDeleteTask = (taskId: number): void => {
         this.stateSyncer.deleteTask(taskId);
+        this.updateState();
     };
 
     private onAddClick = () => {
@@ -260,6 +262,7 @@ export class BacklogComponent extends Component<Props, State> {
         this.setState({
             onEditingNewTask: false,
         });
+        this.updateState();
     };
 
     private onDiscardNewTask = () => {
@@ -270,25 +273,31 @@ export class BacklogComponent extends Component<Props, State> {
 
     private onSelectSortOrder = (sortOrder: string) => {
         this.setState({
-            sortOrder: sortOrder,
+            sortOrder,
         });
 
-        const orderedTasks = this.state.unplannedTasks;
+        this.updateState(sortOrder)
+    };
+
+    private getSortedTasks = (tasks: Task[], sortOrder: string): Task[] => {
         switch (sortOrder) {
             case taskStatusOrder:
-                orderedTasks.sort(orderByStatusUrgencyAsc);
-                break;
+                return tasks.sort(orderByStatusUrgencyAsc);
             case taskPriorityOrder:
-                orderedTasks.sort(orderByPriorityDesc);
-                break;
+                return tasks.sort(orderByPriorityDesc);
             case taskOwnerOrder:
-                orderedTasks.sort(orderByOwner);
-                break;
+                return tasks.sort(orderByOwner);
             case taskDeadlineOrder:
-                orderedTasks.sort(orderByDeadline);
-                break;
+                return tasks.sort(orderByDeadline);
+            case taskEffortOrder:
+                return tasks.sort(orderByDeadline);
+            case taskValueOrder:
+                return tasks.sort(orderByDeadline);
+            default:
+                return tasks;
         }
-    };
+    
+    }
 }
 
 function filterTaskAction(action: TaskAction): boolean {
