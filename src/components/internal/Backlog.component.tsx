@@ -290,7 +290,6 @@ export class BacklogComponent extends Component<Props, State> {
             default:
                 return tasks;
         }
-    
     }
 }
 
