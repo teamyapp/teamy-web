@@ -14,7 +14,7 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { backlogSectionId } from '@core/config/sections';
-import { allTasks, unscheduled } from '@core/data/task.filter';
+import { allTasks } from '@core/data/task.filter';
 import {
     orderByDeadline,
     orderByOwner,
@@ -37,11 +37,9 @@ import { DropDownList } from '@lib/ui/DropDownList';
 import {
     backlogSortOrders,
     taskDeadlineOrder,
-    taskEffortOrder,
     taskOwnerOrder,
     taskPriorityOrder,
     taskStatusOrder,
-    taskValueOrder,
 } from '@core/config/sortOrder';
 import { TooltipUI } from '@lib/ui/Tooltip';
 
@@ -288,10 +286,6 @@ export class BacklogComponent extends Component<Props, State> {
             case taskOwnerOrder:
                 return tasks.sort(orderByOwner);
             case taskDeadlineOrder:
-                return tasks.sort(orderByDeadline);
-            case taskEffortOrder:
-                return tasks.sort(orderByDeadline);
-            case taskValueOrder:
                 return tasks.sort(orderByDeadline);
             default:
                 return tasks;
