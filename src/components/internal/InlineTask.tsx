@@ -3,11 +3,11 @@ import classNames from 'classnames';
 import React, {
     ChangeEvent,
     Component,
-    KeyboardEvent,
     MouseEvent,
     ReactNode,
     RefObject,
     createRef,
+    KeyboardEvent
 } from 'react';
 
 import { RelativeLayout } from '@lib/layout/relativeLayout';
@@ -32,6 +32,7 @@ import styles from './InlineTask.module.scss';
 import { SelectOwnersPopupComponent } from './SelectOwnersPopupComponent';
 import { TaskLinkIconUI } from './TaskLinkIcon';
 import { dueDate, getUserShortName } from './format';
+import { getPlatform } from '@lib/runtime/os';
 
 const statusNames: Record<TaskStatus, string> = {
     TODO: 'Todo',
@@ -108,6 +109,8 @@ interface Props {
 interface State {
     isEditingGoal: boolean;
     updatedGoal?: string;
+    isCmdKeyPressed: boolean;
+    isControlKeyPressed: boolean;
 }
 
 export class InlineTaskUI extends Component<Props, State> {
@@ -121,6 +124,8 @@ export class InlineTaskUI extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
             isEditingGoal: false,
+            isCmdKeyPressed: false,
+            isControlKeyPressed: false,
         };
     }
 
@@ -246,7 +251,8 @@ export class InlineTaskUI extends Component<Props, State> {
                 className={styles.GoalTextField}
                 value={this.state.updatedGoal || ''}
                 onChange={this.onGoalChange}
-                onKeyDown={this.onGoalKeyDown}
+                onKeyDown={this.onKeyDown}
+                onKeyUp={this.onKeyUp}
                 onBlur={this.onGoalBlur}
             />
         ) : (
@@ -259,6 +265,53 @@ export class InlineTaskUI extends Component<Props, State> {
             </div>
         );
     }
+
+    private onKeyDown = (event: KeyboardEvent) => {
+        const platform = getPlatform();
+        if (platform === 'Mac' && event.metaKey) {
+            this.setState({
+                isCmdKeyPressed: true,
+            });
+        }
+
+        if (platform === 'Windows' && event.key === 'Control') {
+            this.setState({
+                isControlKeyPressed: true,
+            });
+        }
+
+        if ((this.state.isCmdKeyPressed || this.state.isControlKeyPressed) &&
+            event.key === 's'
+        ) {
+            event.preventDefault();
+            this.finishEditingGoal();
+        }
+
+        switch (event.key) {
+            case 'Escape':
+                this.cancelEditingGoal();
+                break;
+            default:
+                break;
+        }
+    };
+
+    private onKeyUp = (event: KeyboardEvent) => {
+        const platform = getPlatform();
+        if (platform === 'Mac' && !event.metaKey) {
+            this.setState({
+                isCmdKeyPressed: false,
+            });
+        }
+
+        if (platform === 'Windows' && event.key === 'Control') {
+            this.setState({
+                isControlKeyPressed: false,
+            });
+        }
+    };
+
+
 
     private onSelectTaskHandler = () => {
         this.props.onTaskSelectHandler?.call(null, this.props.task.id);
@@ -582,16 +635,6 @@ export class InlineTaskUI extends Component<Props, State> {
         this.finishEditingGoal();
     };
 
-    private onGoalKeyDown = (
-        event: KeyboardEvent<HTMLTextAreaElement>,
-    ): void => {
-        switch (event.key) {
-            case 'Escape':
-                this.finishEditingGoal();
-                return;
-        }
-    };
-
     private onGoalChange = (event: ChangeEvent<HTMLTextAreaElement>): void => {
         this.setState({
             updatedGoal: event.target.value,
@@ -612,6 +655,14 @@ export class InlineTaskUI extends Component<Props, State> {
             this.props.task.id,
             this.getUpdatedTask(),
         );
+        this.setState({
+            isEditingGoal: false,
+            updatedGoal: undefined,
+        });
+        this.props.onFinishEditingTask?.call(null);
+    }
+
+    private cancelEditingGoal = () => {
         this.setState({
             isEditingGoal: false,
             updatedGoal: undefined,
