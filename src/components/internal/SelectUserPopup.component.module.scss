@@ -1,0 +1,28 @@
+.Users {
+    background-color: white;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+
+    &:focus {
+        outline: none;
+    }
+
+    .TopBar {
+        display: flex;
+        padding: 4px;
+        background-color: #424242;
+        --icon-color: white;
+        justify-content: flex-end;
+        --icon-size: 22px;
+
+        .CloseButton{
+            border-radius: 50%;
+            padding: 2px;
+
+            &:hover {
+                background-color: rgba(255, 255, 255, 0.1);
+                cursor: pointer;
+            }
+        }
+    }
+}

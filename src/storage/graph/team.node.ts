@@ -10,6 +10,7 @@ import { InvitationNode } from './invitation.node';
 import { ProjectNode } from './project.node';
 import { TaskNode } from './task.node';
 import { UserNode } from './user.node';
+import { TeamMemberGroupNode } from './teamMemberGroup.node';
 
 export class TeamNode implements Team {
     constructor(private localStore: LocalStore, private teamState: TeamState) {}
@@ -150,5 +151,20 @@ export class TeamNode implements Team {
         }
 
         return projects;
+    }
+
+    public get memberGroups(): TeamMemberGroupNode[] {
+        const appState = this.localStore.getState();
+        const memberGroups = [];
+        for (let memberGroupId in appState.teamMemberGroups) {
+            const memberGroup = appState.teamMemberGroups[memberGroupId];
+            if (memberGroup.teamId === this.teamState.id) {
+                memberGroups.push(
+                    new TeamMemberGroupNode(this.localStore, memberGroup),
+                );
+            }
+        }
+
+        return memberGroups;
     }
 }

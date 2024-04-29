@@ -45,8 +45,7 @@ import { KanbanUI } from '../internal/Kanban';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
-import { RelativeLayoutContainerUI } from '@lib/layout';
-import { SelectUserListUI } from 'components/internal/SelectUserList';
+import { SelectUserPopupComponent } from 'components/internal/SelectUserPopup.component';
 
 const TEAM_MEMBERS_POPUP_Z_INDEX = 1002;
 
@@ -294,24 +293,22 @@ export class SprintsComponent extends Component<Props, State> {
         };
     };
 
-    private handleTeamMemberClick =
-        (closeContainer: () => void) => (userId: number) => {
-            if (!this.state.selectedSprintId) {
-                return;
-            }
+    private onTeamMemberClick = (userId: number) => {
+        if (!this.state.selectedSprintId) {
+            return;
+        }
 
-            const currentTeam = this.props.deps.graphSource.currentTeam();
-            if (!currentTeam) {
-                return;
-            }
+        const currentTeam = this.props.deps.graphSource.currentTeam();
+        if (!currentTeam) {
+            return;
+        }
 
-            this.stateSyncer.addTeamMemberToSprint(
-                this.state.selectedSprintId,
-                currentTeam.id,
-                userId,
-            );
-            closeContainer();
-        };
+        this.stateSyncer.addTeamMemberToSprint(
+            this.state.selectedSprintId,
+            currentTeam.id,
+            userId,
+        );
+    };
 
     private getAvailableTeamMembers = () => {
         const currentTeam = this.props.deps.graphSource.currentTeam();
@@ -324,35 +321,6 @@ export class SprintsComponent extends Component<Props, State> {
                 return participant.user.id === member.user.id;
             });
         });
-    };
-
-    private renderTeamMembers = ({
-        closeContainer,
-    }: {
-        closeContainer: () => void;
-    }) => {
-        const teamMembers = this.getAvailableTeamMembers();
-        const users = teamMembers.map((teamMember) => teamMember.user);
-        return (
-            <div className={styles.TeamMembers}>
-                <div className={styles.TopBar}>
-                    <div
-                        className={styles.CloseButton}
-                        onClick={closeContainer}
-                    >
-                        <MaterialIconUI>close</MaterialIconUI>
-                    </div>
-                </div>
-                <div className={styles.TeamMemberList}>
-                    <SelectUserListUI
-                        users={users}
-                        onSelectUser={this.handleTeamMemberClick(
-                            closeContainer,
-                        )}
-                    />
-                </div>
-            </div>
-        );
     };
 
     private handleAddParticipantClick =
@@ -397,7 +365,7 @@ export class SprintsComponent extends Component<Props, State> {
                 parseInt(userId),
             );
         });
-        
+
         this.state.selectedTaskOwners.clear();
         this.state.selectedTaskOwners.add(userAll);
         this.forceUpdate();
@@ -421,6 +389,7 @@ export class SprintsComponent extends Component<Props, State> {
         let teamTasksFilter = filters.allTasks;
         const teamMembers = this.getAvailableTeamMembers();
         const isDeleteParticipantDisabled = this.isDeleteParticipantDisabled();
+        const users = teamMembers.map((teamMember) => teamMember.user);
 
         if (this.props.taskFilters.timeRangeFilter) {
             personalTasksFilter = and(
@@ -494,50 +463,56 @@ export class SprintsComponent extends Component<Props, State> {
                                                 </div>
                                             </TooltipUI>
                                         </div>
-                                        <RelativeLayoutContainerUI
+                                        <SelectUserPopupComponent
                                             relativeLayout={
                                                 this.props.deps.relativeLayout
                                             }
                                             zOffset={TEAM_MEMBERS_POPUP_Z_INDEX}
-                                            referenceOffset={4}
-                                            renderFollower={
-                                                this.renderTeamMembers
+                                            users={users}
+                                            onUserSelect={
+                                                this.onTeamMemberClick
                                             }
-                                            preserveReferenceParentHeight
-                                            renderReferenceElement={({
-                                                toggleContainer, showFollower,
-                                            }) => (
-                                                <TooltipUI
-                                                    message={'Add to sprint'}
-                                                    disabled={
-                                                        !teamMembers.length || showFollower
-                                                    }
-                                                    relativeLayout={
-                                                        this.props.deps
-                                                            .relativeLayout
-                                                    }
-                                                >
-                                                    <div
-                                                        className={`${styles.Action} ${styles.Add} ${classNames(
-                                                            {
-                                                                [styles.Disabled]:
-                                                                    teamMembers.length ===
-                                                                    0,
-                                                                [styles.Active]: showFollower,
-                                                            },
-                                                        )}`}
-                                                        onClick={this.handleAddParticipantClick(
-                                                            teamMembers.length >
-                                                                0,
-                                                            toggleContainer,
-                                                        )}
+                                            referenceElement={({
+                                                toggleContainer,
+                                                showFollower,
+                                            }) => {
+                                                return (
+                                                    <TooltipUI
+                                                        message={
+                                                            'Add to sprint'
+                                                        }
+                                                        disabled={
+                                                            !teamMembers.length ||
+                                                            showFollower
+                                                        }
+                                                        relativeLayout={
+                                                            this.props.deps
+                                                                .relativeLayout
+                                                        }
                                                     >
-                                                        <MaterialIconUI>
-                                                            add
-                                                        </MaterialIconUI>
-                                                    </div>
-                                                </TooltipUI>
-                                            )}
+                                                        <div
+                                                            className={`${styles.Action} ${styles.Add} ${classNames(
+                                                                {
+                                                                    [styles.Disabled]:
+                                                                        teamMembers.length ===
+                                                                        0,
+                                                                    [styles.Active]:
+                                                                        showFollower,
+                                                                },
+                                                            )}`}
+                                                            onClick={this.handleAddParticipantClick(
+                                                                teamMembers.length >
+                                                                    0,
+                                                                toggleContainer,
+                                                            )}
+                                                        >
+                                                            <MaterialIconUI>
+                                                                add
+                                                            </MaterialIconUI>
+                                                        </div>
+                                                    </TooltipUI>
+                                                );
+                                            }}
                                         />
                                     </div>
                                 </div>

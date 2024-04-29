@@ -64,6 +64,9 @@ export const CreateTeamMemberGroupModalComponent: FC<
             team.id,
             createTeamMemberGroupInput,
         );
+
+        setCreateTeamMemberGroupInput(undefined);
+        modalRef.current?.close();
     };
 
     const onCloseButtonClick = () => {
