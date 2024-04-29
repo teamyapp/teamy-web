@@ -1527,7 +1527,6 @@ export function mergeTeamMemberGroup(
             member.id
         )
     });
-
     currAppState.teamMemberGroups[remoteTeamMemberGroupId] =
         localNewTeamMemberGroup;
     return currAppState;
@@ -1540,7 +1539,6 @@ export function mergeTeamMemberGroupUserRelation(
 ): AppState {
     const teamMemberGroupId = toInt(remoteTeamMemberGroupId)!;
     const userId = toInt(remoteUserId)!;
-
     if (
         !currAppState.teamMemberGroupUserRelations.some((teamMemberGroupUserRelation) => {
             return (
@@ -1995,7 +1993,7 @@ export function mergeSprintParticipant(
     };
 
     if (localOldSprintParticipantIndex === -1) {
-        appState.sprintParticipants.concat(localNewSprintParticipant);
+        appState.sprintParticipants = appState.sprintParticipants.concat(localNewSprintParticipant);
     } else {
         appState.sprintParticipants[localOldSprintParticipantIndex] =
             localNewSprintParticipant;

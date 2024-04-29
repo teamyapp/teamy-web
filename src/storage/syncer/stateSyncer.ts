@@ -585,7 +585,6 @@ export class StateSyncer {
                         relation.memberUserId === userId
                     ),
             );
-
         this.localStore.updateState(appState);
     }
 
