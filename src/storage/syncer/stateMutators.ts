@@ -1524,8 +1524,8 @@ export function mergeTeamMemberGroup(
         currAppState = mergeTeamMemberGroupUserRelation(
             currAppState,
             remoteTeamMemberGroup.id,
-            member.id
-        )
+            member.id,
+        );
     });
     currAppState.teamMemberGroups[remoteTeamMemberGroupId] =
         localNewTeamMemberGroup;
@@ -1539,14 +1539,18 @@ export function mergeTeamMemberGroupUserRelation(
 ): AppState {
     const teamMemberGroupId = toInt(remoteTeamMemberGroupId)!;
     const userId = toInt(remoteUserId)!;
-    if (
-        !currAppState.teamMemberGroupUserRelations.some((teamMemberGroupUserRelation) => {
-            return (
-                teamMemberGroupUserRelation.groupId === teamMemberGroupId &&
-                teamMemberGroupUserRelation.memberUserId === userId
-            );
-        })
-    ) {
+
+    const hasTeamMemberGroupUserRelation =
+        currAppState.teamMemberGroupUserRelations.some(
+            (teamMemberGroupUserRelation) => {
+                return (
+                    teamMemberGroupUserRelation.groupId === teamMemberGroupId &&
+                    teamMemberGroupUserRelation.memberUserId === userId
+                );
+            },
+        );
+
+    if (!hasTeamMemberGroupUserRelation) {
         currAppState.teamMemberGroupUserRelations.push({
             groupId: teamMemberGroupId,
             memberUserId: userId,
@@ -1555,7 +1559,6 @@ export function mergeTeamMemberGroupUserRelation(
 
     return currAppState;
 }
-
 
 export function mergeTeam(
     currAppState: AppState,
