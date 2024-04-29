@@ -203,17 +203,20 @@
         display: flex;
 
         .LeftActions {
+            box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
             padding: 8px;
-            background-color: #424242;
+            z-index: 2;
 
             .Action {
                 @include action;
                 
                 &.Expand {
-                    --icon-color: white;
+                    --icon-color: rgb(0, 128, 255);
                 }
 
                 &.Active {
+                    background-color: rgb(0, 128, 255);
                     --icon-color: white;
                 }
 
