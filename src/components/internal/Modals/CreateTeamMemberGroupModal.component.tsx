@@ -34,7 +34,6 @@ export const CreateTeamMemberGroupModalComponent: FC<
         setCreateTeamMemberGroupInput({
             name: '',
         });
-
         nameInputRef.current?.focus();
         modalRef.current?.open();
     };

@@ -34,7 +34,6 @@ export class TeamMemberGroupNode implements TeamMemberGroup {
 
     get members(): UserNode[] {
         const appState = this.localStore.getState();
-
         return appState.teamMemberGroupUserRelations
             .filter(
                 (relation) => relation.groupId === this.teamMemberGroupState.id,
