@@ -14,7 +14,7 @@ import {
     sectionItemSizeTransformer,
 } from '@core/config/draggable';
 import { backlogSectionId } from '@core/config/sections';
-import { allTasks } from '@core/data/task.filter';
+import { allTasks, unscheduled } from '@core/data/task.filter';
 import {
     orderByDeadline,
     orderByOwner,
@@ -53,7 +53,7 @@ interface Props {
 }
 
 interface State {
-    unplannedTasks: Task[];
+    unscheduledTasks: Task[];
     sortOrder: string;
     onEditingNewTask: boolean;
 }
@@ -79,7 +79,7 @@ export class BacklogComponent extends Component<Props, State> {
         this.stateSyncer = props.deps.stateSyncer;
         this.relativeLayout = props.deps.relativeLayout;
         this.state = {
-            unplannedTasks: [],
+            unscheduledTasks: [],
             onEditingNewTask: false,
             sortOrder: taskStatusOrder,
         };
@@ -122,7 +122,7 @@ export class BacklogComponent extends Component<Props, State> {
             backlogFilter = and(backlogFilter, timeRangeFilter);
         }
 
-        const filteredTasks = this.state.unplannedTasks.filter(backlogFilter);
+        const filteredTasks = this.state.unscheduledTasks.filter(backlogFilter);
         const clientId = this.localStore.getState().currClientId;
         return (
             <div className={styles.Backlog}>
@@ -201,10 +201,11 @@ export class BacklogComponent extends Component<Props, State> {
     }
 
     private updateState(sortOrder?: string) {
-        const taskNodes = this.graphSource.currentTeam()?.tasks || [];
-        const tasks = this.getSortedTasks(taskNodes, sortOrder || this.state.sortOrder);
+        const tasks: Task[] = this.graphSource.currentTeam()?.tasks || [];
+        let unscheduledTasks = tasks.filter(unscheduled);
+        unscheduledTasks = this.getSortedTasks(unscheduledTasks, sortOrder || this.state.sortOrder);
         this.setState({
-            unplannedTasks: tasks,
+            unscheduledTasks: unscheduledTasks,
         });
     }
 
