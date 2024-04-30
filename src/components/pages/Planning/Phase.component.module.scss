@@ -168,10 +168,8 @@
         display: flex;
 
         .LeftActions {
-            box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-            box-sizing: border-box;
             padding: 8px;
-            z-index: 2;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
 
             .Action {
                 @include action;
