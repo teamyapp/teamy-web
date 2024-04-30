@@ -346,7 +346,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private renderSaveShortcutDescription() {
         const platform = getPlatform();
         let cmdKey = platform === 'Mac' ? 'cmd' : 'ctrl';
-
         return (
             <div className={styles.Description}>
                 Press {cmdKey} + s to save changes
