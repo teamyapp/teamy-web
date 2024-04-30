@@ -143,20 +143,21 @@ $tableRowGap: 12px;
                         }
 
                         .Action {
+                            height: 20px;
                             &.Delete {
+                                --icon-size: 20px;
                                 display: none;
                             }
                         }
 
                         &.HasAction:hover {
-                            cursor: pointer;
-
                             .Action {
                                 &.Delete {
                                     display: block;
                                     --icon-color: #bdbdbd;
 
                                     &:hover {
+                                        cursor: pointer;
                                         --icon-color: #757575;
                                     }
                                 }
@@ -166,8 +167,10 @@ $tableRowGap: 12px;
 
                     .Label {
                         .MemberCount {
-                            font-size: 14px;
-                            font-weight: 700;
+                            font-size: 12px;
+                            font-weight: 600;
+                            color: #757575;
+                            user-select: none;
                         }
                     }
 
