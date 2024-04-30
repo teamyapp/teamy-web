@@ -311,8 +311,6 @@ export class InlineTaskUI extends Component<Props, State> {
         }
     };
 
-
-
     private onSelectTaskHandler = () => {
         this.props.onTaskSelectHandler?.call(null, this.props.task.id);
     };
