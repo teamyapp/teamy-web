@@ -8,12 +8,12 @@ import {
     useRef,
     useState,
 } from 'react';
-import styles from './CreateTeamMemberGroupModal.component.module.scss';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TextFieldUI } from '@lib/ui/TextField';
 import { ButtonUI } from '@lib/ui/Button';
 import { CreateTeamMemberGroupInput } from '@core/entity/input';
 import { Deps } from '@core/dep/deps';
+import styles from './CreateTeamMemberGroupModal.component.module.scss';
 
 interface Props {
     deps: Deps;
