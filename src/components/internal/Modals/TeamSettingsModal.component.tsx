@@ -238,11 +238,21 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             <div className={styles.MemberGroup} key={groupId || 'all'}>
                 <div className={styles.ToolBar}>
                     <div className={styles.Name}>{groupName}</div>
-                    <div className={styles.MemberCount}>{members.length}</div>
+                    <div className={styles.Label}>
+                        <div className={styles.MemberCount}>
+                            {groupId
+                                ? `${this.state.selectedGroupMembers[groupId]?.size || 0} /
+                              ${members.length} selected`
+                                : `total count: ${members.length}`}
+                        </div>
+                    </div>
                     {groupId && (
                         <div className={styles.Actions}>
                             <TooltipUI
-                                disabled={!this.state.selectedGroupMembers[groupId]?.size}
+                                disabled={
+                                    !this.state.selectedGroupMembers[groupId]
+                                        ?.size
+                                }
                                 message='Remove from group'
                                 relativeLayout={this.props.deps.relativeLayout}
                             >
@@ -279,7 +289,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                         relativeLayout={
                                             this.props.deps.relativeLayout
                                         }
-                                        disabled={!allMemberUsers?.length || showFollower}
+                                        disabled={
+                                            !allMemberUsers?.length ||
+                                            showFollower
+                                        }
                                     >
                                         <div
                                             className={`${styles.Action} ${styles.Add} ${classNames(
@@ -303,12 +316,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         </div>
                     )}
                 </div>
-                <div className={styles.Scrollable}>
-                    <div className={styles.TeamMemberList}>
-                        {members.map((user) =>
-                            this.renderTeamMember(user, groupId),
-                        )}
-                    </div>
+                <div className={styles.TeamMemberList}>
+                    {members.map((user) =>
+                        this.renderTeamMember(user, groupId),
+                    )}
                 </div>
             </div>
         );
@@ -338,18 +349,20 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         Create group
                     </div>
                 </div>
-                {this.renderTeamMemberGroup({
-                    groupName: 'All Members',
-                    members: allMemberUsers,
-                })}
-                {teamMemberGroups.map((group) => {
-                    return this.renderTeamMemberGroup({
-                        groupName: group.name,
-                        members: group.members,
-                        allMemberUsers,
-                        groupId: group.id,
-                    });
-                })}
+                <div className={styles.Scrollable}>
+                    {this.renderTeamMemberGroup({
+                        groupName: 'All Members',
+                        members: allMemberUsers,
+                    })}
+                    {teamMemberGroups.map((group) => {
+                        return this.renderTeamMemberGroup({
+                            groupName: group.name,
+                            members: group.members,
+                            allMemberUsers,
+                            groupId: group.id,
+                        });
+                    })}
+                </div>
             </div>
         );
     };
@@ -483,14 +496,19 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private renderDeleteTeamMember(userId: number) {
         return (
-            <div
-                className={`${styles.Action} ${styles.Delete}`}
-                onClick={this.onDeleteTeamMemberClick(userId)}
+            <TooltipUI
+                message='Remove from team'
+                relativeLayout={this.props.deps.relativeLayout}
             >
-                <MaterialIconUI iconStyle={'outlined'}>
-                    remove_circle
-                </MaterialIconUI>
-            </div>
+                <div
+                    className={`${styles.Action} ${styles.Delete}`}
+                    onClick={this.onDeleteTeamMemberClick(userId)}
+                >
+                    <MaterialIconUI iconStyle={'outlined'}>
+                        remove_circle
+                    </MaterialIconUI>
+                </div>
+            </TooltipUI>
         );
     }
 
@@ -600,7 +618,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 return;
             }
 
-            const selectedGroupMembers = {...this.state.selectedGroupMembers};
+            const selectedGroupMembers = { ...this.state.selectedGroupMembers };
             if (!selectedGroupMembers[groupId]) {
                 selectedGroupMembers[groupId] = new Set();
             }
