@@ -30,7 +30,7 @@ $tableRowGap: 12px;
         flex-direction: column;
         height: 100%;
         justify-content: center;
-        padding: 20px;
+        padding: 14px;
 
         .TeamProfileTabContent {
             align-items: center;
@@ -73,7 +73,7 @@ $tableRowGap: 12px;
         display: flex;
         justify-content: flex-end;
         margin-bottom: 14px;
-        padding-right: 12px;
+        padding-right: 14px;
 
         .Action {
             border-radius: 4px;
@@ -97,35 +97,74 @@ $tableRowGap: 12px;
     .TeamMembersTab {
         box-sizing: border-box;
         height: 100%;
-        overflow: hidden;
-        padding: 15px 6px;
+        padding: 14px 6px;
+        display: flex;
+        flex-direction: column;
 
         .Scrollable {
-            height: 100%;
-            overflow-y: auto;
-            padding: 0 14px;
+            flex: 1;
+            overflow-y: scroll;
+            padding-left: 14px;
+            padding-right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
 
             .MemberGroup {
-                margin-bottom: 10px;
-
                 .ToolBar {
+                    height: 36px;
                     align-items: center;
                     background-color: #00000008;
                     border-radius: 4px;
                     display: flex;
-                    margin-bottom: 10px;
-                    padding: 6px 10px;
+                    padding-left: 20px;
+                    padding-right: 20px;
                     gap: 10px;
 
-                    .Name {
-                        margin-left: 15px;
+                    .Action {
+                        align-items: center;
+                        border-radius: 4px;
+                        display: flex;
+                        justify-content: center;
+                        --icon-size: 24px;
+                        width: 24px;
+                        height: 24px;
+                    }
+
+                    .NameContainer {
                         flex: 1;
-                        font-size: 16px;
-                        font-weight: 700;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+
+                        .Name {
+                            font-size: 16px;
+                            font-weight: 700;
+                        }
+
+                        .Action {
+                            &.Delete {
+                                display: none;
+                            }
+                        }
+
+                        &.HasAction:hover {
+                            cursor: pointer;
+
+                            .Action {
+                                &.Delete {
+                                    display: block;
+                                    --icon-color: #bdbdbd;
+
+                                    &:hover {
+                                        --icon-color: #757575;
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     .Label {
-
                         .MemberCount {
                             font-size: 14px;
                             font-weight: 700;
@@ -135,22 +174,13 @@ $tableRowGap: 12px;
                     .Actions {
                         margin-left: auto;
                         display: flex;
-                        gap: 10px;
+                        gap: 4px;
 
                         .Action {
-                            align-items: center;
-                            border-radius: 4px;
-                            display: flex;
-                            height: 30px;
-                            justify-content: center;
-                            --icon-size: 24px;
-                            width: 30px;
-
                             &:hover {
                                 background-color: rgba(0, 0, 0, 0.07);
                                 cursor: pointer;
                             }
-
                             &.Add {
                                 --icon-color: #1976d2;
                                 --icon-size: 24px;
@@ -174,6 +204,7 @@ $tableRowGap: 12px;
                 }
 
                 .TeamMemberList {
+                    margin-top: 10px;
                     box-sizing: border-box;
                     column-gap: 20px;
                     display: grid;
@@ -187,11 +218,11 @@ $tableRowGap: 12px;
                         align-items: center;
                         display: flex;
                         flex-direction: column;
-                        padding-top: 20px;
-                        padding-bottom: 20px;
+                        padding-top: 14px;
+                        padding-bottom: 14px;
                         border-radius: 4px;
 
-                        &:hover {
+                        &.HasAction:hover {
                             cursor: pointer;
                             background-color: #fafafa;
                         }
@@ -260,13 +291,15 @@ $tableRowGap: 12px;
     .BandwidthTab {
         box-sizing: border-box;
         height: 100%;
-        overflow: hidden;
-        padding: 20px 6px;
+        display: flex;
+        flex-direction: column;
+        padding: 14px 6px;
 
         .Scrollable {
-            height: 100%;
-            overflow-y: auto;
-            padding: 0 14px;
+            flex: 1;
+            overflow-y: scroll;
+            padding-left: 14px;
+            padding-right: 8px;
 
             .Table {
                 border-collapse: collapse;
@@ -277,6 +310,7 @@ $tableRowGap: 12px;
                     color: white;
                     position: sticky;
                     top: 0;
+                    z-index: 1;
                 }
 
                 td,

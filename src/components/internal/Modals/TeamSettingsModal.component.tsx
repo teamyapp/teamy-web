@@ -237,13 +237,34 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         return (
             <div className={styles.MemberGroup} key={groupId || 'all'}>
                 <div className={styles.ToolBar}>
-                    <div className={styles.Name}>{groupName}</div>
+                    <div
+                        className={`${styles.NameContainer} ${classNames({
+                            [styles.HasAction]: groupId,
+                        })}`}
+                    >
+                        <div className={styles.Name}>{groupName}</div>
+                        {groupId && (
+                            <TooltipUI
+                                message='Delete'
+                                relativeLayout={this.props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.Delete}`}
+                                    onClick={this.handleDeleteTeamMemberGroup(
+                                        groupId,
+                                    )}
+                                >
+                                    <MaterialIconUI>close</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
+                        )}
+                    </div>
                     <div className={styles.Label}>
                         <div className={styles.MemberCount}>
                             {groupId
                                 ? `${this.state.selectedGroupMembers[groupId]?.size || 0} /
-                              ${members.length} selected`
-                                : `total count: ${members.length}`}
+                              ${members.length}`
+                                : members.length}
                         </div>
                     </div>
                     {groupId && (
@@ -316,11 +337,13 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         </div>
                     )}
                 </div>
-                <div className={styles.TeamMemberList}>
-                    {members.map((user) =>
-                        this.renderTeamMember(user, groupId),
-                    )}
-                </div>
+                {members.length > 0 && (
+                    <div className={styles.TeamMemberList}>
+                        {members.map((user) =>
+                            this.renderTeamMember(user, groupId),
+                        )}
+                    </div>
+                )}
             </div>
         );
     };
@@ -474,6 +497,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             <div
                 key={user.id}
                 className={`${styles.Cell} ${classNames({
+                    [styles.HasAction]: groupId,
                     [styles.Active]:
                         groupId &&
                         this.state.selectedGroupMembers[groupId]?.has(user.id),
@@ -578,6 +602,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         (groupId: number) => async (userId: number) => {
             await this.stateSyncer.addUserToTeamMemberGroup(groupId, userId);
         };
+
+    private handleDeleteTeamMemberGroup = (groupId: number) => () => {
+        this.stateSyncer.deleteTeamMemberGroup(groupId);
+    };
 
     private handleToggleUserPopup =
         (disabled: boolean, toggleContainer: () => void) =>
