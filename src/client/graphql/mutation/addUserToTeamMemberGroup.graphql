@@ -1,0 +1,5 @@
+mutation addUserToTeamMemberGroup($id: ID!, $userId: ID!) {
+    addUserToTeamMemberGroup(id: $id, userId: $userId) {
+        id
+    }
+}

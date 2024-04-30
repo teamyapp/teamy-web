@@ -1,5 +1,6 @@
 #import '../fragment/user.graphql'
 #import '../fragment/team.graphql'
+#import '../fragment/teamMemberGroup.graphql'
 
 query getUserWithTeam($userId: ID!) {
     user(userId: $userId) {
@@ -13,6 +14,9 @@ query getUserWithTeam($userId: ID!) {
                 user {
                     ...UserFragment
                 }
+            }
+            memberGroups {
+                ...TeamMemberGroupFragment
             }
         }
     }

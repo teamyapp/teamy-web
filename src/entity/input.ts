@@ -248,3 +248,11 @@ export interface UpdatePhaseInput {
     expectedEndAt: Date;
     status: PhaseStatus;
 }
+
+export interface CreateTeamMemberGroupInput {
+    name: string;
+}
+
+export interface UpdateTeamMemberGroupInput {
+    name: string;
+}

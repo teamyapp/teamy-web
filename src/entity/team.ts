@@ -5,6 +5,7 @@ import { App } from './app';
 import { Project } from './project';
 import { TeamAppInstallation } from './teamAppInstallation';
 import { User } from './user';
+import { TeamMemberGroup } from './teamMemberGroup';
 
 export interface Team {
     id: number;
@@ -18,4 +19,5 @@ export interface Team {
     managedApps: App[];
     appInstallations: TeamAppInstallation[];
     projects: Project[];
+    memberGroups: TeamMemberGroup[];
 }

@@ -1,0 +1,47 @@
+#import "../fragment/team.graphql"
+
+query getTeam($teamId: ID!, $taskFilter: TaskFilter) {
+    teams(filter: { teamId: $teamId }) {
+        ...TeamFragment
+        tasks(filter: $taskFilter) {
+            id
+            goal
+            dueAt
+            status
+            isScheduled
+            isPlanned
+            effort
+            priority
+            owner {
+                id
+                firstName
+                lastName
+                profileUrl
+            }
+            owningTeam {
+                id
+            }
+            awaitForTasks {
+                id
+                goal
+                context
+                status
+                isScheduled
+                isPlanned
+                effort
+                priority
+                owningTeam {
+                    id
+                }
+            }
+            links {
+                id
+                taskId
+                title
+                url
+                iconUrl
+                iconHoverUrl
+            }
+        }
+    }
+}
