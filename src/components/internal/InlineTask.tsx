@@ -285,6 +285,7 @@ export class InlineTaskUI extends Component<Props, State> {
         ) {
             event.preventDefault();
             this.finishEditingGoal();
+            return;
         }
 
         switch (event.key) {
