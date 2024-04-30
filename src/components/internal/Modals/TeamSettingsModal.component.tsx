@@ -26,12 +26,12 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { DurationInputUI } from '../DurationInput.ui';
 import { ImageUploaderComponent } from '../ImageUploader.component';
 import { UserProfileUI } from '../UserProfile';
-import styles from './TeamSettingsModal.component.module.scss';
 import { CreateTeamGroupModalComponent } from 'components/pages/Marketplace/Modals/CreateTeamGroupModal.component';
 import { CreateTeamMemberGroupModalComponent } from './CreateTeamMemberGroupModal.component';
 import { User } from '@core/entity/user';
 import { SelectUserPopupComponent } from '../SelectUserPopup.component';
 import classNames from 'classnames';
+import styles from './TeamSettingsModal.component.module.scss';
 
 interface Props {
     deps: Deps;
