@@ -76,7 +76,7 @@ export const CreateTeamMemberGroupModalComponent: FC<
     return (
         <ModalUI ref={modalRef} level={2}>
             <div className={styles.Header}>
-                Create Sprint
+                Create Team Member Group
                 <div
                     className={styles.CloseButton}
                     onClick={onCloseButtonClick}
