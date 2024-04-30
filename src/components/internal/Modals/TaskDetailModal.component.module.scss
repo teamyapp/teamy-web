@@ -16,43 +16,30 @@ $divider: 2px solid #eeeeee;
     .TaskActionsSection {
         background-color: #ececec;
         display: flex;
-        justify-content: flex-end;
-        padding: 4px 10px;
+        align-items: center;
+        padding: 4px 16px;
         gap: 10px;
 
-        .SaveAction {
-            align-items: center;
-            display: flex;
-
-            .Button {
-                align-items: center;
-                background-color: #455a64;
-                border-radius: 3px;
-                color: white;
-                display: flex;
-                font-weight: bold;
-                height: 26px;
-                padding: 0 10px;
-
-                &:hover {
-                    cursor: pointer;
-                    opacity: 0.9;
-                }
-            }
+        .Description {
+            flex: 1;
+            font-weight: bold;
         }
 
-        .Action {
-            border-radius: 4px;
-            padding: 4px;
+        .Actions {
+            display: flex;
+            .Action {
+                border-radius: 4px;
+                padding: 4px;
 
-            &:hover {
-                background-color: rgba(0, 0, 0, 0.1);
-                cursor: pointer;
-            }
+                &:hover {
+                    background-color: rgba(0, 0, 0, 0.1);
+                    cursor: pointer;
+                }
 
-            &:hover,
-            &.Active {
-                background-color: rgba(0, 0, 0, 0.1);
+                &:hover,
+                &.Active {
+                    background-color: rgba(0, 0, 0, 0.1);
+                }
             }
         }
     }
@@ -77,14 +64,6 @@ $divider: 2px solid #eeeeee;
             .Context {
                 --initial-height: 300px;
                 margin-top: 20px;
-
-                .Description {
-                    font-size: 12px;
-                    font-style: italic;
-                    margin-top: 6px;
-                    font-weight: 400;
-                    color: #494949;
-                }
             }
 
             .CommentsSection {

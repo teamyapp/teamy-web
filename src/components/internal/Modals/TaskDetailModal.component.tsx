@@ -75,7 +75,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         const dueAt = this.state.updatedTask?.dueAt
             ? new Date(this.state.updatedTask.dueAt)
             : undefined;
-        const cmdKey = getPlatform() === 'Mac' ? 'cmd' : 'ctrl';
         return (
             <>
                 <ModalUI ref={this.modalRef} afterClose={this.props.afterClose}>
@@ -98,20 +97,13 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                 </div>
                             </div>
                             <div className={styles.TaskActionsSection}>
+                                {this.renderSaveShortcutDescription()}
                                 <SelectOwnersPopupComponent
                                     deps={this.props.deps}
                                     onSelectOwner={this.onTaskOwnerSelected}
                                     selectedOwner={this.state.task?.owner}
                                     zOffset={POPUP_Z_INDEX}
                                 />
-                                <div className={styles.SaveAction}>
-                                    <div
-                                        className={`${styles.Button}`}
-                                        onClick={this.onSaveButtonClick}
-                                    >
-                                        Save
-                                    </div>
-                                </div>
                             </div>
                             <div className={styles.TaskDetailSection}>
                                 <div className={styles.LeftSection}>
@@ -134,9 +126,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             }
                                             ref={this.markdownEditorRef}
                                         />
-                                        <div className={styles.Description}>
-                                            Press {cmdKey} + s to save changes
-                                        </div>
                                     </div>
                                     <div className={styles.LinksSection}>
                                         <div className={styles.Title}>
@@ -354,6 +343,17 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         });
     }
 
+    private renderSaveShortcutDescription() {
+        const platform = getPlatform();
+        let cmdKey = platform === 'Mac' ? 'cmd' : 'ctrl';
+
+        return (
+            <div className={styles.Description}>
+                Press {cmdKey} + s to save changes
+            </div>
+        );
+    }
+
     private onCloseButtonClick = () => {
         this.modalRef.current?.close();
     };
@@ -376,11 +376,12 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             });
         }
 
-        if ((this.state.isCmdKeyPressed || this.state.isControlKeyPressed) &&
+        if (
+            (this.state.isCmdKeyPressed || this.state.isControlKeyPressed) &&
             event.key === 's'
         ) {
             event.preventDefault();
-            this.saveTaskContext();
+            this.onSaveButtonClick();
         }
     };
 
@@ -410,28 +411,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             await this.stateSyncer.updateTask(
                 this.state.task.id,
                 this.getUpdatedTaskInput(),
-            );
-            await this.feedbackPubSub.publish({
-                type: 'TaskUpdated',
-                taskId: this.state.task.id,
-            });
-        }
-    };
-
-    private saveTaskContext = async () => {
-        if (this.state.task) {
-            const updatedContextTask = {
-                goal: this.state.task.goal,
-                ownerUserId: this.state.task.owner?.id,
-                owningTeamId: this.state.task.owningTeam.id,
-                context: this.markdownEditorRef.current?.content,
-                dueAt: this.state.task.dueAt,
-                effort: this.state.task.effort,
-            };
-
-            await this.stateSyncer.updateTask(
-                this.state.task.id,
-                updatedContextTask,
             );
             await this.feedbackPubSub.publish({
                 type: 'TaskUpdated',
