@@ -20,7 +20,6 @@ export const SelectUserPopupComponent: FC<Props> = (props) => {
 
             props.onUserSelect(userId);
         };
-
     return (
         <RelativeLayoutContainerUI
             relativeLayout={props.relativeLayout}
