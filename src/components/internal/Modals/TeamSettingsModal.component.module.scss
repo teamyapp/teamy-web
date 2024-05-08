@@ -147,11 +147,12 @@ $tableRowGap: 12px;
                         }
 
                         .TextField {
+                            height: 30px;
                             width: 100%;
                             font-family: inherit;
                             font-size: 16px;
                             font-weight: 600;
-                            background-color: white;
+                            background-color: transparent;
                             border: none;
                             box-sizing: border-box;
                             margin: 0;

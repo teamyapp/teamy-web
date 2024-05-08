@@ -321,7 +321,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                             )}
                                         >
                                             <MaterialIconUI>
-                                                cancel
+                                                close
                                             </MaterialIconUI>
                                         </div>
                                     </TooltipUI>
