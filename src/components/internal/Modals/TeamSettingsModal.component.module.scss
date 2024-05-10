@@ -125,6 +125,7 @@ $tableRowGap: 12px;
                         align-items: center;
                         border-radius: 4px;
                         display: flex;
+                        align-items: center;
                         justify-content: center;
                         --icon-size: 24px;
                         width: 24px;
@@ -173,7 +174,6 @@ $tableRowGap: 12px;
                             height: 20px;
 
                             &.Delete {
-                                --icon-size: 20px;
                                 display: none;
                             }
 
