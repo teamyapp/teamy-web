@@ -137,6 +137,12 @@ $tableRowGap: 12px;
                         align-items: center;
                         gap: 10px;
 
+                        .NameInput {
+                            display: flex;
+                            align-items: center;
+                            flex: 1;
+                        }
+
                         .Name {
                             font-size: 16px;
                             font-weight: 700;
@@ -148,7 +154,7 @@ $tableRowGap: 12px;
 
                         .TextField {
                             height: 30px;
-                            width: 100%;
+                            width: auto;
                             font-family: inherit;
                             font-size: 16px;
                             font-weight: 600;

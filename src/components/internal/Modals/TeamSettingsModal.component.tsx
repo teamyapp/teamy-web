@@ -263,60 +263,80 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                             [styles.HasAction]: groupId && !isEditing,
                         })}`}
                     >
-                        {!isEditing ? (
-                            <div
-                                className={`${styles.Name} ${classNames({
-                                    [styles.HasAction]: groupId,
-                                })}`}
-                                onDoubleClick={this.handleTeamMemberGroupNameClicked(
-                                    groupName,
-                                    groupId,
-                                )}
-                            >
-                                {groupName}
-                            </div>
-                        ) : (
-                            <input
-                                className={styles.TextField}
-                                value={
-                                    this.state.editingTeamMemberGroupInput[
-                                        groupId!
-                                    ]?.name
-                                }
-                                onChange={this.handleTeamMemberGroupNameChanged(
-                                    groupId!,
-                                )}
-                            />
-                        )}
-                        {groupId &&
-                            (isEditing ? (
-                                <>
-                                    <TooltipUI
-                                        message='Save'
-                                        relativeLayout={
-                                            this.props.deps.relativeLayout
-                                        }
-                                    >
-                                        <div
-                                            className={`${styles.Action} ${styles.Save}`}
-                                            onClick={this.handleTeamMemberGroupSave(
-                                                groupId,
-                                            )}
+                        <div className={styles.NameInput}>
+                            {!isEditing ? (
+                                <div
+                                    className={`${styles.Name} ${classNames({
+                                        [styles.HasAction]: groupId,
+                                    })}`}
+                                    onDoubleClick={this.handleTeamMemberGroupNameClicked(
+                                        groupName,
+                                        groupId,
+                                    )}
+                                >
+                                    {groupName}
+                                </div>
+                            ) : (
+                                <input
+                                    className={styles.TextField}
+                                    value={
+                                        this.state.editingTeamMemberGroupInput[
+                                            groupId!
+                                        ]?.name
+                                    }
+                                    onChange={this.handleTeamMemberGroupNameChanged(
+                                        groupId!,
+                                    )}
+                                />
+                            )}
+                            {groupId &&
+                                (isEditing ? (
+                                    <>
+                                        <TooltipUI
+                                            message='Save'
+                                            relativeLayout={
+                                                this.props.deps.relativeLayout
+                                            }
                                         >
-                                            <MaterialIconUI>
-                                                check
-                                            </MaterialIconUI>
-                                        </div>
-                                    </TooltipUI>
+                                            <div
+                                                className={`${styles.Action} ${styles.Save}`}
+                                                onClick={this.handleTeamMemberGroupSave(
+                                                    groupId,
+                                                )}
+                                            >
+                                                <MaterialIconUI>
+                                                    check
+                                                </MaterialIconUI>
+                                            </div>
+                                        </TooltipUI>
+                                        <TooltipUI
+                                            message='Cancel'
+                                            relativeLayout={
+                                                this.props.deps.relativeLayout
+                                            }
+                                        >
+                                            <div
+                                                className={`${styles.Action} ${styles.Cancel}`}
+                                                onClick={this.handleTeamMemberGroupCancel(
+                                                    groupId,
+                                                )}
+                                            >
+                                                <MaterialIconUI>
+                                                    close
+                                                </MaterialIconUI>
+                                            </div>
+                                        </TooltipUI>
+                                    </>
+                                ) : (
                                     <TooltipUI
-                                        message='Cancel'
+                                        message='Delete'
                                         relativeLayout={
                                             this.props.deps.relativeLayout
                                         }
                                     >
                                         <div
-                                            className={`${styles.Action} ${styles.Cancel}`}
-                                            onClick={this.handleTeamMemberGroupCancel(
+                                            className={`${styles.Action} ${styles.Delete}`}
+                                            onClick={this.handleDeleteTeamMemberGroup(
                                                 groupId,
                                             )}
                                         >
@@ -325,24 +345,8 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                             </MaterialIconUI>
                                         </div>
                                     </TooltipUI>
-                                </>
-                            ) : (
-                                <TooltipUI
-                                    message='Delete'
-                                    relativeLayout={
-                                        this.props.deps.relativeLayout
-                                    }
-                                >
-                                    <div
-                                        className={`${styles.Action} ${styles.Delete}`}
-                                        onClick={this.handleDeleteTeamMemberGroup(
-                                            groupId,
-                                        )}
-                                    >
-                                        <MaterialIconUI>close</MaterialIconUI>
-                                    </div>
-                                </TooltipUI>
-                            ))}
+                                ))}
+                        </div>
                     </div>
                     <div className={styles.Label}>
                         <TooltipUI
