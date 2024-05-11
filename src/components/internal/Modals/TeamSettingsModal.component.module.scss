@@ -117,7 +117,6 @@ $tableRowGap: 12px;
                     background-color: #00000008;
                     border-radius: 4px;
                     display: flex;
-                    padding-left: 20px;
                     padding-right: 20px;
                     gap: 10px;
 
@@ -147,6 +146,8 @@ $tableRowGap: 12px;
                         .Name {
                             font-size: 16px;
                             font-weight: 700;
+                            padding-left: 20px;
+                            margin-right: 10px;
 
                             &.HasAction {
                                 cursor: pointer;
@@ -154,26 +155,23 @@ $tableRowGap: 12px;
                         }
 
                         .TextField {
-                            height: 30px;
+                            display: flex;
+                            align-items: center;
+                            height: 100%;
                             width: auto;
                             font-family: inherit;
                             font-size: 16px;
-                            font-weight: 600;
-                            background-color: transparent;
-                            border: none;
-                            box-sizing: border-box;
-                            margin: 0;
+                            font-weight: 700;
                             outline: none;
-                            padding-left: 4px;
-                            padding-right: 4px;
-                            padding-top: 1px;
-                            padding-bottom: 1px;
+                            padding-left: 20px;
+                            padding-right: 10px;
                         }
 
                         .Action {
                             height: 20px;
 
-                            &.Delete {
+                            &.Edit {
+                                --icon-size: 20px;
                                 display: none;
                             }
 
@@ -182,7 +180,7 @@ $tableRowGap: 12px;
                             }
 
                             &.Cancel {
-                                --icon-color: #d32f2f;
+                                --icon-color: #757575;
                             }
 
                             &.Save,
@@ -193,9 +191,9 @@ $tableRowGap: 12px;
 
                         &.HasAction:hover {
                             .Action {
-                                &.Delete {
-                                    display: block;
-                                    --icon-color: #bdbdbd;
+                                &.Edit {
+                                    display: flex;
+                                    --icon-color: #b4b4b4;
 
                                     &:hover {
                                         cursor: pointer;

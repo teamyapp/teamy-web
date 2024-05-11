@@ -277,17 +277,15 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     {groupName}
                                 </div>
                             ) : (
-                                <input
+                                <div
                                     className={styles.TextField}
-                                    value={
-                                        this.state.editingTeamMemberGroupInput[
-                                            groupId!
-                                        ]?.name
-                                    }
-                                    onChange={this.handleTeamMemberGroupNameChanged(
+                                    contentEditable
+                                    onInput={this.handleTeamMemberGroupNameChanged(
                                         groupId!,
                                     )}
-                                />
+                                >
+                                    {groupName}
+                                </div>
                             )}
                             {groupId &&
                                 (isEditing ? (
@@ -322,26 +320,27 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                                 )}
                                             >
                                                 <MaterialIconUI>
-                                                    close
+                                                    undo
                                                 </MaterialIconUI>
                                             </div>
                                         </TooltipUI>
                                     </>
                                 ) : (
                                     <TooltipUI
-                                        message='Delete'
+                                        message='Edit'
                                         relativeLayout={
                                             this.props.deps.relativeLayout
                                         }
                                     >
                                         <div
-                                            className={`${styles.Action} ${styles.Delete}`}
-                                            onClick={this.handleDeleteTeamMemberGroup(
+                                            className={`${styles.Action} ${styles.Edit}`}
+                                            onClick={this.handleTeamMemberGroupNameClicked(
+                                                groupName,
                                                 groupId,
                                             )}
                                         >
                                             <MaterialIconUI>
-                                                close
+                                                edit
                                             </MaterialIconUI>
                                         </div>
                                     </TooltipUI>
@@ -707,7 +706,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         };
 
     private handleTeamMemberGroupNameChanged =
-        (groupId: number) => (event: ChangeEvent<HTMLInputElement>) => {
+        (groupId: number) => (event: ChangeEvent<HTMLDivElement>) => {
             const input = this.state.editingTeamMemberGroupInput[groupId];
             if (!input) {
                 return;
@@ -718,7 +717,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     ...this.state.editingTeamMemberGroupInput,
                     [groupId]: {
                         ...input,
-                        name: event.target.value,
+                        name: event.target.textContent || '',
                     },
                 },
             });
