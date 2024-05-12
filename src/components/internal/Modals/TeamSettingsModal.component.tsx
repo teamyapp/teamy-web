@@ -1,7 +1,7 @@
 import moment from 'moment';
 import React, {
-    ChangeEvent,
     Component,
+    FormEvent,
     MouseEvent,
     ReactNode,
     createRef,
@@ -264,24 +264,24 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         })}`}
                     >
                         <div className={styles.NameInput}>
-                            {!isEditing ? (
+                            {isEditing ? (
                                 <div
-                                    className={`${styles.Name} ${classNames({
-                                        [styles.HasAction]: groupId,
-                                    })}`}
-                                    onDoubleClick={this.handleTeamMemberGroupNameClicked(
-                                        groupName,
-                                        groupId,
+                                    className={styles.TextField}
+                                    contentEditable
+                                    onInput={this.handleTeamMemberGroupNameInput(
+                                        groupId!,
                                     )}
                                 >
                                     {groupName}
                                 </div>
                             ) : (
                                 <div
-                                    className={styles.TextField}
-                                    contentEditable
-                                    onInput={this.handleTeamMemberGroupNameInput(
-                                        groupId!,
+                                    className={`${styles.Name} ${classNames({
+                                        [styles.HasAction]: groupId,
+                                    })}`}
+                                    onDoubleClick={this.handleOnTeamMemberGroupNameClick(
+                                        groupName,
+                                        groupId,
                                     )}
                                 >
                                     {groupName}
@@ -334,7 +334,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     >
                                         <div
                                             className={`${styles.Action} ${styles.Edit}`}
-                                            onClick={this.handleTeamMemberGroupNameClicked(
+                                            onClick={this.handleOnTeamMemberGroupNameClick(
                                                 groupName,
                                                 groupId,
                                             )}
@@ -706,7 +706,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         };
 
     private handleTeamMemberGroupNameInput =
-        (groupId: number) => (event: ChangeEvent<HTMLDivElement>) => {
+        (groupId: number) => (event: FormEvent<HTMLDivElement>) => {
             const input = this.state.editingTeamMemberGroupInput[groupId];
             if (!input) {
                 return;
@@ -717,7 +717,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     ...this.state.editingTeamMemberGroupInput,
                     [groupId]: {
                         ...input,
-                        name: event.target.textContent || '',
+                        name: event.currentTarget.textContent || '',
                     },
                 },
             });
