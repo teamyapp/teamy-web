@@ -705,7 +705,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             });
         };
 
-    private handleTeamMemberGroupNameChanged =
+    private handleTeamMemberGroupNameInput =
         (groupId: number) => (event: ChangeEvent<HTMLDivElement>) => {
             const input = this.state.editingTeamMemberGroupInput[groupId];
             if (!input) {
