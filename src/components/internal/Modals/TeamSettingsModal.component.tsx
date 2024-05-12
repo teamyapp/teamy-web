@@ -427,6 +427,19 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     </TooltipUI>
                                 )}
                             />
+                            <TooltipUI
+                                message='Delete group'
+                                relativeLayout={this.props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.Delete}`}
+                                    onClick={this.handleDeleteTeamMemberGroup(
+                                        groupId,
+                                    )}
+                                >
+                                    <MaterialIconUI>close</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         </div>
                     )}
                 </div>
