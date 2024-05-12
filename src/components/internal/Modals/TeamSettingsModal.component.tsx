@@ -1,5 +1,11 @@
 import moment from 'moment';
-import React, { Component, MouseEvent, ReactNode, createRef } from 'react';
+import React, {
+    Component,
+    FormEvent,
+    MouseEvent,
+    ReactNode,
+    createRef,
+} from 'react';
 
 import { PopChannel } from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
@@ -32,6 +38,7 @@ import { User } from '@core/entity/user';
 import { SelectUserPopupComponent } from '../SelectUserPopup.component';
 import classNames from 'classnames';
 import styles from './TeamSettingsModal.component.module.scss';
+import { UpdateTeamMemberGroupInput } from '@core/entity/input';
 
 interface Props {
     deps: Deps;
@@ -46,6 +53,10 @@ interface State {
     team?: Team;
     invitations: Invitation[];
     selectedGroupMembers: Record<number, Set<number>>;
+    editingTeamMemberGroupInput: Record<
+        number,
+        UpdateTeamMemberGroupInput | undefined
+    >;
 }
 
 export class TeamSettingsModalComponent extends Component<Props, State> {
@@ -71,6 +82,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             currentTabIndex: 0,
             invitations: [],
             selectedGroupMembers: {},
+            editingTeamMemberGroupInput: {},
         };
     }
 
@@ -240,31 +252,100 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         const availableMemberUsers = teamMemberUsers?.filter(
             (user) => !groupMemberUserIds.has(user.id),
         );
+        const isEditing =
+            groupId && this.state.editingTeamMemberGroupInput[groupId];
 
         return (
             <div className={styles.MemberGroup} key={groupId || 'all'}>
                 <div className={styles.ToolBar}>
                     <div
                         className={`${styles.NameContainer} ${classNames({
-                            [styles.HasAction]: groupId,
+                            [styles.HasAction]: groupId && !isEditing,
                         })}`}
                     >
-                        <div className={styles.Name}>{groupName}</div>
-                        {groupId && (
-                            <TooltipUI
-                                message='Delete'
-                                relativeLayout={this.props.deps.relativeLayout}
-                            >
+                        <div className={styles.NameInput}>
+                            {isEditing ? (
                                 <div
-                                    className={`${styles.Action} ${styles.Delete}`}
-                                    onClick={this.handleDeleteTeamMemberGroup(
+                                    className={styles.TextField}
+                                    contentEditable
+                                    onInput={this.handleTeamMemberGroupNameInput(
+                                        groupId!,
+                                    )}
+                                >
+                                    {groupName}
+                                </div>
+                            ) : (
+                                <div
+                                    className={`${styles.Name} ${classNames({
+                                        [styles.HasAction]: groupId,
+                                    })}`}
+                                    onDoubleClick={this.handleOnTeamMemberGroupNameClick(
+                                        groupName,
                                         groupId,
                                     )}
                                 >
-                                    <MaterialIconUI>close</MaterialIconUI>
+                                    {groupName}
                                 </div>
-                            </TooltipUI>
-                        )}
+                            )}
+                            {groupId &&
+                                (isEditing ? (
+                                    <>
+                                        <TooltipUI
+                                            message='Save'
+                                            relativeLayout={
+                                                this.props.deps.relativeLayout
+                                            }
+                                        >
+                                            <div
+                                                className={`${styles.Action} ${styles.Save}`}
+                                                onClick={this.handleTeamMemberGroupSave(
+                                                    groupId,
+                                                )}
+                                            >
+                                                <MaterialIconUI>
+                                                    check
+                                                </MaterialIconUI>
+                                            </div>
+                                        </TooltipUI>
+                                        <TooltipUI
+                                            message='Cancel'
+                                            relativeLayout={
+                                                this.props.deps.relativeLayout
+                                            }
+                                        >
+                                            <div
+                                                className={`${styles.Action} ${styles.Cancel}`}
+                                                onClick={this.handleTeamMemberGroupCancel(
+                                                    groupId,
+                                                )}
+                                            >
+                                                <MaterialIconUI>
+                                                    undo
+                                                </MaterialIconUI>
+                                            </div>
+                                        </TooltipUI>
+                                    </>
+                                ) : (
+                                    <TooltipUI
+                                        message='Edit'
+                                        relativeLayout={
+                                            this.props.deps.relativeLayout
+                                        }
+                                    >
+                                        <div
+                                            className={`${styles.Action} ${styles.Edit}`}
+                                            onClick={this.handleOnTeamMemberGroupNameClick(
+                                                groupName,
+                                                groupId,
+                                            )}
+                                        >
+                                            <MaterialIconUI>
+                                                edit
+                                            </MaterialIconUI>
+                                        </div>
+                                    </TooltipUI>
+                                ))}
+                        </div>
                     </div>
                     <div className={styles.Label}>
                         <TooltipUI
@@ -346,6 +427,19 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     </TooltipUI>
                                 )}
                             />
+                            <TooltipUI
+                                message='Delete group'
+                                relativeLayout={this.props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.Delete}`}
+                                    onClick={this.handleDeleteTeamMemberGroup(
+                                        groupId,
+                                    )}
+                                >
+                                    <MaterialIconUI>close</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         </div>
                     )}
                 </div>
@@ -602,6 +696,69 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             </TooltipUI>
         );
     }
+
+    private handleOnTeamMemberGroupNameClick =
+        (name: string, groupId?: number) =>
+        (event: MouseEvent<HTMLDivElement>) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (!groupId) {
+                return;
+            }
+
+            const editingTeamMemberGroupInput = {
+                ...this.state.editingTeamMemberGroupInput,
+                [groupId]: {
+                    name,
+                },
+            };
+
+            this.setState({
+                editingTeamMemberGroupInput,
+            });
+        };
+
+    private handleTeamMemberGroupNameInput =
+        (groupId: number) => (event: FormEvent<HTMLDivElement>) => {
+            const input = this.state.editingTeamMemberGroupInput[groupId];
+            if (!input) {
+                return;
+            }
+
+            this.setState({
+                editingTeamMemberGroupInput: {
+                    ...this.state.editingTeamMemberGroupInput,
+                    [groupId]: {
+                        ...input,
+                        name: event.currentTarget.textContent || '',
+                    },
+                },
+            });
+        };
+
+    private handleTeamMemberGroupSave = (groupId: number) => async () => {
+        const input = this.state.editingTeamMemberGroupInput[groupId];
+        if (!input) {
+            return;
+        }
+
+        await this.stateSyncer.updateTeamMemberGroup(groupId, input);
+        this.setState({
+            editingTeamMemberGroupInput: {
+                ...this.state.editingTeamMemberGroupInput,
+                [groupId]: undefined,
+            },
+        });
+    };
+
+    private handleTeamMemberGroupCancel = (groupId: number) => () => {
+        this.setState({
+            editingTeamMemberGroupInput: {
+                ...this.state.editingTeamMemberGroupInput,
+                [groupId]: undefined,
+            },
+        });
+    };
 
     private handleAddUserToTeamMemberGroup =
         (groupId: number) => async (userId: number) => {

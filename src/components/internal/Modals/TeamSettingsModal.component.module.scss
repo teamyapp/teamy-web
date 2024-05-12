@@ -117,7 +117,6 @@ $tableRowGap: 12px;
                     background-color: #00000008;
                     border-radius: 4px;
                     display: flex;
-                    padding-left: 20px;
                     padding-right: 20px;
                     gap: 10px;
 
@@ -125,6 +124,7 @@ $tableRowGap: 12px;
                         align-items: center;
                         border-radius: 4px;
                         display: flex;
+                        align-items: center;
                         justify-content: center;
                         --icon-size: 24px;
                         width: 24px;
@@ -137,25 +137,63 @@ $tableRowGap: 12px;
                         align-items: center;
                         gap: 10px;
 
+                        .NameInput {
+                            display: flex;
+                            align-items: center;
+                            flex: 1;
+                        }
+
                         .Name {
                             font-size: 16px;
                             font-weight: 700;
+                            padding-left: 20px;
+                            margin-right: 10px;
+
+                            &.HasAction {
+                                cursor: pointer;
+                            }
+                        }
+
+                        .TextField {
+                            display: flex;
+                            align-items: center;
+                            height: 100%;
+                            width: auto;
+                            font-family: inherit;
+                            font-size: 16px;
+                            font-weight: 700;
+                            outline: none;
+                            padding-left: 20px;
+                            padding-right: 10px;
                         }
 
                         .Action {
                             height: 20px;
 
-                            &.Delete {
+                            &.Edit {
                                 --icon-size: 20px;
                                 display: none;
+                            }
+
+                            &.Save {
+                                --icon-color: #388e3c;
+                            }
+
+                            &.Cancel {
+                                --icon-color: #757575;
+                            }
+
+                            &.Save,
+                            &.Cancel {
+                                cursor: pointer;
                             }
                         }
 
                         &.HasAction:hover {
                             .Action {
-                                &.Delete {
-                                    display: block;
-                                    --icon-color: #bdbdbd;
+                                &.Edit {
+                                    display: flex;
+                                    --icon-color: #b4b4b4;
 
                                     &:hover {
                                         cursor: pointer;
