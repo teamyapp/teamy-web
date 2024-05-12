@@ -684,7 +684,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         );
     }
 
-    private handleTeamMemberGroupNameClicked =
+    private handleOnTeamMemberGroupNameClick =
         (name: string, groupId?: number) =>
         (event: MouseEvent<HTMLDivElement>) => {
             event.preventDefault();
