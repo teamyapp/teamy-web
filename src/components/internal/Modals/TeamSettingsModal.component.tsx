@@ -280,7 +280,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                 <div
                                     className={styles.TextField}
                                     contentEditable
-                                    onInput={this.handleTeamMemberGroupNameChanged(
+                                    onInput={this.handleTeamMemberGroupNameInput(
                                         groupId!,
                                     )}
                                 >
