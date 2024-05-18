@@ -204,6 +204,9 @@ export class MarkdownEditorUI extends Component<Props, State> {
             while (true) {
                 const progress = await onNewProgressCh.pop();
                 if (progress === undefined) {
+                    this.setState({
+                        uploadProgress: undefined,
+                    });
                     return;
                 }
 
@@ -214,9 +217,6 @@ export class MarkdownEditorUI extends Component<Props, State> {
         })().then();
         const error = await uploadSession.uploadFile(file);
         if (error) {
-            this.setState({
-                uploadProgress: undefined,
-            });
             alert('Fail to upload image');
             return;
         }
@@ -226,12 +226,9 @@ export class MarkdownEditorUI extends Component<Props, State> {
 
         this.setState(() => {
             return {
-                uploadProgress: undefined,
                 content: `${this.state.content}![${id}](${url})`,
             };
-        }, 
-            this.props.onContentUpdated
-        );
+        }, this.props.onContentUpdated);
     };
 
     private onTextAreaContentChange = (

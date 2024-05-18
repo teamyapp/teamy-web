@@ -570,7 +570,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private getUpdatedTaskInput(): UpdateTaskInput {
         const dueAt = this.dueAtDatePicker.current?.value || undefined;
         const task = this.state.task!;
-        debugger;
+
         return {
             goal: this.state.updatedTask!.goal,
             context: this.markdownEditorRef.current?.content,
