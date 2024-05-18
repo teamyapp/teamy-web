@@ -5,6 +5,7 @@ import { RemoteTaskStatus } from './remoteTaskStatus';
 import { RemoteTeam } from './remoteTeam';
 import { RemoteThread } from './remoteThread';
 import { RemoteUser } from './remoteUser';
+import { RemoteAttachmentList } from './remoteAttachmentList';
 
 export interface RemoteTask {
     id: string;
@@ -25,4 +26,5 @@ export interface RemoteTask {
     priority?: RemotePriority;
     awaitForTasks: RemoteTask[];
     links: RemoteTaskLink[];
+    contextAttachmentList?: RemoteAttachmentList;
 }

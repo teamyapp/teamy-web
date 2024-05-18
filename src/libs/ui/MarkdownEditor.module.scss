@@ -7,6 +7,15 @@ $outlineColor: var(--outline-color, #1976d2);
 $allowResize: var(--allow-resize, none);
 $initialHeight: var(--initial-height, 100%);
 
+@keyframes blinker {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
 .MarkdownEditor {
     border: $border;
     box-sizing: border-box;
@@ -85,6 +94,85 @@ $initialHeight: var(--initial-height, 100%);
             padding: 10px;
             resize: $allowResize;
             width: 100%;
+        }
+    }
+}
+
+.ImagesContainer {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border-radius: 4px;
+
+    .Image {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        // use a gray that I used before, not using #f0f0f0
+        background-color: #f0f0f0; 
+
+        .LeftSection {
+            img {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        .RightSection {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            .Name {
+                font-size: 20px;
+                font-weight: bold;
+            }
+
+            .Date {
+                font-size: 16px;
+            }
+        }
+    }
+}
+
+.UploadProgress {
+    margin-top: 10px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #f0f0f0; 
+    border-radius: 4px;
+
+    .LeftSection {
+        .ImagePlaceholder {
+            width: 80px;
+            height: 80px;
+
+            .Progress {
+                width: 100%;
+                background-color: white;
+            }
+        }
+    }
+
+    .RightSection {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        .NamePlaceholder {
+            background-color: white;
+            width: 50px;
+            height: 20px;
+            animation: blinker 1s linear infinite;
+        }
+
+        .DatePlaceholder {
+            background-color: white;
+            width: 200px;
+            height: 16px;
+            animation: blinker 1s linear infinite;
         }
     }
 }

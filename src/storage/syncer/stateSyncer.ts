@@ -114,10 +114,14 @@ import {
     mergeTeamMemberGroup,
     mergeTeamMemberGroupUserRelation,
     mergeTaskLink,
+    applyAttachmentListMutation,
+    applyAttachmentMutation,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
 import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
+import { AttachmentClient } from '@core/client/attachment.client';
+import { Attachment } from '@core/entity/attachment';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -138,6 +142,7 @@ export class StateSyncer {
         private phaseClient: PhaseClient,
         private storyClient: StoryClient,
         private taskClient: TaskClient,
+        private attachmentClient: AttachmentClient,
         private messageClient: MessageClient,
         private teamClient: TeamClient,
         private teamMemberClient: TeamMemberClient,
@@ -848,6 +853,35 @@ export class StateSyncer {
         const remoteSessionID =
             await this.teamClient.createTeamIconUploadSession(`${teamId}`);
         return parseInt(remoteSessionID);
+    };
+
+    public createAttachmentListFileUploadSession = async (
+        attachmentListId: number,
+    ): Promise<number> => {
+        const remoteSessionID =
+            await this.attachmentClient.createAttachmentListFileUploadSession(
+                `${attachmentListId}`,
+            );
+        return parseInt(remoteSessionID);
+    };
+
+    public finishAttachmentListFileUploadSession = async (
+        attachmentListId: number,
+        fileUploadSessionId: number,
+    ): Promise<{
+        id: string;
+        url: string;
+    }> => {
+        const { id, url } =
+            await this.attachmentClient.finishAttachmentListFileUploadSession(
+                `${attachmentListId}`,
+                `${fileUploadSessionId}`,
+            );
+
+        return {
+            id,
+            url,
+        };
     };
 
     public async finishTeamIconUpdateSession(
@@ -1987,6 +2021,14 @@ export class StateSyncer {
             switch (mutation.collectionType) {
                 case 'AppVersion': {
                     appState = applyAppVersionMutation(appState, mutation);
+                    break;
+                }
+                case 'AttachmentList': {
+                    appState = applyAttachmentListMutation(appState, mutation);
+                    break;
+                }
+                case 'Attachment': {
+                    appState = applyAttachmentMutation(appState, mutation);
                     break;
                 }
                 case 'AppVersionChange': {

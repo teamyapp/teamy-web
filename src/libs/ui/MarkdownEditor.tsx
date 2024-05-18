@@ -1,11 +1,12 @@
 import classNames from 'classnames';
 import { marked, MarkedOptions } from 'marked';
 import prismjs from 'prismjs';
-import React, { Component, FormEvent, ReactNode } from 'react';
-
+import React, { ClipboardEvent, Component, FormEvent, ReactNode } from 'react';
+import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import styles from './MarkdownEditor.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
 import './VSCode.theme.scss';
+import { Attachment } from '@core/entity/attachment';
 
 interface CustomMarkedOptions extends MarkedOptions {
     highlight?: (code: string, lang: string) => string;
@@ -33,17 +34,31 @@ marked.setOptions(options);
 interface Props {
     label?: string;
     content?: string;
+    attachments?: Attachment[];
+    fileUploadSessionFactory: FileUploadSessionFactory;
+    createRemoteFileUploadSession: () => Promise<number>;
+    onFileUploadFinished: (fileUploadSessionId: number) => Promise<{
+        id: string;
+        url: string;
+    }>;
+    onContentUpdated: () => void;
 }
 
 interface State {
     focus: boolean;
     content: string;
     inEditMode: boolean;
+    uploadProgress?: {
+        newBytesUploaded: number;
+        totalPercentage: number;
+    };
 }
 
 export class MarkdownEditorUI extends Component<Props, State> {
+    private readonly fileUploadSessionFactory: FileUploadSessionFactory;
     constructor(props: Props) {
         super(props);
+        this.fileUploadSessionFactory = props.fileUploadSessionFactory;
         this.state = {
             focus: false,
             inEditMode: true,
@@ -57,56 +72,167 @@ export class MarkdownEditorUI extends Component<Props, State> {
 
     render(): ReactNode {
         return (
-            <div
-                aria-label={'markdown editor'}
-                className={`${styles.MarkdownEditor} ${classNames({
-                    [styles.Focus]: this.state.focus,
-                })}`}
-            >
-                <div className={styles.Toolbar}>
-                    {this.props.label}
-                    <div className={styles.Spacer} />
-                    <div className={styles.Mode}>
-                        <div
-                            className={`${styles.Button} ${classNames({
-                                [styles.Enabled]: this.state.inEditMode,
-                            })}`}
-                            onClick={this.onEditModeButtonClick}
-                        >
-                            <MaterialIconUI>notes</MaterialIconUI>
-                        </div>
-                        <div
-                            className={`${styles.Button} ${classNames({
-                                [styles.Enabled]: !this.state.inEditMode,
-                            })}`}
-                            onClick={this.onPreviewModeButtonClick}
-                        >
-                            <MaterialIconUI>image</MaterialIconUI>
+            <>
+                <div
+                    aria-label={'markdown editor'}
+                    className={`${styles.MarkdownEditor} ${classNames({
+                        [styles.Focus]: this.state.focus,
+                    })}`}
+                >
+                    <div className={styles.Toolbar}>
+                        {this.props.label}
+                        <div className={styles.Spacer} />
+                        <div className={styles.Mode}>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Enabled]: this.state.inEditMode,
+                                })}`}
+                                onClick={this.onEditModeButtonClick}
+                            >
+                                <MaterialIconUI>notes</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Enabled]: !this.state.inEditMode,
+                                })}`}
+                                onClick={this.onPreviewModeButtonClick}
+                            >
+                                <MaterialIconUI>image</MaterialIconUI>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className={styles.Content}>
-                    {this.state.inEditMode ? (
-                        <textarea
-                            className={styles.TextArea}
-                            value={this.state.content}
-                            onChange={this.onTextAreaContentChange}
-                            onFocus={this.onTextAreaFocus}
-                            onBlur={this.onTextAreaBlur}
-                        />
-                    ) : (
-                        <div className={styles.Preview}>
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: marked(this.state.content),
-                                }}
+                    <div className={styles.Content}>
+                        {this.state.inEditMode ? (
+                            <textarea
+                                className={styles.TextArea}
+                                value={this.state.content}
+                                onChange={this.onTextAreaContentChange}
+                                onFocus={this.onTextAreaFocus}
+                                onBlur={this.onTextAreaBlur}
+                                onPaste={this.onPasteImageHandler}
                             />
-                        </div>
-                    )}
+                        ) : (
+                            <div className={styles.Preview}>
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html: marked(this.state.content),
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+                {this.props.attachments && (
+                    <div className={styles.ImagesContainer}>
+                        {this.props.attachments?.map((attachment) => {
+                            return (
+                                <div
+                                    className={styles.Image}
+                                    key={attachment.id}
+                                >
+                                    <div className={styles.LeftSection}>
+                                        <img
+                                            key={attachment.id}
+                                            src={attachment.url}
+                                        />
+                                    </div>
+                                    <div className={styles.RightSection}>
+                                        <div className={styles.Name}>
+                                            {attachment.id}
+                                        </div>
+                                        <div className={styles.Date}>
+                                            {attachment.createdAt.toISOString()}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                )}
+
+                {this.state.uploadProgress && (
+                    <div className={styles.UploadProgress}>
+                        <div className={styles.LeftSection}>
+                            <div className={styles.ImagePlaceholder}>
+                                <div
+                                    className={styles.Progress}
+                                    style={{
+                                        height: `${this.state.uploadProgress.totalPercentage}%`,
+                                    }}
+                                ></div>
+                            </div>
+                        </div>
+                        <div className={styles.RightSection}>
+                            <div className={styles.NamePlaceholder}></div>
+                            <div className={styles.DatePlaceholder}></div>
+                        </div>
+                    </div>
+                )}
+            </>
         );
     }
+
+    private onPasteImageHandler = async (
+        event: ClipboardEvent<HTMLTextAreaElement>,
+    ) => {
+        if (this.props.attachments === undefined) {
+            return;
+        }
+
+        const items = event.clipboardData?.items;
+        if (!items) {
+            return;
+        }
+
+        const file = Array.from(items)
+            .find((item) => item.kind === 'file')
+            ?.getAsFile();
+        if (!file) {
+            return;
+        }
+
+        const fileUploadSessionId =
+            await this.props.createRemoteFileUploadSession();
+
+        const uploadSession =
+            this.fileUploadSessionFactory.createFileUploadSession(
+                fileUploadSessionId,
+            );
+
+        const onNewProgressCh = uploadSession.subscribeNewProgress();
+        (async () => {
+            while (true) {
+                const progress = await onNewProgressCh.pop();
+                if (progress === undefined) {
+                    return;
+                }
+
+                this.setState({
+                    uploadProgress: progress,
+                });
+            }
+        })().then();
+        const error = await uploadSession.uploadFile(file);
+        if (error) {
+            this.setState({
+                uploadProgress: undefined,
+            });
+            alert('Fail to upload image');
+            return;
+        }
+
+        const { id, url } =
+            await this.props.onFileUploadFinished(fileUploadSessionId);
+
+        this.setState(() => {
+            return {
+                uploadProgress: undefined,
+                content: `${this.state.content}![${id}](${url})`,
+            };
+        }, 
+            this.props.onContentUpdated
+        );
+    };
 
     private onTextAreaContentChange = (
         event: FormEvent<HTMLTextAreaElement>,

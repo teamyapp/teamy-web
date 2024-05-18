@@ -9,6 +9,7 @@ import { TaskAction } from './taskAction';
 import { TaskLink } from './taskLink';
 import { TaskStatus } from './taskStatus';
 import { User } from './user';
+import { AttachmentList } from './attachmentList';
 
 export interface Task {
     id: number;
@@ -28,4 +29,5 @@ export interface Task {
     awaitForTasks: Task[];
     draggingBy?: Client;
     links: TaskLink[];
+    contextAttachmentList?: AttachmentList;
 }

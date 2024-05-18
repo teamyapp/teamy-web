@@ -22,6 +22,7 @@ export class TaskState {
         public priority?: Priority,
         public updatedAt?: Date,
         public deliveredAt?: Date,
+        public contextAttachmentListId?: number,
     ) {}
 
     public static fromMutationPayload(json: any): TaskState {
@@ -44,6 +45,7 @@ export class TaskState {
             json.Priority,
             toDate(json.UpdatedAt),
             toDate(json.DeliveredAt),
+            json.ContextAttachmentListID,
         );
     }
 
@@ -65,6 +67,7 @@ export class TaskState {
             json.priority,
             toDate(json.updatedAt),
             toDate(json.deliveredAt),
+            json.contextAttachmentListId,
         );
     }
 }

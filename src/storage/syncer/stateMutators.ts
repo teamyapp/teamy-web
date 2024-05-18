@@ -73,6 +73,10 @@ import { VersionSelectorState } from '../states/versionSelector.state';
 import { Mutation } from './mutation';
 import { RemoteTeamMemberGroup } from '@core/client/entity/remoteTeamMemberGroup';
 import { TeamMemberGroupState } from '../states/teamMemberGroup.state';
+import { RemoteAttachmentList } from '@core/client/entity/remoteAttachmentList';
+import { AttachmentListState } from '../states/attachmentList.state';
+import { RemoteAttachment } from '@core/client/entity/remoteAttachment';
+import { AttachmentState } from '../states/attachment.state';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -88,6 +92,39 @@ export function applyTaskMutation(
         case 'Delete': {
             const taskId = mutation.payload;
             delete currState.tasks[taskId];
+            break;
+        }
+    }
+
+    return currState;
+}
+
+
+export function applyAttachmentListMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create': {
+            const attachmentList = AttachmentListState.fromMutationPayload(
+                mutation.payload,
+            );
+            currState.attachmentLists[attachmentList.listId] = attachmentList;
+            break;
+        }
+    }
+
+    return currState;
+}
+
+export function applyAttachmentMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create': {
+            const attachment = AttachmentState.fromMutationPayload(mutation.payload);
+            currState.attachments[attachment.id] = attachment;
             break;
         }
     }
@@ -550,6 +587,49 @@ export function mergeClient(
     currAppState.clients[clientId] = localNewClient;
     return currAppState;
 }
+
+export function mergeAttachmentList(
+    currAppState: AppState,
+    remoteAttachmentList: RemoteAttachmentList,
+): AppState {
+    const attachmentListId = toInt(remoteAttachmentList.listId)!;
+    const localOldAttachmentList: AttachmentListState = currAppState.attachmentLists[attachmentListId] || {};
+    const localNewAttachmentList: AttachmentListState = {
+        ownerType: remoteAttachmentList.ownerType || localOldAttachmentList.ownerType,
+        ownerId: toInt(remoteAttachmentList.ownerId) || localOldAttachmentList.ownerId,
+        listId: attachmentListId,
+        listLabel: remoteAttachmentList.listLabel || localOldAttachmentList.listLabel,
+        createdAt: toDate(remoteAttachmentList.createdAt) || localOldAttachmentList.createdAt,
+        updatedAt: remoteAttachmentList.updatedAt === undefined ? localOldAttachmentList.updatedAt : toDate(remoteAttachmentList.updatedAt),
+    }
+
+    remoteAttachmentList.attachments?.forEach((remoteAttachment) => {
+        currAppState = mergeAttachment(currAppState, remoteAttachment);
+    })
+
+    currAppState.attachmentLists[attachmentListId] = localNewAttachmentList;
+    return currAppState
+}
+
+export function mergeAttachment(
+    currAppState: AppState,
+    remoteAttachment: RemoteAttachment,
+): AppState {
+    const attachmentId = toInt(remoteAttachment.id)!;
+    const localOldAttachment = currAppState.attachments[attachmentId] || {};
+    const localNewAttachment = {
+        id: attachmentId,
+        type: remoteAttachment.type || localOldAttachment.type,
+        size: remoteAttachment.size || remoteAttachment.size,
+        attachmentListId: toInt(remoteAttachment.attachmentList.listId)!,
+        url: remoteAttachment.url || localOldAttachment.url,
+        createdAt: toDate(remoteAttachment.createdAt) || localOldAttachment.createdAt,
+    };
+
+    currAppState.attachments[attachmentId] = localNewAttachment;
+    return currAppState;
+}
+
 
 export function mergeUser(
     currAppState: AppState,
@@ -1428,6 +1508,10 @@ export function mergeTask(
             remoteTask.priority === undefined
                 ? localOldTask.priority
                 : (remoteTask.priority as Priority),
+        contextAttachmentListId:
+            remoteTask.contextAttachmentList === undefined
+                ? localOldTask.contextAttachmentListId
+                : toInt(remoteTask.contextAttachmentList?.listId),
     };
 
     remoteTask.links?.forEach((link) => {
@@ -1436,6 +1520,10 @@ export function mergeTask(
 
     if (remoteTask.creator) {
         currAppState = mergeUser(currAppState, remoteTask.creator);
+    }
+
+    if (remoteTask.contextAttachmentList) {
+        currAppState = mergeAttachmentList(currAppState, remoteTask.contextAttachmentList);
     }
 
     if (remoteTask.owner) {

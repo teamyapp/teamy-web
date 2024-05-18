@@ -1,5 +1,6 @@
 #import "./user.graphql"
 #import "./team.graphql"
+#import "./attachmentList.graphql"
 
 fragment TaskFragment on Task {
     id
@@ -45,5 +46,8 @@ fragment TaskFragment on Task {
         url
         iconUrl
         iconHoverUrl
+    }
+    contextAttachmentList {
+        ...AttachmentListFragment
     }
 }

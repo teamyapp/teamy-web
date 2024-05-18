@@ -16,6 +16,8 @@ export type CollectionType =
     | 'TaskActivity'
     | 'SprintParticipant'
     | 'Story'
+    | 'AttachmentList'
+    | 'Attachment'
 
 export type MutationType = 'Create' | 'Update' | 'Delete';
 
