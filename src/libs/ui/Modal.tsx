@@ -109,8 +109,8 @@ export class ModalUI extends Component<Props, State> {
             }, transitionDurationMilliseconds);
         });
     }
-
-    public close(): void {
+ 
+    public close = () => {
         if (this.state.isAnimating) {
             return;
         }

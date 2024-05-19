@@ -2,6 +2,7 @@ import { GraphQLClient } from '@lib/network/GraphQL.client';
 
 import {
     RemoteCreateTaskInput,
+    RemoteCreateTaskLinkInput,
     RemoteUpdateTaskInput,
 } from '@core/client/entity/input';
 import { RemoteTask } from '@core/client/entity/remoteTask';
@@ -11,6 +12,7 @@ import removeTaskFromStory from './graphql/mutation/removeTaskFromStory.graphql'
 import addTasksToStory from './graphql/mutation/addTasksToStory.graphql';
 import removeTasksFromStory from './graphql/mutation/removeTasksFromStory.graphql';
 import { RemoteStory } from './entity/remoteStory';
+import { RemoteTaskLink } from './entity/remoteTaskLink';
 
 export class TaskClient {
     private readonly graphQLClient: GraphQLClient;
@@ -316,5 +318,43 @@ export class TaskClient {
                 taskIds,
             },
         }).then(({removeTasksFromStory}) => removeTasksFromStory);
+    }
+
+
+    createTaskLink(taskId: string, input: RemoteCreateTaskLinkInput): Promise<RemoteTaskLink> {
+        return this.graphQLClient.mutate({
+            mutation: `
+                mutation createTaskLink($taskId: ID!, $input: CreateTaskLinkInput!) {
+                    createTaskLink(taskId: $taskId, input: $input) {
+                        id
+                        taskId
+                        title
+                        previewTitle
+                        url
+                        iconUrl
+                        iconHoverUrl
+                    }
+                }
+            `,
+            variables: {
+                taskId,
+                input,
+            },
+        }).then(({createTaskLink}) => createTaskLink);
+    }
+
+    deleteTaskLink(id: string): Promise<RemoteTaskLink> {
+        return this.graphQLClient.mutate({
+            mutation: `
+                mutation deleteTaskLink($id: ID!) {
+                    deleteTaskLink(id: $id) {
+                        id
+                    }
+                }
+            `,
+            variables: {
+                id,
+            },
+        }).then(({deleteTaskLink}) => deleteTaskLink);
     }
 }

@@ -256,3 +256,12 @@ export interface CreateTeamMemberGroupInput {
 export interface UpdateTeamMemberGroupInput {
     name: string;
 }
+
+
+export interface CreateTaskLinkInput {
+    title: string;
+    previewTitle: string;
+    url: string;
+    iconUrl?: string;
+    iconHoverUrl?: string;
+}
