@@ -17,7 +17,7 @@ export type CollectionType =
     | 'SprintParticipant'
     | 'Story'
     | 'AttachmentList'
-    | 'Attachment'
+    | 'Attachment';
 
 export type MutationType = 'Create' | 'Update' | 'Delete';
 

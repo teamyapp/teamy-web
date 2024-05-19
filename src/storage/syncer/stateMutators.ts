@@ -99,7 +99,6 @@ export function applyTaskMutation(
     return currState;
 }
 
-
 export function applyAttachmentListMutation(
     currState: AppState,
     mutation: Mutation,
@@ -606,7 +605,6 @@ export function mergeAttachmentList(
     remoteAttachmentList.attachments?.forEach((remoteAttachment) => {
         currAppState = mergeAttachment(currAppState, remoteAttachment);
     })
-
     currAppState.attachmentLists[attachmentListId] = localNewAttachmentList;
     return currAppState
 }

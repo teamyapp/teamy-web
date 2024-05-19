@@ -22,7 +22,7 @@ export class TaskState {
         public priority?: Priority,
         public updatedAt?: Date,
         public deliveredAt?: Date,
-        public contextAttachmentListId?: number,
+        public contextAttachmentListId: number,
     ) {}
 
     public static fromMutationPayload(json: any): TaskState {

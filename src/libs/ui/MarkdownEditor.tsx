@@ -2,13 +2,13 @@ import classNames from 'classnames';
 import { marked, MarkedOptions } from 'marked';
 import prismjs from 'prismjs';
 import React, { ClipboardEvent, Component, FormEvent, ReactNode } from 'react';
-import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
-import styles from './MarkdownEditor.module.scss';
-import { MaterialIconUI } from './MaterialIcon';
-import './VSCode.theme.scss';
-import { Attachment } from '@core/entity/attachment';
 import moment from 'moment';
+import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
+import { MaterialIconUI } from './MaterialIcon';
+import { Attachment } from '@core/entity/attachment';
 import { timeFromNow } from '@lib/data/format';
+import './VSCode.theme.scss';
+import styles from './MarkdownEditor.module.scss';
 
 interface CustomMarkedOptions extends MarkedOptions {
     highlight?: (code: string, lang: string) => string;
@@ -152,7 +152,6 @@ export class MarkdownEditorUI extends Component<Props, State> {
                         })}
                     </div>
                 )}
-
                 {this.state.uploadProgress && (
                     <div className={styles.UploadProgress}>
                         <div className={styles.LeftSection}>
@@ -175,7 +174,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
         );
     }
 
-    private onPasteImageHandler = async (
+    private onPaste = async (
         event: ClipboardEvent<HTMLTextAreaElement>,
     ) => {
         if (this.props.attachments === undefined) {

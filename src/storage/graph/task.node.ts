@@ -186,7 +186,6 @@ export class TaskNode implements Task {
         const appState = this.localStore.getState();
         const attachmentListState =
             appState.attachmentLists[this.taskState.contextAttachmentListId];
-
         return new AttachmentListNode(this.localStore, attachmentListState);
     }
 }
