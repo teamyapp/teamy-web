@@ -29,5 +29,5 @@ export interface Task {
     awaitForTasks: Task[];
     draggingBy?: Client;
     links: TaskLink[];
-    contextAttachmentList?: AttachmentList;
+    contextAttachmentList: AttachmentList;
 }

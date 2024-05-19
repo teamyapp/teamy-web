@@ -877,7 +877,6 @@ export class StateSyncer {
                 `${attachmentListId}`,
                 `${fileUploadSessionId}`,
             );
-
         return {
             id,
             url,

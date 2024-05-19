@@ -38,10 +38,9 @@ export class AttachmentListNode implements AttachmentList {
 
     public get attachments(): AttachmentNode[] {
         const appState = this.localStore.getState();
-        const images = []
-
-        for (const imageId in appState.attachments) {
-            const image = appState.attachments[imageId];
+        const attachments = [];
+        for (const attachmentId in appState.attachments) {
+            const attachment = appState.attachments[attachmentId];
 
             if (image.attachmentListId === this.listId) {
                 images.push(new AttachmentNode(this.localStore, image));

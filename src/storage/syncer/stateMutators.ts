@@ -625,11 +625,9 @@ export function mergeAttachment(
         url: remoteAttachment.url || localOldAttachment.url,
         createdAt: toDate(remoteAttachment.createdAt) || localOldAttachment.createdAt,
     };
-
     currAppState.attachments[attachmentId] = localNewAttachment;
     return currAppState;
 }
-
 
 export function mergeUser(
     currAppState: AppState,
@@ -1511,7 +1509,7 @@ export function mergeTask(
         contextAttachmentListId:
             remoteTask.contextAttachmentList === undefined
                 ? localOldTask.contextAttachmentListId
-                : toInt(remoteTask.contextAttachmentList?.listId),
+                : toInt(remoteTask.contextAttachmentList.listId),
     };
 
     remoteTask.links?.forEach((link) => {

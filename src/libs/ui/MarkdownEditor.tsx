@@ -58,6 +58,7 @@ interface State {
 
 export class MarkdownEditorUI extends Component<Props, State> {
     private readonly fileUploadSessionFactory: FileUploadSessionFactory;
+    
     constructor(props: Props) {
         super(props);
         this.fileUploadSessionFactory = props.fileUploadSessionFactory;
