@@ -659,7 +659,6 @@ export class StateSyncer {
         const remoteTaskLink = await this.taskClient.createTaskLink(
             `${taskId}`,
             {
-                taskId: `${taskId}`,
                 url: input.url,
                 title: input.title,
                 previewTitle: input.previewTitle,

@@ -242,7 +242,6 @@ export interface RemoteUpdateTeamMemberGroupInput {
 }
 
 export interface RemoteCreateTaskLinkInput {
-    taskId: string;
     title: string;
     previewTitle: string;
     url: string;
