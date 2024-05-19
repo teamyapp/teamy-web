@@ -178,7 +178,7 @@ export class TaskNode implements Task {
         return links;
     }
 
-    public get contextAttachmentList(): AttachmentListNode | undefined {
+    public get contextAttachmentList(): AttachmentListNode {
         if (!this.taskState.contextAttachmentListId) {
             return undefined;
         }

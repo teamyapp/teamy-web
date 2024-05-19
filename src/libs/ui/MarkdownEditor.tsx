@@ -219,13 +219,12 @@ export class MarkdownEditorUI extends Component<Props, State> {
         })().then();
         const error = await uploadSession.uploadFile(file);
         if (error) {
-            alert('Fail to upload image');
+            alert('Fail to upload file');
             return;
         }
 
         const { id, url } =
             await this.props.onFileUploadFinished(fileUploadSessionId);
-
         this.setState(() => {
             return {
                 content: `${this.state.content}![${id}](${url})`,
