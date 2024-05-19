@@ -7,6 +7,8 @@ import styles from './MarkdownEditor.module.scss';
 import { MaterialIconUI } from './MaterialIcon';
 import './VSCode.theme.scss';
 import { Attachment } from '@core/entity/attachment';
+import moment from 'moment';
+import { timeFromNow } from '@lib/data/format';
 
 interface CustomMarkedOptions extends MarkedOptions {
     highlight?: (code: string, lang: string) => string;
@@ -141,7 +143,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
                                             {attachment.id}
                                         </div>
                                         <div className={styles.Date}>
-                                            {attachment.createdAt.toISOString()}
+                                            {timeFromNow(attachment.createdAt)}
                                         </div>
                                     </div>
                                 </div>
