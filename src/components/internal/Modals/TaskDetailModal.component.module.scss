@@ -110,11 +110,40 @@ $divider: 2px solid #eeeeee;
                     }
                 }
 
-                .Link {
-                    align-items: center;
+                .Links {
                     display: flex;
-                    font-weight: bold;
+                    flex-direction: column;
                     gap: 10px;
+
+                    .Link {
+                        align-items: center;
+                        display: flex;
+                        font-weight: bold;
+                        gap: 10px;
+
+                        a {
+                            flex: 1;
+                        }
+
+                        .Actions {
+                            display: flex;
+                            gap: 10px;
+
+                            .Action {
+                                border-radius: 4px;
+                                padding: 4px;
+
+                                &:hover {
+                                    background-color: rgba(0, 0, 0, 0.1);
+                                    cursor: pointer;
+                                }
+
+                                &.Remove {
+                                    --icon-color: #d32f2f;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
