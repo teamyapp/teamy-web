@@ -13,6 +13,7 @@ import { GraphSource } from '@core/storage/graph/graphSource';
 
 import styles from './InlineCreateTask.module.scss';
 import { SelectOwnersPopupComponent } from './SelectOwnersPopupComponent';
+import { getPlatform } from '@lib/runtime/os';
 
 interface Props {
     deps: Deps;
@@ -24,6 +25,8 @@ interface Props {
 
 interface State {
     task: CreateTaskInput;
+    isCmdKeyPressed?: boolean;
+    isControlKeyPressed?: boolean;
 }
 
 export class InlineCreateTaskUI extends Component<Props, State> {
@@ -95,6 +98,56 @@ export class InlineCreateTaskUI extends Component<Props, State> {
             </>
         );
     }
+
+
+    public componentDidMount() {
+        document.addEventListener('keydown', this.onKeyDown);
+        document.addEventListener('keyup', this.onKeyUp);
+    }
+
+    public componentWillUnmount() {
+        document.removeEventListener('keydown', this.onKeyDown);
+        document.removeEventListener('keyup', this.onKeyUp);
+    }
+
+    private onKeyDown = (event: KeyboardEvent) => {
+        const platform = getPlatform();
+        if (platform === 'Mac' && event.metaKey) {
+            this.setState({
+                isCmdKeyPressed: true,
+            });
+        }
+
+        if (platform === 'Windows' && event.key === 'Control') {
+            this.setState({
+                isControlKeyPressed: true,
+            });
+        }
+
+        if (
+            (this.state.isCmdKeyPressed || this.state.isControlKeyPressed) &&
+            event.key === 's'
+        ) {
+            event.preventDefault();
+            this.onSaveTaskClick();
+        }
+    };
+
+    private onKeyUp = (event: KeyboardEvent) => {
+        const platform = getPlatform();
+        if (platform === 'Mac' && !event.metaKey) {
+            this.setState({
+                isCmdKeyPressed: false,
+            });
+        }
+
+        if (platform === 'Windows' && event.key === 'Control') {
+            this.setState({
+                isControlKeyPressed: false,
+            });
+        }
+    };
+
 
     private owner = () => {
         const taskOwnerId = this.state.task.ownerUserId;
