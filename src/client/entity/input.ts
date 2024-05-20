@@ -240,3 +240,11 @@ export interface RemoteCreateTeamMemberGroupInput {
 export interface RemoteUpdateTeamMemberGroupInput {
     name: string;
 }
+
+export interface RemoteCreateTaskLinkInput {
+    title: string;
+    previewTitle: string;
+    url: string;
+    iconUrl?: string;
+    iconHoverUrl?: string;
+}

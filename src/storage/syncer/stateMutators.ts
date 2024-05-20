@@ -1430,9 +1430,9 @@ export function mergeTask(
                 : (remoteTask.priority as Priority),
     };
 
-    if (remoteTask.links) {
-        currAppState = mergeTaskLinks(currAppState, remoteTask.links);
-    }
+    remoteTask.links?.forEach((link) => {
+        currAppState = mergeTaskLink(currAppState, link);
+    });
 
     if (remoteTask.creator) {
         currAppState = mergeUser(currAppState, remoteTask.creator);
@@ -1683,28 +1683,25 @@ export function mergeSprint(
     return currAppState;
 }
 
-export function mergeTaskLinks(
+export function mergeTaskLink(
     currAppState: AppState,
-    taskLinks: RemoteTaskLink[],
+    remoteTaskLink: RemoteTaskLink,
 ): AppState {
-    taskLinks.forEach((remoteTaskLink) => {
-        const remoteTaskLinkId = toInt(remoteTaskLink.id)!;
-        const remoteTaskId = toInt(remoteTaskLink.taskId)!;
-        const localOldTaskLink = currAppState.taskLinks[remoteTaskLinkId] || {};
-        const localNewTaskLink: TaskLinkState = {
-            id: remoteTaskLinkId,
-            taskId: remoteTaskId,
-            title: remoteTaskLink.title || localOldTaskLink.title,
-            previewTitle: remoteTaskLink.previewTitle || localOldTaskLink.title,
-            url: remoteTaskLink.url || localOldTaskLink.url,
-            iconUrl: remoteTaskLink.iconUrl || localOldTaskLink.iconUrl,
-            iconHoverUrl:
-                remoteTaskLink.iconHoverUrl || localOldTaskLink.iconHoverUrl,
-        };
+    const remoteTaskLinkId = toInt(remoteTaskLink.id)!;
+    const remoteTaskId = toInt(remoteTaskLink.taskId)!;
+    const localOldTaskLink = currAppState.taskLinks[remoteTaskLinkId] || {};
+    const localNewTaskLink: TaskLinkState = {
+        id: remoteTaskLinkId,
+        taskId: remoteTaskId,
+        title: remoteTaskLink.title || localOldTaskLink.title,
+        previewTitle: remoteTaskLink.previewTitle || localOldTaskLink.title,
+        url: remoteTaskLink.url || localOldTaskLink.url,
+        iconUrl: remoteTaskLink.iconUrl || localOldTaskLink.iconUrl,
+        iconHoverUrl:
+            remoteTaskLink.iconHoverUrl || localOldTaskLink.iconHoverUrl,
+    };
 
-        currAppState.taskLinks[remoteTaskLinkId] = localNewTaskLink;
-    });
-
+    currAppState.taskLinks[remoteTaskLinkId] = localNewTaskLink;
     return currAppState;
 }
 
@@ -1996,7 +1993,9 @@ export function mergeSprintParticipant(
     };
 
     if (localOldSprintParticipantIndex === -1) {
-        appState.sprintParticipants = appState.sprintParticipants.concat(localNewSprintParticipant);
+        appState.sprintParticipants = appState.sprintParticipants.concat(
+            localNewSprintParticipant,
+        );
     } else {
         appState.sprintParticipants[localOldSprintParticipantIndex] =
             localNewSprintParticipant;

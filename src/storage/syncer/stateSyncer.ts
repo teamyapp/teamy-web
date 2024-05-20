@@ -36,6 +36,7 @@ import {
     CreateStaticGroupInput,
     CreateStoryInput,
     CreateTaskInput,
+    CreateTaskLinkInput,
     CreateTeamInput,
     CreateTeamMemberGroupInput,
     CreateUserInput,
@@ -112,6 +113,7 @@ import {
     mergeSprintParticipant,
     mergeTeamMemberGroup,
     mergeTeamMemberGroupUserRelation,
+    mergeTaskLink,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
@@ -647,6 +649,32 @@ export class StateSyncer {
 
         this.localStore.updateState(appState);
         return remoteTaskId;
+    }
+
+    public async createTaskLink(
+        taskId: number,
+        input: CreateTaskLinkInput,
+    ) {
+        const remoteTaskLink = await this.taskClient.createTaskLink(
+            `${taskId}`,
+            {
+                url: input.url,
+                title: input.title,
+                previewTitle: input.previewTitle,
+                iconHoverUrl: input.iconHoverUrl,
+                iconUrl: input.iconUrl,
+            },
+        );
+        let appState = this.localStore.getState();
+        appState = mergeTaskLink(appState, remoteTaskLink);
+        this.localStore.updateState(appState);
+    }
+
+    public async deleteTaskLink(id: number) {
+        await this.taskClient.deleteTaskLink(`${id}`);
+        let appState = this.localStore.getState();
+        delete appState.taskLinks[id];
+        this.localStore.updateState(appState);
     }
 
     public async updateTask(taskId: number, input: UpdateTaskInput) {

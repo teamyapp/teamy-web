@@ -27,6 +27,10 @@ import { TaskLinkIconUI } from '../TaskLinkIcon';
 import { ThreadUI } from '../Thread';
 import styles from './TaskDetailModal.component.module.scss';
 import { getPlatform } from '@lib/runtime/os';
+import {
+    CreateTaskLinkModalComponent,
+    CreateTaskLinkModalComponentHandle,
+} from './CreateTaskLinkModal.component';
 
 const verticalMargin = 30;
 const POPUP_Z_INDEX = 1002;
@@ -52,6 +56,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly feedbackPubSub: PubSub<Feedback>;
     private readonly relativeLayout: RelativeLayout;
     private readonly modalRef = createRef<ModalUI>();
+    private readonly createTaskLinkModalRef =
+        createRef<CreateTaskLinkModalComponentHandle>();
     private readonly markdownEditorRef = createRef<MarkdownEditorUI>();
     private readonly threadDivRef = createRef<HTMLDivElement>();
     private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
@@ -129,27 +135,80 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                     </div>
                                     <div className={styles.LinksSection}>
                                         <div className={styles.Title}>
-                                            Links&nbsp;(
-                                            {this.state.task.links.length})
-                                        </div>
-                                        {this.state.task.links.map((link) => (
-                                            <div className={styles.Link}>
-                                                <TaskLinkIconUI
-                                                    link={link}
+                                            <div className={styles.Name}>
+                                                Links&nbsp;({this.state.task.links.length})
+                                            </div>
+                                            <div className={styles.Actions}>
+                                                <TooltipUI
+                                                    message='Create link'
                                                     relativeLayout={
                                                         this.props.deps
                                                             .relativeLayout
                                                     }
-                                                />
-                                                <a
-                                                    href={link.url}
-                                                    target='_blank'
-                                                    rel='noreferrer'
                                                 >
-                                                    {link.title}
-                                                </a>
+                                                    <div
+                                                        onClick={
+                                                            this
+                                                                .onTaskLinkModalOpen
+                                                        }
+                                                        className={`${styles.Action} ${styles.Create}`}
+                                                    >
+                                                        <MaterialIconUI>
+                                                            add
+                                                        </MaterialIconUI>
+                                                    </div>
+                                                </TooltipUI>
                                             </div>
-                                        ))}
+                                        </div>
+                                        {this.state.task.links?.length && (
+                                            <div className={styles.Links}>
+                                                {this.state.task.links.map(
+                                                    (link) => (
+                                                        <div
+                                                            className={
+                                                                styles.Link
+                                                            }
+                                                            key={link.id}
+                                                        >
+                                                            <TaskLinkIconUI
+                                                                link={link}
+                                                                relativeLayout={
+                                                                    this.props
+                                                                        .deps
+                                                                        .relativeLayout
+                                                                }
+                                                            />
+                                                            <a
+                                                                href={link.url}
+                                                                target='_blank'
+                                                                rel='noreferrer'
+                                                            >
+                                                                {link.title}
+                                                            </a>
+                                                            <div className={styles.Actions}>
+                                                                <TooltipUI
+                                                                    message='Remove link'
+                                                                    relativeLayout={
+                                                                        this.props
+                                                                            .deps
+                                                                            .relativeLayout
+                                                                    }
+                                                                >
+                                                                    <div
+                                                                        onClick={this.onDeleteTaskLinkClick(link.id)}
+                                                                        className={`${styles.Action} ${styles.Remove}`}
+                                                                    >
+                                                                        <MaterialIconUI>
+                                                                            remove
+                                                                        </MaterialIconUI>
+                                                                    </div>
+                                                                </TooltipUI>
+                                                            </div>
+                                                        </div>
+                                                    ),
+                                                )}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className={styles.CommentsSection}>
                                         <div className={styles.Title}>
@@ -265,6 +324,13 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         </div>
                     )}
                 </ModalUI>
+                {this.state.task && (
+                    <CreateTaskLinkModalComponent
+                        ref={this.createTaskLinkModalRef}
+                        deps={this.props.deps}
+                        taskId={this.state.task?.id}
+                    />
+                )}
             </>
         );
     }
@@ -479,5 +545,13 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             dueAt: dueAt,
             effort: task.effort,
         };
+    }
+
+    private onTaskLinkModalOpen = () => {
+        this.createTaskLinkModalRef.current?.open();
+    };
+
+    private onDeleteTaskLinkClick = (linkId: number) => () => {
+        this.stateSyncer.deleteTaskLink(linkId);
     }
 }

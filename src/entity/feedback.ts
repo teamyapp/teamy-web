@@ -1,4 +1,5 @@
 import { Invitation } from '@core/entity/invitation';
+import { ReactNode } from 'react';
 
 export type Feedback =
     | TaskUpdatedFeedback
@@ -6,7 +7,15 @@ export type Feedback =
     | UserProfileUpdatedFeedback
     | TeamProfileUpdatedFeedback
     | InvitationLinkCopiedFeedback
-    | AppSecretCopiedFeedback;
+    | AppSecretCopiedFeedback
+    | DynamicFeedback;
+
+export interface DynamicFeedback {
+    type: 'Dynamic';
+    children?: ReactNode,
+    actionLabel?: string,
+    onActionClick?: () => void,
+}
 
 export interface TaskUpdatedFeedback {
     type: 'TaskUpdated';
