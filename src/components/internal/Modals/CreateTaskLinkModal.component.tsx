@@ -35,19 +35,28 @@ export const CreateTaskLinkModalComponent: ForwardRefExoticComponent<
                 url: '',
             });
         const modalRef = useRef<ModalUI>(null);
-        const onCreateClick = () => {
+        const onCreateClick = async () => {
             if (!createTaskLinkInput.title) {
-                alert('Title is required');
+                await props.deps.feedbackPubSub.publish({
+                    type: 'Dynamic',
+                    children: 'Title is required',
+                });
                 return;
             }
 
             if (!createTaskLinkInput.url) {
-                alert('Url is required');
+                await props.deps.feedbackPubSub.publish({
+                    type: 'Dynamic',
+                    children: 'Url is required',
+                });
                 return;
             }
 
             if (!createTaskLinkInput.previewTitle) {
-                alert('Preview Title is required');
+                await props.deps.feedbackPubSub.publish({
+                    type: 'Dynamic',
+                    children: 'Preview Title is required',
+                });
                 return;
             }
 
