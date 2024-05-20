@@ -98,47 +98,6 @@ $initialHeight: var(--initial-height, 100%);
     }
 }
 
-.ImagesContainer {
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-
-    .Image {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background-color: #f0f0f0; 
-        border-radius: 4px;
-
-        .LeftSection {
-            img {
-                display: block;
-                width: 80px;
-                height: 80px;
-                border-radius: 4px;
-                margin: 5px;
-                background-color: rgb(12, 12, 12);
-            }
-        }
-
-        .RightSection {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-
-            .Name {
-                font-size: 20px;
-                font-weight: bold;
-            }
-
-            .Date {
-                font-size: 16px;
-            }
-        }
-    }
-}
-
 .UploadProgress {
     margin-top: 5px;
     display: flex;

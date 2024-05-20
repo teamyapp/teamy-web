@@ -9,6 +9,7 @@ import { timeFromNow } from '@lib/data/format';
 import './VSCode.theme.scss';
 import styles from './MarkdownEditor.module.scss';
 import { Deps } from '@core/dep/deps';
+import { AttachmentList } from './AttachmentList';
 
 interface CustomMarkedOptions extends MarkedOptions {
     highlight?: (code: string, lang: string) => string;
@@ -129,31 +130,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
                     </div>
                 </div>
                 {this.props.attachments && (
-                    <div className={styles.ImagesContainer}>
-                        {this.props.attachments?.map((attachment) => {
-                            return (
-                                <div
-                                    className={styles.Image}
-                                    key={attachment.id}
-                                >
-                                    <div className={styles.LeftSection}>
-                                        <img
-                                            key={attachment.id}
-                                            src={attachment.url}
-                                        />
-                                    </div>
-                                    <div className={styles.RightSection}>
-                                        <div className={styles.Name}>
-                                            {attachment.id}
-                                        </div>
-                                        <div className={styles.Date}>
-                                            {timeFromNow(attachment.createdAt)}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                    <AttachmentList attachments={this.props.attachments} />
                 )}
                 {this.state.uploadProgress && (
                     <div className={styles.UploadProgress}>
