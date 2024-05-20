@@ -26,5 +26,5 @@ export interface RemoteTask {
     priority?: RemotePriority;
     awaitForTasks: RemoteTask[];
     links: RemoteTaskLink[];
-    contextAttachmentList?: RemoteAttachmentList;
+    contextAttachmentList: RemoteAttachmentList;
 }

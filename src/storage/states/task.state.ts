@@ -15,14 +15,14 @@ export class TaskState {
         public isPlanned: boolean,
         public commentsThreadId: number,
         public createdAt: Date,
+        public contextAttachmentListId: number,
         public dueAt?: Date,
         public context?: string,
         public ownerUserId?: number,
         public effort?: Duration,
         public priority?: Priority,
         public updatedAt?: Date,
-        public deliveredAt?: Date,
-        public contextAttachmentListId: number,
+        public deliveredAt?: Date
     ) {}
 
     public static fromMutationPayload(json: any): TaskState {
@@ -36,6 +36,7 @@ export class TaskState {
             json.IsPlanned,
             json.CommentsThreadID,
             toDate(json.CreatedAt)!,
+            json.ContextAttachmentListID,
             toDate(json.DueAt),
             json.Context,
             json.OwnerUserID,
@@ -45,7 +46,6 @@ export class TaskState {
             json.Priority,
             toDate(json.UpdatedAt),
             toDate(json.DeliveredAt),
-            json.ContextAttachmentListID,
         );
     }
 
@@ -60,6 +60,7 @@ export class TaskState {
             json.isPlanned,
             json.commentThreadId,
             toDate(json.createdAt)!,
+            json.contextAttachmentListId,
             toDate(json.dueAt),
             json.context,
             json.ownerUserId,
@@ -67,7 +68,6 @@ export class TaskState {
             json.priority,
             toDate(json.updatedAt),
             toDate(json.deliveredAt),
-            json.contextAttachmentListId,
         );
     }
 }

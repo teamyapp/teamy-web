@@ -179,13 +179,25 @@ export class TaskNode implements Task {
     }
 
     public get contextAttachmentList(): AttachmentListNode {
-        if (!this.taskState.contextAttachmentListId) {
-            return undefined;
+        const appState = this.localStore.getState();
+        let attachmentListState = undefined;
+        for (let attachmentListId in appState.attachmentLists) {
+            const attachmentList = appState.attachmentLists[attachmentListId];
+
+            if (
+                attachmentList.ownerId === this.id &&
+                attachmentList.ownerType === 'TASK' &&
+                attachmentList.listLabel === 'context'
+            ) {
+                attachmentListState = attachmentList;
+                break;
+            }
         }
 
-        const appState = this.localStore.getState();
-        const attachmentListState =
-            appState.attachmentLists[this.taskState.contextAttachmentListId];
+        if (!attachmentListState) {
+            throw new Error('Attachment list not found');
+        }
+
         return new AttachmentListNode(this.localStore, attachmentListState);
     }
 }

@@ -122,7 +122,9 @@ export function applyAttachmentMutation(
 ): AppState {
     switch (mutation.mutationType) {
         case 'Create': {
-            const attachment = AttachmentState.fromMutationPayload(mutation.payload);
+            const attachment = AttachmentState.fromMutationPayload(
+                mutation.payload,
+            );
             currState.attachments[attachment.id] = attachment;
             break;
         }
@@ -592,21 +594,31 @@ export function mergeAttachmentList(
     remoteAttachmentList: RemoteAttachmentList,
 ): AppState {
     const attachmentListId = toInt(remoteAttachmentList.listId)!;
-    const localOldAttachmentList: AttachmentListState = currAppState.attachmentLists[attachmentListId] || {};
+    const localOldAttachmentList: AttachmentListState =
+        currAppState.attachmentLists[attachmentListId] || {};
     const localNewAttachmentList: AttachmentListState = {
-        ownerType: remoteAttachmentList.ownerType || localOldAttachmentList.ownerType,
-        ownerId: toInt(remoteAttachmentList.ownerId) || localOldAttachmentList.ownerId,
+        ownerType:
+            remoteAttachmentList.ownerType || localOldAttachmentList.ownerType,
+        ownerId:
+            toInt(remoteAttachmentList.ownerId) ||
+            localOldAttachmentList.ownerId,
         listId: attachmentListId,
-        listLabel: remoteAttachmentList.listLabel || localOldAttachmentList.listLabel,
-        createdAt: toDate(remoteAttachmentList.createdAt) || localOldAttachmentList.createdAt,
-        updatedAt: remoteAttachmentList.updatedAt === undefined ? localOldAttachmentList.updatedAt : toDate(remoteAttachmentList.updatedAt),
-    }
+        listLabel:
+            remoteAttachmentList.listLabel || localOldAttachmentList.listLabel,
+        createdAt:
+            toDate(remoteAttachmentList.createdAt) ||
+            localOldAttachmentList.createdAt,
+        updatedAt:
+            remoteAttachmentList.updatedAt === undefined
+                ? localOldAttachmentList.updatedAt
+                : toDate(remoteAttachmentList.updatedAt),
+    };
 
     remoteAttachmentList.attachments?.forEach((remoteAttachment) => {
         currAppState = mergeAttachment(currAppState, remoteAttachment);
-    })
+    });
     currAppState.attachmentLists[attachmentListId] = localNewAttachmentList;
-    return currAppState
+    return currAppState;
 }
 
 export function mergeAttachment(
@@ -621,7 +633,8 @@ export function mergeAttachment(
         size: remoteAttachment.size || remoteAttachment.size,
         attachmentListId: toInt(remoteAttachment.attachmentList.listId)!,
         url: remoteAttachment.url || localOldAttachment.url,
-        createdAt: toDate(remoteAttachment.createdAt) || localOldAttachment.createdAt,
+        createdAt:
+            toDate(remoteAttachment.createdAt) || localOldAttachment.createdAt,
     };
     currAppState.attachments[attachmentId] = localNewAttachment;
     return currAppState;
@@ -1455,6 +1468,7 @@ export function mergeTask(
     currAppState: AppState,
     remoteTask: RemoteTask,
 ): AppState {
+    debugger
     const remoteTaskId = toInt(remoteTask.id)!;
     const localOldTask = currAppState.tasks[remoteTaskId] || {};
     const localNewTask: TaskState = {
@@ -1505,9 +1519,8 @@ export function mergeTask(
                 ? localOldTask.priority
                 : (remoteTask.priority as Priority),
         contextAttachmentListId:
-            remoteTask.contextAttachmentList === undefined
-                ? localOldTask.contextAttachmentListId
-                : toInt(remoteTask.contextAttachmentList.listId),
+            toInt(remoteTask.contextAttachmentList?.listId) ||
+            localOldTask.contextAttachmentListId,
     };
 
     remoteTask.links?.forEach((link) => {
@@ -1519,7 +1532,10 @@ export function mergeTask(
     }
 
     if (remoteTask.contextAttachmentList) {
-        currAppState = mergeAttachmentList(currAppState, remoteTask.contextAttachmentList);
+        currAppState = mergeAttachmentList(
+            currAppState,
+            remoteTask.contextAttachmentList,
+        );
     }
 
     if (remoteTask.owner) {

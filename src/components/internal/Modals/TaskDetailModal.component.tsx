@@ -129,7 +129,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             attachments={
                                                 this.state.task
                                                     .contextAttachmentList
-                                                    ?.attachments
+                                                    .attachments
                                             }
                                             onContentUpdated={
                                                 this.onTaskSaved
@@ -441,13 +441,13 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private createRemoteFileUploadSession = () => {
         return this.stateSyncer.createAttachmentListFileUploadSession(
-            this.state.task!.contextAttachmentList!.listId,
+            this.state.task!.contextAttachmentList.listId,
         );
     };
 
     private finishRemoteFileUploadSession = (fileUploadSessionId: number) => {
         return this.stateSyncer.finishAttachmentListFileUploadSession(
-            this.state.task!.contextAttachmentList!.listId,
+            this.state.task!.contextAttachmentList.listId,
             fileUploadSessionId,
         );
     };

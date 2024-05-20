@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import { marked, MarkedOptions } from 'marked';
 import prismjs from 'prismjs';
 import React, { ClipboardEvent, Component, FormEvent, ReactNode } from 'react';
-import moment from 'moment';
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { MaterialIconUI } from './MaterialIcon';
 import { Attachment } from '@core/entity/attachment';
@@ -36,7 +35,7 @@ marked.setOptions(options);
 interface Props {
     label?: string;
     content?: string;
-    attachments?: Attachment[];
+    attachments: Attachment[];
     fileUploadSessionFactory: FileUploadSessionFactory;
     createRemoteFileUploadSession: () => Promise<number>;
     onFileUploadFinished: (fileUploadSessionId: number) => Promise<{
@@ -58,6 +57,7 @@ interface State {
 
 export class MarkdownEditorUI extends Component<Props, State> {
     private readonly fileUploadSessionFactory: FileUploadSessionFactory;
+    private readonly textareaRef = React.createRef<HTMLTextAreaElement>();
     
     constructor(props: Props) {
         super(props);
@@ -107,12 +107,13 @@ export class MarkdownEditorUI extends Component<Props, State> {
                     <div className={styles.Content}>
                         {this.state.inEditMode ? (
                             <textarea
+                                ref={this.textareaRef}
                                 className={styles.TextArea}
                                 value={this.state.content}
                                 onChange={this.onTextAreaContentChange}
                                 onFocus={this.onTextAreaFocus}
                                 onBlur={this.onTextAreaBlur}
-                                onPaste={this.onPasteImageHandler}
+                                onPaste={this.onPaste}
                             />
                         ) : (
                             <div className={styles.Preview}>
@@ -177,9 +178,6 @@ export class MarkdownEditorUI extends Component<Props, State> {
     private onPaste = async (
         event: ClipboardEvent<HTMLTextAreaElement>,
     ) => {
-        if (this.props.attachments === undefined) {
-            return;
-        }
 
         const items = event.clipboardData?.items;
         if (!items) {
@@ -226,8 +224,13 @@ export class MarkdownEditorUI extends Component<Props, State> {
         const { id, url } =
             await this.props.onFileUploadFinished(fileUploadSessionId);
         this.setState(() => {
+
+            const start = this.textareaRef.current?.selectionStart;
+            const end = this.textareaRef.current?.selectionEnd;
+            const content = this.state.content;
+            const newContent = `${content.slice(0, start)}![${id}](${url})${content.slice(end)}`;
             return {
-                content: `${this.state.content}![${id}](${url})`,
+                content: newContent,
             };
         }, this.props.onContentUpdated);
     };
