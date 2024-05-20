@@ -257,7 +257,6 @@ export interface UpdateTeamMemberGroupInput {
     name: string;
 }
 
-
 export interface CreateTaskLinkInput {
     title: string;
     previewTitle: string;

@@ -8,11 +8,11 @@ import {
     useRef,
     useState,
 } from 'react';
-import styles from './CreateTaskLinkModal.component.module.scss';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TextFieldUI } from '@lib/ui/TextField';
 import { ButtonUI } from '@lib/ui/Button';
 import { CreateTaskLinkInput } from '@core/entity/input';
+import styles from './CreateTaskLinkModal.component.module.scss';
 
 interface Props {
     deps: Deps;
@@ -71,7 +71,6 @@ export const CreateTaskLinkModalComponent: ForwardRefExoticComponent<
         useImperativeHandle(ref, () => ({
             open,
         }));
-
         const onTaskLinkTitleChange = (title: string) => {
             setCreateTaskLinkInput({
                 ...createTaskLinkInput,

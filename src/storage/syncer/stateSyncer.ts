@@ -651,7 +651,6 @@ export class StateSyncer {
         return remoteTaskId;
     }
 
-
     public async createTaskLink(
         taskId: number,
         input: CreateTaskLinkInput,
@@ -666,7 +665,6 @@ export class StateSyncer {
                 iconUrl: input.iconUrl,
             },
         );
-
         let appState = this.localStore.getState();
         appState = mergeTaskLink(appState, remoteTaskLink);
         this.localStore.updateState(appState);
@@ -678,7 +676,6 @@ export class StateSyncer {
         delete appState.taskLinks[id];
         this.localStore.updateState(appState);
     }
-
 
     public async updateTask(taskId: number, input: UpdateTaskInput) {
         const remoteTask = await this.taskClient.updateTask(`${taskId}`, {

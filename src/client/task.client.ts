@@ -320,7 +320,6 @@ export class TaskClient {
         }).then(({removeTasksFromStory}) => removeTasksFromStory);
     }
 
-
     createTaskLink(taskId: string, input: RemoteCreateTaskLinkInput): Promise<RemoteTaskLink> {
         return this.graphQLClient.mutate({
             mutation: `

@@ -136,8 +136,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                     <div className={styles.LinksSection}>
                                         <div className={styles.Title}>
                                             <div className={styles.Name}>
-                                                Links&nbsp;(
-                                                {this.state.task.links.length})
+                                                Links&nbsp;({this.state.task.links.length})
                                             </div>
                                             <div className={styles.Actions}>
                                                 <TooltipUI
@@ -150,7 +149,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                     <div
                                                         onClick={
                                                             this
-                                                                .handleTaskLinkModalOpen
+                                                                .onTaskLinkModalOpen
                                                         }
                                                         className={`${styles.Action} ${styles.Create}`}
                                                     >
@@ -186,7 +185,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                             >
                                                                 {link.title}
                                                             </a>
-
                                                             <div className={styles.Actions}>
                                                                 <TooltipUI
                                                                     message='Remove link'
@@ -197,7 +195,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                                     }
                                                                 >
                                                                     <div
-                                                                        onClick={this.handleDeleteTaskLinkClicked(link.id)}
+                                                                        onClick={this.onDeleteTaskLinkClick(link.id)}
                                                                         className={`${styles.Action} ${styles.Remove}`}
                                                                     >
                                                                         <MaterialIconUI>
@@ -549,11 +547,11 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         };
     }
 
-    private handleTaskLinkModalOpen = () => {
+    private onTaskLinkModalOpen = () => {
         this.createTaskLinkModalRef.current?.open();
     };
 
-    private handleDeleteTaskLinkClicked = (linkId: number) => () => {
+    private onDeleteTaskLinkClick = (linkId: number) => () => {
         this.stateSyncer.deleteTaskLink(linkId);
     }
 }
