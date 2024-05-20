@@ -8,6 +8,7 @@ import { Attachment } from '@core/entity/attachment';
 import { timeFromNow } from '@lib/data/format';
 import './VSCode.theme.scss';
 import styles from './MarkdownEditor.module.scss';
+import { Deps } from '@core/dep/deps';
 
 interface CustomMarkedOptions extends MarkedOptions {
     highlight?: (code: string, lang: string) => string;
@@ -33,6 +34,7 @@ const options: CustomMarkedOptions = {
 marked.setOptions(options);
 
 interface Props {
+    deps: Deps;
     label?: string;
     content?: string;
     attachments: Attachment[];
@@ -217,7 +219,10 @@ export class MarkdownEditorUI extends Component<Props, State> {
         })().then();
         const error = await uploadSession.uploadFile(file);
         if (error) {
-            alert('Fail to upload file');
+            this.props.deps.feedbackPubSub.publish({
+                type: 'Dynamic',
+                children: 'Fail to upload image',
+            })
             return;
         }
 
