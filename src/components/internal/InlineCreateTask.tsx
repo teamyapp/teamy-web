@@ -68,7 +68,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                             <TooltipUI message={'Save'} relativeLayout={this.props.deps.relativeLayout}>
                                 <div
                                     className={styles.Action}
-                                    onClick={this.onSaveTaskClick}
+                                    onClick={this.saveTask}
                                 >
                                     <div className={styles.SaveTaskIcon}>
                                         <MaterialIconUI>done</MaterialIconUI>
@@ -173,7 +173,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
         });
     };
 
-    private onSaveTaskClick = () => {
+    private saveTask = () => {
         if (this.state.task.goal) {
             this.props.onCreateTask?.call(null, this.state.task);
         } else {
