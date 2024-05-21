@@ -126,6 +126,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                     </div>
                                     <div className={styles.Context}>
                                         <MarkdownEditorUI
+                                            deps={this.props.deps}
                                             attachments={
                                                 this.state.task
                                                     .contextAttachmentList
@@ -180,7 +181,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                 </TooltipUI>
                                             </div>
                                         </div>
-                                        {this.state.task.links?.length && (
+                                        {this.state.task.links?.length > 0 && (
                                             <div className={styles.Links}>
                                                 {this.state.task.links.map(
                                                     (link) => (

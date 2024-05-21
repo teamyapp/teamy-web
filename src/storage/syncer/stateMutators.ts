@@ -1518,9 +1518,6 @@ export function mergeTask(
             remoteTask.priority === undefined
                 ? localOldTask.priority
                 : (remoteTask.priority as Priority),
-        contextAttachmentListId:
-            toInt(remoteTask.contextAttachmentList?.listId) ||
-            localOldTask.contextAttachmentListId,
     };
 
     remoteTask.links?.forEach((link) => {
