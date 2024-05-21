@@ -197,7 +197,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
         const error = await uploadSession.uploadFile(file);
         if (error) {
             this.props.deps.feedbackPubSub.publish({
-                type: 'Dynamic',
+                type: 'Error',
                 children: 'Fail to upload image',
             })
             return;

@@ -8,13 +8,11 @@ export type Feedback =
     | TeamProfileUpdatedFeedback
     | InvitationLinkCopiedFeedback
     | AppSecretCopiedFeedback
-    | DynamicFeedback;
+    | ErrorFeedback;
 
-export interface DynamicFeedback {
-    type: 'Dynamic';
+export interface ErrorFeedback {
+    type: 'Error';
     children?: ReactNode,
-    actionLabel?: string,
-    onActionClick?: () => void,
 }
 
 export interface TaskUpdatedFeedback {
