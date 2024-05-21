@@ -99,7 +99,6 @@ export class InlineCreateTaskUI extends Component<Props, State> {
         );
     }
 
-
     public componentDidMount() {
         document.addEventListener('keydown', this.onKeyDown);
         document.addEventListener('keyup', this.onKeyUp);
@@ -129,7 +128,7 @@ export class InlineCreateTaskUI extends Component<Props, State> {
             event.key === 's'
         ) {
             event.preventDefault();
-            this.onSaveTaskClick();
+            this.saveTask();
         }
     };
 
@@ -147,7 +146,6 @@ export class InlineCreateTaskUI extends Component<Props, State> {
             });
         }
     };
-
 
     private owner = () => {
         const taskOwnerId = this.state.task.ownerUserId;
