@@ -82,7 +82,7 @@ import { PlanningComponent } from './pages/Planning/Planning.component';
 import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
 import { StoryUpdatedFeedbackComponent } from './internal/feedbacks/StoryUpdatedFeedback.component';
-import { DynamicFeedbackComponent } from './internal/feedbacks/DynamicFeedback.component';
+import { ErrorFeedbackComponent } from './internal/feedbacks/ErrorFeedback.component';
 
 const sectionIds = [
     backlogSectionId,
@@ -412,7 +412,7 @@ export class AppComponent extends Component<Props, State> {
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
                 <AppSecretCopiedFeedbackComponent deps={this.props.deps} />
                 <DynamicFeedbackUI ref={this.dynamicFeedbackRef} />
-                <DynamicFeedbackComponent dynamicFeedBackRef={this.dynamicFeedbackRef} deps={this.props.deps} />
+                <ErrorFeedbackComponent deps={this.props.deps} />
                 <TeamyThirdPartyAppFeedbackUI
                     ref={this.thirdPartyAppFeedbackRef}
                 />

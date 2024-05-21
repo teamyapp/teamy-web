@@ -38,7 +38,7 @@ export const CreateTaskLinkModalComponent: ForwardRefExoticComponent<
         const onCreateClick = async () => {
             if (!createTaskLinkInput.title) {
                 await props.deps.feedbackPubSub.publish({
-                    type: 'Dynamic',
+                    type: 'Error',
                     children: 'Title is required',
                 });
                 return;
@@ -46,7 +46,7 @@ export const CreateTaskLinkModalComponent: ForwardRefExoticComponent<
 
             if (!createTaskLinkInput.url) {
                 await props.deps.feedbackPubSub.publish({
-                    type: 'Dynamic',
+                    type: 'Error',
                     children: 'Url is required',
                 });
                 return;
@@ -54,7 +54,7 @@ export const CreateTaskLinkModalComponent: ForwardRefExoticComponent<
 
             if (!createTaskLinkInput.previewTitle) {
                 await props.deps.feedbackPubSub.publish({
-                    type: 'Dynamic',
+                    type: 'Error',
                     children: 'Preview Title is required',
                 });
                 return;
