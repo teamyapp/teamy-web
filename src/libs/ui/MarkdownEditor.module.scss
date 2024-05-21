@@ -7,6 +7,15 @@ $outlineColor: var(--outline-color, #1976d2);
 $allowResize: var(--allow-resize, none);
 $initialHeight: var(--initial-height, 100%);
 
+@keyframes blinker {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.4;
+    }
+}
+
 .MarkdownEditor {
     border: $border;
     box-sizing: border-box;
@@ -85,6 +94,48 @@ $initialHeight: var(--initial-height, 100%);
             padding: 10px;
             resize: $allowResize;
             width: 100%;
+        }
+    }
+}
+
+.UploadProgress {
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #f0f0f0; 
+    border-radius: 4px;
+
+    .LeftSection {
+        .ImagePlaceholder {
+            height: 80px;
+            padding: 5px;
+        
+            .Progress {
+                width: 80px;
+                background-color: rgb(12, 12, 12);
+                border-radius: 4px;
+            }
+        }
+    }
+
+    .RightSection {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .NamePlaceholder {
+            background-color: white;
+            width: 50px;
+            height: 20px;
+            animation: blinker 1s linear infinite;
+        }
+
+        .DatePlaceholder {
+            background-color: white;
+            width: 200px;
+            height: 16px;
+            animation: blinker 1s linear infinite;
         }
     }
 }

@@ -1,0 +1,7 @@
+#import '../fragment/task.graphql'
+
+mutation updateTask($taskId: ID!, $input: UpdateTaskInput!) {
+    updateTask(taskId: $taskId, input: $input) {
+        ...TaskFragment
+    }
+}

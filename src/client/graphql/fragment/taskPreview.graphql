@@ -1,3 +1,6 @@
+#import "./team.graphql"
+#import "./attachmentList.graphql"
+
 fragment TaskPreviewFragment on Task {
     id
     goal
@@ -10,4 +13,7 @@ fragment TaskPreviewFragment on Task {
     createdAt
     deliveredAt
     status
+    contextAttachmentList {
+        ...AttachmentListFragment
+    }
 }

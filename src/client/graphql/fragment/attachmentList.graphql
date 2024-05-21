@@ -1,0 +1,18 @@
+fragment AttachmentListFragment on AttachmentList {
+    ownerType
+    ownerId
+    listLabel
+    listId
+    createdAt
+    updatedAt
+    attachments {
+        id
+        type
+        url
+        size
+        createdAt
+        attachmentList {
+            listId
+        }
+    }
+}

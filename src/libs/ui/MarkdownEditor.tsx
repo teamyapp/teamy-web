@@ -1,11 +1,15 @@
 import classNames from 'classnames';
 import { marked, MarkedOptions } from 'marked';
 import prismjs from 'prismjs';
-import React, { Component, FormEvent, ReactNode } from 'react';
-
-import styles from './MarkdownEditor.module.scss';
+import React, { ClipboardEvent, Component, FormEvent, ReactNode } from 'react';
+import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { MaterialIconUI } from './MaterialIcon';
+import { Attachment } from '@core/entity/attachment';
+import { timeFromNow } from '@lib/data/format';
 import './VSCode.theme.scss';
+import styles from './MarkdownEditor.module.scss';
+import { Deps } from '@core/dep/deps';
+import { AttachmentList } from './AttachmentList';
 
 interface CustomMarkedOptions extends MarkedOptions {
     highlight?: (code: string, lang: string) => string;
@@ -31,19 +35,36 @@ const options: CustomMarkedOptions = {
 marked.setOptions(options);
 
 interface Props {
+    deps: Deps;
     label?: string;
     content?: string;
+    attachments: Attachment[];
+    fileUploadSessionFactory: FileUploadSessionFactory;
+    createRemoteFileUploadSession: () => Promise<number>;
+    onFileUploadFinished: (fileUploadSessionId: number) => Promise<{
+        id: string;
+        url: string;
+    }>;
+    onContentUpdated: () => void;
 }
 
 interface State {
     focus: boolean;
     content: string;
     inEditMode: boolean;
+    uploadProgress?: {
+        newBytesUploaded: number;
+        totalPercentage: number;
+    };
 }
 
 export class MarkdownEditorUI extends Component<Props, State> {
+    private readonly fileUploadSessionFactory: FileUploadSessionFactory;
+    private readonly textareaRef = React.createRef<HTMLTextAreaElement>();
+    
     constructor(props: Props) {
         super(props);
+        this.fileUploadSessionFactory = props.fileUploadSessionFactory;
         this.state = {
             focus: false,
             inEditMode: true,
@@ -57,56 +78,144 @@ export class MarkdownEditorUI extends Component<Props, State> {
 
     render(): ReactNode {
         return (
-            <div
-                aria-label={'markdown editor'}
-                className={`${styles.MarkdownEditor} ${classNames({
-                    [styles.Focus]: this.state.focus,
-                })}`}
-            >
-                <div className={styles.Toolbar}>
-                    {this.props.label}
-                    <div className={styles.Spacer} />
-                    <div className={styles.Mode}>
-                        <div
-                            className={`${styles.Button} ${classNames({
-                                [styles.Enabled]: this.state.inEditMode,
-                            })}`}
-                            onClick={this.onEditModeButtonClick}
-                        >
-                            <MaterialIconUI>notes</MaterialIconUI>
-                        </div>
-                        <div
-                            className={`${styles.Button} ${classNames({
-                                [styles.Enabled]: !this.state.inEditMode,
-                            })}`}
-                            onClick={this.onPreviewModeButtonClick}
-                        >
-                            <MaterialIconUI>image</MaterialIconUI>
+            <>
+                <div
+                    aria-label={'markdown editor'}
+                    className={`${styles.MarkdownEditor} ${classNames({
+                        [styles.Focus]: this.state.focus,
+                    })}`}
+                >
+                    <div className={styles.Toolbar}>
+                        {this.props.label}
+                        <div className={styles.Spacer} />
+                        <div className={styles.Mode}>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Enabled]: this.state.inEditMode,
+                                })}`}
+                                onClick={this.onEditModeButtonClick}
+                            >
+                                <MaterialIconUI>notes</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Enabled]: !this.state.inEditMode,
+                                })}`}
+                                onClick={this.onPreviewModeButtonClick}
+                            >
+                                <MaterialIconUI>image</MaterialIconUI>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className={styles.Content}>
-                    {this.state.inEditMode ? (
-                        <textarea
-                            className={styles.TextArea}
-                            value={this.state.content}
-                            onChange={this.onTextAreaContentChange}
-                            onFocus={this.onTextAreaFocus}
-                            onBlur={this.onTextAreaBlur}
-                        />
-                    ) : (
-                        <div className={styles.Preview}>
-                            <div
-                                dangerouslySetInnerHTML={{
-                                    __html: marked(this.state.content),
-                                }}
+                    <div className={styles.Content}>
+                        {this.state.inEditMode ? (
+                            <textarea
+                                ref={this.textareaRef}
+                                className={styles.TextArea}
+                                value={this.state.content}
+                                onChange={this.onTextAreaContentChange}
+                                onFocus={this.onTextAreaFocus}
+                                onBlur={this.onTextAreaBlur}
+                                onPaste={this.onPaste}
                             />
-                        </div>
-                    )}
+                        ) : (
+                            <div className={styles.Preview}>
+                                <div
+                                    dangerouslySetInnerHTML={{
+                                        __html: marked(this.state.content),
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
                 </div>
-            </div>
+                {this.props.attachments && (
+                    <AttachmentList attachments={this.props.attachments} />
+                )}
+                {this.state.uploadProgress && (
+                    <div className={styles.UploadProgress}>
+                        <div className={styles.LeftSection}>
+                            <div className={styles.ImagePlaceholder}>
+                                <div
+                                    className={styles.Progress}
+                                    style={{
+                                        height: `${this.state.uploadProgress.totalPercentage}%`,
+                                    }}
+                                ></div>
+                            </div>
+                        </div>
+                        <div className={styles.RightSection}>
+                            <div className={styles.NamePlaceholder}></div>
+                            <div className={styles.DatePlaceholder}></div>
+                        </div>
+                    </div>
+                )}
+            </>
         );
     }
+
+    private onPaste = async (
+        event: ClipboardEvent<HTMLTextAreaElement>,
+    ) => {
+
+        const items = event.clipboardData?.items;
+        if (!items) {
+            return;
+        }
+
+        const file = Array.from(items)
+            .find((item) => item.kind === 'file')
+            ?.getAsFile();
+        if (!file) {
+            return;
+        }
+
+        const fileUploadSessionId =
+            await this.props.createRemoteFileUploadSession();
+
+        const uploadSession =
+            this.fileUploadSessionFactory.createFileUploadSession(
+                fileUploadSessionId,
+            );
+
+        const onNewProgressCh = uploadSession.subscribeNewProgress();
+        (async () => {
+            while (true) {
+                const progress = await onNewProgressCh.pop();
+                if (progress === undefined) {
+                    this.setState({
+                        uploadProgress: undefined,
+                    });
+                    return;
+                }
+
+                this.setState({
+                    uploadProgress: progress,
+                });
+            }
+        })().then();
+        const error = await uploadSession.uploadFile(file);
+        if (error) {
+            this.props.deps.feedbackPubSub.publish({
+                type: 'Dynamic',
+                children: 'Fail to upload image',
+            })
+            return;
+        }
+
+        const { id, url } =
+            await this.props.onFileUploadFinished(fileUploadSessionId);
+        this.setState(() => {
+
+            const start = this.textareaRef.current?.selectionStart;
+            const end = this.textareaRef.current?.selectionEnd;
+            const content = this.state.content;
+            const newContent = `${content.slice(0, start)}![${id}](${url})${content.slice(end)}`;
+            return {
+                content: newContent,
+            };
+        }, this.props.onContentUpdated);
+    };
 
     private onTextAreaContentChange = (
         event: FormEvent<HTMLTextAreaElement>,

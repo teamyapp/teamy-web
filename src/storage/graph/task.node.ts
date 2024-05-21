@@ -13,6 +13,7 @@ import { TaskLinkNode } from './taskLink.node';
 import { TeamNode } from './team.node';
 import { ThreadNode } from './thread.node';
 import { UserNode } from './user.node';
+import { AttachmentListNode } from './attachmentList.node';
 
 const availableActions: Record<TaskStatus, TaskAction[]> = {
     TODO: ['START', 'DELETE', 'ASSIGN_OWNER'],
@@ -30,7 +31,10 @@ const availableActions: Record<TaskStatus, TaskAction[]> = {
 };
 
 export class TaskNode implements Task {
-    constructor(private localStore: LocalStore, private taskState: TaskState) {}
+    constructor(
+        private localStore: LocalStore,
+        private taskState: TaskState,
+    ) {}
 
     public get id(): number {
         return this.taskState.id;
@@ -172,5 +176,28 @@ export class TaskNode implements Task {
         }
 
         return links;
+    }
+
+    public get contextAttachmentList(): AttachmentListNode {
+        const appState = this.localStore.getState();
+        let attachmentListState = undefined;
+        for (let attachmentListId in appState.attachmentLists) {
+            const attachmentList = appState.attachmentLists[attachmentListId];
+
+            if (
+                attachmentList.ownerId === this.id &&
+                attachmentList.ownerType === 'TASK' &&
+                attachmentList.listLabel === 'context'
+            ) {
+                attachmentListState = attachmentList;
+                break;
+            }
+        }
+
+        if (!attachmentListState) {
+            throw new Error('Attachment list not found');
+        }
+
+        return new AttachmentListNode(this.localStore, attachmentListState);
     }
 }

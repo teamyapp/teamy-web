@@ -126,6 +126,27 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                     </div>
                                     <div className={styles.Context}>
                                         <MarkdownEditorUI
+                                            deps={this.props.deps}
+                                            attachments={
+                                                this.state.task
+                                                    .contextAttachmentList
+                                                    .attachments
+                                            }
+                                            onContentUpdated={
+                                                this.onTaskSaved
+                                            }
+                                            fileUploadSessionFactory={
+                                                this.props.deps
+                                                    .fileUploadSessionFactory
+                                            }
+                                            createRemoteFileUploadSession={
+                                                this
+                                                    .createRemoteFileUploadSession
+                                            }
+                                            onFileUploadFinished={
+                                                this
+                                                    .finishRemoteFileUploadSession
+                                            }
                                             label={'Context'}
                                             content={
                                                 this.state.updatedTask.context
@@ -160,7 +181,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                 </TooltipUI>
                                             </div>
                                         </div>
-                                        {this.state.task.links?.length && (
+                                        {this.state.task.links?.length > 0 && (
                                             <div className={styles.Links}>
                                                 {this.state.task.links.map(
                                                     (link) => (
@@ -419,6 +440,19 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         );
     }
 
+    private createRemoteFileUploadSession = () => {
+        return this.stateSyncer.createAttachmentListFileUploadSession(
+            this.state.task!.contextAttachmentList.listId,
+        );
+    };
+
+    private finishRemoteFileUploadSession = (fileUploadSessionId: number) => {
+        return this.stateSyncer.finishAttachmentListFileUploadSession(
+            this.state.task!.contextAttachmentList.listId,
+            fileUploadSessionId,
+        );
+    };
+
     private onCloseButtonClick = () => {
         this.modalRef.current?.close();
     };
@@ -446,7 +480,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             event.key === 's'
         ) {
             event.preventDefault();
-            this.onSaveButtonClick();
+            this.onTaskSaved();
         }
     };
 
@@ -471,7 +505,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         });
     }
 
-    private onSaveButtonClick = async () => {
+    private onTaskSaved = async () => {
         if (this.state.task) {
             await this.stateSyncer.updateTask(
                 this.state.task.id,
@@ -537,6 +571,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private getUpdatedTaskInput(): UpdateTaskInput {
         const dueAt = this.dueAtDatePicker.current?.value || undefined;
         const task = this.state.task!;
+
         return {
             goal: this.state.updatedTask!.goal,
             context: this.markdownEditorRef.current?.content,

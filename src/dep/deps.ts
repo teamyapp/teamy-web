@@ -53,6 +53,7 @@ import { ProjectClient } from '@core/client/project.client';
 import { PhaseClient } from '@core/client/phase.client';
 import { StoryClient } from '@core/client/story.client';
 import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
+import { AttachmentClient } from '@core/client/attachment.client';
 
 export interface Deps {
     featureToggle: FeatureToggle;
@@ -144,6 +145,7 @@ export function initDeps(config: Config): Deps {
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);
     const teamClient = new TeamClient(teamyGraphQLClient);
+    const attachmentClient = new AttachmentClient(teamyGraphQLClient);
     const teamMemberClient = new TeamMemberClient(teamyGraphQLClient);
     const teamMemberGroupClient = new TeamMemberGroupClient(teamyGraphQLClient);
     const invitationClient = new InvitationClient(teamyGraphQLClient);
@@ -166,6 +168,7 @@ export function initDeps(config: Config): Deps {
         phaseClient,
         storyClient,
         taskClient,
+        attachmentClient,
         messageClient,
         teamClient,
         teamMemberClient,
