@@ -61,7 +61,7 @@ interface State {
 export class MarkdownEditorUI extends Component<Props, State> {
     private readonly fileUploadSessionFactory: FileUploadSessionFactory;
     private readonly textareaRef = React.createRef<HTMLTextAreaElement>();
-    
+
     constructor(props: Props) {
         super(props);
         this.fileUploadSessionFactory = props.fileUploadSessionFactory;
@@ -154,10 +154,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
         );
     }
 
-    private onPaste = async (
-        event: ClipboardEvent<HTMLTextAreaElement>,
-    ) => {
-
+    private onPaste = async (event: ClipboardEvent<HTMLTextAreaElement>) => {
         const items = event.clipboardData?.items;
         if (!items) {
             return;
@@ -179,6 +176,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
             );
 
         const onNewProgressCh = uploadSession.subscribeNewProgress();
+        let start: number | undefined, end: number | undefined, content = '';
         (async () => {
             while (true) {
                 const progress = await onNewProgressCh.pop();
@@ -189,9 +187,21 @@ export class MarkdownEditorUI extends Component<Props, State> {
                     return;
                 }
 
-                this.setState({
-                    uploadProgress: progress,
-                });
+                const previousState = this.state.uploadProgress;
+                if (!previousState && progress) {
+                    start = this.textareaRef.current?.selectionStart;
+                    end = this.textareaRef.current?.selectionEnd;
+                    content = this.state.content;
+                    const newContent = `${content.slice(0, start)}![Uploading...]${content.slice(end)}`;
+                    this.setState({
+                        content: newContent,
+                        uploadProgress: progress
+                    });
+                } else {
+                    this.setState({
+                        uploadProgress: progress
+                    });
+                }
             }
         })().then();
         const error = await uploadSession.uploadFile(file);
@@ -199,18 +209,15 @@ export class MarkdownEditorUI extends Component<Props, State> {
             this.props.deps.feedbackPubSub.publish({
                 type: 'Error',
                 children: 'Fail to upload image',
-            })
+            });
             return;
         }
 
         const { id, url } =
             await this.props.onFileUploadFinished(fileUploadSessionId);
         this.setState(() => {
-
-            const start = this.textareaRef.current?.selectionStart;
-            const end = this.textareaRef.current?.selectionEnd;
-            const content = this.state.content;
             const newContent = `${content.slice(0, start)}![${id}](${url})${content.slice(end)}`;
+
             return {
                 content: newContent,
             };
