@@ -176,13 +176,9 @@ export class MarkdownEditorUI extends Component<Props, State> {
             );
 
         const onNewProgressCh = uploadSession.subscribeNewProgress();
-        let start: number | undefined;
-        let end: number | undefined;
-        let content = '';
-
-        start = this.textareaRef.current?.selectionStart;
-        end = this.textareaRef.current?.selectionEnd;
-        content = this.state.content;
+        let start = this.textareaRef.current?.selectionStart;
+        let end = this.textareaRef.current?.selectionEnd;
+        let content = this.state.content;
         const newContent = `${content.slice(0, start)}![Uploading...]${content.slice(end)}`;
         this.setState({
             content: newContent,
