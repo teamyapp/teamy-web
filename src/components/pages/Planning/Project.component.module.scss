@@ -209,6 +209,7 @@
             .Action {
                 @include action;
                 &.Expand {
+                    font-variation-settings: '"FILL" 1';
                     --icon-color: rgb(0, 128, 255);
                 }
 

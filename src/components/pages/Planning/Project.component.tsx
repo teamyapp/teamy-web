@@ -447,9 +447,6 @@ export function ProjectComponent(props: Props) {
                                 [styles.Active]: !showRightPanel,
                             },
                         )}`}
-                        style={{
-                            fontVariationSettings: '"FILL" 1',
-                        }}
                         onClick={onToggleRightPanelClick}
                     >
                         <MaterialIconUI>
