@@ -176,7 +176,9 @@ export class MarkdownEditorUI extends Component<Props, State> {
             );
 
         const onNewProgressCh = uploadSession.subscribeNewProgress();
-        let start: number | undefined, end: number | undefined, content = '';
+        let start: number | undefined;
+        let end: number | undefined;
+        let content = '';
         (async () => {
             while (true) {
                 const progress = await onNewProgressCh.pop();
