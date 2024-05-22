@@ -141,25 +141,66 @@
         }
     }
 
-    .TaskListSection {
-        @include ItemListSection;
-        .Filter {
-            --drop-down-color: #1565c0;
-            max-width: 120px;
-            min-width: 100px;
-            margin-right: auto;
-            margin-left: 10px;
+    .TaskListPanel {
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+        box-sizing: border-box;
+        z-index: 1;
+        display: flex;
+
+        .LeftActions {
+            padding: 8px;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+
+            .Action {
+                @include action;
+                &.Expand {
+                    font-variation-settings: '"FILL" 1';
+                    --icon-color: rgb(0, 128, 255);
+                }
+
+                &.Active {
+                    background-color: rgb(0, 128, 255);
+                    --icon-color: white;
+                }
+
+                &:hover {
+                    cursor: pointer;
+
+                    &:not(.Active) {
+                        background-color: rgba(0, 0, 0, 0.06);
+                    }
+                }
+            }
         }
 
-        .TaskList {
-            box-sizing: border-box;
-            flex: 1;
-            overflow-y: scroll;
-            padding: 6px 8px;
-            margin: 10px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+        .TaskListSection {
+            @include ItemListSection;
+            box-shadow: none;
+            transition: width 0.5s ease;
+
+            &.Hidden {
+                width: 0px;
+                padding: 0px;
+            }
+            
+            .Filter {
+                --drop-down-color: #1565c0;
+                max-width: 120px;
+                min-width: 100px;
+                margin-right: auto;
+                margin-left: 10px;
+            }
+
+            .TaskList {
+                box-sizing: border-box;
+                flex: 1;
+                overflow-y: scroll;
+                padding: 6px 8px;
+                margin: 10px 0;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
         }
     }
 }

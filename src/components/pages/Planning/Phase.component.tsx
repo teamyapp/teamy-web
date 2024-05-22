@@ -63,7 +63,7 @@ interface Props {
 
 export function PhaseComponent(props: Props) {
     const [project, setProject] = useState<Project>();
-    const [showRightPanel, setShowRightPanel] = useState(true);
+    const [showRightPanel, setShowRightPanel] = useState(false);
     const [phase, setPhase] = useState<Phase>();
     const [onEditingPhase, setOnEditingPhase] = useState(false);
     const [currentTeam, setCurrentTeam] = useState<Team>();
@@ -599,9 +599,6 @@ export function PhaseComponent(props: Props) {
                                 [styles.Active]: !showRightPanel,
                             },
                         )}`}
-                        style={{
-                            fontVariationSettings: '"FILL" 1',
-                        }}
                         onClick={onToggleRightPanelClick}
                     >
                         <MaterialIconUI>

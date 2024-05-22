@@ -18,6 +18,7 @@ import { Task } from '@core/entity/task';
 import { TaskAction } from '@core/entity/taskAction';
 
 import styles from './Story.component.module.scss';
+import classNames from 'classnames';
 
 type backlogTasksFilterKey = 'IS_PLANNED' | 'UNPLANNED' | 'ALL';
 const backlogTasksFilterOptions: Option[] = [
@@ -47,6 +48,7 @@ export function StoryComponent(props: Props) {
         useState(false);
     const [onEditingNewTaskInStory, setOnEditingNewTaskInStory] =
         useState(false);
+    const [showRightPanel, setShowRightPanel] = useState(false);
     const [onEditingStory, setOnEditingStory] = useState(false);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [currentClientId, setCurrentClientId] = useState<number>();
@@ -285,6 +287,10 @@ export function StoryComponent(props: Props) {
         setOnEditingStory(true);
     };
 
+    const onToggleRightPanelClick = () => {
+        setShowRightPanel(!showRightPanel);
+    };
+
     const saveEditedStoryName = async () => {
         if (!story) {
             return;
@@ -367,7 +373,9 @@ export function StoryComponent(props: Props) {
                                         <MaterialIconUI>cancel</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                {selectStoryTaskIds.size > 0 && <div className={styles.Divider} />}
+                                {selectStoryTaskIds.size > 0 && (
+                                    <div className={styles.Divider} />
+                                )}
                             </>
                         ) : (
                             <>
@@ -382,7 +390,7 @@ export function StoryComponent(props: Props) {
                                         <MaterialIconUI>edit</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                <div className={styles.Divider}/>
+                                <div className={styles.Divider} />
                                 <TooltipUI
                                     message='Add task'
                                     relativeLayout={props.deps.relativeLayout}
@@ -465,93 +473,120 @@ export function StoryComponent(props: Props) {
                 </div>
             </div>
 
-            <div className={styles.TaskListSection}>
-                <div className={styles.TopBar}>
-                    <div className={styles.Title}>Tasks</div>
-                    <div className={styles.Filter}>
-                        <DropDownList
-                            relativeLayout={props.deps.relativeLayout}
-                            selectOptionKey={selectedBacklogTasksFilter}
-                            options={backlogTasksFilterOptions}
-                            onSelectOption={handleBacklogFilterChange}
-                        />
-                    </div>
-                    <div className={styles.Actions}>
-                        {selectBacklogTaskIds.size > 0 && (
-                            <TooltipUI
-                                message='Add to story'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.Move}`}
-                                    onClick={onAddTasksToStoryClick}
-                                >
-                                    <MaterialIconUI>read_more</MaterialIconUI>
-                                </div>
-                            </TooltipUI>
-                        )}
-                        {selectBacklogTaskIds.size > 0 && (
-                            <TooltipUI
-                                message='Delete'
-                                relativeLayout={props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.Delete}`}
-                                    onClick={onDeleteBacklogTasksClick}
-                                >
-                                    <MaterialIconUI>close</MaterialIconUI>
-                                </div>
-                            </TooltipUI>
-                        )}
-                        <TooltipUI
-                            message='Create task'
-                            relativeLayout={props.deps.relativeLayout}
-                        >
-                            <div
-                                className={`${styles.Action} ${styles.Add}`}
-                                onClick={onAddTaskInBacklogClick}
-                            >
-                                <MaterialIconUI>add</MaterialIconUI>
-                            </div>
-                        </TooltipUI>
+            <div className={styles.TaskListPanel}>
+                <div className={styles.LeftActions}>
+                    <div
+                        className={`${styles.Action} ${styles.Expand} ${classNames(
+                            {
+                                [styles.Active]: !showRightPanel,
+                            },
+                        )}`}
+                        onClick={onToggleRightPanelClick}
+                    >
+                        <MaterialIconUI>
+                            {showRightPanel
+                                ? 'collapse_content'
+                                : 'expand_content'}
+                        </MaterialIconUI>
                     </div>
                 </div>
-                <div className={styles.TaskList}>
-                    {onEditingNewTaskInBacklog && (
-                        <InlineCreateTaskUI
-                            deps={props.deps}
-                            numActionColumns={1}
-                            onCreateTask={onCreateTaskInBacklog}
-                            onDiscardNewTask={onDiscardNewTaskInBacklog}
-                        />
-                    )}
-                    {backlogTasks.map((task) => (
-                        <div className={styles.ListItem} key={task.id}>
-                            <TaskListItem
-                                deps={props.deps}
+
+                <div
+                    className={`${styles.TaskListSection} ${classNames({
+                        [styles.Hidden]: !showRightPanel,
+                    })}`}
+                >
+                    <div className={styles.TopBar}>
+                        <div className={styles.Title}>Tasks</div>
+                        <div className={styles.Filter}>
+                            <DropDownList
                                 relativeLayout={props.deps.relativeLayout}
-                                sectionId={backlogSectionId}
-                                dragAndDropController={
-                                    props.deps.dragAndDropController
-                                }
-                                onTaskSelectHandler={onBacklogTaskSelectHandler}
-                                isSelected={selectBacklogTaskIds.has(
-                                    task.id.toString(),
-                                )}
-                                currentClientId={currentClientId}
-                                task={task}
-                                numActionColumns={1}
-                                showStatus={true}
-                                filterTaskAction={filterTaskAction}
-                                thirdPartyAppEventHubs={
-                                    props.thirdPartyAppEventHubs
-                                }
-                                onUpdateTask={onUpdateTask}
-                                onDeleteTask={onDeleteTask}
-                                onViewTaskDetail={props.onViewTaskDetail}
+                                selectOptionKey={selectedBacklogTasksFilter}
+                                options={backlogTasksFilterOptions}
+                                onSelectOption={handleBacklogFilterChange}
                             />
                         </div>
-                    ))}
+                        <div className={styles.Actions}>
+                            {selectBacklogTaskIds.size > 0 && (
+                                <TooltipUI
+                                    message='Add to story'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Move}`}
+                                        onClick={onAddTasksToStoryClick}
+                                    >
+                                        <MaterialIconUI>
+                                            read_more
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            )}
+                            {selectBacklogTaskIds.size > 0 && (
+                                <TooltipUI
+                                    message='Delete'
+                                    relativeLayout={props.deps.relativeLayout}
+                                >
+                                    <div
+                                        className={`${styles.Action} ${styles.Delete}`}
+                                        onClick={onDeleteBacklogTasksClick}
+                                    >
+                                        <MaterialIconUI>close</MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
+                            )}
+                            <TooltipUI
+                                message='Create task'
+                                relativeLayout={props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.Add}`}
+                                    onClick={onAddTaskInBacklogClick}
+                                >
+                                    <MaterialIconUI>add</MaterialIconUI>
+                                </div>
+                            </TooltipUI>
+                        </div>
+                    </div>
+                    <div className={styles.TaskList}>
+                        {onEditingNewTaskInBacklog && (
+                            <InlineCreateTaskUI
+                                deps={props.deps}
+                                numActionColumns={1}
+                                onCreateTask={onCreateTaskInBacklog}
+                                onDiscardNewTask={onDiscardNewTaskInBacklog}
+                            />
+                        )}
+                        {backlogTasks.map((task) => (
+                            <div className={styles.ListItem} key={task.id}>
+                                <TaskListItem
+                                    deps={props.deps}
+                                    relativeLayout={props.deps.relativeLayout}
+                                    sectionId={backlogSectionId}
+                                    dragAndDropController={
+                                        props.deps.dragAndDropController
+                                    }
+                                    onTaskSelectHandler={
+                                        onBacklogTaskSelectHandler
+                                    }
+                                    isSelected={selectBacklogTaskIds.has(
+                                        task.id.toString(),
+                                    )}
+                                    currentClientId={currentClientId}
+                                    task={task}
+                                    numActionColumns={1}
+                                    showStatus={true}
+                                    filterTaskAction={filterTaskAction}
+                                    thirdPartyAppEventHubs={
+                                        props.thirdPartyAppEventHubs
+                                    }
+                                    onUpdateTask={onUpdateTask}
+                                    onDeleteTask={onDeleteTask}
+                                    onViewTaskDetail={props.onViewTaskDetail}
+                                />
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>
