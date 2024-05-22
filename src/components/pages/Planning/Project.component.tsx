@@ -42,7 +42,7 @@ const endAt = moment().add(1, 'months').toDate();
 
 export function ProjectComponent(props: Props) {
     const [project, setProject] = useState<Project>();
-    const [showRightPanel, setShowRightPanel] = useState(true);
+    const [showRightPanel, setShowRightPanel] = useState(false);
     const [currentTeam, setCurrentTeam] = useState<Team>();
     const [isEditingNewStoryInBacklog, setIsEditingNewStoryInBacklog] =
         useState(false);
