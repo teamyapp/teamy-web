@@ -179,6 +179,15 @@ export class MarkdownEditorUI extends Component<Props, State> {
         let start: number | undefined;
         let end: number | undefined;
         let content = '';
+
+        start = this.textareaRef.current?.selectionStart;
+        end = this.textareaRef.current?.selectionEnd;
+        content = this.state.content;
+        const newContent = `${content.slice(0, start)}![Uploading...]${content.slice(end)}`;
+        this.setState({
+            content: newContent,
+        });
+
         (async () => {
             while (true) {
                 const progress = await onNewProgressCh.pop();
@@ -189,21 +198,9 @@ export class MarkdownEditorUI extends Component<Props, State> {
                     return;
                 }
 
-                const previousState = this.state.uploadProgress;
-                if (!previousState && progress) {
-                    start = this.textareaRef.current?.selectionStart;
-                    end = this.textareaRef.current?.selectionEnd;
-                    content = this.state.content;
-                    const newContent = `${content.slice(0, start)}![Uploading...]${content.slice(end)}`;
-                    this.setState({
-                        content: newContent,
-                        uploadProgress: progress
-                    });
-                } else {
-                    this.setState({
-                        uploadProgress: progress
-                    });
-                }
+                this.setState({
+                    uploadProgress: progress
+                });
             }
         })().then();
         const error = await uploadSession.uploadFile(file);
