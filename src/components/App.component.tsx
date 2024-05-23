@@ -83,6 +83,7 @@ import { SignUpComponent } from './pages/SignUp.component';
 import { SprintsComponent } from './pages/Sprints.component';
 import { StoryUpdatedFeedbackComponent } from './internal/feedbacks/StoryUpdatedFeedback.component';
 import { ErrorFeedbackComponent } from './internal/feedbacks/ErrorFeedback.component';
+import { getPlatform } from '@lib/runtime/os';
 
 const sectionIds = [
     backlogSectionId,
@@ -112,6 +113,8 @@ interface State {
     taskFilters: TaskFilters;
     showActiveSprintBanner?: boolean;
     thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
+    isCmdKeyPressed: boolean;
+    isControlKeyPressed: boolean;
 }
 
 export class AppComponent extends Component<Props, State> {
@@ -162,6 +165,8 @@ export class AppComponent extends Component<Props, State> {
             taskFilters: {},
             backlogDropReceiverLayer: -1,
             thirdPartyAppEventHubs: [],
+            isCmdKeyPressed: false,
+            isControlKeyPressed: false,
         };
     }
 
@@ -278,37 +283,43 @@ export class AppComponent extends Component<Props, State> {
                                     this.onShowMarketplaceViewClick
                                 }
                             />
+
                             {this.state.activeTeamId ? (
                                 <div className={styles.Team}>
-                                    <div
-                                        className={`${
-                                            styles.Sidebar
-                                        } ${classNames({
-                                            [styles.Shown]:
-                                                this.state.showBacklog,
-                                        })}`}
+                                    <Route
+                                        router={this.router}
+                                        pattern={sprintsRoutePattern}
                                     >
-                                        <div className={styles.Backlog}>
-                                            <BacklogComponent
-                                                ref={this.backlogRef}
-                                                deps={this.props.deps}
-                                                dropReceiverLayer={
-                                                    this.state
-                                                        .backlogDropReceiverLayer
-                                                }
-                                                taskFilters={
-                                                    this.state.taskFilters
-                                                }
-                                                thirdPartyAppEventHubs={
-                                                    this.state
-                                                        .thirdPartyAppEventHubs
-                                                }
-                                                onViewTaskDetail={
-                                                    this.onViewTaskDetail
-                                                }
-                                            />
+                                        <div
+                                            className={`${
+                                                styles.Sidebar
+                                            } ${classNames({
+                                                [styles.Shown]:
+                                                    this.state.showBacklog,
+                                            })}`}
+                                        >
+                                            <div className={styles.Backlog}>
+                                                <BacklogComponent
+                                                    ref={this.backlogRef}
+                                                    deps={this.props.deps}
+                                                    dropReceiverLayer={
+                                                        this.state
+                                                            .backlogDropReceiverLayer
+                                                    }
+                                                    taskFilters={
+                                                        this.state.taskFilters
+                                                    }
+                                                    thirdPartyAppEventHubs={
+                                                        this.state
+                                                            .thirdPartyAppEventHubs
+                                                    }
+                                                    onViewTaskDetail={
+                                                        this.onViewTaskDetail
+                                                    }
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
+                                    </Route>
                                     <div className={styles.Content}>
                                         <Route
                                             router={this.router}
@@ -428,6 +439,9 @@ export class AppComponent extends Component<Props, State> {
         this.monitorStateChanges();
         this.router.initBrowserUri();
         this.monitorUserActions();
+        document.addEventListener('keydown', this.onKeyDown);
+        document.addEventListener('keyup', this.onKeyUp);
+
         this.dragAndDropEventChan =
             this.props.deps.dragAndDropController.subscribeDragAndDropEvent();
         (async () => {
@@ -481,7 +495,47 @@ export class AppComponent extends Component<Props, State> {
         closeIfNot(this.stateChangeChan);
         closeIfNot(this.dragAndDropEventChan);
         this.props.deps.shortcutMonitor.dispose();
+        document.removeEventListener('keydown', this.onKeyDown);
+        document.removeEventListener('keyup', this.onKeyUp);
     }
+
+    private onKeyDown = (event: KeyboardEvent) => {
+        const platform = getPlatform();
+        if (platform === 'Mac' && event.metaKey) {
+            this.setState({
+                isCmdKeyPressed: true,
+            });
+        }
+
+        if (platform === 'Windows' && event.key === 'Control') {
+            this.setState({
+                isControlKeyPressed: true,
+            });
+        }
+
+        if (
+            (this.state.isCmdKeyPressed || this.state.isControlKeyPressed) &&
+            event.key === 'b'
+        ) {
+            event.preventDefault();
+            this.onBacklogToggle();
+        }
+    };
+
+    private onKeyUp = (event: KeyboardEvent) => {
+        const platform = getPlatform();
+        if (platform === 'Mac' && !event.metaKey) {
+            this.setState({
+                isCmdKeyPressed: false,
+            });
+        }
+
+        if (platform === 'Windows' && event.key === 'Control') {
+            this.setState({
+                isControlKeyPressed: false,
+            });
+        }
+    };
 
     public onViewTaskDetail = (taskId: number) => {
         this.taskDetailModalRef.current?.open(taskId);
