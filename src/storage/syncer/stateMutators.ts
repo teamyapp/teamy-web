@@ -1468,7 +1468,6 @@ export function mergeTask(
     currAppState: AppState,
     remoteTask: RemoteTask,
 ): AppState {
-    debugger
     const remoteTaskId = toInt(remoteTask.id)!;
     const localOldTask = currAppState.tasks[remoteTaskId] || {};
     const localNewTask: TaskState = {
