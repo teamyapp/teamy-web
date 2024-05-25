@@ -39,6 +39,7 @@ import { SelectUserPopupComponent } from '../SelectUserPopup.component';
 import classNames from 'classnames';
 import styles from './TeamSettingsModal.component.module.scss';
 import { UpdateTeamMemberGroupInput } from '@core/entity/input';
+import { ConfirmActionsModalComponent } from './ConfirmActionsModal.component';
 
 interface Props {
     deps: Deps;
@@ -57,6 +58,8 @@ interface State {
         number,
         UpdateTeamMemberGroupInput | undefined
     >;
+    deletingGroupId?: number;
+    deletingGroupName?: string;
 }
 
 export class TeamSettingsModalComponent extends Component<Props, State> {
@@ -69,6 +72,8 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
     private readonly modalRef = createRef<ModalUI>();
     private readonly createTeamMemberGroupModelRef =
         createRef<CreateTeamGroupModalComponent>();
+    private readonly deleteTeamGroupConfirmRef =
+        createRef<ConfirmActionsModalComponent>();
     private onStateChangeChan?: PopChannel<boolean | undefined>;
 
     constructor(props: any) {
@@ -435,6 +440,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     className={`${styles.Action} ${styles.Delete}`}
                                     onClick={this.handleDeleteTeamMemberGroup(
                                         groupId,
+                                        groupName,
                                     )}
                                 >
                                     <MaterialIconUI>close</MaterialIconUI>
@@ -483,6 +489,11 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                         });
                     })}
                 </div>
+                <ConfirmActionsModalComponent
+                        ref={this.deleteTeamGroupConfirmRef}
+                        message={`Do you want to delete this team member group ${this.state.deletingGroupName}?`}
+                        onConfirm={this.onDeleteTeamMemberGroup}
+                    />
             </div>
         );
     };
@@ -768,8 +779,26 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             await this.stateSyncer.addUserToTeamMemberGroup(groupId, userId);
         };
 
-    private handleDeleteTeamMemberGroup = (groupId: number) => () => {
-        this.stateSyncer.deleteTeamMemberGroup(groupId);
+    private handleDeleteTeamMemberGroup = (groupId: number, groupName: string) => () => {
+        this.setState({
+            deletingGroupId: groupId,
+            deletingGroupName: groupName,
+        }, () => {
+            this.deleteTeamGroupConfirmRef.current?.open();
+        });
+    };
+
+    private onDeleteTeamMemberGroup = async () => {
+        const groupId = this.state.deletingGroupId;
+        if (!groupId) {
+            return;
+        }
+
+        await this.stateSyncer.deleteTeamMemberGroup(groupId);
+        this.setState({
+            deletingGroupId: undefined,
+            deletingGroupName: undefined,
+        });
     };
 
     private handleToggleUserPopup =
