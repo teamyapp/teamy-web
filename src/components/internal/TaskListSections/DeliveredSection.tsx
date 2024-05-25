@@ -23,6 +23,9 @@ import { Task } from '@core/entity/task';
 
 import styles from './DeliveredSection.module.scss';
 import { TaskListItem } from './TaskListItem';
+import { DropDownList } from '@lib/ui/DropDownList';
+import { TooltipUI } from '@lib/ui/Tooltip';
+import { deliveredSortOrders, getSortOrder } from '@core/config/sortOrder';
 
 interface Props {
     deps: Deps;
@@ -30,6 +33,7 @@ interface Props {
     dragAndDropController: DragAndDropController<DragAndDropContext>;
     tasks: Task[];
     currentClientId?: number;
+    sortOrder?: string;
     isPersonal?: boolean;
     thirdPartyAppEventHubs: ThirdPartyAppEventHub[];
     onUpdateTask?: (taskId: number, task: UpdateTaskInput) => void;
@@ -38,6 +42,7 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
+    onSelectSortOrder?: (order: string) => void;
 }
 
 export class DeliveredSection extends Component<Props> {
@@ -45,6 +50,8 @@ export class DeliveredSection extends Component<Props> {
         const flattenTasks = flattenGroupedTasksByOwner(
             groupByOwners(this.props.tasks),
         );
+        const sortOrder = getSortOrder(this.props.sortOrder);
+        const sortedTasks = flattenTasks.sort(sortOrder);
         return (
             <div className={`${styles.TaskListSection}`}>
                 <DragAndDropContainer
@@ -61,12 +68,33 @@ export class DeliveredSection extends Component<Props> {
                                 <div className={styles.TaskCounter}>
                                     {flattenTasks.length}
                                 </div>
+                                <div className={styles.SortOrder}>
+                                    <DropDownList
+                                        relativeLayout={this.props.relativeLayout}
+                                        selectOptionKey={this.props.sortOrder}
+                                        options={deliveredSortOrders}
+                                        onSelectOption={
+                                            this.props.onSelectSortOrder
+                                        }
+                                        transformReferenceContainer={({
+                                            showFollower,
+                                            container,
+                                        }) => (
+                                            <TooltipUI
+                                                relativeLayout={this.props.deps.relativeLayout}
+                                                disabled={showFollower}
+                                                message={'Order by'}>
+                                                {container}
+                                            </TooltipUI>
+                                        )}
+                                    />
+                                </div>
                                 <SpacerUI />
                             </div>
                         }
                     >
                         <div className={styles.TaskList}>
-                            {flattenTasks.map(
+                            {sortedTasks.map(
                                 this.renderInlineTask(deliveredSectionId),
                             )}
                         </div>

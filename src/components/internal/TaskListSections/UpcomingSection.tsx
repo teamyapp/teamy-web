@@ -2,7 +2,6 @@ import { TooltipUI } from '@lib/ui/Tooltip';
 import { ThirdPartyAppEventHub } from '@teamyapp/ext';
 import React, { Component, ReactNode } from 'react';
 
-import { SortOrder } from '@lib/data/order';
 import { DragAndDropContainer } from '@lib/dragAndDrop/DragAndDropContainer';
 import { DragAndDropController } from '@lib/dragAndDrop/DragAndDropController';
 import { RelativeLayout } from '@lib/layout/relativeLayout';
@@ -18,6 +17,7 @@ import {
 } from '@core/config/draggable';
 import { upcomingSectionId } from '@core/config/sections';
 import {
+    getSortOrder,
     taskDeadlineOrder,
     taskEffortOrder,
     taskOwnerOrder,
@@ -26,14 +26,6 @@ import {
     upcomingSortOrders,
 } from '@core/config/sortOrder';
 import { groupByOwners } from '@core/data/task.group';
-import {
-    orderByDeadline,
-    orderByEffort,
-    orderById,
-    orderByOwner,
-    orderByPriorityDesc,
-    orderByValue,
-} from '@core/data/task.order';
 import { Deps } from '@core/dep/deps';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
 import { Task } from '@core/entity/task';
@@ -78,7 +70,7 @@ export class UpcomingSection extends Component<Props, State> {
     }
 
     public render() {
-        const sortOrder = this.getSortOrder();
+        const sortOrder = getSortOrder(this.props.sortOrder);
         const sortedTasks = this.props.tasks.sort(sortOrder);
         const initialTaskOwnerId = this.props.isPersonal
             ? this.localStore.getState().currUserId
@@ -200,27 +192,10 @@ export class UpcomingSection extends Component<Props, State> {
     private getGroupedTasks(): Map<number | undefined, Task[]> {
         const groupedTasks = groupByOwners(this.props.tasks);
         const newGroupedTasks = new Map<number | undefined, Task[]>();
-        const sortOrder = this.getSortOrder();
+        const sortOrder = getSortOrder(this.props.sortOrder);
         groupedTasks.forEach((tasks, group) => {
             newGroupedTasks.set(group, tasks.sort(sortOrder));
         });
         return newGroupedTasks;
-    }
-
-    private getSortOrder(): SortOrder<Task> {
-        switch (this.props.sortOrder) {
-            case taskPriorityOrder:
-                return orderByPriorityDesc;
-            case taskOwnerOrder:
-                return orderByOwner;
-            case taskDeadlineOrder:
-                return orderByDeadline;
-            case taskValueOrder:
-                return orderByValue;
-            case taskEffortOrder:
-                return orderByEffort;
-            default:
-                return orderById;
-        }
     }
 }

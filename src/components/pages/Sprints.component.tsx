@@ -108,6 +108,7 @@ export class SprintsComponent extends Component<Props, State> {
             sprintParticipants: [],
             sortOrders: {
                 upcoming: taskPriorityOrder,
+                delivered: taskPriorityOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
             allowMultiSelection: false,
@@ -619,6 +620,9 @@ export class SprintsComponent extends Component<Props, State> {
                                 onSelectUpcomingOrder={
                                     this.onSelectUpcomingOrder
                                 }
+                                onSelectDeliveredOrder={
+                                    this.onSelectDeliveredOrder
+                                }
                             />
                         </div>
                     </div>
@@ -828,6 +832,18 @@ export class SprintsComponent extends Component<Props, State> {
                 this.state.sortOrders,
                 {
                     upcoming: order,
+                },
+            ),
+        });
+    };
+
+    private onSelectDeliveredOrder = (order: string) => {
+        this.setState({
+            sortOrders: Object.assign<any, SortOrders, Partial<SortOrders>>(
+                {},
+                this.state.sortOrders,
+                {
+                    delivered: order,
                 },
             ),
         });

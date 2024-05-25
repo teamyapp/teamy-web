@@ -36,6 +36,7 @@ interface Props {
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
     onSelectUpcomingOrder?: (order: string) => void;
+    onSelectDeliveredOrder?: (order: string) => void;
 }
 
 export class KanbanUI extends Component<Props> {
@@ -121,6 +122,7 @@ export class KanbanUI extends Component<Props> {
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
+                        sortOrder={this.props.sortOrders.delivered}
                         tasks={deliveredTasks}
                         currentClientId={this.props.currentClientId}
                         thirdPartyAppEventHubs={
@@ -132,6 +134,7 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
+                        onSelectSortOrder={this.props.onSelectDeliveredOrder}
                     />
                 </div>
             </div>
