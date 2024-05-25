@@ -5,7 +5,6 @@ import React, { ClipboardEvent, Component, FormEvent, ReactNode } from 'react';
 import { FileUploadSessionFactory } from '@lib/fileUpload/fileUploadSession';
 import { MaterialIconUI } from './MaterialIcon';
 import { Attachment } from '@core/entity/attachment';
-import { timeFromNow } from '@lib/data/format';
 import './VSCode.theme.scss';
 import styles from './MarkdownEditor.module.scss';
 import { Deps } from '@core/dep/deps';
@@ -40,6 +39,7 @@ interface Props {
     content?: string;
     attachments: Attachment[];
     fileUploadSessionFactory: FileUploadSessionFactory;
+    onDeleteAttachment: (attachmentId: number) => void;
     createRemoteFileUploadSession: () => Promise<number>;
     onFileUploadFinished: (fileUploadSessionId: number) => Promise<{
         id: string;
@@ -130,7 +130,11 @@ export class MarkdownEditorUI extends Component<Props, State> {
                     </div>
                 </div>
                 {this.props.attachments && (
-                    <AttachmentList attachments={this.props.attachments} />
+                    <AttachmentList
+                        attachments={this.props.attachments}
+                        relativeLayout={this.props.deps.relativeLayout}
+                        onDeleteAttachment={this.props.onDeleteAttachment}
+                    />
                 )}
                 {this.state.uploadProgress && (
                     <div className={styles.UploadProgress}>
@@ -195,7 +199,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
                 }
 
                 this.setState({
-                    uploadProgress: progress
+                    uploadProgress: progress,
                 });
             }
         })().then();

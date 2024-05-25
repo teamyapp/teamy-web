@@ -656,10 +656,7 @@ export class StateSyncer {
         return remoteTaskId;
     }
 
-    public async createTaskLink(
-        taskId: number,
-        input: CreateTaskLinkInput,
-    ) {
+    public async createTaskLink(taskId: number, input: CreateTaskLinkInput) {
         const remoteTaskLink = await this.taskClient.createTaskLink(
             `${taskId}`,
             {
@@ -881,6 +878,15 @@ export class StateSyncer {
             id,
             url,
         };
+    };
+
+    public deleteAttachmentListFile = async (
+        attachmentId: number,
+    ): Promise<void> => {
+        await this.attachmentClient.deleteAttachmentListFile(`${attachmentId}`);
+        let appState = this.localStore.getState();
+        delete appState.attachments[attachmentId];
+        this.localStore.updateState(appState);
     };
 
     public async finishTeamIconUpdateSession(

@@ -132,9 +132,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                     .contextAttachmentList
                                                     .attachments
                                             }
-                                            onContentUpdated={
-                                                this.onTaskSaved
-                                            }
+                                            onContentUpdated={this.onTaskSaved}
                                             fileUploadSessionFactory={
                                                 this.props.deps
                                                     .fileUploadSessionFactory
@@ -147,6 +145,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                 this
                                                     .finishRemoteFileUploadSession
                                             }
+                                            onDeleteAttachment={
+                                                this.deleteTaskContextAttachment
+                                            }
                                             label={'Context'}
                                             content={
                                                 this.state.updatedTask.context
@@ -157,7 +158,8 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                     <div className={styles.LinksSection}>
                                         <div className={styles.Title}>
                                             <div className={styles.Name}>
-                                                Links&nbsp;({this.state.task.links.length})
+                                                Links&nbsp;(
+                                                {this.state.task.links.length})
                                             </div>
                                             <div className={styles.Actions}>
                                                 <TooltipUI
@@ -206,17 +208,24 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                                             >
                                                                 {link.title}
                                                             </a>
-                                                            <div className={styles.Actions}>
+                                                            <div
+                                                                className={
+                                                                    styles.Actions
+                                                                }
+                                                            >
                                                                 <TooltipUI
                                                                     message='Remove link'
                                                                     relativeLayout={
-                                                                        this.props
+                                                                        this
+                                                                            .props
                                                                             .deps
                                                                             .relativeLayout
                                                                     }
                                                                 >
                                                                     <div
-                                                                        onClick={this.onDeleteTaskLinkClick(link.id)}
+                                                                        onClick={this.onDeleteTaskLinkClick(
+                                                                            link.id,
+                                                                        )}
                                                                         className={`${styles.Action} ${styles.Remove}`}
                                                                     >
                                                                         <MaterialIconUI>
@@ -453,6 +462,10 @@ export class TaskDetailModalComponent extends Component<Props, State> {
         );
     };
 
+    private deleteTaskContextAttachment = (attachmentId: number) => {
+        return this.stateSyncer.deleteAttachmentListFile(attachmentId);
+    };
+
     private onCloseButtonClick = () => {
         this.modalRef.current?.close();
     };
@@ -589,5 +602,5 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onDeleteTaskLinkClick = (linkId: number) => () => {
         this.stateSyncer.deleteTaskLink(linkId);
-    }
+    };
 }
