@@ -31,7 +31,7 @@ import { allTasks, ownedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
-import { SortOrders } from '@core/entity/sortOrders';
+import { SortOrders, taskSection } from '@core/entity/sortOrders';
 import { Sprint } from '@core/entity/sprint';
 import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
@@ -108,6 +108,7 @@ export class SprintsComponent extends Component<Props, State> {
             sprintParticipants: [],
             sortOrders: {
                 upcoming: taskPriorityOrder,
+                delivered: taskPriorityOrder,
             },
             selectedTaskOwners: new Set<string>([userAll]),
             allowMultiSelection: false,
@@ -616,8 +617,8 @@ export class SprintsComponent extends Component<Props, State> {
                                 onCompleteTask={this.moveTaskToDelivered}
                                 onViewTaskDetail={this.props.onViewTaskDetail}
                                 onReportTaskBlocked={this.onReportTaskBlocked}
-                                onSelectUpcomingOrder={
-                                    this.onSelectUpcomingOrder
+                                onSelectOrder={
+                                    this.onSelectOrder
                                 }
                             />
                         </div>
@@ -821,13 +822,13 @@ export class SprintsComponent extends Component<Props, State> {
         this.stateSyncer.moveTaskToDelivered(taskId);
     };
 
-    private onSelectUpcomingOrder = (order: string) => {
+    private onSelectOrder = (taskSection: taskSection) => (order: string) => {
         this.setState({
             sortOrders: Object.assign<any, SortOrders, Partial<SortOrders>>(
                 {},
                 this.state.sortOrders,
                 {
-                    upcoming: order,
+                    [taskSection]: order,
                 },
             ),
         });

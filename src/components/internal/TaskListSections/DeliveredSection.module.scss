@@ -10,6 +10,17 @@ $deliveredPrimary: #43a047;
     width: 100%;
 
     .SectionTopBar {
+        .SortOrder {
+            --drop-down-button-color: rgba(0, 0, 0, 0.2);
+            --drop-down-color: #{$deliveredPrimary};
+
+            --drop-down-font-size: 14px;
+            --drop-down-height: 24px;
+            --drop-down-width: 100px;
+            height: 100%;
+            margin-left: 10px;
+        }
+
         .TaskCounter {
             background-color: $deliveredPrimary;
         }

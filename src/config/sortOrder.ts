@@ -1,5 +1,8 @@
+import { orderByDeadline, orderByEffort, orderById, orderByOwner, orderByPriorityDesc, orderByValue } from '@core/data/task.order';
 import { Priority } from '@core/entity/priority';
 import { Story, StoryStatus } from '@core/entity/story';
+import { Task } from '@core/entity/task';
+import { SortOrder } from '@lib/data/order';
 import { Option } from '@lib/ui/DropDownList';
 
 export const taskStatusOrder = 'status';
@@ -51,6 +54,21 @@ export const upcomingSortOrders: Option[] = [
     // },
 ];
 
+export const deliveredSortOrders: Option[] = [
+    {
+        key: taskPriorityOrder,
+        description: 'Priority',
+    },
+    {
+        key: taskOwnerOrder,
+        description: 'Owner',
+    },
+    {
+        key: taskDeadlineOrder,
+        description: 'Deadline',
+    },
+];
+
 const priorityToOrderNumber: Record<Priority, number> = {
     URGENT: 0,
     HIGH: 1,
@@ -89,3 +107,21 @@ export const sortByStoryStatus = (storyA: Story, storyB: Story) => {
     const statusBOrderNumber = storyStatusToOrderNumber[storyB.status];
     return statusAOrderNumber - statusBOrderNumber;
 };
+
+
+export function getSortOrder(sortOrder?: string): SortOrder<Task> {
+    switch (sortOrder) {
+        case taskPriorityOrder:
+            return orderByPriorityDesc;
+        case taskOwnerOrder:
+            return orderByOwner;
+        case taskDeadlineOrder:
+            return orderByDeadline;
+        case taskValueOrder:
+            return orderByValue;
+        case taskEffortOrder:
+            return orderByEffort;
+        default:
+            return orderById;
+    }
+}

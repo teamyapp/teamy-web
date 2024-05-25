@@ -6,7 +6,7 @@ import { or } from '@lib/data/filter';
 import * as filters from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
-import { SortOrders } from '@core/entity/sortOrders';
+import { SortOrders, taskSection } from '@core/entity/sortOrders';
 import { Task } from '@core/entity/task';
 import { User } from '@core/entity/user';
 
@@ -35,7 +35,7 @@ interface Props {
     onCompleteTask?: (taskId: number) => void;
     onViewTaskDetail?: (taskId: number) => void;
     onReportTaskBlocked?: (taskId: number) => void;
-    onSelectUpcomingOrder?: (order: string) => void;
+    onSelectOrder?: (taskSection: taskSection) => (order: string) => void;
 }
 
 export class KanbanUI extends Component<Props> {
@@ -71,7 +71,7 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onSelectSortOrder={this.props.onSelectUpcomingOrder}
+                        onSelectSortOrder={this.props.onSelectOrder && this.props.onSelectOrder('upcoming')}
                     />
                 </div>
                 <div className={`${styles.TaskListSection}`}>
@@ -121,6 +121,7 @@ export class KanbanUI extends Component<Props> {
                         dragAndDropController={
                             this.props.deps.dragAndDropController
                         }
+                        sortOrder={this.props.sortOrders.delivered}
                         tasks={deliveredTasks}
                         currentClientId={this.props.currentClientId}
                         thirdPartyAppEventHubs={
@@ -132,6 +133,7 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
+                        onSelectSortOrder={this.props.onSelectOrder && this.props.onSelectOrder('delivered')}
                     />
                 </div>
             </div>
