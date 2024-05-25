@@ -54,4 +54,23 @@ export class AttachmentClient {
                     payload?.finishAttachmentListFileUploadSession,
             );
     }
+
+    deleteAttachmentListFile(
+        attachmentId: string,
+    ): Promise<void> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation deleteAttachmentListFile($attachmentId: ID!) {
+                        deleteAttachmentListFile(attachmentId: $attachmentId) {
+                            id
+                        }
+                    }
+                `,
+                variables: {
+                    attachmentId,
+                },
+            })
+            .then(() => {});
+    }
 }

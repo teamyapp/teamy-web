@@ -84,6 +84,7 @@ import { SprintsComponent } from './pages/Sprints.component';
 import { StoryUpdatedFeedbackComponent } from './internal/feedbacks/StoryUpdatedFeedback.component';
 import { ErrorFeedbackComponent } from './internal/feedbacks/ErrorFeedback.component';
 import { getPlatform } from '@lib/runtime/os';
+import { CopiedFeedbackComponent } from './internal/feedbacks/CopiedFeedback.component';
 
 const sectionIds = [
     backlogSectionId,
@@ -420,6 +421,7 @@ export class AppComponent extends Component<Props, State> {
                 <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <TaskUpdatedFeedbackComponent deps={this.props.deps} />
                 <StoryUpdatedFeedbackComponent deps={this.props.deps} />
+                <CopiedFeedbackComponent deps={this.props.deps} />
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />
                 <AppSecretCopiedFeedbackComponent deps={this.props.deps} />
                 <DynamicFeedbackUI ref={this.dynamicFeedbackRef} />
