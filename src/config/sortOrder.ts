@@ -108,7 +108,6 @@ export const sortByStoryStatus = (storyA: Story, storyB: Story) => {
     return statusAOrderNumber - statusBOrderNumber;
 };
 
-
 export function getSortOrder(sortOrder?: string): SortOrder<Task> {
     switch (sortOrder) {
         case taskPriorityOrder:
