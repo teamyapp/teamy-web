@@ -1,8 +1,7 @@
 import { FeedbackUI } from "@lib/ui/Feedback";
 import { FC, createRef, useState } from "react";
-import styles from './feedback.module.scss';
 import { Deps } from "@core/dep/deps";
-
+import styles from './feedback.module.scss';
 export interface Props {
     deps: Deps;
 }
@@ -11,7 +10,6 @@ export const CopiedFeedbackComponent: FC<Props> = (props: Props) => {
     const feedbackRef = createRef<FeedbackUI>();
     const feedbackChan = props.deps.feedbackPubSub.subscribe();
     const [content, setContent] = useState<string>();
-
     (async () => {
         while (true) {
             const feedback = await feedbackChan?.pop();

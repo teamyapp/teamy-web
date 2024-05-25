@@ -471,7 +471,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private copyTaskContextAttachmentLink = (attachmentUrl: string) => {
         navigator.clipboard.writeText(attachmentUrl);
-
         this.props.deps.feedbackPubSub.publish({
             type: "Copied",
             content: attachmentUrl,

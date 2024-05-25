@@ -55,7 +55,6 @@ export class AttachmentClient {
             );
     }
 
-
     deleteAttachmentListFile(
         attachmentId: string,
     ): Promise<void> {
