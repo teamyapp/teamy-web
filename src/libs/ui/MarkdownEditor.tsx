@@ -67,7 +67,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
         this.fileUploadSessionFactory = props.fileUploadSessionFactory;
         this.state = {
             focus: false,
-            inEditMode: true,
+            inEditMode: false,
             content: this.props.content || '',
         };
     }
