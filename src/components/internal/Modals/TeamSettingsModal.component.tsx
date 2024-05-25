@@ -602,6 +602,9 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 onClick={this.handleGroupUserSelected(user.id, groupId)}
             >
                 <UserProfileUI user={user} />
+                <div className={styles.UserId}>
+                    {user.id}
+                </div>
                 <div className={styles.MemberName}>
                     <span>{user.firstName}</span>
                     &nbsp;

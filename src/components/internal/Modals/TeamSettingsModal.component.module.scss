@@ -263,6 +263,7 @@ $tableRowGap: 12px;
                         padding-top: 14px;
                         padding-bottom: 14px;
                         border-radius: 4px;
+                        row-gap: 10px;
 
                         &.HasAction:hover {
                             cursor: pointer;
@@ -273,19 +274,17 @@ $tableRowGap: 12px;
                             background-color: #f5f5f5;
                         }
 
+                        .UserId {
+                            font-size: 14px;
+                            font-weight: 600;
+                        }
+
                         .MemberName {
                             font-size: 18px;
                             font-weight: bold;
-                            margin-top: 10px;
-                        }
-
-                        .InvitationStatus {
-                            margin-top: 10px;
                         }
 
                         .Actions {
-                            margin-top: 10px;
-
                             &:hover {
                                 cursor: pointer;
                                 opacity: 0.8;
