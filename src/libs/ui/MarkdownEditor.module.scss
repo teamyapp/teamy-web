@@ -80,6 +80,11 @@ $initialHeight: var(--initial-height, 100%);
             height: auto;
             padding: 10px;
             width: 100%;
+
+            img {
+                max-width: 200px;
+                height: auto;
+            }
         }
 
         .TextArea {
@@ -138,3 +143,4 @@ $initialHeight: var(--initial-height, 100%);
         }
     }
 }
+
