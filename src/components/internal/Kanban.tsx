@@ -71,7 +71,7 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onSelectSortOrder={this.props.onSelectOrder && this.props.onSelectOrder('upcoming')}
+                        onSelectSortOrder={this.props.onSelectOrder?.call(null, 'upcoming')}
                     />
                 </div>
                 <div className={`${styles.TaskListSection}`}>
@@ -133,7 +133,7 @@ export class KanbanUI extends Component<Props> {
                         onCompleteTask={this.props.onCompleteTask}
                         onViewTaskDetail={this.props.onViewTaskDetail}
                         onReportTaskBlocked={this.props.onReportTaskBlocked}
-                        onSelectSortOrder={this.props.onSelectOrder && this.props.onSelectOrder('delivered')}
+                        onSelectSortOrder={this.props.onSelectOrder?.call(null, 'delivered')}
                     />
                 </div>
             </div>
