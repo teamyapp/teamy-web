@@ -578,6 +578,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             ownerUserId: task.owner?.id,
             owningTeamId: task.owningTeam.id,
             dueAt: dueAt,
+            priority: task.priority,
             effort: task.effort,
         };
     }
