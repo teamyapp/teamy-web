@@ -40,6 +40,7 @@ interface Props {
     attachments: Attachment[];
     fileUploadSessionFactory: FileUploadSessionFactory;
     onDeleteAttachment: (attachmentId: number) => void;
+    onCopyAttachmentLink: (url: string) => void;
     createRemoteFileUploadSession: () => Promise<number>;
     onFileUploadFinished: (fileUploadSessionId: number) => Promise<{
         id: string;
@@ -134,6 +135,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
                         attachments={this.props.attachments}
                         relativeLayout={this.props.deps.relativeLayout}
                         onDeleteAttachment={this.props.onDeleteAttachment}
+                        onCopyAttachmentLink={this.props.onCopyAttachmentLink}
                     />
                 )}
                 {this.state.uploadProgress && (

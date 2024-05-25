@@ -8,11 +8,17 @@ export type Feedback =
     | TeamProfileUpdatedFeedback
     | InvitationLinkCopiedFeedback
     | AppSecretCopiedFeedback
-    | ErrorFeedback;
+    | ErrorFeedback
+    | CopiedFeedback;
 
 export interface ErrorFeedback {
     type: 'Error';
     children?: ReactNode,
+}
+
+export interface CopiedFeedback {
+    type: 'Copied';
+    content: string;
 }
 
 export interface TaskUpdatedFeedback {

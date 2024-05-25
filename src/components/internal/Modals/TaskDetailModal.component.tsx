@@ -148,6 +148,9 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             onDeleteAttachment={
                                                 this.deleteTaskContextAttachment
                                             }
+                                            onCopyAttachmentLink={
+                                                this.copyTaskContextAttachmentLink
+                                            }
                                             label={'Context'}
                                             content={
                                                 this.state.updatedTask.context
@@ -464,6 +467,15 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private deleteTaskContextAttachment = (attachmentId: number) => {
         return this.stateSyncer.deleteAttachmentListFile(attachmentId);
+    };
+
+    private copyTaskContextAttachmentLink = (attachmentUrl: string) => {
+        navigator.clipboard.writeText(attachmentUrl);
+
+        this.props.deps.feedbackPubSub.publish({
+            type: "Copied",
+            content: attachmentUrl,
+        })
     };
 
     private onCloseButtonClick = () => {
