@@ -31,7 +31,7 @@ import { allTasks, ownedBy } from '@core/data/task.filter';
 import { Deps } from '@core/dep/deps';
 import { TaskFilters } from '@core/entity/filters';
 import { CreateTaskInput, UpdateTaskInput } from '@core/entity/input';
-import { SortOrders, taskSection } from '@core/entity/sortOrders';
+import { SortOrders } from '@core/entity/sortOrders';
 import { Sprint } from '@core/entity/sprint';
 import { SprintParticipant } from '@core/entity/sprintParticipant';
 import { Task } from '@core/entity/task';
@@ -617,8 +617,11 @@ export class SprintsComponent extends Component<Props, State> {
                                 onCompleteTask={this.moveTaskToDelivered}
                                 onViewTaskDetail={this.props.onViewTaskDetail}
                                 onReportTaskBlocked={this.onReportTaskBlocked}
-                                onSelectOrder={
-                                    this.onSelectOrder
+                                onSelectUpcomingOrder={
+                                    this.onSelectUpcomingOrder
+                                }
+                                onSelectDeliveredOrder={
+                                    this.onSelectDeliveredOrder
                                 }
                             />
                         </div>
@@ -822,13 +825,25 @@ export class SprintsComponent extends Component<Props, State> {
         this.stateSyncer.moveTaskToDelivered(taskId);
     };
 
-    private onSelectOrder = (taskSection: taskSection) => (order: string) => {
+    private onSelectUpcomingOrder = (order: string) => {
         this.setState({
             sortOrders: Object.assign<any, SortOrders, Partial<SortOrders>>(
                 {},
                 this.state.sortOrders,
                 {
-                    [taskSection]: order,
+                    upcoming: order,
+                },
+            ),
+        });
+    };
+
+    private onSelectDeliveredOrder = (order: string) => {
+        this.setState({
+            sortOrders: Object.assign<any, SortOrders, Partial<SortOrders>>(
+                {},
+                this.state.sortOrders,
+                {
+                    delivered: order,
                 },
             ),
         });
