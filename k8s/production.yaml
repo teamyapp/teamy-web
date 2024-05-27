@@ -47,6 +47,10 @@ kind: IngressRoute
 metadata:
   namespace: production
   name: teamy-web
+  labels:
+    app.kubernetes.io/name: web
+    app.kubernetes.io/component: web
+    app.kubernetes.io/part-of: teamy
 spec:
   entryPoints:
     - websecure
