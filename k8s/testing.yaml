@@ -29,6 +29,19 @@ spec:
           ports:
             - containerPort: 80
 ---
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  namespace: testing
+  name: teamy-web
+spec:
+  targetRef:
+    apiVersion: "apps/v1"
+    kind:       Deployment
+    name:       teamy-web
+  updatePolicy:
+    updateMode: "Auto"
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -36,6 +49,7 @@ metadata:
   name: teamy-web
   labels:
     app.kubernetes.io/name: web
+    app.kubernetes.io/instance: web
     app.kubernetes.io/component: web
     app.kubernetes.io/part-of: teamy
 spec:
