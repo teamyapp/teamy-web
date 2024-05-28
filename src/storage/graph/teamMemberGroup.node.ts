@@ -14,6 +14,10 @@ export class TeamMemberGroupNode implements TeamMemberGroup {
         return this.teamMemberGroupState.id;
     }
 
+    public get orderIndex(): number {
+        return this.teamMemberGroupState.orderIndex;
+    }
+
     public get name(): string {
         return this.teamMemberGroupState.name;
     }

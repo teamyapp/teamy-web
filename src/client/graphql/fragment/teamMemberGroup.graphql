@@ -10,6 +10,7 @@ fragment TeamMemberGroupFragment on TeamMemberGroup {
     members {
         ...UserFragment
     }
+    orderIndex
     createdAt
     updatedAt
 }

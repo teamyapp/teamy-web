@@ -165,6 +165,16 @@ export class TeamNode implements Team {
             }
         }
 
-        return memberGroups;
+        return memberGroups.sort((a, b) => {
+            if (a.orderIndex < b.orderIndex) {
+                return -1;
+            }
+
+            if (a.orderIndex > b.orderIndex) {
+                return 1;
+            }
+
+            return 0;
+        });
     }
 }

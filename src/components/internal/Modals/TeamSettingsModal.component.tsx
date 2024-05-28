@@ -245,11 +245,13 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         groupMemberUsers,
         teamMemberUsers,
         groupId,
+        groupIndex,
     }: {
         groupName: string;
         groupMemberUsers: User[];
         teamMemberUsers?: User[];
         groupId?: number;
+        groupIndex?: number;
     }) => {
         const groupMemberUserIds = new Set(
             groupMemberUsers.map((user) => user.id),
@@ -446,6 +448,43 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     <MaterialIconUI>close</MaterialIconUI>
                                 </div>
                             </TooltipUI>
+
+                            <TooltipUI
+                                message='Move up'
+                                relativeLayout={this.props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.MoveUp} ${classNames(
+                                        {
+                                            [styles.Disabled]: groupIndex === 0,
+                                        },
+                                    )}`}
+                                    onClick={this.handleMoveTeamMemberGroupUp(groupId, groupName)}
+                                >
+                                    <MaterialIconUI>
+                                        arrow_upward
+                                    </MaterialIconUI>
+                                </div>
+                            </TooltipUI>
+
+                            <TooltipUI
+                                message='Move down'
+                                relativeLayout={this.props.deps.relativeLayout}
+                            >
+                                <div
+                                    className={`${styles.Action} ${styles.MoveDown} ${classNames({
+                                        [styles.Disabled]:
+                                            groupIndex ===
+                                            (this.state.team?.memberGroups
+                                                .length || 0) - 1,
+                                    })}`}
+                                    onClick={this.handleMoveTeamMemberGroupDown(groupId, groupName)}
+                                >
+                                    <MaterialIconUI>
+                                        arrow_downward
+                                    </MaterialIconUI>
+                                </div>
+                            </TooltipUI>
                         </div>
                     )}
                 </div>
@@ -486,14 +525,15 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                             groupMemberUsers: group.members,
                             teamMemberUsers: allMemberUsers,
                             groupId: group.id,
+                            groupIndex: group.orderIndex,
                         });
                     })}
                 </div>
                 <ConfirmActionsModalComponent
-                        ref={this.deleteTeamGroupConfirmRef}
-                        message={`Do you want to delete this team member group ${this.state.deletingGroupName}?`}
-                        onConfirm={this.onDeleteTeamMemberGroup}
-                    />
+                    ref={this.deleteTeamGroupConfirmRef}
+                    message={`Do you want to delete this team member group ${this.state.deletingGroupName}?`}
+                    onConfirm={this.onDeleteTeamMemberGroup}
+                />
             </div>
         );
     };
@@ -613,9 +653,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 onClick={this.handleGroupUserSelected(user.id, groupId)}
             >
                 <UserProfileUI user={user} />
-                <div className={styles.UserId}>
-                    {user.id}
-                </div>
+                <div className={styles.UserId}>{user.id}</div>
                 <div className={styles.MemberName}>
                     <span>{user.firstName}</span>
                     &nbsp;
@@ -774,19 +812,44 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         });
     };
 
+    private handleMoveTeamMemberGroupUp = (groupId: number, groupName: string) => () => {
+        this.stateSyncer.moveUpTeamMemberGroup(groupId);
+
+        this.props.deps.feedbackPubSub.publish({
+            type: 'TeamMemberGroupOrderUpdated',
+            name: groupName,
+            direction: 'moved up',
+        })
+
+    };
+
+    private handleMoveTeamMemberGroupDown = (groupId: number, groupName: string) => () => {
+        this.stateSyncer.moveDownTeamMemberGroup(groupId);
+
+        this.props.deps.feedbackPubSub.publish({
+            type: 'TeamMemberGroupOrderUpdated',
+            name: groupName,
+            direction: 'moved down',
+        })
+    };
+
     private handleAddUserToTeamMemberGroup =
         (groupId: number) => async (userId: number) => {
             await this.stateSyncer.addUserToTeamMemberGroup(groupId, userId);
         };
 
-    private handleDeleteTeamMemberGroup = (groupId: number, groupName: string) => () => {
-        this.setState({
-            deletingGroupId: groupId,
-            deletingGroupName: groupName,
-        }, () => {
-            this.deleteTeamGroupConfirmRef.current?.open();
-        });
-    };
+    private handleDeleteTeamMemberGroup =
+        (groupId: number, groupName: string) => () => {
+            this.setState(
+                {
+                    deletingGroupId: groupId,
+                    deletingGroupName: groupName,
+                },
+                () => {
+                    this.deleteTeamGroupConfirmRef.current?.open();
+                },
+            );
+        };
 
     private onDeleteTeamMemberGroup = async () => {
         const groupId = this.state.deletingGroupId;

@@ -10,6 +10,7 @@ export type CollectionType =
     | 'User'
     | 'Thread'
     | 'TeamMember'
+    | 'TeamMemberGroup'
     | 'TaskAwaitForRelation'
     | 'SprintTaskRelation'
     | 'Client'

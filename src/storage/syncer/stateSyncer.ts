@@ -116,6 +116,7 @@ import {
     mergeTaskLink,
     applyAttachmentListMutation,
     applyAttachmentMutation,
+    applyTeamMemberGroupMutation,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
@@ -556,6 +557,14 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         delete appState.teamMemberGroups[id];
         this.localStore.updateState(appState);
+    }
+
+    public async moveUpTeamMemberGroup(id: number): Promise<void> {
+        await this.teamMemberClient.moveUpTeamMemberGroup(`${id}`);
+    }
+
+    public async moveDownTeamMemberGroup(id: number): Promise<void> {
+        await this.teamMemberClient.moveDownTeamMemberGroup(`${id}`);
     }
 
     public async addUserToTeamMemberGroup(
@@ -2088,6 +2097,10 @@ export class StateSyncer {
                         mutation,
                         this.teamMemberClient,
                     );
+                    break;
+                }
+                case 'TeamMemberGroup': {
+                    appState = applyTeamMemberGroupMutation(appState, mutation);
                     break;
                 }
                 case 'TaskAwaitForRelation': {
