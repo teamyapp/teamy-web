@@ -92,19 +92,19 @@ export class MarkdownEditorUI extends Component<Props, State> {
                         <div className={styles.Mode}>
                             <div
                                 className={`${styles.Button} ${classNames({
-                                    [styles.Enabled]: this.state.inEditMode,
-                                })}`}
-                                onClick={this.onEditModeButtonClick}
-                            >
-                                <MaterialIconUI>notes</MaterialIconUI>
-                            </div>
-                            <div
-                                className={`${styles.Button} ${classNames({
                                     [styles.Enabled]: !this.state.inEditMode,
                                 })}`}
                                 onClick={this.onPreviewModeButtonClick}
                             >
                                 <MaterialIconUI>image</MaterialIconUI>
+                            </div>
+                            <div
+                                className={`${styles.Button} ${classNames({
+                                    [styles.Enabled]: this.state.inEditMode,
+                                })}`}
+                                onClick={this.onEditModeButtonClick}
+                            >
+                                <MaterialIconUI>notes</MaterialIconUI>
                             </div>
                         </div>
                     </div>
