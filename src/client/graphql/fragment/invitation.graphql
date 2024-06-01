@@ -1,0 +1,24 @@
+
+#import "./user.graphql"
+#import "./team.graphql"
+
+fragment InvitationFragment on Invitation {
+    id
+    createdAt
+    updatedAt
+    expireAt
+    code
+    status
+    receiverFirstName
+	receiverLastName
+	receiverEmail
+    receiver {
+        ...UserFragment
+    }
+    sender {
+        ...UserFragment
+    }
+    joiningTeam {
+        ...TeamFragment
+    }
+}

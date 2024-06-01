@@ -1,0 +1,10 @@
+#import "../fragment/invitation.graphql" 
+
+mutation declineInvitation($invitationId: ID!, $invitationCode: String!) {
+    declineInvitation(
+        invitationId: $invitationId
+        invitationCode: $invitationCode
+    ) {
+        ...InvitationFragment
+    }
+}

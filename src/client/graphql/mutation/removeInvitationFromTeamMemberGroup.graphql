@@ -1,0 +1,13 @@
+#import "../fragment/invitation.graphql" 
+
+mutation removeInvitationFromTeamMemberGroup(
+    $invitationId: ID!
+    $teamMemberGroupId: ID!
+) {
+    removeInvitationFromTeamMemberGroup(
+        invitationId: $invitationId
+        teamMemberGroupId: $teamMemberGroupId
+    ) {
+        ...InvitationFragment
+    }
+}
