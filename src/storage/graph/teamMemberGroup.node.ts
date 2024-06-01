@@ -3,6 +3,7 @@ import { UserNode } from '@core/storage/graph/user.node';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { TeamMemberGroupState } from '../states/teamMemberGroup.state';
 import { TeamMemberGroup } from '@core/entity/teamMemberGroup';
+import { InvitationNode } from './invitation.node';
 
 export class TeamMemberGroupNode implements TeamMemberGroup {
     constructor(
@@ -49,5 +50,21 @@ export class TeamMemberGroupNode implements TeamMemberGroup {
                         appState.users[relation.memberUserId],
                     ),
             );
+    }
+
+    get invitations(): InvitationNode[] {
+        const appState = this.localStore.getState();
+        return appState.teamMemberGroupInvitationRelations
+            .filter(
+                (relation) => relation.groupId === this.teamMemberGroupState.id
+            )
+            .map(
+                (relation) =>
+                    new InvitationNode(
+                        this.localStore,
+                        appState.invitations[relation.invitationId],
+                    ),
+            )
+            .filter((invitation) => invitation.status !== 'ACCEPTED');
     }
 }

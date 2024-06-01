@@ -77,6 +77,7 @@ import { RemoteAttachmentList } from '@core/client/entity/remoteAttachmentList';
 import { AttachmentListState } from '../states/attachmentList.state';
 import { RemoteAttachment } from '@core/client/entity/remoteAttachment';
 import { AttachmentState } from '../states/attachment.state';
+import { TeamMemberGroupInvitationRelation } from '../states/teamMemberGroupInvitationRelation.state';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -521,6 +522,22 @@ export function applyTaskAwaitingForRelationMutation(
 
     return currState;
 }
+
+export function applyTeamMemberGroupInvitationRelationMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create': {
+            const relation = TeamMemberGroupInvitationRelation.fromMutationPayload(mutation.payload);
+            currState.teamMemberGroupInvitationRelations = currState.teamMemberGroupInvitationRelations.concat(relation);
+            break;
+        }
+    }
+
+    return currState;
+}
+
 
 export function applySprintParticipantMutation(
     currState: AppState,
@@ -1642,8 +1659,48 @@ export function mergeTeamMemberGroup(
             member.id,
         );
     });
+
+    remoteTeamMemberGroup.invitations?.forEach((invitation) => {
+        currAppState = mergeInvitation(currAppState, invitation);
+        currAppState = mergeTeamMemberGroupInvitationRelation(
+            currAppState,
+            remoteTeamMemberGroup.id,
+            invitation.id,
+        );
+    });
+
     currAppState.teamMemberGroups[remoteTeamMemberGroupId] =
         localNewTeamMemberGroup;
+    return currAppState;
+}
+
+export function mergeTeamMemberGroupInvitationRelation(
+    currAppState: AppState,
+    remoteTeamMemberGroupId: string,
+    remoteInvitationId: string,
+): AppState {
+    const teamMemberGroupId = toInt(remoteTeamMemberGroupId)!;
+    const invitationId = toInt(remoteInvitationId)!;
+
+    const hasTeamMemberGroupInvitationRelation =
+        currAppState.teamMemberGroupInvitationRelations.some(
+            (teamMemberGroupInvitationRelation) => {
+                return (
+                    teamMemberGroupInvitationRelation.groupId ===
+                        teamMemberGroupId &&
+                    teamMemberGroupInvitationRelation.invitationId ===
+                        invitationId
+                );
+            },
+        );
+
+    if (!hasTeamMemberGroupInvitationRelation) {
+        currAppState.teamMemberGroupInvitationRelations.push({
+            groupId: teamMemberGroupId,
+            invitationId: invitationId,
+        });
+    }
+
     return currAppState;
 }
 

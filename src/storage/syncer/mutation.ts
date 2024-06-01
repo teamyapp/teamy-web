@@ -18,7 +18,8 @@ export type CollectionType =
     | 'SprintParticipant'
     | 'Story'
     | 'AttachmentList'
-    | 'Attachment';
+    | 'Attachment'
+    | 'TeamMemberGroupInvitationRelation';
 
 export type MutationType = 'Create' | 'Update' | 'Delete';
 
