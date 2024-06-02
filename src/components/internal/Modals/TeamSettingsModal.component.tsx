@@ -35,7 +35,7 @@ import { UserProfileUI } from '../UserProfile';
 import { CreateTeamGroupModalComponent } from 'components/pages/Marketplace/Modals/CreateTeamGroupModal.component';
 import { CreateTeamMemberGroupModalComponent } from './CreateTeamMemberGroupModal.component';
 import { User } from '@core/entity/user';
-import { SelectEntityPopupComponent } from '../SelectItemPopupComponent.component';
+import { SelectItemPopupComponent } from '../SelectItemPopupComponent.component';
 import classNames from 'classnames';
 import styles from './TeamSettingsModal.component.module.scss';
 import { UpdateTeamMemberGroupInput } from '@core/entity/input';
@@ -397,9 +397,9 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                         <MaterialIconUI>remove</MaterialIconUI>
                                     </div>
                                 </TooltipUI>
-                                <SelectEntityPopupComponent
+                                <SelectItemPopupComponent
                                     relativeLayout={this.relativeLayout}
-                                    objectList={(closeContainer) => (
+                                    itemList={(closeContainer) => (
                                         <>
                                             <SelectUserListUI
                                                 users={

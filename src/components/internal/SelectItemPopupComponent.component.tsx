@@ -1,23 +1,23 @@
 import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
 import { FC } from 'react';
-import styles from './SelectEntityPopupComponent.component.module.scss';
+import styles from './SelectItemPopupComponent.component.module.scss';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 
 interface Props {
     relativeLayout: RelativeLayout;
-    objectList: (closeContainer: () => void) => JSX.Element;
+    itemList: (closeContainer: () => void) => JSX.Element;
     zOffset?: number;
     referenceElement: ({ toggleContainer, showFollower }: { toggleContainer: () => void; showFollower: boolean }) => JSX.Element;
 }
 
-export const SelectEntityPopupComponent: FC<Props> = (props) => {
+export const SelectItemPopupComponent: FC<Props> = (props) => {
     return (
         <RelativeLayoutContainerUI
             relativeLayout={props.relativeLayout}
             zOffset={props.zOffset}
             renderFollower={({ closeContainer }) => {
                 return (
-                    <div className={styles.Entities}>
+                    <div className={styles.Items}>
                         <div className={styles.TopBar}>
                             <div
                                 className={styles.CloseButton}
@@ -26,8 +26,8 @@ export const SelectEntityPopupComponent: FC<Props> = (props) => {
                                 <MaterialIconUI>close</MaterialIconUI>
                             </div>
                         </div>
-                        <div className={styles.EntityList}>
-                            {props.objectList(closeContainer)}
+                        <div className={styles.ItemList}>
+                            {props.itemList(closeContainer)}
                         </div>
                     </div>
                 );

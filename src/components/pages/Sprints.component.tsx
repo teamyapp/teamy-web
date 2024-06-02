@@ -45,7 +45,7 @@ import { KanbanUI } from '../internal/Kanban';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
 import styles from './Sprints.component.module.scss';
-import { SelectEntityPopupComponent } from 'components/internal/SelectEntityPopupComponent.component';
+import { SelectItemPopupComponent } from 'components/internal/SelectItemPopupComponent.component';
 import { SelectUserListUI } from 'components/internal/SelectUserList';
 
 const TEAM_MEMBERS_POPUP_Z_INDEX = 1002;
@@ -466,12 +466,12 @@ export class SprintsComponent extends Component<Props, State> {
                                                 </div>
                                             </TooltipUI>
                                         </div>
-                                        <SelectEntityPopupComponent
+                                        <SelectItemPopupComponent
                                             relativeLayout={
                                                 this.props.deps.relativeLayout
                                             }
                                             zOffset={TEAM_MEMBERS_POPUP_Z_INDEX}
-                                            objectList={(closeContainer) => {
+                                            itemList={(closeContainer) => {
                                                 return (
                                                     <SelectUserListUI
                                                         users={users}
