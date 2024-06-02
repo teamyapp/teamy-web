@@ -85,6 +85,7 @@ import { StoryUpdatedFeedbackComponent } from './internal/feedbacks/StoryUpdated
 import { ErrorFeedbackComponent } from './internal/feedbacks/ErrorFeedback.component';
 import { getPlatform } from '@lib/runtime/os';
 import { CopiedFeedbackComponent } from './internal/feedbacks/CopiedFeedback.component';
+import { TeamMemberGroupOrderUpdatedFeedback } from './internal/feedbacks/TeamMemberGroupOrderUpdatedFeedback.component';
 
 const sectionIds = [
     backlogSectionId,
@@ -420,6 +421,7 @@ export class AppComponent extends Component<Props, State> {
                 />
                 <UserProfileUpdatedFeedbackComponent deps={this.props.deps} />
                 <TaskUpdatedFeedbackComponent deps={this.props.deps} />
+                <TeamMemberGroupOrderUpdatedFeedback deps={this.props.deps} />
                 <StoryUpdatedFeedbackComponent deps={this.props.deps} />
                 <CopiedFeedbackComponent deps={this.props.deps} />
                 <InvitationLinkCopiedFeedbackComponent deps={this.props.deps} />

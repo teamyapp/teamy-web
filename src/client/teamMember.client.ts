@@ -136,4 +136,44 @@ export class TeamMemberClient {
             })
             .then((payload: any) => payload?.removeMemberFromTeam);
     }
+
+    public moveUpTeamMemberGroup(
+        id: string,
+    ): Promise<void> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation moveUpTeamMemberGroup($id: ID!) {
+                        moveUpTeamMemberGroup(id: $id) {
+                            id
+                            orderIndex
+                        }
+                    }
+                `,
+                variables: {
+                    id,
+                },
+            })
+            .then(() => {});
+    }
+
+    public moveDownTeamMemberGroup(
+        id: string,
+    ): Promise<void> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
+                    mutation moveDownTeamMemberGroup($id: ID!) {
+                        moveDownTeamMemberGroup(id: $id) {
+                            id
+                            orderIndex
+                        }
+                    }
+                `,
+                variables: {
+                    id,
+                },
+            })
+            .then(() => {});
+    }
 }

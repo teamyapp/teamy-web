@@ -237,6 +237,16 @@ $tableRowGap: 12px;
                                 --icon-size: 24px;
                             }
 
+                            &.MoveUp {
+                                --icon-color: #388e3c;
+                                --icon-size: 24px;
+                            }
+
+                            &.MoveDown {
+                                --icon-color: #388e3c;
+                                --icon-size: 24px;
+                            }
+
                             &.Disabled {
                                 --icon-color: #9e9e9e;
                                 pointer-events: none;

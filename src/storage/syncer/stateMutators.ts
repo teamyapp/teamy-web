@@ -262,6 +262,24 @@ export function applySprintTaskMutation(
     return currState;
 }
 
+export function applyTeamMemberGroupMutation(
+    currState: AppState,
+    mutation: Mutation,
+): AppState {
+    switch (mutation.mutationType) {
+        case 'Create':
+        case 'Update': {
+            const teamMemberGroup = TeamMemberGroupState.fromMutationPayload(
+                mutation.payload,
+            );
+            currState.teamMemberGroups[teamMemberGroup.id] = teamMemberGroup;
+            break;
+        }
+    }
+
+    return currState;
+}
+
 export function applyInvitationMutation(
     currState: AppState,
     mutation: Mutation,
@@ -1599,6 +1617,7 @@ export function mergeTeamMemberGroup(
     const localNewTeamMemberGroup: TeamMemberGroupState = {
         id: remoteTeamMemberGroupId,
         name: remoteTeamMemberGroup.name || localOldTeamMemberGroup.name,
+        orderIndex: remoteTeamMemberGroup.orderIndex === undefined ? localOldTeamMemberGroup.orderIndex : remoteTeamMemberGroup.orderIndex,
         teamId:
             toInt(remoteTeamMemberGroup.team?.id) ||
             localOldTeamMemberGroup.teamId,

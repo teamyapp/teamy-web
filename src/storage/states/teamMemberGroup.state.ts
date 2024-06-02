@@ -5,6 +5,7 @@ export class TeamMemberGroupState {
         public id: number,
         public teamId: number,
         public name: string,
+        public orderIndex: number,
         public createdAt: Date,
         public updatedAt?: Date,
     ) {}
@@ -14,6 +15,7 @@ export class TeamMemberGroupState {
             json.ID,
             json.TeamID,
             json.Name,
+            json.OrderIndex,
             toDate(json.CreatedAt)!,
             toDate(json.UpdatedAt),
         );
@@ -24,6 +26,7 @@ export class TeamMemberGroupState {
             json.id,
             json.teamId,
             json.name,
+            json.orderIndex,
             toDate(json.createdAt)!,
             toDate(json.updatedAt),
         );
