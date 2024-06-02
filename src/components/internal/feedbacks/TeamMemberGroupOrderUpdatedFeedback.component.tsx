@@ -30,7 +30,6 @@ export const TeamMemberGroupOrderUpdatedFeedback: FC<Props> = (props: Props) => 
             }
         }
     })().then();
-
     return (
         <FeedbackUI ref={feedbackRef}>
             Team member group

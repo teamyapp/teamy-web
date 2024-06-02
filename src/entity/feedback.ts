@@ -23,7 +23,6 @@ export interface TeamMemberGroupOrderUpdatedFeedback {
     direction: string;
 }
 
-
 export interface CopiedFeedback {
     type: 'Copied';
     content: string;

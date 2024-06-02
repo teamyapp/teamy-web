@@ -280,7 +280,6 @@ export function applyTeamMemberGroupMutation(
     return currState;
 }
 
-
 export function applyInvitationMutation(
     currState: AppState,
     mutation: Mutation,

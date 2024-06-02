@@ -476,7 +476,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                         [styles.Disabled]:
                                             groupIndex ===
                                             (this.state.team?.memberGroups
-                                                .length || 0) - 1,
+                                                .length || 1) - 1,
                                     })}`}
                                     onClick={this.handleMoveTeamMemberGroupDown(groupId, groupName)}
                                 >
@@ -814,23 +814,20 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
 
     private handleMoveTeamMemberGroupUp = (groupId: number, groupName: string) => () => {
         this.stateSyncer.moveUpTeamMemberGroup(groupId);
-
         this.props.deps.feedbackPubSub.publish({
             type: 'TeamMemberGroupOrderUpdated',
             name: groupName,
             direction: 'moved up',
-        })
-
+        });
     };
 
     private handleMoveTeamMemberGroupDown = (groupId: number, groupName: string) => () => {
         this.stateSyncer.moveDownTeamMemberGroup(groupId);
-
         this.props.deps.feedbackPubSub.publish({
             type: 'TeamMemberGroupOrderUpdated',
             name: groupName,
             direction: 'moved down',
-        })
+        });
     };
 
     private handleAddUserToTeamMemberGroup =
