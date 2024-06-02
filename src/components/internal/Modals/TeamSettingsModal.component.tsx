@@ -410,48 +410,37 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                                     group.id,
                                                 )}
                                             />
-                                            {availableGroupInvitations.length >
-                                                0 && (
-                                                <>
-                                                    <div
-                                                        className={
-                                                            styles.InvitationsSubHeader
-                                                        }
-                                                    >
-                                                        invitations
-                                                    </div>
-                                                    {availableGroupInvitations.map(
-                                                        (invitation) => (
+
+                                            <>
+                                                {availableGroupInvitations.map(
+                                                    (invitation) => (
+                                                        <div
+                                                            className={
+                                                                styles.InvitationRow
+                                                            }
+                                                            key={invitation.id}
+                                                            onClick={this.handleInvitationRowClick(
+                                                                invitation.id,
+                                                                group.id,
+                                                            )}
+                                                        >
+                                                            {this.renderInvitationProfile(
+                                                                invitation,
+                                                            )}
                                                             <div
                                                                 className={
-                                                                    styles.InvitationRow
+                                                                    styles.Name
                                                                 }
-                                                                key={
-                                                                    invitation.id
-                                                                }
-                                                                onClick={this.handleInvitationRowClick(
-                                                                    invitation.id,
-                                                                    group.id,
-                                                                )}
                                                             >
-                                                                {this.renderInvitationProfile(
-                                                                    invitation,
+                                                                {getUserShortName(
+                                                                    invitation.receiverFirstName,
+                                                                    invitation.receiverLastName,
                                                                 )}
-                                                                <div
-                                                                    className={
-                                                                        styles.Name
-                                                                    }
-                                                                >
-                                                                    {getUserShortName(
-                                                                        invitation.receiverFirstName,
-                                                                        invitation.receiverLastName,
-                                                                    )}
-                                                                </div>
                                                             </div>
-                                                        ),
-                                                    )}
-                                                </>
-                                            )}
+                                                        </div>
+                                                    ),
+                                                )}
+                                            </>
                                         </>
                                     )}
                                     zOffset={1002}

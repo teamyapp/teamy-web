@@ -686,11 +686,14 @@ export class StateSyncer {
         );
 
         let appState = this.localStore.getState();
-        appState.teamMemberGroupInvitationRelations = appState.teamMemberGroupInvitationRelations.filter(
-            (relation) =>
-                relation.groupId !== groupId &&
-                relation.invitationId !== invitationId,
-        );
+        appState.teamMemberGroupInvitationRelations =
+            appState.teamMemberGroupInvitationRelations.filter(
+                (relation) =>
+                    !(
+                        relation.groupId === groupId &&
+                        relation.invitationId === invitationId
+                    ),
+            );
 
         this.localStore.updateState(appState);
     }
