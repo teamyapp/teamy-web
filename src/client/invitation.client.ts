@@ -1,5 +1,5 @@
 import { GraphQLClient } from '@lib/network/GraphQL.client';
-
+import { print } from 'graphql';
 import {
     RemoteCreateInvitationInput,
     RemoteUpdateInvitationInput,
@@ -14,8 +14,6 @@ import deleteInvitation from './graphql/mutation/deleteInvitation.graphql';
 import declineInvitation from './graphql/mutation/declineInvitation.graphql';
 import addInvitationToTeamMemberGroup from './graphql/mutation/addInvitationToTeamMemberGroup.graphql';  
 import removeInvitationFromTeamMemberGroup from './graphql/mutation/removeInvitationFromTeamMemberGroup.graphql';
-
-import { print } from 'graphql';
 
 export class InvitationClient {
     private readonly graphQLClient: GraphQLClient;

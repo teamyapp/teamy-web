@@ -267,9 +267,12 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
             !availableMemberUsers?.length && !availableGroupInvitations.length;
         const isEditing = this.state.editingTeamMemberGroupInput[group.id];
 
+        const selectedGroupMembersSize =
+            this.state.selectedGroupMembers[group.id]?.size || 0;
+        const selectedGroupInvitationsSize =
+            this.state.selectedGroupInvitations[group.id]?.size || 0;
         const selectedUsersAndInvitationsSize =
-            (this.state.selectedGroupMembers[group.id]?.size || 0) +
-            (this.state.selectedGroupInvitations[group.id]?.size || 0);
+            selectedGroupMembersSize + selectedGroupInvitationsSize;
         const totalUsersAndInvitationsSize =
             group.members.length + group.invitations.length;
 
@@ -410,37 +413,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                                     group.id,
                                                 )}
                                             />
-
-                                            <>
-                                                {availableGroupInvitations.map(
-                                                    (invitation) => (
-                                                        <div
-                                                            className={
-                                                                styles.InvitationRow
-                                                            }
-                                                            key={invitation.id}
-                                                            onClick={this.handleInvitationRowClick(
-                                                                invitation.id,
-                                                                group.id,
-                                                            )}
-                                                        >
-                                                            {this.renderInvitationProfile(
-                                                                invitation,
-                                                            )}
-                                                            <div
-                                                                className={
-                                                                    styles.Name
-                                                                }
-                                                            >
-                                                                {getUserShortName(
-                                                                    invitation.receiverFirstName,
-                                                                    invitation.receiverLastName,
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ),
-                                                )}
-                                            </>
+                                            {this.renderAvailableInvitations(availableGroupInvitations, group.id)}
                                         </>
                                     )}
                                     zOffset={1002}
@@ -496,41 +469,56 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                     </div>
                                 </TooltipUI>
                                 <TooltipUI
-                                message='Move up'
-                                relativeLayout={this.props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.MoveUp} ${classNames(
-                                        {
-                                            [styles.Disabled]: group.orderIndex === 0,
-                                        },
-                                    )}`}
-                                    onClick={this.handleMoveTeamMemberGroupUp(group.id, group.name)}
+                                    message='Move up'
+                                    relativeLayout={
+                                        this.props.deps.relativeLayout
+                                    }
                                 >
-                                    <MaterialIconUI>
-                                        arrow_upward
-                                    </MaterialIconUI>
-                                </div>
-                            </TooltipUI>
+                                    <div
+                                        className={`${styles.Action} ${styles.MoveUp} ${classNames(
+                                            {
+                                                [styles.Disabled]:
+                                                    group.orderIndex === 0,
+                                            },
+                                        )}`}
+                                        onClick={this.handleMoveTeamMemberGroupUp(
+                                            group.id,
+                                            group.name,
+                                        )}
+                                    >
+                                        <MaterialIconUI>
+                                            arrow_upward
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
 
-                            <TooltipUI
-                                message='Move down'
-                                relativeLayout={this.props.deps.relativeLayout}
-                            >
-                                <div
-                                    className={`${styles.Action} ${styles.MoveDown} ${classNames({
-                                        [styles.Disabled]:
-                                            group.orderIndex ===
-                                            (this.state.team?.memberGroups
-                                                .length || 1) - 1,
-                                    })}`}
-                                    onClick={this.handleMoveTeamMemberGroupDown(group.id, group.name)}
+                                <TooltipUI
+                                    message='Move down'
+                                    relativeLayout={
+                                        this.props.deps.relativeLayout
+                                    }
                                 >
-                                    <MaterialIconUI>
-                                        arrow_downward
-                                    </MaterialIconUI>
-                                </div>
-                            </TooltipUI>
+                                    <div
+                                        className={`${styles.Action} ${styles.MoveDown} ${classNames(
+                                            {
+                                                [styles.Disabled]:
+                                                    group.orderIndex ===
+                                                    (this.state.team
+                                                        ?.memberGroups.length ||
+                                                        1) -
+                                                        1,
+                                            },
+                                        )}`}
+                                        onClick={this.handleMoveTeamMemberGroupDown(
+                                            group.id,
+                                            group.name,
+                                        )}
+                                    >
+                                        <MaterialIconUI>
+                                            arrow_downward
+                                        </MaterialIconUI>
+                                    </div>
+                                </TooltipUI>
                             </>
                         }
                     </div>
@@ -546,6 +534,31 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     </div>
                 )}
             </div>
+        );
+    };
+
+    private renderAvailableInvitations = (availableGroupInvitations: Invitation[], groupId: number) => {
+        return (
+            <>
+                {availableGroupInvitations.map((invitation) => (
+                    <div
+                        className={styles.InvitationRow}
+                        key={invitation.id}
+                        onClick={this.handleInvitationRowClick(
+                            invitation.id,
+                            groupId,
+                        )}
+                    >
+                        {this.renderInvitationProfile(invitation)}
+                        <div className={styles.Name}>
+                            {getUserShortName(
+                                invitation.receiverFirstName,
+                                invitation.receiverLastName,
+                            )}
+                        </div>
+                    </div>
+                ))}
+            </>
         );
     };
 
@@ -1004,23 +1017,25 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         });
     };
 
-    private handleMoveTeamMemberGroupUp = (groupId: number, groupName: string) => () => {
-        this.stateSyncer.moveUpTeamMemberGroup(groupId);
-        this.props.deps.feedbackPubSub.publish({
-            type: 'TeamMemberGroupOrderUpdated',
-            name: groupName,
-            direction: 'moved up',
-        });
-    };
+    private handleMoveTeamMemberGroupUp =
+        (groupId: number, groupName: string) => () => {
+            this.stateSyncer.moveUpTeamMemberGroup(groupId);
+            this.props.deps.feedbackPubSub.publish({
+                type: 'TeamMemberGroupOrderUpdated',
+                name: groupName,
+                direction: 'moved up',
+            });
+        };
 
-    private handleMoveTeamMemberGroupDown = (groupId: number, groupName: string) => () => {
-        this.stateSyncer.moveDownTeamMemberGroup(groupId);
-        this.props.deps.feedbackPubSub.publish({
-            type: 'TeamMemberGroupOrderUpdated',
-            name: groupName,
-            direction: 'moved down',
-        });
-    };
+    private handleMoveTeamMemberGroupDown =
+        (groupId: number, groupName: string) => () => {
+            this.stateSyncer.moveDownTeamMemberGroup(groupId);
+            this.props.deps.feedbackPubSub.publish({
+                type: 'TeamMemberGroupOrderUpdated',
+                name: groupName,
+                direction: 'moved down',
+            });
+        };
 
     private handleAddUserToTeamMemberGroup =
         (closeContainer: () => void, groupId: number) =>

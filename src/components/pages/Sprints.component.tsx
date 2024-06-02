@@ -44,9 +44,9 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { KanbanUI } from '../internal/Kanban';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
-import styles from './Sprints.component.module.scss';
 import { SelectItemPopupComponent } from 'components/internal/SelectItemPopupComponent.component';
 import { SelectUserListUI } from 'components/internal/SelectUserList';
+import styles from './Sprints.component.module.scss';
 
 const TEAM_MEMBERS_POPUP_Z_INDEX = 1002;
 
