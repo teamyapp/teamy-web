@@ -65,6 +65,6 @@ export class TeamMemberGroupNode implements TeamMemberGroup {
                         appState.invitations[relation.invitationId],
                     ),
             )
-            .filter((invitation) => invitation.status !== 'ACCEPTED');
+            .filter((invitation) => invitation.status === 'PENDING');
     }
 }

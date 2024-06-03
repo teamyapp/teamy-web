@@ -538,7 +538,6 @@ export function applyTeamMemberGroupInvitationRelationMutation(
     return currState;
 }
 
-
 export function applySprintParticipantMutation(
     currState: AppState,
     mutation: Mutation,
@@ -1681,15 +1680,12 @@ export function mergeTeamMemberGroupInvitationRelation(
 ): AppState {
     const teamMemberGroupId = toInt(remoteTeamMemberGroupId)!;
     const invitationId = toInt(remoteInvitationId)!;
-
     const hasTeamMemberGroupInvitationRelation =
         currAppState.teamMemberGroupInvitationRelations.some(
             (teamMemberGroupInvitationRelation) => {
                 return (
-                    teamMemberGroupInvitationRelation.groupId ===
-                        teamMemberGroupId &&
-                    teamMemberGroupInvitationRelation.invitationId ===
-                        invitationId
+                    teamMemberGroupInvitationRelation.groupId === teamMemberGroupId &&
+                    teamMemberGroupInvitationRelation.invitationId === invitationId
                 );
             },
         );

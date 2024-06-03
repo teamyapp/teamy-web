@@ -636,7 +636,7 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         const teamMemberGroups = this.state.team?.memberGroups || [];
         const allMemberUsers =
             this.state.team?.members?.map((member) => member.user) || [];
-        const allNonAcceptedInvitations = this.state.invitations.filter(
+        const allNotAcceptedInvitations = this.state.invitations.filter(
             (invitation) => invitation.status !== 'ACCEPTED',
         );
         return (
@@ -805,7 +805,6 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     &nbsp;
                     <span>{invitation.receiverLastName}</span>
                 </div>
-
                 {!groupId && (
                     <div className={styles.Actions}>
                         <TooltipUI
@@ -1099,14 +1098,12 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                     userId,
                 );
             });
-
             selectedGroupInvitations?.forEach(async (invitationId) => {
                 await this.stateSyncer.removeInvitationFromTeamMemberGroup(
                     invitationId,
                     groupId,
                 );
             });
-
             this.setState({
                 selectedGroupMembers: {
                     ...this.state.selectedGroupMembers,

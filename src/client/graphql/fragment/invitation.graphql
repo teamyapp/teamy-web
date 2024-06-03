@@ -1,4 +1,3 @@
-
 #import "./user.graphql"
 #import "./team.graphql"
 
@@ -10,8 +9,8 @@ fragment InvitationFragment on Invitation {
     code
     status
     receiverFirstName
-	receiverLastName
-	receiverEmail
+    receiverLastName
+    receiverEmail
     receiver {
         ...UserFragment
     }
