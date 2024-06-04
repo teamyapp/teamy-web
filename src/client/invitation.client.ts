@@ -135,7 +135,6 @@ export class InvitationClient {
                 (payload: any) =>
                     payload?.addInvitationToTeamMemberGroup,
             );
-            
     }
 
     public removeInvitationFromTeamMemberGroup(
