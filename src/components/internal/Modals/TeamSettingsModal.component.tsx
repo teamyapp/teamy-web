@@ -652,13 +652,13 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 <div className={styles.Scrollable}>
                     {this.renderAllTeamMemberGroup(
                         allMemberUsers,
-                        allNonAcceptedInvitations,
+                        allNotAcceptedInvitations,
                     )}
                     {teamMemberGroups.map((group) => {
                         return this.renderTeamMemberGroup(
                             group,
                             allMemberUsers,
-                            allNonAcceptedInvitations,
+                            allNotAcceptedInvitations,
                         );
                     })}
                 </div>
