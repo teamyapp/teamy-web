@@ -537,7 +537,6 @@ export function applyTeamMemberGroupInvitationRelationMutation(
 
     return currState;
 }
-
 export function applySprintParticipantMutation(
     currState: AppState,
     mutation: Mutation,
