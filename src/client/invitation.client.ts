@@ -1,5 +1,5 @@
-import { GraphQLClient } from '@lib/network/GraphQL.client';
 import { print } from 'graphql';
+import { GraphQLClient } from '@lib/network/GraphQL.client';
 import {
     RemoteCreateInvitationInput,
     RemoteUpdateInvitationInput,

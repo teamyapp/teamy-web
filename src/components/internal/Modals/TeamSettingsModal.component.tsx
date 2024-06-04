@@ -636,8 +636,8 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         const teamMemberGroups = this.state.team?.memberGroups || [];
         const allMemberUsers =
             this.state.team?.members?.map((member) => member.user) || [];
-        const allNotAcceptedInvitations = this.state.invitations.filter(
-            (invitation) => invitation.status !== 'ACCEPTED',
+        const allPendingInvitations = this.state.invitations.filter(
+            (invitation) => invitation.status === 'PENDING',
         );
         return (
             <div className={styles.TeamMembersTab}>
@@ -652,13 +652,13 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                 <div className={styles.Scrollable}>
                     {this.renderAllTeamMemberGroup(
                         allMemberUsers,
-                        allNotAcceptedInvitations,
+                        allPendingInvitations,
                     )}
                     {teamMemberGroups.map((group) => {
                         return this.renderTeamMemberGroup(
                             group,
                             allMemberUsers,
-                            allNotAcceptedInvitations,
+                            allPendingInvitations,
                         );
                     })}
                 </div>
