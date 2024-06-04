@@ -1,0 +1,7 @@
+#import "../fragment/invitation.graphql" 
+
+mutation createInvitation($teamId: ID!, $input: CreateInvitationInput!) {
+    createInvitation(teamId: $teamId, invitation: $input) {
+        ...InvitationFragment
+    }
+}

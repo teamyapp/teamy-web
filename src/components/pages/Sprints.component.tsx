@@ -44,8 +44,9 @@ import { StateSyncer } from '@core/storage/syncer/stateSyncer';
 import { KanbanUI } from '../internal/Kanban';
 import { UserProfileUI } from '../internal/UserProfile';
 import { getSprintName, getUserShortName } from '../internal/format';
+import { SelectItemPopupComponent } from 'components/internal/SelectItemPopupComponent.component';
+import { SelectUserListUI } from 'components/internal/SelectUserList';
 import styles from './Sprints.component.module.scss';
-import { SelectUserPopupComponent } from 'components/internal/SelectUserPopup.component';
 
 const TEAM_MEMBERS_POPUP_Z_INDEX = 1002;
 
@@ -294,7 +295,8 @@ export class SprintsComponent extends Component<Props, State> {
         };
     };
 
-    private onTeamMemberClick = (userId: number) => {
+    private handleUserSelectClick = (closeContainer: () => void ) => (userId: number) => {
+        closeContainer();
         if (!this.state.selectedSprintId) {
             return;
         }
@@ -464,15 +466,21 @@ export class SprintsComponent extends Component<Props, State> {
                                                 </div>
                                             </TooltipUI>
                                         </div>
-                                        <SelectUserPopupComponent
+                                        <SelectItemPopupComponent
                                             relativeLayout={
                                                 this.props.deps.relativeLayout
                                             }
                                             zOffset={TEAM_MEMBERS_POPUP_Z_INDEX}
-                                            users={users}
-                                            onUserSelect={
-                                                this.onTeamMemberClick
-                                            }
+                                            itemList={(closeContainer) => {
+                                                return (
+                                                    <SelectUserListUI
+                                                        users={users}
+                                                        onSelectUser={this.handleUserSelectClick(
+                                                            closeContainer,
+                                                        )}
+                                                    />
+                                                );
+                                            }}
                                             referenceElement={({
                                                 toggleContainer,
                                                 showFollower,

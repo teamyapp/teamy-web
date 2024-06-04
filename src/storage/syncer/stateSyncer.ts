@@ -75,6 +75,7 @@ import {
     applySprintMutation,
     applyStoryMutation,
     applySprintParticipantMutation,
+    applyTeamMemberGroupInvitationRelationMutation,
     applySprintTaskMutation,
     applyTaskActivityMutation,
     applyTaskAwaitingForRelationMutation,
@@ -663,6 +664,38 @@ export class StateSyncer {
 
         this.localStore.updateState(appState);
         return remoteTaskId;
+    }
+
+    public async addInvitationToTeamMemberGroup(
+        invitationId: number,
+        groupId: number,
+    ) {
+        await this.invitationClient.addInvitationToTeamMemberGroup(
+            `${invitationId}`,
+            `${groupId}`,
+        );
+    }
+
+    public async removeInvitationFromTeamMemberGroup(
+        invitationId: number,
+        groupId: number,
+    ) {
+        await this.invitationClient.removeInvitationFromTeamMemberGroup(
+            `${invitationId}`,
+            `${groupId}`,
+        );
+
+        let appState = this.localStore.getState();
+        appState.teamMemberGroupInvitationRelations =
+            appState.teamMemberGroupInvitationRelations.filter(
+                (relation) =>
+                    !(
+                        relation.groupId === groupId &&
+                        relation.invitationId === invitationId
+                    ),
+            );
+
+        this.localStore.updateState(appState);
     }
 
     public async createTaskLink(taskId: number, input: CreateTaskLinkInput) {
@@ -2116,6 +2149,13 @@ export class StateSyncer {
                 }
                 case 'SprintParticipant': {
                     appState = applySprintParticipantMutation(
+                        appState,
+                        mutation,
+                    );
+                    break;
+                }
+                case 'TeamMemberGroupInvitationRelation': {
+                    appState = applyTeamMemberGroupInvitationRelationMutation(
                         appState,
                         mutation,
                     );

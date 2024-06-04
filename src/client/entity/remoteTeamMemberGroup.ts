@@ -1,3 +1,4 @@
+import { RemoteInvitation } from './remoteInvitation';
 import { RemoteTeam } from './remoteTeam';
 import { RemoteUser } from './remoteUser';
 
@@ -9,4 +10,5 @@ export interface RemoteTeamMemberGroup {
     members: RemoteUser[];
     createdAt: string;
     updatedAt?: string;
+    invitations: RemoteInvitation[];
 }

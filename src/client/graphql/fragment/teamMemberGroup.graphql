@@ -1,5 +1,6 @@
 #import "./team.graphql"
 #import "./user.graphql"
+#import "./invitation.graphql"
 
 fragment TeamMemberGroupFragment on TeamMemberGroup {
     id
@@ -11,6 +12,9 @@ fragment TeamMemberGroupFragment on TeamMemberGroup {
         ...UserFragment
     }
     orderIndex
+    invitations {
+        ...InvitationFragment
+    }
     createdAt
     updatedAt
 }

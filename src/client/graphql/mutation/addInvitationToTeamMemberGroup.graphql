@@ -1,0 +1,13 @@
+#import "../fragment/invitation.graphql" 
+
+mutation addInvitationToTeamMemberGroup(
+    $invitationId: ID!
+    $teamMemberGroupId: ID!
+) {
+    addInvitationToTeamMemberGroup(
+        invitationId: $invitationId
+        teamMemberGroupId: $teamMemberGroupId
+    ) {
+        ...InvitationFragment
+    }
+}

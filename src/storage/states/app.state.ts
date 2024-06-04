@@ -46,6 +46,7 @@ import { TeamMemberGroupState } from './teamMemberGroup.state';
 import { TeamMemberGroupUserRelation } from './teamMemberGroupUserRelation.state';
 import { AttachmentListState } from './attachmentList.state';
 import { AttachmentState } from './attachment.state';
+import { TeamMemberGroupInvitationRelation } from './teamMemberGroupInvitationRelation.state';
 
 interface PersistedState {
     teamSelectedSprint: Record<number, number>;
@@ -84,6 +85,7 @@ export class AppState {
     public attachmentLists: Record<number, AttachmentListState> = {};
     public attachments: Record<number, AttachmentState> = {};
     public teamMemberGroupUserRelations: TeamMemberGroupUserRelation[] = [];
+    public teamMemberGroupInvitationRelations: TeamMemberGroupInvitationRelation[] = [];
     public projectPhaseRelations: ProjectPhaseRelationState[] = [];
     public projectStoryRelations: ProjectStoryRelationState[] = [];
     public phaseStoryRelations: PhaseStoryRelationState[] = [];

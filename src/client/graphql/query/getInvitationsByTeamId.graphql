@@ -1,0 +1,9 @@
+#import "../fragment/invitation.graphql"
+
+query getInvitations($teamId: ID!) {
+    teams(filter: { teamId: $teamId }) {
+        invitations {
+            ...InvitationFragment
+        }
+    }
+}

@@ -1,32 +1,23 @@
 import { RelativeLayout, RelativeLayoutContainerUI } from '@lib/layout';
 import { FC } from 'react';
-import styles from './SelectUserPopup.component.module.scss';
+import styles from './SelectItemPopupComponent.component.module.scss';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
-import { SelectUserListUI } from './SelectUserList';
-import { User } from '@core/entity/user';
 
 interface Props {
     relativeLayout: RelativeLayout;
-    users: User[];
-    onUserSelect: (userId: number) => void;
+    itemList: (closeContainer: () => void) => JSX.Element;
     zOffset?: number;
     referenceElement: ({ toggleContainer, showFollower }: { toggleContainer: () => void; showFollower: boolean }) => JSX.Element;
 }
 
-export const SelectUserPopupComponent: FC<Props> = (props) => {
-    const handleUserSelectClick =
-        (closeContainer: () => void) => (userId: number) => {
-            closeContainer();
-
-            props.onUserSelect(userId);
-        };
+export const SelectItemPopupComponent: FC<Props> = (props) => {
     return (
         <RelativeLayoutContainerUI
             relativeLayout={props.relativeLayout}
             zOffset={props.zOffset}
             renderFollower={({ closeContainer }) => {
                 return (
-                    <div className={styles.Users}>
+                    <div className={styles.Items}>
                         <div className={styles.TopBar}>
                             <div
                                 className={styles.CloseButton}
@@ -35,13 +26,8 @@ export const SelectUserPopupComponent: FC<Props> = (props) => {
                                 <MaterialIconUI>close</MaterialIconUI>
                             </div>
                         </div>
-                        <div className={styles.UserList}>
-                            <SelectUserListUI
-                                users={props.users}
-                                onSelectUser={handleUserSelectClick(
-                                    closeContainer,
-                                )}
-                            />
+                        <div className={styles.ItemList}>
+                            {props.itemList(closeContainer)}
                         </div>
                     </div>
                 );
