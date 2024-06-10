@@ -18,11 +18,12 @@ steps:
   - name: build frontend
     image: node:21.6.0-alpine3.19
     environment:
+      GOOS: 123
       GITHUB_PACKAGES_ACCESS_TOKEN:
         from_secret: GITHUB_PACKAGES_ACCESS_TOKEN
     commands:
       - apk add --no-cache git g++ make python3
-      - sh ./scripts/prepare.sh ${GITHUB_PACKAGES_ACCESS_TOKEN}
+      - sh ./scripts/prepare.sh "$GITHUB_PACKAGES_ACCESS_TOKEN"
       - yarn install --frozen-lockfile
       - yarn build:staging
   - name: run unit tests
@@ -85,7 +86,7 @@ steps:
         from_secret: GITHUB_PACKAGES_ACCESS_TOKEN
     commands:
       - apk add --no-cache git g++ make python3
-      - sh ./scripts/prepare.sh ${GITHUB_PACKAGES_ACCESS_TOKEN}
+      - sh ./scripts/prepare.sh "$GITHUB_PACKAGES_ACCESS_TOKEN"
       - yarn install --frozen-lockfile
       - yarn build:testing
   - name: build & publish Docker image
@@ -164,7 +165,7 @@ steps:
         from_secret: GITHUB_PACKAGES_ACCESS_TOKEN
     commands:
       - apk add --no-cache git g++ make python3
-      - sh ./scripts/prepare.sh ${GITHUB_PACKAGES_ACCESS_TOKEN}
+      - sh ./scripts/prepare.sh "$GITHUB_PACKAGES_ACCESS_TOKEN"
       - yarn install --frozen-lockfile
       - yarn build:staging
   - name: build & publish Docker image
@@ -245,7 +246,7 @@ steps:
         from_secret: GITHUB_PACKAGES_ACCESS_TOKEN
     commands:
       - apk add --no-cache git g++ make python3
-      - sh ./scripts/prepare.sh ${GITHUB_PACKAGES_ACCESS_TOKEN}
+      - sh ./scripts/prepare.sh "$GITHUB_PACKAGES_ACCESS_TOKEN"
       - yarn install --frozen-lockfile
       - yarn build
   - name: build & publish Docker image
