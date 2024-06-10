@@ -58,8 +58,7 @@ import {
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-import { GetTaskRequest } from '../proto/task';
-import { TaskClient } from '../proto/task.client';
+import { TaskClient } from '@teamyapp/proto';
 
 import styles from './App.component.module.scss';
 import { BacklogComponent } from './internal/Backlog.component';
@@ -448,7 +447,7 @@ export class AppComponent extends Component<Props, State> {
         });
         let client = new TaskClient(transport);
         let response = await client.getTask({
-            taskId: 73,
+            taskId: 26,
         }, {
             meta: {
                 'Authorization': getAccessToken()
