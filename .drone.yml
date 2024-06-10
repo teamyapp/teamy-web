@@ -22,7 +22,7 @@ steps:
         from_secret: GITHUB_PACKAGES_ACCESS_TOKEN
     commands:
       - apk add --no-cache git g++ make python3
-      - sh ./scripts/prepare.sh
+      - sh ./scripts/prepare.sh ${GITHUB_PACKAGES_ACCESS_TOKEN}
       - yarn install --frozen-lockfile
       - yarn build:staging
   - name: run unit tests
