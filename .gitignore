@@ -32,5 +32,4 @@ yarn-error.log*
 src/libs/identity/config.ts
 
 tsconfig.json
-
 secrets.txt
