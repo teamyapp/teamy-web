@@ -28,6 +28,22 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
+          env:
+            - name: NPM_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: teamy
+                  key: npm-auth-token
+          volumeMounts:
+            - name: project-root
+              mountPath: /usr/share/nginx/html
+          lifecycle:
+            postStart:
+              exec:
+                 command: ["/bin/sh", "-c", "echo '//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}' > /usr/share/nginx/html/.npmrc && echo '@teamyapp:registry=https://npm.pkg.github.com/' >> /usr/share/nginx/html/.npmrc"]
+      volumes:
+        - name: project-root
+          emptyDir: {}
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
