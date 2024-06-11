@@ -446,14 +446,18 @@ export class AppComponent extends Component<Props, State> {
         //     baseUrl: 'http://localhost:9001',
         // });
         // let client = new TaskClient(transport);
-        // let response = await client.getTask({
-        //     taskId: 26,
-        // }, {
-        //     meta: {
-        //         'Authorization': getAccessToken()
-        //     }
-        // }).response;
-        // console.log('===== gRPC response', response);
+        // try {
+        //     let response = await client.getTask({
+        //         taskId: 26,
+        //     }, {
+        //         meta: {
+        //             'Authorization': getAccessToken()
+        //         }
+        //     }).response;
+        //     console.log('===== gRPC response', response);
+        // } catch (e) {
+        //     console.error('===== gRPC error', e);
+        // }
 
         this.monitorStateChanges();
         this.router.initBrowserUri();
