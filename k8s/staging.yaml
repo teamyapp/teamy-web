@@ -41,9 +41,6 @@ spec:
             postStart:
               exec:
                  command: ["/bin/sh", "-c", "echo '//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}' > /usr/share/nginx/html/.npmrc && echo '@teamyapp:registry=https://npm.pkg.github.com/' >> /usr/share/nginx/html/.npmrc"]
-      volumes:
-        - name: project-root
-          emptyDir: {}
 ---
 apiVersion: autoscaling.k8s.io/v1
 kind: VerticalPodAutoscaler
