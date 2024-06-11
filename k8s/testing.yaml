@@ -34,9 +34,6 @@ spec:
                 secretKeyRef:
                   name: teamy
                   key: npm-auth-token
-          volumeMounts:
-            - name: project-root
-              mountPath: /usr/share/nginx/html
           lifecycle:
             postStart:
               exec:
