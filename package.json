@@ -22,7 +22,7 @@
         "@protobuf-ts/grpcweb-transport": "^2.9.4",
         "@protobuf-ts/runtime-rpc": "^2.9.4",
         "@teamyapp/ext": "^0.0.23",
-        "@teamyapp/proto": "^0.0.3",
+        "@teamyapp/proto": "../protocol/pb/pbweb/dist",
         "classnames": "^2.3.1",
         "graphql": "^16.8.1",
         "js-cookie": "^3.0.1",

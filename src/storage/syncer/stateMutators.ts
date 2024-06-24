@@ -78,6 +78,14 @@ import { AttachmentListState } from '../states/attachmentList.state';
 import { RemoteAttachment } from '@core/client/entity/remoteAttachment';
 import { AttachmentState } from '../states/attachment.state';
 import { TeamMemberGroupInvitationRelation } from '../states/teamMemberGroupInvitationRelation.state';
+import { Attachment, AttachmentList, Task, TaskLink } from '@teamyapp/proto';
+import {
+    attachmentListOwnerTypes,
+    attachmentTypes,
+    fromProtoDurationPtr,
+    fromProtoTimePtr,
+    taskStatuses,
+} from './proto';
 
 export function applyTaskMutation(
     currState: AppState,
@@ -529,8 +537,12 @@ export function applyTeamMemberGroupInvitationRelationMutation(
 ): AppState {
     switch (mutation.mutationType) {
         case 'Create': {
-            const relation = TeamMemberGroupInvitationRelation.fromMutationPayload(mutation.payload);
-            currState.teamMemberGroupInvitationRelations = currState.teamMemberGroupInvitationRelations.concat(relation);
+            const relation =
+                TeamMemberGroupInvitationRelation.fromMutationPayload(
+                    mutation.payload,
+                );
+            currState.teamMemberGroupInvitationRelations =
+                currState.teamMemberGroupInvitationRelations.concat(relation);
             break;
         }
     }
@@ -1497,6 +1509,99 @@ export function mergeAppInstallation(
     return currAppState;
 }
 
+export function setTask(currAppState: AppState, task: Task, taskLinks?: TaskLink[], attachmentList?: AttachmentList, attachments?: Attachment[]): AppState {
+    const localNewTask: TaskState = {
+        id: task.id,
+        goal: task.goal,
+        context: task.context,
+        creatorUserId: task.creatorUserId,
+        ownerUserId: task.ownerUserId,
+        owningTeamId: task.owningTeamId,
+        status: taskStatuses[task.status],
+        isScheduled: task.isScheduled,
+        isPlanned: task.isPlanned,
+        commentsThreadId:
+            task.commentsThreadId,
+        createdAt: fromProtoTimePtr(task.createdAt)!,
+        updatedAt: fromProtoTimePtr(task.updatedAt),
+        deliveredAt:
+            fromProtoTimePtr(task.deliveredAt),
+        effort: fromProtoDurationPtr(task.effort),
+        dueAt: fromProtoTimePtr(task.dueAt),
+    };
+
+    taskLinks?.forEach((taskLink) => {
+        currAppState = setTaskLink(currAppState, taskLink);
+    });
+
+    attachments?.forEach((attachment) => {
+        currAppState = setAttachment(currAppState, attachment);
+    });
+
+    if (attachmentList) {
+        currAppState = setAttachmentList(currAppState, attachmentList);
+    }
+
+    currAppState.tasks[task.id] = localNewTask;
+    return currAppState;
+}
+
+export function setAttachment(
+    currAppState: AppState,
+    attachment: Attachment,
+): AppState {
+    const localNewAttachment: AttachmentState = {
+        id: attachment.id,
+        type: attachmentTypes[attachment.type],
+        url: attachment.url,
+        size: attachment.size,
+        createdAt: fromProtoTimePtr(attachment.createdAt)!,
+        attachmentListId: attachment.attachmentListId,
+    };
+
+    currAppState.attachments[attachment.id] = localNewAttachment;
+    return currAppState;
+}
+
+
+export function setTaskLink(
+    currAppState: AppState,
+    taskLink: TaskLink,
+): AppState {
+    const localNewTaskLink: TaskLinkState = {
+        id: taskLink.id,
+        taskId: taskLink.taskId,
+        title: taskLink.title,
+        previewTitle: taskLink.previewTitle,
+        url: taskLink.url,
+        iconUrl: taskLink.iconUrl,
+        iconHoverUrl: taskLink.iconHoverUrl,
+    };
+
+    currAppState.taskLinks[taskLink.id] = localNewTaskLink;
+    return currAppState;
+}
+
+export function setAttachmentList(
+    currAppState: AppState,
+    attachmentList: AttachmentList,
+): AppState {
+    const localNewAttachmentList: AttachmentListState = {
+        ownerType: attachmentListOwnerTypes[attachmentList.ownerType],
+        ownerId: attachmentList.ownerId,
+        listLabel: attachmentList.listLabel,
+        listId: attachmentList.listId,
+        createdAt: fromProtoTimePtr(attachmentList.createdAt)!,
+        updatedAt: fromProtoTimePtr(attachmentList.updatedAt),
+    };
+
+
+    currAppState.attachmentLists[attachmentList.listId] = localNewAttachmentList;
+    return currAppState;
+}
+
+
+
 export function mergeTask(
     currAppState: AppState,
     remoteTask: RemoteTask,
@@ -1632,7 +1737,10 @@ export function mergeTeamMemberGroup(
     const localNewTeamMemberGroup: TeamMemberGroupState = {
         id: remoteTeamMemberGroupId,
         name: remoteTeamMemberGroup.name || localOldTeamMemberGroup.name,
-        orderIndex: remoteTeamMemberGroup.orderIndex === undefined ? localOldTeamMemberGroup.orderIndex : remoteTeamMemberGroup.orderIndex,
+        orderIndex:
+            remoteTeamMemberGroup.orderIndex === undefined
+                ? localOldTeamMemberGroup.orderIndex
+                : remoteTeamMemberGroup.orderIndex,
         teamId:
             toInt(remoteTeamMemberGroup.team?.id) ||
             localOldTeamMemberGroup.teamId,
@@ -1683,8 +1791,10 @@ export function mergeTeamMemberGroupInvitationRelation(
         currAppState.teamMemberGroupInvitationRelations.some(
             (teamMemberGroupInvitationRelation) => {
                 return (
-                    teamMemberGroupInvitationRelation.groupId === teamMemberGroupId &&
-                    teamMemberGroupInvitationRelation.invitationId === invitationId
+                    teamMemberGroupInvitationRelation.groupId ===
+                        teamMemberGroupId &&
+                    teamMemberGroupInvitationRelation.invitationId ===
+                        invitationId
                 );
             },
         );

@@ -400,7 +400,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     }
 
     public async open(taskId: number) {
-        const syncPromise = this.stateSyncer.pullTask(taskId);
+        const syncPromise = this.stateSyncer.pullTaskV2(taskId);
         this.setState(
             {
                 task: undefined,

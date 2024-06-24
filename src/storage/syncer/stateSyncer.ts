@@ -118,12 +118,24 @@ import {
     applyAttachmentListMutation,
     applyAttachmentMutation,
     applyTeamMemberGroupMutation,
+    setTask,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
 import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
 import { AttachmentClient } from '@core/client/attachment.client';
-import { Attachment } from '@core/entity/attachment';
+import {
+    TaskServiceClient,
+    TaskLinkServiceClient,
+    AttachmentServiceClient,
+    Attachment,
+    Task,
+    TaskLink,
+    AttachmentList,
+} from '@teamyapp/proto';
+import { Retry } from '@lib/retry/retry';
+import { grpcWithErrorHandling } from '@lib/error/errors';
+import { protoAttachmentOwnerTypes } from './proto';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -153,9 +165,76 @@ export class StateSyncer {
         private appVersionClient: AppVersionClient,
         private invitationClient: InvitationClient,
         private sprintClient: SprintClient,
+        private taskServiceClient: TaskServiceClient,
+        private taskLinkServiceClient: TaskLinkServiceClient,
+        private attachmentServiceClient: AttachmentServiceClient,
+        private getRetry: () => Retry,
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
+    }
+
+    public async pullTaskV2(taskId: number): Promise<void> {
+        let task: Task | undefined;
+        let taskLinks: TaskLink[] = [];
+        let attachmentList: AttachmentList | undefined;
+        let attachments: Attachment[] = [];
+
+        await Promise.all([
+            this.getRetry().withRetry(
+                {},
+                grpcWithErrorHandling(async () => {
+                    const res = await this.taskServiceClient.getTask({
+                        taskId,
+                    }).response;
+                    task = res.task;
+                }),
+            ),
+            this.getRetry().withRetry(
+                {},
+                grpcWithErrorHandling(async () => {
+                    const res = await this.taskLinkServiceClient.listTaskLinks({
+                        taskId,
+                    }).response;
+                    taskLinks = res.taskLinks;
+                }),
+            ),
+            this.getRetry().withRetry(
+                {},
+                grpcWithErrorHandling(async () => {
+                    const res =
+                        await this.attachmentServiceClient.getAttachmentList({
+                            ownerId: taskId,
+                            ownerType: protoAttachmentOwnerTypes['TASK'],
+                            listLabel: 'context',
+                        }).response;
+                    attachmentList = res.attachmentList;
+                }),
+            ),
+        ]);
+
+        await this.getRetry().withRetry(
+            {},
+            grpcWithErrorHandling(async () => {
+                if (attachmentList) {
+                    const res =
+                        await this.attachmentServiceClient.listAttachments({
+                            attachmentListId: attachmentList?.listId,
+                        }).response;
+                    attachments = res.attachments;
+                }
+            }),
+        );
+
+        let appState = this.localStore.getState();
+        appState = setTask(
+            appState,
+            task!,
+            taskLinks,
+            attachmentList,
+            attachments,
+        );
+        this.localStore.updateState(appState);
     }
 
     public async notifyInitialStateReceived() {
