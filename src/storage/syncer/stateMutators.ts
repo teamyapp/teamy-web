@@ -1509,7 +1509,7 @@ export function mergeAppInstallation(
     return currAppState;
 }
 
-export function setTask(currAppState: AppState, task: Task, taskLinks?: TaskLink[], attachmentList?: AttachmentList, attachments?: Attachment[]): AppState {
+export function setTask(currAppState: AppState, task: Task): AppState {
     const localNewTask: TaskState = {
         id: task.id,
         goal: task.goal,
@@ -1563,7 +1563,6 @@ export function setAttachment(
     return currAppState;
 }
 
-
 export function setTaskLink(
     currAppState: AppState,
     taskLink: TaskLink,
@@ -1577,7 +1576,6 @@ export function setTaskLink(
         iconUrl: taskLink.iconUrl,
         iconHoverUrl: taskLink.iconHoverUrl,
     };
-
     currAppState.taskLinks[taskLink.id] = localNewTaskLink;
     return currAppState;
 }
@@ -1595,12 +1593,9 @@ export function setAttachmentList(
         updatedAt: fromProtoTimePtr(attachmentList.updatedAt),
     };
 
-
     currAppState.attachmentLists[attachmentList.listId] = localNewAttachmentList;
     return currAppState;
 }
-
-
 
 export function mergeTask(
     currAppState: AppState,

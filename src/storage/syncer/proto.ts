@@ -12,7 +12,6 @@ import { Duration } from '@lib/time/duration';
 import { AttachmentType } from 'entity/attachment';
 import { AttachmentListOwnerType } from 'entity/attachmentList';
 
-
 export const protoAttachmentOwnerTypes: Record<AttachmentListOwnerType, PBAttachmentListOwnerType> = {
     TASK: PBAttachmentListOwnerType.TASK,
 };
@@ -65,15 +64,16 @@ export function fromProtoTimePtr(ts?: Timestamp): Date | undefined {
         return undefined;
     }
 
-    return new Date(ts.seconds * 1000 + ts.nanos / 1000000);
+    return new Date(ts.seconds * 1_000 + ts.nanos / 1_000_000);
 }
 
 export function toProtoTimePtr(tm?: Date | null): Timestamp | null {
     if (!tm) {
         return null;
     }
-    const seconds = Math.floor(tm.getTime() / 1000);
-    const nanos = (tm.getTime() % 1000) * 1000000;
+    
+    const seconds = Math.floor(tm.getTime() / 1_000);
+    const nanos = (tm.getTime() % 1_000) * 1_000_000;
     return { seconds, nanos };
 }
 
@@ -85,7 +85,7 @@ export function fromProtoDurationPtr(
     }
 
     return new Duration(
-        protoDuration.seconds * 1000 + protoDuration.nanos / 1000000,
+        protoDuration.seconds * 1_000 + protoDuration.nanos / 1_000_000,
     );
 }
 
@@ -97,7 +97,7 @@ export function toProtoDurationPtr(
     }
 
     const seconds = Math.floor(duration.totalMilliSeconds / 1000);
-    const nanos = (duration.totalMilliSeconds % 1000) * 1000000;
+    const nanos = (duration.totalMilliSeconds % 1_000) * 1_000_000;
     return { seconds, nanos };
 }
 
@@ -107,6 +107,7 @@ export function toProtoPriorityPtr(
     if (!priority) {
         return null;
     }
+    
     return protoPriorities[priority];
 }
 
@@ -116,5 +117,6 @@ export function fromProtoPriorityPtr(
     if (!protoPriority) {
         return undefined;
     }
+    
     return priorities[protoPriority];
 }

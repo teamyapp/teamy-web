@@ -21,6 +21,5 @@ export const clientGRPCWithRequestId =
                 [REQUEST_ID_HEADER]: uuidv4(),
             }
         }
-
         return next(method, input, optionsWithIdentity);
 };

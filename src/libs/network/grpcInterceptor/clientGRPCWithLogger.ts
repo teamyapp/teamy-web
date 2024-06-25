@@ -37,7 +37,6 @@ export const clientGRPCWithLogger =
                 [StageProp]: 'begin',
                 [HostProp]: method.service.typeName,
                 [MethodProp]: method.name,
-                [PathProp]: '',
                 [HeadersProp]: JSON.stringify(options?.meta),
                 [BodyProp]: input ? JSON.stringify(input) : '',
                 [FileNameProp]: BUILD_INJECT_FILE_PATH,
@@ -56,7 +55,6 @@ export const clientGRPCWithLogger =
                         [StageProp]: 'end',
                         [HostProp]: method.service.typeName,
                         [MethodProp]: method.name,
-                        [PathProp]: '',
                         [HeadersProp]: JSON.stringify(response.headers),
                         [BodyProp]: response.response,
                         [FileNameProp]: BUILD_INJECT_FILE_PATH,
@@ -64,7 +62,6 @@ export const clientGRPCWithLogger =
                     },
                     context,
                 );
-
                 return response;
             })
             .catch((error: RpcError) => {
@@ -75,9 +72,7 @@ export const clientGRPCWithLogger =
                     },
                     {},
                 );
-
                 return error;
             });
-
         return nextFn;
 };

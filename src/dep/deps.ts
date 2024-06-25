@@ -110,7 +110,7 @@ export function initDeps(config: Config): Deps {
         },
     );
 
-    const getRetry = () =>new MaxCountRetry(
+    const makeRetry = () =>new MaxCountRetry(
         new BuiltInRuntime(),
         logger,
         shortBackOff,

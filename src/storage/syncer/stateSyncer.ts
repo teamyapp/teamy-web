@@ -168,7 +168,7 @@ export class StateSyncer {
         private taskServiceClient: TaskServiceClient,
         private taskLinkServiceClient: TaskLinkServiceClient,
         private attachmentServiceClient: AttachmentServiceClient,
-        private getRetry: () => Retry,
+        private makeRetry: () => Retry,
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
