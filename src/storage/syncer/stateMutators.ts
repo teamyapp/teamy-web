@@ -1550,7 +1550,6 @@ export function setAttachment(
     currAppState.attachments[attachment.id] = localNewAttachment;
     return currAppState;
 }
-
 export function setTaskLink(
     currAppState: AppState,
     taskLink: TaskLink,
