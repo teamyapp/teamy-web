@@ -118,8 +118,8 @@ export function initDeps(config: Config): Deps {
         config.maxAPIRetryTimes,
     );
 
-    let transport = new GrpcWebFetchTransport({
-        baseUrl: 'http://localhost:9001',
+    const transport = new GrpcWebFetchTransport({
+        baseUrl: config.servicesWebRPCAPIEndpoint,
         interceptors: [
             {
                 interceptUnary: clientGRPCWithIdentity,
@@ -140,7 +140,7 @@ export function initDeps(config: Config): Deps {
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,
         clientHTTPWithLogger(logger),
-        clientHTTPWithRetry(getRetry),
+        clientHTTPWithRetry(makeRetry),
     ]);
 
     const identityConfig: IdentityConfig = {
@@ -203,7 +203,7 @@ export function initDeps(config: Config): Deps {
         taskGRPCClient,
         taskLinkGRPCClient,
         attachmentGRPCClient,
-        getRetry,
+        makeRetry,
     );
     const router = new Router();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);

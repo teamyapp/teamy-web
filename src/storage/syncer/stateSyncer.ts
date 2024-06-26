@@ -119,6 +119,9 @@ import {
     applyAttachmentMutation,
     applyTeamMemberGroupMutation,
     setTask,
+    setAttachmentList,
+    setAttachment,
+    setTaskLink,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
@@ -181,7 +184,7 @@ export class StateSyncer {
         let attachments: Attachment[] = [];
 
         await Promise.all([
-            this.getRetry().withRetry(
+            this.makeRetry().withRetry(
                 {},
                 grpcWithErrorHandling(async () => {
                     const res = await this.taskServiceClient.getTask({
@@ -190,7 +193,7 @@ export class StateSyncer {
                     task = res.task;
                 }),
             ),
-            this.getRetry().withRetry(
+            this.makeRetry().withRetry(
                 {},
                 grpcWithErrorHandling(async () => {
                     const res = await this.taskLinkServiceClient.listTaskLinks({
@@ -199,7 +202,7 @@ export class StateSyncer {
                     taskLinks = res.taskLinks;
                 }),
             ),
-            this.getRetry().withRetry(
+            this.makeRetry().withRetry(
                 {},
                 grpcWithErrorHandling(async () => {
                     const res =
@@ -213,7 +216,7 @@ export class StateSyncer {
             ),
         ]);
 
-        await this.getRetry().withRetry(
+        await this.makeRetry().withRetry(
             {},
             grpcWithErrorHandling(async () => {
                 if (attachmentList) {
@@ -227,13 +230,22 @@ export class StateSyncer {
         );
 
         let appState = this.localStore.getState();
-        appState = setTask(
-            appState,
-            task!,
-            taskLinks,
-            attachmentList,
-            attachments,
-        );
+        if (task) {
+            appState = setTask(appState, task);
+        }
+        
+        if (attachmentList) {
+            appState = setAttachmentList(appState, attachmentList);
+        }
+
+        taskLinks.forEach((taskLink) => {
+            appState = setTaskLink(appState, taskLink);
+        });
+
+        attachments.forEach((attachment) => {
+            appState = setAttachment(appState, attachment);
+        });
+
         this.localStore.updateState(appState);
     }
 

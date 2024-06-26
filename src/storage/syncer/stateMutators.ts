@@ -1530,18 +1530,6 @@ export function setTask(currAppState: AppState, task: Task): AppState {
         dueAt: fromProtoTimePtr(task.dueAt),
     };
 
-    taskLinks?.forEach((taskLink) => {
-        currAppState = setTaskLink(currAppState, taskLink);
-    });
-
-    attachments?.forEach((attachment) => {
-        currAppState = setAttachment(currAppState, attachment);
-    });
-
-    if (attachmentList) {
-        currAppState = setAttachmentList(currAppState, attachmentList);
-    }
-
     currAppState.tasks[task.id] = localNewTask;
     return currAppState;
 }

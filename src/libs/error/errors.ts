@@ -9,6 +9,23 @@ export type ErrorCode =
     | 'ServiceUnavailable'
     | 'NotImplemented';
 
+const rpcErrorMap: Record<string, ErrorCode> = {
+    CANCELLED: 'RequestTimeOut',
+    UNKNOWN: 'Unhandled',
+    INVALID_ARGUMENT: 'BadRequest',
+    DEADLINE_EXCEEDED: 'RequestTimeOut',
+    NOT_FOUND: 'NotFound',
+    PERMISSION_DENIED: 'Unauthenticated',
+    RESOURCE_EXHAUSTED: 'ServiceUnavailable',
+    FAILED_PRECONDITION: 'BadRequest',
+    ABORTED: 'BadRequest',
+    OUT_OF_RANGE: 'BadRequest',
+    UNIMPLEMENTED: 'NotImplemented',
+    INTERNAL: 'Unhandled',
+    UNAVAILABLE: 'ServiceUnavailable',
+    DATA_LOSS: 'Unhandled',
+};
+
 export interface InternalError {
     errorCode: ErrorCode;
     message?: string;
@@ -38,38 +55,8 @@ export const grpcWithErrorHandling = (
             await execute();
         } catch (err) {
             const rpcError = err as RpcError;
-            switch (rpcError.code) {
-                case 'CANCELLED':
-                    return { errorCode: 'RequestTimeOut' };
-                case 'UNKNOWN':
-                    return { errorCode: 'Unhandled' };
-                case 'INVALID_ARGUMENT':
-                    return { errorCode: 'BadRequest' };
-                case 'DEADLINE_EXCEEDED':
-                    return { errorCode: 'RequestTimeOut' };
-                case 'NOT_FOUND':
-                    return { errorCode: 'NotFound' };
-                case 'PERMISSION_DENIED':
-                    return { errorCode: 'Unauthenticated' };
-                case 'RESOURCE_EXHAUSTED':
-                    return { errorCode: 'ServiceUnavailable' };
-                case 'FAILED_PRECONDITION':
-                    return { errorCode: 'BadRequest' };
-                case 'ABORTED':
-                    return { errorCode: 'BadRequest' };
-                case 'OUT_OF_RANGE':
-                    return { errorCode: 'BadRequest' };
-                case 'UNIMPLEMENTED':
-                    return { errorCode: 'NotImplemented' };
-                case 'INTERNAL':
-                    return { errorCode: 'Unhandled' };
-                case 'UNAVAILABLE':
-                    return { errorCode: 'ServiceUnavailable' };
-                case 'DATA_LOSS':
-                    return { errorCode: 'Unhandled' };
-                default:
-                    return { errorCode: 'Unhandled' };
-            }
+            const errorCode = rpcErrorMap[rpcError.code] || 'Unhandled';
+            return { errorCode, message: rpcError.message };
         }
     };
 };
