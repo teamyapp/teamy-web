@@ -1579,7 +1579,6 @@ export function setAttachmentList(
         createdAt: fromProtoTimePtr(attachmentList.createdAt)!,
         updatedAt: fromProtoTimePtr(attachmentList.updatedAt),
     };
-
     currAppState.attachmentLists[attachmentList.listId] = localNewAttachmentList;
     return currAppState;
 }
