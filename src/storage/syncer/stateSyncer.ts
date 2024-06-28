@@ -177,7 +177,7 @@ export class StateSyncer {
         this.connection = new WebSocketConnection(url, getAccessToken);
     }
 
-    public async pullTaskV2(taskId: number): Promise<void> {
+    public async pullTask(taskId: number): Promise<void> {
         let task: Task | undefined;
         let taskLinks: TaskLink[] = [];
         let attachmentList: AttachmentList | undefined;
@@ -233,7 +233,7 @@ export class StateSyncer {
         if (task) {
             appState = setTask(appState, task);
         }
-        
+
         if (attachmentList) {
             appState = setAttachmentList(appState, attachmentList);
         }
@@ -509,15 +509,6 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         appState = removeOrMergeTeamMembers(appState, teamId, members);
         this.localStore.updateState(appState);
-    }
-
-    public async pullTask(taskId: number): Promise<void> {
-        const remoteTask = await this.taskClient.getTask(`${taskId}`);
-        if (remoteTask) {
-            let appState = this.localStore.getState();
-            appState = mergeTask(appState, remoteTask);
-            this.localStore.updateState(appState);
-        }
     }
 
     public async pullUser(userId: number): Promise<void> {
