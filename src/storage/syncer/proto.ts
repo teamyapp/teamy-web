@@ -11,6 +11,7 @@ import { Priority } from 'entity/priority';
 import { Duration } from '@lib/time/duration';
 import { AttachmentType } from 'entity/attachment';
 import { AttachmentListOwnerType } from 'entity/attachmentList';
+
 export const protoAttachmentOwnerTypes: Record<AttachmentListOwnerType, PBAttachmentListOwnerType> = {
     TASK: PBAttachmentListOwnerType.TASK,
 };
