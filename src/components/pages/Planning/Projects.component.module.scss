@@ -1,7 +1,7 @@
 @import 'shared.scss';
 
 .Projects {
-    padding: 30px;
+    padding: 40px;
 
     .Label {
         font-size: 16px;
@@ -64,19 +64,18 @@
             display: flex;
             flex-wrap: wrap;
             row-gap: 20px;
-            column-gap: 10px;
+            column-gap: 40px;
 
             .Project {
                 .Card {
                     width: 260px;
-                    background-color: #e5e5e5;
                     height: 150px;
-                    border: 1px solid #e5e5e5;
                     border-radius: 4px;
-                    margin-bottom: 10px;
+                    background-image: url('/assets/textures/grid.png');
+                    transition: box-shadow 100ms ease-in-out;
 
                     &:hover {
-                        opacity: 0.75;
+                        opacity: 0.9;
                         cursor: pointer;
                     }
 
@@ -88,60 +87,76 @@
                         width: 100%;
 
                         --icon-size: 48px;
-                        --icon-color: #6a8db8;
+                        --icon-color: rgba(255, 255, 255, 0.5);
                     }
                 }
 
                 .NameRow {
+                    width: 100%;
+                    margin-top: 20px;
+                    height: 30px;
                     display: flex;
-                    justify-content: space-between;
                     align-items: center;
+                    justify-content: center;
 
-                    .Actions {
-                        display: flex;
-
-                        .Action {
-                            align-items: center;
-                            border-radius: 4px;
-                            display: flex;
-                            height: 30px;
-                            justify-content: center;
-                            --icon-size: 24px;
-                            width: 30px;
-
-                            &:hover {
-                                background-color: rgba(0, 0, 0, 0.07);
-                                cursor: pointer;
-                            }
-
-                            &.Cancel {
-                                --icon-color: #ff0000;
-                            }
-
-                            &.Save {
-                                --icon-color: #009304;
-                            }
-
-                            &.Edit{
-                                --icon-color: #ff9800;
-                            }
-
-                            &.Delete {
-                                --icon-color: #ff0000;
-                            }
-                        }
+                    .TextField {
+                        width: 100%;
+                        height: 30px;
+                        text-align: center;
+                        font-weight: bold;
                     }
 
                     .Name {
+                        width: 100%;
                         font-size: 16px;
                         font-weight: bold;
+                        text-align: center;
+
+                        &:hover {
+                            cursor: pointer;
+                            text-decoration: underline;
+                        }
                     }
                 }
 
                 .Description {
+                    text-align: center;
                     font-size: 14px;
-                    margin-top: 5px;
-                    color: #333333;
+                    margin-top: 10px;
+                    color: #7c7c7c;
+                }
+
+                .Actions {
+                    margin-top: 20px;
+                    display: flex;
+                    justify-content: center;
+                    column-gap: 4px;
+
+                    .Action {
+                        padding: 2px;
+
+                        &:hover {
+                            cursor: pointer;
+                            background-color: rgba(0, 0, 0, 0.05);
+                            border-radius: 4px;
+                        }
+
+                        &.Save {
+                            --icon-color: #009304;
+                        }
+
+                        &.Cancel {
+                            --icon-color: #ff0000;
+                        }
+
+                        &.Edit {
+                            --icon-color: #ff9800;
+                        }
+
+                        &.Delete {
+                            --icon-color: #ff0000;
+                        }
+                    }
                 }
             }
         }

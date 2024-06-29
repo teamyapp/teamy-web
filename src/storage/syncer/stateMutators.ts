@@ -768,6 +768,8 @@ export function mergeProject(
                 ? localOldProject.updatedAt
                 : toDate(remoteProject.updatedAt),
         teamId: toInt(remoteProject.team.id) || localOldProject.teamId,
+        iconUrl: remoteProject.iconUrl === undefined ? localOldProject.iconUrl : remoteProject.iconUrl,
+        color: remoteProject.color === undefined ? localOldProject.color : remoteProject.color,
     };
 
     remoteProject.phases?.forEach((phase) => {
