@@ -137,7 +137,7 @@ import {
     AttachmentList,
 } from '@teamyapp/proto';
 import { Retry } from '@lib/retry/retry';
-import { grpcWithErrorHandling } from '@lib/error/errors';
+import { rpcWithError } from '@lib/error/errors';
 import { protoAttachmentOwnerTypes } from './proto';
 
 export class StateSyncer {
@@ -186,7 +186,7 @@ export class StateSyncer {
         await Promise.all([
             this.makeRetry().withRetry(
                 {},
-                grpcWithErrorHandling(async () => {
+                rpcWithError(async () => {
                     const res = await this.taskServiceClient.getTask({
                         taskId,
                     }).response;
@@ -195,7 +195,7 @@ export class StateSyncer {
             ),
             this.makeRetry().withRetry(
                 {},
-                grpcWithErrorHandling(async () => {
+                rpcWithError(async () => {
                     const res = await this.taskLinkServiceClient.listTaskLinks({
                         taskId,
                     }).response;
@@ -204,7 +204,7 @@ export class StateSyncer {
             ),
             this.makeRetry().withRetry(
                 {},
-                grpcWithErrorHandling(async () => {
+                rpcWithError(async () => {
                     const res =
                         await this.attachmentServiceClient.getAttachmentList({
                             ownerId: taskId,
@@ -218,7 +218,7 @@ export class StateSyncer {
 
         await this.makeRetry().withRetry(
             {},
-            grpcWithErrorHandling(async () => {
+            rpcWithError(async () => {
                 if (attachmentList) {
                     const res =
                         await this.attachmentServiceClient.listAttachments({
