@@ -118,12 +118,27 @@ import {
     applyAttachmentListMutation,
     applyAttachmentMutation,
     applyTeamMemberGroupMutation,
+    setTask,
+    setAttachmentList,
+    setAttachment,
+    setTaskLink,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
 import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
 import { AttachmentClient } from '@core/client/attachment.client';
-import { Attachment } from '@core/entity/attachment';
+import {
+    TaskServiceClient,
+    TaskLinkServiceClient,
+    AttachmentServiceClient,
+    Attachment,
+    Task,
+    TaskLink,
+    AttachmentList,
+} from '@teamyapp/proto';
+import { Retry } from '@lib/retry/retry';
+import { rpcWithError } from '@lib/error/errors';
+import { protoAttachmentOwnerTypes } from './proto';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -153,9 +168,83 @@ export class StateSyncer {
         private appVersionClient: AppVersionClient,
         private invitationClient: InvitationClient,
         private sprintClient: SprintClient,
+        private taskServiceClient: TaskServiceClient,
+        private taskLinkServiceClient: TaskLinkServiceClient,
+        private attachmentServiceClient: AttachmentServiceClient,
+        private makeRetry: () => Retry,
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
+    }
+
+    public async pullTask(taskId: number): Promise<void> {
+        let task: Task | undefined;
+        let taskLinks: TaskLink[] = [];
+        let attachmentList: AttachmentList | undefined;
+        let attachments: Attachment[] = [];
+
+        await Promise.all([
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res = await this.taskServiceClient.getTask({
+                        taskId,
+                    }).response;
+                    task = res.task;
+                }),
+            ),
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res = await this.taskLinkServiceClient.listTaskLinks({
+                        taskId,
+                    }).response;
+                    taskLinks = res.taskLinks;
+                }),
+            ),
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res =
+                        await this.attachmentServiceClient.getAttachmentList({
+                            ownerId: taskId,
+                            ownerType: protoAttachmentOwnerTypes['TASK'],
+                            listLabel: 'context',
+                        }).response;
+                    attachmentList = res.attachmentList;
+                }),
+            ),
+        ]);
+
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                if (attachmentList) {
+                    const res =
+                        await this.attachmentServiceClient.listAttachments({
+                            attachmentListId: attachmentList?.listId,
+                        }).response;
+                    attachments = res.attachments;
+                }
+            }),
+        );
+
+        let appState = this.localStore.getState();
+        if (task) {
+            appState = setTask(appState, task);
+        }
+
+        if (attachmentList) {
+            appState = setAttachmentList(appState, attachmentList);
+        }
+
+        taskLinks.forEach((taskLink) => {
+            appState = setTaskLink(appState, taskLink);
+        });
+        attachments.forEach((attachment) => {
+            appState = setAttachment(appState, attachment);
+        });
+        this.localStore.updateState(appState);
     }
 
     public async notifyInitialStateReceived() {
@@ -418,15 +507,6 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         appState = removeOrMergeTeamMembers(appState, teamId, members);
         this.localStore.updateState(appState);
-    }
-
-    public async pullTask(taskId: number): Promise<void> {
-        const remoteTask = await this.taskClient.getTask(`${taskId}`);
-        if (remoteTask) {
-            let appState = this.localStore.getState();
-            appState = mergeTask(appState, remoteTask);
-            this.localStore.updateState(appState);
-        }
     }
 
     public async pullUser(userId: number): Promise<void> {
