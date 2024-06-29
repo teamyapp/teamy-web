@@ -744,7 +744,6 @@ export class StateSyncer {
                     isScheduled: isScheduled,
                     isPlanned: Boolean(taskInput.isPlanned),
                 }).response;
-
                 task = res.task;
             }),
         );
@@ -833,7 +832,6 @@ export class StateSyncer {
                     effort: toProtoDurationPtr(input.effort),
                     priority: toProtoPriorityPtr(input.priority),
                 }).response;
-
                 task = res.task;
             }),
         );
@@ -864,7 +862,6 @@ export class StateSyncer {
         );
         delete appState.tasks[taskId];
         this.localStore.updateState(appState);
-
         await this.makeRetry().withRetry(
             {},
             rpcWithError(async () => {
