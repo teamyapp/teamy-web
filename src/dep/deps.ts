@@ -117,7 +117,6 @@ export function initDeps(config: Config): Deps {
         longBackOff,
         config.maxAPIRetryTimes,
     );
-
     const transport = new GrpcWebFetchTransport({
         baseUrl: config.servicesWebRPCAPIEndpoint,
         interceptors: [

@@ -241,11 +241,9 @@ export class StateSyncer {
         taskLinks.forEach((taskLink) => {
             appState = setTaskLink(appState, taskLink);
         });
-
         attachments.forEach((attachment) => {
             appState = setAttachment(appState, attachment);
         });
-
         this.localStore.updateState(appState);
     }
 

@@ -47,7 +47,7 @@ export const getErrCategory = (err: InternalError): ErrorCategory => {
     return ERROR_CATEGORIES[err.errorCode] || 'Outage';
 };
 
-export const grpcWithErrorHandling = (
+export const rpcWithError = (
     execute: () => Promise<void>,
 ): (() => Promise<InternalError | undefined>) => {
     return async () => {

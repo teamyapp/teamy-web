@@ -1529,7 +1529,6 @@ export function setTask(currAppState: AppState, task: Task): AppState {
         effort: fromProtoDurationPtr(task.effort),
         dueAt: fromProtoTimePtr(task.dueAt),
     };
-
     currAppState.tasks[task.id] = localNewTask;
     return currAppState;
 }
@@ -1550,6 +1549,7 @@ export function setAttachment(
     currAppState.attachments[attachment.id] = localNewAttachment;
     return currAppState;
 }
+
 export function setTaskLink(
     currAppState: AppState,
     taskLink: TaskLink,
