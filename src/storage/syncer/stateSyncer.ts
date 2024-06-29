@@ -138,7 +138,12 @@ import {
 } from '@teamyapp/proto';
 import { Retry } from '@lib/retry/retry';
 import { rpcWithError } from '@lib/error/errors';
-import { protoAttachmentOwnerTypes } from './proto';
+import {
+    protoAttachmentOwnerTypes,
+    toProtoDurationPtr,
+    toProtoPriorityPtr,
+    toProtoTimePtr,
+} from './proto';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -718,7 +723,7 @@ export class StateSyncer {
 
     public async createTask(
         teamId: number,
-        task: CreateTaskInput,
+        taskInput: CreateTaskInput,
         sprintId?: number,
     ): Promise<number> {
         let isScheduled = false;
@@ -726,18 +731,30 @@ export class StateSyncer {
             isScheduled = true;
         }
 
-        const remoteTask = await this.taskClient.createTask(`${teamId}`, {
-            goal: task.goal,
-            context: task.context,
-            ownerUserId: task.ownerUserId ? `${task.ownerUserId}` : undefined,
-            dueAt: task.dueAt,
-            isScheduled: isScheduled,
-            isPlanned: Boolean(task.isPlanned),
-        });
+        let task: Task | undefined;
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                const res = await this.taskServiceClient.createTask({
+                    teamId,
+                    goal: taskInput.goal,
+                    context: taskInput.context,
+                    ownerUserId: taskInput.ownerUserId,
+                    dueAt: toProtoTimePtr(taskInput.dueAt),
+                    isScheduled: isScheduled,
+                    isPlanned: Boolean(taskInput.isPlanned),
+                }).response;
 
-        const remoteTaskId = parseInt(remoteTask.id);
+                task = res.task;
+            }),
+        );
+        if (!task) {
+            return 0;
+        }
+
+        const remoteTaskId = task.id;
         let appState = this.localStore.getState();
-        appState = mergeTask(appState, remoteTask);
+        appState = setTask(appState, task);
         if (sprintId) {
             appState = await this._addTaskToSprint(sprintId, remoteTaskId);
         }
@@ -802,18 +819,30 @@ export class StateSyncer {
     }
 
     public async updateTask(taskId: number, input: UpdateTaskInput) {
-        const remoteTask = await this.taskClient.updateTask(`${taskId}`, {
-            goal: input.goal,
-            context: input.context,
-            ownerUserId: input.ownerUserId ? `${input.ownerUserId}` : undefined,
-            owningTeamId: `${input.owningTeamId}`,
-            effort: input.effort?.toString(),
-            priority: input.priority,
-            dueAt: input.dueAt,
-        });
+        let task: Task | undefined;
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                const res = await this.taskServiceClient.updateTask({
+                    taskId: taskId,
+                    goal: input.goal,
+                    context: input.context,
+                    ownerUserId: input.ownerUserId,
+                    dueAt: toProtoTimePtr(input.dueAt),
+                    owningTeamId: input.owningTeamId,
+                    effort: toProtoDurationPtr(input.effort),
+                    priority: toProtoPriorityPtr(input.priority),
+                }).response;
+
+                task = res.task;
+            }),
+        );
+        if (!task) {
+            return 0;
+        }
 
         let appState = this.localStore.getState();
-        appState = mergeTask(appState, remoteTask);
+        appState = setTask(appState, task);
         this.localStore.updateState(appState);
     }
 
@@ -835,7 +864,15 @@ export class StateSyncer {
         );
         delete appState.tasks[taskId];
         this.localStore.updateState(appState);
-        await this.taskClient.deleteTask(`${taskId}`);
+
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.taskServiceClient.deleteTask({
+                    taskId,
+                }).response;
+            }),
+        );
     }
 
     public async moveTaskToUpcoming(taskId: number) {
