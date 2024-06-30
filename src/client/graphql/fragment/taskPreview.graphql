@@ -1,4 +1,3 @@
-#import "./team.graphql"
 #import "./attachmentList.graphql"
 
 fragment TaskPreviewFragment on Task {
