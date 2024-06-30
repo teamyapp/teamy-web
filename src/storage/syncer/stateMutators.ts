@@ -78,7 +78,7 @@ import { AttachmentListState } from '../states/attachmentList.state';
 import { RemoteAttachment } from '@core/client/entity/remoteAttachment';
 import { AttachmentState } from '../states/attachment.state';
 import { TeamMemberGroupInvitationRelation } from '../states/teamMemberGroupInvitationRelation.state';
-import { Attachment, AttachmentList, Task, TaskLink } from '@teamyapp/proto';
+import { Attachment, AttachmentList, Message, Task, TaskLink } from '@teamyapp/proto';
 import {
     attachmentListOwnerTypes,
     attachmentTypes,
@@ -1676,6 +1676,23 @@ export function mergeTask(
     }
 
     currAppState.tasks[remoteTaskId] = localNewTask;
+    return currAppState;
+}
+
+
+export function setMessage(
+    currAppState: AppState,
+    message: Message,
+): AppState {
+    const localNewMessage: MessageState = {
+        id: message.id,
+        body: message.body,
+        authorUserId: message.authorUserId,
+        threadId: message.threadId,
+        createdAt: fromProtoTimePtr(message.createdAt)!,
+        updatedAt: fromProtoTimePtr(message.updatedAt),
+    };
+    currAppState.messages[message.id] = localNewMessage;
     return currAppState;
 }
 
