@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import moment from 'moment';
-import { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react';
+import React, { MouseEvent, ReactElement, useEffect, useRef, useState } from 'react';
 
 import { ItemsSelector } from '@lib/collections/itemSelector';
 import { getPlatform } from '@lib/runtime/os';
@@ -12,6 +12,7 @@ import { Phase } from '@core/entity/phase';
 import { Project } from '@core/entity/project';
 import { Team } from '@core/entity/team';
 import { phasePath, projectStoryPath } from '@core/routing/routes';
+import { ContextMenuComponent } from '../../internal/ContextMenu.component';
 
 import {
     CreatePhaseModalComponent,
@@ -37,6 +38,11 @@ interface Props {
     projectId: number;
 }
 
+interface EditingPhaseInput {
+    phaseId: number;
+    updatePhaseInput: UpdatePhaseInput;
+}
+
 const startAt = moment().subtract(1, 'months').toDate();
 const endAt = moment().add(1, 'months').toDate();
 
@@ -50,10 +56,7 @@ export function ProjectComponent(props: Props) {
         useRef<CreatePhaseModalComponentHandle>(null);
     const updatePhaseModalComponentRef =
         useRef<UpdatePhaseModalComponentHandle>(null);
-    const [editingPhaseInput, setEditingPhaseInput] = useState<{
-        phaseId: number;
-        updatePhaseInput: UpdatePhaseInput;
-    }>();
+    const [editingPhaseInput, setEditingPhaseInput] = useState<EditingPhaseInput>();
     const timelineRef = useRef<TimelineComponentHandle>(null);
 
     const [selectedStoryIds, setSelectedStoryIds] = useState<Set<string>>(
@@ -73,12 +76,12 @@ export function ProjectComponent(props: Props) {
     const phaseSelectorRef = useRef<ItemsSelector>(
         new ItemsSelector(ctrlKeyPressedRef.current, selectedPhaseIds),
     );
-    const handleUpdatePhase = (updatePhaseInput: UpdatePhaseInput) => {
+    const handleUpdatePhase = async (updatePhaseInput: UpdatePhaseInput) => {
         if (!editingPhaseInput) {
             return;
         }
 
-        props.deps.stateSyncer.updatePhase(
+       await props.deps.stateSyncer.updatePhase(
             editingPhaseInput.phaseId,
             updatePhaseInput,
         );
@@ -225,43 +228,42 @@ export function ProjectComponent(props: Props) {
         storySelectorRef.current.selectItem(storyIdNumber.toString());
     };
 
-    const onPhaseSelectHandler =
+    const onToggleSelect =
         (phaseIdNumber: number, phaseIndexNumber: number) =>
-        async (event: MouseEvent) => {
-            event.stopPropagation();
-            const isSelected = await phaseSelectorRef.current.selectItem(
-                phaseIdNumber.toString(),
-            );
+            async () => {
+                const isSelected = await phaseSelectorRef.current.selectItem(
+                    phaseIdNumber.toString(),
+                );
 
-            if (isSelected) {
-                timelineRef.current?.showAndSelectItem(phaseIndexNumber, 0);
-            } else {
-                timelineRef.current?.deselectItem(phaseIndexNumber, 0);
-            }
-        };
+                if (isSelected) {
+                    timelineRef.current?.showAndSelectItem(phaseIndexNumber, 0);
+                } else {
+                    timelineRef.current?.deselectItem(phaseIndexNumber, 0);
+                }
+            };
 
-    const onPhaseDeleteHandler = (phaseId: number) => (event: MouseEvent) => {
-        event.stopPropagation();
+    const onDeletePhaseHandler = (phaseId: number) => () => {
         props.deps.stateSyncer.deletePhase(phaseId);
     };
 
-    const onPhaseUpdateHandler = (phase: Phase) => (event: MouseEvent) => {
-        event.stopPropagation();
-        setEditingPhaseInput({
-            phaseId: phase.id,
-            updatePhaseInput: {
-                name: phase.name,
-                expectedStartAt: phase.expectedStartAt,
-                expectedEndAt: phase.expectedEndAt,
-                status: phase.status,
-            },
-        });
-        updatePhaseModalComponentRef.current?.open();
+    const onEditPhaseHandler = (phase: Phase) => () => {
+        const editingPhaseInput: EditingPhaseInput =
+            {
+                phaseId: phase.id,
+                updatePhaseInput: {
+                    name: phase.name,
+                    expectedStartAt: phase.expectedStartAt,
+                    expectedEndAt: phase.expectedEndAt,
+                    status: phase.status,
+                },
+            };
+
+        setEditingPhaseInput(editingPhaseInput);
+        updatePhaseModalComponentRef.current?.open(editingPhaseInput.updatePhaseInput);
     };
 
-    const onPhaseDetailClickHandler =
-        (phaseId: number) => (event: MouseEvent) => {
-            event.stopPropagation();
+    const onViewPhaseDetailHandler =
+        (phaseId: number) => () => {
             if (!currentTeam || !project) {
                 return;
             }
@@ -280,58 +282,18 @@ export function ProjectComponent(props: Props) {
                         phase.id.toString(),
                     ),
                 })}`}
-                onClick={onPhaseSelectHandler(phase.id, index)}
             >
-                <div className={styles.LeftSection}>
-                    <div className={styles.Name}>{phase.name}</div>
-                    <div className={styles.Status}>
-                        {phase.deliveredStories} of {phase.totalStories} stories
-                        delivered
-                    </div>
-                    <div className={styles.Duration}>
-                        {moment(phase.expectedStartAt).format('MMM DD')}
-                        &nbsp;-&nbsp;
-                        {moment(phase.expectedEndAt).format('MMM DD')}
-                    </div>
-                </div>
-                <div className={styles.RightSection}>
-                    <TooltipUI
-                        message='Delete phase'
-                        relativeLayout={props.deps.relativeLayout}
-                    >
-                        <div
-                            className={styles.DeleteIcon}
-                            onClick={onPhaseDeleteHandler(phase.id)}
-                        >
-                            <MaterialIconUI>close</MaterialIconUI>
-                        </div>
-                    </TooltipUI>
-                    <TooltipUI
-                        message='Edit phase'
-                        relativeLayout={props.deps.relativeLayout}
-                    >
-                        <div
-                            className={styles.EditIcon}
-                            onClick={onPhaseUpdateHandler(phase)}
-                        >
-                            <MaterialIconUI>edit</MaterialIconUI>
-                        </div>
-                    </TooltipUI>
-                    <TooltipUI
-                        message='Detail'
-                        relativeLayout={props.deps.relativeLayout}
-                    >
-                        <div
-                            className={styles.DetailsIcon}
-                            onClick={onPhaseDetailClickHandler(phase.id)}
-                        >
-                            <MaterialIconUI>settings</MaterialIconUI>
-                        </div>
-                    </TooltipUI>
-                </div>
+                <PhaseRow
+                    phase={phase}
+                    onToggleSelect={onToggleSelect(phase.id, index)}
+                    onEditPhase={onEditPhaseHandler(phase)}
+                    onDeletePhase={onDeletePhaseHandler(phase.id)}
+                    onViewPhaseDetail={onViewPhaseDetailHandler(phase.id)}
+                />
             </div>
         );
     };
+
     const onStoryDetailClickHandler = (storyId: number) => {
         if (!currentTeam || !project) {
             return;
@@ -404,7 +366,7 @@ export function ProjectComponent(props: Props) {
                     <div className={styles.TopBar}>
                         <div className={styles.Title}>Phases</div>
                         <TooltipUI
-                            message='Create phase'
+                            message="Create phase"
                             relativeLayout={props.deps.relativeLayout}
                         >
                             <div
@@ -423,7 +385,7 @@ export function ProjectComponent(props: Props) {
                     <div className={styles.CreatePhaseContainer}>
                         <ButtonUI
                             onClick={onAddPhaseClick}
-                            label='Create phase'
+                            label="Create phase"
                         />
                     </div>
                 ) : (
@@ -467,7 +429,7 @@ export function ProjectComponent(props: Props) {
                             {selectedStoryIds.size > 0 &&
                                 selectedPhaseIds.size > 0 && (
                                     <TooltipUI
-                                        message='Move to phase'
+                                        message="Move to phase"
                                         relativeLayout={
                                             props.deps.relativeLayout
                                         }
@@ -484,7 +446,7 @@ export function ProjectComponent(props: Props) {
                                 )}
                             {selectedStoryIds.size > 0 && (
                                 <TooltipUI
-                                    message='Delete'
+                                    message="Delete"
                                     relativeLayout={props.deps.relativeLayout}
                                 >
                                     <div
@@ -496,7 +458,7 @@ export function ProjectComponent(props: Props) {
                                 </TooltipUI>
                             )}
                             <TooltipUI
-                                message='Create story'
+                                message="Create story"
                                 relativeLayout={props.deps.relativeLayout}
                             >
                                 <div
@@ -542,13 +504,68 @@ export function ProjectComponent(props: Props) {
                 deps={props.deps}
                 projectId={props.projectId}
             />
-            {editingPhaseInput && (
-                <UpdatePhaseModalComponent
-                    ref={updatePhaseModalComponentRef}
-                    updatePhaseInput={editingPhaseInput.updatePhaseInput}
-                    updatePhase={handleUpdatePhase}
-                />
-            )}
+            <UpdatePhaseModalComponent
+                ref={updatePhaseModalComponentRef}
+                updatePhase={handleUpdatePhase}
+            />
         </div>
+    );
+}
+
+interface PhaseRowProps {
+    phase: Phase;
+    onToggleSelect: () => void;
+    onEditPhase: () => void;
+    onDeletePhase: () => void;
+    onViewPhaseDetail: () => void;
+}
+
+function PhaseRow(props: PhaseRowProps) {
+    const phaseContextMenuRef = useRef<ContextMenuComponent>(null);
+    const onContextMenu = (event: MouseEvent) => {
+        event.preventDefault();
+        phaseContextMenuRef.current?.open(event.clientY, event.clientX);
+    }
+    return (
+        <>
+            <div className={styles.PhaseRow}
+                onContextMenu={onContextMenu}>
+                <div className={styles.Name}>{props.phase.name}</div>
+                <div className={styles.Status}>
+                    {props.phase.deliveredStories} of {props.phase.totalStories} stories
+                    delivered
+                </div>
+                <div className={styles.Duration}>
+                    {moment(props.phase.expectedStartAt).format('MMM DD')}
+                    &nbsp;-&nbsp;
+                    {moment(props.phase.expectedEndAt).format('MMM DD')}
+                </div>
+            </div>
+            <ContextMenuComponent
+                ref={phaseContextMenuRef}
+                menuItems={[
+                    {
+                        key: 'toggleSelect',
+                        action: props.onToggleSelect,
+                        label: 'Toggle Select',
+                    },
+                    {
+                        key: 'viewDetail',
+                        action: props.onViewPhaseDetail,
+                        label: 'View Detail',
+                    },
+                    {
+                        key: 'edit',
+                        action: props.onEditPhase,
+                        label: 'Edit',
+                    },
+                    {
+                        key: 'delete',
+                        action: props.onDeletePhase,
+                        label: 'Delete',
+                    },
+                ]}
+            />
+        </>
     );
 }
