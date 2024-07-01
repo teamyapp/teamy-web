@@ -26,7 +26,7 @@
             height: 100%;
             overflow: hidden;
             padding: 0 10px;
-            width: 220px;
+            width: 260px;
             z-index: 1;
 
             > .TopBar {
@@ -63,59 +63,26 @@
 
                 .Phase {
                     border-radius: 4px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                    padding: 10px;
-                    user-select: none;
 
                     &:hover {
                         background-color: rgba(0, 0, 0, 0.05);
                         cursor: pointer;
-
-                        .RightSection {
-                            .DeleteIcon,
-                            .DetailsIcon,
-                            .EditIcon {
-                                display: block;
-                                --icon-color: #bdbdbd;
-
-                                &:hover {
-                                    --icon-color: #757575;
-                                }
-                            }
-                        }
                     }
 
                     &.Selected {
                         background-color: #ff5722;
 
-                        .LeftSection {
+                        .PhaseRow {
                             .Name,
                             .Status,
                             .Duration {
                                 color: white;
                             }
                         }
-
-                        .RightSection {
-                            .DeleteIcon,
-                            .DetailsIcon,
-                            .EditIcon {
-                                display: block;
-                                --icon-color: rgba(255, 255, 255, 0.4);
-
-                                &:hover {
-                                    --icon-color: rgba(255, 255, 255, 1);
-                                }
-                            }
-                        }
                     }
 
-                    .LeftSection {
-                        display: flex;
-                        flex-direction: column;
-                        row-gap: 6px;
+                    .PhaseRow {
+                        padding: 10px;
 
                         .Name {
                             font-size: 14px;
@@ -125,24 +92,17 @@
                         }
 
                         .Status {
+                            margin-top: 6px;
                             color: #757575;
                             font-size: 12px;
                             font-weight: bold;
                         }
 
                         .Duration {
+                            margin-top: 6px;
                             color: #9e9e9e;
                             font-size: 12px;
                             font-weight: bold;
-                        }
-                    }
-
-                    .RightSection {
-                        .DeleteIcon,
-                        .DetailsIcon,
-                        .EditIcon {
-                            display: none;
-                            --icon-size: 20px;
                         }
                     }
                 }

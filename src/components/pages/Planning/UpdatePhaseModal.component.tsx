@@ -22,8 +22,7 @@ import styles from './UpdatePhaseModal.component.module.scss';
 import { UpdatePhaseInput } from '@core/entity/input';
 
 interface Props {
-    updatePhaseInput: UpdatePhaseInput;
-    updatePhase: (updatePhaseInput: UpdatePhaseInput) => void;
+    updatePhase: (updatePhaseInput: UpdatePhaseInput) => Promise<void>;
 }
 
 interface UpdatePhaseUIInput {
@@ -34,7 +33,7 @@ interface UpdatePhaseUIInput {
 }
 
 export interface UpdatePhaseModalComponentHandle {
-    open: () => void;
+    open: (updatePhaseInput: UpdatePhaseInput) => void;
 }
 
 export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
@@ -46,18 +45,15 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
             useState<UpdatePhaseUIInput>();
         const phaseNameInputRef: RefObject<TextFieldUI> = useRef(null);
 
-        useEffect(() => {
+        const open = (updatePhaseInput: UpdatePhaseInput) => {
             setUpdatePhaseInput({
-                name: props.updatePhaseInput.name,
+                name: updatePhaseInput.name,
                 expectedStartAt: formatDate(
-                    props.updatePhaseInput.expectedStartAt,
+                    updatePhaseInput.expectedStartAt,
                 ),
-                expectedEndAt: formatDate(props.updatePhaseInput.expectedEndAt),
-                status: props.updatePhaseInput.status,
+                expectedEndAt: formatDate(updatePhaseInput.expectedEndAt),
+                status: updatePhaseInput.status,
             });
-        }, [props.updatePhaseInput])
-
-        const open = () => {
             modalRef.current?.open();
             setTimeout(() => {
                 phaseNameInputRef.current?.focus();
@@ -79,7 +75,7 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
                 updatePhaseInput.expectedEndAt &&
                 updatePhaseInput.status
             ) {
-                await props.updatePhase({
+               await props.updatePhase({
                     name: updatePhaseInput.name,
                     expectedStartAt: new Date(updatePhaseInput.expectedStartAt),
                     expectedEndAt: new Date(updatePhaseInput.expectedEndAt),
