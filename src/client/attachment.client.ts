@@ -55,9 +55,7 @@ export class AttachmentClient {
             );
     }
 
-    deleteAttachmentListFile(
-        attachmentId: string,
-    ): Promise<void> {
+    deleteAttachmentListFile(attachmentId: string): Promise<void> {
         return this.graphQLClient
             .mutate({
                 mutation: `

@@ -153,9 +153,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                 style={{
                                     backgroundColor: project.color,
                                 }}
-                                onClick={onViewProjectClickHandler(
-                                    project.id,
-                                )}
+                                onClick={onViewProjectClickHandler(project.id)}
                             >
                                 {project.iconUrl ? (
                                     <div className={styles.IconUrl}>
@@ -183,10 +181,12 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                         )}
                                     ></input>
                                 ) : (
-                                    <div className={styles.Name}
-                                         onClick={onViewProjectClickHandler(
-                                             project.id,
-                                         )}>
+                                    <div
+                                        className={styles.Name}
+                                        onClick={onViewProjectClickHandler(
+                                            project.id,
+                                        )}
+                                    >
                                         {project.name}
                                     </div>
                                 )}
@@ -196,10 +196,11 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                 {project.totalPhases} phases delivered
                             </div>
                             <div className={styles.Actions}>
-                                {editingUpdateProject?.projectId === project.id ? (
+                                {editingUpdateProject?.projectId ===
+                                project.id ? (
                                     <>
                                         <TooltipUI
-                                            message="Save"
+                                            message='Save'
                                             relativeLayout={
                                                 props.deps.relativeLayout
                                             }
@@ -214,16 +215,14 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                             </div>
                                         </TooltipUI>
                                         <TooltipUI
-                                            message="Cancel"
+                                            message='Cancel'
                                             relativeLayout={
                                                 props.deps.relativeLayout
                                             }
                                         >
                                             <div
                                                 className={`${styles.Cancel} ${styles.Action}`}
-                                                onClick={
-                                                    onCancelProjectClick
-                                                }
+                                                onClick={onCancelProjectClick}
                                             >
                                                 <MaterialIconUI>
                                                     undo
@@ -234,7 +233,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                 ) : (
                                     <>
                                         <TooltipUI
-                                            message="Edit"
+                                            message='Edit'
                                             relativeLayout={
                                                 props.deps.relativeLayout
                                             }
@@ -251,7 +250,7 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                             </div>
                                         </TooltipUI>
                                         <TooltipUI
-                                            message="Delete"
+                                            message='Delete'
                                             relativeLayout={
                                                 props.deps.relativeLayout
                                             }

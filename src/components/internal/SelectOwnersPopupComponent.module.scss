@@ -53,7 +53,7 @@ $actionIconSize: 28px;
         justify-content: center;
         --icon-size: #{$actionIconSize};
         user-select: none;
-    
+
         &.Active,
         &:hover {
             background-color: rgba(0, 0, 0, 0.07);

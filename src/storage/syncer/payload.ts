@@ -1,5 +1,8 @@
 export class DeleteTaskAwaitForRelationPayload {
-    constructor(public awaitingTaskId: number, public awaitForTaskId: number) {}
+    constructor(
+        public awaitingTaskId: number,
+        public awaitForTaskId: number,
+    ) {}
 
     public static fromMutationPayload(
         json: any,
@@ -12,7 +15,10 @@ export class DeleteTaskAwaitForRelationPayload {
 }
 
 export class DeleteSprintParticipantPayload {
-    constructor(public sprintId: number, public userId: number) {}
+    constructor(
+        public sprintId: number,
+        public userId: number,
+    ) {}
 
     public static fromMutationPayload(
         json: any,

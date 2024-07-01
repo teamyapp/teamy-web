@@ -1,7 +1,7 @@
 #import '../fragment/phase.graphql'
 
 mutation addStoriesToPhase($phaseId: ID!, $storyIds: [ID!]!) {
-    addStoriesToPhase(phaseId: $phaseId, storyIds: $storyIds, ) {
+    addStoriesToPhase(phaseId: $phaseId, storyIds: $storyIds) {
         ...PhaseFragment
     }
 }

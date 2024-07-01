@@ -76,7 +76,9 @@ export const AttachmentList: React.FC<Props> = (props) => {
                                     >
                                         <div
                                             className={`${styles.Action} ${styles.Copy}`}
-                                            onClick={handleCopyAttachmentLink(attachment.url)}
+                                            onClick={handleCopyAttachmentLink(
+                                                attachment.url,
+                                            )}
                                         >
                                             <MaterialIconUI>
                                                 content_copy

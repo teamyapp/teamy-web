@@ -14,7 +14,7 @@ export type Feedback =
 
 export interface ErrorFeedback {
     type: 'Error';
-    children?: ReactNode,
+    children?: ReactNode;
 }
 
 export interface TeamMemberGroupOrderUpdatedFeedback {
@@ -34,7 +34,7 @@ export interface TaskUpdatedFeedback {
 }
 
 export interface StoryUpdatedFeedback {
-    type: "StoryUpdated";
+    type: 'StoryUpdated';
     storyId: number;
 }
 

@@ -5,7 +5,10 @@ import { ClientState } from '../states/client.state';
 import { UserNode } from './user.node';
 
 export class ClientNode implements Client {
-    constructor(private localStore: LocalStore, private client: ClientState) {}
+    constructor(
+        private localStore: LocalStore,
+        private client: ClientState,
+    ) {}
 
     public get id(): number {
         return this.client.id;

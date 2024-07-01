@@ -86,7 +86,7 @@ import { StoryUpdatedFeedbackComponent } from './internal/feedbacks/StoryUpdated
 import { ErrorFeedbackComponent } from './internal/feedbacks/ErrorFeedback.component';
 import { getPlatform } from '@lib/runtime/os';
 import { CopiedFeedbackComponent } from './internal/feedbacks/CopiedFeedback.component';
-import { TeamMemberGroupOrderUpdatedFeedback } from './internal/feedbacks/TeamMemberGroupOrderUpdatedFeedback.component'
+import { TeamMemberGroupOrderUpdatedFeedback } from './internal/feedbacks/TeamMemberGroupOrderUpdatedFeedback.component';
 
 const sectionIds = [
     backlogSectionId,

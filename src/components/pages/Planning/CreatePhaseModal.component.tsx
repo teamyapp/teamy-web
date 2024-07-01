@@ -69,7 +69,7 @@ export const CreatePhaseModalComponent: ForwardRefExoticComponent<
                     name: createPhaseInput.name,
                     expectedStartAt: new Date(createPhaseInput.expectedStartAt),
                     expectedEndAt: new Date(createPhaseInput.expectedEndAt),
-                })
+                });
 
                 setCreatePhaseInput({
                     name: '',

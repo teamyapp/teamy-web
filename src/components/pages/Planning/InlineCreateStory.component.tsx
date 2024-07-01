@@ -71,7 +71,10 @@ export const InlineCreateStory: FC<Props> = (props) => {
                 }}
             >
                 <div>
-                    <TooltipUI message={'Save'} relativeLayout={props.deps.relativeLayout}>
+                    <TooltipUI
+                        message={'Save'}
+                        relativeLayout={props.deps.relativeLayout}
+                    >
                         <div
                             className={styles.Action}
                             onClick={onSaveStoryClick}
@@ -83,7 +86,10 @@ export const InlineCreateStory: FC<Props> = (props) => {
                     </TooltipUI>
                 </div>
                 <div>
-                    <TooltipUI message={'Cancel'} relativeLayout={props.deps.relativeLayout}>
+                    <TooltipUI
+                        message={'Cancel'}
+                        relativeLayout={props.deps.relativeLayout}
+                    >
                         <div
                             className={styles.Action}
                             onClick={onCancelEditStoryClick}
@@ -97,7 +103,11 @@ export const InlineCreateStory: FC<Props> = (props) => {
                 <SelectOwnersPopupComponent
                     deps={props.deps}
                     onSelectOwner={onSelectStoryOwner}
-                    selectedOwner={story.ownerId ? props.deps.graphSource.user(story.ownerId) : undefined}
+                    selectedOwner={
+                        story.ownerId
+                            ? props.deps.graphSource.user(story.ownerId)
+                            : undefined
+                    }
                 />
             </div>
         </div>

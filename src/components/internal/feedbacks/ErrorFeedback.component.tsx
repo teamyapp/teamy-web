@@ -25,9 +25,5 @@ export const ErrorFeedbackComponent: FC<Props> = (props: Props) => {
             }
         }
     })().then();
-    return (
-        <FeedbackUI ref={feedbackRef}>
-            {errMessage}
-        </FeedbackUI>
-    );
+    return <FeedbackUI ref={feedbackRef}>{errMessage}</FeedbackUI>;
 };

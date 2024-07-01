@@ -54,7 +54,12 @@ import { PhaseClient } from '@core/client/phase.client';
 import { StoryClient } from '@core/client/story.client';
 import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
 import { AttachmentClient } from '@core/client/attachment.client';
-import { TaskServiceClient, TaskLinkServiceClient, AttachmentServiceClient, MessageServiceClient } from '@teamyapp/proto';
+import {
+    TaskServiceClient,
+    TaskLinkServiceClient,
+    AttachmentServiceClient,
+    MessageServiceClient,
+} from '@teamyapp/proto';
 import { clientGRPCWithIdentity } from '@lib/network/grpcInterceptor/clientGRPCWithIdentiy';
 import { clientGRPCWithRequestId } from '@lib/network/grpcInterceptor/clientGRPCWithRequestId';
 import { clientGRPCWithLogger } from '@lib/network/grpcInterceptor/clientGRPCWithLogger';
@@ -110,13 +115,14 @@ export function initDeps(config: Config): Deps {
         },
     );
 
-    const makeRetry = () =>new MaxCountRetry(
-        new BuiltInRuntime(),
-        logger,
-        shortBackOff,
-        longBackOff,
-        config.maxAPIRetryTimes,
-    );
+    const makeRetry = () =>
+        new MaxCountRetry(
+            new BuiltInRuntime(),
+            logger,
+            shortBackOff,
+            longBackOff,
+            config.maxAPIRetryTimes,
+        );
     const transport = new GrpcWebFetchTransport({
         baseUrl: config.servicesWebRPCAPIEndpoint,
         interceptors: [
@@ -128,7 +134,7 @@ export function initDeps(config: Config): Deps {
             },
             {
                 interceptUnary: clientGRPCWithLogger(logger),
-            }
+            },
         ],
     });
 

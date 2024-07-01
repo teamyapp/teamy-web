@@ -323,7 +323,7 @@ const planningRoutesInterceptor = (
         if (!isNaN(projectId)) {
             await stateSyncer.getProject(projectId);
         }
-   
+
         const phaseId = parseInt(getPhaseId(routeUpdate.params)!);
         if (!isNaN(phaseId)) {
             await stateSyncer.getPhase(phaseId);

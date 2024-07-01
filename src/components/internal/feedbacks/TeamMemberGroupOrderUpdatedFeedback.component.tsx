@@ -1,4 +1,4 @@
-import React, {FC, createRef, useState } from 'react';
+import React, { FC, createRef, useState } from 'react';
 import { FeedbackUI } from '@lib/ui/Feedback';
 
 import { Deps } from '@core/dep/deps';
@@ -8,7 +8,9 @@ export interface Props {
     deps: Deps;
 }
 
-export const TeamMemberGroupOrderUpdatedFeedback: FC<Props> = (props: Props) => {
+export const TeamMemberGroupOrderUpdatedFeedback: FC<Props> = (
+    props: Props,
+) => {
     const feedbackRef = createRef<FeedbackUI>();
     const feedbackChan = props.deps.feedbackPubSub.subscribe();
     const [name, setName] = useState<string>();

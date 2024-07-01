@@ -10,8 +10,8 @@ interface Props {
     priority?: Priority;
     onPriorityChange: (priority: Priority) => void;
     transformReferenceContainer?: (props: {
-        showFollower: boolean,
-        container: ReactNode
+        showFollower: boolean;
+        container: ReactNode;
     }) => ReactNode;
 }
 

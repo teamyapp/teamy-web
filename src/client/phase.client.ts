@@ -1,11 +1,11 @@
-import { GraphQLClient } from "@lib/network/GraphQL.client";
-import { RemoteCreatePhaseInput, RemoteUpdatePhaseInput } from "./entity/input";
-import  createPhase  from "./graphql/mutation/createPhase.graphql";
-import  updatePhase  from "./graphql/mutation/updatePhase.graphql";
-import deletePhase  from "./graphql/mutation/deletePhase.graphql";
-import getPhases from "./graphql/query/getPhases.graphql";
-import { print } from "graphql";
-import { RemotePhase } from "./entity/remotePhase";
+import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { RemoteCreatePhaseInput, RemoteUpdatePhaseInput } from './entity/input';
+import createPhase from './graphql/mutation/createPhase.graphql';
+import updatePhase from './graphql/mutation/updatePhase.graphql';
+import deletePhase from './graphql/mutation/deletePhase.graphql';
+import getPhases from './graphql/query/getPhases.graphql';
+import { print } from 'graphql';
+import { RemotePhase } from './entity/remotePhase';
 
 export class PhaseClient {
     private readonly graphQLClient: GraphQLClient;
@@ -20,14 +20,17 @@ export class PhaseClient {
                 query: print(getPhases),
                 variables: {
                     filter: {
-                        phaseId
-                    }
+                        phaseId,
+                    },
                 },
             })
-            .then(({ phases }) => phases?.length ? phases[0] : undefined);
+            .then(({ phases }) => (phases?.length ? phases[0] : undefined));
     }
 
-    createPhase(projectId: string, input: RemoteCreatePhaseInput): Promise<RemotePhase> {
+    createPhase(
+        projectId: string,
+        input: RemoteCreatePhaseInput,
+    ): Promise<RemotePhase> {
         return this.graphQLClient
             .mutate({
                 mutation: print(createPhase),
@@ -39,7 +42,10 @@ export class PhaseClient {
             .then(({ createPhase }) => createPhase);
     }
 
-    updatePhase(phaseId: string, input: RemoteUpdatePhaseInput): Promise<RemotePhase> {
+    updatePhase(
+        phaseId: string,
+        input: RemoteUpdatePhaseInput,
+    ): Promise<RemotePhase> {
         return this.graphQLClient
             .mutate({
                 mutation: print(updatePhase),

@@ -18,8 +18,8 @@ interface Props {
     options: Option[];
     onSelectOption?: (optionKey: string) => void;
     transformReferenceContainer?: (props: {
-        showFollower: boolean,
-        container: ReactNode
+        showFollower: boolean;
+        container: ReactNode;
     }) => ReactNode;
 }
 
@@ -41,7 +41,7 @@ export class DropDownList extends Component<Props, State> {
         this.state = {
             selectedOption: this.props.selectOptionKey
                 ? options[this.props.selectOptionKey]
-                : undefined
+                : undefined,
         };
     }
 
@@ -53,8 +53,8 @@ export class DropDownList extends Component<Props, State> {
         return (
             <RelativeLayoutContainerUI
                 relativeLayout={this.props.relativeLayout}
-                overSpaceAction="jumpVertically"
-                verticalAlignment="bottom"
+                overSpaceAction='jumpVertically'
+                verticalAlignment='bottom'
                 zOffset={DROP_DOWN_LIST_Z_INDEX}
                 renderFollower={({ closeContainer }) => (
                     <div className={styles.DropDownList}>
@@ -65,7 +65,10 @@ export class DropDownList extends Component<Props, State> {
                                         key={index}
                                         role={'listitem'}
                                         className={styles.Option}
-                                        onClick={this.onOptionClick(option, closeContainer)}
+                                        onClick={this.onOptionClick(
+                                            option,
+                                            closeContainer,
+                                        )}
                                     >
                                         {option.description}
                                     </div>
@@ -74,14 +77,16 @@ export class DropDownList extends Component<Props, State> {
                         </div>
                     </div>
                 )}
-                renderReferenceElement={({ toggleContainer, showFollower}) => {
-                    return this.props.transformReferenceContainer ?
-                        this.props.transformReferenceContainer({
-                            showFollower,
-                                container: this.renderSelectedOptionContainer(toggleContainer),
-                            },
-                        ) :
-                        this.renderSelectedOptionContainer(toggleContainer);
+                renderReferenceElement={({ toggleContainer, showFollower }) => {
+                    return this.props.transformReferenceContainer
+                        ? this.props.transformReferenceContainer({
+                              showFollower,
+                              container:
+                                  this.renderSelectedOptionContainer(
+                                      toggleContainer,
+                                  ),
+                          })
+                        : this.renderSelectedOptionContainer(toggleContainer);
                 }}
             />
         );
@@ -97,10 +102,7 @@ export class DropDownList extends Component<Props, State> {
                     {this.state.selectedOption &&
                         this.state.selectedOption.description}
                 </div>
-                <div
-                    role={'button'}
-                    className={styles.DropDownButton}
-                >
+                <div role={'button'} className={styles.DropDownButton}>
                     <MaterialIconUI>arrow_drop_down</MaterialIconUI>
                 </div>
             </div>

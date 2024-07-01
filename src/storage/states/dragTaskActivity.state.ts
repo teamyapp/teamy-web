@@ -1,5 +1,8 @@
 export class DragTaskActivityState {
-    public constructor(public isDragging: boolean, public clientId?: number) {}
+    public constructor(
+        public isDragging: boolean,
+        public clientId?: number,
+    ) {}
 
     public static fromMutationPayload(json: any): DragTaskActivityState {
         return new DragTaskActivityState(json.IsDragging, json.Client?.ID);

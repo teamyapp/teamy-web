@@ -23,13 +23,13 @@ export class ItemsSelector implements Disposable {
         return this.selectedItemsChangedChan.put(this.selectedItemKeys);
     }
 
-    public async selectItem(key: string):Promise<boolean> {
-        let isSelected = false
+    public async selectItem(key: string): Promise<boolean> {
+        let isSelected = false;
         if (this.multiSelectionEnabled) {
             if (this.selectedItemKeys.has(key)) {
                 this.selectedItemKeys.delete(key);
             } else {
-                isSelected = true
+                isSelected = true;
                 this.selectedItemKeys.add(key);
             }
         } else {
@@ -39,13 +39,13 @@ export class ItemsSelector implements Disposable {
             ) {
                 this.selectedItemKeys = new Set([]);
             } else {
-                isSelected = true
+                isSelected = true;
                 this.selectedItemKeys = new Set([key]);
             }
         }
 
         await this.selectedItemsChangedChan.put(this.selectedItemKeys);
-        return isSelected
+        return isSelected;
     }
 
     public subscribeSelectedItemsChanged(): PopChannel<

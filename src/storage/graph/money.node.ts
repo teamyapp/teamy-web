@@ -1,7 +1,10 @@
 import { Currency, Money } from '@core/entity/money';
 
 export class MoneyNode implements Money {
-    constructor(private _amount: number, private _currency: Currency) {}
+    constructor(
+        private _amount: number,
+        private _currency: Currency,
+    ) {}
 
     public get amount(): number {
         return this._amount;

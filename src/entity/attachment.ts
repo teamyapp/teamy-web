@@ -1,4 +1,4 @@
-import { AttachmentList } from "./attachmentList";
+import { AttachmentList } from './attachmentList';
 export type AttachmentType = 'IMAGE';
 
 export interface Attachment {

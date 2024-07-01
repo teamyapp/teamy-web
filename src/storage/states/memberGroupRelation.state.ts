@@ -1,5 +1,8 @@
 export class MemberGroupRelationState {
-    constructor(public memberId: number, public groupId: number) {}
+    constructor(
+        public memberId: number,
+        public groupId: number,
+    ) {}
 
     public static fromJson(json: any): MemberGroupRelationState {
         return new MemberGroupRelationState(json.memberId, json.groupId);

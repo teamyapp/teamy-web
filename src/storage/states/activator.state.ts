@@ -28,7 +28,10 @@ export class ActivatorState {
 }
 
 export class TimeRangeActivatorState {
-    constructor(public startAt?: Date, public endAt?: Date) {}
+    constructor(
+        public startAt?: Date,
+        public endAt?: Date,
+    ) {}
 
     public static fromMutationPayload(json: any): TimeRangeActivatorState {
         return new TimeRangeActivatorState(

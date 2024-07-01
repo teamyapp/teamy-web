@@ -93,7 +93,8 @@ function calcLeft(
     }
 
     const rightBound =
-        (window.innerWidth || document.documentElement.clientWidth) - viewportOffset;
+        (window.innerWidth || document.documentElement.clientWidth) -
+        viewportOffset;
     const right = left + followerRect.width;
     if (left >= viewportOffset && right <= rightBound) {
         return left;
@@ -106,7 +107,8 @@ function calcLeft(
                 left = viewportOffset;
                 break;
             case 'jumpHorizontally':
-                left = referenceRect.left + referenceRect.width + referenceOffset;
+                left =
+                    referenceRect.left + referenceRect.width + referenceOffset;
                 break;
         }
     }
@@ -118,7 +120,8 @@ function calcLeft(
                 left = rightBound - followerRect.width;
                 break;
             case 'jumpHorizontally':
-                left = referenceRect.left - followerRect.width - referenceOffset;
+                left =
+                    referenceRect.left - followerRect.width - referenceOffset;
                 break;
         }
     }
@@ -151,7 +154,8 @@ function calcTop(
     }
 
     const bottomBound =
-        window.innerHeight || document.documentElement.clientHeight - viewportOffset;
+        window.innerHeight ||
+        document.documentElement.clientHeight - viewportOffset;
     const bottom = top + followerRect.height;
     if (top >= viewportOffset && bottom <= bottomBound) {
         return top;
@@ -164,7 +168,8 @@ function calcTop(
                 top = viewportOffset;
                 break;
             case 'jumpVertically':
-                top = referenceRect.top + referenceRect.height + referenceOffset;
+                top =
+                    referenceRect.top + referenceRect.height + referenceOffset;
                 break;
         }
     }

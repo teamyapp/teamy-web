@@ -93,7 +93,9 @@ export class UpcomingSection extends Component<Props, State> {
                                 </div>
                                 <div className={styles.SortOrder}>
                                     <DropDownList
-                                        relativeLayout={this.props.relativeLayout}
+                                        relativeLayout={
+                                            this.props.relativeLayout
+                                        }
                                         selectOptionKey={this.props.sortOrder}
                                         options={upcomingSortOrders}
                                         onSelectOption={
@@ -104,9 +106,13 @@ export class UpcomingSection extends Component<Props, State> {
                                             container,
                                         }) => (
                                             <TooltipUI
-                                                relativeLayout={this.props.deps.relativeLayout}
+                                                relativeLayout={
+                                                    this.props.deps
+                                                        .relativeLayout
+                                                }
                                                 disabled={showFollower}
-                                                message={'Order by'}>
+                                                message={'Order by'}
+                                            >
                                                 {container}
                                             </TooltipUI>
                                         )}

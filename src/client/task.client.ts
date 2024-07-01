@@ -187,48 +187,63 @@ export class TaskClient {
     }
 
     addTaskToStory(storyId: string, taskId: string): Promise<RemoteStory> {
-        return this.graphQLClient.mutate({
-            mutation: print(addTaskToStory),
-            variables: {
-                storyId,
-                taskId,
-            },
-        }).then(({addTaskToStory}) => addTaskToStory);
+        return this.graphQLClient
+            .mutate({
+                mutation: print(addTaskToStory),
+                variables: {
+                    storyId,
+                    taskId,
+                },
+            })
+            .then(({ addTaskToStory }) => addTaskToStory);
     }
 
-    removeTaskFromStory(storyId: string, taskId: string ): Promise<RemoteStory> {
-        return this.graphQLClient.mutate({
-            mutation: print(removeTaskFromStory),
-            variables: {
-                storyId,
-                taskId,
-            },
-        }).then(({removeTaskFromStory}) => removeTaskFromStory);
+    removeTaskFromStory(storyId: string, taskId: string): Promise<RemoteStory> {
+        return this.graphQLClient
+            .mutate({
+                mutation: print(removeTaskFromStory),
+                variables: {
+                    storyId,
+                    taskId,
+                },
+            })
+            .then(({ removeTaskFromStory }) => removeTaskFromStory);
     }
 
     addTasksToStory(storyId: string, taskIds: string[]): Promise<RemoteStory> {
-        return this.graphQLClient.mutate({
-            mutation: print(addTasksToStory),
-            variables: {
-                storyId,
-                taskIds,
-            },
-        }).then(({addTasksToStory}) => addTasksToStory);
+        return this.graphQLClient
+            .mutate({
+                mutation: print(addTasksToStory),
+                variables: {
+                    storyId,
+                    taskIds,
+                },
+            })
+            .then(({ addTasksToStory }) => addTasksToStory);
     }
 
-    removeTasksFromStory(storyId: string, taskIds: string[]): Promise<RemoteStory> {
-        return this.graphQLClient.mutate({
-            mutation: print(removeTasksFromStory),
-            variables: {
-                storyId,
-                taskIds,
-            },
-        }).then(({removeTasksFromStory}) => removeTasksFromStory);
+    removeTasksFromStory(
+        storyId: string,
+        taskIds: string[],
+    ): Promise<RemoteStory> {
+        return this.graphQLClient
+            .mutate({
+                mutation: print(removeTasksFromStory),
+                variables: {
+                    storyId,
+                    taskIds,
+                },
+            })
+            .then(({ removeTasksFromStory }) => removeTasksFromStory);
     }
 
-    createTaskLink(taskId: string, input: RemoteCreateTaskLinkInput): Promise<RemoteTaskLink> {
-        return this.graphQLClient.mutate({
-            mutation: `
+    createTaskLink(
+        taskId: string,
+        input: RemoteCreateTaskLinkInput,
+    ): Promise<RemoteTaskLink> {
+        return this.graphQLClient
+            .mutate({
+                mutation: `
                 mutation createTaskLink($taskId: ID!, $input: CreateTaskLinkInput!) {
                     createTaskLink(taskId: $taskId, input: $input) {
                         id
@@ -241,25 +256,28 @@ export class TaskClient {
                     }
                 }
             `,
-            variables: {
-                taskId,
-                input,
-            },
-        }).then(({createTaskLink}) => createTaskLink);
+                variables: {
+                    taskId,
+                    input,
+                },
+            })
+            .then(({ createTaskLink }) => createTaskLink);
     }
 
     deleteTaskLink(id: string): Promise<RemoteTaskLink> {
-        return this.graphQLClient.mutate({
-            mutation: `
+        return this.graphQLClient
+            .mutate({
+                mutation: `
                 mutation deleteTaskLink($id: ID!) {
                     deleteTaskLink(id: $id) {
                         id
                     }
                 }
             `,
-            variables: {
-                id,
-            },
-        }).then(({deleteTaskLink}) => deleteTaskLink);
+                variables: {
+                    id,
+                },
+            })
+            .then(({ deleteTaskLink }) => deleteTaskLink);
     }
 }

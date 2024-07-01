@@ -86,7 +86,7 @@ export const StoryTable: FC<Props> = (props) => {
             name: creatingStoryInput?.name ?? '',
             status,
         });
-    }
+    };
 
     const handleSaveStoryClick = (storyId: number) => () => {
         const editingStoryInput = editingStoryInputs[storyId];
@@ -107,7 +107,7 @@ export const StoryTable: FC<Props> = (props) => {
             status,
             priority: story.priority,
         });
-    }
+    };
 
     const handleDeleteStoryClick = (storyId: number) => () => {
         props.deps.stateSyncer.deleteStory(storyId);
@@ -317,9 +317,12 @@ export const StoryTable: FC<Props> = (props) => {
                         <td>
                             <div className={styles.StoryStatus}>
                                 <StoryStatusComponent
-                                    relativeLayout={props.deps.relativeLayout} 
-                                    status={story.status} 
-                                    onStatusChange={handleStoryStatusChanged(story)}/>
+                                    relativeLayout={props.deps.relativeLayout}
+                                    status={story.status}
+                                    onStatusChange={handleStoryStatusChanged(
+                                        story,
+                                    )}
+                                />
                             </div>
                         </td>
                         <td className={styles.OwnerCol}>

@@ -42,7 +42,9 @@ export class AttachmentListNode implements AttachmentList {
         for (const attachmentId in appState.attachments) {
             const attachment = appState.attachments[attachmentId];
             if (attachment.attachmentListId === this.listId) {
-                attachments.push(new AttachmentNode(this.localStore, attachment));
+                attachments.push(
+                    new AttachmentNode(this.localStore, attachment),
+                );
             }
         }
 

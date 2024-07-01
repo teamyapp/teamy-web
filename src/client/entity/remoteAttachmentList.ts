@@ -1,5 +1,5 @@
 import { RemoteAttachment } from './remoteAttachment';
-export type RemoteAttachmentListOwnerType = "TASK"
+export type RemoteAttachmentListOwnerType = 'TASK';
 
 export interface RemoteAttachmentList {
     ownerType: RemoteAttachmentListOwnerType;

@@ -39,12 +39,23 @@ export class DurationInputUI extends Component<Props> {
                     referenceOffset={4}
                     preserveReferenceParentHeight={true}
                     zOffset={this.props.zOffset}
-                    renderReferenceElement={({ toggleContainer, showFollower }) => (
-                        this.props.transformReferenceContainer? this.props.transformReferenceContainer({
-                            showFollower,
-                            container: this.renderReferenceElement({duration, toggleContainer}),
-                        }) : this.renderReferenceElement({duration, toggleContainer})
-                    )}
+                    renderReferenceElement={({
+                        toggleContainer,
+                        showFollower,
+                    }) =>
+                        this.props.transformReferenceContainer
+                            ? this.props.transformReferenceContainer({
+                                  showFollower,
+                                  container: this.renderReferenceElement({
+                                      duration,
+                                      toggleContainer,
+                                  }),
+                              })
+                            : this.renderReferenceElement({
+                                  duration,
+                                  toggleContainer,
+                              })
+                    }
                     renderFollower={({ closeContainer }) => (
                         <DurationInputPopup
                             duration={duration}
@@ -58,20 +69,27 @@ export class DurationInputUI extends Component<Props> {
         );
     }
 
-    renderReferenceElement = ({ duration, toggleContainer }: {
-        duration?: Duration,
-        toggleContainer: ()=>void
+    renderReferenceElement = ({
+        duration,
+        toggleContainer,
+    }: {
+        duration?: Duration;
+        toggleContainer: () => void;
     }) => {
-        return <div className={styles.ValueRow}
-             onClick={this.onViewRowClickHandler(toggleContainer)}>
-            {this.props.icon}
-            {duration && (
-                <div className={styles.Value}>
-                    {this.props.duration?.toReadable()}
-                </div>
-            )}
-        </div>;
-    }
+        return (
+            <div
+                className={styles.ValueRow}
+                onClick={this.onViewRowClickHandler(toggleContainer)}
+            >
+                {this.props.icon}
+                {duration && (
+                    <div className={styles.Value}>
+                        {this.props.duration?.toReadable()}
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     onViewRowClickHandler = (toggleContainer: () => void) => {
         return (event: MouseEvent) => {

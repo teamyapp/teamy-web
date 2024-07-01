@@ -77,7 +77,9 @@ export class DateLabelPickerUI extends Component<Props, State> {
                         )}
                     </div>
                 )}
-                transformReferenceContainer={this.props.transformReferenceContainer}
+                transformReferenceContainer={
+                    this.props.transformReferenceContainer
+                }
             />
         );
     }

@@ -36,7 +36,9 @@
                     --icon-color: white;
                     cursor: pointer;
 
-                    &.Add, &.Move, &.Delete {
+                    &.Add,
+                    &.Move,
+                    &.Delete {
                         --icon-color: white;
                     }
                 }

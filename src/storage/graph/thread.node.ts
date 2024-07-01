@@ -4,7 +4,10 @@ import { LocalStore } from '@core/storage/syncer/localStore';
 import { MessageNode } from './message.node';
 
 export class ThreadNode implements Thread {
-    constructor(private localStore: LocalStore, private threadId: number) {}
+    constructor(
+        private localStore: LocalStore,
+        private threadId: number,
+    ) {}
 
     public get id(): number {
         return this.threadId;

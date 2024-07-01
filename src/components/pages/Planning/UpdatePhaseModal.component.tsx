@@ -55,7 +55,7 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
                 expectedEndAt: formatDate(props.updatePhaseInput.expectedEndAt),
                 status: props.updatePhaseInput.status,
             });
-        }, [props.updatePhaseInput])
+        }, [props.updatePhaseInput]);
 
         const open = () => {
             modalRef.current?.open();
@@ -110,7 +110,7 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
 
         const onExpectedStartDateChange = (expectedStartAt: string) => {
             if (!updatePhaseInput) {
-                return
+                return;
             }
 
             setUpdatePhaseInput({

@@ -1,16 +1,16 @@
-import { GraphQLClient } from "@lib/network/GraphQL.client";
-import { RemoteCreateStoryInput, RemoteUpdateStoryInput } from "./entity/input";
-import  createStory  from "./graphql/mutation/createStory.graphql";
-import  updateStory  from "./graphql/mutation/updateStory.graphql";
-import deleteStory  from "./graphql/mutation/deleteStory.graphql";
-import addStoryToPhase  from "./graphql/mutation/addStoryToPhase.graphql";
-import addStoriesToPhase from "./graphql/mutation/addStoriesToPhase.graphql";
-import getStories from "./graphql/query/getStories.graphql";
-import removeStoryFromPhase  from "./graphql/mutation/removeStoryFromPhase.graphql";
-import removeStoriesFromPhase from "./graphql/mutation/removeStoriesFromPhase.graphql";
-import { print } from "graphql";
-import { RemoteStory } from "./entity/remoteStory";
-import { RemotePhase } from "./entity/remotePhase";
+import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { RemoteCreateStoryInput, RemoteUpdateStoryInput } from './entity/input';
+import createStory from './graphql/mutation/createStory.graphql';
+import updateStory from './graphql/mutation/updateStory.graphql';
+import deleteStory from './graphql/mutation/deleteStory.graphql';
+import addStoryToPhase from './graphql/mutation/addStoryToPhase.graphql';
+import addStoriesToPhase from './graphql/mutation/addStoriesToPhase.graphql';
+import getStories from './graphql/query/getStories.graphql';
+import removeStoryFromPhase from './graphql/mutation/removeStoryFromPhase.graphql';
+import removeStoriesFromPhase from './graphql/mutation/removeStoriesFromPhase.graphql';
+import { print } from 'graphql';
+import { RemoteStory } from './entity/remoteStory';
+import { RemotePhase } from './entity/remotePhase';
 
 export class StoryClient {
     private readonly graphQLClient: GraphQLClient;
@@ -18,21 +18,24 @@ export class StoryClient {
     constructor(graphQLClient: GraphQLClient) {
         this.graphQLClient = graphQLClient;
     }
-    
+
     getStory(storyId: string): Promise<RemoteStory | undefined> {
         return this.graphQLClient
             .query({
                 query: print(getStories),
                 variables: {
                     filter: {
-                        storyId
-                    }
+                        storyId,
+                    },
                 },
             })
-            .then(({ stories }) => stories?.length ? stories[0] : undefined);
+            .then(({ stories }) => (stories?.length ? stories[0] : undefined));
     }
 
-    createStory(projectId: string, input: RemoteCreateStoryInput): Promise<RemoteStory> {
+    createStory(
+        projectId: string,
+        input: RemoteCreateStoryInput,
+    ): Promise<RemoteStory> {
         return this.graphQLClient
             .mutate({
                 mutation: print(createStory),
@@ -44,7 +47,10 @@ export class StoryClient {
             .then(({ createStory }) => createStory);
     }
 
-    updateStory(storyId: string, input: RemoteUpdateStoryInput): Promise<RemoteStory> {
+    updateStory(
+        storyId: string,
+        input: RemoteUpdateStoryInput,
+    ): Promise<RemoteStory> {
         return this.graphQLClient
             .mutate({
                 mutation: print(updateStory),
@@ -76,7 +82,7 @@ export class StoryClient {
                     storyId,
                 },
             })
-            .then(({addStoryToPhase}) => addStoryToPhase);
+            .then(({ addStoryToPhase }) => addStoryToPhase);
     }
 
     addStoriesToPhase(
@@ -91,10 +97,13 @@ export class StoryClient {
                     storyIds,
                 },
             })
-            .then(({addStoriesToPhase}) => addStoriesToPhase);
+            .then(({ addStoriesToPhase }) => addStoriesToPhase);
     }
 
-    removeStoryFromPhase(phaseId: string, storyId: string): Promise<RemotePhase> {
+    removeStoryFromPhase(
+        phaseId: string,
+        storyId: string,
+    ): Promise<RemotePhase> {
         return this.graphQLClient
             .mutate({
                 mutation: print(removeStoryFromPhase),
@@ -103,7 +112,7 @@ export class StoryClient {
                     storyId,
                 },
             })
-            .then(({removeStoryFromPhase}) => removeStoryFromPhase);
+            .then(({ removeStoryFromPhase }) => removeStoryFromPhase);
     }
 
     removeStoriesFromPhase(
@@ -118,6 +127,6 @@ export class StoryClient {
                     storyIds,
                 },
             })
-            .then(({removeStoriesFromPhase}) => removeStoriesFromPhase);
+            .then(({ removeStoriesFromPhase }) => removeStoriesFromPhase);
     }
 }

@@ -1,7 +1,4 @@
-import React, {
-    ChangeEvent,
-    Component,
-} from 'react';
+import React, { ChangeEvent, Component } from 'react';
 
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import { TooltipUI } from '@lib/ui/Tooltip';
@@ -65,7 +62,10 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                         }}
                     >
                         <div>
-                            <TooltipUI message={'Save'} relativeLayout={this.props.deps.relativeLayout}>
+                            <TooltipUI
+                                message={'Save'}
+                                relativeLayout={this.props.deps.relativeLayout}
+                            >
                                 <div
                                     className={styles.Action}
                                     onClick={this.saveTask}
@@ -77,7 +77,10 @@ export class InlineCreateTaskUI extends Component<Props, State> {
                             </TooltipUI>
                         </div>
                         <div>
-                            <TooltipUI message={'Cancel'} relativeLayout={this.props.deps.relativeLayout}>
+                            <TooltipUI
+                                message={'Cancel'}
+                                relativeLayout={this.props.deps.relativeLayout}
+                            >
                                 <div
                                     className={styles.Action}
                                     onClick={this.onCancelEditTaskClick}

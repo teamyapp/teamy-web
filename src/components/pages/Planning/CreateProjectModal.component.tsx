@@ -69,8 +69,12 @@ export const CreateProjectModalComponent: ForwardRefExoticComponent<
             if (teamId && createProjectInput?.name) {
                 await props.deps.stateSyncer.createProject(teamId, {
                     name: createProjectInput.name,
-                    expectedStartAt:  moment(createProjectInput.expectedStartAt).toDate(),
-                    expectedEndAt: moment(createProjectInput.expectedEndAt).toDate()
+                    expectedStartAt: moment(
+                        createProjectInput.expectedStartAt,
+                    ).toDate(),
+                    expectedEndAt: moment(
+                        createProjectInput.expectedEndAt,
+                    ).toDate(),
                 });
 
                 setCreateProjectInput({

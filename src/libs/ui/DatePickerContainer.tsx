@@ -10,9 +10,9 @@ const dateFormat = 'MM/DD/YYYY';
 
 interface Props {
     renderReferenceElement: ({
-                 onChange,
-                 onToggle,
-             }: {
+        onChange,
+        onToggle,
+    }: {
         onChange: (date: Date) => void;
         onToggle: () => void;
     }) => ReactNode;
@@ -54,26 +54,21 @@ export class DatePickerContainerUI extends Component<Props, State> {
             <RelativeLayoutContainerUI
                 zOffset={this.props.zOffset}
                 relativeLayout={this.props.relativeLayout}
-                overSpaceAction="jumpVertically"
+                overSpaceAction='jumpVertically'
                 referenceOffset={4}
                 renderReferenceElement={({ toggleContainer, showFollower }) => {
-                    return this.props.transformReferenceContainer ?
-                        this.props.transformReferenceContainer({
-                                showFollower,
-                                container: (
-                                    this.props.renderReferenceElement({
-                                        onToggle: toggleContainer,
-                                        onChange: this.handleCalendarChanged,
-                                    })
-                                ),
-                            },
-                        ) :
-                        (
-                            this.props.renderReferenceElement({
-                                onToggle: toggleContainer,
-                                onChange: this.handleCalendarChanged,
-                            })
-                        );
+                    return this.props.transformReferenceContainer
+                        ? this.props.transformReferenceContainer({
+                              showFollower,
+                              container: this.props.renderReferenceElement({
+                                  onToggle: toggleContainer,
+                                  onChange: this.handleCalendarChanged,
+                              }),
+                          })
+                        : this.props.renderReferenceElement({
+                              onToggle: toggleContainer,
+                              onChange: this.handleCalendarChanged,
+                          });
                 }}
                 renderFollower={({ closeContainer }) => (
                     <CalendarUI

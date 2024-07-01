@@ -12,7 +12,7 @@ import updateInvitation from './graphql/mutation/updateInvitation.graphql';
 import acceptInvitation from './graphql/mutation/acceptInvitation.graphql';
 import deleteInvitation from './graphql/mutation/deleteInvitation.graphql';
 import declineInvitation from './graphql/mutation/declineInvitation.graphql';
-import addInvitationToTeamMemberGroup from './graphql/mutation/addInvitationToTeamMemberGroup.graphql';  
+import addInvitationToTeamMemberGroup from './graphql/mutation/addInvitationToTeamMemberGroup.graphql';
 import removeInvitationFromTeamMemberGroup from './graphql/mutation/removeInvitationFromTeamMemberGroup.graphql';
 
 export class InvitationClient {
@@ -131,10 +131,7 @@ export class InvitationClient {
                     teamMemberGroupId,
                 },
             })
-            .then(
-                (payload: any) =>
-                    payload?.addInvitationToTeamMemberGroup,
-            );
+            .then((payload: any) => payload?.addInvitationToTeamMemberGroup);
     }
 
     public removeInvitationFromTeamMemberGroup(
@@ -150,8 +147,7 @@ export class InvitationClient {
                 },
             })
             .then(
-                (payload: any) =>
-                    payload?.removeInvitationFromTeamMemberGroup,
+                (payload: any) => payload?.removeInvitationFromTeamMemberGroup,
             );
     }
 }
