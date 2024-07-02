@@ -817,40 +817,23 @@ export class StateSyncer {
     }
 
     public async createTaskLink(taskId: number, input: CreateTaskLinkInput) {
-        let taskLink: TaskLink | undefined;
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                const res = await this.taskLinkServiceClient.createTaskLink({
-                    taskId,
-                    url: input.url,
-                    title: input.title,
-                    previewTitle: input.previewTitle,
-                    iconHoverUrl: input.iconHoverUrl,
-                    iconUrl: input.iconUrl,
-                }).response;
-                taskLink = res.taskLink;
-            }),
+        const remoteTaskLink = await this.taskClient.createTaskLink(
+            `${taskId}`,
+            {
+                url: input.url,
+                title: input.title,
+                previewTitle: input.previewTitle,
+                iconHoverUrl: input.iconHoverUrl,
+                iconUrl: input.iconUrl,
+            },
         );
-        if (!taskLink) {
-            return;
-        }
-
         let appState = this.localStore.getState();
-        appState = setTaskLink(appState, taskLink);
+        appState = mergeTaskLink(appState, remoteTaskLink);
         this.localStore.updateState(appState);
     }
 
     public async deleteTaskLink(id: number) {
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                await this.taskLinkServiceClient.deleteTaskLink({
-                    id,
-                }).response;
-            }),
-        );
-
+        await this.taskClient.deleteTaskLink(`${id}`);
         let appState = this.localStore.getState();
         delete appState.taskLinks[id];
         this.localStore.updateState(appState);
