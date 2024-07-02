@@ -70,9 +70,9 @@ export function fromProtoTimePtr(ts?: Timestamp): Date | undefined {
     return new Date(ts.seconds * 1_000 + ts.nanos / 1_000_000);
 }
 
-export function toProtoTimePtr(tm?: Date | null): Timestamp | undefined {
+export function toProtoTimePtr(tm?: Date | null): Timestamp | null {
     if (!tm) {
-        return undefined;
+        return null;
     }
 
     const seconds = Math.floor(tm.getTime() / 1_000);
@@ -94,9 +94,9 @@ export function fromProtoDurationPtr(
 
 export function toProtoDurationPtr(
     duration?: Duration | null,
-): PBDuration | undefined {
+): PBDuration | null {
     if (!duration) {
-        return undefined;
+        return null;
     }
 
     const seconds = Math.floor(duration.totalMilliSeconds / 1000);
@@ -106,9 +106,9 @@ export function toProtoDurationPtr(
 
 export function toProtoPriorityPtr(
     priority?: Priority | null,
-): PBPriority | undefined {
+): PBPriority | null {
     if (!priority) {
-        return undefined;
+        return null;
     }
 
     return protoPriorities[priority];
