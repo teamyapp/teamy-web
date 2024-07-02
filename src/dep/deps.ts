@@ -27,7 +27,7 @@ import { TelemetryClient } from '@lib/telemetry/TelemetryClient';
 import { logWithCommit } from '@lib/telemetry/middleware/logWithCommit';
 import { logWithRequestId } from '@lib/telemetry/middleware/logWithRequestId';
 import { logWithServiceName } from '@lib/telemetry/middleware/logWithServiceName';
-import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
+
 import { AppClient } from '@core/client/app.client';
 import { AppVersionClient } from '@core/client/appVersion.client';
 import { FileClient } from '@core/client/file.client';
@@ -54,19 +54,6 @@ import { PhaseClient } from '@core/client/phase.client';
 import { StoryClient } from '@core/client/story.client';
 import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
 import { AttachmentClient } from '@core/client/attachment.client';
-<<<<<<< HEAD
-import {
-    TaskServiceClient,
-    TaskLinkServiceClient,
-    AttachmentServiceClient,
-    MessageServiceClient,
-} from '@teamyapp/proto';
-=======
-import { TaskServiceClient, TaskLinkServiceClient, AttachmentServiceClient } from '@teamyapp/proto';
->>>>>>> parent of 51bc77e (Use message proto (#687))
-import { clientGRPCWithIdentity } from '@lib/network/grpcInterceptor/clientGRPCWithIdentiy';
-import { clientGRPCWithRequestId } from '@lib/network/grpcInterceptor/clientGRPCWithRequestId';
-import { clientGRPCWithLogger } from '@lib/network/grpcInterceptor/clientGRPCWithLogger';
 
 export interface Deps {
     featureToggle: FeatureToggle;
@@ -119,37 +106,18 @@ export function initDeps(config: Config): Deps {
         },
     );
 
-    const makeRetry = () =>
-        new MaxCountRetry(
-            new BuiltInRuntime(),
-            logger,
-            shortBackOff,
-            longBackOff,
-            config.maxAPIRetryTimes,
-        );
-    const transport = new GrpcWebFetchTransport({
-        baseUrl: config.servicesWebRPCAPIEndpoint,
-        interceptors: [
-            {
-                interceptUnary: clientGRPCWithIdentity,
-            },
-            {
-                interceptUnary: clientGRPCWithRequestId,
-            },
-            {
-                interceptUnary: clientGRPCWithLogger(logger),
-            },
-        ],
-    });
-
-    const taskGRPCClient = new TaskServiceClient(transport);
-    const taskLinkGRPCClient = new TaskLinkServiceClient(transport);
-    const attachmentGRPCClient = new AttachmentServiceClient(transport);
-
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,
         clientHTTPWithLogger(logger),
-        clientHTTPWithRetry(makeRetry),
+        clientHTTPWithRetry(() => {
+            return new MaxCountRetry(
+                new BuiltInRuntime(),
+                logger,
+                shortBackOff,
+                longBackOff,
+                config.maxAPIRetryTimes,
+            );
+        }),
     ]);
 
     const identityConfig: IdentityConfig = {
@@ -209,10 +177,6 @@ export function initDeps(config: Config): Deps {
         appVersionClient,
         invitationClient,
         sprintClient,
-        taskGRPCClient,
-        taskLinkGRPCClient,
-        attachmentGRPCClient,
-        makeRetry,
     );
     const router = new Router();
     const shortcutMonitor = new ShortcutMonitor(shortcuts);

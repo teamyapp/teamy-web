@@ -20,6 +20,7 @@ import { TeamyThirdPartyAppClient } from '@lib/thirdPartyApp/client';
 import { BannerUI } from '@lib/ui/Banner';
 import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
 import { Config } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
@@ -441,6 +442,23 @@ export class AppComponent extends Component<Props, State> {
 
     public async componentDidMount() {
         console.log(`[AppComponent]componentDidMount`);
+        // let transport = new GrpcWebFetchTransport({
+        //     baseUrl: 'http://localhost:9001',
+        // });
+        // let client = new TaskClient(transport);
+        // try {
+        //     let response = await client.getTask({
+        //         taskId: 26,
+        //     }, {
+        //         meta: {
+        //             'Authorization': getAccessToken()
+        //         }
+        //     }).response;
+        //     console.log('===== gRPC response', response);
+        // } catch (e) {
+        //     console.error('===== gRPC error', e);
+        // }
+
         this.monitorStateChanges();
         this.router.initBrowserUri();
         this.monitorUserActions();
