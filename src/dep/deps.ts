@@ -54,7 +54,7 @@ import { PhaseClient } from '@core/client/phase.client';
 import { StoryClient } from '@core/client/story.client';
 import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
 import { AttachmentClient } from '@core/client/attachment.client';
-import { TaskServiceClient, TaskLinkServiceClient, AttachmentServiceClient, MessageServiceClient } from '@teamyapp/proto';
+import { TaskServiceClient, TaskLinkServiceClient, AttachmentServiceClient, MessageServiceClient, ProjectServiceClient, PhaseServiceClient, StoryServiceClient } from '@teamyapp/proto';
 import { clientGRPCWithIdentity } from '@lib/network/grpcInterceptor/clientGRPCWithIdentiy';
 import { clientGRPCWithRequestId } from '@lib/network/grpcInterceptor/clientGRPCWithRequestId';
 import { clientGRPCWithLogger } from '@lib/network/grpcInterceptor/clientGRPCWithLogger';
@@ -136,6 +136,9 @@ export function initDeps(config: Config): Deps {
     const taskLinkGRPCClient = new TaskLinkServiceClient(transport);
     const attachmentGRPCClient = new AttachmentServiceClient(transport);
     const messageGRPCClient = new MessageServiceClient(transport);
+    const projectGRPCClient = new ProjectServiceClient(transport);
+    const phaseGRPCClient = new PhaseServiceClient(transport);
+    const storyGRPCClient = new StoryServiceClient(transport);
 
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,
@@ -162,9 +165,6 @@ export function initDeps(config: Config): Deps {
         httpWithLogger,
     );
     const appClient = new AppClient(teamyGraphQLClient);
-    const projectClient = new ProjectClient(teamyGraphQLClient);
-    const phaseClient = new PhaseClient(teamyGraphQLClient);
-    const storyClient = new StoryClient(teamyGraphQLClient);
     const userClient = new UserClient(teamyGraphQLClient);
     const taskClient = new TaskClient(teamyGraphQLClient);
     const teamClient = new TeamClient(teamyGraphQLClient);
@@ -172,7 +172,6 @@ export function initDeps(config: Config): Deps {
     const teamMemberClient = new TeamMemberClient(teamyGraphQLClient);
     const teamMemberGroupClient = new TeamMemberGroupClient(teamyGraphQLClient);
     const invitationClient = new InvitationClient(teamyGraphQLClient);
-    const messageClient = new MessageClient(teamyGraphQLClient);
     const sprintClient = new SprintClient(teamyGraphQLClient);
     const appVersionClient = new AppVersionClient(teamyGraphQLClient);
     const localStore = new LocalStore();
@@ -187,12 +186,8 @@ export function initDeps(config: Config): Deps {
         identityClient,
         localStore,
         appClient,
-        projectClient,
-        phaseClient,
-        storyClient,
         taskClient,
         attachmentClient,
-        messageClient,
         teamClient,
         teamMemberClient,
         teamMemberGroupClient,
@@ -204,6 +199,9 @@ export function initDeps(config: Config): Deps {
         taskLinkGRPCClient,
         attachmentGRPCClient,
         messageGRPCClient,
+        projectGRPCClient,
+        phaseGRPCClient,
+        storyGRPCClient,
         makeRetry,
     );
     const router = new Router();

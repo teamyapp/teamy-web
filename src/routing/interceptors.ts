@@ -186,6 +186,7 @@ const teamsRoutesInterceptor = (
                     isRedirected: true,
                 };
             }
+            await initPlanning(stateSyncer, teamId);
         } else if (routeUpdate.routePattern.startsWith(knowledgeRoutePattern)) {
             if (!featureToggle.enableKnowledgeBase) {
                 redirectToTeamsFallback(router, localStore);
@@ -402,4 +403,11 @@ async function initTeam(
     (async () => {
         appRef.current?.onTeamInit();
     })();
+}
+
+async function initPlanning(
+    stateSyncer: StateSyncer,
+    teamId: number,
+): Promise<void> {
+    await stateSyncer.pullProjects(teamId);
 }

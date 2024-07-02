@@ -12,11 +12,7 @@ import { RemoteTaskFilter } from '@core/client/entity/filter';
 import { RemoteRolloutActivator } from '@core/client/entity/remoteRolloutActivator';
 import { RemoteTask } from '@core/client/entity/remoteTask';
 import { InvitationClient } from '@core/client/invitation.client';
-import { MessageClient } from '@core/client/message.client';
-import { PhaseClient } from '@core/client/phase.client';
-import { ProjectClient } from '@core/client/project.client';
 import { SprintClient } from '@core/client/sprint.client';
-import { StoryClient } from '@core/client/story.client';
 import { TaskClient } from '@core/client/task.client';
 import { TeamClient } from '@core/client/team.client';
 import { TeamMemberClient } from '@core/client/teamMember.client';
@@ -95,14 +91,15 @@ import {
     mergeGroupRolloutRelation,
     mergeInvitation,
     setMessage,
-    mergePhase,
-    mergeProject,
-    mergeProjectPhaseRelation,
-    mergeProjectStoryRelation,
+    setPhase,
+    setProject,
+    setProjectPhaseRelation,
+    setPhaseStoryRelation,
+    setProjectStoryRelation,
     mergeRollout,
     mergeSprint,
-    mergeStory,
-    mergeStoryTaskRelation,
+    setStory,
+    setStoryTaskRelation,
     mergeTag,
     mergeTask,
     mergeTeam,
@@ -114,7 +111,6 @@ import {
     mergeSprintParticipant,
     mergeTeamMemberGroup,
     mergeTeamMemberGroupUserRelation,
-    mergeTaskLink,
     applyAttachmentListMutation,
     applyAttachmentMutation,
     applyTeamMemberGroupMutation,
@@ -138,11 +134,19 @@ import {
     MessageServiceClient,
     Message,
     User,
+    ProjectServiceClient,
+    PhaseServiceClient,
+    StoryServiceClient,
+    Project,
+    Phase,
+    Story,
 } from '@teamyapp/proto';
 import { Retry } from '@lib/retry/retry';
 import { rpcWithError } from '@lib/error/errors';
 import {
     protoAttachmentOwnerTypes,
+    protoPhaseStatuses,
+    protoStoryStatuses,
     toProtoDurationPtr,
     toProtoPriorityPtr,
     toProtoTimePtr,
@@ -163,12 +167,8 @@ export class StateSyncer {
         private identityClient: IdentityClient,
         private localStore: LocalStore,
         private appClient: AppClient,
-        private projectClient: ProjectClient,
-        private phaseClient: PhaseClient,
-        private storyClient: StoryClient,
         private taskClient: TaskClient,
         private attachmentClient: AttachmentClient,
-        private messageClient: MessageClient,
         private teamClient: TeamClient,
         private teamMemberClient: TeamMemberClient,
         private teamMemberGroupClient: TeamMemberGroupClient,
@@ -180,6 +180,9 @@ export class StateSyncer {
         private taskLinkServiceClient: TaskLinkServiceClient,
         private attachmentServiceClient: AttachmentServiceClient,
         private messageServiceClient: MessageServiceClient,
+        private projectServiceClient: ProjectServiceClient,
+        private phaseServiceClient: PhaseServiceClient,
+        private storyServiceClient: StoryServiceClient,
         private makeRetry: () => Retry,
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
@@ -1358,37 +1361,147 @@ export class StateSyncer {
     }
 
     public async getProject(projectId: number): Promise<void> {
-        const remoteProject = await this.projectClient.getProject(
-            `${projectId}`,
-        );
-        if (!remoteProject) {
+        let project: Project | undefined;
+        let phases: Phase[] = [];
+        let stories: Story[] = [];
+        await Promise.all([
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res = await this.projectServiceClient.getProject({
+                        id: projectId,
+                    }).response;
+
+                    project = res.project;
+                }),
+            ),
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res = await this.phaseServiceClient.listPhases({
+                        projectId: projectId,
+                    }).response;
+                    phases = res.phases;
+                }),
+            ),
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res = await this.storyServiceClient.listStories({
+                        projectId: projectId,
+                    }).response;
+                    stories = res.stories;
+                }),
+            ),
+        ]);
+
+        if (!project) {
             return;
         }
 
         let appState = this.localStore.getState();
-        appState = mergeProject(appState, remoteProject);
+        appState = setProject(appState, project);
+        phases.forEach((phase) => {
+            appState = setPhase(appState, phase);
+            appState = setProjectPhaseRelation(appState, projectId, phase.id);
+        });
+        stories.forEach((story) => {
+            appState = setStory(appState, story);
+            appState = setProjectStoryRelation(appState, projectId, story.id);
+        });
         this.localStore.updateState(appState);
     }
 
     public async getPhase(phaseId: number): Promise<void> {
-        const remotePhase = await this.phaseClient.getPhase(`${phaseId}`);
-        if (!remotePhase) {
+        let phase: Phase | undefined;
+        let stories: Story[] = [];
+        await Promise.all([
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res = await this.phaseServiceClient.getPhase({
+                        id: phaseId,
+                    }).response;
+                    phase = res.phase;
+                }),
+            ),
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res = await this.storyServiceClient.listStories({
+                        phaseId: phaseId,
+                    }).response;
+                    stories = res.stories;
+                }),
+            ),
+        ]);
+
+        if (!phase) {
             return;
         }
 
         let appState = this.localStore.getState();
-        appState = mergePhase(appState, remotePhase);
+        appState = setPhase(appState, phase);
+        stories.forEach((story) => {
+            appState = setStory(appState, story);
+            appState = setPhaseStoryRelation(appState, phaseId, story.id);
+        });
         this.localStore.updateState(appState);
     }
 
     public async getStory(storyId: number): Promise<void> {
-        const remoteStory = await this.storyClient.getStory(`${storyId}`);
-        if (!remoteStory) {
+        let story: Story | undefined;
+        let tasks: Task[] = [];
+        await Promise.all([
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res = await this.storyServiceClient.getStory({
+                        id: storyId,
+                    }).response;
+                    story = res.story;
+                }),
+            ),
+
+            this.makeRetry().withRetry(
+                {},
+                rpcWithError(async () => {
+                    const res = await this.storyServiceClient.getTasksByStory({
+                        storyId,
+                    }).response;
+                    tasks = res.tasks;
+                }),
+            ),
+        ]);
+        if (!story) {
             return;
         }
 
         let appState = this.localStore.getState();
-        appState = mergeStory(appState, remoteStory);
+        appState = setStory(appState, story);
+        tasks.forEach((task) => {
+            appState = setTask(appState, task);
+            appState = setStoryTaskRelation(appState, storyId, task.id);
+        });
+        this.localStore.updateState(appState);
+    }
+
+    public async pullProjects(teamId: number): Promise<void> {
+        let projects: Project[] = [];
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                const res = await this.projectServiceClient.listProjects({
+                    teamId: teamId,
+                }).response;
+                projects = res.projects;
+            }),
+        );
+
+        let appState = this.localStore.getState();
+        projects.forEach((project) => {
+            appState = setProject(appState, project);
+        });
         this.localStore.updateState(appState);
     }
 
@@ -1396,12 +1509,28 @@ export class StateSyncer {
         teamId: number,
         input: CreateProjectInput,
     ): Promise<void> {
-        const remoteProject = await this.projectClient.createProject(
-            `${teamId}`,
-            input,
+        let project: Project | undefined;
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                const res = await this.projectServiceClient.createProject({
+                    teamId: teamId,
+                    name: input.name,
+                    expectedStartAt: toProtoTimePtr(input.expectedStartAt),
+                    expectedEndAt: toProtoTimePtr(input.expectedEndAt),
+                    iconUrl: input.iconUrl,
+                    color: input.color,
+                }).response;
+                project = res.project;
+            }),
         );
+
+        if (!project) {
+            return;
+        }
+
         let appState = this.localStore.getState();
-        appState = mergeProject(appState, remoteProject);
+        appState = setProject(appState, project);
         this.localStore.updateState(appState);
     }
 
@@ -1409,17 +1538,26 @@ export class StateSyncer {
         projectId: number,
         input: CreatePhaseInput,
     ): Promise<void> {
-        const remotePhase = await this.phaseClient.createPhase(
-            `${projectId}`,
-            input,
+        let phase: Phase | undefined;
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                const res = await this.phaseServiceClient.createPhase({
+                    projectId,
+                    name: input.name,
+                    expectedStartAt: toProtoTimePtr(input.expectedStartAt),
+                    expectedEndAt: toProtoTimePtr(input.expectedEndAt),
+                }).response;
+                phase = res.phase;
+            }),
         );
+        if (!phase) {
+            return;
+        }
+
         let appState = this.localStore.getState();
-        appState = mergePhase(appState, remotePhase);
-        appState = mergeProjectPhaseRelation(
-            appState,
-            `${projectId}`,
-            remotePhase.id,
-        );
+        appState = setPhase(appState, phase);
+        appState = setProjectPhaseRelation(appState, projectId, phase.id);
         this.localStore.updateState(appState);
     }
 
@@ -1427,35 +1565,56 @@ export class StateSyncer {
         projectId: number,
         input: CreateStoryInput,
     ): Promise<number> {
-        const remoteStory = await this.storyClient.createStory(`${projectId}`, {
-            name: input.name,
-            ownerId: input.ownerId ? `${input.ownerId}` : undefined,
-            priority: input.priority,
-            status: input.status,
-        });
-        let appState = this.localStore.getState();
-        appState = mergeStory(appState, remoteStory);
-        appState = mergeProjectStoryRelation(
-            appState,
-            `${projectId}`,
-            remoteStory.id,
+        let story: Story | undefined;
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                const res = await this.storyServiceClient.createStory({
+                    projectId,
+                    name: input.name,
+                    ownerUserId: input.ownerId,
+                    priority: toProtoPriorityPtr(input.priority),
+                    status: protoStoryStatuses[input.status],
+                }).response;
+                story = res.story;
+            }),
         );
+        if (!story) {
+            return 0;
+        }
+
+        debugger;
+        let appState = this.localStore.getState();
+        appState = setStory(appState, story);
+        appState = setProjectStoryRelation(appState, projectId, story.id);
         this.localStore.updateState(appState);
-        return toInt(remoteStory.id)!;
+        return story.id;
     }
 
     public async updateStory(
         storyId: number,
         input: UpdateStoryInput,
     ): Promise<void> {
-        const remoteStory = await this.storyClient.updateStory(`${storyId}`, {
-            name: input.name,
-            ownerId: input.ownerId ? `${input.ownerId}` : undefined,
-            priority: input.priority,
-            status: input.status,
-        });
+        let story: Story | undefined;
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                const res = await this.storyServiceClient.updateStory({
+                    id: storyId,
+                    name: input.name,
+                    ownerUserId: input.ownerId,
+                    priority: toProtoPriorityPtr(input.priority),
+                    status: protoStoryStatuses[input.status],
+                }).response;
+                story = res.story;
+            }),
+        );
+        if (!story) {
+            return;
+        }
+
         let appState = this.localStore.getState();
-        appState = mergeStory(appState, remoteStory);
+        appState = setStory(appState, story);
         this.localStore.updateState(appState);
     }
 
@@ -1463,13 +1622,18 @@ export class StateSyncer {
         storyId: number,
         taskId: number,
     ): Promise<void> {
-        const remoteStory = await this.taskClient.addTaskToStory(
-            `${storyId}`,
-            `${taskId}`,
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.storyServiceClient.addTaskToStory({
+                    storyId,
+                    taskId,
+                }).response;
+            }),
         );
+
         let appState = this.localStore.getState();
-        appState = mergeStory(appState, remoteStory);
-        appState = mergeStoryTaskRelation(appState, `${storyId}`, `${taskId}`);
+        appState = setStoryTaskRelation(appState, storyId, taskId);
         this.localStore.updateState(appState);
     }
 
@@ -1477,12 +1641,20 @@ export class StateSyncer {
         storyId: number,
         taskIds: number[],
     ): Promise<void> {
-        const remoteStory = await this.taskClient.addTasksToStory(
-            `${storyId}`,
-            taskIds.map(String),
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.storyServiceClient.addTasksToStory({
+                    storyId,
+                    taskIds,
+                }).response;
+            }),
         );
+
         let appState = this.localStore.getState();
-        appState = mergeStory(appState, remoteStory);
+        taskIds.forEach((taskId) => {
+            appState = setStoryTaskRelation(appState, storyId, taskId);
+        });
         this.localStore.updateState(appState);
     }
 
@@ -1490,12 +1662,17 @@ export class StateSyncer {
         storyId: number,
         taskId: number,
     ): Promise<void> {
-        const remoteStory = await this.taskClient.removeTaskFromStory(
-            `${storyId}`,
-            `${taskId}`,
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.storyServiceClient.removeTaskFromStory({
+                    storyId,
+                    taskId,
+                }).response;
+            }),
         );
+
         let appState = this.localStore.getState();
-        mergeStory(appState, remoteStory);
         appState.storyTaskRelations = appState.storyTaskRelations.filter(
             (relation) =>
                 relation.storyId !== storyId && relation.taskId !== taskId,
@@ -1508,12 +1685,17 @@ export class StateSyncer {
         storyId: number,
         taskIds: number[],
     ): Promise<void> {
-        const remoteStory = await this.taskClient.removeTasksFromStory(
-            `${storyId}`,
-            taskIds.map(String),
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.storyServiceClient.removeTasksFromStory({
+                    storyId,
+                    taskIds,
+                }).response;
+            }),
         );
+
         let appState = this.localStore.getState();
-        mergeStory(appState, remoteStory);
         appState.storyTaskRelations = appState.storyTaskRelations.filter(
             (relation) =>
                 relation.storyId !== storyId ||
@@ -1527,12 +1709,18 @@ export class StateSyncer {
         phaseId: number,
         storyId: number,
     ): Promise<void> {
-        const remotePhase = await this.storyClient.addStoryToPhase(
-            `${phaseId}`,
-            `${storyId}`,
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.phaseServiceClient.addStoryToPhase({
+                    phaseId: phaseId,
+                    storyId: storyId,
+                }).response;
+            }),
         );
+
         let appState = this.localStore.getState();
-        appState = mergePhase(appState, remotePhase);
+        appState = setPhaseStoryRelation(appState, phaseId, storyId);
         this.localStore.updateState(appState);
     }
 
@@ -1540,12 +1728,21 @@ export class StateSyncer {
         phaseId: number,
         storyIds: number[],
     ): Promise<void> {
-        const remotePhase = await this.storyClient.addStoriesToPhase(
-            `${phaseId}`,
-            storyIds.map(String),
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.phaseServiceClient.addStoriesToPhase({
+                    phaseId: phaseId,
+                    storyIds: storyIds,
+                }).response;
+            }),
         );
+
         let appState = this.localStore.getState();
-        appState = mergePhase(appState, remotePhase);
+        storyIds.forEach((storyId) => {
+            appState = setPhaseStoryRelation(appState, phaseId, storyId);
+        });
+
         this.localStore.updateState(appState);
     }
 
@@ -1553,12 +1750,17 @@ export class StateSyncer {
         phaseId: number,
         storyId: number,
     ): Promise<void> {
-        const remotePhase = await this.storyClient.removeStoryFromPhase(
-            `${phaseId}`,
-            `${storyId}`,
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.phaseServiceClient.removeStoryFromPhase({
+                    phaseId: phaseId,
+                    storyId: storyId,
+                }).response;
+            }),
         );
+
         let appState = this.localStore.getState();
-        appState = mergePhase(appState, remotePhase);
         appState.phaseStoryRelations = appState.phaseStoryRelations.filter(
             (relation) =>
                 relation.phaseId !== phaseId && relation.storyId !== storyId,
@@ -1571,12 +1773,17 @@ export class StateSyncer {
         phaseId: number,
         storyIds: number[],
     ): Promise<void> {
-        const remotePhase = await this.storyClient.removeStoriesFromPhase(
-            `${phaseId}`,
-            storyIds.map(String),
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.phaseServiceClient.removeStoriesFromPhase({
+                    phaseId: phaseId,
+                    storyIds: storyIds,
+                }).response;
+            }),
         );
+
         let appState = this.localStore.getState();
-        appState = mergePhase(appState, remotePhase);
         appState.phaseStoryRelations = appState.phaseStoryRelations.filter(
             (relation) =>
                 relation.phaseId !== phaseId ||
@@ -1587,7 +1794,15 @@ export class StateSyncer {
     }
 
     public async deleteStory(storyId: number): Promise<void> {
-        await this.storyClient.deleteStory(`${storyId}`);
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.storyServiceClient.deleteStory({
+                    id: storyId,
+                }).response;
+            }),
+        );
+
         let appState = this.localStore.getState();
         appState = this._deleteStory(appState, storyId);
         this.localStore.updateState(appState);
@@ -1597,17 +1812,39 @@ export class StateSyncer {
         phaseId: number,
         input: UpdatePhaseInput,
     ): Promise<void> {
-        const remotePhase = await this.phaseClient.updatePhase(
-            `${phaseId}`,
-            input,
+        let phase: Phase | undefined;
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                const res = await this.phaseServiceClient.updatePhase({
+                    id: phaseId,
+                    name: input.name,
+                    expectedStartAt: toProtoTimePtr(input.expectedStartAt),
+                    expectedEndAt: toProtoTimePtr(input.expectedEndAt),
+                    status: protoPhaseStatuses[input.status],
+                }).response;
+                phase = res.phase;
+            }),
         );
+        if (!phase) {
+            return;
+        }
+
         let appState = this.localStore.getState();
-        appState = mergePhase(appState, remotePhase);
+        appState = setPhase(appState, phase);
         this.localStore.updateState(appState);
     }
 
     public async deletePhase(phaseId: number): Promise<void> {
-        await this.phaseClient.deletePhase(`${phaseId}`);
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.phaseServiceClient.deletePhase({
+                    id: phaseId,
+                }).response;
+            }),
+        );
+
         let appState = this.localStore.getState();
         appState = this._deletePhase(appState, phaseId);
         this.localStore.updateState(appState);
@@ -1617,17 +1854,41 @@ export class StateSyncer {
         projectId: number,
         input: UpdateProjectInput,
     ): Promise<void> {
-        const remoteProject = await this.projectClient.updateProject(
-            `${projectId}`,
-            input,
+        let project: Project | undefined;
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                const res = await this.projectServiceClient.updateProject({
+                    id: projectId,
+                    name: input.name,
+                    expectedStartAt: toProtoTimePtr(input.expectedStartAt),
+                    expectedEndAt: toProtoTimePtr(input.expectedEndAt),
+                    iconUrl: input.iconUrl,
+                    color: input.color,
+                }).response;
+                project = res.project;
+            }),
         );
+
+        if (!project) {
+            return;
+        }
+
         let appState = this.localStore.getState();
-        appState = mergeProject(appState, remoteProject);
+        appState = setProject(appState, project);
         this.localStore.updateState(appState);
     }
 
     public async deleteProject(projectId: number): Promise<void> {
-        await this.projectClient.deleteProject(`${projectId}`);
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                await this.projectServiceClient.deleteProject({
+                    id: projectId,
+                }).response;
+            }),
+        );
+
         let appState = this.localStore.getState();
         delete appState.projects[projectId];
 

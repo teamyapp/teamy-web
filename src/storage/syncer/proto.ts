@@ -1,5 +1,7 @@
 import {
     TaskStatus as PBTaskStatus,
+    PhaseStatus as PBPhaseStatus,
+    StoryStatus as PBStoryStatus,
     Priority as PBPriority,
     Timestamp,
     Duration as PBDuration,
@@ -11,6 +13,8 @@ import { Priority } from 'entity/priority';
 import { Duration } from '@lib/time/duration';
 import { AttachmentType } from 'entity/attachment';
 import { AttachmentListOwnerType } from 'entity/attachmentList';
+import { PhaseStatus } from '@core/entity/phase';
+import { StoryStatus } from '@core/entity/story';
 
 export const protoAttachmentOwnerTypes: Record<AttachmentListOwnerType, PBAttachmentListOwnerType> = {
     TASK: PBAttachmentListOwnerType.TASK,
@@ -25,6 +29,13 @@ export const protoTaskStatuses: Record<TaskStatus, PBTaskStatus> = {
     DELIVERED: PBTaskStatus.DELIVERED,
 };
 
+export const protoStoryStatuses: Record<StoryStatus, PBStoryStatus> = {
+    TODO: PBStoryStatus.STORY_TODO,
+    IN_PROGRESS: PBStoryStatus.STORY_IN_PROGRESS,
+    PAUSED: PBStoryStatus.STORY_PAUSED,
+    COMPLETED: PBStoryStatus.STORY_COMPLETED,
+};
+
 export const protoPriorities: Record<Priority, PBPriority> = {
     URGENT: PBPriority.URGENT,
     HIGH: PBPriority.HIGH,
@@ -32,11 +43,32 @@ export const protoPriorities: Record<Priority, PBPriority> = {
     LOW: PBPriority.LOW,
 };
 
+export const protoPhaseStatuses: Record<PhaseStatus, PBPhaseStatus> = {
+    TODO: PBPhaseStatus.PHASE_TODO,
+    IN_PROGRESS: PBPhaseStatus.PHASE_IN_PROGRESS,
+    PAUSED: PBPhaseStatus.PHASE_PAUSED,
+    COMPLETED: PBPhaseStatus.PHASE_COMPLETED,
+}
+
 export const priorities: Record<PBPriority, Priority> = {
     [PBPriority.URGENT]: 'URGENT',
     [PBPriority.HIGH]: 'HIGH',
     [PBPriority.MEDIUM]: 'MEDIUM',
     [PBPriority.LOW]: 'LOW',
+};
+
+export const phaseStatues: Record<PBPhaseStatus, PhaseStatus> = {
+    [PBPhaseStatus.PHASE_TODO]: 'TODO',
+    [PBPhaseStatus.PHASE_IN_PROGRESS]: 'IN_PROGRESS',
+    [PBPhaseStatus.PHASE_PAUSED]: 'PAUSED',
+    [PBPhaseStatus.PHASE_COMPLETED]: 'COMPLETED',
+};
+
+export const storyStatuses: Record<PBStoryStatus, StoryStatus> = {
+    [PBStoryStatus.STORY_TODO]: 'TODO',
+    [PBStoryStatus.STORY_IN_PROGRESS]: 'IN_PROGRESS',
+    [PBStoryStatus.STORY_PAUSED]: 'PAUSED',
+    [PBStoryStatus.STORY_COMPLETED]: 'COMPLETED',
 };
 
 export const taskStatuses: Record<PBTaskStatus, TaskStatus> = {

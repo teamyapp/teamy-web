@@ -83,13 +83,12 @@ export class ProjectNode implements Project {
         return this.stories.filter((story) => !story.isPlanned);
     }
 
-    get totalPhases(): number {
-        return this.phases.length;
+    get totalPhaseCount(): number {
+        return this.project.totalPhaseCount;
     }
 
-    get deliveredPhases(): number {
-        return this.phases.filter((phase) => phase.status === 'COMPLETED')
-            .length;
+    get completedPhaseCount(): number {
+        return this.project.completedPhaseCount;
     }
 
     get iconUrl(): string | undefined {

@@ -16,8 +16,8 @@ export interface Project {
     phases: Phase[];
     stories: Story[];
     unplannedStories: Story[];
-    totalPhases: number;
-    deliveredPhases: number;
+    totalPhaseCount: number;
+    completedPhaseCount: number;
     iconUrl?: string;
     color?: string;
 }

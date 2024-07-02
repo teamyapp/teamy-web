@@ -192,8 +192,8 @@ export const ProjectsComponent: FC<Props> = (props) => {
                                 )}
                             </div>
                             <div className={styles.Description}>
-                                {project.deliveredPhases} of{' '}
-                                {project.totalPhases} phases delivered
+                                {project.completedPhaseCount} of{' '}
+                                {project.totalPhaseCount} phases delivered
                             </div>
                             <div className={styles.Actions}>
                                 {editingUpdateProject?.projectId === project.id ? (

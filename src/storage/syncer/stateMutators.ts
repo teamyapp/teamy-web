@@ -78,12 +78,15 @@ import { AttachmentListState } from '../states/attachmentList.state';
 import { RemoteAttachment } from '@core/client/entity/remoteAttachment';
 import { AttachmentState } from '../states/attachment.state';
 import { TeamMemberGroupInvitationRelation } from '../states/teamMemberGroupInvitationRelation.state';
-import { Attachment, AttachmentList, Message, Task, TaskLink } from '@teamyapp/proto';
+import { Attachment, AttachmentList, Message, Phase, Project, Story, Task, TaskLink } from '@teamyapp/proto';
 import {
     attachmentListOwnerTypes,
     attachmentTypes,
     fromProtoDurationPtr,
+    fromProtoPriorityPtr,
     fromProtoTimePtr,
+    phaseStatues,
+    storyStatuses,
     taskStatuses,
 } from './proto';
 
@@ -738,71 +741,36 @@ export function mergeAppRolloutRelation(
     return currAppState;
 }
 
-export function mergeProject(
+export function setProject(
     currAppState: AppState,
-    remoteProject: RemoteProject,
+    project: Project,
 ): AppState {
-    const remoteProjectId = toInt(remoteProject.id)!;
-    const localOldProject = currAppState.projects[remoteProjectId] || {};
     const localNewProject: ProjectState = {
-        id: remoteProjectId,
-        name: remoteProject.name || localOldProject.name,
-        expectedStartAt:
-            toDate(remoteProject.expectedStartAt) ||
-            localOldProject.expectedStartAt,
-        actualStartAt:
-            remoteProject.actualStartAt === undefined
-                ? localOldProject.actualStartAt
-                : toDate(remoteProject.actualStartAt),
-        expectedEndAt:
-            toDate(remoteProject.expectedEndAt) ||
-            localOldProject.expectedEndAt,
-        actualEndAt:
-            remoteProject.actualEndAt === undefined
-                ? localOldProject.actualEndAt
-                : toDate(remoteProject.actualEndAt),
-        createdAt: toDate(remoteProject.createdAt) || localOldProject.createdAt,
-        creatorId: toInt(remoteProject.creator.id) || localOldProject.creatorId,
-        updatedAt:
-            remoteProject.updatedAt === undefined
-                ? localOldProject.updatedAt
-                : toDate(remoteProject.updatedAt),
-        teamId: toInt(remoteProject.team.id) || localOldProject.teamId,
-        iconUrl: remoteProject.iconUrl === undefined ? localOldProject.iconUrl : remoteProject.iconUrl,
-        color: remoteProject.color === undefined ? localOldProject.color : remoteProject.color,
+        id: project.id,
+        name: project.name,
+        expectedStartAt: fromProtoTimePtr(project.expectedStartAt),
+        actualStartAt: fromProtoTimePtr(project.actualStartAt),
+        expectedEndAt: fromProtoTimePtr(project.expectedEndAt),
+        actualEndAt: fromProtoTimePtr(project.actualEndAt),
+        createdAt: fromProtoTimePtr(project.createdAt)!,
+        creatorId: project.creatorUserId,
+        updatedAt: fromProtoTimePtr(project.updatedAt),
+        teamId: project.teamId,
+        iconUrl: project.iconUrl,
+        color: project.color,
+        totalPhaseCount: project.totalPhaseCount,
+        completedPhaseCount: project.completedPhaseCount,
     };
 
-    remoteProject.phases?.forEach((phase) => {
-        currAppState = mergePhase(currAppState, phase);
-        currAppState = mergeProjectPhaseRelation(
-            currAppState,
-            remoteProject.id,
-            phase.id,
-        );
-    });
-
-    remoteProject.stories?.forEach((story) => {
-        currAppState = mergeStory(currAppState, story);
-        currAppState = mergeProjectStoryRelation(
-            currAppState,
-            remoteProject.id,
-            story.id,
-        );
-    });
-
-    currAppState = mergeTeam(currAppState, remoteProject.team);
-    currAppState.projects[remoteProjectId] = localNewProject;
+    currAppState.projects[project.id] = localNewProject;
     return currAppState;
 }
 
-export function mergeProjectStoryRelation(
+export function setProjectStoryRelation(
     currAppState: AppState,
-    remoteProjectId: string,
-    remoteStoryId: string,
+    projectId: number,
+    storyId: number,
 ): AppState {
-    const projectId = toInt(remoteProjectId)!;
-    const storyId = toInt(remoteStoryId)!;
-
     if (
         !currAppState.projectStoryRelations.some((projectStoryRelation) => {
             return (
@@ -820,13 +788,11 @@ export function mergeProjectStoryRelation(
     return currAppState;
 }
 
-export function mergePhaseStoryRelation(
+export function setPhaseStoryRelation(
     currAppState: AppState,
-    remotePhaseId: string,
-    remoteStoryId: string,
+    phaseId: number,
+    storyId: number,
 ): AppState {
-    const phaseId = toInt(remotePhaseId)!;
-    const storyId = toInt(remoteStoryId)!;
 
     if (
         !currAppState.phaseStoryRelations.some((phaseStoryRelation) => {
@@ -845,14 +811,11 @@ export function mergePhaseStoryRelation(
     return currAppState;
 }
 
-export function mergeStoryTaskRelation(
+export function setStoryTaskRelation(
     currAppState: AppState,
-    remoteStoryId: string,
-    remoteTaskId: string,
+    storyId: number,
+    taskId: number,
 ): AppState {
-    const storyId = toInt(remoteStoryId)!;
-    const taskId = toInt(remoteTaskId)!;
-
     if (
         !currAppState.storyTaskRelations.some((storyTaskRelation) => {
             return (
@@ -870,14 +833,11 @@ export function mergeStoryTaskRelation(
     return currAppState;
 }
 
-export function mergeProjectPhaseRelation(
+export function setProjectPhaseRelation(
     currAppState: AppState,
-    remoteProjectId: string,
-    remotePhaseId: string,
+    projectId: number,
+    phaseId: number,
 ): AppState {
-    const projectId = toInt(remoteProjectId)!;
-    const phaseId = toInt(remotePhaseId)!;
-
     if (
         !currAppState.projectPhaseRelations.some((projectPhaseRelation) => {
             return (
@@ -895,87 +855,45 @@ export function mergeProjectPhaseRelation(
     return currAppState;
 }
 
-export function mergePhase(
+export function setPhase(
     currAppState: AppState,
-    remotePhase: RemotePhase,
+    phase: Phase,
 ): AppState {
-    const remotePhaseId = toInt(remotePhase.id)!;
-    const localOldPhase = currAppState.phases[remotePhaseId] || {};
     const localNewPhase: PhaseState = {
-        id: remotePhaseId,
-        name: remotePhase.name || localOldPhase.name,
-        status: remotePhase.status || localOldPhase.status,
-        expectedStartAt:
-            toDate(remotePhase.expectedStartAt) ||
-            localOldPhase.expectedStartAt,
-        actualStartAt:
-            remotePhase.actualStartAt === undefined
-                ? localOldPhase.actualStartAt
-                : toDate(remotePhase.actualStartAt),
-        expectedEndAt:
-            toDate(remotePhase.expectedEndAt) || localOldPhase.expectedEndAt,
-        actualEndAt:
-            remotePhase.actualEndAt === undefined
-                ? localOldPhase.actualEndAt
-                : toDate(remotePhase.actualEndAt),
-        creatorId: toInt(remotePhase.creator.id) || localOldPhase.creatorId,
-        createdAt: toDate(remotePhase.createdAt) || localOldPhase.createdAt,
-        updatedAt:
-            remotePhase.updatedAt === undefined
-                ? localOldPhase.updatedAt
-                : toDate(remotePhase.updatedAt),
+        id: phase.id,
+        name: phase.name,
+        status: phaseStatues[phase.status],
+        expectedStartAt: fromProtoTimePtr(phase.expectedStartAt)!,
+        expectedEndAt: fromProtoTimePtr(phase.expectedEndAt)!,
+        createdAt: fromProtoTimePtr(phase.createdAt)!,
+        creatorId: phase.creatorUserId,
+        updatedAt: fromProtoTimePtr(phase.updatedAt),
+        actualStartAt: fromProtoTimePtr(phase.actualStartAt),
+        actualEndAt: fromProtoTimePtr(phase.actualEndAt),
     };
 
-    remotePhase.stories?.forEach((story) => {
-        currAppState = mergeStory(currAppState, story);
-        currAppState = mergePhaseStoryRelation(
-            currAppState,
-            remotePhase.id,
-            story.id,
-        );
-    });
-
-    currAppState.phases[remotePhaseId] = localNewPhase;
+    currAppState.phases[phase.id] = localNewPhase;
     return currAppState;
 }
 
-export function mergeStory(
+export function setStory(
     currAppState: AppState,
-    remoteStory: RemoteStory,
+    story: Story,
 ): AppState {
-    const remoteStoryId = toInt(remoteStory.id)!;
-    const localOldStory = currAppState.stories[remoteStoryId] || {};
+
     const localNewStory: StoryState = {
-        id: remoteStoryId,
-        name: remoteStory.name || localOldStory.name,
-        ownerId:
-            remoteStory.owner === undefined
-                ? localOldStory.ownerId
-                : toInt(remoteStory.owner?.id),
-        status: remoteStory.status || localOldStory.status,
-        priority: remoteStory.priority || localOldStory.priority,
-        creatorId: toInt(remoteStory.creator.id) || localOldStory.creatorId,
-        createdAt: toDate(remoteStory.createdAt) || localOldStory.createdAt,
-        updatedAt:
-            remoteStory.updatedAt === undefined
-                ? localOldStory.updatedAt
-                : toDate(remoteStory.updatedAt),
-        isPlanned:
-            remoteStory.isPlanned === undefined
-                ? localOldStory.isPlanned
-                : remoteStory.isPlanned,
+        id: story.id,
+        name: story.name,
+        ownerId: story.ownerUserId,
+        creatorId: story.creatorUserId,
+        status: storyStatuses[story.status],
+        priority: fromProtoPriorityPtr(story.priority),
+        createdAt: fromProtoTimePtr(story.createdAt)!,
+        updatedAt: fromProtoTimePtr(story.updatedAt),
+        isPlanned: story.isPlanned,
     };
 
-    remoteStory.tasks?.forEach((task) => {
-        currAppState = mergeTask(currAppState, task);
-        currAppState = mergeStoryTaskRelation(
-            currAppState,
-            remoteStory.id,
-            task.id,
-        );
-    });
-
-    currAppState.stories[remoteStoryId] = localNewStory;
+    currAppState.stories[story.id] = localNewStory;
     return currAppState;
 }
 
@@ -1879,10 +1797,6 @@ export function mergeTeam(
 
     remoteTeam.appInstallations?.forEach((appInstallation) => {
         currAppState = mergeAppInstallation(currAppState, appInstallation);
-    });
-
-    remoteTeam.projects?.forEach((project) => {
-        currAppState = mergeProject(currAppState, project);
     });
 
     remoteTeam.memberGroups?.forEach((group) => {
