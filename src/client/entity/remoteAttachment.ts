@@ -1,6 +1,6 @@
-import { RemoteAttachmentList } from "./remoteAttachmentList"
+import { RemoteAttachmentList } from './remoteAttachmentList';
 
-export type RemoteAttachmentType = "IMAGE";
+export type RemoteAttachmentType = 'IMAGE';
 export interface RemoteAttachment {
     id: string;
     type: RemoteAttachmentType;

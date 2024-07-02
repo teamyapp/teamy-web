@@ -1,11 +1,11 @@
-import { GraphQLClient } from "@lib/network/GraphQL.client";
-import { RemoteCreateProjectInput } from "./entity/input";
-import  createProject  from "./graphql/mutation/createProject.graphql";
-import  updateProject  from "./graphql/mutation/updateProject.graphql";
-import deleteProject  from "./graphql/mutation/deleteProject.graphql";
-import getProjects from "./graphql/query/getProjects.graphql";
-import { print } from "graphql";
-import { RemoteProject } from "./entity/remoteProject";
+import { GraphQLClient } from '@lib/network/GraphQL.client';
+import { RemoteCreateProjectInput } from './entity/input';
+import createProject from './graphql/mutation/createProject.graphql';
+import updateProject from './graphql/mutation/updateProject.graphql';
+import deleteProject from './graphql/mutation/deleteProject.graphql';
+import getProjects from './graphql/query/getProjects.graphql';
+import { print } from 'graphql';
+import { RemoteProject } from './entity/remoteProject';
 
 export class ProjectClient {
     private readonly graphQLClient: GraphQLClient;
@@ -20,14 +20,19 @@ export class ProjectClient {
                 query: print(getProjects),
                 variables: {
                     filter: {
-                        projectId
-                    }
+                        projectId,
+                    },
                 },
             })
-            .then(({ projects }) => projects?.length ? projects[0] : undefined);
+            .then(({ projects }) =>
+                projects?.length ? projects[0] : undefined,
+            );
     }
 
-    createProject(teamId: string, input: RemoteCreateProjectInput): Promise<RemoteProject> {
+    createProject(
+        teamId: string,
+        input: RemoteCreateProjectInput,
+    ): Promise<RemoteProject> {
         return this.graphQLClient
             .mutate({
                 mutation: print(createProject),
@@ -39,7 +44,10 @@ export class ProjectClient {
             .then(({ createProject }) => createProject);
     }
 
-    updateProject(projectId: string, input: RemoteCreateProjectInput): Promise<RemoteProject> {
+    updateProject(
+        projectId: string,
+        input: RemoteCreateProjectInput,
+    ): Promise<RemoteProject> {
         return this.graphQLClient
             .mutate({
                 mutation: print(updateProject),

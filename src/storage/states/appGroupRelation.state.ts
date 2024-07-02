@@ -1,5 +1,8 @@
 export class AppGroupRelationState {
-    constructor(public appId: number, public groupId: number) {}
+    constructor(
+        public appId: number,
+        public groupId: number,
+    ) {}
 
     public static fromJson(json: any): AppGroupRelationState {
         return new AppGroupRelationState(json.appId, json.groupId);

@@ -1,5 +1,8 @@
 export class PhaseStoryRelationState {
-    constructor(public phaseId: number, public storyId: number) {}
+    constructor(
+        public phaseId: number,
+        public storyId: number,
+    ) {}
 
     public static fromMutationPayload(json: any): PhaseStoryRelationState {
         return new PhaseStoryRelationState(json.PhaseID, json.StoryID);

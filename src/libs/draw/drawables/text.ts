@@ -9,7 +9,10 @@ type FontWeight = 'lighter' | 'normal' | 'bold' | 'bolder';
 const RENDER_OFFSET = 1;
 
 export class Text implements Drawable {
-    constructor(private _position: Point, private content: string) {
+    constructor(
+        private _position: Point,
+        private content: string,
+    ) {
         this._size = {
             width: 0,
             height: 0,

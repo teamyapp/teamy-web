@@ -1,4 +1,11 @@
-import { orderByDeadline, orderByEffort, orderById, orderByOwner, orderByPriorityDesc, orderByValue } from '@core/data/task.order';
+import {
+    orderByDeadline,
+    orderByEffort,
+    orderById,
+    orderByOwner,
+    orderByPriorityDesc,
+    orderByValue,
+} from '@core/data/task.order';
 import { Priority } from '@core/entity/priority';
 import { Story, StoryStatus } from '@core/entity/story';
 import { Task } from '@core/entity/task';
@@ -89,7 +96,7 @@ export const sortByStoryId = (storyA: Story, storyB: Story) => {
 
 export const sortByStoryName = (storyA: Story, storyB: Story) => {
     return storyA.name.localeCompare(storyB.name);
-}
+};
 
 export const sortByStoryPriority = (storyA: Story, storyB: Story) => {
     const priorityAOrderNumber = storyA.priority

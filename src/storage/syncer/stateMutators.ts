@@ -78,7 +78,13 @@ import { AttachmentListState } from '../states/attachmentList.state';
 import { RemoteAttachment } from '@core/client/entity/remoteAttachment';
 import { AttachmentState } from '../states/attachment.state';
 import { TeamMemberGroupInvitationRelation } from '../states/teamMemberGroupInvitationRelation.state';
-import { Attachment, AttachmentList, Message, Task, TaskLink } from '@teamyapp/proto';
+import {
+    Attachment,
+    AttachmentList,
+    Message,
+    Task,
+    TaskLink,
+} from '@teamyapp/proto';
 import {
     attachmentListOwnerTypes,
     attachmentTypes,
@@ -768,8 +774,14 @@ export function mergeProject(
                 ? localOldProject.updatedAt
                 : toDate(remoteProject.updatedAt),
         teamId: toInt(remoteProject.team.id) || localOldProject.teamId,
-        iconUrl: remoteProject.iconUrl === undefined ? localOldProject.iconUrl : remoteProject.iconUrl,
-        color: remoteProject.color === undefined ? localOldProject.color : remoteProject.color,
+        iconUrl:
+            remoteProject.iconUrl === undefined
+                ? localOldProject.iconUrl
+                : remoteProject.iconUrl,
+        color:
+            remoteProject.color === undefined
+                ? localOldProject.color
+                : remoteProject.color,
     };
 
     remoteProject.phases?.forEach((phase) => {
@@ -1522,12 +1534,10 @@ export function setTask(currAppState: AppState, task: Task): AppState {
         status: taskStatuses[task.status],
         isScheduled: task.isScheduled,
         isPlanned: task.isPlanned,
-        commentsThreadId:
-            task.commentsThreadId,
+        commentsThreadId: task.commentsThreadId,
         createdAt: fromProtoTimePtr(task.createdAt)!,
         updatedAt: fromProtoTimePtr(task.updatedAt),
-        deliveredAt:
-            fromProtoTimePtr(task.deliveredAt),
+        deliveredAt: fromProtoTimePtr(task.deliveredAt),
         effort: fromProtoDurationPtr(task.effort),
         dueAt: fromProtoTimePtr(task.dueAt),
     };
@@ -1581,7 +1591,8 @@ export function setAttachmentList(
         createdAt: fromProtoTimePtr(attachmentList.createdAt)!,
         updatedAt: fromProtoTimePtr(attachmentList.updatedAt),
     };
-    currAppState.attachmentLists[attachmentList.listId] = localNewAttachmentList;
+    currAppState.attachmentLists[attachmentList.listId] =
+        localNewAttachmentList;
     return currAppState;
 }
 
@@ -1679,11 +1690,7 @@ export function mergeTask(
     return currAppState;
 }
 
-
-export function setMessage(
-    currAppState: AppState,
-    message: Message,
-): AppState {
+export function setMessage(currAppState: AppState, message: Message): AppState {
     const localNewMessage: MessageState = {
         id: message.id,
         body: message.body,

@@ -8,7 +8,8 @@ $allowResize: var(--allow-resize, none);
 $initialHeight: var(--initial-height, 100%);
 
 @keyframes blinker {
-    0%, 100% {
+    0%,
+    100% {
         opacity: 1;
     }
     50% {
@@ -108,14 +109,14 @@ $initialHeight: var(--initial-height, 100%);
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: #f0f0f0; 
+    background-color: #f0f0f0;
     border-radius: 4px;
 
     .LeftSection {
         .ImagePlaceholder {
             height: 90px;
             width: 90px;
-        
+
             .Progress {
                 width: 90px;
                 background-color: rgb(12, 12, 12);
@@ -144,4 +145,3 @@ $initialHeight: var(--initial-height, 100%);
         }
     }
 }
-

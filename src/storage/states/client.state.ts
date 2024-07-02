@@ -1,5 +1,8 @@
 export class ClientState {
-    public constructor(public id: number, public userId: number) {}
+    public constructor(
+        public id: number,
+        public userId: number,
+    ) {}
 
     public static fromMutationPayload(json: any): ClientState {
         return new ClientState(json.ID, json.UserID);

@@ -295,23 +295,24 @@ export class SprintsComponent extends Component<Props, State> {
         };
     };
 
-    private handleUserSelectClick = (closeContainer: () => void ) => (userId: number) => {
-        closeContainer();
-        if (!this.state.selectedSprintId) {
-            return;
-        }
+    private handleUserSelectClick =
+        (closeContainer: () => void) => (userId: number) => {
+            closeContainer();
+            if (!this.state.selectedSprintId) {
+                return;
+            }
 
-        const currentTeam = this.props.deps.graphSource.currentTeam();
-        if (!currentTeam) {
-            return;
-        }
+            const currentTeam = this.props.deps.graphSource.currentTeam();
+            if (!currentTeam) {
+                return;
+            }
 
-        this.stateSyncer.addTeamMemberToSprint(
-            this.state.selectedSprintId,
-            currentTeam.id,
-            userId,
-        );
-    };
+            this.stateSyncer.addTeamMemberToSprint(
+                this.state.selectedSprintId,
+                currentTeam.id,
+                userId,
+            );
+        };
 
     private getAvailableTeamMembers = () => {
         const currentTeam = this.props.deps.graphSource.currentTeam();

@@ -1,6 +1,6 @@
-import { FeedbackUI } from "@lib/ui/Feedback";
-import { FC, createRef, useState } from "react";
-import { Deps } from "@core/dep/deps";
+import { FeedbackUI } from '@lib/ui/Feedback';
+import { FC, createRef, useState } from 'react';
+import { Deps } from '@core/dep/deps';
 import styles from './feedback.module.scss';
 export interface Props {
     deps: Deps;
@@ -32,4 +32,4 @@ export const CopiedFeedbackComponent: FC<Props> = (props: Props) => {
             is copied in the clipboard.
         </FeedbackUI>
     );
-}
+};

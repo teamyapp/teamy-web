@@ -5,7 +5,10 @@ import { UserState } from '@core/storage/states/user.state';
 import { LocalStore } from '@core/storage/syncer/localStore';
 
 export class UserNode implements User {
-    constructor(private localStore: LocalStore, private userState: UserState) {}
+    constructor(
+        private localStore: LocalStore,
+        private userState: UserState,
+    ) {}
 
     public get id(): number {
         return this.userState.id;

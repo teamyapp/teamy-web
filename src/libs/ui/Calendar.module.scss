@@ -31,7 +31,8 @@
                 cursor: pointer;
             }
 
-            &.Clear, &.Close {
+            &.Clear,
+            &.Close {
                 --icon-color: white;
             }
         }

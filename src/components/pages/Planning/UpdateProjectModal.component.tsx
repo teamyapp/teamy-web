@@ -64,11 +64,19 @@ export const UpdateProjectModalComponent: ForwardRefExoticComponent<
         };
 
         const onUpdateClick = async () => {
-            if (updateProjectInput?.name && updateProjectInput?.expectedStartAt && updateProjectInput?.expectedEndAt) {
+            if (
+                updateProjectInput?.name &&
+                updateProjectInput?.expectedStartAt &&
+                updateProjectInput?.expectedEndAt
+            ) {
                 await props.deps.stateSyncer.updateProject(props.project.id, {
                     name: updateProjectInput.name,
-                    expectedStartAt:  moment(updateProjectInput.expectedStartAt).toDate(),
-                    expectedEndAt: moment(updateProjectInput.expectedEndAt).toDate()
+                    expectedStartAt: moment(
+                        updateProjectInput.expectedStartAt,
+                    ).toDate(),
+                    expectedEndAt: moment(
+                        updateProjectInput.expectedEndAt,
+                    ).toDate(),
                 });
 
                 setUpdateProjectInput({

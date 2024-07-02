@@ -137,9 +137,7 @@ export class TeamMemberClient {
             .then((payload: any) => payload?.removeMemberFromTeam);
     }
 
-    public moveUpTeamMemberGroup(
-        id: string,
-    ): Promise<void> {
+    public moveUpTeamMemberGroup(id: string): Promise<void> {
         return this.graphQLClient
             .mutate({
                 mutation: `
@@ -157,9 +155,7 @@ export class TeamMemberClient {
             .then(() => {});
     }
 
-    public moveDownTeamMemberGroup(
-        id: string,
-    ): Promise<void> {
+    public moveDownTeamMemberGroup(id: string): Promise<void> {
         return this.graphQLClient
             .mutate({
                 mutation: `

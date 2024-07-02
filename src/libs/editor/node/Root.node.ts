@@ -18,7 +18,10 @@ export class RootNode implements EditorNode {
     private children: EditorNode[];
     private readonly classNames: Record<string, boolean>;
 
-    constructor(private idGenerator: IdGenerator, private readonly id: number) {
+    constructor(
+        private idGenerator: IdGenerator,
+        private readonly id: number,
+    ) {
         this.classNames = {};
 
         // TODO: remove sample data

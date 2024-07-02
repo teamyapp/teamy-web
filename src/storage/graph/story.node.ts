@@ -9,7 +9,10 @@ import { TaskNode } from './task.node';
 import { UserNode } from './user.node';
 
 export class StoryNode implements Story {
-    constructor(private localStore: LocalStore, private story: StoryState) {}
+    constructor(
+        private localStore: LocalStore,
+        private story: StoryState,
+    ) {}
 
     get id(): number {
         return this.story.id;
@@ -23,7 +26,6 @@ export class StoryNode implements Story {
         if (!this.story.ownerId) {
             return undefined;
         }
-
 
         return new UserNode(
             this.localStore,

@@ -14,26 +14,24 @@ type Props = {
     onCloseContainer?: () => void;
     onMouseLeave?: () => void;
     zOffset?: number;
-    renderReferenceElement: (
-        {
-            toggleContainer,
-            closeContainer,
-            openContainer,
-            showFollower,
-        }: {
-            toggleContainer: () => void;
-            closeContainer: () => void;
-            openContainer: () => void;
-            showFollower: boolean;
-        }) => ReactNode;
-    renderFollower: (
-        {
-            closeContainer,
-            openContainer,
-        }: {
-            closeContainer: () => void;
-            openContainer: () => void;
-        }) => ReactNode;
+    renderReferenceElement: ({
+        toggleContainer,
+        closeContainer,
+        openContainer,
+        showFollower,
+    }: {
+        toggleContainer: () => void;
+        closeContainer: () => void;
+        openContainer: () => void;
+        showFollower: boolean;
+    }) => ReactNode;
+    renderFollower: ({
+        closeContainer,
+        openContainer,
+    }: {
+        closeContainer: () => void;
+        openContainer: () => void;
+    }) => ReactNode;
     relativeLayout: RelativeLayout;
     horizontalAlignment?: HorizontalAlignment;
     verticalAlignment?: VerticalAlignment;
@@ -84,11 +82,17 @@ export class RelativeLayoutContainerUI extends Component<Props, States> {
     render() {
         return (
             <Fragment>
-                <div ref={this.referenceElementRef}
+                <div
+                    ref={this.referenceElementRef}
                     style={{
-                        width: this.props.preserveReferenceParentWidth ? '100%' : 'auto',
-                        height: this.props.preserveReferenceParentHeight ? '100%' : 'auto',
-                    }}>
+                        width: this.props.preserveReferenceParentWidth
+                            ? '100%'
+                            : 'auto',
+                        height: this.props.preserveReferenceParentHeight
+                            ? '100%'
+                            : 'auto',
+                    }}
+                >
                     {this.props.renderReferenceElement({
                         toggleContainer: this.handleToggle,
                         showFollower: this.state.showFollower,

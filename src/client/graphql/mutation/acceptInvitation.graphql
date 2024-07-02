@@ -1,4 +1,4 @@
-#import "../fragment/invitation.graphql" 
+#import "../fragment/invitation.graphql"
 
 mutation acceptInvitation($invitationId: ID!, $invitationCode: String!) {
     acceptInvitation(

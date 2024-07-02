@@ -106,7 +106,7 @@ export const UpdatePhaseModalComponent: ForwardRefExoticComponent<
 
         const onExpectedStartDateChange = (expectedStartAt: string) => {
             if (!updatePhaseInput) {
-                return
+                return;
             }
 
             setUpdatePhaseInput({

@@ -85,7 +85,8 @@ export class AppState {
     public attachmentLists: Record<number, AttachmentListState> = {};
     public attachments: Record<number, AttachmentState> = {};
     public teamMemberGroupUserRelations: TeamMemberGroupUserRelation[] = [];
-    public teamMemberGroupInvitationRelations: TeamMemberGroupInvitationRelation[] = [];
+    public teamMemberGroupInvitationRelations: TeamMemberGroupInvitationRelation[] =
+        [];
     public projectPhaseRelations: ProjectPhaseRelationState[] = [];
     public projectStoryRelations: ProjectStoryRelationState[] = [];
     public phaseStoryRelations: PhaseStoryRelationState[] = [];

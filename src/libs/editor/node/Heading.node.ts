@@ -28,7 +28,10 @@ export class HeadingNode implements EditorNode {
     private children: EditorNode[];
     private readonly classNames: Record<string, boolean>;
 
-    constructor(private idGenerator: IdGenerator, private readonly id: number) {
+    constructor(
+        private idGenerator: IdGenerator,
+        private readonly id: number,
+    ) {
         this.size = 1;
         this.children = [];
         this.classNames = {};

@@ -413,7 +413,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
                                                     group.id,
                                                 )}
                                             />
-                                            {this.renderAvailableInvitations(availableGroupInvitations, group.id)}
+                                            {this.renderAvailableInvitations(
+                                                availableGroupInvitations,
+                                                group.id,
+                                            )}
                                         </>
                                     )}
                                     zOffset={1002}
@@ -537,7 +540,10 @@ export class TeamSettingsModalComponent extends Component<Props, State> {
         );
     };
 
-    private renderAvailableInvitations = (availableGroupInvitations: Invitation[], groupId: number) => {
+    private renderAvailableInvitations = (
+        availableGroupInvitations: Invitation[],
+        groupId: number,
+    ) => {
         return (
             <>
                 {availableGroupInvitations.map((invitation) => (

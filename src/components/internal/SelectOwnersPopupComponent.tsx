@@ -54,13 +54,13 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
         props.onSelectOwner?.call(this);
     };
 
-    const onAssignOwnerClick = (toggleContainer: ()=>void) => {
+    const onAssignOwnerClick = (toggleContainer: () => void) => {
         return (event: MouseEvent) => {
             event.stopPropagation();
             setShowFollower(!showFollower);
             toggleContainer();
-        }
-    }
+        };
+    };
 
     const renderAssignOwner = ({
         toggleContainer,
@@ -104,13 +104,17 @@ export const SelectOwnersPopupComponent: FC<Props> = (props) => {
     const onContainerClose = () => {
         setPotentialOwners([]);
         setShowFollower(false);
-    }
+    };
 
     return (
         <RelativeLayoutContainerUI
             relativeLayout={props.deps.relativeLayout}
             overSpaceAction='jumpVertically'
-            zOffset={props.zOffset === undefined ? OWNER_ASSIGNMENT_Z_INDEX : props.zOffset}
+            zOffset={
+                props.zOffset === undefined
+                    ? OWNER_ASSIGNMENT_Z_INDEX
+                    : props.zOffset
+            }
             referenceOffset={4}
             renderReferenceElement={renderAssignOwner}
             onOpenContainer={fetchOwnerList}

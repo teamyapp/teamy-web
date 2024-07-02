@@ -21,7 +21,7 @@ export class TaskState {
         public effort?: Duration,
         public priority?: Priority,
         public updatedAt?: Date,
-        public deliveredAt?: Date
+        public deliveredAt?: Date,
     ) {}
 
     public static fromMutationPayload(json: any): TaskState {

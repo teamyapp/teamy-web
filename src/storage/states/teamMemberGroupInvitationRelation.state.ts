@@ -4,7 +4,9 @@ export class TeamMemberGroupInvitationRelation {
         public invitationId: number,
     ) {}
 
-    public static fromMutationPayload(json: any): TeamMemberGroupInvitationRelation {
+    public static fromMutationPayload(
+        json: any,
+    ): TeamMemberGroupInvitationRelation {
         return new TeamMemberGroupInvitationRelation(
             json.GroupID,
             json.InvitationID,

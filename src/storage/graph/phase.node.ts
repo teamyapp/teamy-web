@@ -6,7 +6,10 @@ import { StoryNode } from './story.node';
 import { UserNode } from './user.node';
 
 export class PhaseNode implements Phase {
-    constructor(private localStore: LocalStore, private phase: PhaseState) {}
+    constructor(
+        private localStore: LocalStore,
+        private phase: PhaseState,
+    ) {}
 
     get id(): number {
         return this.phase.id;

@@ -32,9 +32,7 @@ export class AttachmentNode implements Attachment {
     public get attachmentList(): AttachmentListNode {
         const appState = this.localStore.getState();
         const attachmentListState =
-            appState.attachmentLists[
-                this.attachment.attachmentListId
-            ];
+            appState.attachmentLists[this.attachment.attachmentListId];
         return new AttachmentListNode(this.localStore, attachmentListState);
     }
 }

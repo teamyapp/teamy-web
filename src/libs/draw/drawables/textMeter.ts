@@ -1,5 +1,8 @@
 export class TextMeter {
-    constructor(private ctx: CanvasRenderingContext2D, private font: string) {}
+    constructor(
+        private ctx: CanvasRenderingContext2D,
+        private font: string,
+    ) {}
 
     measureText(text: string): TextMetrics {
         this.ctx.save();

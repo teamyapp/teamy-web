@@ -109,7 +109,7 @@ export class ModalUI extends Component<Props, State> {
             }, transitionDurationMilliseconds);
         });
     }
- 
+
     public close = () => {
         if (this.state.isAnimating) {
             return;
@@ -129,7 +129,7 @@ export class ModalUI extends Component<Props, State> {
             });
             this.props.afterClose?.call(null);
         }, transitionDurationMilliseconds);
-    }
+    };
 
     public Position(): Point {
         const rect = this.contentRef.current?.getBoundingClientRect();

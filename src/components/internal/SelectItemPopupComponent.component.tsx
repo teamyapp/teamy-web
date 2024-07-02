@@ -7,7 +7,13 @@ interface Props {
     relativeLayout: RelativeLayout;
     itemList: (closeContainer: () => void) => JSX.Element;
     zOffset?: number;
-    referenceElement: ({ toggleContainer, showFollower }: { toggleContainer: () => void; showFollower: boolean }) => JSX.Element;
+    referenceElement: ({
+        toggleContainer,
+        showFollower,
+    }: {
+        toggleContainer: () => void;
+        showFollower: boolean;
+    }) => JSX.Element;
 }
 
 export const SelectItemPopupComponent: FC<Props> = (props) => {

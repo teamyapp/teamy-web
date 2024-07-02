@@ -56,7 +56,7 @@ export class TeamMemberGroupNode implements TeamMemberGroup {
         const appState = this.localStore.getState();
         return appState.teamMemberGroupInvitationRelations
             .filter(
-                (relation) => relation.groupId === this.teamMemberGroupState.id
+                (relation) => relation.groupId === this.teamMemberGroupState.id,
             )
             .map(
                 (relation) =>

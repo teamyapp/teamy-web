@@ -13,7 +13,10 @@ import { UserNode } from './user.node';
 import { TeamMemberGroupNode } from './teamMemberGroup.node';
 
 export class TeamNode implements Team {
-    constructor(private localStore: LocalStore, private teamState: TeamState) {}
+    constructor(
+        private localStore: LocalStore,
+        private teamState: TeamState,
+    ) {}
 
     public get id(): number {
         return this.teamState.id;

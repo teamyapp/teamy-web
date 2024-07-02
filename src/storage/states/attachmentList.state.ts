@@ -1,14 +1,13 @@
-
-export type RemoteAttachmentListOwnerType = "TASK";
+export type RemoteAttachmentListOwnerType = 'TASK';
 
 export class AttachmentListState {
     public constructor(
-        public ownerType: RemoteAttachmentListOwnerType, 
+        public ownerType: RemoteAttachmentListOwnerType,
         public ownerId: number,
         public listLabel: string,
         public listId: number,
         public createdAt: Date,
-        public updatedAt?: Date
+        public updatedAt?: Date,
     ) {}
 
     public static fromMutationPayload(json: any): AttachmentListState {
@@ -18,7 +17,7 @@ export class AttachmentListState {
             json.ListLabel,
             json.ListID,
             new Date(json.CreatedAt),
-            json.UpdatedAt ? new Date(json.UpdatedAt) : undefined
+            json.UpdatedAt ? new Date(json.UpdatedAt) : undefined,
         );
     }
 
@@ -29,7 +28,7 @@ export class AttachmentListState {
             json.listLabel,
             json.listId,
             new Date(json.createdAt),
-            json.updatedAt ? new Date(json.updatedAt) : undefined
+            json.updatedAt ? new Date(json.updatedAt) : undefined,
         );
     }
 }

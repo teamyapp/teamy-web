@@ -5,7 +5,6 @@
 $edgeSpace: 10px;
 $actionIconSize: 28px;
 
-
 .InlineStory {
     .Story {
         @include elevation(4);
@@ -16,7 +15,7 @@ $actionIconSize: 28px;
         word-break: break-word;
 
         &.Selected {
-           outline: 3px solid #ffc107;
+            outline: 3px solid #ffc107;
         }
 
         &:hover {

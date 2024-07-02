@@ -129,4 +129,3 @@ export function getYearsBetween(startAt: Moment, endAt: Moment): Year[] {
 export function formatDate(date: Date | undefined): string {
     return date ? moment(date).format('MM/DD/YYYY h:mm:ss') : '';
 }
-

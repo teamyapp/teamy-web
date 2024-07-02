@@ -10,7 +10,7 @@ import { RelativeLayout } from '@lib/layout';
 
 interface Props {
     link: TaskLink;
-    relativeLayout: RelativeLayout
+    relativeLayout: RelativeLayout;
 }
 
 interface State {
@@ -32,7 +32,8 @@ export class TaskLinkIconUI extends Component<Props, State> {
         return (
             <TooltipUI
                 relativeLayout={this.props.relativeLayout}
-                message={this.props.link.previewTitle} >
+                message={this.props.link.previewTitle}
+            >
                 <div
                     className={styles.TaskLink}
                     onMouseEnter={this.onMouseEnterTaskLink}

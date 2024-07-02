@@ -203,7 +203,10 @@ export class BacklogComponent extends Component<Props, State> {
     private updateState(sortOrder?: string) {
         const tasks: Task[] = this.graphSource.currentTeam()?.tasks || [];
         let unscheduledTasks = tasks.filter(unscheduled);
-        unscheduledTasks = this.getSortedTasks(unscheduledTasks, sortOrder || this.state.sortOrder);
+        unscheduledTasks = this.getSortedTasks(
+            unscheduledTasks,
+            sortOrder || this.state.sortOrder,
+        );
         this.setState({
             unscheduledTasks: unscheduledTasks,
         });
@@ -275,7 +278,7 @@ export class BacklogComponent extends Component<Props, State> {
             sortOrder,
         });
 
-        this.updateState(sortOrder)
+        this.updateState(sortOrder);
     };
 
     private getSortedTasks = (tasks: Task[], sortOrder: string): Task[] => {
@@ -291,7 +294,7 @@ export class BacklogComponent extends Component<Props, State> {
             default:
                 return tasks;
         }
-    }
+    };
 }
 
 function filterTaskAction(action: TaskAction): boolean {

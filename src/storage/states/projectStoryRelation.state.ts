@@ -1,5 +1,8 @@
 export class ProjectStoryRelationState {
-    constructor(public projectId: number, public storyId: number) {}
+    constructor(
+        public projectId: number,
+        public storyId: number,
+    ) {}
 
     public static fromMutationPayload(json: any): ProjectStoryRelationState {
         return new ProjectStoryRelationState(json.ProjectID, json.StoryID);
