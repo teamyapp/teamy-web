@@ -102,11 +102,6 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                                 onClick={this.onGenerateLinkClick}
                             />
                         </div>
-                        {this.state.invitationLink && (
-                            <div className={styles.InvitationLink}>
-                                {this.state.invitationLink}
-                            </div>
-                        )}
                     </div>
                 </div>
             </ModalUI>
@@ -157,5 +152,6 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
         this.setState({
             invitationLink: generatedLink,
         });
+        this.modalRef.current?.close();
     };
 }
