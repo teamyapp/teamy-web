@@ -65,7 +65,7 @@ import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
 import { LocalStore } from './localStore';
-import { Message as RealTimeMessage } from './message';
+import { Message } from './message';
 import { Metadata } from './metadata';
 import {
     applyAppVersionChangeMutation,
@@ -94,7 +94,7 @@ import {
     mergeGroup,
     mergeGroupRolloutRelation,
     mergeInvitation,
-    setMessage,
+    mergeMessage,
     mergePhase,
     mergeProject,
     mergeProjectPhaseRelation,
@@ -118,35 +118,12 @@ import {
     applyAttachmentListMutation,
     applyAttachmentMutation,
     applyTeamMemberGroupMutation,
-    setTask,
-    setAttachmentList,
-    setAttachment,
-    setTaskLink,
 } from './stateMutators';
 import { StateSyncClient } from './stateSyncClient';
 import { Transaction } from './transaction';
 import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
 import { AttachmentClient } from '@core/client/attachment.client';
-import {
-    TaskServiceClient,
-    TaskLinkServiceClient,
-    AttachmentServiceClient,
-    Attachment,
-    Task,
-    TaskLink,
-    AttachmentList,
-    MessageServiceClient,
-    Message,
-    User,
-} from '@teamyapp/proto';
-import { Retry } from '@lib/retry/retry';
-import { rpcWithError } from '@lib/error/errors';
-import {
-    protoAttachmentOwnerTypes,
-    toProtoDurationPtr,
-    toProtoPriorityPtr,
-    toProtoTimePtr,
-} from './proto';
+import { Attachment } from '@core/entity/attachment';
 
 export class StateSyncer {
     private readonly connection: Connection;
@@ -176,102 +153,9 @@ export class StateSyncer {
         private appVersionClient: AppVersionClient,
         private invitationClient: InvitationClient,
         private sprintClient: SprintClient,
-        private taskServiceClient: TaskServiceClient,
-        private taskLinkServiceClient: TaskLinkServiceClient,
-        private attachmentServiceClient: AttachmentServiceClient,
-        private messageServiceClient: MessageServiceClient,
-        private makeRetry: () => Retry,
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
         this.connection = new WebSocketConnection(url, getAccessToken);
-    }
-
-    public async pullTask(taskId: number): Promise<void> {
-        let task: Task | undefined;
-        let taskLinks: TaskLink[] = [];
-        let attachmentList: AttachmentList | undefined;
-        let attachments: Attachment[] = [];
-        let messages: Message[] = [];
-
-        await Promise.all([
-            this.makeRetry().withRetry(
-                {},
-                rpcWithError(async () => {
-                    const res = await this.taskServiceClient.getTask({
-                        taskId,
-                    }).response;
-                    task = res.task;
-                }),
-            ),
-            this.makeRetry().withRetry(
-                {},
-                rpcWithError(async () => {
-                    const res = await this.taskLinkServiceClient.listTaskLinks({
-                        taskId,
-                    }).response;
-                    taskLinks = res.taskLinks;
-                }),
-            ),
-            this.makeRetry().withRetry(
-                {},
-                rpcWithError(async () => {
-                    const res =
-                        await this.attachmentServiceClient.getAttachmentList({
-                            ownerId: taskId,
-                            ownerType: protoAttachmentOwnerTypes['TASK'],
-                            listLabel: 'context',
-                        }).response;
-                    attachmentList = res.attachmentList;
-                }),
-            ),
-        ]);
-
-        if (!task) {
-            return;
-        }
-
-        await Promise.all([
-            this.makeRetry().withRetry(
-                {},
-                rpcWithError(async () => {
-                    if (attachmentList) {
-                        const res =
-                            await this.attachmentServiceClient.listAttachments({
-                                attachmentListId: attachmentList?.listId,
-                            }).response;
-                        attachments = res.attachments;
-                    }
-                }),
-            ),
-            this.makeRetry().withRetry(
-                {},
-                rpcWithError(async () => {
-                    const res = await this.messageServiceClient.listMessages({
-                        threadId: task!.commentsThreadId,
-                    }).response;
-                    messages = res.messages;
-                }),
-            ),
-        ]);
-
-        let appState = this.localStore.getState();
-        appState = setTask(appState, task);
-
-        if (attachmentList) {
-            appState = setAttachmentList(appState, attachmentList);
-        }
-
-        taskLinks.forEach((taskLink) => {
-            appState = setTaskLink(appState, taskLink);
-        });
-        attachments.forEach((attachment) => {
-            appState = setAttachment(appState, attachment);
-        });
-        messages.forEach((message) => {
-            appState = setMessage(appState, message);
-        });
-
-        this.localStore.updateState(appState);
     }
 
     public async notifyInitialStateReceived() {
@@ -310,7 +194,7 @@ export class StateSyncer {
 
                 const json = JSON.parse(receivedMessage);
                 console.log('JSON received: ', json);
-                const message = RealTimeMessage.fromMutationPayload(json);
+                const message = Message.fromMutationPayload(json);
                 console.log('Message received: ', message);
                 switch (message.type) {
                     case 'Transaction': {
@@ -536,6 +420,15 @@ export class StateSyncer {
         this.localStore.updateState(appState);
     }
 
+    public async pullTask(taskId: number): Promise<void> {
+        const remoteTask = await this.taskClient.getTask(`${taskId}`);
+        if (remoteTask) {
+            let appState = this.localStore.getState();
+            appState = mergeTask(appState, remoteTask);
+            this.localStore.updateState(appState);
+        }
+    }
+
     public async pullUser(userId: number): Promise<void> {
         const remoteUser = await this.userClient.getUser(`${userId}`);
         if (remoteUser) {
@@ -745,7 +638,7 @@ export class StateSyncer {
 
     public async createTask(
         teamId: number,
-        taskInput: CreateTaskInput,
+        task: CreateTaskInput,
         sprintId?: number,
     ): Promise<number> {
         let isScheduled = false;
@@ -753,29 +646,18 @@ export class StateSyncer {
             isScheduled = true;
         }
 
-        let task: Task | undefined;
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                const res = await this.taskServiceClient.createTask({
-                    teamId,
-                    goal: taskInput.goal,
-                    context: taskInput.context,
-                    ownerUserId: taskInput.ownerUserId,
-                    dueAt: toProtoTimePtr(taskInput.dueAt),
-                    isScheduled: isScheduled,
-                    isPlanned: Boolean(taskInput.isPlanned),
-                }).response;
-                task = res.task;
-            }),
-        );
-        if (!task) {
-            return 0;
-        }
+        const remoteTask = await this.taskClient.createTask(`${teamId}`, {
+            goal: task.goal,
+            context: task.context,
+            ownerUserId: task.ownerUserId ? `${task.ownerUserId}` : undefined,
+            dueAt: task.dueAt,
+            isScheduled: isScheduled,
+            isPlanned: Boolean(task.isPlanned),
+        });
 
-        const remoteTaskId = task.id;
+        const remoteTaskId = parseInt(remoteTask.id);
         let appState = this.localStore.getState();
-        appState = setTask(appState, task);
+        appState = mergeTask(appState, remoteTask);
         if (sprintId) {
             appState = await this._addTaskToSprint(sprintId, remoteTaskId);
         }
@@ -817,69 +699,41 @@ export class StateSyncer {
     }
 
     public async createTaskLink(taskId: number, input: CreateTaskLinkInput) {
-        let taskLink: TaskLink | undefined;
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                const res = await this.taskLinkServiceClient.createTaskLink({
-                    taskId,
-                    url: input.url,
-                    title: input.title,
-                    previewTitle: input.previewTitle,
-                    iconHoverUrl: input.iconHoverUrl,
-                    iconUrl: input.iconUrl,
-                }).response;
-                taskLink = res.taskLink;
-            }),
+        const remoteTaskLink = await this.taskClient.createTaskLink(
+            `${taskId}`,
+            {
+                url: input.url,
+                title: input.title,
+                previewTitle: input.previewTitle,
+                iconHoverUrl: input.iconHoverUrl,
+                iconUrl: input.iconUrl,
+            },
         );
-        if (!taskLink) {
-            return;
-        }
-
         let appState = this.localStore.getState();
-        appState = setTaskLink(appState, taskLink);
+        appState = mergeTaskLink(appState, remoteTaskLink);
         this.localStore.updateState(appState);
     }
 
     public async deleteTaskLink(id: number) {
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                await this.taskLinkServiceClient.deleteTaskLink({
-                    id,
-                }).response;
-            }),
-        );
-
+        await this.taskClient.deleteTaskLink(`${id}`);
         let appState = this.localStore.getState();
         delete appState.taskLinks[id];
         this.localStore.updateState(appState);
     }
 
     public async updateTask(taskId: number, input: UpdateTaskInput) {
-        let task: Task | undefined;
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                const res = await this.taskServiceClient.updateTask({
-                    taskId: taskId,
-                    goal: input.goal,
-                    context: input.context,
-                    ownerUserId: input.ownerUserId,
-                    dueAt: toProtoTimePtr(input.dueAt),
-                    owningTeamId: input.owningTeamId,
-                    effort: toProtoDurationPtr(input.effort),
-                    priority: toProtoPriorityPtr(input.priority),
-                }).response;
-                task = res.task;
-            }),
-        );
-        if (!task) {
-            return 0;
-        }
+        const remoteTask = await this.taskClient.updateTask(`${taskId}`, {
+            goal: input.goal,
+            context: input.context,
+            ownerUserId: input.ownerUserId ? `${input.ownerUserId}` : undefined,
+            owningTeamId: `${input.owningTeamId}`,
+            effort: input.effort?.toString(),
+            priority: input.priority,
+            dueAt: input.dueAt,
+        });
 
         let appState = this.localStore.getState();
-        appState = setTask(appState, task);
+        appState = mergeTask(appState, remoteTask);
         this.localStore.updateState(appState);
     }
 
@@ -901,14 +755,7 @@ export class StateSyncer {
         );
         delete appState.tasks[taskId];
         this.localStore.updateState(appState);
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                await this.taskServiceClient.deleteTask({
-                    taskId,
-                }).response;
-            }),
-        );
+        await this.taskClient.deleteTask(`${taskId}`);
     }
 
     public async moveTaskToUpcoming(taskId: number) {
@@ -1101,26 +948,13 @@ export class StateSyncer {
         threadId: number,
         input: CreateMessageInput,
     ): Promise<void> {
-        let message: Message | undefined;
-        let user: User | undefined;
-        this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                const res = await this.messageServiceClient.createMessage({
-                    threadId: threadId,
-                    body: input.body,
-                }).response;
-
-                message = res.message;
-            }),
+        const message = await this.messageClient.createMessage(
+            `${threadId}`,
+            input,
         );
 
-        if (!message) {
-            return;
-        }
-
         let appState = this.localStore.getState();
-        appState = setMessage(appState, message);
+        appState = mergeMessage(appState, message);
         this.localStore.updateState(appState);
     }
 
@@ -1128,24 +962,12 @@ export class StateSyncer {
         messageId: number,
         input: UpdateMessageInput,
     ): Promise<void> {
-        let message: Message | undefined;
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                const res = await this.messageServiceClient.updateMessage({
-                    id: messageId,
-                    body: input.body,
-                }).response;
-                message = res.message;
-            }),
+        const message = await this.messageClient.updateMessage(
+            `${messageId}`,
+            input,
         );
-
-        if (!message) {
-            return;
-        }
-
         let appState = this.localStore.getState();
-        appState = setMessage(appState, message);
+        appState = mergeMessage(appState, message);
         this.localStore.updateState(appState);
     }
 
@@ -1153,15 +975,7 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         delete appState.messages[messageId];
         this.localStore.updateState(appState);
-
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                await this.messageServiceClient.deleteMessage({
-                    id: messageId,
-                }).response;
-            }),
-        );
+        await this.messageClient.deleteMessage(`${messageId}`);
     }
 
     public async createInvitation(

@@ -5,7 +5,6 @@ export const taskGoalLengthLimit = 100;
 export interface Config {
     environment: string;
     servicesWebAPIEndpoint: string;
-    servicesWebRPCAPIEndpoint: string;
     servicesWebSocketAPIEndpoint: string;
     cloudWebAPIEndpoint: string;
     defaultLogLevel: LogLevel;
@@ -23,8 +22,6 @@ export function getConfig(): Config {
     return {
         environment: import.meta.env.VITE_ENVIRONMENT,
         servicesWebAPIEndpoint: import.meta.env.VITE_SERVICES_WEB_API_ENDPOINT,
-        servicesWebRPCAPIEndpoint: import.meta.env
-            .VITE_SERVICES_WEB_RPC_API_ENDPOINT,
         servicesWebSocketAPIEndpoint: import.meta.env
             .VITE_SERVICES_WEB_SOCKET_API_ENDPOINT,
         cloudWebAPIEndpoint: import.meta.env.VITE_CLOUD_WEB_API_ENDPOINT,

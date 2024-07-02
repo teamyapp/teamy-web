@@ -1,5 +1,4 @@
 import { CloudComponent } from '@cloud/Cloud.component';
-// import { GrpcWebFetchTransport } from '@protobuf-ts/grpcweb-transport';
 import {
     RequiredAction,
     ThirdPartyApp,
@@ -12,7 +11,7 @@ import React, { Component, createRef } from 'react';
 import * as csp from '@lib/csp/csp';
 import { closeIfNot } from '@lib/csp/lib';
 import { DragAndDropEvent } from '@lib/dragAndDrop/DragAndDropController';
-import { getAccessToken, IdentityClient } from '@lib/identity/Identity.client';
+import { IdentityClient } from '@lib/identity/Identity.client';
 import { Route } from '@lib/router/Route';
 import { Router } from '@lib/router/router';
 import { TeamyThirdPartyAppFeedbackUI } from '@lib/thirdPartyApp/DynamicFeedback';
@@ -20,6 +19,7 @@ import { TeamyThirdPartyAppClient } from '@lib/thirdPartyApp/client';
 import { BannerUI } from '@lib/ui/Banner';
 import { DynamicFeedbackUI } from '@lib/ui/DynamicFeedback';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
+
 import { Config } from '@core/config/config';
 import { DragAndDropContext } from '@core/config/dragAndDrop';
 import { draggableTask } from '@core/config/draggable';
@@ -57,7 +57,6 @@ import {
 import { GraphSource } from '@core/storage/graph/graphSource';
 import { LocalStore } from '@core/storage/syncer/localStore';
 import { StateSyncer } from '@core/storage/syncer/stateSyncer';
-// import { TaskClient } from '@teamyapp/proto';
 
 import styles from './App.component.module.scss';
 import { BacklogComponent } from './internal/Backlog.component';
