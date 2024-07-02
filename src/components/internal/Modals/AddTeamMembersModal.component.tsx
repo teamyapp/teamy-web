@@ -35,6 +35,7 @@ interface State {
     team?: Team;
     invitationLink?: string;
     currentTabIndex: number;
+    isInvitationLinkClicked: boolean;
 }
 
 export class AddTeamMembersModalComponent extends Component<Props, State> {
@@ -51,11 +52,21 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
         this.graphSource = props.deps.graphSource;
         this.stateSyncer = props.deps.stateSyncer;
         this.state = {
-            currentTabIndex: 0
+            currentTabIndex: 0,
+            isInvitationLinkClicked: false
         };
     }
 
     public render() {
+        const { isInvitationLinkClicked } = this.state;
+
+        // Close the Modal if 'Get Invitation Link' button is clicked
+        if (isInvitationLinkClicked) {
+            this.onCloseButtonClick();
+            this.setState({
+                isInvitationLinkClicked: false
+            });
+        }
         return (
             <ModalUI ref={this.modalRef} level={1}>
                 <div className={styles.Header}>
@@ -102,6 +113,11 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
                                 onClick={this.onGenerateLinkClick}
                             />
                         </div>
+                        {this.state.invitationLink && (
+                            <div className={styles.InvitationLink}>
+                                {this.state.invitationLink}
+                            </div>
+                        )}
                     </div>
                 </div>
             </ModalUI>
@@ -150,8 +166,8 @@ export class AddTeamMembersModalComponent extends Component<Props, State> {
         }
 
         this.setState({
-            invitationLink: generatedLink
+            invitationLink: generatedLink,
+            isInvitationLinkClicked: true
         });
-        this.modalRef.current?.close();
     };
 }
