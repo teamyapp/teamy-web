@@ -78,6 +78,7 @@ import { AttachmentListState } from '../states/attachmentList.state';
 import { RemoteAttachment } from '@core/client/entity/remoteAttachment';
 import { AttachmentState } from '../states/attachment.state';
 import { TeamMemberGroupInvitationRelation } from '../states/teamMemberGroupInvitationRelation.state';
+<<<<<<< HEAD
 import {
     Attachment,
     AttachmentList,
@@ -85,6 +86,9 @@ import {
     Task,
     TaskLink,
 } from '@teamyapp/proto';
+=======
+import { Attachment, AttachmentList, Task, TaskLink } from '@teamyapp/proto';
+>>>>>>> parent of 51bc77e (Use message proto (#687))
 import {
     attachmentListOwnerTypes,
     attachmentTypes,
@@ -1690,6 +1694,7 @@ export function mergeTask(
     return currAppState;
 }
 
+<<<<<<< HEAD
 export function setMessage(currAppState: AppState, message: Message): AppState {
     const localNewMessage: MessageState = {
         id: message.id,
@@ -1703,6 +1708,8 @@ export function setMessage(currAppState: AppState, message: Message): AppState {
     return currAppState;
 }
 
+=======
+>>>>>>> parent of 51bc77e (Use message proto (#687))
 export function mergeMessage(
     currAppState: AppState,
     remoteMessage: RemoteMessage,

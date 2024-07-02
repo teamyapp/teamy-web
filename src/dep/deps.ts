@@ -54,12 +54,16 @@ import { PhaseClient } from '@core/client/phase.client';
 import { StoryClient } from '@core/client/story.client';
 import { TeamMemberGroupClient } from '@core/client/teamMemberGroup.client';
 import { AttachmentClient } from '@core/client/attachment.client';
+<<<<<<< HEAD
 import {
     TaskServiceClient,
     TaskLinkServiceClient,
     AttachmentServiceClient,
     MessageServiceClient,
 } from '@teamyapp/proto';
+=======
+import { TaskServiceClient, TaskLinkServiceClient, AttachmentServiceClient } from '@teamyapp/proto';
+>>>>>>> parent of 51bc77e (Use message proto (#687))
 import { clientGRPCWithIdentity } from '@lib/network/grpcInterceptor/clientGRPCWithIdentiy';
 import { clientGRPCWithRequestId } from '@lib/network/grpcInterceptor/clientGRPCWithRequestId';
 import { clientGRPCWithLogger } from '@lib/network/grpcInterceptor/clientGRPCWithLogger';
@@ -141,7 +145,6 @@ export function initDeps(config: Config): Deps {
     const taskGRPCClient = new TaskServiceClient(transport);
     const taskLinkGRPCClient = new TaskLinkServiceClient(transport);
     const attachmentGRPCClient = new AttachmentServiceClient(transport);
-    const messageGRPCClient = new MessageServiceClient(transport);
 
     const httpWithLogger = WithMiddlewares<HTTPClient>(new FetchHTTPClient(), [
         ...httpMiddlewares,
@@ -209,7 +212,6 @@ export function initDeps(config: Config): Deps {
         taskGRPCClient,
         taskLinkGRPCClient,
         attachmentGRPCClient,
-        messageGRPCClient,
         makeRetry,
     );
     const router = new Router();

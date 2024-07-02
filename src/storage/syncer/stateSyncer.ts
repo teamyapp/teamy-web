@@ -65,7 +65,7 @@ import { TeamMemberState } from '@core/storage/states/teamMember.state';
 import { UserLinkState } from '@core/storage/states/userLink.state';
 
 import { LocalStore } from './localStore';
-import { Message as RealTimeMessage } from './message';
+import { Message } from './message';
 import { Metadata } from './metadata';
 import {
     applyAppVersionChangeMutation,
@@ -94,7 +94,7 @@ import {
     mergeGroup,
     mergeGroupRolloutRelation,
     mergeInvitation,
-    setMessage,
+    mergeMessage,
     mergePhase,
     mergeProject,
     mergeProjectPhaseRelation,
@@ -135,9 +135,6 @@ import {
     Task,
     TaskLink,
     AttachmentList,
-    MessageServiceClient,
-    Message,
-    User,
 } from '@teamyapp/proto';
 import { Retry } from '@lib/retry/retry';
 import { rpcWithError } from '@lib/error/errors';
@@ -179,7 +176,6 @@ export class StateSyncer {
         private taskServiceClient: TaskServiceClient,
         private taskLinkServiceClient: TaskLinkServiceClient,
         private attachmentServiceClient: AttachmentServiceClient,
-        private messageServiceClient: MessageServiceClient,
         private makeRetry: () => Retry,
     ) {
         const url = `${this.webSocketEndpoint}/real-time-state-sync/clients/connect`;
@@ -191,7 +187,6 @@ export class StateSyncer {
         let taskLinks: TaskLink[] = [];
         let attachmentList: AttachmentList | undefined;
         let attachments: Attachment[] = [];
-        let messages: Message[] = [];
 
         await Promise.all([
             this.makeRetry().withRetry(
@@ -226,36 +221,23 @@ export class StateSyncer {
             ),
         ]);
 
-        if (!task) {
-            return;
-        }
-
-        await Promise.all([
-            this.makeRetry().withRetry(
-                {},
-                rpcWithError(async () => {
-                    if (attachmentList) {
-                        const res =
-                            await this.attachmentServiceClient.listAttachments({
-                                attachmentListId: attachmentList?.listId,
-                            }).response;
-                        attachments = res.attachments;
-                    }
-                }),
-            ),
-            this.makeRetry().withRetry(
-                {},
-                rpcWithError(async () => {
-                    const res = await this.messageServiceClient.listMessages({
-                        threadId: task!.commentsThreadId,
-                    }).response;
-                    messages = res.messages;
-                }),
-            ),
-        ]);
+        await this.makeRetry().withRetry(
+            {},
+            rpcWithError(async () => {
+                if (attachmentList) {
+                    const res =
+                        await this.attachmentServiceClient.listAttachments({
+                            attachmentListId: attachmentList?.listId,
+                        }).response;
+                    attachments = res.attachments;
+                }
+            }),
+        );
 
         let appState = this.localStore.getState();
-        appState = setTask(appState, task);
+        if (task) {
+            appState = setTask(appState, task);
+        }
 
         if (attachmentList) {
             appState = setAttachmentList(appState, attachmentList);
@@ -267,10 +249,6 @@ export class StateSyncer {
         attachments.forEach((attachment) => {
             appState = setAttachment(appState, attachment);
         });
-        messages.forEach((message) => {
-            appState = setMessage(appState, message);
-        });
-
         this.localStore.updateState(appState);
     }
 
@@ -310,7 +288,7 @@ export class StateSyncer {
 
                 const json = JSON.parse(receivedMessage);
                 console.log('JSON received: ', json);
-                const message = RealTimeMessage.fromMutationPayload(json);
+                const message = Message.fromMutationPayload(json);
                 console.log('Message received: ', message);
                 switch (message.type) {
                     case 'Transaction': {
@@ -1084,26 +1062,13 @@ export class StateSyncer {
         threadId: number,
         input: CreateMessageInput,
     ): Promise<void> {
-        let message: Message | undefined;
-        let user: User | undefined;
-        this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                const res = await this.messageServiceClient.createMessage({
-                    threadId: threadId,
-                    body: input.body,
-                }).response;
-
-                message = res.message;
-            }),
+        const message = await this.messageClient.createMessage(
+            `${threadId}`,
+            input,
         );
 
-        if (!message) {
-            return;
-        }
-
         let appState = this.localStore.getState();
-        appState = setMessage(appState, message);
+        appState = mergeMessage(appState, message);
         this.localStore.updateState(appState);
     }
 
@@ -1111,24 +1076,12 @@ export class StateSyncer {
         messageId: number,
         input: UpdateMessageInput,
     ): Promise<void> {
-        let message: Message | undefined;
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                const res = await this.messageServiceClient.updateMessage({
-                    id: messageId,
-                    body: input.body,
-                }).response;
-                message = res.message;
-            }),
+        const message = await this.messageClient.updateMessage(
+            `${messageId}`,
+            input,
         );
-
-        if (!message) {
-            return;
-        }
-
         let appState = this.localStore.getState();
-        appState = setMessage(appState, message);
+        appState = mergeMessage(appState, message);
         this.localStore.updateState(appState);
     }
 
@@ -1136,15 +1089,7 @@ export class StateSyncer {
         let appState = this.localStore.getState();
         delete appState.messages[messageId];
         this.localStore.updateState(appState);
-
-        await this.makeRetry().withRetry(
-            {},
-            rpcWithError(async () => {
-                await this.messageServiceClient.deleteMessage({
-                    id: messageId,
-                }).response;
-            }),
-        );
+        await this.messageClient.deleteMessage(`${messageId}`);
     }
 
     public async createInvitation(
