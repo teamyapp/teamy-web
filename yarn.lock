@@ -515,10 +515,10 @@
   resolved "https://npm.pkg.github.com/download/@teamyapp/ext/0.0.23/ce37af8380f3a875e308c3f8f7b4c8bf95210409#ce37af8380f3a875e308c3f8f7b4c8bf95210409"
   integrity sha512-++GLJiq+9UDerbIvbYjTOswZtUVJJv9/BCQjIbjPZpcTDq9zXEvTyLWXxyCgemqamEYLxu6tAZh6tNx2usQuqA==
 
-"@teamyapp/proto@^0.0.3":
-  version "0.0.3"
-  resolved "https://npm.pkg.github.com/download/@teamyapp/proto/0.0.3/f27a2c7c50fc110909c8363f8d4c23a0e5f1b9bd#f27a2c7c50fc110909c8363f8d4c23a0e5f1b9bd"
-  integrity sha512-0rgIl9Tx9QoRCT9eMzDtxrRvIyohEaXyD13Bbo+MdswToqZQd4rZrIEsulXZYRrYXFN1jCuoC8rL6J5ijXqaXA==
+"@teamyapp/proto@^0.0.2":
+  version "0.0.2"
+  resolved "https://npm.pkg.github.com/download/@teamyapp/proto/0.0.2/ad6bb6519872c1de55e2c8f29bdd1efe731e281a#ad6bb6519872c1de55e2c8f29bdd1efe731e281a"
+  integrity sha512-SDsIRXivD9qANilQ4mcNCaMl/BZSNpTosEk76q5JxAFI8NdH/9I4Lt4h/PnOs5hxKBIk54+LOIzbj4ep3GbD2g==
 
 "@trivago/prettier-plugin-sort-imports@^4.3.0":
   version "4.3.0"
