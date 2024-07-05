@@ -10,6 +10,7 @@ interface Props {
     relativeLayout: RelativeLayout;
     onDeleteAttachment: (attachmentId: number) => void;
     onCopyAttachmentLink: (url: string) => void;
+    onPreviewAttachment: (url: string) => void;
 }
 
 export const AttachmentList: React.FC<Props> = (props) => {
@@ -30,13 +31,17 @@ export const AttachmentList: React.FC<Props> = (props) => {
         props.onCopyAttachmentLink(url);
     };
 
+    const handlePreviewAttachment= (url: string) => () => {
+        props.onPreviewAttachment(url);
+    };
+
     return (
         <>
             <div className={styles.Attachments}>
                 {props.attachments?.map((attachment) => {
                     return (
                         <div className={styles.Attachment} key={attachment.id}>
-                            <div className={styles.LeftSection}>
+                            <div className={styles.LeftSection} onClick={handlePreviewAttachment(attachment.url)}>
                                 <div className={styles.Container}>
                                     <img
                                         key={attachment.id}

@@ -47,6 +47,7 @@ interface Props {
         url: string;
     }>;
     onContentUpdated: () => void;
+    onPreviewAttachment: (url: string) => void;
 }
 
 interface State {
@@ -134,6 +135,7 @@ export class MarkdownEditorUI extends Component<Props, State> {
                     <AttachmentList
                         attachments={this.props.attachments}
                         relativeLayout={this.props.deps.relativeLayout}
+                        onPreviewAttachment={this.props.onPreviewAttachment}
                         onDeleteAttachment={this.props.onDeleteAttachment}
                         onCopyAttachmentLink={this.props.onCopyAttachmentLink}
                     />
