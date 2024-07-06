@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { Component, ReactNode, createRef } from 'react';
-
+import { createPortal } from 'react-dom';
 import { Point } from '@lib/ui/position';
 
 import styles from './Modal.module.scss';
@@ -40,7 +40,7 @@ export class ModalUI extends Component<Props, State> {
 
     public render(): ReactNode {
         const elevation = (this.props.level || 0) + baseElevation;
-        return (
+       return createPortal(
             <div
                 role={'dialog'}
                 aria-label={this.props.ariaLabel}
@@ -75,7 +75,8 @@ export class ModalUI extends Component<Props, State> {
                         />
                     </>
                 )}
-            </div>
+            </div>,
+            document.body,
         );
     }
 
