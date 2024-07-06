@@ -31,7 +31,6 @@ import {
     CreateTaskLinkModalComponent,
     CreateTaskLinkModalComponentHandle,
 } from './CreateTaskLinkModal.component';
-import { PreviewAttachemntComponent, PreviewAttachemntComponentHandle } from '../PreviewAttachment.component';
 
 const verticalMargin = 30;
 const POPUP_Z_INDEX = 1002;
@@ -48,7 +47,6 @@ interface State {
     heightWithMargin: number;
     isCmdKeyPressed: boolean;
     isControlKeyPressed: boolean;
-    previewAttachmentUrl?: string;
 }
 
 export class TaskDetailModalComponent extends Component<Props, State> {
@@ -64,7 +62,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
     private readonly threadDivRef = createRef<HTMLDivElement>();
     private readonly dueAtDatePicker = createRef<DateTextPickerUI>();
     private stateChangeChan?: csp.PopChannel<boolean | undefined>;
-    private readonly previewAttachmentModalRef = createRef<PreviewAttachemntComponentHandle>();
 
     constructor(props: Props) {
         super(props);
@@ -79,6 +76,7 @@ export class TaskDetailModalComponent extends Component<Props, State> {
             isControlKeyPressed: false,
         };
     }
+
     public render(): ReactNode {
         const dueAt = this.state.updatedTask?.dueAt
             ? new Date(this.state.updatedTask.dueAt)
@@ -142,10 +140,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                                             createRemoteFileUploadSession={
                                                 this
                                                     .createRemoteFileUploadSession
-                                            }
-                                            onPreviewAttachment={
-                                                this
-                                                    .onPreviewAttachmentClick
                                             }
                                             onFileUploadFinished={
                                                 this
@@ -371,10 +365,6 @@ export class TaskDetailModalComponent extends Component<Props, State> {
                         taskId={this.state.task?.id}
                     />
                 )}
-                <PreviewAttachemntComponent
-                    ref={this.previewAttachmentModalRef}
-                    attachmentUrl={this.state?.previewAttachmentUrl}
-                />
             </>
         );
     }
@@ -624,12 +614,5 @@ export class TaskDetailModalComponent extends Component<Props, State> {
 
     private onDeleteTaskLinkClick = (linkId: number) => () => {
         this.stateSyncer.deleteTaskLink(linkId);
-    };
-
-    private onPreviewAttachmentClick = (url: string) => {
-        this.setState({
-            previewAttachmentUrl: url,
-        });
-        this.previewAttachmentModalRef.current?.open();
     };
 }
