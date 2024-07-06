@@ -4,6 +4,8 @@ import { timeFromNow } from '@lib/data/format';
 import { TooltipUI } from './Tooltip';
 import { RelativeLayout } from '@lib/layout';
 import { MaterialIconUI } from './MaterialIcon';
+import { PreviewAttachemntComponent } from 'components/internal/PreviewAttachment.component';
+import { createRef, useState } from 'react';
 
 interface Props {
     attachments: Attachment[];
@@ -13,6 +15,9 @@ interface Props {
 }
 
 export const AttachmentList: React.FC<Props> = (props) => {
+    const previewAttachmentModalRef = createRef<PreviewAttachemntComponent>();
+    const [previewAttachmentUrl, setPreviewAttachmentUrl] = useState<string>();
+
     const renderName = (attachment: Attachment) => {
         switch (attachment.type) {
             case 'IMAGE':
@@ -30,13 +35,23 @@ export const AttachmentList: React.FC<Props> = (props) => {
         props.onCopyAttachmentLink(url);
     };
 
+    const handlePreviewAttachment = (url: string) => () => {
+        setPreviewAttachmentUrl(url);
+        previewAttachmentModalRef.current?.open();
+    };
+
     return (
         <>
             <div className={styles.Attachments}>
                 {props.attachments?.map((attachment) => {
                     return (
                         <div className={styles.Attachment} key={attachment.id}>
-                            <div className={styles.LeftSection}>
+                            <div
+                                className={styles.LeftSection}
+                                onClick={handlePreviewAttachment(
+                                    attachment.url,
+                                )}
+                            >
                                 <div className={styles.Container}>
                                     <img
                                         key={attachment.id}
@@ -91,6 +106,10 @@ export const AttachmentList: React.FC<Props> = (props) => {
                     );
                 })}
             </div>
+            <PreviewAttachemntComponent
+                ref={previewAttachmentModalRef}
+                attachmentUrl={previewAttachmentUrl}
+            />
         </>
     );
 };
