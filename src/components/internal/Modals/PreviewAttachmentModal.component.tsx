@@ -15,8 +15,7 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
 
     constructor(props: Props) {
         super(props);
-        this.state = {
-        };
+        this.state = {};
     }
 
     public render() {
@@ -54,7 +53,6 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
 
     private renderPreviewContent() {
         const { previewAttachmentUrl, previewAttachmentType } = this.state;
-
         switch (previewAttachmentType) {
             case 'IMAGE':
                 return <img src={previewAttachmentUrl} className={styles.PreviewImage} alt='Preview' />;
