@@ -4,15 +4,20 @@ import { timeFromNow } from '@lib/data/format';
 import { TooltipUI } from './Tooltip';
 import { RelativeLayout } from '@lib/layout';
 import { MaterialIconUI } from './MaterialIcon';
+import { PreviewAttachemntModalComponent } from 'components/internal/Modals/PreviewAttachmentModal.component';
+import { createRef } from 'react';
 
 interface Props {
     attachments: Attachment[];
     relativeLayout: RelativeLayout;
-    onDeleteAttachment: (attachmentId: number) => void;
-    onCopyAttachmentLink: (url: string) => void;
+    onDeleteAttachment?: (attachmentId: number) => void;
+    onCopyAttachmentLink?: (url: string) => void;
 }
 
 export const AttachmentList: React.FC<Props> = (props) => {
+    const previewAttachmentModalRef =
+        createRef<PreviewAttachemntModalComponent>();
+
     const renderName = (attachment: Attachment) => {
         switch (attachment.type) {
             case 'IMAGE':
@@ -23,11 +28,18 @@ export const AttachmentList: React.FC<Props> = (props) => {
     };
 
     const handleDeleteAttachment = (attachmentId: number) => () => {
-        props.onDeleteAttachment(attachmentId);
+        props.onDeleteAttachment?.call(null, attachmentId);
     };
 
     const handleCopyAttachmentLink = (url: string) => () => {
-        props.onCopyAttachmentLink(url);
+        props.onCopyAttachmentLink?.call(null, url);
+    };
+
+    const handlePreviewAttachment = (attachment: Attachment) => () => {
+        previewAttachmentModalRef.current?.open(
+            attachment.url,
+            attachment.type,
+        );
     };
 
     return (
@@ -36,7 +48,10 @@ export const AttachmentList: React.FC<Props> = (props) => {
                 {props.attachments?.map((attachment) => {
                     return (
                         <div className={styles.Attachment} key={attachment.id}>
-                            <div className={styles.LeftSection}>
+                            <div
+                                className={styles.LeftSection}
+                                onClick={handlePreviewAttachment(attachment)}
+                            >
                                 <div className={styles.Container}>
                                     <img
                                         key={attachment.id}
@@ -91,6 +106,7 @@ export const AttachmentList: React.FC<Props> = (props) => {
                     );
                 })}
             </div>
+            <PreviewAttachemntModalComponent ref={previewAttachmentModalRef} />
         </>
     );
 };
