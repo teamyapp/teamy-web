@@ -12,11 +12,10 @@ interface State {
 
 export class PreviewAttachemntModalComponent extends Component<Props, State> {
     private readonly modalRef = createRef<ModalUI>();
+
     constructor(props: Props) {
         super(props);
         this.state = {
-            previewAttachmentUrl: '',
-            previewAttachmentType: '',
         };
     }
 
@@ -35,11 +34,7 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
                     </div>
                 </div>
                 <div className={styles.PreviewAttachmentContainer}>
-                    <img
-                        src={this.state.previewAttachmentUrl}
-                        className={styles.PreviewImage}
-                        alt='Preview'
-                    />
+                    {this.renderPreviewContent()}
                 </div>
             </ModalUI>
         );
@@ -56,4 +51,15 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
     private onCloseButtonClick = () => {
         this.modalRef.current?.close();
     };
+
+    private renderPreviewContent() {
+        const { previewAttachmentUrl, previewAttachmentType } = this.state;
+
+        switch (previewAttachmentType) {
+            case 'IMAGE':
+                return <img src={previewAttachmentUrl} className={styles.PreviewImage} alt='Preview' />;
+            default:
+                return <p>Unsupported attachment type.</p>;
+        }
+    }
 }

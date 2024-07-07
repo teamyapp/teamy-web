@@ -28,15 +28,11 @@ export const AttachmentList: React.FC<Props> = (props) => {
     };
 
     const handleDeleteAttachment = (attachmentId: number) => () => {
-        if (props.onDeleteAttachment) {
-            props.onDeleteAttachment(attachmentId);
-        }
+        props.onDeleteAttachment?.call(null, attachmentId);
     };
 
     const handleCopyAttachmentLink = (url: string) => () => {
-        if (props.onCopyAttachmentLink) {
-            props.onCopyAttachmentLink(url);
-        }
+        props.onCopyAttachmentLink?.call(null, url);
     };
 
     const handlePreviewAttachment = (attachment: Attachment) => () => {
