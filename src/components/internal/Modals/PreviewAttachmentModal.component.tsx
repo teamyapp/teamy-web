@@ -1,4 +1,4 @@
-import { Component, createRef, useState } from 'react';
+import { Component, createRef } from 'react';
 import { ModalUI } from '@lib/ui/Modal';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import styles from './PreviewAttachmentModal.component.module.scss';
