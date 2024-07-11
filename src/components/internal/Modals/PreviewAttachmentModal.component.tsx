@@ -59,7 +59,6 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
 
     public open = (url: string, type: string) => {
         const { minScreenWidth, minScreenHeight } = PREVIEW_ATTACHMENT_DIMENSIONS;
-
         this.setState({
             attachmentLoaded: false,
             attachmentLoading: true,
@@ -105,6 +104,7 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
                 if (attachmentLoading) {
                     return <p>Loading...</p>;
                 }
+
                 if (attachmentLoaded) {
                     return (
                         <img
@@ -128,11 +128,12 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
                 attachmentLoaded: true,
                 attachmentLoading: false,
             });
+            this.adjustPreviewContainerSize(
+                image.naturalWidth,
+                image.naturalHeight,
+            );
         };
-        this.adjustPreviewContainerSize(
-            image.naturalWidth,
-            image.naturalHeight,
-        );
+
         image.onerror = (error) => {
             this.setState({
                 attachmentLoaded: false,
@@ -160,13 +161,10 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
         let imageWidthViewportWidth = (imageWidth / viewportWidth) * 100;
         let imageHeightViewportWidth = (imageHeight / viewportHeight) * 100;
 
-        let containerWidth;
-        let containerHeight;
-        // Adjust width and height based on min and max constraints
-        containerWidth = Math.max(imageWidthViewportWidth, minScreenWidth);
+        let containerWidth = Math.max(imageWidthViewportWidth, minScreenWidth);
         containerWidth = Math.min(containerWidth, maxScreenWidth);
 
-        containerHeight = Math.max(imageHeightViewportWidth, minScreenHeight);
+        let containerHeight = Math.max(imageHeightViewportWidth, minScreenHeight);
         containerHeight = Math.min(containerHeight, maxScreenHeight);
 
         this.setState({
