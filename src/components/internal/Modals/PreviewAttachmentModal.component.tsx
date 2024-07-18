@@ -3,14 +3,17 @@ import { ModalUI } from '@lib/ui/Modal';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import styles from './PreviewAttachmentModal.component.module.scss';
 import { Attachment } from '@core/entity/attachment';
+import { TooltipUI } from '@lib/ui/Tooltip';
+import { RelativeLayout } from '@lib/layout';
 
 export const PREVIEW_ATTACHMENT_DIMENSIONS = {
-    screenWidth: 90, // in Viewport Wdith
-    screenHeight: 85, // in Viewport Height
+    modalWidth: 90, // in Viewport Wdith
+    modalHeight: 85, // in Viewport Height
 };
 
 interface Props {
     attachments: Attachment[];
+    relativeLayout: RelativeLayout;
 }
 
 interface State {
@@ -60,29 +63,8 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
         );
     }
 
-    public open = (url: string, type: string, index: number) => {
-        const { screenWidth, screenHeight } = PREVIEW_ATTACHMENT_DIMENSIONS;
-        this.setState({
-            attachmentLoaded: false,
-            attachmentLoading: true,
-            containerWidth: screenWidth,
-            containerHeight: screenHeight,
-            errorMessage: '',
-            attachmentIndex: index,
-        });
-
-        switch (type) {
-            case 'IMAGE':
-                this.loadImage(url);
-                break;
-            default:
-                return;
-        }
-
-        this.setState({
-            previewAttachmentUrl: url,
-            previewAttachmentType: type,
-        });
+    public open = (attachment: Attachment, index: number) => {
+        this.showAttachment(attachment, index);
         this.modalRef.current?.open();
     };
 
@@ -100,13 +82,13 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
         } = this.state;
 
         if (errorMessage) {
-            return <p className={styles.ContainerText}>{errorMessage}</p>;
+            return <p className={styles.Placeholder}>{errorMessage}</p>;
         }
 
         switch (previewAttachmentType) {
             case 'IMAGE':
                 if (attachmentLoading) {
-                    return <p className={styles.ContainerText}>Loading...</p>;
+                    return <p className={styles.Placeholder}>Loading...</p>;
                 }
 
                 if (attachmentLoaded) {
@@ -118,14 +100,13 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
                         />
                     );
                 }
+
                 return (
-                    <p className={styles.ContainerText}>
-                        Image failed to load.
-                    </p>
+                    <p className={styles.Placeholder}>Failed to load image.</p>
                 );
             default:
                 return (
-                    <p className={styles.ContainerText}>
+                    <p className={styles.Placeholder}>
                         Unsupported attachment type.
                     </p>
                 );
@@ -162,11 +143,17 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
                     <div
                         role='button'
                         aria-label='Previous'
-                        className={styles.PrevButton}
-                        onClick={this.onPrevAttachment}
+                        className={`${styles.PrevButton} `}
+                        onClick={this.onPreviousClick}
                     >
-                        <span className={styles.TooltipText}>Previous</span>
-                        <MaterialIconUI>chevron_left</MaterialIconUI>
+                        <TooltipUI
+                            message='Previous'
+                            verticalAlignment={'center'}
+                            horizontalAlignment={'right'}
+                            relativeLayout={this.props.relativeLayout}
+                        >
+                            <MaterialIconUI>chevron_left</MaterialIconUI>
+                        </TooltipUI>
                     </div>
                 )}
                 {attachmentIndex !== undefined &&
@@ -174,37 +161,64 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
                         <div
                             role='button'
                             aria-label='Next'
-                            className={styles.NextButton}
-                            onClick={this.onNextAttachment}
+                            className={`${styles.NextButton} `}
+                            onClick={this.onNextClick}
                         >
-                            <span className={styles.TooltipText}>Next</span>
-                            <MaterialIconUI>chevron_right</MaterialIconUI>
+                            <TooltipUI
+                                message='Next'
+                                verticalAlignment={'center'}
+                                horizontalAlignment={'left'}
+                                relativeLayout={this.props.relativeLayout}
+                            >
+                                <MaterialIconUI>chevron_right</MaterialIconUI>
+                            </TooltipUI>
                         </div>
                     )}
             </>
         );
     }
 
-    private onPrevAttachment = () => {
+    private onPreviousClick = () => {
         const { attachmentIndex } = this.state;
         const { attachments } = this.props;
-        if (attachmentIndex !== undefined && attachmentIndex > 0) {
-            const newIndex = attachmentIndex - 1;
-            const newAttachment = attachments[newIndex];
-            this.open(newAttachment.url, newAttachment.type, newIndex);
-        }
+
+        const newIndex = attachmentIndex! - 1;
+        const newAttachment = attachments[newIndex];
+        this.showAttachment(newAttachment, newIndex);
     };
 
-    private onNextAttachment = () => {
+    private onNextClick = () => {
         const { attachmentIndex } = this.state;
         const { attachments } = this.props;
-        if (
-            attachmentIndex !== undefined &&
-            attachmentIndex < attachments.length - 1
-        ) {
-            const newIndex = attachmentIndex + 1;
-            const newAttachment = attachments[newIndex];
-            this.open(newAttachment.url, newAttachment.type, newIndex);
+
+        const newIndex = attachmentIndex! + 1;
+        const newAttachment = attachments[newIndex];
+        this.showAttachment(newAttachment, newIndex);
+    };
+
+    private showAttachment = (attachment: Attachment, index: number) => {
+        const { modalWidth, modalHeight } = PREVIEW_ATTACHMENT_DIMENSIONS;
+
+        this.setState({
+            attachmentLoaded: false,
+            attachmentLoading: true,
+            containerWidth: modalWidth,
+            containerHeight: modalHeight,
+            errorMessage: '',
+            attachmentIndex: index,
+        });
+
+        switch (attachment.type) {
+            case 'IMAGE':
+                this.loadImage(attachment.url);
+                break;
+            default:
+                return;
         }
+
+        this.setState({
+            previewAttachmentUrl: attachment.url,
+            previewAttachmentType: attachment.type,
+        });
     };
 }

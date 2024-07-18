@@ -38,9 +38,8 @@ export const AttachmentList: React.FC<Props> = (props) => {
     const handlePreviewAttachment =
         (attachment: Attachment, index: number) => () => {
             previewAttachmentModalRef.current?.open(
-                attachment.url,
-                attachment.type,
-                index,
+                attachment,
+                index
             );
         };
 
@@ -114,6 +113,7 @@ export const AttachmentList: React.FC<Props> = (props) => {
             <PreviewAttachemntModalComponent
                 ref={previewAttachmentModalRef}
                 attachments={props.attachments}
+                relativeLayout={props.relativeLayout}
             />
         </>
     );
