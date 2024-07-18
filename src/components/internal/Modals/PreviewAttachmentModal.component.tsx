@@ -127,7 +127,7 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
             this.setState({
                 attachmentLoaded: false,
                 attachmentLoading: false,
-                errorMessage: 'Image failed to load.',
+                errorMessage: 'Failed to load image.',
             });
             console.error('Error loading image:', error);
         };
@@ -139,7 +139,8 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
 
         return (
             <>
-                {attachmentIndex !== undefined && attachmentIndex > 0 && (
+                {attachmentIndex !== undefined &&
+                attachmentIndex > 0 && (
                     <div
                         role='button'
                         aria-label='Previous'
