@@ -17,8 +17,7 @@ interface Props {
 }
 
 interface State {
-    previewAttachmentUrl?: string;
-    previewAttachmentType?: string;
+    attachment?: Attachment;
     attachmentLoading?: boolean;
     attachmentLoaded?: boolean;
     containerWidth?: number;
@@ -74,8 +73,7 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
 
     private renderPreviewContent() {
         const {
-            previewAttachmentUrl,
-            previewAttachmentType,
+            attachment,
             errorMessage,
             attachmentLoaded,
             attachmentLoading,
@@ -85,7 +83,7 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
             return <p className={styles.Placeholder}>{errorMessage}</p>;
         }
 
-        switch (previewAttachmentType) {
+        switch (attachment?.type) {
             case 'IMAGE':
                 if (attachmentLoading) {
                     return <p className={styles.Placeholder}>Loading...</p>;
@@ -94,7 +92,7 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
                 if (attachmentLoaded) {
                     return (
                         <img
-                            src={previewAttachmentUrl}
+                            src={attachment?.url}
                             className={styles.PreviewImage}
                             alt='Preview'
                         />
@@ -218,8 +216,7 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
         }
 
         this.setState({
-            previewAttachmentUrl: attachment.url,
-            previewAttachmentType: attachment.type,
+            attachment: attachment
         });
     };
 }
