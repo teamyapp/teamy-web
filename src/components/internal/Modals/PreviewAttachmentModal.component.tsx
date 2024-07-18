@@ -2,24 +2,28 @@ import { Component, createRef } from 'react';
 import { ModalUI } from '@lib/ui/Modal';
 import { MaterialIconUI } from '@lib/ui/MaterialIcon';
 import styles from './PreviewAttachmentModal.component.module.scss';
+import { Attachment } from '@core/entity/attachment';
+import { TooltipUI } from '@lib/ui/Tooltip';
+import { RelativeLayout } from '@lib/layout';
 
 export const PREVIEW_ATTACHMENT_DIMENSIONS = {
-    minScreenWidth: 30, // in Viewport Wdith
-    minScreenHeight: 20, // in Viewport Height
-    maxScreenWidth: 90, // in Viewport Wdith
-    maxScreenHeight: 80, // in Viewport Height
+    modalWidth: 90, // in Viewport Wdith
+    modalHeight: 85, // in Viewport Height
 };
 
-interface Props {}
+interface Props {
+    attachments: Attachment[];
+    relativeLayout: RelativeLayout;
+}
 
 interface State {
-    previewAttachmentUrl?: string;
-    previewAttachmentType?: string;
+    attachment?: Attachment;
     attachmentLoading?: boolean;
     attachmentLoaded?: boolean;
     containerWidth?: number;
     containerHeight?: number;
     errorMessage?: string;
+    attachmentIndex?: number;
 }
 
 export class PreviewAttachemntModalComponent extends Component<Props, State> {
@@ -52,33 +56,14 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
                     }}
                 >
                     {this.renderPreviewContent()}
+                    {this.renderNavigationButtons()}
                 </div>
             </ModalUI>
         );
     }
 
-    public open = (url: string, type: string) => {
-        const { minScreenWidth, minScreenHeight } = PREVIEW_ATTACHMENT_DIMENSIONS;
-        this.setState({
-            attachmentLoaded: false,
-            attachmentLoading: true,
-            containerWidth: minScreenWidth,
-            containerHeight: minScreenHeight,
-            errorMessage: '',
-        });
-
-        switch (type) {
-            case 'IMAGE':
-                this.loadImage(url);
-                break;
-            default:
-                return;
-        }
-
-        this.setState({
-            previewAttachmentUrl: url,
-            previewAttachmentType: type,
-        });
+    public open = (attachment: Attachment, index: number) => {
+        this.showAttachment(attachment, index);
         this.modalRef.current?.open();
     };
 
@@ -88,35 +73,41 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
 
     private renderPreviewContent() {
         const {
-            previewAttachmentUrl,
-            previewAttachmentType,
+            attachment,
             errorMessage,
             attachmentLoaded,
             attachmentLoading,
         } = this.state;
 
         if (errorMessage) {
-            return <p>{errorMessage}</p>;
+            return <p className={styles.Placeholder}>{errorMessage}</p>;
         }
 
-        switch (previewAttachmentType) {
+        switch (attachment?.type) {
             case 'IMAGE':
                 if (attachmentLoading) {
-                    return <p>Loading...</p>;
+                    return <p className={styles.Placeholder}>Loading...</p>;
                 }
 
                 if (attachmentLoaded) {
                     return (
                         <img
-                            src={previewAttachmentUrl}
+                            src={attachment?.url}
                             className={styles.PreviewImage}
                             alt='Preview'
                         />
                     );
                 }
-                return <p>Image failed to load.</p>;
+
+                return (
+                    <p className={styles.Placeholder}>Failed to load image.</p>
+                );
             default:
-                return <p>Unsupported attachment type.</p>;
+                return (
+                    <p className={styles.Placeholder}>
+                        Unsupported attachment type.
+                    </p>
+                );
         }
     }
 
@@ -128,48 +119,104 @@ export class PreviewAttachemntModalComponent extends Component<Props, State> {
                 attachmentLoaded: true,
                 attachmentLoading: false,
             });
-            this.adjustPreviewContainerSize(
-                image.naturalWidth,
-                image.naturalHeight,
-            );
         };
 
         image.onerror = (error) => {
             this.setState({
                 attachmentLoaded: false,
                 attachmentLoading: false,
-                errorMessage: 'Image failed to load.',
+                errorMessage: 'Failed to load image.',
             });
             console.error('Error loading image:', error);
         };
     };
 
-    private adjustPreviewContainerSize = (
-        imageWidth: number,
-        imageHeight: number,
-    ) => {
-        const {
-            minScreenWidth,
-            minScreenHeight,
-            maxScreenWidth,
-            maxScreenHeight,
-        } = PREVIEW_ATTACHMENT_DIMENSIONS;
+    private renderNavigationButtons() {
+        const { attachmentIndex } = this.state;
+        const { attachments } = this.props;
 
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
+        return (
+            <>
+                {attachmentIndex !== undefined &&
+                attachmentIndex > 0 && (
+                    <div
+                        role='button'
+                        aria-label='Previous'
+                        className={`${styles.PrevButton} `}
+                        onClick={this.onPreviousClick}
+                    >
+                        <TooltipUI
+                            message='Previous'
+                            verticalAlignment={'center'}
+                            horizontalAlignment={'right'}
+                            relativeLayout={this.props.relativeLayout}
+                        >
+                            <MaterialIconUI>chevron_left</MaterialIconUI>
+                        </TooltipUI>
+                    </div>
+                )}
+                {attachmentIndex !== undefined &&
+                    attachmentIndex < attachments.length - 1 && (
+                        <div
+                            role='button'
+                            aria-label='Next'
+                            className={`${styles.NextButton} `}
+                            onClick={this.onNextClick}
+                        >
+                            <TooltipUI
+                                message='Next'
+                                verticalAlignment={'center'}
+                                horizontalAlignment={'left'}
+                                relativeLayout={this.props.relativeLayout}
+                            >
+                                <MaterialIconUI>chevron_right</MaterialIconUI>
+                            </TooltipUI>
+                        </div>
+                    )}
+            </>
+        );
+    }
 
-        let imageWidthViewportWidth = (imageWidth / viewportWidth) * 100;
-        let imageHeightViewportWidth = (imageHeight / viewportHeight) * 100;
+    private onPreviousClick = () => {
+        const { attachmentIndex } = this.state;
+        const { attachments } = this.props;
 
-        let containerWidth = Math.max(imageWidthViewportWidth, minScreenWidth);
-        containerWidth = Math.min(containerWidth, maxScreenWidth);
+        const newIndex = attachmentIndex! - 1;
+        const newAttachment = attachments[newIndex];
+        this.showAttachment(newAttachment, newIndex);
+    };
 
-        let containerHeight = Math.max(imageHeightViewportWidth, minScreenHeight);
-        containerHeight = Math.min(containerHeight, maxScreenHeight);
+    private onNextClick = () => {
+        const { attachmentIndex } = this.state;
+        const { attachments } = this.props;
+
+        const newIndex = attachmentIndex! + 1;
+        const newAttachment = attachments[newIndex];
+        this.showAttachment(newAttachment, newIndex);
+    };
+
+    private showAttachment = (attachment: Attachment, index: number) => {
+        const { modalWidth, modalHeight } = PREVIEW_ATTACHMENT_DIMENSIONS;
 
         this.setState({
-            containerWidth: containerWidth,
-            containerHeight: containerHeight,
+            attachmentLoaded: false,
+            attachmentLoading: true,
+            containerWidth: modalWidth,
+            containerHeight: modalHeight,
+            errorMessage: '',
+            attachmentIndex: index,
+        });
+
+        switch (attachment.type) {
+            case 'IMAGE':
+                this.loadImage(attachment.url);
+                break;
+            default:
+                return;
+        }
+
+        this.setState({
+            attachment: attachment
         });
     };
 }

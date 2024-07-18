@@ -35,22 +35,26 @@ export const AttachmentList: React.FC<Props> = (props) => {
         props.onCopyAttachmentLink?.call(null, url);
     };
 
-    const handlePreviewAttachment = (attachment: Attachment) => () => {
-        previewAttachmentModalRef.current?.open(
-            attachment.url,
-            attachment.type,
-        );
-    };
+    const handlePreviewAttachment =
+        (attachment: Attachment, index: number) => () => {
+            previewAttachmentModalRef.current?.open(
+                attachment,
+                index
+            );
+        };
 
     return (
         <>
             <div className={styles.Attachments}>
-                {props.attachments?.map((attachment) => {
+                {props.attachments?.map((attachment, index) => {
                     return (
                         <div className={styles.Attachment} key={attachment.id}>
                             <div
                                 className={styles.LeftSection}
-                                onClick={handlePreviewAttachment(attachment)}
+                                onClick={handlePreviewAttachment(
+                                    attachment,
+                                    index,
+                                )}
                             >
                                 <div className={styles.Container}>
                                     <img
@@ -106,7 +110,11 @@ export const AttachmentList: React.FC<Props> = (props) => {
                     );
                 })}
             </div>
-            <PreviewAttachemntModalComponent ref={previewAttachmentModalRef} />
+            <PreviewAttachemntModalComponent
+                ref={previewAttachmentModalRef}
+                attachments={props.attachments}
+                relativeLayout={props.relativeLayout}
+            />
         </>
     );
 };

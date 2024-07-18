@@ -1,4 +1,5 @@
 @import 'Modal.shared.module';
+$navigationButtonColor: #3a3a3a;
 
 .Content {
     box-sizing: border-box;
@@ -24,9 +25,42 @@
     background-color: #000000;
     cursor: pointer;
     padding: 10px;
+    position: relative;
 
     .PreviewImage {
         max-width: 100%;
         max-height: 100%;
+    }
+
+    .PrevButton,
+    .NextButton {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: $navigationButtonColor;
+        --icon-color: white;
+        width: 40px; 
+        height: 40px;
+        border-radius: 50%;
+        opacity: 0.8;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .PrevButton {
+        left: 10px;
+    }
+
+    .NextButton {
+        right: 10px;
+    }
+
+    .Placeholder {
+        color: white;
     }
 }
